@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lilith Learning Lab</title>
+<style>
+:root{--bg:#0f0b18;--bg2:#171025;--panel:#1b1429;--panel2:#261b3b;--line:#3a2d55;--tx:#f1ebff;--dim:#a99dc7;--g:#b26bff;--g2:#d9acff;--pink:#e06aa8;--warn:#e3b341;--err:#ff7a9a;--ok:#7be0a4;--blue:#6bb6ff;--r:14px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Roboto,sans-serif;-webkit-text-size-adjust:100%}
+body{display:flex;flex-direction:column;background:radial-gradient(1200px 500px at 70% -10%,#2a1748 0%,transparent 60%),var(--bg)}
+header{flex:none;padding:calc(8px + env(safe-area-inset-top)) 14px 6px;display:flex;align-items:center;gap:10px}
+header .t{flex:1;min-width:0}
+h1{font-size:17px;margin:0;color:var(--g2);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub{font-size:11.5px;color:var(--dim)}
+.iconbtn{background:var(--panel2);border:1px solid var(--line);color:var(--tx);border-radius:12px;width:42px;height:42px;font-size:19px}
+.bar{flex:none;height:4px;background:var(--panel2);margin:0 14px 4px;border-radius:2px;overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--g),var(--pink));width:0;transition:width .3s}
+main{flex:1;min-height:0;overflow:auto;padding:6px 14px 18px;-webkit-overflow-scrolling:touch}
+main.fill{overflow:hidden;padding:4px 10px 6px}
+nav{flex:none;display:flex;background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:none;border:0;color:var(--dim);padding:8px 2px 7px;font:inherit;font-size:11.5px;display:flex;flex-direction:column;align-items:center;gap:1px;min-height:54px}
+nav button b{font-size:19px;line-height:1.1}
+nav button.on{color:var(--g2)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin:10px 0}
+.card h3{margin:0 0 6px;font-size:12.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--g)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button.btn,.chip{background:var(--panel2);border:1px solid var(--line);color:var(--tx);border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;min-height:40px}
+button.btn.pri{background:linear-gradient(135deg,var(--g),var(--pink));color:#1a0a2a;border-color:transparent;font-weight:700}
+button.btn.sm,.chip{padding:5px 11px;font-size:13px;min-height:34px}
+.chip.on{border-color:var(--g);color:var(--g2)}
+.chap{display:flex;gap:10px;align-items:center;padding:11px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);margin:8px 0;width:100%;text-align:left;color:var(--tx);font:inherit}
+.chap .n{min-width:32px;height:32px;border-radius:50%;background:var(--panel2);display:grid;place-items:center;font-size:13px;color:var(--g2)}
+.chap.done .n{background:var(--g);color:#1a0a2a}
+.chap small{display:block;color:var(--dim);font-size:12px}
+ul{padding-left:20px;margin:6px 0}li{margin:5px 0}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;background:#0b0813;border:1px solid var(--line);border-radius:5px;padding:0 4px}
+pre{position:relative;background:#0b0813;border:1px solid var(--line);border-radius:10px;padding:10px 12px;overflow:auto;margin:10px 0;font:13px/1.45 ui-monospace,Menlo,Consolas,monospace}
+pre code{background:none;border:0;padding:0;font-size:inherit}
+pre .lang{position:absolute;top:4px;right:8px;font-size:10px;color:var(--dim)}
+pre .cp{position:absolute;bottom:4px;right:6px;font-size:11px;background:var(--panel2);color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+figure{margin:10px 0}figure img{width:100%;height:auto;border-radius:12px;display:block;background:#fff}
+figcaption{font-size:12px;color:var(--dim);margin-top:4px}
+.qa{border:1px dashed var(--line);border-radius:10px;padding:10px;margin:8px 0}
+.qa .a{display:none;margin-top:8px;color:var(--g2)}.qa.open .a{display:block}
+input[type=text],input[type=search],textarea,select{width:100%;background:#07040d;color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:10px;font:16px ui-monospace,Menlo,Consolas,monospace}
+textarea{min-height:190px;font-size:14px;line-height:1.45;resize:vertical}
+.muted{color:var(--dim);font-size:13px}.hide{display:none!important}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.gl dt{font-weight:600;color:var(--g2);margin-top:10px}.gl dd{margin:2px 0 0}
+.big{font-size:18px;margin:6px 0}
+/* terminal + lab */
+.term{background:#05030a;border:1px solid var(--line);border-radius:var(--r);padding:10px;height:50vh;overflow:auto;font:13px/1.45 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word}
+.term .dim{color:var(--dim)}.term .ok{color:var(--ok)}.term .err{color:var(--err)}.term .warn{color:var(--warn)}.term .cmd{color:var(--g2)}
+.prompt{display:flex;gap:6px;align-items:center;margin-top:8px}.prompt span{color:var(--g2);font:13px ui-monospace,Menlo,monospace;white-space:nowrap}
+.out{background:#07040d;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px;font:13px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap}
+.out .p{color:var(--ok)}.out .f{color:var(--err)}.out .g{color:var(--warn)}
+/* teacher */
+.teacherBox{position:relative;border-radius:16px;overflow:hidden;background:radial-gradient(120% 120% at 50% 0%,#3a1f66 0%,#1b1030 60%,#120a22 100%);border:1px solid var(--line);display:flex;justify-content:center;align-items:flex-end}
+.teacherBox img.teacher{height:100%;width:auto;max-width:100%;object-fit:contain;object-position:50% 100%;display:block;filter:drop-shadow(0 6px 18px rgba(178,107,255,.35))}
+.teacherBox .tag{position:absolute;left:8px;top:8px;font-size:11px;letter-spacing:.6px;color:var(--g2);background:rgba(15,11,24,.7);border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+.teacherBox .live{position:absolute;right:8px;top:8px;width:9px;height:9px;border-radius:50%;background:var(--dim)}
+.teacherBox.talk .live{background:var(--ok);box-shadow:0 0 0 0 rgba(123,224,164,.7);animation:pulse 1.2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px rgba(123,224,164,0)}100%{box-shadow:0 0 0 0 rgba(123,224,164,0)}}
+.hero{height:300px;margin-top:6px}
+/* lecture */
+.lec{height:100%;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto 1fr auto;grid-template-areas:"t c" "s s" "k k";gap:8px}
+.lec .teacherBox{grid-area:t;height:27vh;min-height:150px;aspect-ratio:540/643}
+.slideWrap{grid-area:s;position:relative;min-height:0;border-radius:18px;overflow:hidden;background:linear-gradient(160deg,#21163a,#150d27);border:1px solid var(--line)}
+.slide{position:absolute;inset:0;padding:14px 16px;overflow:auto;display:flex;flex-direction:column}
+.slide.enter{animation:slin .45s cubic-bezier(.2,.8,.2,1)}.slide.enterback{animation:slinb .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes slin{from{opacity:0;transform:translateX(34px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes slinb{from{opacity:0;transform:translateX(-34px) scale(.98)}to{opacity:1;transform:none}}
+.sh{margin:0 0 10px;color:var(--g2);font-size:15px;letter-spacing:.6px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.sh:before{content:"";width:22px;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--g),var(--pink))}
+.bl{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.b{display:flex;gap:11px;align-items:flex-start;margin:0;transition:opacity .35s,filter .35s}
+.b.hid{opacity:0;transform:translateY(12px);pointer-events:none;position:absolute;visibility:hidden}
+.b.pop{animation:bpop .5s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes bpop{from{opacity:0;transform:translateX(-22px) scale(.96)}to{opacity:1;transform:none}}
+.b:not(.now){opacity:.62}.b.now{opacity:1}
+.dot{flex:none;width:12px;height:12px;margin-top:7px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--pink));box-shadow:0 0 0 0 rgba(178,107,255,.7)}
+.b.now .dot{animation:pulse2 1.4s infinite}
+@keyframes pulse2{70%{box-shadow:0 0 0 9px rgba(178,107,255,0)}100%{box-shadow:0 0 0 0 rgba(178,107,255,0)}}
+.bh{display:block;font-size:clamp(17px,4.6vw,24px);line-height:1.25;font-weight:650}
+.bd{display:block;font-size:clamp(13px,3.5vw,16px);color:var(--dim);margin-top:3px;opacity:0}
+.b.now .bd,.b.shown .bd{animation:fadein .6s .35s forwards}
+.b:not(.now) .bd{opacity:.9;animation:none}
+@keyframes fadein{to{opacity:1}}
+.s-title{flex:1;display:flex;flex-direction:column;justify-content:center;position:relative}
+.s-title h2{font-size:clamp(26px,8vw,44px);line-height:1.1;margin:6px 0 12px;background:linear-gradient(90deg,#fff,var(--g2),var(--pink),#fff);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shim 5s linear infinite}
+@keyframes shim{to{background-position:-250% 0}}
+.kicker{color:var(--pink);letter-spacing:2px;text-transform:uppercase;font-size:13px}
+.rule{width:90px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--g),var(--pink));animation:grow .8s both}
+@keyframes grow{from{width:0}}
+.orb{position:absolute;border-radius:50%;filter:blur(30px);opacity:.5;animation:float 7s ease-in-out infinite}
+.o1{width:140px;height:140px;background:var(--g);right:-30px;top:-10px}.o2{width:110px;height:110px;background:var(--pink);left:10px;bottom:-30px;animation-delay:-3s}
+@keyframes float{50%{transform:translate(-14px,16px)}}
+.fig img{width:100%;height:auto;max-height:100%;border-radius:12px;animation:zoom .7s cubic-bezier(.2,.8,.2,1);background:#fff}
+@keyframes zoom{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+.fig .cap{font-size:12.5px;color:var(--dim);margin-top:8px}
+.codeblk{background:#08050f;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:12.5px/1.5 ui-monospace,Menlo,Consolas,monospace;overflow:auto;white-space:pre-wrap;word-break:break-word}
+.ln{display:block;opacity:0;transform:translateX(-10px);animation:lnin .35s forwards;animation-delay:calc(var(--d)*130ms)}
+.ln.c{color:#8c82a8}
+@keyframes lnin{to{opacity:1;transform:none}}
+.q{font-size:clamp(18px,5vw,26px);font-weight:650;line-height:1.25}
+.ans{margin-top:14px;padding:12px 14px;border-radius:12px;border:1px solid var(--g);background:rgba(178,107,255,.12);font-size:clamp(15px,4vw,19px)}
+.ans:not(.hid){animation:bpop .5s}
+.think{display:flex;align-items:center;gap:10px;margin-top:14px;color:var(--dim)}
+.ring{width:34px;height:34px;transform:rotate(-90deg)}.ring circle{fill:none;stroke-width:4}.ring .bg{stroke:var(--line)}.ring .fg{stroke:var(--g);stroke-dasharray:100;stroke-dashoffset:100;stroke-linecap:round}
+.think.run .fg{animation:ringgo 3.2s linear forwards}@keyframes ringgo{to{stroke-dashoffset:0}}
+.hid.think,.hid.ans{display:none}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;animation:fall 3.2s linear infinite}
+@keyframes fall{to{transform:translateY(420px) rotate(540deg);opacity:.2}}
+.mapsvg{width:100%;height:100%;display:block}
+.mapsvg .e{fill:none;stroke:var(--dim);stroke-width:1.8;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .8s ease,stroke .3s}
+.mapsvg .e:not(.on){marker-end:none}.mapsvg .e.on{stroke-dashoffset:0}.mapsvg .e.now{stroke:var(--pink);stroke-width:2.8}
+.mapsvg .n{opacity:0;transition:opacity .5s}.mapsvg .n.on{opacity:1}
+.mapsvg .n rect{fill:#241a3c;stroke:var(--g);stroke-width:1.5}.mapsvg .n.link rect{stroke:var(--pink)}.mapsvg .n.now rect{fill:#3a2560}
+.mapsvg .n text{fill:var(--tx);font-size:12.5px}
+.mapsvg .el{opacity:0;transition:opacity .5s}.mapsvg .el.on{opacity:1}.mapsvg .el rect{fill:#120a22;stroke:var(--line)}.mapsvg .el text{fill:var(--g2);font-size:10.5px}
+.mapsvg.all .e{stroke-dashoffset:0;transition:none}.mapsvg.all .n,.mapsvg.all .el{opacity:1;transition:none}
+.caps{grid-area:c;min-height:0;align-self:center;max-height:27vh;overflow:auto;font-size:13.5px;color:var(--tx);background:rgba(38,27,59,.92);border:1px solid var(--g);border-radius:16px 16px 16px 4px;padding:9px 12px;display:block;position:relative}
+.caps.hide{visibility:hidden}
+.caps b{display:block;color:var(--g2);font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px}
+.ctl{grid-area:k;display:flex;align-items:center;gap:6px;justify-content:space-between}
+.ctl .btn{padding:0;width:44px;height:44px;font-size:18px;display:grid;place-items:center}
+.ctl .play{width:58px;height:58px;font-size:24px}
+.ctl .meta{font-size:11.5px;color:var(--dim);text-align:center;min-width:64px}
+.prog{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.06)}.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--g),var(--pink));width:0;transition:width .4s}
+@media (orientation:landscape) and (max-height:560px){
+  .lec{grid-template-columns:30% 1fr;grid-template-rows:1fr auto auto;grid-template-areas:"t s" "c s" "k k"}
+  .lec .teacherBox{height:100%;aspect-ratio:auto;min-height:0}
+  .caps{align-self:stretch;max-height:none}
+  nav button{min-height:44px;flex-direction:row;justify-content:center;gap:6px}
+  header{padding-top:4px;padding-bottom:2px}
+}
+/* dock for read-aloud */
+.dock{flex:none;display:none;align-items:center;gap:8px;padding:6px 10px;background:linear-gradient(180deg,#26193f,#1b1229);border-top:1px solid var(--line)}
+.dock.on{display:flex}
+.dock .teacherBox{width:54px;height:54px;flex:none;border-radius:12px}
+.dock .teacherBox img.teacher{width:100%;height:100%;object-fit:cover;object-position:50% 14%}
+.dock .teacherBox .tag,.dock .teacherBox .live{display:none}
+.dock .txt{flex:1;min-width:0;font-size:12.5px;line-height:1.3;max-height:2.7em;overflow:hidden}
+.dock .btn{width:38px;height:38px;padding:0;display:grid;place-items:center;font-size:16px}
+/* maps */
+.mapbox{background:#120a22;border:1px solid var(--line);border-radius:14px;overflow:auto;max-height:58vh}
+.mapbox svg{display:block}
+.mapbox .e{fill:none;stroke:var(--dim);stroke-width:1.6}
+.mapbox .n{cursor:pointer}.mapbox .n rect{fill:#241a3c;stroke:var(--g);stroke-width:1.5}.mapbox .n.link rect{stroke:var(--pink)}.mapbox .n.sel rect{fill:#4a2d7a;stroke:#fff}
+.mapbox .n text{fill:var(--tx);font-size:12.5px;pointer-events:none}
+.mapbox .el rect{fill:#120a22;stroke:var(--line)}.mapbox .el text{fill:var(--g2);font-size:10.5px}
+.mapbox .e.hl{stroke:var(--pink);stroke-width:2.8}
+dialog{background:var(--panel);color:var(--tx);border:1px solid var(--line);border-radius:16px;padding:16px;width:min(92vw,460px)}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+.set{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.sw{width:48px;height:28px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);position:relative;flex:none}
+.sw:after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--dim);transition:.2s}
+.sw.on{background:var(--g)}.sw.on:after{left:23px;background:#fff}
+.rm *{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}
+a{color:var(--blue)}
+
+/* v2: progress, library, quiz options, labs */
+.pips{display:flex;gap:3px;margin-top:5px}.pips i{width:16px;height:5px;border-radius:3px;background:var(--panel2)}.pips i.on{background:linear-gradient(90deg,var(--g),var(--pink))}
+.pbar{height:7px;background:var(--panel2);border-radius:4px;overflow:hidden;margin:6px 0}.pbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--g),var(--pink))}
+.chap .pct{margin-left:auto;font-size:12px;color:var(--g2);white-space:nowrap}
+.chap .mid{flex:1;min-width:0}
+.crs{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);padding:12px 14px;margin:10px 0}
+.crs.cur{border-color:var(--g)}
+.crs h4{margin:0;font-size:16px;color:var(--g2)}.crs .muted{margin-top:2px}
+.opts{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--panel2);border:1px solid var(--line);color:var(--tx);border-radius:12px;padding:10px 12px;font:inherit;font-size:clamp(14px,3.9vw,17px);width:100%}
+.opt b{flex:none;width:24px;height:24px;border-radius:50%;background:#150d27;display:grid;place-items:center;font-size:12px;color:var(--g2)}
+.opt.ok{border-color:var(--ok);background:rgba(123,224,164,.14)}.opt.bad{border-color:var(--err);background:rgba(255,122,154,.14)}
+.opt:disabled{opacity:1}
+.fb{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--g);background:rgba(178,107,255,.12);font-size:clamp(13px,3.7vw,16px)}
+.fb.ok{border-color:var(--ok)}.fb.bad{border-color:var(--err)}
+.fb.hid{display:none}
+.qmeta{margin-top:8px;font-size:12px;color:var(--dim)}
+.pl{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.pl button{display:flex;gap:10px;align-items:center;text-align:left}
+.kind{font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--g);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.fillp{font-size:16px;line-height:2.2}.fillp input{display:inline-block;width:9.5em;max-width:60vw;padding:3px 8px;margin:0 3px;font-size:15px;border-radius:8px}
+.fillp input.ok{border-color:var(--ok)}.fillp input.bad{border-color:var(--err)}
+.ordl{display:flex;flex-direction:column;gap:6px;margin:8px 0}.ordl button{text-align:left}
+.ordl .slot{min-height:40px;border:1px dashed var(--line);border-radius:10px;padding:8px 10px;display:flex;gap:8px;align-items:center}
+.matchr{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center;margin:6px 0}
+.matchr select{font:15px system-ui,sans-serif}
+.tasks{margin:6px 0;padding:0;list-style:none;font-size:13.5px}.tasks li{margin:3px 0}.tasks li.ok{color:var(--ok)}
+.empty{text-align:center;padding:6px 0 0}
+details.fmt pre{max-height:40vh}
+textarea.big{min-height:46vh;font-size:12.5px}
+.toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#2b1d45;border:1px solid var(--g);color:var(--tx);padding:9px 16px;border-radius:999px;font-size:13.5px;z-index:50;max-width:90vw;text-align:center}
+.warnl{font-size:12.5px;color:var(--warn);margin:6px 0 0;padding-left:18px}
+.stagepill{font-size:11px;color:var(--dim)}
+
+/* Material-style controls (icons: Material Design, bundled) */
+.ic{width:20px;height:20px;fill:currentColor;flex:none;display:inline-block;vertical-align:middle}
+:root{--tonal:#33244f}
+button.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 20px;border-radius:20px;border:1px solid var(--line);background:transparent;color:var(--g2);font:500 14px/1 Roboto,system-ui,sans-serif;letter-spacing:.1px}
+button.btn.sm{min-height:34px;padding:0 14px;font-size:13px;border-radius:17px}
+button.btn.sm .ic{width:18px;height:18px}
+button.btn.pri{background:var(--g);color:#22083d;border-color:transparent;font-weight:600}
+button.btn.tonal{background:var(--tonal);border-color:transparent;color:#eadbff}
+button.btn.txt{border-color:transparent;padding:0 12px}
+button.btn.danger{color:var(--err);border-color:rgba(255,122,154,.5)}
+button.btn:active{filter:brightness(1.25)}
+button.btn:disabled{opacity:.5}
+.pl button.btn{justify-content:flex-start;width:100%;padding:0 16px;gap:10px;text-align:left}
+.pl button.btn .kind{margin-left:auto}.okc{color:var(--ok);margin-left:6px}
+button.chip{display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 12px;border-radius:8px;background:transparent;border:1px solid var(--line);color:var(--dim);font:500 13px/1 Roboto,system-ui,sans-serif}
+button.chip.on{background:var(--tonal);border-color:transparent;color:#eadbff}
+button.chip.sm{min-height:30px;font-size:12px}
+button.chip .ic{width:16px;height:16px}
+.ibtn{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;border:0;background:transparent;color:var(--g2);padding:0}
+.ibtn.fill{background:var(--g);color:#22083d}.ibtn.fill.big{width:56px;height:56px}.ibtn.fill.big .ic{width:28px;height:28px}
+.ibtn.on{background:var(--tonal)}
+.ibtn:active{background:var(--tonal)}
+header .ibtn{background:transparent}
+.ctl .ibtn{width:44px;height:44px}
+.ctl .ibtn .ic{width:24px;height:24px}
+nav{background:#1a1228;border-top:1px solid var(--line)}
+nav button{font:500 11.5px/1.2 Roboto,system-ui,sans-serif;gap:4px;padding:10px 2px 8px}
+nav button .pill{display:grid;place-items:center;width:58px;height:30px;border-radius:15px}
+nav button.on .pill{background:var(--tonal)}nav button .ic{width:22px;height:22px}
+.chap .n{overflow:hidden}.chap .n .ic{width:18px;height:18px}
+.chap.done .n{background:var(--g);color:#22083d}
+.dh{margin:0 0 8px;color:var(--g2);font:600 18px/1.3 Roboto,system-ui,sans-serif}
+.row.end{justify-content:flex-end;margin-top:14px}
+dialog textarea{margin-top:8px}
+.dock .ibtn{width:38px;height:38px}
+.sh{font-family:Roboto,system-ui,sans-serif}
+
+.xframe{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;display:block}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="sprite"></defs></svg>
+<header>
+  <div class="t"><h1>Lilith Learning Lab</h1><div class="sub" id="sub">Import a course to begin</div></div>
+  <button class="ibtn" id="libbtn" aria-label="Course library"></button>
+  <button class="ibtn" id="gear" aria-label="Settings"></button>
+</header>
+<div class="bar"><i id="pb"></i></div>
+<main id="main"></main>
+<div class="dock" id="dock">
+  <div class="teacherBox"><img class="teacher" alt="Teacher" src="avatar/neutral1.webp"></div>
+  <div class="txt" id="dtxt">Teacher is ready.</div>
+  <button class="ibtn" id="dprev" aria-label="Previous"></button>
+  <button class="ibtn fill" id="dplay" aria-label="Play or pause"></button>
+  <button class="ibtn" id="dnext" aria-label="Next"></button>
+  <button class="ibtn" id="dclose" aria-label="Close"></button>
+</div>
+<nav id="nav">
+  <button data-t="lecture" class="on"><span class="pill"></span>Lecture</button>
+  <button data-t="read"><span class="pill"></span>Read</button>
+  <button data-t="maps"><span class="pill"></span>Maps</button>
+  <button data-t="practice"><span class="pill"></span>Practice</button>
+  <button data-t="progress"><span class="pill"></span>Progress</button>
+</nav>
+<dialog id="settings"></dialog>
+<dialog id="modal"></dialog>
+<input type="file" id="filein" accept=".json,application/json,text/plain,*/*" multiple class="hide">
+
+<script>
+/*__ICONS__*/
+</script>
+<script>
+/*__XDC__*/
+</script>
+<script>
+/*__COURSE__*/
+</script>
+<script>
+/*__MAPS__*/
+</script>
+<script>
+/*__NARRATE__*/
+</script>
+<script>
+/*__SLIDES__*/
+</script>
+<script>
+(function () {
+'use strict';
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const inline = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+const N = LilithNarrate, M = LilithMaps, S = LilithSlides, K = LilithCourse, X = LilithXdc, ICONS = LilithIcons;
+const LET = 'ABCDEFGH';
+
+/* ---------- icons (Material Design, bundled) ---------- */
+$('#sprite').innerHTML = Object.keys(ICONS).map(k => '<symbol id="i-' + k + '" viewBox="0 0 24 24">' + ICONS[k] + '</symbol>').join('');
+const ic = (n, cls) => '<svg class="ic ' + (cls || '') + '" aria-hidden="true"><use href="#i-' + n + '"/></svg>';
+const setIcon = (sel, n) => { const e = $(sel); if (e) e.innerHTML = ic(n); };
+setIcon('#libbtn', 'library_books'); setIcon('#gear', 'settings'); setIcon('#dprev', 'skip_previous'); setIcon('#dnext', 'skip_next'); setIcon('#dclose', 'close'); setIcon('#dplay', 'play_arrow');
+const NAVI = { lecture: 'school', read: 'menu_book', maps: 'account_tree', practice: 'science', progress: 'insights' };
+$$('#nav button').forEach(b => { $('.pill', b).innerHTML = ic(NAVI[b.dataset.t]); });
+const KIND = { fill: 'Fill in', order: 'Order', match: 'Match', write: 'Write', code: 'Code', terminal: 'Terminal', webxdc: 'App' };
+
+/* ---------- storage: course library + progress ---------- */
+const IDX = 'lilith-lab-v1', CKEY = id => 'lilith-course:' + id;
+let mem = null;
+function loadIdx() { try { const v = localStorage.getItem(IDX); if (v) return JSON.parse(v); } catch (e) {} return mem || {}; }
+let ST = loadIdx();
+ST.courses = ST.courses || []; ST.prog = ST.prog || {}; ST.current = ST.current || null;
+ST.set = Object.assign({ rate: 1, readCode: false, captions: true, autoNext: true, voice: null }, ST.set || {});
+const memCourses = {};
+function save() { mem = ST; try { localStorage.setItem(IDX, JSON.stringify(ST)); return true; } catch (e) { return false; } }
+function readCourse(id) { if (memCourses[id]) return memCourses[id]; try { const v = localStorage.getItem(CKEY(id)); if (v) return JSON.parse(v); } catch (e) {} return null; }
+function writeCourse(c) { memCourses[c.id] = c; try { localStorage.setItem(CKEY(c.id), JSON.stringify(c)); return true; } catch (e) { return false; } }
+if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) document.body.classList.add('rm');
+
+let CUR = null;   // { course, ch: [views], byId }
+function setCourse(id) {
+  const c = id && readCourse(id);
+  if (!c) { CUR = null; ST.current = null; save(); N.setPronounce({}); return; }
+  const v = K.validate(c);   // re-validate stored data so a damaged entry cannot crash the app
+  if (!v.ok) { CUR = null; return; }
+  CUR = { course: v.course, ch: v.course.chapters.map(x => K.chapterView(x, v.course)) };
+  ST.current = id; save(); N.setPronounce(v.course.pronounce);
+}
+function P() {
+  const p = ST.prog[CUR.course.id] = ST.prog[CUR.course.id] || {};
+  p.st = p.st || {}; p.q = p.q || {}; p.lab = p.lab || {}; p.cards = p.cards || {}; p.drafts = p.drafts || {};
+  return p;
+}
+const chBy = n => CUR && CUR.ch.find(c => c.n === n);
+const chIdx = n => CUR ? CUR.ch.findIndex(c => c.n === n) : -1;
+
+/* progress model: a chapter has up to 7 stages */
+const STAGES = [['map', 'Map'], ['summary', 'Summary'], ['glossary', 'Glossary'], ['points', 'Key points'], ['lesson', 'Lesson'], ['quiz', 'Quiz'], ['practice', 'Practice']];
+function stagesOf(c) {
+  return STAGES.filter(s => s[0] === 'map' ? c.maps.length : s[0] === 'summary' ? c.summary : s[0] === 'glossary' ? c.glossary.length : s[0] === 'points' ? c.points : s[0] === 'lesson' ? c.examples.trim() : s[0] === 'quiz' ? c.quiz.length : c.practice.length);
+}
+function labsDone(c) { const p = P(); return c.practice.filter(l => p.lab[c.id + '/' + l.id]).length; }
+function stageDone(c, k) {
+  const p = P();
+  if (k === 'quiz') return !!(p.q[c.id] && p.q[c.id].done);
+  if (k === 'practice') return c.practice.length > 0 && labsDone(c) === c.practice.length;
+  return !!(p.st[c.id] && p.st[c.id][k]);
+}
+function chPct(c) { const ss = stagesOf(c); if (!ss.length) return 0; return Math.round(100 * ss.filter(s => stageDone(c, s[0])).length / ss.length); }
+function coursePct() { if (!CUR) return 0; return Math.round(CUR.ch.reduce((a, c) => a + chPct(c), 0) / CUR.ch.length); }
+function markStage(c, k) { const p = P(); p.st[c.id] = p.st[c.id] || {}; if (!p.st[c.id][k]) { p.st[c.id][k] = true; save(); } }
+function pips(c) { return '<span class="pips">' + stagesOf(c).map(s => '<i class="' + (stageDone(c, s[0]) ? 'on' : '') + '" title="' + s[1] + '"></i>').join('') + '</span>'; }
+
+/* ---------- small UI helpers ---------- */
+let toastT = null;
+function toast(msg) {
+  let t = $('.toast'); if (!t) { t = document.createElement('div'); t.className = 'toast'; document.body.appendChild(t); }
+  t.textContent = msg; clearTimeout(toastT); toastT = setTimeout(() => t.remove(), 3200);
+}
+function modal(html, mount) { const d = $('#modal'); d.innerHTML = html; if (!d.open) d.showModal(); if (mount) mount(d); return d; }
+function closeModal() { const d = $('#modal'); if (d.open) d.close(); }
+function ask(msg, ok, detail) {
+  return new Promise(res => {
+    modal('<h3 class="dh">' + esc(msg) + '</h3>' + (detail ? '<div class="muted">' + esc(detail) + '</div>' : '') + '<div class="row end"><button class="btn txt" id="mno">Cancel</button><button class="btn pri" id="myes">' + esc(ok || 'OK') + '</button></div>', d => {
+      $('#mno', d).onclick = () => { closeModal(); res(false); };
+      $('#myes', d).onclick = () => { closeModal(); res(true); };
+    });
+  });
+}
+function copyText(t, what) {
+  const done = () => toast((what || 'Text') + ' copied');
+  if (window.AndroidTTS && window.AndroidTTS.copy) { try { window.AndroidTTS.copy(t); return done(); } catch (e) {} }
+  try { navigator.clipboard.writeText(t).then(done, () => toast('Copy failed')); } catch (e) { toast('Copy failed'); }
+}
+function shareText(title, t) {
+  if (window.AndroidTTS && window.AndroidTTS.share) { try { window.AndroidTTS.share(title, t); return; } catch (e) {} }
+  copyText(t, 'JSON');
+}
+const btn = (id, icon, label, cls) => '<button class="btn ' + (cls || '') + '" id="' + id + '">' + (icon ? ic(icon) : '') + '<span>' + label + '</span></button>';
+
+/* ---------- teacher avatar + narration ---------- */
+const FR = {}; ['neutral', 'happy', 'shy', 'mad', 'sad'].forEach(e => [1, 2, 3, 4].forEach(n => { const i = new Image(); i.src = 'avatar/' + e + n + '.webp'; FR[e + n] = i; }));
+let lastFrame = '';
+const AV = N.createAvatar((emo, n) => { const f = 'avatar/' + emo + n + '.webp'; if (f === lastFrame) return; lastFrame = f; $$('img.teacher').forEach(i => i.setAttribute('src', f)); });
+const ENV = N.makeEnv(window);
+let mode = null, LEC = null, READ = null;
+const NAR = N.createNarrator(ENV, {
+  onChunk: (i, c) => { AV.emotion(c.emotion || 'neutral'); if (mode === 'lecture') lecShow(i); else if (mode === 'read') dockShow(c); },
+  onSpeaking: on => { AV.speaking(on); $$('.teacherBox').forEach(b => b.classList.toggle('talk', on)); },
+  onWord: () => AV.word(),
+  onState: s => syncControls(s),
+  onDone: () => { if (mode === 'lecture' && LEC && !LEC.tour && ST.set.autoNext) { const nx = nextChapter(LEC.ch.n); if (nx) openLecture(nx.n, true); } }
+});
+AV.start();
+function nextChapter(n) { const i = chIdx(n); return CUR && CUR.ch[i + 1] || null; }
+function syncControls(s) {
+  const p = $('#lplay'); if (p) p.innerHTML = ic(s.playing ? 'pause' : 'play_arrow');
+  const d = $('#dplay'); if (d) d.innerHTML = ic(s.playing ? 'pause' : 'play_arrow');
+  const m = $('#lmeta'); if (m && LEC) m.textContent = (s.i + 1) + ' / ' + s.n;
+  const pr = $('#lprog'); if (pr && s.n) pr.style.width = Math.round(100 * (s.i + 1) / s.n) + '%';
+}
+NAR.setRate(ST.set.rate);
+if (ENV.setVoice && ST.set.voice) ENV.setVoice(ST.set.voice);
+
+/* ---------- navigation ---------- */
+let tab = 'lecture', view = null, readCh = null, practice = 'labs', mapPick = 0, mapSel = null, labSel = null;
+const main = $('#main');
+$$('#nav button').forEach(b => b.addEventListener('click', () => go(b.dataset.t)));
+$('#libbtn').onclick = () => { leaveLecture(); view = view === 'lib' ? null : 'lib'; render(); };
+function go(t) { if (t !== 'lecture') leaveLecture(); tab = t; view = null; if (t === 'read') readCh = null; if (t === 'practice') { labSel = null; } render(); }
+function leaveLecture() { if (mode === 'lecture' && NAR.state.playing) NAR.pause(); }
+function updateHeader() {
+  if (!CUR) { $('#sub').textContent = 'Import a course to begin'; $('#pb').style.width = '0%'; return; }
+  const p = coursePct(); $('#sub').textContent = CUR.course.title + ' · ' + p + '% complete'; $('#pb').style.width = p + '%';
+}
+function render() {
+  $$('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === tab && view !== 'lib' && view !== 'exam'));
+  $('#libbtn').classList.toggle('on', view === 'lib');
+  main.classList.toggle('fill', tab === 'lecture' && !!LEC && view !== 'lib');
+  main.scrollTop = 0;
+  if (view === 'lib' || !CUR) renderLibrary();
+  else if (view === 'exam') renderExam();
+  else if (tab === 'lecture') renderLecture();
+  else if (tab === 'read') readCh === null ? renderReadList() : renderChapter(readCh);
+  else if (tab === 'maps') renderMaps();
+  else if (tab === 'practice') renderPractice();
+  else renderProgress();
+  updateHeader();
+  $('#dock').classList.toggle('on', mode === 'read' && NAR.state.chunks.length > 0 && tab !== 'lecture');
+}
+window.__onBack = function () {
+  if ($('#modal').open) { closeModal(); return true; }
+  if ($('#settings').open) { $('#settings').close(); return true; }
+  if (view === 'lib' && CUR) { view = null; render(); return true; }
+  if (view === 'exam') { if (EXAM && EXAM.stage === 'run' && !EXAM.done) { ask('Leave the exam?', 'Leave', 'Your answers so far are discarded.').then(y => { if (y) { EXAM = null; view = null; render(); } }); return true; } EXAM = null; view = null; render(); return true; }
+  if (tab === 'lecture' && LEC) { NAR.stop(); LEC = null; mode = null; render(); return true; }
+  if (tab === 'read' && readCh !== null) { readCh = null; render(); return true; }
+  if (tab === 'practice' && labSel) { labSel = null; render(); return true; }
+  if (tab !== 'lecture') { go('lecture'); return true; }
+  return false;
+};
+
+/* ================= LIBRARY: import, store, delete ================= */
+const GUIDE_PROMPT = 'Create a course for Lilith Learning Lab as ONE JSON file (format "lilith-course", version 1). Subject: <your subject>. Audience: <level>.\n' +
+  'Structure: {"format":"lilith-course","version":1,"id":"short-id","title":"","subtitle":"","author":"","pronounce":{"WordAsWritten":"how to say it"},"chapters":[...]}.\n' +
+  'Every chapter has: "title"; "maps":[{"title":"","links":["Concept A | relation | Concept B", ...]}] (6-10 links, optionally tag a node "[ch3]" to link to chapter 3); "summary":[2-4 sentences]; "glossary":[{"term":"","def":""}]; "keyPoints":[4-8 short points]; ' +
+  '"lesson":[{"type":"text","items":[""]},{"type":"code","lang":"","code":""},{"type":"figure","image":"name.svg","caption":""}] ; "quiz":[3 questions {"q":"","options":["","",""],"answer":0,"explain":""}] (answer is the 0-based index of the right option); "cards":[{"q":"","a":""}]; and "practice":[labs].\n' +
+  'Lab types: {"type":"fill","title":"","text":"Water boils at {{100|one hundred}} degrees Celsius."}; {"type":"order","title":"","items":["step 1","step 2","step 3"]} (items in the correct order); {"type":"match","title":"","pairs":[["left","right"]]}; ' +
+  '{"type":"write","title":"","prompt":"","checks":[{"re":"regex","msg":"what it checks"}]}; {"type":"code","title":"","fn":"name","starter":"function name(x) {\\n}","tests":[{"args":[2],"expect":4}],"hint":"","solution":""} (JavaScript); ' +
+  '{"type":"terminal","title":"","prompt":"$","commands":[{"re":"^ls$","out":["file.txt"]}],"tasks":[{"text":"List the files","cmd":"^ls$"}],"chips":["ls"]}.\n' +
+  'Return only valid JSON, no commentary. Include a quiz and at least one practice lab in every chapter.';
+
+function renderLibrary() {
+  let h = '';
+  if (!CUR && !ST.courses.length) {
+    h += '<div class="teacherBox hero"><span class="tag">TEACHER</span><span class="live"></span><img class="teacher" alt="Teacher" src="avatar/neutral1.webp"></div>';
+    h += '<div class="card empty"><div class="big">Your lab is empty.</div><div class="muted">Import a course file (.json) and Teacher will turn it into animated lectures, concept maps, quizzes and practice labs. Any subject works.</div></div>';
+  } else {
+    h += '<div class="muted" style="margin:6px 2px">Your courses are stored on this device. Progress is kept for each one.</div>';
+  }
+  h += '<div class="row" style="margin:10px 0">' + btn('imp', 'upload_file', 'Import file', 'pri') + btn('pst', 'content_paste', 'Paste JSON', '') + '</div>';
+  ST.courses.forEach(c => {
+    const prog = ST.prog[c.id] || {}, full = readCourse(c.id), cur = CUR && CUR.course.id === c.id;
+    let pct = 0;
+    if (full) { const v = K.validate(full); if (v.ok) { const vs = v.course.chapters.map(x => K.chapterView(x, v.course)); const saved = CUR; CUR = { course: v.course, ch: vs }; try { pct = coursePct(); } catch (e) {} CUR = saved; } }
+    h += '<div class="crs ' + (cur ? 'cur' : '') + '"><h4>' + esc(c.title) + '</h4><div class="muted">' + esc(c.subtitle || '') + (c.subtitle ? ' · ' : '') + c.chapters + ' chapters' + (c.author ? ' · ' + esc(c.author) : '') + '</div>' +
+      '<div class="pbar"><i style="width:' + pct + '%"></i></div><div class="muted">' + pct + '% complete</div>' +
+      '<div class="row" style="margin-top:8px"><button class="btn pri sm" data-open="' + esc(c.id) + '">' + ic('play_arrow') + '<span>' + (cur ? 'Continue' : 'Open') + '</span></button>' +
+      '<button class="btn sm" data-share="' + esc(c.id) + '">' + ic('share') + '<span>Share JSON</span></button>' +
+      '<button class="btn sm danger" data-del="' + esc(c.id) + '">' + ic('delete') + '<span>Delete</span></button></div></div>';
+  });
+  h += '<div class="card"><h3>Make your own course</h3><div class="muted">A course is a single JSON file. Ask Jade or Claude to write one for any subject, or start from the template.</div>' +
+    '<div class="row" style="margin-top:8px">' + btn('tpl', 'description', 'Template', '') + btn('gde', 'auto_stories', 'AI prompt', '') + '</div></div>';
+  main.innerHTML = h;
+  $('#imp').onclick = () => $('#filein').click();
+  $('#pst').onclick = pasteDialog;
+  $('#tpl').onclick = () => { const t = JSON.stringify(K.template(), null, 2); modal('<h3 class="dh">Course template</h3><div class="muted">Edit it, or give it to an AI as an example. It covers every lab type.</div><textarea readonly class="big" id="tt">' + esc(t) + '</textarea><div class="row end">' + btn('tc', 'content_copy', 'Copy', '') + btn('ts', 'share', 'Share', '') + btn('tx', 'close', 'Close', 'pri') + '</div>', d => { $('#tc', d).onclick = () => copyText(t, 'Template'); $('#ts', d).onclick = () => shareText('course-template.json', t); $('#tx', d).onclick = closeModal; }); };
+  $('#gde').onclick = () => modal('<h3 class="dh">Prompt for an AI</h3><div class="muted">Copy this, add your subject, and paste the AI\'s JSON reply with "Paste JSON".</div><textarea readonly class="big" id="gp">' + esc(GUIDE_PROMPT) + '</textarea><div class="row end">' + btn('gc', 'content_copy', 'Copy', 'pri') + btn('gx', 'close', 'Close', '') + '</div>', d => { $('#gc', d).onclick = () => copyText(GUIDE_PROMPT, 'Prompt'); $('#gx', d).onclick = closeModal; });
+  $$('[data-open]').forEach(b => b.onclick = () => { openCourse(b.dataset.open); });
+  $$('[data-share]').forEach(b => b.onclick = () => { const full = readCourse(b.dataset.share); if (full) shareText(b.dataset.share + '.course.json', JSON.stringify(full, null, 1)); });
+  $$('[data-del]').forEach(b => b.onclick = async () => {
+    const c = ST.courses.find(x => x.id === b.dataset.del); if (!c) return;
+    if (await ask('Delete "' + c.title + '"?', 'Delete', 'The course and your progress in it are removed from this device. You can import the file again later.')) deleteCourse(c.id);
+  });
+}
+function openCourse(id) { NAR.stop(); LEC = null; mode = null; setCourse(id); tab = 'lecture'; view = null; readCh = null; labSel = null; render(); }
+function deleteCourse(id) {
+  try { localStorage.removeItem(CKEY(id)); } catch (e) {} delete memCourses[id];
+  ST.courses = ST.courses.filter(c => c.id !== id); delete ST.prog[id];
+  if (ST.current === id) { NAR.stop(); LEC = null; mode = null; CUR = null; ST.current = null; N.setPronounce({}); }
+  save(); view = 'lib'; render(); toast('Course deleted');
+}
+function pasteDialog() {
+  modal('<h3 class="dh">Paste course JSON</h3><textarea class="big" id="pj" spellcheck="false" autocapitalize="off" placeholder="{ &quot;format&quot;: &quot;lilith-course&quot;, ... }"></textarea><div class="row end">' + btn('pc', 'close', 'Cancel', 'txt') + btn('pi', 'check', 'Import', 'pri') + '</div>', d => {
+    $('#pc', d).onclick = closeModal;
+    $('#pi', d).onclick = () => { const t = $('#pj', d).value; closeModal(); importText(t, 'pasted JSON'); };
+  });
+}
+function importText(text, name) {
+  const v = K.validate(String(text).replace(/^﻿/, ''));
+  if (!v.ok) { modal('<h3 class="dh">Could not import ' + esc(name) + '</h3><ul class="warnl">' + v.errors.map(e => '<li>' + esc(e) + '</li>').join('') + '</ul><div class="row end">' + btn('mx', 'close', 'Close', 'pri') + '</div>', d => { $('#mx', d).onclick = closeModal; }); return null; }
+  const c = v.course, existed = ST.courses.some(x => x.id === c.id);
+  if (!writeCourse(c)) { modal('<h3 class="dh">Not enough storage</h3><div class="muted">This device would not store the course. Delete a course you no longer need and try again.</div><div class="row end">' + btn('mx', 'close', 'Close', 'pri') + '</div>', d => { $('#mx', d).onclick = closeModal; }); return null; }
+  const meta = { id: c.id, title: c.title, subtitle: c.subtitle, author: c.author, chapters: c.chapters.length, added: Date.now() };
+  ST.courses = ST.courses.filter(x => x.id !== c.id).concat([meta]); save();
+  const warn = v.warnings.slice(0, 8);
+  modal('<h3 class="dh">' + (existed ? 'Updated' : 'Imported') + ': ' + esc(c.title) + '</h3><div class="muted">' + c.chapters.length + ' chapters. ' + c.chapters.reduce((a, x) => a + x.quiz.length, 0) + ' quiz questions, ' + c.chapters.reduce((a, x) => a + x.practice.length, 0) + ' practice labs.' + (existed ? ' Your progress was kept.' : '') + '</div>' +
+    (warn.length ? '<div class="muted" style="margin-top:8px">Notes:</div><ul class="warnl">' + warn.map(w => '<li>' + esc(w) + '</li>').join('') + '</ul>' : '') +
+    '<div class="row end">' + btn('mo', 'play_arrow', 'Open course', 'pri') + btn('ml', 'close', 'Later', 'txt') + '</div>', d => {
+    $('#mo', d).onclick = () => { closeModal(); openCourse(c.id); };
+    $('#ml', d).onclick = () => { closeModal(); if (!CUR) setCourse(c.id); render(); };
+  });
+  if (CUR && CUR.course.id === c.id) setCourse(c.id);
+  render();
+  return c;
+}
+$('#filein').onchange = e => {
+  const files = Array.from(e.target.files || []);
+  files.forEach(f => {
+    const r = new FileReader();
+    r.onload = () => { const u8 = new Uint8Array(r.result); if (X.isZip(u8)) addApp(u8, f.name); else importText(new TextDecoder('utf-8').decode(u8), f.name); };
+    r.onerror = () => toast('Could not read ' + f.name); r.readAsArrayBuffer(f);
+  });
+  e.target.value = '';
+};
+/* a .xdc (webxdc zip) file is added to the open course as an extra app in Practice > Apps */
+async function addApp(u8, fname) {
+  if (!CUR) { modal('<h3 class="dh">Open a course first</h3><div class="muted">A webxdc app is added to a course. Import or open a course, then import the .xdc file again.</div><div class="row end">' + btn('mx', 'close', 'Close', 'pri') + '</div>', d => { $('#mx', d).onclick = closeModal; }); return; }
+  try {
+    const files = await X.unzip(u8); if (!files['index.html']) throw new Error('The file has no index.html, so it is not a webxdc app.');
+    const name = X.manifest(files).name || fname.replace(/\.xdc$/i, '');
+    const c = readCourse(CUR.course.id); c.apps = (c.apps || []).filter(a => a.title !== name).concat([{ id: 'app' + Date.now(), title: name, xdc: X.bytesToB64(u8), height: 520 }]);
+    if (!writeCourse(c)) { toast('Not enough storage for this app'); return; }
+    ST.courses.forEach(m => { if (m.id === c.id) m.added = Date.now(); }); save(); setCourse(c.id);
+    toast('Added app: ' + name); tab = 'practice'; practice = 'apps'; view = null; labSel = null; render();
+  } catch (err) { toast('Could not read the app: ' + err.message); }
+}
+
+/* ---------- markdown (reading mode) ---------- */
+function figImg(name) { const svg = CUR.course.images[name]; return svg ? '<img alt="" src="data:image/svg+xml;utf8,' + encodeURIComponent(svg) + '">' : ''; }
+function md(src) {
+  const lines = src.split('\n'); let html = '', i = 0, list = false, para = [];
+  const flushP = () => { if (para.length) { html += '<p>' + inline(para.join(' ')) + '</p>'; para = []; } };
+  const closeL = () => { if (list) { html += '</ul>'; list = false; } };
+  while (i < lines.length) {
+    const ln = lines[i], f = ln.match(/^```(\w*)/), im = ln.trim().match(/^!\[([^\]]*)\]\(images\/([^)]+)\)$/);
+    if (f) {
+      flushP(); closeL(); const buf = []; i++;
+      while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; }
+      const code = buf.join('\n');
+      if (f[1] === 'conceptmap') html += '<div class="muted">Concept map: ' + esc((buf[0] || '').replace('title:', '').trim()) + ' (see the Maps tab)</div>';
+      else html += '<pre><span class="lang">' + esc(f[1] || 'text') + '</span><code>' + esc(code) + '</code><button class="cp" data-copy="' + esc(code) + '">copy</button></pre>';
+    } else if (im) { flushP(); closeL(); html += '<figure>' + figImg(im[2]) + '<figcaption>' + esc(im[1]) + '</figcaption></figure>'; }
+    else if (/^\s*-\s+/.test(ln)) { flushP(); if (!list) { html += '<ul>'; list = true; } html += '<li>' + inline(ln.replace(/^\s*-\s+/, '')) + '</li>'; }
+    else if (!ln.trim()) { flushP(); closeL(); } else { closeL(); para.push(ln.trim()); }
+    i++;
+  }
+  flushP(); closeL(); return html;
+}
+main.addEventListener('click', e => {
+  const c = e.target.closest('[data-copy]');
+  if (c) { copyText(c.dataset.copy, 'Code'); }
+});
+const firstSentence = s => { const m = s.match(/^.*?[.!?](\s|$)/); return (m ? m[0] : s).slice(0, 110); };
+
+/* ================= LECTURE ================= */
+function renderLecture() {
+  if (LEC) return renderLecturePlayer();
+  const p = P();
+  let h = '<div class="teacherBox hero"><span class="tag">TEACHER</span><span class="live"></span><img class="teacher" alt="Teacher" src="avatar/neutral1.webp"></div>';
+  h += '<div class="card"><div class="big">' + esc(CUR.course.title) + '</div><div class="muted">' + esc(CUR.course.description || CUR.course.subtitle || 'Pick a chapter. Teacher presents each one as animated slides: concept map, summary, glossary, key points, lesson, then a quiz and practice.') + '</div></div>';
+  const last = p.last && chBy(p.last.n), first = last || CUR.ch.find(c => chPct(c) < 100) || CUR.ch[0];
+  h += '<div class="row">' + '<button class="btn pri" id="lgo">' + ic('play_arrow') + '<span>' + (last ? 'Resume' : 'Start') + ': ' + esc(first.title.length > 24 ? first.title.slice(0, 22) + '...' : first.title) + '</span></button></div>';
+  CUR.ch.forEach(c => {
+    const L = S.buildLecture(c, { readCode: ST.set.readCode }), pct = chPct(c);
+    h += '<button class="chap ' + (pct === 100 ? 'done' : '') + '" data-lec="' + c.n + '"><span class="n">' + (pct === 100 ? ic('check') : c.n) + '</span><span class="mid">' + esc(c.title) + '<small>' + L.slides.length + ' slides, about ' + Math.max(1, Math.round(L.chunks.length * 6 / 60)) + ' min</small>' + pips(c) + '</span><span class="pct">' + pct + '%</span></button>';
+  });
+  h += examCard();
+  main.innerHTML = h;
+  wireExamCard();
+  $('#lgo').onclick = () => openLecture(first.n, true, last && last.n === first.n ? p.last.chunk : 0);
+  $$('[data-lec]').forEach(b => b.onclick = () => openLecture(+b.dataset.lec, true));
+}
+
+function openLecture(n, autoplay, start, stage) {
+  const ch = chBy(n); if (!ch) return;
+  NAR.stop();
+  mode = 'lecture'; tab = 'lecture'; view = null;
+  const deck = S.buildLecture(ch, { readCode: ST.set.readCode });
+  LEC = { ch, deck, slide: -1, starts: S.slideStarts(deck), qa: {}, tour: false, stageEnd: {} };
+  deck.chunks.forEach((c, i) => { LEC.stageEnd[deck.slides[c.slide].stage] = i; });
+  let st = start || 0;
+  if (stage) { const k = deck.chunks.findIndex(c => deck.slides[c.slide].stage === stage); if (k >= 0) st = k; }
+  NAR.load(deck.chunks, st);
+  render(); lecShow(st);
+  if (autoplay) NAR.play();
+}
+function openTour(n, mi) {
+  const ch = chBy(n), mp = ch && ch.maps[mi]; if (!mp) return;
+  NAR.stop(); mode = 'lecture'; tab = 'lecture'; view = null;
+  const pseudo = { n: ch.n, id: ch.id, title: 'Concept map tour', maps: [mp], glossary: [], quiz: [], practice: [], raw: { summary: [], keyPoints: [], lesson: [] } };
+  const deck = S.buildLecture(pseudo, { label: 'Tour' });
+  LEC = { ch, deck, slide: -1, starts: S.slideStarts(deck), qa: {}, tour: true, stageEnd: {}, back: 'maps' };
+  NAR.load(deck.chunks, 0); render(); lecShow(0); NAR.play();
+}
+function exitLecture() { NAR.stop(); const back = LEC && LEC.back; LEC = null; mode = null; if (back) tab = back; render(); }
+
+function renderLecturePlayer() {
+  main.innerHTML =
+    '<div class="lec" id="lec">' +
+    '<div class="teacherBox"><span class="tag">TEACHER</span><span class="live"></span><img class="teacher" alt="Teacher" src="avatar/neutral1.webp"></div>' +
+    '<div class="caps" id="caps"></div>' +
+    '<div class="slideWrap"><div class="slide" id="slide"></div><div class="prog"><i id="lprog"></i></div></div>' +
+    '<div class="ctl">' +
+    '<button class="ibtn" id="lback" aria-label="Chapters">' + ic('arrow_back') + '</button>' +
+    '<button class="ibtn" id="lps" aria-label="Previous slide">' + ic('first_page') + '</button>' +
+    '<button class="ibtn" id="lp" aria-label="Previous step">' + ic('chevron_left') + '</button>' +
+    '<button class="ibtn fill big" id="lplay" aria-label="Play or pause">' + ic('play_arrow') + '</button>' +
+    '<button class="ibtn" id="ln" aria-label="Next step">' + ic('chevron_right') + '</button>' +
+    '<button class="ibtn" id="lns" aria-label="Next slide">' + ic('last_page') + '</button>' +
+    '<button class="btn sm tonal" id="lrate" aria-label="Speed">1x</button>' +
+    '</div></div>';
+  const wrap = $('.slideWrap');
+  $('#lback').onclick = exitLecture;
+  $('#lplay').onclick = () => NAR.toggle();
+  $('#lp').onclick = () => NAR.prev();
+  $('#ln').onclick = () => NAR.next();
+  $('#lps').onclick = () => slideStep(-1);
+  $('#lns').onclick = () => slideStep(1);
+  $('#lrate').textContent = ST.set.rate + 'x';
+  $('#lrate').onclick = () => { const r = [0.8, 1, 1.2, 1.5, 1.8]; ST.set.rate = r[(r.indexOf(ST.set.rate) + 1) % r.length]; save(); NAR.setRate(ST.set.rate); $('#lrate').textContent = ST.set.rate + 'x'; };
+  let x0 = null;
+  wrap.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+  wrap.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 60) (dx < 0 ? NAR.next() : NAR.prev()); }, { passive: true });
+  LEC.slide = -1; syncControls(NAR.state); lecShow(NAR.state.i);
+}
+function slideStep(d) {
+  const c = LEC.deck.chunks[NAR.state.i], s = c.slide + d;
+  if (s < 0 || s >= LEC.deck.slides.length) return;
+  NAR.jump(LEC.starts[s]);
+}
+
+const chartLines = code => code.split('\n').map((l, i) => '<span class="ln' + (/^\s*(#|\/\/)/.test(l) ? ' c' : '') + '" style="--d:' + i + '">' + (esc(l) || ' ') + '</span>').join('');
+function mapSVG(L, all) {
+  let h = '<svg class="mapsvg' + (all ? ' all' : '') + '" viewBox="0 0 ' + L.width + ' ' + L.height + '" preserveAspectRatio="xMidYMid meet">';
+  L.edges.forEach((e, i) => { h += '<path class="e" pathLength="1" data-i="' + i + '" d="' + e.d + '" marker-end="url(#mh)"/>'; });
+  L.edges.forEach((e, i) => {
+    const w = Math.max(30, e.rel.length * 5.6 + 10);
+    h += '<g class="el" data-i="' + i + '"><rect x="' + (e.lx - w / 2) + '" y="' + (e.ly - 9) + '" width="' + w + '" height="17" rx="8"/><text x="' + e.lx + '" y="' + (e.ly + 3.5) + '" text-anchor="middle">' + esc(e.rel) + '</text></g>';
+  });
+  L.nodes.forEach(n => {
+    h += '<g class="n' + (n.ch !== null ? ' link' : '') + '" data-id="' + esc(n.id) + '"><rect x="' + n.x + '" y="' + n.y + '" width="' + n.w + '" height="' + n.h + '" rx="9"/>';
+    n.lines.forEach((t, k) => { h += '<text x="' + (n.x + n.w / 2) + '" y="' + (n.y + 19 + k * 14) + '" text-anchor="middle">' + esc(t) + '</text>'; });
+    h += '</g>';
+  });
+  return h + '<defs><marker id="mh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a99dc7"/></marker></defs></svg>';
+}
+function slideHTML(s, idx) {
+  switch (s.type) {
+    case 'title': return '<div class="s-title"><div class="orb o1"></div><div class="orb o2"></div><div class="kicker">' + esc(s.sub) + '</div><h2>' + esc(s.heading) + '</h2><div class="rule"></div></div>';
+    case 'bullets': return '<h3 class="sh">' + esc(s.heading) + '</h3><ul class="bl">' + s.bullets.map((b, i) => '<li class="b hid" data-i="' + i + '"><span class="dot"></span><div><b class="bh">' + inline(b.head) + '</b>' + (b.detail ? '<span class="bd">' + inline(b.detail) + '</span>' : '') + '</div></li>').join('') + '</ul>';
+    case 'figure': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="fig">' + figImg(s.file) + '<div class="cap">' + esc(s.caption) + '</div></div>';
+    case 'code': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="codeblk">' + chartLines(s.code) + '</div>';
+    case 'map': return '<h3 class="sh">' + esc(s.heading) + '</h3><div style="flex:1;min-height:0">' + mapSVG(s.layout, false) + '</div>';
+    case 'quiz': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="q">' + inline(s.q) + '</div><div class="opts">' + s.options.map((o, k) => '<button class="opt" data-k="' + k + '"><b>' + LET[k] + '</b><span>' + inline(o) + '</span></button>').join('') + '</div><div class="fb hid" id="fb"></div>';
+    case 'practice': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="muted">Try these to lock in the chapter. Tap one; Teacher waits here.</div><div class="pl">' + s.labs.map(l => '<button class="btn tonal" data-lab="' + esc(l.id) + '">' + ic(l.kind === 'terminal' ? 'terminal' : l.kind === 'code' ? 'code' : 'extension') + '<span>' + esc(l.title) + '</span><span class="kind">' + KIND[l.kind] + '</span>' + (P().lab[LEC.ch.id + '/' + l.id] ? ic('check_circle', 'okc') : '') + '</button>').join('') + '</div>';
+    case 'end': {
+      let cf = ''; const cols = ['#b26bff', '#e06aa8', '#6bb6ff', '#e3b341', '#7be0a4'];
+      for (let i = 0; i < 22; i++) cf += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;background:' + cols[i % 5] + ';animation-delay:' + (Math.random() * 2.5).toFixed(2) + 's"></i>';
+      const nx = !LEC.tour && nextChapter(LEC.ch.n);
+      return '<div class="confetti">' + cf + '</div><div class="s-title"><div class="kicker">Well done</div><h2>' + esc(s.heading) + '</h2><div class="rule"></div><p class="muted" style="margin-top:12px">' + esc(s.sub) + '</p>' + (nx ? '<div class="row" style="margin-top:8px"><button class="btn pri" id="nextlec">' + ic('skip_next') + '<span>Next: ' + esc(nx.title.slice(0, 24)) + '</span></button></div>' : '') + '</div>';
+    }
+  }
+  return '';
+}
+
+let camRaf = null;
+function camera(svg, L, a, b) {
+  const cur = svg.getAttribute('viewBox').split(' ').map(Number);
+  let target;
+  if (!a) target = [0, 0, L.width, L.height];
+  else {
+    const A = L.nodes.find(n => n.id === a), B = L.nodes.find(n => n.id === b);
+    let x1 = Math.min(A.x, B.x) - 50, y1 = Math.min(A.y, B.y) - 40, x2 = Math.max(A.x + A.w, B.x + B.w) + 50, y2 = Math.max(A.y + A.h, B.y + B.h) + 40;
+    const r = svg.clientWidth / Math.max(1, svg.clientHeight);
+    let w = x2 - x1, h = y2 - y1;
+    w = Math.max(w, 330); h = Math.max(h, 240);
+    if (w / h < r) { const nw = h * r; x1 -= (nw - w) / 2; w = nw; } else { const nh = w / r; y1 -= (nh - h) / 2; h = nh; }
+    w = Math.min(w, L.width + 200); h = Math.min(h, L.height + 200);
+    target = [x1, y1, w, h];
+  }
+  if (document.body.classList.contains('rm')) { svg.setAttribute('viewBox', target.join(' ')); return; }
+  if (camRaf) cancelAnimationFrame(camRaf);
+  const t0 = performance.now(), D = 800;
+  (function step(t) {
+    const k = Math.min(1, (t - t0) / D), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+    svg.setAttribute('viewBox', cur.map((v, i) => v + (target[i] - v) * e).join(' '));
+    if (k < 1) camRaf = requestAnimationFrame(step);
+  })(t0);
+}
+
+/* ----- quiz ----- */
+function quizState(el, s, si) {
+  const k = LEC.qa[si], fb = $('#fb', el);
+  $$('.opt', el).forEach(o => {
+    const j = +o.dataset.k; o.disabled = k !== undefined;
+    o.classList.toggle('ok', k !== undefined && j === s.answer); o.classList.toggle('bad', k !== undefined && j === k && k !== s.answer);
+  });
+  if (k === undefined) { fb.classList.add('hid'); return; }
+  const fc = LEC.deck.chunks[LEC.starts[si] + 1];
+  fb.classList.remove('hid', 'ok', 'bad'); fb.classList.add(k === s.answer ? 'ok' : 'bad');
+  fb.innerHTML = '<b>' + esc(fc.label) + '.</b> ' + inline(fc.shown.replace(/^(Correct!|Not quite\.)\s*/, ''));
+}
+function answerQuiz(si, k) {
+  const s = LEC.deck.slides[si]; if (LEC.qa[si] !== undefined) return;
+  LEC.qa[si] = k;
+  const ok = k === s.answer, fi = LEC.starts[si] + 1, fc = LEC.deck.chunks[fi];
+  fc.label = ok ? 'Correct' : 'Not quite';
+  fc.shown = (ok ? 'Correct! ' : 'Not quite. The answer is ' + LET[s.answer] + ': ' + s.options[s.answer] + '. ') + (s.explain || '');
+  fc.text = N.speakable(fc.shown); fc.emotion = ok ? 'happy' : 'sad';
+  quizState($('#slide'), s, si);
+  // score
+  const qs = LEC.deck.slides.map((x, i) => [x, i]).filter(x => x[0].type === 'quiz');
+  if (!LEC.tour && qs.every(x => LEC.qa[x[1]] !== undefined)) {
+    const correct = qs.filter(x => LEC.qa[x[1]] === x[0].answer).length, p = P(), old = p.q[LEC.ch.id] || {};
+    p.q[LEC.ch.id] = { best: Math.max(old.best || 0, correct), total: qs.length, done: true, last: correct }; save(); updateHeader();
+    toast('Quiz score: ' + correct + ' / ' + qs.length);
+  }
+  const wasHeld = NAR.state.held;
+  NAR.jump(fi); if (wasHeld) NAR.play();
+}
+
+function lecShow(i) {
+  if (!LEC || !$('#slide')) return;
+  const c = LEC.deck.chunks[i]; if (!c) return;
+  const s = LEC.deck.slides[c.slide], el = $('#slide');
+  if (LEC.slide !== c.slide) {
+    const dir = c.slide < LEC.slide ? 'enterback' : 'enter';
+    el.className = 'slide'; void el.offsetWidth; el.className = 'slide ' + dir;
+    el.innerHTML = slideHTML(s, c.slide);
+    el.scrollTop = 0; LEC.slide = c.slide;
+    if (s.type === 'end') { const nb = $('#nextlec'); if (nb) nb.onclick = () => openLecture(nextChapter(LEC.ch.n).n, true); }
+    if (s.type === 'map') LEC.svg = $('svg.mapsvg', el);
+    if (s.type === 'quiz') { $$('.opt', el).forEach(o => o.onclick = () => answerQuiz(c.slide, +o.dataset.k)); }
+    if (s.type === 'practice') { $$('[data-lab]', el).forEach(b => b.onclick = () => { NAR.pause(); openLab(LEC.ch.id, b.dataset.lab, true); }); }
+  }
+  if (s.type === 'bullets') {
+    $$('.b', el).forEach(b => {
+      const k = +b.dataset.i, was = !b.classList.contains('hid');
+      if (k <= c.step) { b.classList.remove('hid'); if (!was) b.classList.add('pop'); b.classList.toggle('now', k === c.step); b.classList.toggle('shown', k < c.step); }
+      else { b.classList.add('hid'); b.classList.remove('pop', 'now', 'shown'); }
+    });
+    const nowEl = $('.b.now', el); if (nowEl && nowEl.scrollIntoView) nowEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  } else if (s.type === 'quiz') {
+    quizState(el, s, c.slide);
+  } else if (s.type === 'map' && c.edge !== undefined) {
+    const L = s.layout, svg = LEC.svg;
+    $$('.e', svg).forEach(p => { const k = +p.dataset.i; p.classList.toggle('on', k <= c.edge); p.classList.toggle('now', k === c.edge); });
+    $$('.el', svg).forEach(p => p.classList.toggle('on', +p.dataset.i <= c.edge));
+    const shown = {}; L.edges.forEach((e, k) => { if (k <= c.edge) { shown[e.from] = 1; shown[e.to] = 1; } });
+    const cur = L.edges[c.edge];
+    $$('.n', svg).forEach(n => { n.classList.toggle('on', !cur ? false : !!shown[n.dataset.id]); n.classList.toggle('now', !!cur && (n.dataset.id === cur.from || n.dataset.id === cur.to)); });
+    if (cur) camera(svg, L, cur.from, cur.to); else camera(svg, L, null, null);
+  }
+  const caps = $('#caps');
+  if (ST.set.captions) { caps.classList.remove('hide'); caps.innerHTML = '<b>' + esc(c.label) + '</b><span>' + esc(c.shown || '') + '</span>'; } else caps.classList.add('hide');
+  // progress bookkeeping
+  if (!LEC.tour) {
+    Object.keys(LEC.stageEnd).forEach(k => { if (k !== 'title' && k !== 'quiz' && k !== 'practice' && k !== 'end' && LEC.stageEnd[k] <= i) markStage(LEC.ch, k); });
+    const p = P(); p.last = { n: LEC.ch.n, chunk: i }; if (c.slide !== LEC._saved) { LEC._saved = c.slide; save(); updateHeader(); }
+  } else if (s.type === 'end') { /* tour finished */ }
+  syncControls(NAR.state);
+}
+
+/* ================= READ ================= */
+function renderReadList() {
+  let h = '<div class="card"><div class="big">Read at your own pace</div><div class="muted">The written version of every chapter. Teacher can read any page aloud.</div></div>';
+  CUR.ch.forEach(c => { const pct = chPct(c); h += '<button class="chap ' + (pct === 100 ? 'done' : '') + '" data-n="' + c.n + '"><span class="n">' + (pct === 100 ? ic('check') : c.n) + '</span><span class="mid">' + esc(c.title) + '<small>' + esc(firstSentence(c.summary || '')) + '</small></span></button>'; });
+  main.innerHTML = h;
+  $$('.chap').forEach(b => b.onclick = () => { readCh = +b.dataset.n; render(); });
+}
+function renderChapter(n) {
+  const i = chIdx(n), c = CUR.ch[i];
+  let h = '<div class="row">' + btn('back', 'arrow_back', 'Chapters', 'sm') + '<span class="muted">Chapter ' + c.n + '</span></div>';
+  h += '<h2 style="margin:10px 0 0">' + esc(c.title) + '</h2>';
+  h += '<div class="row" style="margin:8px 0">' + btn('listen', 'volume_up', 'Read aloud', 'pri') + btn('lectureit', 'school', 'Lecture', '') + '</div>';
+  if (c.maps.length) h += '<div class="card"><h3>Concept maps</h3><div class="row">' + c.maps.map((m, k) => '<button class="btn sm tonal" data-map="' + k + '">' + ic('account_tree') + '<span>' + esc(m.title) + '</span></button>').join('') + '</div></div>';
+  if (c.summary) h += '<div class="card"><h3>Summary</h3>' + md(c.summary) + '</div>';
+  if (c.glossary.length) h += '<div class="card"><h3>Glossary</h3><dl class="gl">' + c.glossary.map(g => '<dt>' + esc(g.term) + '</dt><dd>' + inline(g.def) + '</dd>').join('') + '</dl></div>';
+  if (c.points) h += '<div class="card"><h3>Key points</h3>' + md(c.points) + '</div>';
+  if (c.examples.trim()) h += '<div class="card"><h3>Lesson</h3>' + md(c.examples) + '</div>';
+  if (c.quiz.length) { const q = P().q[c.id]; h += '<div class="card"><h3>Quiz</h3><div class="muted">' + c.quiz.length + ' questions' + (q ? '. Best score ' + q.best + ' / ' + q.total : '') + '</div><div class="row" style="margin-top:8px">' + btn('doquiz', 'quiz', q ? 'Take it again' : 'Take the quiz', 'pri') + '</div></div>'; }
+  if (c.practice.length) h += '<div class="card"><h3>Practice</h3><div class="pl">' + c.practice.map(l => '<button class="btn tonal" data-lab="' + esc(l.id) + '">' + ic(l.type === 'terminal' ? 'terminal' : l.type === 'code' ? 'code' : 'extension') + '<span>' + esc(l.title) + '</span><span class="kind">' + KIND[l.type] + '</span>' + (P().lab[c.id + '/' + l.id] ? ic('check_circle', 'okc') : '') + '</button>').join('') + '</div></div>';
+  if (c.cards.length) { h += '<div class="card"><h3>Check yourself</h3>'; c.cards.forEach(q => { h += '<div class="qa"><div>' + inline(q.q) + '</div><div class="a">' + inline(q.a) + '</div><button class="btn sm" style="margin-top:6px">Show answer</button></div>'; }); h += '</div>'; }
+  h += '<div class="row" style="margin:14px 0">' + btn('mark', 'done_all', 'Mark text sections as read', 'tonal') + '</div>';
+  h += '<div class="row">' + (i > 0 ? btn('prev', 'chevron_left', 'Previous', '') : '') + (i < CUR.ch.length - 1 ? btn('next', 'chevron_right', 'Next', 'pri') : '') + '</div>';
+  main.innerHTML = h;
+  $('#back').onclick = () => { readCh = null; render(); };
+  $('#mark').onclick = () => { ['map', 'summary', 'glossary', 'points', 'lesson'].forEach(k => markStage(c, k)); toast('Marked as read'); updateHeader(); };
+  $('#listen').onclick = () => { NAR.stop(); mode = 'read'; READ = { ch: c }; NAR.load(N.buildChunks(c, { readCode: ST.set.readCode }), 0); render(); NAR.play(); };
+  $('#lectureit').onclick = () => openLecture(c.n, true);
+  const dq = $('#doquiz'); if (dq) dq.onclick = () => openLecture(c.n, true, 0, 'quiz');
+  const p = $('#prev'), nx = $('#next');
+  if (p) p.onclick = () => { readCh = CUR.ch[i - 1].n; render(); };
+  if (nx) nx.onclick = () => { readCh = CUR.ch[i + 1].n; render(); };
+  $$('.qa button').forEach(b => b.onclick = () => { const q = b.parentElement; q.classList.toggle('open'); b.textContent = q.classList.contains('open') ? 'Hide' : 'Show answer'; });
+  $$('[data-lab]').forEach(b => b.onclick = () => openLab(c.id, b.dataset.lab, false));
+  $$('[data-map]').forEach(b => b.onclick = () => { tab = 'maps'; mapPick = mapIndex(c.n, +b.dataset.map); render(); });
+}
+function dockShow(c) { $('#dtxt').textContent = (c.label ? c.label + ': ' : '') + (c.shown || c.text); }
+$('#dplay').onclick = () => NAR.toggle();
+$('#dprev').onclick = () => NAR.prev();
+$('#dnext').onclick = () => NAR.next();
+$('#dclose').onclick = () => { NAR.stop(); NAR.load([], 0); mode = null; render(); };
+
+/* ================= MAPS ================= */
+function allMaps() { const a = []; CUR.ch.forEach(c => c.maps.forEach((m, k) => a.push({ n: c.n, k, title: m.title, chTitle: c.title, map: m }))); return a; }
+function mapIndex(n, k) { return Math.max(0, allMaps().findIndex(m => m.n === n && m.k === k)); }
+function renderMaps() {
+  const maps = allMaps();
+  if (!maps.length) { main.innerHTML = '<div class="card">This course has no concept maps.</div>'; return; }
+  if (mapPick >= maps.length) mapPick = 0;
+  const cur = maps[mapPick], L = M.layout(M.parseMaps(K.mapBlock(cur.map))[0]);
+  let h = '<div class="chips">' + maps.map((m, i) => '<button class="chip ' + (i === mapPick ? 'on' : '') + '" data-m="' + i + '">' + m.n + '. ' + esc(m.title.length > 26 ? m.title.slice(0, 24) + '...' : m.title) + '</button>').join('') + '</div>';
+  h += '<div class="muted">Chapter ' + cur.n + ': ' + esc(cur.chTitle) + '. Tap a node to see its links. Pink outlines open a chapter.</div>';
+  h += '<div class="row" style="margin:8px 0">' + btn('tour', 'route', 'Animated tour', 'pri') + btn('speakmap', 'volume_up', 'Explain it', '') + '</div>';
+  h += '<div class="mapbox" id="mapbox">' + mapSVG(L, true).replace('class="mapsvg all"', 'class="mm" style="width:' + L.width + 'px;height:' + L.height + 'px"') + '</div>';
+  h += '<div class="card" id="ninfo"><div class="muted">Select a node.</div></div>';
+  h += '<details style="margin-top:10px"><summary class="muted">Outline (text version)</summary><ul>' + L.outline.map(o => '<li>' + esc(o) + '</li>').join('') + '</ul></details>';
+  main.innerHTML = h;
+  $$('[data-m]').forEach(b => b.onclick = () => { mapPick = +b.dataset.m; mapSel = null; renderMaps(); });
+  $$('.n', $('#mapbox')).forEach(n => n.addEventListener('click', () => selectNode(L, n.dataset.id)));
+  $('#tour').onclick = () => openTour(cur.n, cur.k);
+  $('#speakmap').onclick = () => {
+    NAR.stop(); mode = 'read';
+    const chunks = [{ label: 'Concept map', text: N.speakable(L.title + '.'), shown: L.title, emotion: 'happy' }].concat(L.outline.map(o => ({ label: 'Link', text: N.speakable(o + '.'), shown: o, emotion: 'neutral' })));
+    NAR.load(chunks, 0); render(); NAR.play();
+  };
+  if (mapSel) selectNode(L, mapSel);
+}
+function selectNode(L, id) {
+  mapSel = id;
+  const n = L.nodes.find(x => x.id === id); if (!n) return;
+  $$('.n', $('#mapbox')).forEach(e => e.classList.toggle('sel', e.dataset.id === id));
+  $$('.e', $('#mapbox')).forEach((e, k) => e.classList.toggle('hl', L.edges[k].from === id || L.edges[k].to === id));
+  const out = L.edges.filter(e => e.from === id), inn = L.edges.filter(e => e.to === id);
+  let h = '<h3>' + esc(n.label) + '</h3>';
+  if (out.length) h += '<div class="muted">It...</div><ul>' + out.map(e => '<li><b>' + esc(e.rel) + '</b> ' + esc(e.to) + '</li>').join('') + '</ul>';
+  if (inn.length) h += '<div class="muted">Linked from...</div><ul>' + inn.map(e => '<li>' + esc(e.from) + ' <b>' + esc(e.rel) + '</b> it</li>').join('') + '</ul>';
+  const target = n.ch !== null && chBy(n.ch);
+  if (target) h += '<div class="row">' + btn('opench', 'menu_book', 'Read chapter ' + n.ch, 'pri sm') + btn('lecch', 'school', 'Lecture ' + n.ch, 'sm') + '</div>';
+  $('#ninfo').innerHTML = h;
+  const o = $('#opench'); if (o) o.onclick = () => { tab = 'read'; readCh = n.ch; render(); };
+  const l = $('#lecch'); if (l) l.onclick = () => openLecture(n.ch, true);
+}
+
+/* ================= PRACTICE: labs, sandbox, cards, glossary ================= */
+const TERMS = {};
+let rqueue = null, rshow = false;
+function renderPractice() {
+  if (labSel) return renderLab();
+  const tabs = [['labs', 'Labs']].concat(CUR.course.sandbox ? [['sandbox', 'Sandbox']] : []).concat(CUR.course.apps.length ? [['apps', 'Apps']] : []).concat([['cards', 'Flashcards'], ['gloss', 'Glossary']]);
+  let h = '<div class="chips">' + tabs.map(p => '<button class="chip ' + (practice === p[0] ? 'on' : '') + '" data-p="' + p[0] + '">' + p[1] + '</button>').join('') + '</div><div id="pbody"></div>';
+  main.innerHTML = h;
+  $$('[data-p]').forEach(b => b.onclick = () => { practice = b.dataset.p; renderPractice(); });
+  const body = $('#pbody');
+  if (practice === 'sandbox' && CUR.course.sandbox) renderTerminal(body, CUR.course.sandbox, 'sandbox');
+  else if (practice === 'apps' && CUR.course.apps.length) renderApps(body);
+  else if (practice === 'cards' || practice === 'gloss') renderReview(body, practice);
+  else {
+    const labs = CUR.ch.filter(c => c.practice.length);
+    if (!labs.length) { body.innerHTML = '<div class="card">This course has no practice labs.</div>'; return; }
+    const total = labs.reduce((a, c) => a + c.practice.length, 0), done = labs.reduce((a, c) => a + labsDone(c), 0);
+    let x = '<div class="muted">' + done + ' of ' + total + ' labs complete.</div>';
+    labs.forEach(c => {
+      x += '<div class="card"><h3>Chapter ' + c.n + ': ' + esc(c.title) + '</h3><div class="pl">' + c.practice.map(l => '<button class="btn tonal" data-lab="' + esc(c.id + '/' + l.id) + '">' + ic(l.type === 'terminal' ? 'terminal' : l.type === 'code' ? 'code' : 'extension') + '<span>' + esc(l.title) + '</span><span class="kind">' + KIND[l.type] + '</span>' + (P().lab[c.id + '/' + l.id] ? ic('check_circle', 'okc') : '') + '</button>').join('') + '</div></div>';
+    });
+    body.innerHTML = x;
+    $$('[data-lab]', body).forEach(b => b.onclick = () => { const [cid, lid] = b.dataset.lab.split('/'); openLab(cid, lid, false); });
+  }
+}
+function openLab(chId, labId, fromLecture) {
+  labSel = { chId, labId, fromLecture };
+  tab = 'practice'; view = null; if (!fromLecture) leaveLecture();
+  render();
+}
+function labDone(key) { P().lab[key] = true; save(); updateHeader(); }
+function resBox(r) { return '<b class="' + (r.pass ? 'p' : 'f') + '">' + (r.pass ? 'ALL CORRECT' : 'NOT YET') + '</b>\n' + r.msgs.map(m => '<span class="' + (/^PASS/.test(m) ? 'p' : /^(FAIL|ERROR)/.test(m) ? 'f' : '') + '">' + esc(m) + '</span>').join('\n'); }
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function renderLab() {
+  const c = chBy2(labSel.chId), lab = c && c.practice.find(l => l.id === labSel.labId);
+  if (!lab) { labSel = null; return renderPractice(); }
+  const key = c.id + '/' + lab.id, p = P();
+  let h = '<div class="row">' + btn('lback', 'arrow_back', labSel.fromLecture ? 'Back to lecture' : 'Labs', 'sm') + '<span class="kind">' + KIND[lab.type] + '</span>' + (p.lab[key] ? '<span class="kind" style="color:var(--ok)">done</span>' : '') + '</div>';
+  h += '<div class="card"><h3>Chapter ' + c.n + ': ' + esc(lab.title) + '</h3>' + (lab.intro && lab.type !== 'write' ? '<p style="margin:0 0 8px">' + inline(lab.intro) + '</p>' : '') + '<div id="labbody"></div></div>';
+  main.innerHTML = h;
+  $('#lback').onclick = () => { const fl = labSel.fromLecture; labSel = null; if (fl && LEC) { tab = 'lecture'; } render(); };
+  const body = $('#labbody');
+  const extra = (hint, sol) => '<div class="row" style="margin-top:8px">' + (hint ? btn('hint', 'lightbulb', 'Hint', 'sm') : '') + (sol ? btn('sol', 'visibility', 'Show answer', 'sm') : '') + btn('reset', 'restart_alt', 'Reset', 'sm') + '</div><div class="out hide" id="aux"></div>';
+  const aux = txt => { const a = $('#aux'); a.classList.remove('hide'); a.textContent = txt; };
+  const wire = (hint, sol, reset) => { const hb = $('#hint'); if (hb) hb.onclick = () => aux('Hint: ' + hint); const sb = $('#sol'); if (sb) sb.onclick = () => aux(typeof sol === 'function' ? sol() : sol); $('#reset').onclick = () => { delete p.drafts[key]; save(); reset(); }; };
+  const show = (r) => { const o = $('#res'); o.classList.remove('hide'); o.innerHTML = resBox(r); if (r.pass) { labDone(key); const l = $('#lback span'); if (l && !p.__t) toast('Lab complete'); } };
+
+  if (lab.type === 'fill') {
+    const segs = K.parseFill(lab.text), saved = p.drafts[key] || [];
+    let k = 0, x = '<div class="fillp">' + segs.map(sg => sg.t === 'text' ? inline(sg.v).replace(/\n/g, '<br>') : '<input type="text" data-i="' + (k++) + '" value="' + esc(saved[k - 1] || '') + '" autocapitalize="off" autocorrect="off" spellcheck="false">').join('') + '</div>';
+    body.innerHTML = x + '<div class="row" style="margin-top:8px">' + btn('chk', 'check', 'Check', 'pri') + '</div><div class="out hide" id="res"></div>' + extra(lab.hint, true);
+    const ins = $$('input', body);
+    ins.forEach(i => i.oninput = () => { p.drafts[key] = ins.map(z => z.value); save(); });
+    $('#chk').onclick = () => { const r = K.checkFill(lab, ins.map(z => z.value)); ins.forEach((z, j) => { z.classList.remove('ok', 'bad'); z.classList.add(r.msgs[j].startsWith('PASS') ? 'ok' : 'bad'); }); show(r); };
+    wire(lab.hint, () => segs.filter(s => s.t === 'blank').map((s, j) => (j + 1) + '. ' + s.alts[0]).join('\n'), () => renderLab());
+  } else if (lab.type === 'order') {
+    const pool = shuffle(lab.items); let seq = [];
+    const draw = () => {
+      body.innerHTML = '<div class="muted">Tap the steps in the right order. Tap a placed step to take it back.</div><div class="ordl" id="seq">' + (seq.length ? seq.map((t, i) => '<button class="btn tonal" data-s="' + i + '"><b>' + (i + 1) + '</b><span>' + inline(t) + '</span></button>').join('') : '<div class="slot muted">Nothing placed yet</div>') + '</div><div class="ordl">' + pool.filter(t => seq.indexOf(t) < 0).map(t => '<button class="btn" data-p="' + esc(t) + '"><span>' + inline(t) + '</span></button>').join('') + '</div>' +
+        '<div class="row">' + btn('chk', 'check', 'Check', 'pri') + '</div><div class="out hide" id="res"></div>' + extra(lab.hint, true);
+      $$('[data-s]', body).forEach(b => b.onclick = () => { seq.splice(+b.dataset.s, 1); draw(); });
+      $$('[data-p]', body).forEach(b => b.onclick = () => { seq.push(pool.find(t => esc(t) === b.dataset.p)); draw(); });
+      $('#chk').onclick = () => show(K.checkOrder(lab, seq));
+      wire(lab.hint, () => lab.items.map((t, i) => (i + 1) + '. ' + t).join('\n'), () => { seq = []; draw(); });
+    };
+    draw();
+  } else if (lab.type === 'match') {
+    const rights = shuffle(lab.pairs.map(q => q[1])), saved = p.drafts[key] || [];
+    body.innerHTML = lab.pairs.map((q, i) => '<div class="matchr"><div>' + inline(q[0]) + '</div><select data-i="' + i + '"><option value="">choose...</option>' + rights.map(r => '<option ' + (saved[i] === r ? 'selected' : '') + ' value="' + esc(r) + '">' + esc(r) + '</option>').join('') + '</select></div>').join('') +
+      '<div class="row" style="margin-top:8px">' + btn('chk', 'check', 'Check', 'pri') + '</div><div class="out hide" id="res"></div>' + extra(lab.hint, true);
+    const sels = $$('select', body); sels.forEach(s => s.onchange = () => { p.drafts[key] = sels.map(z => z.value); save(); });
+    $('#chk').onclick = () => { const r = K.checkMatch(lab, sels.map(z => z.value)); sels.forEach((z, j) => { z.style.borderColor = r.msgs[j].startsWith('PASS') ? 'var(--ok)' : 'var(--err)'; }); show(r); };
+    wire(lab.hint, () => lab.pairs.map(q => q[0] + '  ->  ' + q[1]).join('\n'), () => renderLab());
+  } else if (lab.type === 'write') {
+    body.innerHTML = '<p style="margin:0 0 8px">' + inline(lab.prompt) + '</p><textarea id="code" spellcheck="false" autocapitalize="off" autocorrect="off">' + esc(p.drafts[key] != null ? p.drafts[key] : lab.starter) + '</textarea><div class="row" style="margin-top:8px">' + btn('chk', 'check', 'Check', 'pri') + '</div><div class="out hide" id="res"></div>' + extra(lab.hint, lab.solution);
+    const t = $('#code'); t.oninput = () => { p.drafts[key] = t.value; save(); };
+    $('#chk').onclick = () => show(K.checkWrite(lab, t.value));
+    wire(lab.hint, lab.solution, () => renderLab());
+  } else if (lab.type === 'code') {
+    body.innerHTML = '<textarea id="code" spellcheck="false" autocapitalize="off" autocorrect="off">' + esc(p.drafts[key] != null ? p.drafts[key] : lab.starter) + '</textarea><div class="row" style="margin-top:8px">' + btn('run', 'play_arrow', 'Run tests', 'pri') + '</div><div class="out hide" id="res"></div>' + extra(lab.hint, lab.solution) + '<div class="muted" style="margin-top:6px">JavaScript. Runs on this device, offline.</div>';
+    const t = $('#code'); t.oninput = () => { p.drafts[key] = t.value; save(); };
+    $('#run').onclick = async () => { const r = await K.runCode(lab, t.value); show(r); };
+    wire(lab.hint, lab.solution, () => renderLab());
+  } else if (lab.type === 'terminal') {
+    renderTerminal(body, lab, key);
+  } else if (lab.type === 'webxdc') {
+    renderXdc(body, lab, key, () => { labDone(key); toast('Lab complete'); const sp = $('.kind.dn'); if (!sp) { const k = document.createElement('span'); k.className = 'kind dn'; k.style.color = 'var(--ok)'; k.textContent = 'done'; const row = $('#lback').parentElement; row.appendChild(k); } });
+  }
+}
+const chBy2 = id => CUR.ch.find(c => c.id === id);
+
+/* ----- webxdc labs and apps ----- */
+function renderXdc(root, lab, key, onDone) {
+  const p = P(); p.xdc = p.xdc || {};
+  root.innerHTML = '<div class="muted" id="xst">Loading app...</div>';
+  X.labToHtml(lab, p.xdc[key] || [], 'Learner').then(r => {
+    const fr = document.createElement('iframe');
+    fr.className = 'xframe'; fr.setAttribute('sandbox', 'allow-scripts'); fr.style.height = Math.min(lab.height || 520, Math.round(window.innerHeight * 0.72)) + 'px';
+    fr.srcdoc = r.html;
+    root.innerHTML = '<div id="xwrap"></div><div class="row" style="margin-top:8px">' + (onDone ? btn('xdone', 'check', "I'm done", 'tonal sm') : '') + btn('xreset', 'restart_alt', 'Restart app', 'sm') + '</div><div class="muted" style="margin-top:6px">An interactive app (webxdc). It runs on this device, offline, and keeps its own saved state.</div>';
+    $('#xwrap', root).appendChild(fr);
+    const onMsg = e => {
+      if (e.source !== fr.contentWindow || !e.data || !e.data.lilith) return;
+      if (!document.body.contains(fr)) { window.removeEventListener('message', onMsg); return; }
+      if (e.data.lilith === 'update') { const a = p.xdc[key] = p.xdc[key] || []; a.push(e.data.update); if (a.length > 400) a.splice(0, a.length - 400); save(); }
+      else if (e.data.lilith === 'complete' && onDone) onDone();
+    };
+    window.addEventListener('message', onMsg);
+    const d = $('#xdone', root); if (d) d.onclick = onDone;
+    $('#xreset', root).onclick = () => { delete p.xdc[key]; save(); renderXdc(root, lab, key, onDone); };
+  }).catch(err => { root.innerHTML = '<div class="out"><span class="f">Could not run this app: ' + esc(err.message) + '</span></div>'; });
+}
+function renderApps(root) {
+  const apps = CUR.course.apps;
+  let h = '<div class="muted">Extra interactive apps (webxdc) for this course.</div>';
+  apps.forEach((a, i) => { h += '<div class="card"><h3>' + esc(a.title) + '</h3><div class="row">' + btn('ap' + i, 'play_arrow', 'Open', 'pri sm') + btn('ad' + i, 'delete', 'Remove', 'sm danger') + '</div></div>'; });
+  h += '<div class="muted" style="margin-top:6px">Import a .xdc file with the import button in the library to add more.</div>';
+  root.innerHTML = h;
+  apps.forEach((a, i) => {
+    $('#ap' + i, root).onclick = () => { root.innerHTML = '<div class="row">' + btn('aback', 'arrow_back', 'Apps', 'sm') + '</div><div class="card"><h3>' + esc(a.title) + '</h3><div id="abody"></div></div>'; $('#aback', root).onclick = () => renderApps(root); renderXdc($('#abody', root), a, 'app/' + a.id, null); };
+    $('#ad' + i, root).onclick = async () => { if (await ask('Remove "' + a.title + '"?', 'Remove')) { const c = readCourse(CUR.course.id); c.apps = (c.apps || []).filter(x => x.id !== a.id); writeCourse(c); setCourse(c.id); practice = 'labs'; render(); } };
+  });
+}
+
+function renderTerminal(root, lab, key) {
+  let T = TERMS[CUR.course.id + '/' + key];
+  if (!T) T = TERMS[CUR.course.id + '/' + key] = { term: K.makeScriptTerm(lab), html: '<span class="dim">' + esc(lab.banner || lab.intro || 'Type help for commands.') + '\n</span>', ran: 0 };
+  const draw = () => {
+    const tl = T.term.tasks;
+    root.innerHTML = (tl.length ? '<ul class="tasks">' + tl.map(t => '<li class="' + (T.term.state.done[t.id] ? 'ok' : '') + '">' + ic(T.term.state.done[t.id] ? 'check_circle' : 'radio_button_unchecked') + ' ' + esc(t.text) + '</li>').join('') + '</ul>' : '') +
+      '<div class="term" id="tout">' + T.html + '</div>' +
+      '<form class="prompt" id="tf"><span>' + esc(lab.prompt) + '</span><input type="text" id="tin" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type a command"></form>' +
+      '<div class="chips">' + ((lab.chips && lab.chips.length ? lab.chips : ['help']).concat(tl.length ? ['tasks', 'hint'] : [])).map(c => '<button class="chip" data-c="' + esc(c) + '">' + esc(c.length > 34 ? c.slice(0, 32) + '...' : c) + '</button>').join('') + '</div>' +
+      '<div class="muted">A simulation: nothing here touches a real device. Chips fill the prompt; press enter to run.</div>';
+    const o = $('#tout', root); o.scrollTop = o.scrollHeight; const inp = $('#tin', root);
+    $$('.chip[data-c]', root).forEach(b => b.onclick = () => { inp.value = b.dataset.c; inp.focus(); });
+    let hidx = -1;
+    $('#tf', root).onsubmit = e => {
+      e.preventDefault(); const line = inp.value; inp.value = '';
+      T.html += '<span class="cmd">' + esc(lab.prompt) + ' ' + esc(line) + '</span>\n';
+      const r = T.term.exec(line); T.ran++;
+      if (r === 'CLEAR') T.html = ''; else r.forEach(x => { T.html += '<span class="' + x.c + '">' + esc(x.t) + '</span>\n'; });
+      const done = T.term.tasks.length ? T.term.tasks.every(t => T.term.state.done[t.id]) : false;
+      draw();
+      if (done && key !== 'sandbox' && !P().lab[CUR.ch.find(c => c.practice.some(l => c.id + '/' + l.id === key)).id + '/' + lab.id]) { labDone(key); toast('Lab complete'); }
+      $('#tin', root).focus();
+    };
+    inp.onkeydown = e => {
+      const hh = T.term.state.hist;
+      if (e.key === 'ArrowUp' && hh.length) { hidx = hidx < 0 ? hh.length - 1 : Math.max(0, hidx - 1); inp.value = hh[hidx]; e.preventDefault(); }
+      if (e.key === 'ArrowDown' && hh.length) { hidx = hidx < 0 ? -1 : Math.min(hh.length, hidx + 1); inp.value = hh[hidx] || ''; e.preventDefault(); }
+    };
+  };
+  draw();
+}
+
+function allCards() { const a = []; CUR.ch.forEach(c => c.cards.forEach((q, k) => a.push({ id: c.id + '.' + k, ch: c.n, q: q.q, a: q.a }))); return a; }
+function renderReview(root, which) {
+  if (which === 'gloss') {
+    const terms = []; CUR.ch.forEach(c => c.glossary.forEach(g => terms.push({ term: g.term, def: g.def, ch: c.n })));
+    root.innerHTML = '<input type="search" id="gq" placeholder="Search ' + terms.length + ' terms..."><dl class="gl" id="gl"></dl>';
+    const draw = q => { $('#gl').innerHTML = terms.filter(x => !q || (x.term + ' ' + x.def).toLowerCase().includes(q.toLowerCase())).map(x => '<dt>' + esc(x.term) + ' <span class="stagepill">ch ' + x.ch + '</span></dt><dd>' + inline(x.def) + '</dd>').join('') || '<dd class="muted">No match.</dd>'; };
+    draw(''); $('#gq').oninput = e => draw(e.target.value); return;
+  }
+  const cards = allCards(), p = P();
+  if (!cards.length) { root.innerHTML = '<div class="card">This course has no flashcards.</div>'; return; }
+  if (!rqueue) rqueue = cards.filter(c => !p.cards[c.id]).sort(() => Math.random() - 0.5);
+  const known = cards.filter(c => p.cards[c.id]).length;
+  let h = '<div class="muted">Known: ' + known + ' / ' + cards.length + ' cards. Remaining in this round: ' + rqueue.length + '.</div>';
+  if (!rqueue.length) h += '<div class="card"><div class="big">Round complete</div>' + btn('again', 'replay', 'Reshuffle all cards', 'pri') + '</div>';
+  else { const c = rqueue[0]; h += '<div class="card"><h3>Chapter ' + c.ch + '</h3><div class="big">' + inline(c.q) + '</div>' + (rshow ? '<div style="color:var(--g2);margin:8px 0">' + inline(c.a) + '</div><div class="row">' + btn('got', 'check', 'Got it', 'pri') + btn('miss', 'replay', 'Again later', '') + '</div>' : btn('show', 'visibility', 'Show answer', 'pri')) + '</div>'; }
+  root.innerHTML = h;
+  const g = id => $(id, root);
+  if (g('#show')) g('#show').onclick = () => { rshow = true; renderReview(root, 'cards'); };
+  if (g('#got')) g('#got').onclick = () => { p.cards[rqueue[0].id] = true; save(); rqueue.shift(); rshow = false; renderReview(root, 'cards'); };
+  if (g('#miss')) g('#miss').onclick = () => { rqueue.push(rqueue.shift()); rshow = false; renderReview(root, 'cards'); };
+  if (g('#again')) g('#again').onclick = () => { p.cards = {}; save(); rqueue = null; renderReview(root, 'cards'); };
+}
+
+/* ================= PROGRESS ================= */
+function renderProgress() {
+  const p = P(), pct = coursePct();
+  const quizzes = CUR.ch.filter(c => c.quiz.length), qd = quizzes.filter(c => p.q[c.id] && p.q[c.id].done).length;
+  const labs = CUR.ch.reduce((a, c) => a + c.practice.length, 0), ld = CUR.ch.reduce((a, c) => a + labsDone(c), 0);
+  const cards = allCards(), kn = cards.filter(c => p.cards[c.id]).length;
+  let h = '<div class="card"><div class="big">' + esc(CUR.course.title) + '</div><div class="pbar"><i style="width:' + pct + '%"></i></div><div class="muted">' + pct + '% complete. Quizzes ' + qd + '/' + quizzes.length + ', labs ' + ld + '/' + labs + ', flashcards ' + kn + '/' + cards.length + '.</div></div>';
+  CUR.ch.forEach(c => {
+    const q = p.q[c.id];
+    h += '<div class="card"><div class="row" style="justify-content:space-between"><b>' + c.n + '. ' + esc(c.title) + '</b><span class="pct" style="color:var(--g2)">' + chPct(c) + '%</span></div><div class="pbar"><i style="width:' + chPct(c) + '%"></i></div><div class="chips">' +
+      stagesOf(c).map(s => '<button class="chip sm ' + (stageDone(c, s[0]) ? 'on' : '') + '" data-go="' + c.n + ':' + s[0] + '">' + (stageDone(c, s[0]) ? ic('check') : '') + s[1] + (s[0] === 'quiz' && q ? ' ' + q.best + '/' + q.total : '') + (s[0] === 'practice' ? ' ' + labsDone(c) + '/' + c.practice.length : '') + '</button>').join('') + '</div></div>';
+  });
+  h += examCard();
+  h += '<div class="row" style="margin:12px 0">' + btn('rst', 'restart_alt', 'Reset progress', 'danger') + '</div>';
+  main.innerHTML = h;
+  wireExamCard();
+  $$('[data-go]').forEach(b => b.onclick = () => { const [n, st] = b.dataset.go.split(':'); const c = chBy(+n); if (st === 'practice') { tab = 'practice'; practice = 'labs'; render(); } else openLecture(+n, false, 0, st); });
+  $('#rst').onclick = async () => { if (await ask('Reset progress for this course?', 'Reset', 'Quiz scores, lab results, flashcards and lecture progress are cleared.')) { ST.prog[CUR.course.id] = {}; rqueue = null; save(); render(); toast('Progress reset'); } };
+}
+
+/* ================= FINAL EXAM ================= */
+let EXAM = null;
+function examPool() {
+  const ex = CUR.course.exam;
+  if (ex) return { title: ex.title, pass: ex.passMark, size: ex.size, qs: ex.questions.map(q => Object.assign({ ch: null }, q)) };
+  const qs = []; CUR.ch.forEach(c => c.quiz.forEach(q => qs.push(Object.assign({ ch: c.n }, q))));
+  return { title: 'Final exam', pass: 70, size: Math.min(20, qs.length), qs };
+}
+function examCard() {
+  const pool = examPool(); if (!pool.qs.length) return '';
+  const e = P().exam, n = pool.size || pool.qs.length;
+  return '<div class="card"><h3>' + esc(pool.title) + '</h3><div class="muted">' + n + ' questions' + (CUR.course.exam ? '' : ', drawn from all the chapter quizzes') + '. Pass mark ' + pool.pass + '%. No feedback until the end.' +
+    (e ? ' Best score ' + e.bestPct + '%' + (e.passed ? ', passed' : ', not passed yet') + ' (' + e.attempts + (e.attempts === 1 ? ' attempt' : ' attempts') + ').' : '') + '</div>' +
+    '<div class="row" style="margin-top:8px">' + btn('exgo', 'assignment', e ? 'Retake the exam' : 'Start the exam', 'pri') + '</div></div>';
+}
+function wireExamCard() { const b = $('#exgo'); if (b) b.onclick = startExam; }
+function startExam() {
+  const pool = examPool(); if (!pool.qs.length) return;
+  NAR.stop(); LEC = null; mode = null;
+  const picked = shuffle(pool.qs).slice(0, pool.size || pool.qs.length).map(q => {
+    const order = shuffle(q.options.map((o, i) => i));
+    return { ch: q.ch, q: q.q, options: order.map(i => q.options[i]), answer: order.indexOf(q.answer), explain: q.explain };
+  });
+  EXAM = { stage: 'run', i: 0, qs: picked, ans: [], pass: pool.pass, title: pool.title, done: false };
+  view = 'exam'; render();
+}
+function renderExam() {
+  const E = EXAM; if (!E) { view = null; return render(); }
+  const LETT = 'ABCDEFGH';
+  if (E.stage === 'run') {
+    const q = E.qs[E.i], sel = E.ans[E.i];
+    let h = '<div class="row"><span class="kind">' + esc(E.title) + '</span><span class="kind">' + (E.i + 1) + ' / ' + E.qs.length + '</span></div><div class="pbar"><i style="width:' + Math.round(E.i / E.qs.length * 100) + '%"></i></div>' +
+      '<div class="card"><div class="q">' + inline(q.q) + '</div><div class="opts">' + q.options.map((o, k) => '<button class="opt' + (sel === k ? ' ok' : '') + '" data-k="' + k + '"><b>' + LETT[k] + '</b><span>' + inline(o) + '</span></button>').join('') + '</div></div>' +
+      '<div class="row">' + (E.i ? btn('exprev', 'arrow_back', 'Back', '') : '') + btn('exnext', E.i === E.qs.length - 1 ? 'check' : 'arrow_forward', E.i === E.qs.length - 1 ? 'Finish' : 'Next', 'pri') + '</div>';
+    main.innerHTML = h;
+    $$('.opt').forEach(o => o.onclick = () => { E.ans[E.i] = +o.dataset.k; renderExam(); });
+    const nb = $('#exnext'); nb.disabled = sel === undefined; nb.style.opacity = sel === undefined ? .5 : 1;
+    nb.onclick = () => { if (E.ans[E.i] === undefined) return; if (E.i < E.qs.length - 1) { E.i++; renderExam(); } else finishExam(); };
+    if ($('#exprev')) $('#exprev').onclick = () => { E.i--; renderExam(); };
+    return;
+  }
+  const right = E.qs.filter((q, i) => E.ans[i] === q.answer).length, pct = Math.round(right / E.qs.length * 100), ok = pct >= E.pass;
+  const misses = E.qs.map((q, i) => [q, i]).filter(x => E.ans[x[1]] !== x[0].answer);
+  let h = '<div class="card"><div class="big">' + (ok ? 'Passed' : 'Not passed yet') + '</div><div class="pbar"><i style="width:' + pct + '%"></i></div><div class="muted">' + right + ' of ' + E.qs.length + ' correct (' + pct + '%). Pass mark ' + E.pass + '%.' + (ok ? '' : ' Review the chapters below and try again.') + '</div></div>';
+  if (misses.length) {
+    h += '<div class="card"><h3>Review</h3>' + misses.map(([q, i]) => '<div style="margin:0 0 12px"><div class="q">' + inline(q.q) + '</div><div class="muted">Your answer: ' + esc(q.options[E.ans[i]] || '') + '</div><div style="color:var(--ok)">Correct: ' + esc(q.options[q.answer]) + '</div>' + (q.explain ? '<div class="muted">' + inline(q.explain) + '</div>' : '') + (q.ch !== null && chBy(q.ch) ? '<div class="row" style="margin-top:6px">' + btn('', 'menu_book', 'Chapter ' + q.ch, 'sm').replace('<button', '<button data-rev="' + q.ch + '"') + '</div>' : '') + '</div>').join('') + '</div>';
+  }
+  h += '<div class="row">' + btn('exagain', 'restart_alt', 'Retake', 'pri') + btn('exdone', 'close', 'Close', '') + '</div>';
+  main.innerHTML = h;
+  $('#exagain').onclick = startExam; $('#exdone').onclick = () => { EXAM = null; view = null; tab = 'progress'; render(); };
+  $$('[data-rev]').forEach(b => b.onclick = () => { EXAM = null; view = null; openLecture(+b.dataset.rev, false, 0, 'lesson'); });
+}
+function finishExam() {
+  const E = EXAM, p = P(), right = E.qs.filter((q, i) => E.ans[i] === q.answer).length, pct = Math.round(right / E.qs.length * 100), old = p.exam || {};
+  p.exam = { bestPct: Math.max(old.bestPct || 0, pct), lastPct: pct, total: E.qs.length, passed: !!old.passed || pct >= E.pass, attempts: (old.attempts || 0) + 1, at: Date.now() };
+  save(); E.stage = 'result'; E.done = true; renderExam(); updateHeader();
+}
+
+/* ================= SETTINGS ================= */
+$('#gear').onclick = () => {
+  const d = $('#settings');
+  const kind = ENV.kind === 'android' ? 'Android text-to-speech' : ENV.kind === 'web' ? 'browser voice' : 'silent read-along (no speech engine found)';
+  const voices = ENV.voices ? ENV.voices() : [];
+  const sw = (k, label) => '<div class="set"><span>' + label + '</span><button class="sw ' + (ST.set[k] ? 'on' : '') + '" data-k="' + k + '" aria-label="' + label + '"></button></div>';
+  d.innerHTML = '<h3 class="dh">Settings</h3><div class="muted">Voice: ' + kind + '</div>' +
+    '<div class="set"><span>Speech speed</span><span class="row">' + [0.8, 1, 1.2, 1.5, 1.8].map(r => '<button class="chip ' + (ST.set.rate === r ? 'on' : '') + '" data-r="' + r + '">' + r + 'x</button>').join('') + '</span></div>' +
+    sw('captions', 'Show captions') + sw('autoNext', 'Continue to the next chapter') + sw('readCode', 'Read code aloud') +
+    (voices.length > 1 ? '<div class="set"><span>Voice</span><select id="vsel">' + voices.map(v => '<option ' + (v.name === ST.set.voice ? 'selected' : '') + '>' + esc(v.name) + '</option>').join('') + '</select></div>' : '') +
+    '<div class="row end" style="margin-top:12px">' + btn('vtest', 'volume_up', 'Test voice', '') + btn('vclose', 'check', 'Done', 'pri') + '</div>';
+  $$('[data-k]', d).forEach(b => b.onclick = () => { const k = b.dataset.k; ST.set[k] = !ST.set[k]; save(); b.classList.toggle('on', ST.set[k]); });
+  $$('[data-r]', d).forEach(b => b.onclick = () => { ST.set.rate = +b.dataset.r; save(); NAR.setRate(ST.set.rate); $$('[data-r]', d).forEach(x => x.classList.toggle('on', x === b)); const lr = $('#lrate'); if (lr) lr.textContent = ST.set.rate + 'x'; });
+  const vs = $('#vsel'); if (vs) vs.onchange = () => { ST.set.voice = vs.value; save(); ENV.setVoice(vs.value); };
+  $('#vtest').onclick = () => { NAR.stop(); mode = 'read'; NAR.load([{ label: 'Test', text: 'Hello, I am Teacher. Welcome to the Lilith Learning Lab.', shown: 'Hello, I am Teacher.', emotion: 'happy' }], 0); NAR.play(); };
+  $('#vclose').onclick = () => d.close();
+  d.showModal();
+};
+
+window.__app = { NAR, AV, ST, K, openLecture, openCourse, importText, go, get LEC() { return LEC; }, get CUR() { return CUR; }, get EXAM() { return EXAM; }, ENV, answerQuiz, openLab, openTour };
+setCourse(ST.current || (ST.courses[0] && ST.courses[0].id));
+render();
+})();
+</script>
+</body>
+</html>
