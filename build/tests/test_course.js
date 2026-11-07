@@ -57,6 +57,7 @@ ok(files.length >= 2, 'two course files');
             'Query the power mode: sudo nvpmodel -q': 'sudo nvpmodel -q', 'Set MAXN: sudo nvpmodel -m 0': 'sudo nvpmodel -m 0', 'Lock the clocks: sudo jetson_clocks': 'sudo jetson_clocks', 'Run tegrastats': 'tegrastats',
             'Build the FP16 GPU engine': 'trtexec --onnx=model.onnx --fp16 --saveEngine=gpu.engine', 'Load it again': 'trtexec --loadEngine=gpu.engine',
             'Build model.onnx for DLA with fallback and --verbose': 'trtexec --onnx=model.onnx --fp16 --useDLACore=0 --allowGPUFallback --verbose', 'Try decoder.onnx and read why layers fall back': 'trtexec --onnx=decoder.onnx --fp16 --useDLACore=0 --allowGPUFallback',
+            'Install gymnasium': 'pip install gymnasium', 'Check that it imports': 'python -c "import gymnasium"', 'Run the random CartPole script': 'python cartpole_random.py', 'Install Stable-Baselines3': 'pip install "stable-baselines3[extra]"', 'Run the training script': 'python train_cartpole.py', 'List the files to see the saved model': 'ls', 'Run train.py': 'python train.py', 'Start TensorBoard': 'tensorboard --logdir ./tb/', 'Check the best model was saved': 'ls best',
             'Find 20% of 80': 'calc 20 of 80', 'Find 10% of 350': 'calc 10 of 350'
           };
           T.tasks.forEach(t => { const cmd = cmds[t.text]; ok(cmd, tag + ' no scripted command for ' + t.text); if (cmd) T.exec(cmd); });
@@ -70,6 +71,9 @@ ok(files.length >= 2, 'two course files');
     if (c.sandbox) {
       const T = K.makeScriptTerm(c.sandbox);
       const run = l => T.exec(l).map(x => x.t).join('\n');
+      if (c.id === 'rl-python-gymnasium-sb3') {
+        ok(/clipped objective/.test(run('algo ppo')), 'algo ppo'); ok(/discrete only/i.test(run('algo dqn')), 'algo dqn'); ok(/n_steps 2048/.test(run('defaults ppo')), 'defaults'); ok(/Unknown/.test(run('xyz')), 'unknown');
+      }
       if (c.id === 'jetson-agx-xavier') {
         ok(/MAXN/.test(run('sudo nvpmodel -q')), 'nvpmodel -q');
         run('sudo nvpmodel -m 1'); ok(/MODE_10W/.test(run('sudo nvpmodel -q')), 'mode 10W set');

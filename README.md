@@ -11,13 +11,14 @@ A standalone, offline Android app with a talking, animated Teacher. It comes **e
 ## Courses (`courses/`)
 
 * `jetson-agx-xavier.course.json`: the NVIDIA Jetson AGX Xavier course (23 chapters).
+* `rl-python-gymnasium-sb3.course.json`: Reinforcement Learning with Python (12 chapters: RL basics, Gymnasium, MDPs, bandits, Q-learning, custom environments, DQN, Stable-Baselines3, PPO/SAC, training in practice, reward design, next steps). Has a final exam, a bandit lab and a gridworld Q-learning lab.
 * `sample-percentages.course.json`: a tiny second-subject sample.
 
 Course format: see the header of `build/src/course.js` or use "Template" and "AI prompt" in the app's library.
 
 ## Build
 
-* `build/make_course.py <out.json>` and `build/make_sample.py <out.json>` regenerate the courses.
+* `build/make_course.py <out.json>`, `build/make_rl_course.py <out.json>` and `build/make_sample.py <out.json>` regenerate the courses.
 * `python3 build/build_web.py --web <dir>` writes the web app (`index.html` + `avatar/`).
 * `node build/tests/test_course.js`, `python3 build/tests/ui_test.py <web dir> courses [shots]` (Playwright) run the tests.
 * `android/build_apk.sh` builds and signs the APK with the plain Android SDK tools (no Gradle). It creates a local keystore on first run; do not commit it.

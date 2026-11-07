@@ -151,8 +151,8 @@
       course.chapters.push(ch);
     });
     course.apps = arr(raw.apps).filter(function (a) { return a && typeof a === 'object' && (a.xdc || a.html || a.files); }).map(function (a, i) { return { id: s(a.id) || ('app' + (i + 1)), title: s(a.title) || ('App ' + (i + 1)), xdc: s(a.xdc).replace(/\s+/g, ''), html: s(a.html), files: a.files && typeof a.files === 'object' ? a.files : null, height: Math.max(240, Math.min(900, Number(a.height) || 520)) }; });
-    if (raw.finalExam) {
-      var fe = raw.finalExam, fq = Array.isArray(fe) ? fe : arr(fe.questions);
+    if (raw.finalExam || raw.exam) {
+      var fe = raw.finalExam || raw.exam, fq = Array.isArray(fe) ? fe : arr(fe.questions);
       var exq = fq.map(function (q) { return normQuiz(q, warnings, 'final exam'); }).filter(Boolean);
       if (exq.length) {
         var pm = Array.isArray(fe) ? 70 : Number(fe.passMark), sz = Array.isArray(fe) ? 0 : Number(fe.size);

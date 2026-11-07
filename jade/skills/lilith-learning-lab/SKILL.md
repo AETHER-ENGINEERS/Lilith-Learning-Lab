@@ -5,7 +5,7 @@ description: Make, check and teach from Lilith Learning Lab course files (JSON, 
 
 # Lilith Learning Lab courses
 
-Lilith Learning Lab is an offline Android app with a talking "Teacher". It starts empty; everything it teaches is a **course file**: one JSON file the user imports (Library > Import file, or Paste JSON). Two courses ship with the project: `jetson-agx-xavier.course.json` and `sample-percentages.course.json`.
+Lilith Learning Lab is an offline Android app with a talking "Teacher". It starts empty; everything it teaches is a **course file**: one JSON file the user imports (Library > Import file, or Paste JSON). Three courses ship with the project: `jetson-agx-xavier.course.json`, `rl-python-gymnasium-sb3.course.json` and `sample-percentages.course.json`.
 
 ## Tools
 

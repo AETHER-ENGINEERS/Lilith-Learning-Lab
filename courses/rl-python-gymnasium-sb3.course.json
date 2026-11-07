@@ -1,0 +1,3386 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "rl-python-gymnasium-sb3",
+ "title": "Reinforcement Learning with Python",
+ "subtitle": "From the basics to Gymnasium and Stable-Baselines3",
+ "author": "Lilith Learning Lab",
+ "description": "A beginner-friendly course on reinforcement learning: the core ideas, tabular Q-learning, DQN and PPO, then practical work with Gymnasium environments and Stable-Baselines3. Written for the current Gymnasium (1.x) API and recent Stable-Baselines3 2.x releases; check the library docs for your installed versions.",
+ "pronounce": {
+  "Gymnasium": "jim nay zee um",
+  "PPO": "P P O",
+  "DQN": "D Q N",
+  "A2C": "A 2 C",
+  "SAC": "sack",
+  "TD3": "T D 3",
+  "DDPG": "D D P G",
+  "TRPO": "T R P O",
+  "SB3": "S B 3",
+  "MDP": "M D P",
+  "RL": "R L",
+  "RLHF": "R L H F",
+  "GAE": "G A E",
+  "KL": "K L",
+  "MlpPolicy": "M L P policy",
+  "CnnPolicy": "C N N policy",
+  "numpy": "num pie",
+  "NumPy": "num pie",
+  "PyTorch": "pie torch",
+  "TensorBoard": "tensor board",
+  "VecNormalize": "vec normalize",
+  "CartPole": "cart pole",
+  "FrozenLake": "frozen lake",
+  "LineWorld": "line world",
+  "MuJoCo": "mew jo co",
+  "env": "environment",
+  "venv": "V env",
+  "gamma": "gamma",
+  "Atari": "a tarry",
+  "VecFrameStack": "vec frame stack",
+  "DummyVecEnv": "dummy vec environment",
+  "SubprocVecEnv": "sub process vec environment",
+  "EvalCallback": "eval callback",
+  "sb3-contrib": "S B 3 contrib",
+  "pip": "pip",
+  "Q-learning": "Q learning",
+  "Q-table": "Q table"
+ },
+ "chapters": [
+  {
+   "title": "What is reinforcement learning?",
+   "maps": [
+    {
+     "title": "The RL loop",
+     "links": [
+      "Agent | observes | State",
+      "Agent | chooses | Action",
+      "Action | changes | Environment",
+      "Environment | returns | Reward",
+      "Environment | returns | Next state",
+      "Reward | shapes | Policy",
+      "Policy | picks | Action",
+      "Agent | wants to maximize | Return",
+      "Environment [ch2] | is made with | Gymnasium [ch2]",
+      "Policy [ch8] | is trained by | Stable-Baselines3 [ch8]"
+     ]
+    }
+   ],
+   "summary": [
+    "Reinforcement learning, or RL, is learning by trial and error. An agent takes actions in an environment, gets a reward signal, and slowly learns which actions lead to more reward over time.",
+    "Nobody gives the agent the right answers. Unlike supervised learning there are no labels, only a score that arrives after the fact, often delayed. The agent must work out which of its earlier actions deserve the credit or the blame.",
+    "In this course you learn the ideas first, then practice them in Python with Gymnasium, which provides environments, and Stable-Baselines3, which provides ready-made algorithms."
+   ],
+   "glossary": [
+    {
+     "term": "Agent",
+     "def": "The learner and decision maker. In code it is usually a policy plus a learning algorithm."
+    },
+    {
+     "term": "Environment",
+     "def": "Everything the agent interacts with. It reacts to actions and produces observations and rewards."
+    },
+    {
+     "term": "Observation",
+     "def": "What the agent actually sees at a step. Often called the state when it contains everything that matters."
+    },
+    {
+     "term": "Action",
+     "def": "A choice the agent makes, such as push left or push right."
+    },
+    {
+     "term": "Reward",
+     "def": "A single number the environment sends after each step. It says how good that step was."
+    },
+    {
+     "term": "Policy",
+     "def": "The agent's rule for choosing actions from observations. Learning means improving the policy."
+    },
+    {
+     "term": "Return",
+     "def": "The total reward collected over time. The agent tries to maximize it, not just the next reward."
+    },
+    {
+     "term": "Episode",
+     "def": "One run from a start state until the task ends, for example one game."
+    }
+   ],
+   "keyPoints": [
+    "RL learns from rewards, not from labeled examples.",
+    "The loop is: observe, act, receive reward and next observation, repeat.",
+    "The goal is a high total return over time, not a high immediate reward.",
+    "Rewards can be delayed, so credit assignment is the hard part.",
+    "The agent must explore to find good actions, and exploit what it already knows."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Imagine teaching a dog a trick. You cannot explain it in words. You wait for a good attempt and give a treat. Over many tries the dog connects what it did with the treat. That is reinforcement learning in one picture: the dog is the agent, the room is the environment, the treat is the reward.",
+      "Compare this with supervised learning. There, every example comes with the correct answer, like a photo labeled cat. In RL nobody tells the agent the correct move. It only learns afterwards whether things went well, and the result of an action can show up many steps later. A chess move may only prove good or bad twenty moves on."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# The whole RL idea as pseudo-Python\nobservation = env.reset()\ndone = False\ntotal = 0\nwhile not done:\n    action = policy(observation)          # the agent decides\n    observation, reward, done = env.step(action)   # the world answers\n    total += reward                       # keep score\n# learning = changing policy so that total goes up next time"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where is RL used? Game playing, robot control, recommendation and ad systems, data center cooling, chip layout, and training language models from human feedback. It shines when you can simulate or safely try things many times, and when the right behavior is easier to score than to describe.",
+      "It is also hard. Rewards can be sparse, training can be unstable, and a clever agent will happily exploit a badly designed reward. Later chapters show how to spot and manage this."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Course plan. First the ideas: Gymnasium environments, the Markov decision process, exploration, and tabular Q-learning. Then deep RL with neural networks. Then Stable-Baselines3: PPO, DQN, SAC, evaluation, callbacks, logging and your own environments."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does an RL agent receive after each action?",
+     "options": [
+      "The correct action label",
+      "A reward and a new observation",
+      "A copy of the dataset",
+      "Only the final score at the end of training"
+     ],
+     "answer": 1,
+     "explain": "The environment returns a reward and the next observation. There are no correct-answer labels."
+    },
+    {
+     "q": "Which statement best separates RL from supervised learning?",
+     "options": [
+      "RL needs more data",
+      "RL uses neural networks and supervised learning does not",
+      "RL learns from rewards for its own actions instead of labeled answers",
+      "RL cannot be used in simulation"
+     ],
+     "answer": 2,
+     "explain": "In RL the agent generates its own experience and is scored on it. Supervised learning is given labeled examples."
+    },
+    {
+     "q": "What does the agent try to maximize?",
+     "options": [
+      "The next single reward",
+      "The number of actions",
+      "The total return over time",
+      "The size of its model"
+     ],
+     "answer": 2,
+     "explain": "A good agent trades a small reward now for larger rewards later. Return is the total over time."
+    },
+    {
+     "q": "Why is credit assignment hard?",
+     "options": [
+      "Rewards are always negative",
+      "A reward may come long after the action that caused it",
+      "Agents cannot remember",
+      "Environments are always random"
+     ],
+     "answer": 1,
+     "explain": "With delayed rewards the agent must work out which of many earlier actions mattered."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What are the two things the environment returns each step?",
+     "a": "A reward and the next observation."
+    },
+    {
+     "q": "What is a policy?",
+     "a": "The agent's rule for choosing an action from an observation."
+    },
+    {
+     "q": "What is an episode?",
+     "a": "One run from the start of a task until it ends."
+    },
+    {
+     "q": "Why can't RL just use labels?",
+     "a": "Nobody knows the right action in advance. Only the outcome is scored."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the RL words",
+     "intro": "Match each term to what it means.",
+     "pairs": [
+      [
+       "Agent",
+       "The learner that chooses actions"
+      ],
+      [
+       "Environment",
+       "The world that reacts to actions"
+      ],
+      [
+       "Reward",
+       "A number saying how good the last step was"
+      ],
+      [
+       "Policy",
+       "A rule that picks actions from observations"
+      ],
+      [
+       "Return",
+       "Total reward collected over time"
+      ]
+     ]
+    },
+    {
+     "type": "order",
+     "title": "One step of the loop",
+     "intro": "Put the steps of the agent-environment loop in order.",
+     "items": [
+      "The agent receives an observation",
+      "The agent chooses an action",
+      "The environment applies the action",
+      "The environment returns a reward and a new observation",
+      "The agent uses the result to learn"
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Fill the loop",
+     "text": "In the loop, the agent picks an {{action}} from a {{policy}}. The environment sends back a {{reward}} and the next {{observation|state}}. The agent wants the highest total {{return}}."
+    }
+   ]
+  },
+  {
+   "title": "Python setup and Gymnasium basics",
+   "maps": [
+    {
+     "title": "Gymnasium at a glance",
+     "links": [
+      "Gymnasium | provides | Environments",
+      "gym.make | creates | Environment",
+      "Environment | has | Observation space",
+      "Environment | has | Action space",
+      "reset | returns | Observation and info",
+      "step | returns | Five values",
+      "Five values | include | terminated",
+      "Five values | include | truncated",
+      "Environment | is trained on by | Stable-Baselines3 [ch8]"
+     ]
+    }
+   ],
+   "summary": [
+    "Gymnasium is the maintained successor to OpenAI Gym. It gives every environment the same small interface, so any agent can be paired with any environment.",
+    "You create an environment with gym.make, start it with reset, and advance it with step. Step returns five values: observation, reward, terminated, truncated and info. Terminated means the task really ended; truncated means a time limit cut it off.",
+    "Every environment describes its inputs and outputs with spaces. Discrete spaces hold integers, Box spaces hold arrays of numbers. Knowing the spaces tells you which algorithms and network shapes you can use."
+   ],
+   "glossary": [
+    {
+     "term": "Gymnasium",
+     "def": "The Python library that defines the standard environment interface and ships many example environments."
+    },
+    {
+     "term": "gym.make",
+     "def": "Function that builds an environment from its name, for example CartPole-v1."
+    },
+    {
+     "term": "reset",
+     "def": "Starts a new episode and returns the first observation and an info dictionary."
+    },
+    {
+     "term": "step",
+     "def": "Applies an action and returns observation, reward, terminated, truncated and info."
+    },
+    {
+     "term": "terminated",
+     "def": "True when the episode ended because of the task itself, such as falling over or reaching the goal."
+    },
+    {
+     "term": "truncated",
+     "def": "True when the episode was stopped by a limit such as a maximum number of steps, not by the task."
+    },
+    {
+     "term": "Discrete space",
+     "def": "A space of n integers, 0 up to n minus 1. Used for a fixed set of choices."
+    },
+    {
+     "term": "Box space",
+     "def": "A space of arrays of real numbers with lower and upper bounds. Used for continuous values."
+    }
+   ],
+   "keyPoints": [
+    "Install with pip install gymnasium, and use a virtual environment.",
+    "reset returns (observation, info). step returns (observation, reward, terminated, truncated, info).",
+    "An episode is over when terminated or truncated is True.",
+    "Terminated and truncated are different: only truncation means the future was cut off, not that it was bad.",
+    "Pass a seed to reset to make runs repeatable.",
+    "env.action_space.sample() gives a random valid action, handy for testing."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Start with a clean virtual environment, then install the library. Recent Stable-Baselines3 releases need Python 3.10 or newer, so use a current Python for the whole course."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "bash",
+     "code": "python -m venv rl-env\nsource rl-env/bin/activate        # Windows: rl-env\\Scripts\\activate\npip install --upgrade pip\npip install gymnasium\npython -c \"import gymnasium; print(gymnasium.__version__)\""
+    },
+    {
+     "type": "text",
+     "items": [
+      "Here is the first program. CartPole is a cart with a pole balanced on top. The agent pushes the cart left or right to keep the pole up. Each step the pole stays up gives a reward of 1."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import gymnasium as gym\n\nenv = gym.make(\"CartPole-v1\")\nobs, info = env.reset(seed=42)\nprint(env.observation_space)   # Box with 4 numbers\nprint(env.action_space)        # Discrete(2): 0 = push left, 1 = push right\n\ntotal, done = 0.0, False\nwhile not done:\n    action = env.action_space.sample()            # random policy\n    obs, reward, terminated, truncated, info = env.step(action)\n    total += reward\n    done = terminated or truncated\nprint(\"episode return:\", total)\nenv.close()"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A random policy usually lasts only a few dozen steps. The four observation numbers are cart position, cart velocity, pole angle and pole angular velocity. The episode is terminated if the pole tilts past about twelve degrees or the cart leaves the track. In CartPole-v1 it is truncated at 500 steps, which is the best possible return.",
+      "Why two flags? If the pole falls, the future is worth nothing: that is termination. If time simply ran out, the situation was still fine and a learning algorithm should still value the future. Treating a time limit as a real end teaches wrong values, so Gymnasium keeps them separate."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# Watching an episode needs a render mode\nenv = gym.make(\"CartPole-v1\", render_mode=\"human\")      # opens a window\nenv = gym.make(\"CartPole-v1\", render_mode=\"rgb_array\")  # returns images to save as video\n\n# Other environments to try\ngym.make(\"FrozenLake-v1\")     # tiny grid, Discrete observations\ngym.make(\"Taxi-v3\")           # 500 discrete states\ngym.make(\"Pendulum-v1\")       # continuous action: Box\n# LunarLander needs:  pip install \"gymnasium[box2d]\""
+    },
+    {
+     "type": "text",
+     "items": [
+      "Spaces matter. Discrete(2) means two actions. Box(low, high, shape) means an array of real numbers, for example a torque between minus two and two. Value-based methods such as DQN need discrete actions. Algorithms such as SAC and TD3 are for continuous Box actions. PPO handles both."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does env.step(action) return in Gymnasium?",
+     "options": [
+      "obs, reward, done",
+      "obs, reward, terminated, truncated, info",
+      "reward only",
+      "obs, info"
+     ],
+     "answer": 1,
+     "explain": "Gymnasium uses five values. The old Gym used a single done flag."
+    },
+    {
+     "q": "CartPole-v1 hits 500 steps. Which flag is set?",
+     "options": [
+      "terminated",
+      "truncated",
+      "both are False",
+      "reset"
+     ],
+     "answer": 1,
+     "explain": "A step limit is a truncation. The pole did not fall, so the episode was not terminated by the task."
+    },
+    {
+     "q": "What does reset(seed=42) give you?",
+     "options": [
+      "A random action",
+      "A repeatable starting state and the first observation",
+      "A trained model",
+      "The reward"
+     ],
+     "answer": 1,
+     "explain": "The seed makes the random start reproducible. reset returns (observation, info)."
+    },
+    {
+     "q": "Which space describes a fixed set of choices such as left or right?",
+     "options": [
+      "Box",
+      "Discrete",
+      "Dict of floats",
+      "Sequence"
+     ],
+     "answer": 1,
+     "explain": "Discrete(n) holds the integers 0 to n minus 1."
+    }
+   ],
+   "cards": [
+    {
+     "q": "How do you create CartPole?",
+     "a": "env = gym.make(\"CartPole-v1\")"
+    },
+    {
+     "q": "What does reset return?",
+     "a": "A tuple: the first observation and an info dictionary."
+    },
+    {
+     "q": "Terminated vs truncated?",
+     "a": "Terminated: the task ended. Truncated: a limit such as max steps cut it off."
+    },
+    {
+     "q": "How do you get a random valid action?",
+     "a": "env.action_space.sample()"
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Complete the loop",
+     "text": "obs, info = env.{{reset}}(seed=0)\nobs, reward, {{terminated}}, {{truncated}}, info = env.{{step}}(action)\nThe episode is over when terminated {{or}} truncated is True."
+    },
+    {
+     "type": "terminal",
+     "title": "Install and first run",
+     "intro": "A scripted shell. Do each task. Outputs are simulated examples.",
+     "prompt": "(rl-env) $",
+     "chips": [
+      "pip install gymnasium",
+      "python -c \"import gymnasium\"",
+      "python cartpole_random.py"
+     ],
+     "commands": [
+      {
+       "re": "^pip install gymnasium$",
+       "out": [
+        "Collecting gymnasium",
+        "Installing collected packages: gymnasium",
+        "Successfully installed gymnasium (simulated)"
+       ]
+      },
+      {
+       "re": "^python -c \"import gymnasium\"$",
+       "out": [
+        "(no output means the import worked)"
+       ]
+      },
+      {
+       "re": "^python cartpole_random\\.py$",
+       "out": [
+        "Box(4,)  Discrete(2)",
+        "episode return: 21.0"
+       ]
+      },
+      {
+       "re": "^python",
+       "out": [
+        "Try: python cartpole_random.py"
+       ],
+       "cls": "warn"
+      },
+      {
+       "re": "^pip",
+       "out": [
+        "Try: pip install gymnasium"
+       ],
+       "cls": "warn"
+      }
+     ],
+     "tasks": [
+      {
+       "text": "Install gymnasium",
+       "cmd": "^pip install gymnasium$"
+      },
+      {
+       "text": "Check that it imports",
+       "cmd": "^python -c \"import gymnasium\"$"
+      },
+      {
+       "text": "Run the random CartPole script",
+       "cmd": "^python cartpole_random\\.py$"
+      }
+     ]
+    },
+    {
+     "type": "write",
+     "title": "Spot the bug",
+     "prompt": "This loop never ends: while True: obs, r, terminated, truncated, info = env.step(a). Write the line you would add after it to stop correctly.",
+     "checks": [
+      {
+       "re": "terminated",
+       "msg": "checks terminated"
+      },
+      {
+       "re": "truncated",
+       "msg": "checks truncated"
+      },
+      {
+       "re": "or",
+       "msg": "uses or"
+      },
+      {
+       "re": "break|done",
+       "msg": "breaks out or sets done"
+      }
+     ],
+     "solution": "if terminated or truncated: break"
+    }
+   ]
+  },
+  {
+   "title": "Markov decision processes",
+   "maps": [
+    {
+     "title": "The MDP",
+     "links": [
+      "MDP | consists of | States",
+      "MDP | consists of | Actions",
+      "MDP | consists of | Transition probabilities",
+      "MDP | consists of | Rewards",
+      "MDP | uses | Discount factor",
+      "Discount factor | turns rewards into | Return",
+      "Policy | is evaluated by | Value function",
+      "Value function | obeys | Bellman equation",
+      "Optimal policy | maximizes | Value function",
+      "Value function [ch5] | is learned by | Q-learning [ch5]"
+     ]
+    }
+   ],
+   "summary": [
+    "A Markov decision process, or MDP, is the math behind RL. It has states, actions, rules for how states change, rewards and a discount factor. The Markov property says the next state depends only on the current state and action, not on the longer history.",
+    "The discount factor gamma, between zero and one, makes later rewards count less. The return is the sum of discounted rewards. A value function V(s) is the expected return from a state under a policy, and Q(s, a) is the expected return after taking action a in state s.",
+    "The Bellman equation says a value equals the immediate reward plus the discounted value of what follows. Almost every RL algorithm is a way of solving or approximating this equation."
+   ],
+   "glossary": [
+    {
+     "term": "MDP",
+     "def": "Markov decision process: states, actions, transitions, rewards and a discount factor."
+    },
+    {
+     "term": "Markov property",
+     "def": "The future depends only on the current state and action, not on how you got there."
+    },
+    {
+     "term": "Transition",
+     "def": "The rule, possibly random, for which state comes next after an action."
+    },
+    {
+     "term": "Discount factor (gamma)",
+     "def": "A number from 0 to 1 that shrinks future rewards. Close to 1 means far-sighted."
+    },
+    {
+     "term": "Return",
+     "def": "Sum of discounted rewards: r0 + gamma r1 + gamma squared r2 and so on."
+    },
+    {
+     "term": "State value V(s)",
+     "def": "Expected return starting in state s and following the policy."
+    },
+    {
+     "term": "Action value Q(s, a)",
+     "def": "Expected return from taking action a in state s, then following the policy."
+    },
+    {
+     "term": "Bellman equation",
+     "def": "Recursive relation: value equals reward plus discounted value of the next state."
+    }
+   ],
+   "keyPoints": [
+    "An MDP is states, actions, transitions, rewards and gamma.",
+    "Return = r0 + gamma*r1 + gamma^2*r2 + ...",
+    "Gamma near 0 is short-sighted. Gamma near 1 is far-sighted. 0.99 is a common default.",
+    "V(s) scores states. Q(s, a) scores actions in states.",
+    "The best policy picks the action with the highest Q in every state.",
+    "If the observation hides important information, the problem is only partly observable and a plain MDP is not a perfect fit."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Everything in the first chapter fits in one tidy model. At each time step the agent is in a state s, picks an action a, the world moves to a new state s prime with some probability, and a reward r arrives. Repeat.",
+      "The Markov property is a statement about the state, not about the world. If the state includes everything you need to predict what happens next, it is Markov. In CartPole, position and velocity of both cart and pole are enough. A single photo of the pole would not be, because it hides velocity. People then stack several frames."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why discount? Two reasons. It keeps infinite sums finite, and it expresses a preference for sooner rewards. With gamma = 0.9, a reward of 10 that arrives three steps later is worth 10 x 0.9 x 0.9 x 0.9 = 7.29 now."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "def discounted_return(rewards, gamma):\n    total = 0.0\n    for t, r in enumerate(rewards):\n        total += (gamma ** t) * r\n    return total\n\nprint(discounted_return([1, 1, 1], 0.5))   # 1 + 0.5 + 0.25 = 1.75\nprint(discounted_return([0, 0, 8], 0.5))   # 8 * 0.25 = 2.0"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Value functions answer: how good is it to be here? Q-values answer: how good is it to do this here? If you know Q for every state and action, acting is easy: pick the largest.",
+      "The Bellman idea: the return from now equals the reward now plus gamma times the return from the next state. So Q(s, a) = r + gamma x max over a prime of Q(s prime, a prime), when you act optimally afterwards. That one line is behind Q-learning in the next chapters, and DQN is the same idea with a neural network."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# Bellman backup for one transition (optimal case)\n#   Q(s, a)  <-  r + gamma * max_a' Q(s', a')\nq_target = r + gamma * max(Q[s_next])"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Finally, a policy can be deterministic (one action per state) or stochastic (a probability for each action). Stochastic policies help exploration and are used by PPO and A2C. Deterministic ones are often used at test time."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the Markov property say?",
+     "options": [
+      "Rewards are always positive",
+      "The next state depends only on the current state and action",
+      "The agent never explores",
+      "Episodes have a fixed length"
+     ],
+     "answer": 1,
+     "explain": "The state must contain what is needed to predict what comes next, so history is not needed."
+    },
+    {
+     "q": "With gamma = 0.5, what is the return of rewards [1, 1, 1]?",
+     "options": [
+      "3",
+      "1.75",
+      "1.5",
+      "0.875"
+     ],
+     "answer": 1,
+     "explain": "1 + 0.5 + 0.25 = 1.75."
+    },
+    {
+     "q": "What does Q(s, a) mean?",
+     "options": [
+      "The probability of reaching s",
+      "Expected return after taking a in s, then following the policy",
+      "The reward at s",
+      "The number of steps in an episode"
+     ],
+     "answer": 1,
+     "explain": "Q scores a state and action together. V scores only a state."
+    },
+    {
+     "q": "Gamma is set very close to 0. How does the agent behave?",
+     "options": [
+      "Far-sighted",
+      "Short-sighted, caring about immediate reward",
+      "It stops learning",
+      "It acts randomly"
+     ],
+     "answer": 1,
+     "explain": "Future rewards are shrunk to almost nothing, so only the next rewards matter."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Write the return formula.",
+     "a": "G = r0 + gamma*r1 + gamma^2*r2 + ..."
+    },
+    {
+     "q": "V(s) versus Q(s, a)?",
+     "a": "V scores a state. Q scores an action taken in a state."
+    },
+    {
+     "q": "Bellman optimality for Q?",
+     "a": "Q(s,a) = r + gamma * max over a' of Q(s',a')"
+    },
+    {
+     "q": "Common default gamma?",
+     "a": "0.99"
+    }
+   ],
+   "practice": [
+    {
+     "type": "code",
+     "title": "Write discountedReturn",
+     "intro": "Write discountedReturn(rewards, gamma): the sum of gamma^t times reward t.",
+     "fn": "discountedReturn",
+     "starter": "function discountedReturn(rewards, gamma) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        0.5
+       ],
+       "expect": 1.75,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        0.9
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         8
+        ],
+        0.5
+       ],
+       "expect": 2,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        [
+         2,
+         2
+        ],
+        1
+       ],
+       "expect": 4
+      },
+      {
+       "args": [
+        [],
+        0.9
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Loop with an index t and add Math.pow(gamma, t) * rewards[t].",
+     "solution": "function discountedReturn(rewards, gamma) {\n  let total = 0;\n  rewards.forEach((r, t) => { total += Math.pow(gamma, t) * r; });\n  return total;\n}"
+    },
+    {
+     "type": "match",
+     "title": "Match the symbols",
+     "intro": "Match each symbol or phrase to its meaning.",
+     "pairs": [
+      [
+       "gamma",
+       "Discount factor"
+      ],
+      [
+       "V(s)",
+       "Value of a state"
+      ],
+      [
+       "Q(s, a)",
+       "Value of an action in a state"
+      ],
+      [
+       "pi",
+       "The policy"
+      ],
+      [
+       "s prime",
+       "The next state"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Bellman in words",
+     "text": "The value of a state equals the immediate {{reward}} plus gamma times the value of the {{next state|next}}. A gamma close to {{1}} makes the agent far-sighted."
+    }
+   ]
+  },
+  {
+   "title": "Exploration, exploitation and bandits",
+   "maps": [
+    {
+     "title": "Explore or exploit",
+     "links": [
+      "Agent | must balance | Exploration",
+      "Agent | must balance | Exploitation",
+      "Exploration | tries | Unknown actions",
+      "Exploitation | repeats | Best known action",
+      "Epsilon-greedy | mixes | Exploration",
+      "Epsilon-greedy | mixes | Exploitation",
+      "Bandit | is an MDP with | One state",
+      "Bandit | estimates | Action values",
+      "Epsilon-greedy [ch7] | is used by | DQN [ch7]"
+     ]
+    }
+   ],
+   "summary": [
+    "An agent that always repeats the best action it knows may never discover a better one. An agent that always tries new things never cashes in. This is the exploration versus exploitation trade-off.",
+    "A multi-armed bandit is the simplest setting: one state, several actions, each paying a random reward. It isolates the trade-off. The agent keeps a running average of rewards per action and picks mostly the best one.",
+    "Epsilon-greedy is the classic rule: with probability epsilon pick a random action, otherwise pick the one with the highest estimate. Epsilon is often decayed over time. Deep RL uses the same idea."
+   ],
+   "glossary": [
+    {
+     "term": "Exploration",
+     "def": "Trying actions to learn more about them, even if they look worse right now."
+    },
+    {
+     "term": "Exploitation",
+     "def": "Choosing the action that currently looks best to collect reward."
+    },
+    {
+     "term": "Bandit",
+     "def": "A problem with one state and several actions, each with an unknown reward distribution."
+    },
+    {
+     "term": "Epsilon-greedy",
+     "def": "With probability epsilon act randomly, otherwise act greedily."
+    },
+    {
+     "term": "Greedy action",
+     "def": "The action with the highest current value estimate."
+    },
+    {
+     "term": "Sample average",
+     "def": "Estimate of an action's value: the mean of the rewards seen so far for that action."
+    },
+    {
+     "term": "Regret",
+     "def": "How much reward was lost compared to always picking the best action."
+    }
+   ],
+   "keyPoints": [
+    "Without exploration the agent can lock onto a poor choice forever.",
+    "Estimate each action's value with a running average.",
+    "Incremental update: new_estimate = old + (reward - old) / count.",
+    "Epsilon-greedy is simple and works well. Typical epsilon is 0.1, or decays from 1.0 to a small value.",
+    "Random start estimates or optimistic start values also push exploration.",
+    "Evaluate a trained agent greedily, with exploration turned off."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Picture five slot machines with different, hidden average payouts. You have 1000 pulls. Pull one machine only and you may never learn another was better. Pull all machines equally forever and you waste pulls on bad ones. The art is in between.",
+      "The agent keeps two lists: the estimated value of each arm and how many times it has pulled it. After a pull with reward r, it updates the average without storing history."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import random\n\nn_arms = 5\nQ = [0.0] * n_arms        # value estimates\nN = [0] * n_arms          # pull counts\n\ndef choose(epsilon):\n    if random.random() < epsilon:\n        return random.randrange(n_arms)             # explore\n    return max(range(n_arms), key=lambda a: Q[a])   # exploit\n\ndef update(arm, reward):\n    N[arm] += 1\n    Q[arm] += (reward - Q[arm]) / N[arm]            # running average"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Choosing epsilon. Too small and learning is slow to find better arms. Too large and you keep wasting pulls. A common schedule starts epsilon high and decays it linearly. Stable-Baselines3's DQN does exactly this with the parameters exploration_fraction and exploration_final_eps.",
+      "Bandits matter beyond slot machines: choosing which ad to show, which article to recommend, or which version of a web page to test. Full RL adds the idea that actions also change the future state, which is what the next chapters add."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Try the Bandit Lab in the practice section. Pull the arms by hand first, then switch on epsilon-greedy and watch the estimates settle."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is exploitation?",
+     "options": [
+      "Trying random actions",
+      "Choosing the action that currently looks best",
+      "Resetting the environment",
+      "Increasing gamma"
+     ],
+     "answer": 1,
+     "explain": "Exploitation uses current knowledge to collect reward."
+    },
+    {
+     "q": "With epsilon-greedy and epsilon = 0.1, how often is the action random?",
+     "options": [
+      "About 90% of the time",
+      "About 10% of the time",
+      "Never",
+      "Only at the start"
+     ],
+     "answer": 1,
+     "explain": "With probability epsilon the action is random, otherwise greedy."
+    },
+    {
+     "q": "What is a multi-armed bandit?",
+     "options": [
+      "A problem with one state and several actions with unknown rewards",
+      "A neural network type",
+      "A policy gradient method",
+      "An environment wrapper"
+     ],
+     "answer": 0,
+     "explain": "It is the simplest RL problem and isolates the exploration question."
+    },
+    {
+     "q": "Which update keeps an average without storing all rewards?",
+     "options": [
+      "Q = reward",
+      "Q = Q + (reward - Q) / N",
+      "Q = Q * N",
+      "Q = max(Q, reward)"
+     ],
+     "answer": 1,
+     "explain": "This incremental mean moves the estimate a fraction 1/N toward each new reward."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Explore vs exploit in one line?",
+     "a": "Try new things to learn, or repeat the best known thing to earn."
+    },
+    {
+     "q": "Epsilon-greedy rule?",
+     "a": "Random action with probability epsilon, otherwise the greedy action."
+    },
+    {
+     "q": "Running average update?",
+     "a": "Q += (reward - Q) / N"
+    },
+    {
+     "q": "Which SB3 DQN parameters control epsilon?",
+     "a": "exploration_fraction and exploration_final_eps (and exploration_initial_eps)."
+    }
+   ],
+   "practice": [
+    {
+     "type": "code",
+     "title": "Greedy action",
+     "intro": "Write greedyAction(q): the index of the largest value. If values tie, return the lowest index.",
+     "fn": "greedyAction",
+     "starter": "function greedyAction(q) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        [
+         0.1,
+         0.5,
+         0.2
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         3,
+         1,
+         3
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         -2,
+         -1
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         7
+        ]
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Keep the best index so far and only replace it when a value is strictly larger.",
+     "solution": "function greedyAction(q) {\n  let best = 0;\n  for (let i = 1; i < q.length; i++) if (q[i] > q[best]) best = i;\n  return best;\n}"
+    },
+    {
+     "type": "code",
+     "title": "Epsilon-greedy",
+     "intro": "Write epsGreedy(q, eps, r1, r2). If r1 < eps return Math.floor(r2 * q.length) (explore). Otherwise return the index of the largest value, lowest index on ties.",
+     "fn": "epsGreedy",
+     "starter": "function epsGreedy(q, eps, r1, r2) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        [
+         0.1,
+         0.5,
+         0.2
+        ],
+        0.1,
+        0.05,
+        0.9
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         0.1,
+         0.5,
+         0.2
+        ],
+        0.1,
+        0.5,
+        0.9
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         1,
+         0
+        ],
+        0.5,
+        0.2,
+        0.1
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         3,
+         3,
+         1
+        ],
+        0,
+        0,
+        0.9
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "r1 and r2 stand in for random numbers so the tests are repeatable.",
+     "solution": "function epsGreedy(q, eps, r1, r2) {\n  if (r1 < eps) return Math.floor(r2 * q.length);\n  let best = 0;\n  for (let i = 1; i < q.length; i++) if (q[i] > q[best]) best = i;\n  return best;\n}"
+    },
+    {
+     "type": "webxdc",
+     "title": "Bandit Lab",
+     "intro": "An interactive app. Pull arms by hand or switch on epsilon-greedy. Finish by making 40 pulls.",
+     "height": 430,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px 3px 3px 0}\nbutton.t{background:#2d2046;color:#e7d9ff}.row{display:flex;flex-wrap:wrap;align-items:center;gap:4px}\n.bar{height:10px;border-radius:5px;background:#261b3b;overflow:hidden}.bar i{display:block;height:100%;background:#b26bff;width:0}\nsmall,.m{color:#c9b8e8}input[type=range]{width:140px}.arm button{white-space:nowrap}.arm{display:grid;grid-template-columns:84px 1fr 78px;gap:8px;align-items:center;margin:6px 0}</style></head><body>\n<div class=\"m\">Five slot machines with hidden average payouts. Pull to learn. The bars are your running estimates.</div>\n<div id=\"arms\"></div>\n<div class=\"row\"><label class=\"m\">epsilon <input id=\"e\" type=\"range\" min=\"0\" max=\"100\" value=\"10\"> <b id=\"ev\">0.10</b></label>\n<button id=\"auto\" class=\"t\">Auto pull x10 (epsilon-greedy)</button><button id=\"rst\" class=\"t\">New machines</button></div>\n<div class=\"m\" id=\"st\"></div><div class=\"bar\"><i id=\"pg\"></i></div><div class=\"m\">Make 40 pulls to finish.</div><script>\nfunction done(){try{if(window.lilith)lilith.complete()}catch(e){}}\n\nvar N=5,mu,Q,C,total,pulls;\nfunction init(){mu=[];for(var i=0;i<N;i++)mu.push(Math.random());Q=Array(N).fill(0);C=Array(N).fill(0);total=0;pulls=0;draw()}\nfunction gauss(){return (Math.random()+Math.random()+Math.random()-1.5)/0.5}\nfunction pull(a){var r=mu[a]+0.25*gauss();C[a]++;Q[a]+=(r-Q[a])/C[a];total+=r;pulls++;draw();if(pulls>=40)done()}\nfunction greedy(){var b=0;for(var i=1;i<N;i++)if(Q[i]>Q[b])b=i;return b}\nfunction eps(){return +document.getElementById('e').value/100}\nfunction draw(){var h='';for(var i=0;i<N;i++){var w=Math.max(0,Math.min(100,Q[i]*100));h+='<div class=\"arm\"><button data-a=\"'+i+'\">Arm '+(i+1)+'</button><div class=\"bar\"><i style=\"width:'+w+'%\"></i></div><small>'+Q[i].toFixed(2)+' ('+C[i]+')</small></div>'}\ndocument.getElementById('arms').innerHTML=h;document.getElementById('ev').textContent=eps().toFixed(2);\nvar best=0;for(var j=1;j<N;j++)if(mu[j]>mu[best])best=j;\ndocument.getElementById('st').textContent='Pulls: '+pulls+'   total reward: '+total.toFixed(1)+(pulls>=8?'   (the truly best arm is Arm '+(best+1)+' when you want to check)':'');\ndocument.getElementById('pg').style.width=Math.min(100,pulls/40*100)+'%';\nArray.prototype.forEach.call(document.querySelectorAll('[data-a]'),function(b){b.onclick=function(){pull(+b.dataset.a)}})}\ndocument.getElementById('e').oninput=draw;\ndocument.getElementById('auto').onclick=function(){for(var k=0;k<10;k++){pull(Math.random()<eps()?Math.floor(Math.random()*N):greedy())}};\ndocument.getElementById('rst').onclick=init;init();</script></body></html>"
+    }
+   ]
+  },
+  {
+   "title": "Tabular Q-learning",
+   "maps": [
+    {
+     "title": "Q-learning",
+     "links": [
+      "Q-table | stores | Action values",
+      "Q-learning | updates | Q-table",
+      "Q-learning | uses | Learning rate alpha",
+      "Q-learning | uses | Discount factor [ch3]",
+      "Q-learning | is | Off-policy",
+      "Behavior policy | explores with | Epsilon-greedy [ch4]",
+      "Q-table | needs | Small discrete spaces",
+      "Large spaces [ch7] | need | Neural networks [ch7]",
+      "FrozenLake | is solved with | Q-table"
+     ]
+    }
+   ],
+   "summary": [
+    "Q-learning learns the action values Q(s, a) from experience. Keep a table with one row per state and one column per action. After each step, move the table entry a little toward the target: reward plus gamma times the best value in the next state.",
+    "The learning rate alpha sets how big that move is. Q-learning is off-policy: it learns about the greedy policy while behaving with an exploring policy such as epsilon-greedy.",
+    "Tables only work when the number of states is small and discrete, like FrozenLake with 16 states or Taxi with 500. Bigger problems need function approximation, which is the next big idea."
+   ],
+   "glossary": [
+    {
+     "term": "Q-table",
+     "def": "An array of shape (number of states, number of actions) holding the current Q estimates."
+    },
+    {
+     "term": "Q-learning",
+     "def": "A method that updates Q toward reward plus gamma times the maximum Q of the next state."
+    },
+    {
+     "term": "Learning rate (alpha)",
+     "def": "How far each update moves the estimate toward the target. Between 0 and 1."
+    },
+    {
+     "term": "TD target",
+     "def": "The value r + gamma * max Q(s', a') that the old estimate is nudged toward."
+    },
+    {
+     "term": "TD error",
+     "def": "Target minus current estimate. The size of the surprise."
+    },
+    {
+     "term": "Off-policy",
+     "def": "Learning about one policy (greedy) while following another (exploring)."
+    },
+    {
+     "term": "FrozenLake",
+     "def": "A Gymnasium grid world: reach the goal over ice without falling into holes. Slippery by default."
+    }
+   ],
+   "keyPoints": [
+    "Update: Q[s,a] += alpha * (r + gamma * max(Q[s']) - Q[s,a]).",
+    "At a terminal state there is no next value: the target is just r.",
+    "Behave with epsilon-greedy, evaluate with greedy.",
+    "Alpha around 0.1 to 0.5 and gamma around 0.9 to 0.99 are typical for small tasks.",
+    "FrozenLake is slippery: the same action can move you somewhere else, so expect noisy learning.",
+    "Tables do not scale: add one state variable and the table grows multiplicatively."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Q-learning is the Bellman idea turned into a learning rule. You do not need a model of the environment. You just act, watch what happens and adjust.",
+      "Each experience is a tuple (s, a, r, s prime, done). From it compute a target: if the episode ended, the target is r. Otherwise it is r plus gamma times the best Q in s prime. The old estimate then moves a fraction alpha toward the target."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import numpy as np\nimport gymnasium as gym\n\nenv = gym.make(\"FrozenLake-v1\", is_slippery=False)   # deterministic version to start\nn_s, n_a = env.observation_space.n, env.action_space.n\nQ = np.zeros((n_s, n_a))\nalpha, gamma = 0.5, 0.95\neps, eps_min, eps_decay = 1.0, 0.05, 0.999\nrng = np.random.default_rng(0)\n\nfor episode in range(5000):\n    s, _ = env.reset()\n    done = False\n    while not done:\n        if rng.random() < eps:\n            a = env.action_space.sample()\n        else:\n            a = int(np.argmax(Q[s]))\n        s2, r, terminated, truncated, _ = env.step(a)\n        target = r if terminated else r + gamma * np.max(Q[s2])\n        Q[s, a] += alpha * (target - Q[s, a])\n        s, done = s2, terminated or truncated\n    eps = max(eps_min, eps * eps_decay)\n\npolicy = np.argmax(Q, axis=1)     # greedy policy: best action for each state"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Notice the line that uses terminated, not truncated, to cut off the future. A time-limit truncation should still bootstrap from the next state, because the future was not actually zero.",
+      "FrozenLake action numbers are 0 left, 1 down, 2 right, 3 up. The default map is four by four with a start in the top left and a goal in the bottom right. With is_slippery=True the move only goes the intended way a third of the time, so learning needs many more episodes and the best success rate is well below 100 percent."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why is it off-policy? The max in the target assumes you act greedily from the next state, even though you actually explored. That lets Q-learning learn the optimal values while still exploring. SARSA, a close relative, uses the action actually taken instead and is called on-policy."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Open the Gridworld Lab in the practice section. Train the agent for a few hundred episodes and watch the arrows turn toward the goal."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the Q-learning target for a non-terminal step?",
+     "options": [
+      "r",
+      "r + gamma * max Q(s', a')",
+      "Q(s, a)",
+      "gamma * r"
+     ],
+     "answer": 1,
+     "explain": "The target adds the discounted best next value to the immediate reward."
+    },
+    {
+     "q": "At a terminal transition the target is...",
+     "options": [
+      "r + gamma * max Q(s')",
+      "r",
+      "0 always",
+      "Q(s, a)"
+     ],
+     "answer": 1,
+     "explain": "No future exists after termination, so the target is just the reward."
+    },
+    {
+     "q": "Why is Q-learning called off-policy?",
+     "options": [
+      "It does not use a policy",
+      "It learns the greedy policy while acting with an exploring one",
+      "It only works offline",
+      "It ignores rewards"
+     ],
+     "answer": 1,
+     "explain": "The max in the target is the greedy policy, while behavior can be epsilon-greedy."
+    },
+    {
+     "q": "Which problem can a Q-table handle?",
+     "options": [
+      "Raw camera images",
+      "A 16-state grid world",
+      "A continuous torque",
+      "A game with billions of states"
+     ],
+     "answer": 1,
+     "explain": "Tables need a small number of discrete states and actions."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Q-learning update?",
+     "a": "Q[s,a] += alpha * (r + gamma*max(Q[s']) - Q[s,a])"
+    },
+    {
+     "q": "What is the TD error?",
+     "a": "Target minus the current estimate."
+    },
+    {
+     "q": "FrozenLake actions?",
+     "a": "0 left, 1 down, 2 right, 3 up."
+    },
+    {
+     "q": "Why do tables fail on big problems?",
+     "a": "The number of states explodes and unseen states have no entries."
+    }
+   ],
+   "practice": [
+    {
+     "type": "code",
+     "title": "The Q-learning update",
+     "intro": "Write qUpdate(q, r, qNextMax, alpha, gamma): return the new Q value after one update.",
+     "fn": "qUpdate",
+     "starter": "function qUpdate(q, r, qNextMax, alpha, gamma) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        0,
+        1,
+        0,
+        0.5,
+        0.9
+       ],
+       "expect": 0.5,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        2,
+        0,
+        4,
+        0.5,
+        0.5
+       ],
+       "expect": 2,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        1,
+        1,
+        2,
+        0.1,
+        0.5
+       ],
+       "expect": 1.1,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        0,
+        0,
+        0,
+        0.5,
+        0.9
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "target = r + gamma * qNextMax, then q + alpha * (target - q).",
+     "solution": "function qUpdate(q, r, qNextMax, alpha, gamma) {\n  const target = r + gamma * qNextMax;\n  return q + alpha * (target - q);\n}"
+    },
+    {
+     "type": "order",
+     "title": "One Q-learning step",
+     "intro": "Put the steps of a single Q-learning step in order.",
+     "items": [
+      "Choose an action with epsilon-greedy",
+      "Step the environment and get r and the next state",
+      "Compute the target from r and the best next Q",
+      "Move Q[s, a] toward the target by alpha",
+      "Set the next state as the current state"
+     ]
+    },
+    {
+     "type": "webxdc",
+     "title": "Gridworld Lab",
+     "intro": "Train a tiny Q-learning agent on a grid. The goal is the star, the pit is red. Finish when the greedy path reaches the goal.",
+     "height": 520,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px 3px 3px 0}\nbutton.t{background:#2d2046;color:#e7d9ff}.row{display:flex;flex-wrap:wrap;align-items:center;gap:4px}\n.bar{height:10px;border-radius:5px;background:#261b3b;overflow:hidden}.bar i{display:block;height:100%;background:#b26bff;width:0}\nsmall,.m{color:#c9b8e8}input[type=range]{width:140px}table{border-collapse:collapse;margin:8px 0}td{width:52px;height:52px;border:1px solid #3a2a5c;text-align:center;font-size:24px;padding:0}.g{background:#2c4a1f}.p{background:#5a1a2a}.s{background:#2a1f4a}.path{outline:2px solid #b26bff;outline-offset:-3px}</style></head><body>\n<div class=\"m\">Start is S, goal is the star, the pit is the red cell. Arrows show the best action learned so far.</div>\n<table id=\"t\"></table>\n<div class=\"row\"><button id=\"b1\">Train 20 episodes</button><button id=\"b2\">Train 300</button><button id=\"b3\" class=\"t\">Reset</button></div>\n<div class=\"m\" id=\"st\"></div><script>\nfunction done(){try{if(window.lilith)lilith.complete()}catch(e){}}\n\nvar R=5,Cc=5,A=4,goal=[4,4],pit=[2,2],wall=[[1,1],[3,2]],Q,ep,rng=Math.random;\nvar DX=[-1,0,1,0],DY=[0,1,0,-1],AR=['\\u2190','\\u2193','\\u2192','\\u2191'];\nfunction id(r,c){return r*Cc+c}function isWall(r,c){return wall.some(function(w){return w[0]===r&&w[1]===c})}\nfunction reset(){Q=[];for(var i=0;i<R*Cc;i++)Q.push([0,0,0,0]);ep=0;draw([])}\nfunction step(r,c,a){var nr=r+DY[a],nc=c+DX[a];if(nr<0||nr>=R||nc<0||nc>=Cc||isWall(nr,nc)){nr=r;nc=c}\nvar rew=-0.01,fin=false;if(nr===goal[0]&&nc===goal[1]){rew=1;fin=true}else if(nr===pit[0]&&nc===pit[1]){rew=-1;fin=true}return [nr,nc,rew,fin]}\nfunction best(s){var b=0;for(var i=1;i<A;i++)if(Q[s][i]>Q[s][b])b=i;return b}\nfunction train(n){var alpha=0.5,gamma=0.95,eps=0.2;for(var e=0;e<n;e++){var r=0,c=0;for(var t=0;t<60;t++){var s=id(r,c),a=rng()<eps?Math.floor(rng()*A):best(s);\nvar o=step(r,c,a),s2=id(o[0],o[1]);var tgt=o[3]?o[2]:o[2]+gamma*Math.max.apply(null,Q[s2]);Q[s][a]+=alpha*(tgt-Q[s][a]);r=o[0];c=o[1];if(o[3])break}ep++}\nvar p=greedyPath();draw(p.cells);var ok=p.ok;document.getElementById('st').textContent='Episodes: '+ep+(ok?'   Greedy path reaches the goal in '+p.cells.length+' cells.':'   Greedy path does not reach the goal yet.');if(ok)done()}\nfunction greedyPath(){var r=0,c=0,cells=[[0,0]];for(var t=0;t<30;t++){var o=step(r,c,best(id(r,c)));r=o[0];c=o[1];cells.push([r,c]);if(o[3])return {cells:cells,ok:r===goal[0]&&c===goal[1]}}return {cells:cells,ok:false}}\nfunction draw(path){var h='';for(var r=0;r<R;r++){h+='<tr>';for(var c=0;c<Cc;c++){var cl='',tx='';var onp=path.some(function(p){return p[0]===r&&p[1]===c});\nif(r===goal[0]&&c===goal[1]){cl='g';tx='\\u2605'}else if(r===pit[0]&&c===pit[1]){cl='p'}else if(isWall(r,c)){cl='s';tx='\\u25A0'}\nelse if(r===0&&c===0&&ep===0){cl='s';tx='S'}else if(ep>0){tx=AR[best(id(r,c))]}else tx='\\u00B7';\nh+='<td class=\"'+cl+(onp?' path':'')+'\">'+tx+'</td>'}h+='</tr>'}document.getElementById('t').innerHTML=h;if(!ep)document.getElementById('st').textContent='Episodes: 0'}\ndocument.getElementById('b1').onclick=function(){train(20)};document.getElementById('b2').onclick=function(){train(300)};document.getElementById('b3').onclick=reset;reset();</script></body></html>"
+    }
+   ]
+  },
+  {
+   "title": "Custom environments and wrappers",
+   "maps": [
+    {
+     "title": "Building an environment",
+     "links": [
+      "Custom env | subclasses | gym.Env",
+      "Custom env | defines | Observation space",
+      "Custom env | defines | Action space",
+      "Custom env | implements | reset",
+      "Custom env | implements | step",
+      "check_env | validates | Custom env",
+      "Wrapper | modifies | Environment",
+      "Wrapper | can change | Reward or observation",
+      "Reward design [ch11] | affects | Learning [ch11]"
+     ]
+    }
+   ],
+   "summary": [
+    "To teach an agent your own task you write a Gymnasium environment: a class that subclasses gym.Env, declares its observation and action spaces, and implements reset and step.",
+    "Spaces must match the data you return exactly, including shape and dtype. Stable-Baselines3 provides check_env to catch mistakes early. Fix every warning before training, because bad environments waste hours.",
+    "Wrappers add behavior around an existing environment without editing it: limit time, scale rewards, clip actions, stack frames. They are small and composable."
+   ],
+   "glossary": [
+    {
+     "term": "gym.Env",
+     "def": "Base class for environments. You subclass it and implement reset and step."
+    },
+    {
+     "term": "observation_space",
+     "def": "Attribute describing the shape, type and bounds of observations."
+    },
+    {
+     "term": "action_space",
+     "def": "Attribute describing the valid actions."
+    },
+    {
+     "term": "check_env",
+     "def": "SB3 helper that runs sanity checks on an environment and warns about problems."
+    },
+    {
+     "term": "Wrapper",
+     "def": "A class that wraps an environment and changes its inputs, outputs or rules."
+    },
+    {
+     "term": "TimeLimit",
+     "def": "A wrapper that truncates episodes after a maximum number of steps. Applied via max_episode_steps."
+    },
+    {
+     "term": "info",
+     "def": "A dictionary for extra data. The agent should not learn from it, but you can log it."
+    }
+   ],
+   "keyPoints": [
+    "Subclass gym.Env, set the two spaces in __init__, implement reset and step.",
+    "reset(seed=None, options=None) must call super().reset(seed=seed) and return (obs, info).",
+    "step returns (obs, reward, terminated, truncated, info).",
+    "Observations must match the space: same shape and dtype (float32 for Box).",
+    "Run check_env(env) before training.",
+    "Prefer wrappers over editing environment code when you only change data going in or out."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Here is a tiny custom environment. The agent stands on a line of cells and must walk to the right end. It is small enough to read in one go, and it follows every rule SB3 expects."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import numpy as np\nimport gymnasium as gym\nfrom gymnasium import spaces\n\nclass LineWorld(gym.Env):\n    metadata = {\"render_modes\": [\"ansi\"]}\n\n    def __init__(self, size=8, render_mode=None):\n        super().__init__()\n        self.size = size\n        self.render_mode = render_mode\n        self.action_space = spaces.Discrete(2)             # 0 = left, 1 = right\n        self.observation_space = spaces.Box(0.0, 1.0, shape=(1,), dtype=np.float32)\n        self.pos = 0\n\n    def _obs(self):\n        return np.array([self.pos / (self.size - 1)], dtype=np.float32)\n\n    def reset(self, seed=None, options=None):\n        super().reset(seed=seed)           # seeds self.np_random\n        self.pos = 0\n        return self._obs(), {}\n\n    def step(self, action):\n        self.pos = max(0, self.pos - 1) if action == 0 else self.pos + 1\n        terminated = self.pos >= self.size - 1\n        reward = 1.0 if terminated else -0.01     # small cost per step\n        return self._obs(), reward, terminated, False, {}\n\n    def render(self):\n        if self.render_mode == \"ansi\":\n            return \"\".join(\"A\" if i == self.pos else \".\" for i in range(self.size))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Check it before you train. check_env builds the checks SB3 relies on, such as whether reset and step return the right types and whether observations fit the declared space.",
+      "Register the class to build it by name, or just create it directly. For a time limit use TimeLimit or register with max_episode_steps."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from stable_baselines3.common.env_checker import check_env\nenv = LineWorld()\ncheck_env(env, warn=True)          # silent means it passed\n\n# Register to use gym.make(\"LineWorld-v0\")\ngym.register(id=\"LineWorld-v0\", entry_point=LineWorld, max_episode_steps=50)\nenv = gym.make(\"LineWorld-v0\")"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Wrappers follow a simple pattern: subclass a wrapper type, override one method. Use gym.ObservationWrapper to change what the agent sees, gym.RewardWrapper to change the reward, and gym.ActionWrapper to change actions. Because they stack, you can add them one at a time and keep each easy to test."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "class ScaleReward(gym.RewardWrapper):\n    def __init__(self, env, scale=0.1):\n        super().__init__(env)\n        self.scale = scale\n    def reward(self, reward):\n        return reward * self.scale\n\nenv = ScaleReward(gym.make(\"CartPole-v1\"), scale=0.01)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Common bugs: observation dtype float64 when the space says float32, a reset that forgets to return info, a step that returns four values, and a Box with bounds the data goes outside. check_env finds most of these."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which two methods must a custom Gymnasium environment implement?",
+     "options": [
+      "fit and predict",
+      "reset and step",
+      "train and test",
+      "act and learn"
+     ],
+     "answer": 1,
+     "explain": "reset starts an episode and step advances it."
+    },
+    {
+     "q": "What should reset return?",
+     "options": [
+      "Only the observation",
+      "(observation, info)",
+      "(obs, reward, done)",
+      "Nothing"
+     ],
+     "answer": 1,
+     "explain": "Gymnasium reset returns a pair: the first observation and an info dictionary."
+    },
+    {
+     "q": "Which tool checks that your environment follows the API?",
+     "options": [
+      "check_env",
+      "evaluate_policy",
+      "VecNormalize",
+      "Monitor"
+     ],
+     "answer": 0,
+     "explain": "stable_baselines3.common.env_checker.check_env raises errors and warnings for common mistakes."
+    },
+    {
+     "q": "You want to multiply every reward by 0.1 without touching the environment code. What do you use?",
+     "options": [
+      "A second environment",
+      "A RewardWrapper",
+      "A callback",
+      "A different policy"
+     ],
+     "answer": 1,
+     "explain": "gym.RewardWrapper overrides reward() and leaves the wrapped environment unchanged."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Minimum parts of a custom env?",
+     "a": "Subclass gym.Env, define observation_space and action_space, implement reset and step."
+    },
+    {
+     "q": "Why call super().reset(seed=seed)?",
+     "a": "It seeds the environment's random generator, self.np_random."
+    },
+    {
+     "q": "Which dtype for Box observations?",
+     "a": "float32 is the usual choice."
+    },
+    {
+     "q": "Three wrapper base classes?",
+     "a": "ObservationWrapper, RewardWrapper, ActionWrapper."
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Complete the environment",
+     "text": "class MyEnv(gym.{{Env}}):\n    def {{reset}}(self, seed=None, options=None):\n        super().reset(seed=seed)\n        return obs, {}\n    def {{step}}(self, action):\n        return obs, reward, terminated, truncated, info\nRun {{check_env}}(env) before training."
+    },
+    {
+     "type": "match",
+     "title": "Match the wrapper",
+     "intro": "Match what you want to change to the wrapper to use.",
+     "pairs": [
+      [
+       "Change what the agent sees",
+       "ObservationWrapper"
+      ],
+      [
+       "Rescale the reward",
+       "RewardWrapper"
+      ],
+      [
+       "Clip or remap actions",
+       "ActionWrapper"
+      ],
+      [
+       "Stop after N steps",
+       "TimeLimit"
+      ]
+     ]
+    },
+    {
+     "type": "write",
+     "title": "Fix the step",
+     "prompt": "A step() returns: return obs, reward, done, info. Write the correct return line for Gymnasium.",
+     "checks": [
+      {
+       "re": "obs",
+       "msg": "returns obs"
+      },
+      {
+       "re": "reward",
+       "msg": "returns reward"
+      },
+      {
+       "re": "terminated",
+       "msg": "has terminated"
+      },
+      {
+       "re": "truncated",
+       "msg": "has truncated"
+      },
+      {
+       "re": "info",
+       "msg": "has info"
+      }
+     ],
+     "solution": "return obs, reward, terminated, truncated, info"
+    }
+   ]
+  },
+  {
+   "title": "Deep RL and DQN",
+   "maps": [
+    {
+     "title": "From tables to networks",
+     "links": [
+      "Large state space | breaks | Q-table [ch5]",
+      "Neural network | approximates | Q function",
+      "DQN | trains | Q network",
+      "DQN | uses | Replay buffer",
+      "DQN | uses | Target network",
+      "DQN | explores with | Epsilon-greedy [ch4]",
+      "Replay buffer | breaks | Correlated samples",
+      "Target network | stabilizes | Training",
+      "DQN [ch8] | is available in | Stable-Baselines3 [ch8]",
+      "DQN | needs | Discrete actions"
+     ]
+    }
+   ],
+   "summary": [
+    "When there are too many states for a table, a neural network approximates Q. It takes the observation and outputs one Q-value per action. Training is gradient descent on the TD error.",
+    "Naive training is unstable because consecutive samples are correlated and the target moves as the network changes. DQN fixes this with a replay buffer, which stores past experience and trains on random mini-batches, and a target network, a slowly updated copy used to compute targets.",
+    "DQN works for discrete actions only. It is exploring with epsilon-greedy, and it is the base for many improvements such as Double DQN and dueling networks."
+   ],
+   "glossary": [
+    {
+     "term": "Function approximation",
+     "def": "Using a parametric model, such as a neural network, instead of a table to represent values or policies."
+    },
+    {
+     "term": "DQN",
+     "def": "Deep Q-Network: Q-learning with a neural network, a replay buffer and a target network."
+    },
+    {
+     "term": "Replay buffer",
+     "def": "A memory of past transitions from which random mini-batches are sampled for training."
+    },
+    {
+     "term": "Target network",
+     "def": "A delayed copy of the Q network used to compute stable training targets."
+    },
+    {
+     "term": "Mini-batch",
+     "def": "A small random group of transitions used for one gradient step."
+    },
+    {
+     "term": "Off-policy",
+     "def": "Able to learn from old data collected by older versions of the policy, which is why a replay buffer works."
+    },
+    {
+     "term": "Soft update",
+     "def": "Slowly blending the online weights into the target network: target = tau * online + (1 - tau) * target."
+    }
+   ],
+   "keyPoints": [
+    "Network input is the observation. Output is a Q-value for each action.",
+    "Loss is the squared (or Huber) difference between Q(s, a) and the target r + gamma * max Q_target(s').",
+    "Replay: store (s, a, r, s', done) and train on random samples.",
+    "Target network: update it every so many steps, or blend with a small tau.",
+    "DQN needs discrete actions. Use SAC, TD3 or PPO for continuous ones.",
+    "Start training after the buffer has some data (learning_starts in SB3)."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "A table fails when the observation is an image or a vector of real numbers. Instead of one row per state, a network learns a smooth function. Similar states get similar values, so what is learned in one place transfers to others. That is also what causes trouble: updating one state moves the values of many.",
+      "Two tricks make it work. First, the replay buffer. Experiences arrive in order and neighboring steps look alike, which makes gradient steps biased. Storing them and sampling at random mixes old and new, and lets each experience be reused many times."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Second, the target network. Look at the target: r + gamma times the maximum of Q at the next state. If the same network produces both the prediction and the target, every update moves the goalpost. So the target is computed by a frozen copy that is refreshed only now and then."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# DQN training step in outline (PyTorch style)\ns, a, r, s2, done = buffer.sample(batch_size)\nwith torch.no_grad():\n    next_q = target_net(s2).max(dim=1).values\n    target = r + gamma * (1 - done) * next_q\nq = q_net(s).gather(1, a.unsqueeze(1)).squeeze(1)\nloss = torch.nn.functional.smooth_l1_loss(q, target)\noptimizer.zero_grad(); loss.backward(); optimizer.step()\nif step % target_update_interval == 0:\n    target_net.load_state_dict(q_net.state_dict())"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Hyperparameters to know: the learning rate, the buffer size, the batch size, how often to update the target, how long epsilon decays, and learning_starts. In Stable-Baselines3 they are all constructor arguments of DQN.",
+      "Limits: DQN overestimates values (Double DQN reduces this), it is sample hungry, and it only handles a discrete action set. For robots with continuous controls you need a different family, which chapter 9 introduces."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a DQN network output?",
+     "options": [
+      "One action",
+      "A Q-value for each action",
+      "The reward",
+      "A probability of termination"
+     ],
+     "answer": 1,
+     "explain": "Given an observation, it predicts Q for every discrete action. The agent picks the largest."
+    },
+    {
+     "q": "Why use a replay buffer?",
+     "options": [
+      "To speed up the environment",
+      "To break correlation between consecutive samples and reuse data",
+      "To store the policy",
+      "To normalize rewards"
+     ],
+     "answer": 1,
+     "explain": "Random mini-batches from stored experience are closer to independent and each experience is reused."
+    },
+    {
+     "q": "What is the purpose of the target network?",
+     "options": [
+      "To act in the environment",
+      "To keep the learning targets stable",
+      "To store rewards",
+      "To pick random actions"
+     ],
+     "answer": 1,
+     "explain": "Targets from a frozen copy do not shift on every gradient step."
+    },
+    {
+     "q": "Which action spaces does DQN support?",
+     "options": [
+      "Only continuous",
+      "Only discrete",
+      "Both",
+      "Neither"
+     ],
+     "answer": 1,
+     "explain": "DQN takes a max over a fixed set of actions, so they must be discrete."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Two tricks that make DQN stable?",
+     "a": "A replay buffer and a target network."
+    },
+    {
+     "q": "DQN target for a transition?",
+     "a": "r + gamma * (1 - done) * max Q_target(s')"
+    },
+    {
+     "q": "Soft update formula?",
+     "a": "target = tau * online + (1 - tau) * target"
+    },
+    {
+     "q": "When not to use DQN?",
+     "a": "When actions are continuous."
+    }
+   ],
+   "practice": [
+    {
+     "type": "code",
+     "title": "Soft update",
+     "intro": "Write softUpdate(target, online, tau): return a new array where each value is tau * online + (1 - tau) * target.",
+     "fn": "softUpdate",
+     "starter": "function softUpdate(target, online, tau) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         3,
+         4
+        ],
+        0.5
+       ],
+       "expect": [
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         10,
+         20
+        ],
+        0.1
+       ],
+       "expect": [
+        1,
+        2
+       ],
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        [
+         9
+        ],
+        0
+       ],
+       "expect": [
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        [
+         9
+        ],
+        1
+       ],
+       "expect": [
+        9
+       ]
+      }
+     ],
+     "hint": "Use map and index into both arrays.",
+     "solution": "function softUpdate(target, online, tau) {\n  return target.map((t, i) => tau * online[i] + (1 - tau) * t);\n}"
+    },
+    {
+     "type": "code",
+     "title": "DQN target",
+     "intro": "Write dqnTarget(r, gamma, done, nextQs): return r when done is true, otherwise r + gamma * the largest value in nextQs.",
+     "fn": "dqnTarget",
+     "starter": "function dqnTarget(r, gamma, done, nextQs) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        1,
+        0.9,
+        false,
+        [
+         1,
+         3,
+         2
+        ]
+       ],
+       "expect": 3.7,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        1,
+        0.9,
+        true,
+        [
+         1,
+         3,
+         2
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        0,
+        0.5,
+        false,
+        [
+         -1,
+         -2
+        ]
+       ],
+       "expect": -0.5,
+       "approx": 1e-06
+      }
+     ],
+     "hint": "Math.max(...nextQs) gives the largest value.",
+     "solution": "function dqnTarget(r, gamma, done, nextQs) {\n  return done ? r : r + gamma * Math.max(...nextQs);\n}"
+    },
+    {
+     "type": "match",
+     "title": "Why each piece exists",
+     "intro": "Match each DQN part to its job.",
+     "pairs": [
+      [
+       "Replay buffer",
+       "Reuse past data and decorrelate samples"
+      ],
+      [
+       "Target network",
+       "Give stable learning targets"
+      ],
+      [
+       "Epsilon-greedy",
+       "Keep exploring"
+      ],
+      [
+       "Q network",
+       "Predict a value per action"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Stable-Baselines3 quickstart",
+   "maps": [
+    {
+     "title": "SB3 workflow",
+     "links": [
+      "Stable-Baselines3 | provides | Algorithms",
+      "Algorithms | include | PPO",
+      "Algorithms | include | DQN",
+      "Algorithms | include | SAC",
+      "Algorithm | takes | Policy and env",
+      "learn | trains | Model",
+      "predict | gets | Action from Model",
+      "evaluate_policy | measures | Mean reward",
+      "save and load | persist | Model",
+      "Algorithms [ch9] | differ in | Action space support [ch9]"
+     ]
+    }
+   ],
+   "summary": [
+    "Stable-Baselines3, or SB3, is a library of reliable, well-tested RL algorithms built on PyTorch. It works directly with Gymnasium environments, so training is a few lines.",
+    "The core pattern: create an algorithm with a policy name and an environment, call learn with a number of timesteps, then use predict to act, evaluate_policy to measure, and save to keep the model.",
+    "Install with pip install stable-baselines3, or the extras bundle for plotting and logging. Recent releases need Python 3.10 or newer and a current PyTorch."
+   ],
+   "glossary": [
+    {
+     "term": "Stable-Baselines3",
+     "def": "A PyTorch library of RL algorithms such as PPO, A2C, DQN, SAC, TD3 and DDPG."
+    },
+    {
+     "term": "MlpPolicy",
+     "def": "The default network for vector observations: a multilayer perceptron."
+    },
+    {
+     "term": "learn",
+     "def": "Method that trains the model for total_timesteps environment steps."
+    },
+    {
+     "term": "predict",
+     "def": "Returns an action for an observation. Use deterministic=True when evaluating."
+    },
+    {
+     "term": "evaluate_policy",
+     "def": "Helper that runs episodes and returns the mean and standard deviation of the episode reward."
+    },
+    {
+     "term": "total_timesteps",
+     "def": "Number of environment steps used for training, not the number of episodes."
+    },
+    {
+     "term": "Vectorized environment",
+     "def": "SB3 wraps each environment so it can run in batches. Resets happen automatically."
+    }
+   ],
+   "keyPoints": [
+    "pip install stable-baselines3 (add [extra] for plotting and TensorBoard support).",
+    "model = PPO(\"MlpPolicy\", env, verbose=1); model.learn(total_timesteps=...).",
+    "model.predict(obs, deterministic=True) returns (action, state). Ignore the second value for feed-forward policies.",
+    "evaluate_policy(model, env, n_eval_episodes=10) returns (mean_reward, std_reward).",
+    "model.save(\"name\") and PPO.load(\"name\") keep and restore a model.",
+    "Evaluate on a separate environment instance from the one you trained on."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "This is the hello world of SB3. It trains PPO on CartPole and watches the result. It usually reaches the maximum of 500 within about fifty thousand steps."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "bash",
+     "code": "pip install \"stable-baselines3[extra]\""
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import gymnasium as gym\nfrom stable_baselines3 import PPO\nfrom stable_baselines3.common.evaluation import evaluate_policy\n\nenv = gym.make(\"CartPole-v1\")\nmodel = PPO(\"MlpPolicy\", env, verbose=1, seed=0)\nmodel.learn(total_timesteps=50_000)\n\neval_env = gym.make(\"CartPole-v1\")\nmean_r, std_r = evaluate_policy(model, eval_env, n_eval_episodes=10, deterministic=True)\nprint(f\"mean reward {mean_r:.1f} +/- {std_r:.1f}\")\n\nmodel.save(\"ppo_cartpole\")\ndel model\nmodel = PPO.load(\"ppo_cartpole\")"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Using the model yourself. predict takes one observation and returns an action. The second value is a recurrent state which is None for normal policies."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "env = gym.make(\"CartPole-v1\", render_mode=\"human\")\nobs, info = env.reset()\ndone = False\nwhile not done:\n    action, _ = model.predict(obs, deterministic=True)\n    obs, reward, terminated, truncated, info = env.step(action)\n    done = terminated or truncated\nenv.close()"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Behind the scenes SB3 wraps your environment in a vectorized environment and a Monitor, which records episode reward and length. The vectorized API differs slightly from Gymnasium: reset returns only observations, step returns four values and resets finished environments by itself. You see this if you call model.get_env().",
+      "Switching algorithm is a one-word change. DQN for CartPole, SAC for Pendulum. The policy string stays MlpPolicy for vector inputs, CnnPolicy for images, and MultiInputPolicy for dictionary observations. Use policy_kwargs to change the network, for example policy_kwargs=dict(net_arch=[64, 64])."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from stable_baselines3 import DQN, SAC\ndqn = DQN(\"MlpPolicy\", \"CartPole-v1\", verbose=0)       # a string id works as well\nsac = SAC(\"MlpPolicy\", \"Pendulum-v1\", verbose=0)\nmodel = PPO(\"MlpPolicy\", \"CartPole-v1\",\n            policy_kwargs=dict(net_arch=[64, 64]), learning_rate=3e-4)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Treat total_timesteps as a budget and judge the model by evaluation, not by the training log alone. Always check how the reward curve changes with different seeds. RL results vary a lot from run to run."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which call trains an SB3 model?",
+     "options": [
+      "model.fit()",
+      "model.learn(total_timesteps=...)",
+      "model.train()",
+      "model.run()"
+     ],
+     "answer": 1,
+     "explain": "SB3 uses learn with a timestep budget."
+    },
+    {
+     "q": "What does model.predict(obs, deterministic=True) return?",
+     "options": [
+      "Only the action",
+      "(action, state)",
+      "The reward",
+      "The next observation"
+     ],
+     "answer": 1,
+     "explain": "It returns the action and an optional recurrent state, which is None for normal policies."
+    },
+    {
+     "q": "Which helper gives mean and standard deviation of episode reward?",
+     "options": [
+      "Monitor",
+      "evaluate_policy",
+      "check_env",
+      "make_vec_env"
+     ],
+     "answer": 1,
+     "explain": "evaluate_policy returns (mean_reward, std_reward)."
+    },
+    {
+     "q": "Which policy string is used for vector observations?",
+     "options": [
+      "CnnPolicy",
+      "MlpPolicy",
+      "MultiInputPolicy",
+      "BoxPolicy"
+     ],
+     "answer": 1,
+     "explain": "MlpPolicy for vectors, CnnPolicy for images, MultiInputPolicy for dictionaries."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Minimal SB3 training code?",
+     "a": "model = PPO(\"MlpPolicy\", env); model.learn(total_timesteps=50_000)"
+    },
+    {
+     "q": "How do you save and load?",
+     "a": "model.save(\"name\") and PPO.load(\"name\")"
+    },
+    {
+     "q": "Does total_timesteps count episodes?",
+     "a": "No. It counts environment steps."
+    },
+    {
+     "q": "Which policy for images?",
+     "a": "CnnPolicy"
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Train and test",
+     "text": "from stable_baselines3 import {{PPO}}\nmodel = PPO(\"{{MlpPolicy}}\", env, verbose=1)\nmodel.{{learn}}(total_timesteps=50_000)\naction, _ = model.{{predict}}(obs, deterministic=True)\nmodel.{{save}}(\"my_model\")"
+    },
+    {
+     "type": "order",
+     "title": "The SB3 workflow",
+     "intro": "Put the steps in the usual order.",
+     "items": [
+      "Create the environment",
+      "Create the model with a policy and the environment",
+      "Call learn with a timestep budget",
+      "Evaluate on a separate environment",
+      "Save the model"
+     ]
+    },
+    {
+     "type": "terminal",
+     "title": "Train from the shell",
+     "intro": "A scripted shell. The output is a simulated example, not a measurement.",
+     "prompt": "(rl-env) $",
+     "chips": [
+      "pip install \"stable-baselines3[extra]\"",
+      "python train_cartpole.py",
+      "ls"
+     ],
+     "commands": [
+      {
+       "re": "^pip install \"?stable-baselines3(\\[extra\\])?\"?$",
+       "out": [
+        "Collecting stable-baselines3[extra]",
+        "Installing collected packages: torch, stable-baselines3",
+        "Successfully installed stable-baselines3 (simulated)"
+       ]
+      },
+      {
+       "re": "^python train_cartpole\\.py$",
+       "out": [
+        "Using cpu device",
+        "---------------------------------",
+        "| rollout/           |          |",
+        "|    ep_len_mean     | 21.3     |",
+        "|    ep_rew_mean     | 21.3     |",
+        "... (training) ...",
+        "mean reward 500.0 +/- 0.0   (simulated)",
+        "saved ppo_cartpole.zip"
+       ],
+       "set": {
+        "trained": "1"
+       }
+      },
+      {
+       "re": "^ls$",
+       "when": {
+        "trained": "1"
+       },
+       "out": [
+        "ppo_cartpole.zip  train_cartpole.py"
+       ]
+      },
+      {
+       "re": "^ls$",
+       "out": [
+        "train_cartpole.py"
+       ]
+      },
+      {
+       "re": "^pip",
+       "out": [
+        "Try: pip install \"stable-baselines3[extra]\""
+       ],
+       "cls": "warn"
+      }
+     ],
+     "tasks": [
+      {
+       "text": "Install Stable-Baselines3",
+       "cmd": "^pip install \"?stable-baselines3"
+      },
+      {
+       "text": "Run the training script",
+       "cmd": "^python train_cartpole\\.py$"
+      },
+      {
+       "text": "List the files to see the saved model",
+       "cmd": "^ls$"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Policy gradients, PPO and choosing an algorithm",
+   "maps": [
+    {
+     "title": "Algorithm families",
+     "links": [
+      "Value-based | includes | DQN [ch7]",
+      "Policy-based | includes | Policy gradient",
+      "Actor-critic | combines | Policy and value",
+      "Actor-critic | includes | A2C",
+      "Actor-critic | includes | PPO",
+      "PPO | limits | Policy change per update",
+      "SAC | handles | Continuous actions",
+      "TD3 | handles | Continuous actions",
+      "On-policy | reuses data | Rarely",
+      "Off-policy | reuses data | Often via replay buffer [ch7]"
+     ]
+    }
+   ],
+   "summary": [
+    "Value-based methods such as DQN learn Q and act greedily. Policy-gradient methods learn the policy directly: they nudge the probability of actions up when they led to a high return and down when they led to a low one.",
+    "Actor-critic methods add a critic, a value function that tells how much better an action was than expected. That difference is called the advantage and it reduces noise. A2C and PPO are actor-critic methods.",
+    "PPO, proximal policy optimization, clips the update so the new policy stays close to the old one. It is simple, stable, works for discrete and continuous actions, and is a strong default. For continuous control SAC and TD3 are often more sample efficient."
+   ],
+   "glossary": [
+    {
+     "term": "Policy gradient",
+     "def": "A method that adjusts policy parameters in the direction that increases expected return."
+    },
+    {
+     "term": "Actor",
+     "def": "The part of the agent that chooses actions, the policy network."
+    },
+    {
+     "term": "Critic",
+     "def": "The part that estimates values, used to judge the actor's actions."
+    },
+    {
+     "term": "Advantage",
+     "def": "How much better an action was than the average action in that state: Q minus V."
+    },
+    {
+     "term": "PPO",
+     "def": "Proximal Policy Optimization. Policy gradient with a clipped objective that keeps updates small."
+    },
+    {
+     "term": "On-policy",
+     "def": "Learns only from data gathered by the current policy, so old data is thrown away."
+    },
+    {
+     "term": "Entropy bonus",
+     "def": "A reward for keeping the policy random enough, to encourage exploration."
+    },
+    {
+     "term": "SAC",
+     "def": "Soft Actor-Critic: an off-policy actor-critic for continuous actions that maximizes reward plus entropy."
+    }
+   ],
+   "keyPoints": [
+    "PPO and A2C are on-policy. DQN, SAC, TD3 and DDPG are off-policy.",
+    "DQN: discrete actions only. SAC, TD3, DDPG: continuous only. PPO and A2C: both.",
+    "PPO clip objective: min(ratio * A, clip(ratio, 1 - eps, 1 + eps) * A). Typical eps is 0.2.",
+    "Start with PPO. Try SAC for continuous control when samples are expensive.",
+    "On-policy methods usually want many parallel environments.",
+    "Advantage estimates (GAE) trade bias against variance with lambda, typically 0.95."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "A policy-gradient agent uses a network that outputs action probabilities. After running some episodes you increase the probability of each action in proportion to how good the outcome was. The idea is called REINFORCE. It is simple and noisy, because a single lucky episode can push the policy the wrong way."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To cut the noise, subtract a baseline. If the average outcome in a state is 10 and this action gave 12, the advantage is plus 2, and the action becomes more likely. If it gave 8, it becomes less likely. The critic network learns that baseline V(s). Together the actor and the critic form an actor-critic."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The danger with policy gradients is a step too big. One bad update can wreck the policy, and since the new data comes from the new policy, it may never recover. PPO guards against this. It computes the ratio of the new probability to the old one for each action and clips it to the range 1 minus epsilon to 1 plus epsilon, so there is no gain from moving further than that."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# PPO clipped objective for one sample (maximize this)\nratio = new_prob / old_prob\nclipped = max(1 - eps, min(ratio, 1 + eps))\nobjective = min(ratio * advantage, clipped * advantage)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Each PPO iteration collects n_steps from each environment, then runs several epochs of mini-batch updates on that data, then throws it away. That is on-policy learning. The defaults in SB3 are n_steps 2048, batch_size 64, n_epochs 10, gamma 0.99, gae_lambda 0.95 and clip_range 0.2, which work well for many problems."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How to choose?"
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "Algorithm | Actions            | Data      | Notes\nPPO       | discrete, continuous | on-policy | strong default, parallel envs\nA2C       | discrete, continuous | on-policy | simple, fast, noisier\nDQN       | discrete             | off-policy| image games, replay buffer\nSAC       | continuous           | off-policy| sample efficient, robust\nTD3       | continuous           | off-policy| deterministic, careful tuning\nDDPG      | continuous           | off-policy| older, sensitive"
+    },
+    {
+     "type": "text",
+     "items": [
+      "SB3 gives all of these under the same interface. Extra algorithms live in the sb3-contrib package, for example recurrent PPO, TRPO and QR-DQN."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the critic in an actor-critic estimate?",
+     "options": [
+      "The next action",
+      "A value function",
+      "The reward function",
+      "The environment dynamics"
+     ],
+     "answer": 1,
+     "explain": "The critic estimates values, which gives a baseline for judging actions."
+    },
+    {
+     "q": "Which algorithm is limited to discrete action spaces?",
+     "options": [
+      "PPO",
+      "SAC",
+      "DQN",
+      "A2C"
+     ],
+     "answer": 2,
+     "explain": "DQN takes a max over a fixed set of actions. SAC is continuous only."
+    },
+    {
+     "q": "What does PPO's clipping accomplish?",
+     "options": [
+      "It clips the rewards",
+      "It limits how far the new policy can move from the old one",
+      "It limits the episode length",
+      "It limits the replay buffer"
+     ],
+     "answer": 1,
+     "explain": "Clipping the probability ratio removes the incentive for large policy changes."
+    },
+    {
+     "q": "You have a continuous-control robot task with expensive samples. Which is a sensible first thing to try besides PPO?",
+     "options": [
+      "DQN",
+      "SAC",
+      "Q-table",
+      "Bandit"
+     ],
+     "answer": 1,
+     "explain": "SAC is off-policy and reuses data, so it is often more sample efficient on continuous control."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Advantage in words?",
+     "a": "How much better an action was than average for that state."
+    },
+    {
+     "q": "On-policy vs off-policy?",
+     "a": "On-policy learns from the current policy's data only. Off-policy can reuse older data."
+    },
+    {
+     "q": "PPO clip range default?",
+     "a": "0.2"
+    },
+    {
+     "q": "Default algorithm to try first?",
+     "a": "PPO."
+    }
+   ],
+   "practice": [
+    {
+     "type": "code",
+     "title": "PPO clipped objective",
+     "intro": "Write ppoObjective(ratio, adv, eps): min(ratio * adv, clip(ratio, 1 - eps, 1 + eps) * adv).",
+     "fn": "ppoObjective",
+     "starter": "function ppoObjective(ratio, adv, eps) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        1.5,
+        1,
+        0.2
+       ],
+       "expect": 1.2,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        0.5,
+        1,
+        0.2
+       ],
+       "expect": 0.5,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        1.5,
+        -1,
+        0.2
+       ],
+       "expect": -1.5,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        0.5,
+        -1,
+        0.2
+       ],
+       "expect": -0.8,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        1,
+        3,
+        0.2
+       ],
+       "expect": 3
+      }
+     ],
+     "hint": "Clip the ratio with Math.max(1 - eps, Math.min(ratio, 1 + eps)).",
+     "solution": "function ppoObjective(ratio, adv, eps) {\n  const clipped = Math.max(1 - eps, Math.min(ratio, 1 + eps));\n  return Math.min(ratio * adv, clipped * adv);\n}"
+    },
+    {
+     "type": "code",
+     "title": "Advantage",
+     "intro": "Write advantage(r, gamma, vNext, v): the one-step advantage r + gamma * vNext - v.",
+     "fn": "advantage",
+     "starter": "function advantage(r, gamma, vNext, v) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        1,
+        0.9,
+        10,
+        9
+       ],
+       "expect": 1,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        0,
+        0.5,
+        4,
+        3
+       ],
+       "expect": -1,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        2,
+        1,
+        0,
+        2
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "It is the TD target minus the current value.",
+     "solution": "function advantage(r, gamma, vNext, v) {\n  return r + gamma * vNext - v;\n}"
+    },
+    {
+     "type": "match",
+     "title": "Pick the algorithm",
+     "intro": "Match each situation to a sensible algorithm.",
+     "pairs": [
+      [
+       "Discrete actions, image input, replay buffer",
+       "DQN"
+      ],
+      [
+       "Continuous control, sample efficient",
+       "SAC"
+      ],
+      [
+       "Safe default for most tasks",
+       "PPO"
+      ],
+      [
+       "Recurrent policy extra",
+       "sb3-contrib RecurrentPPO"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Training in practice: vector envs, callbacks and logging",
+   "maps": [
+    {
+     "title": "A real training setup",
+     "links": [
+      "make_vec_env | creates | Parallel environments",
+      "Monitor | records | Episode reward",
+      "EvalCallback | evaluates | Model during training",
+      "EvalCallback | saves | Best model",
+      "CheckpointCallback | saves | Regular snapshots",
+      "TensorBoard | shows | Training curves",
+      "VecNormalize | normalizes | Observations and rewards",
+      "Seeds | make runs | Reproducible",
+      "Reward design [ch11] | decides | What is learned [ch11]"
+     ]
+    }
+   ],
+   "summary": [
+    "Real projects train many environments in parallel with make_vec_env, evaluate on a separate environment, save the best model and log curves to TensorBoard. SB3's callbacks do the periodic work without you rewriting the training loop.",
+    "Always use a Monitor so episode reward and length are recorded, a separate evaluation environment so you test what you train, and several random seeds because RL results vary widely between runs.",
+    "VecNormalize normalizes observations and rewards, which helps in many continuous control tasks. If you use it, save and load its statistics together with the model."
+   ],
+   "glossary": [
+    {
+     "term": "make_vec_env",
+     "def": "Helper that builds several copies of an environment, each wrapped with a Monitor."
+    },
+    {
+     "term": "DummyVecEnv",
+     "def": "Runs several environments one after another in a single process."
+    },
+    {
+     "term": "SubprocVecEnv",
+     "def": "Runs each environment in its own process for real parallelism."
+    },
+    {
+     "term": "Callback",
+     "def": "An object whose methods are called during training, for example to evaluate or save."
+    },
+    {
+     "term": "EvalCallback",
+     "def": "Evaluates the model every eval_freq steps and can save the best model."
+    },
+    {
+     "term": "TensorBoard",
+     "def": "A web dashboard for training curves. Enable it with tensorboard_log."
+    },
+    {
+     "term": "VecNormalize",
+     "def": "A wrapper that keeps running statistics to normalize observations and rewards."
+    },
+    {
+     "term": "Seed",
+     "def": "A number that fixes random choices so a run can be repeated."
+    }
+   ],
+   "keyPoints": [
+    "Use make_vec_env(\"CartPole-v1\", n_envs=8) to collect data faster.",
+    "Evaluate on a separate environment, not the training one.",
+    "EvalCallback(eval_env, best_model_save_path=..., eval_freq=...) keeps the best model.",
+    "Log with tensorboard_log=\"./tb\" and view with tensorboard --logdir ./tb.",
+    "Run at least 3 to 5 seeds before believing a result.",
+    "When using VecNormalize, save it: env.save(\"vecnormalize.pkl\") and load it for evaluation with training=False."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Here is a complete small training script with the features you will want in any project. Read it top to bottom."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from stable_baselines3 import PPO\nfrom stable_baselines3.common.env_util import make_vec_env\nfrom stable_baselines3.common.callbacks import EvalCallback, CheckpointCallback, StopTrainingOnRewardThreshold\nfrom stable_baselines3.common.evaluation import evaluate_policy\nfrom stable_baselines3.common.monitor import Monitor\nimport gymnasium as gym\n\nif __name__ == \"__main__\":                       # needed for SubprocVecEnv on Windows and macOS\n    train_env = make_vec_env(\"CartPole-v1\", n_envs=8, seed=0)\n    eval_env = Monitor(gym.make(\"CartPole-v1\"))\n\n    stop = StopTrainingOnRewardThreshold(reward_threshold=475, verbose=1)\n    evalcb = EvalCallback(eval_env, callback_on_new_best=stop,\n                          best_model_save_path=\"./best/\", log_path=\"./logs/\",\n                          eval_freq=5_000, n_eval_episodes=10, deterministic=True)\n    ckpt = CheckpointCallback(save_freq=20_000, save_path=\"./ckpt/\", name_prefix=\"ppo_cp\")\n\n    model = PPO(\"MlpPolicy\", train_env, tensorboard_log=\"./tb/\", seed=0, verbose=1)\n    model.learn(total_timesteps=200_000, callback=[evalcb, ckpt])\n\n    best = PPO.load(\"./best/best_model\")\n    print(evaluate_policy(best, eval_env, n_eval_episodes=20))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Note about eval_freq. With 8 parallel environments, eval_freq counts calls of the callback, which happen once per step of every environment together. To evaluate every N total timesteps divide by the number of environments: eval_freq = max(N // n_envs, 1).",
+      "To watch training run tensorboard in a second terminal."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "bash",
+     "code": "pip install tensorboard\ntensorboard --logdir ./tb/\n# then open http://localhost:6006"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Things to watch on the curves: ep_rew_mean should rise. For PPO, approx_kl and clip_fraction show how big updates are, explained_variance shows how well the critic predicts returns, and entropy_loss shows whether the policy has become too deterministic too early. A flat or falling ep_rew_mean over a long time is a sign to check rewards, learning rate and seeds."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Normalization. Reward scales and observation ranges vary wildly between tasks. VecNormalize keeps running averages and rescales. Remember that the statistics are part of the model: evaluating without them gives bad results."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize\n\nvenv = VecNormalize(DummyVecEnv([lambda: gym.make(\"Pendulum-v1\")]), norm_obs=True, norm_reward=True)\nmodel = SAC(\"MlpPolicy\", venv).learn(50_000)\nmodel.save(\"sac_pendulum\"); venv.save(\"vecnormalize.pkl\")\n\n# later, for evaluation\nvenv = VecNormalize.load(\"vecnormalize.pkl\", DummyVecEnv([lambda: gym.make(\"Pendulum-v1\")]))\nvenv.training = False; venv.norm_reward = False"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Reproducibility. Pass seed to the algorithm and to make_vec_env, and expect small differences anyway on GPU. For reporting, run several seeds and show the mean with its spread. Compare algorithms with the same budget of timesteps."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Why evaluate on a separate environment?",
+     "options": [
+      "It is faster",
+      "Training environments may carry exploration state and wrappers that bias the result",
+      "SB3 requires it to run",
+      "To use more memory"
+     ],
+     "answer": 1,
+     "explain": "A separate evaluation environment lets you measure the deterministic policy cleanly, without training-time noise and stateful wrappers."
+    },
+    {
+     "q": "Which callback saves the best model found so far?",
+     "options": [
+      "CheckpointCallback",
+      "EvalCallback with best_model_save_path",
+      "ProgressBarCallback",
+      "StopTrainingOnMaxEpisodes"
+     ],
+     "answer": 1,
+     "explain": "EvalCallback evaluates periodically and keeps the best model on disk."
+    },
+    {
+     "q": "How do you enable TensorBoard logging in SB3?",
+     "options": [
+      "verbose=2",
+      "tensorboard_log=\"./tb/\"",
+      "log=True",
+      "It cannot be done"
+     ],
+     "answer": 1,
+     "explain": "Give the algorithm a tensorboard_log directory and run tensorboard on it."
+    },
+    {
+     "q": "You used VecNormalize in training. What must you do for evaluation?",
+     "options": [
+      "Nothing",
+      "Load the saved normalization statistics and set training to False",
+      "Retrain the model",
+      "Remove the model"
+     ],
+     "answer": 1,
+     "explain": "The statistics belong to the model. Save and reload them, and stop updating them in evaluation."
+    }
+   ],
+   "cards": [
+    {
+     "q": "How many envs for PPO?",
+     "a": "Often 4 to 16 parallel environments, via make_vec_env(n_envs=...)."
+    },
+    {
+     "q": "Which wrapper records episode reward?",
+     "a": "Monitor."
+    },
+    {
+     "q": "How to watch curves?",
+     "a": "tensorboard --logdir ./tb/"
+    },
+    {
+     "q": "How many seeds before trusting a result?",
+     "a": "At least 3 to 5."
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Set up training",
+     "text": "env = {{make_vec_env}}(\"CartPole-v1\", n_envs=8)\nevalcb = {{EvalCallback}}(eval_env, best_model_save_path=\"./best/\", eval_freq=5000)\nmodel = PPO(\"MlpPolicy\", env, tensorboard_log=\"{{./tb/|./tb|tb}}\")\nmodel.learn(total_timesteps=200_000, callback={{evalcb}})"
+    },
+    {
+     "type": "terminal",
+     "title": "Check your training",
+     "intro": "A scripted shell with simulated output.",
+     "prompt": "(rl-env) $",
+     "chips": [
+      "python train.py",
+      "tensorboard --logdir ./tb/",
+      "ls best"
+     ],
+     "commands": [
+      {
+       "re": "^python train\\.py$",
+       "out": [
+        "Using cpu device",
+        "Eval num_timesteps=5000, episode_reward=123.40 +/- 20.10",
+        "New best mean reward!",
+        "... (simulated) ...",
+        "Stopping training because the mean reward 500.00 is above the threshold 475.00"
+       ],
+       "set": {
+        "ran": "1"
+       }
+      },
+      {
+       "re": "^tensorboard --logdir \\./tb/?$",
+       "out": [
+        "TensorBoard 2.x at http://localhost:6006/ (Press CTRL+C to quit)"
+       ]
+      },
+      {
+       "re": "^ls best$",
+       "when": {
+        "ran": "1"
+       },
+       "out": [
+        "best_model.zip"
+       ]
+      },
+      {
+       "re": "^ls best$",
+       "out": [
+        "ls: cannot access 'best': run train.py first"
+       ],
+       "cls": "warn"
+      }
+     ],
+     "tasks": [
+      {
+       "text": "Run train.py",
+       "cmd": "^python train\\.py$"
+      },
+      {
+       "text": "Start TensorBoard",
+       "cmd": "^tensorboard --logdir"
+      },
+      {
+       "text": "Check the best model was saved",
+       "cmd": "^ls best$"
+      }
+     ]
+    },
+    {
+     "type": "write",
+     "title": "Evaluate every 10000 steps",
+     "prompt": "You train with n_envs=8 and want an evaluation every 10000 total timesteps. Write the eval_freq expression.",
+     "checks": [
+      {
+       "re": "10000|10_000",
+       "msg": "uses 10000"
+      },
+      {
+       "re": "//|/\\s*n_envs|/\\s*8",
+       "msg": "divides by the number of envs"
+      },
+      {
+       "re": "n_envs|8",
+       "msg": "uses the number of envs"
+      }
+     ],
+     "solution": "eval_freq = max(10_000 // n_envs, 1)"
+    }
+   ]
+  },
+  {
+   "title": "Reward design, debugging and pitfalls",
+   "maps": [
+    {
+     "title": "Why training fails",
+     "links": [
+      "Reward design | decides | What the agent learns",
+      "Sparse reward | makes | Learning slow",
+      "Reward shaping | adds | Intermediate rewards",
+      "Bad shaping | causes | Reward hacking",
+      "Bug in env | looks like | Bad algorithm",
+      "check_env [ch6] | catches | Interface bugs",
+      "Evaluation | needs | Several seeds [ch10]",
+      "Hyperparameters | need | Systematic tuning"
+     ]
+    }
+   ],
+   "summary": [
+    "An agent optimizes exactly the reward you wrote, not the one you meant. A badly designed reward gets exploited: the agent finds a loophole that scores high without doing the task. This is called reward hacking or specification gaming.",
+    "Sparse rewards, where feedback comes only at the very end, make learning slow. Reward shaping adds intermediate signals, but it must reward progress toward the real goal and not creative shortcuts. Potential-based shaping is the safe form.",
+    "When training fails, suspect the environment and the reward first, then the observation scaling, then the hyperparameters, and only then the algorithm. A short checklist and small test environments save time."
+   ],
+   "glossary": [
+    {
+     "term": "Reward shaping",
+     "def": "Adding extra reward signals that guide the agent toward the goal."
+    },
+    {
+     "term": "Sparse reward",
+     "def": "A reward that is zero almost everywhere and nonzero only on success."
+    },
+    {
+     "term": "Reward hacking",
+     "def": "When the agent exploits a loophole in the reward to score high without solving the task."
+    },
+    {
+     "term": "Potential-based shaping",
+     "def": "Shaping of the form gamma * phi(s') - phi(s). It does not change the best policy."
+    },
+    {
+     "term": "Curriculum",
+     "def": "Starting with easy versions of a task and making it harder as the agent improves."
+    },
+    {
+     "term": "Overfitting to a seed",
+     "def": "Performing well only on the starting states or random numbers seen in training."
+    },
+    {
+     "term": "Hyperparameter",
+     "def": "A setting chosen by you, not learned, such as the learning rate or n_steps."
+    }
+   ],
+   "keyPoints": [
+    "Write the reward for the outcome you want, then ask how it could be gamed.",
+    "Dense hints help, but mistakes in shaping teach the wrong behavior.",
+    "Log and watch the agent. Plot an episode, render a video, read the numbers.",
+    "Test the environment by hand before training: step with fixed actions and check rewards.",
+    "Solve a smaller version of the task first.",
+    "Change one thing at a time and keep the seed fixed when comparing."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The classic story is a boat racing game where the agent learned to spin in circles collecting small bonus items, scoring higher than any agent that finished the race. The reward said points, not finish. The agent did what the reward said.",
+      "A simpler example: a cleaning robot rewarded for dust collected could learn to dump dust and re-collect it. A walking robot rewarded for forward speed might learn to fall forward as fast as it can. These are not bugs in the learning algorithm. They are bugs in the reward."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sparse rewards are the opposite problem. In a maze with a reward only at the exit, a random agent might never find it, and nothing is learned. Shaping adds hints, such as a small reward for getting closer to the goal. Do it carefully. If you reward distance reduction and also forget a penalty for loops, the agent can step back and forth forever collecting points.",
+      "The safe version is potential-based shaping. Define a potential phi(s), for example minus the distance to the goal. Add gamma times phi of the next state minus phi of the current state to the reward. Stepping away costs exactly what stepping back gains, so loops give nothing, and the best policy is unchanged."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# Potential-based shaping inside step()\ndef phi(pos):             # potential: higher is closer to the goal\n    return -abs(self.goal - pos)\n\nshaped = reward + self.gamma * phi(new_pos) - phi(old_pos)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A debugging checklist. First, run check_env and fix every warning. Second, step the environment by hand with a fixed action list and read the rewards and flags."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Third, confirm that a trivial policy, such as always going right in LineWorld, gets the reward you expect.",
+      "Fourth, look at observation scale: values near zero to one or minus one to one train faster than values in the thousands.",
+      "Fifth, try a known-good algorithm on a known-good environment to check your install. Sixth, only then tune the learning rate, the n_steps or the network size."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Other pitfalls. Reporting one lucky seed. Evaluating with exploration noise on. Mixing up terminated and truncated in a custom environment. Training for too few steps: CartPole takes thousands, Atari takes millions. Using a policy trained with VecNormalize without the saved statistics. A reward whose scale is so large that gradients explode.",
+      "Finally, remember the safety side: an agent in the real world will exploit unexpected loopholes in the real world. Test in simulation, add limits and keep a human in the loop."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is reward hacking?",
+     "options": [
+      "Stealing data",
+      "The agent exploits a loophole to score high without doing the task",
+      "A faster algorithm",
+      "Increasing gamma"
+     ],
+     "answer": 1,
+     "explain": "The agent optimizes the reward as written, which may not match what you intended."
+    },
+    {
+     "q": "Why is potential-based shaping considered safe?",
+     "options": [
+      "It makes rewards bigger",
+      "It does not change which policy is best",
+      "It removes exploration",
+      "It removes randomness"
+     ],
+     "answer": 1,
+     "explain": "The extra terms cancel along any cycle, so the optimal policy stays the same."
+    },
+    {
+     "q": "Training is not working. What should you check first?",
+     "options": [
+      "Buy a GPU",
+      "Environment and reward correctness",
+      "Try a different library",
+      "Increase total_timesteps tenfold"
+     ],
+     "answer": 1,
+     "explain": "Most failures are environment or reward bugs. Check them before the algorithm."
+    },
+    {
+     "q": "A maze gives reward only at the exit and a random agent never finds it. What is this called?",
+     "options": [
+      "Dense reward",
+      "Sparse reward",
+      "Negative reward",
+      "Delayed discount"
+     ],
+     "answer": 1,
+     "explain": "A sparse reward gives almost no learning signal until the goal is reached by chance."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Potential-based shaping formula?",
+     "a": "F = gamma * phi(s') - phi(s)"
+    },
+    {
+     "q": "Reward hacking in one line?",
+     "a": "Agent scores high by exploiting the reward, not by solving the task."
+    },
+    {
+     "q": "First debugging step?",
+     "a": "check_env, then step the env by hand and read the rewards."
+    },
+    {
+     "q": "Why several seeds?",
+     "a": "RL results vary a lot between runs."
+    }
+   ],
+   "practice": [
+    {
+     "type": "code",
+     "title": "Potential-based shaping",
+     "intro": "Write shapedReward(r, gamma, phiNext, phi): r + gamma * phiNext - phi.",
+     "fn": "shapedReward",
+     "starter": "function shapedReward(r, gamma, phiNext, phi) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        0,
+        0.9,
+        -1,
+        -2
+       ],
+       "expect": 1.1,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        0,
+        1,
+        -2,
+        -1
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        1,
+        0.5,
+        4,
+        2
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        0,
+        0.99,
+        0,
+        0
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Moving to a state with higher potential should give a positive bonus.",
+     "solution": "function shapedReward(r, gamma, phiNext, phi) {\n  return r + gamma * phiNext - phi;\n}"
+    },
+    {
+     "type": "match",
+     "title": "Name the problem",
+     "intro": "Match the symptom to the likely cause.",
+     "pairs": [
+      [
+       "Reward is zero everywhere for a long time",
+       "Sparse reward"
+      ],
+      [
+       "Agent loops to farm points",
+       "Reward hacking from bad shaping"
+      ],
+      [
+       "Great on one seed, poor on others",
+       "Overfitting or luck: use more seeds"
+      ],
+      [
+       "Warnings from check_env",
+       "Interface bug in the environment"
+      ]
+     ]
+    },
+    {
+     "type": "order",
+     "title": "Debugging order",
+     "intro": "Put the debugging steps in a sensible order.",
+     "items": [
+      "Run check_env and fix warnings",
+      "Step the environment by hand and read the rewards",
+      "Check observation scale",
+      "Try a known-good algorithm on a known-good environment",
+      "Tune hyperparameters"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Where to go next",
+   "maps": [
+    {
+     "title": "After the basics",
+     "links": [
+      "Continuous control [ch9] | uses | SAC and TD3 [ch9]",
+      "Robotics | uses | MuJoCo and Isaac",
+      "Atari | uses | CnnPolicy and frame stacking",
+      "RL Zoo | provides | Tuned hyperparameters",
+      "sb3-contrib | adds | More algorithms",
+      "Multi-agent RL | extends | Single agent RL",
+      "Offline RL | learns from | Fixed datasets",
+      "RLHF | trains | Language models"
+     ]
+    }
+   ],
+   "summary": [
+    "You now know the loop, the math, tabular and deep value learning, policy gradients, the SB3 toolkit and how to build and debug environments. The best next step is to build something of your own.",
+    "Useful extensions: continuous control tasks with SAC, image-based tasks with CnnPolicy, the RL Zoo for tuned hyperparameters and training scripts, sb3-contrib for extra algorithms, and multi-agent and offline RL when your problem calls for it.",
+    "Plan a project: choose a small environment, make a baseline, define the evaluation, and improve one thing at a time."
+   ],
+   "glossary": [
+    {
+     "term": "RL Zoo",
+     "def": "A training framework with tuned hyperparameters and scripts for many environments, built on SB3."
+    },
+    {
+     "term": "sb3-contrib",
+     "def": "A companion package with additional algorithms such as RecurrentPPO, TRPO and QR-DQN."
+    },
+    {
+     "term": "Frame stacking",
+     "def": "Giving the agent the last few frames as one observation so it can sense motion."
+    },
+    {
+     "term": "Multi-agent RL",
+     "def": "Several agents learn at once in a shared environment, cooperating or competing."
+    },
+    {
+     "term": "Offline RL",
+     "def": "Learning a policy from a fixed dataset without interacting with the environment."
+    },
+    {
+     "term": "Sim-to-real",
+     "def": "Training in simulation and transferring the policy to a physical system."
+    },
+    {
+     "term": "RLHF",
+     "def": "Reinforcement learning from human feedback, used to fine-tune language models."
+    }
+   ],
+   "keyPoints": [
+    "Keep a baseline and change one thing at a time.",
+    "For images use CnnPolicy and frame stacking (VecFrameStack).",
+    "Use the RL Zoo for known-good hyperparameters.",
+    "Real systems need safety limits and careful reward checks.",
+    "Read the SB3 docs on algorithms and tips, and read the original papers once you have the habit.",
+    "Share environments and models you build so others can check them."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Suggested projects, in rising difficulty: a grid or line world of your own with Q-learning; a custom environment trained with PPO; Pendulum or MountainCarContinuous with SAC; LunarLander with PPO or DQN; an Atari game with CnnPolicy; a robotics simulation. At each step write down what you expect before running."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# Image-based environment sketch with SB3\nfrom stable_baselines3.common.env_util import make_atari_env\nfrom stable_baselines3.common.vec_env import VecFrameStack\nenv = make_atari_env(\"PongNoFrameskip-v4\", n_envs=8, seed=0)\nenv = VecFrameStack(env, n_stack=4)\nmodel = PPO(\"CnnPolicy\", env, verbose=1)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Atari needs extra packages (the ale-py package and the ROM license acceptance that comes with it) and a lot of training steps, often millions, so a GPU helps. Check the current installation notes before starting.",
+      "For continuous control the RL Zoo contains tuned settings such as network size, learning rate and noise choices for many tasks. Start with those rather than guessing."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How to keep learning. Keep a notebook of experiments: environment version, algorithm, hyperparameters, seed and result. Reproduce a published result before inventing your own. When you hit something odd, shrink the problem until you can explain it.",
+      "Thank you for learning with Lilith. Use the final exam to check yourself, and revisit the chapters where your score was lowest."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which policy type is used for image observations?",
+     "options": [
+      "MlpPolicy",
+      "CnnPolicy",
+      "BoxPolicy",
+      "TablePolicy"
+     ],
+     "answer": 1,
+     "explain": "CnnPolicy uses a convolutional network for images."
+    },
+    {
+     "q": "Where can you find tuned hyperparameters for many environments?",
+     "options": [
+      "RL Zoo",
+      "numpy",
+      "Pillow",
+      "pip"
+     ],
+     "answer": 0,
+     "explain": "The RL Baselines3 Zoo provides tuned configs and training scripts."
+    },
+    {
+     "q": "Why stack frames for an Atari agent?",
+     "options": [
+      "To reduce memory",
+      "So it can perceive motion",
+      "To increase reward",
+      "To make training deterministic"
+     ],
+     "answer": 1,
+     "explain": "A single frame hides velocity. Several frames reveal motion."
+    },
+    {
+     "q": "What is offline RL?",
+     "options": [
+      "RL without a computer",
+      "Learning from a fixed dataset without new interaction",
+      "RL with no rewards",
+      "Training on a phone"
+     ],
+     "answer": 1,
+     "explain": "Offline RL uses logged data only."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Good first project?",
+     "a": "A tiny custom environment solved with PPO."
+    },
+    {
+     "q": "Where are extra algorithms?",
+     "a": "The sb3-contrib package."
+    },
+    {
+     "q": "Which wrapper stacks frames?",
+     "a": "VecFrameStack"
+    },
+    {
+     "q": "Key habit for experiments?",
+     "a": "Log environment, algorithm, hyperparameters, seed and result."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "Plan a project",
+     "intro": "Put the project steps in a good order.",
+     "items": [
+      "Pick a small environment",
+      "Run a random policy as a baseline",
+      "Train a default PPO",
+      "Evaluate over several seeds",
+      "Change one thing and compare"
+     ]
+    },
+    {
+     "type": "write",
+     "title": "Your next project",
+     "prompt": "In one or two sentences, name an environment you will try next and which algorithm you will use. Include one of: PPO, SAC, DQN.",
+     "checks": [
+      {
+       "re": "PPO|SAC|DQN",
+       "msg": "names an algorithm"
+      },
+      {
+       "re": ".{20,}",
+       "msg": "has a real sentence"
+      }
+     ],
+     "solution": "I will try Pendulum-v1 with SAC and compare it to PPO over three seeds."
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Reinforcement Learning",
+  "passMark": 70,
+  "size": 16,
+  "questions": [
+   {
+    "q": "In the RL loop, who produces the reward?",
+    "options": [
+     "The agent",
+     "The environment",
+     "The optimizer",
+     "The dataset"
+    ],
+    "answer": 1,
+    "explain": "The environment sends the reward and the next observation."
+   },
+   {
+    "q": "What does step() return in Gymnasium?",
+    "options": [
+     "obs, reward, done",
+     "obs, reward, terminated, truncated, info",
+     "obs, info",
+     "reward, info"
+    ],
+    "answer": 1,
+    "explain": "Gymnasium uses terminated and truncated instead of one done flag."
+   },
+   {
+    "q": "An episode ends at the 500-step limit in CartPole. Which flag is true?",
+    "options": [
+     "terminated",
+     "truncated",
+     "neither",
+     "both"
+    ],
+    "answer": 1,
+    "explain": "A time limit is truncation."
+   },
+   {
+    "q": "With gamma = 0.5, what is the return of [2, 2, 2]?",
+    "options": [
+     "6",
+     "3.5",
+     "4",
+     "1.5"
+    ],
+    "answer": 1,
+    "explain": "2 + 1 + 0.5 = 3.5."
+   },
+   {
+    "q": "Which expression is the Bellman target for Q(s, a) with reward r and next state s'?",
+    "options": [
+     "r",
+     "r + gamma * max Q(s', a')",
+     "Q(s, a)",
+     "gamma * r"
+    ],
+    "answer": 1,
+    "explain": "Reward plus the discounted best next value."
+   },
+   {
+    "q": "Why do agents need to explore?",
+    "options": [
+     "To save memory",
+     "Otherwise they may never find better actions",
+     "To reduce reward",
+     "To avoid terminal states"
+    ],
+    "answer": 1,
+    "explain": "Without exploring, the agent can lock onto a poor action."
+   },
+   {
+    "q": "In Q-learning, what does alpha control?",
+    "options": [
+     "Discounting",
+     "How far each update moves toward the target",
+     "The number of states",
+     "Exploration probability"
+    ],
+    "answer": 1,
+    "explain": "Alpha is the learning rate."
+   },
+   {
+    "q": "Which method learns about the greedy policy while behaving with an exploring one?",
+    "options": [
+     "Q-learning",
+     "Random search",
+     "REINFORCE only",
+     "Supervised learning"
+    ],
+    "answer": 0,
+    "explain": "That is what off-policy means."
+   },
+   {
+    "q": "What must a custom Gymnasium environment define?",
+    "options": [
+     "Observation and action spaces, reset and step",
+     "A loss function",
+     "A GPU",
+     "A replay buffer"
+    ],
+    "answer": 0,
+    "explain": "Those are the required parts."
+   },
+   {
+    "q": "Which tool validates a custom environment for SB3?",
+    "options": [
+     "check_env",
+     "evaluate_policy",
+     "Monitor",
+     "VecNormalize"
+    ],
+    "answer": 0,
+    "explain": "stable_baselines3.common.env_checker.check_env."
+   },
+   {
+    "q": "What two ideas stabilize DQN?",
+    "options": [
+     "Dropout and batch norm",
+     "Replay buffer and target network",
+     "Entropy and clipping",
+     "Wrappers and callbacks"
+    ],
+    "answer": 1,
+    "explain": "Replay decorrelates samples; the target network stabilizes targets."
+   },
+   {
+    "q": "Which algorithm cannot handle continuous actions?",
+    "options": [
+     "PPO",
+     "SAC",
+     "DQN",
+     "A2C"
+    ],
+    "answer": 2,
+    "explain": "DQN needs a discrete action set."
+   },
+   {
+    "q": "What does PPO's clipping limit?",
+    "options": [
+     "Reward size",
+     "How far the new policy moves from the old one",
+     "Episode length",
+     "Buffer size"
+    ],
+    "answer": 1,
+    "explain": "It limits the probability ratio."
+   },
+   {
+    "q": "Which call trains an SB3 model?",
+    "options": [
+     "model.fit()",
+     "model.learn(total_timesteps=...)",
+     "model.run()",
+     "model.train()"
+    ],
+    "answer": 1,
+    "explain": "learn with a timestep budget."
+   },
+   {
+    "q": "Why use a separate evaluation environment?",
+    "options": [
+     "It is required by Python",
+     "To measure the policy without training noise",
+     "To save memory",
+     "To use more CPUs"
+    ],
+    "answer": 1,
+    "explain": "Evaluation should be clean and repeatable."
+   },
+   {
+    "q": "What is reward hacking?",
+    "options": [
+     "Stealing rewards",
+     "Exploiting a loophole in the reward to score high without the real task",
+     "Clipping rewards",
+     "Shaping rewards with potentials"
+    ],
+    "answer": 1,
+    "explain": "The agent optimizes what you wrote, not what you meant."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Algorithm cheat sheet",
+  "prompt": "rl>",
+  "intro": "A scripted lookup tool, not a real Python shell. Try: algo ppo, compare, defaults ppo, spaces",
+  "chips": [
+   "algo ppo",
+   "algo dqn",
+   "algo sac",
+   "compare",
+   "defaults ppo",
+   "spaces",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "algo <ppo|a2c|dqn|sac|td3|ddpg>   what it is and when to use it",
+     "compare                          table of action spaces and data use",
+     "defaults ppo                     main PPO defaults in SB3",
+     "spaces                           Gymnasium spaces cheat sheet"
+    ]
+   },
+   {
+    "re": "^algo ppo$",
+    "out": [
+     "PPO: on-policy actor-critic with a clipped objective.",
+     "Actions: discrete or continuous. Use as a strong default.",
+     "Tip: use several parallel envs (make_vec_env)."
+    ]
+   },
+   {
+    "re": "^algo a2c$",
+    "out": [
+     "A2C: on-policy actor-critic, synchronous advantage updates.",
+     "Actions: discrete or continuous. Simple and fast, often noisier than PPO."
+    ]
+   },
+   {
+    "re": "^algo dqn$",
+    "out": [
+     "DQN: off-policy value-based with replay buffer and target network.",
+     "Actions: discrete only. Good for games and image inputs."
+    ]
+   },
+   {
+    "re": "^algo sac$",
+    "out": [
+     "SAC: off-policy actor-critic with an entropy bonus.",
+     "Actions: continuous only. Sample efficient and robust for control."
+    ]
+   },
+   {
+    "re": "^algo td3$",
+    "out": [
+     "TD3: off-policy deterministic actor-critic with twin critics.",
+     "Actions: continuous only."
+    ]
+   },
+   {
+    "re": "^algo ddpg$",
+    "out": [
+     "DDPG: off-policy deterministic actor-critic, an ancestor of TD3.",
+     "Actions: continuous only. Sensitive to settings."
+    ]
+   },
+   {
+    "re": "^algo ",
+    "out": [
+     "Unknown algorithm. Try: ppo a2c dqn sac td3 ddpg"
+    ],
+    "cls": "warn"
+   },
+   {
+    "re": "^compare$",
+    "out": [
+     "algo  actions            data",
+     "PPO   discrete+continuous on-policy",
+     "A2C   discrete+continuous on-policy",
+     "DQN   discrete            off-policy",
+     "SAC   continuous          off-policy",
+     "TD3   continuous          off-policy",
+     "DDPG  continuous          off-policy"
+    ]
+   },
+   {
+    "re": "^defaults ppo$",
+    "out": [
+     "learning_rate 3e-4",
+     "n_steps 2048 (per env)",
+     "batch_size 64",
+     "n_epochs 10",
+     "gamma 0.99",
+     "gae_lambda 0.95",
+     "clip_range 0.2",
+     "(check your SB3 version's docs to confirm)"
+    ]
+   },
+   {
+    "re": "^spaces$",
+    "out": [
+     "Discrete(n)            integers 0..n-1",
+     "Box(low, high, shape)  real arrays",
+     "MultiDiscrete([a, b])  several discrete choices",
+     "MultiBinary(n)         n on/off flags",
+     "Dict({...})            named spaces, use MultiInputPolicy"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "warn"
+   }
+  ],
+  "tasks": []
+ }
+}
