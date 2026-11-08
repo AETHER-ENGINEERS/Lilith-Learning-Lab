@@ -6,7 +6,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 SDK="${ANDROID_SDK_ROOT:-/home/claude/android/sdk}"
 BT="$SDK/build-tools/34.0.0"; AJ="$SDK/platforms/android-34/android.jar"
 OUT="$HERE/out"; APK_NAME="${APK_NAME:-LilithLearningLab.apk}"
-VERSION_NAME="${VERSION_NAME:-2.0.0}"; VERSION_CODE="${VERSION_CODE:-3}"
+VERSION_NAME="${VERSION_NAME:-2.1.1}"; VERSION_CODE="${VERSION_CODE:-5}"
 KS="$HERE/teacher-xavier.jks"; KS_PASS="${KS_PASS:-teacher-xavier}"
 
 rm -rf "$OUT" "$HERE/assets" && mkdir -p "$OUT/classes" "$OUT/dex" "$HERE/assets"

@@ -9,6 +9,7 @@
   /* split "Label: detail" or the first clause into a short headline and a detail */
   function headline(text) {
     var t = N.plain(text), m;
+    if (/\$|\\[\[(]/.test(t)) return { head: t, detail: '' };   // never cut through a formula
     m = /^([^:]{2,60}):\s+(.+)$/.exec(t);
     if (m && !/^(e\.g|i\.e)/i.test(m[1])) return { head: m[1], detail: m[2] };
     m = /^(.{12,80}?[.;])\s+(.+)$/.exec(t);

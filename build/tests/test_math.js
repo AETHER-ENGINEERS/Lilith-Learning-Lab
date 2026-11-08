@@ -20,4 +20,8 @@ ok(M.caption('type $\\mathbb{N}$ ok') === 'type ℕ ok', M.caption('type $\\math
 ok(N.speakable('So $A \\to B$ means implies. Cost is $5.').includes('A to B') && !N.speakable('x $\\forall$').includes('$'), N.speakable('x $\\forall$'));
 ok(N.caption('Take $\\alpha \\to \\beta$.') === 'Take α → β.', N.caption('Take $\\alpha \\to \\beta$.'));
 ok(/The formula: A to B/.test(sp('$$A \\to B$$')), sp('$$A \\to B$$'));
+// gathered environments and line breaks
+(function () { const LM = require('../src/math.js'); const t = '$$\\begin{gathered} A \\to A \\\\[0.6em] A \\wedge B \\to A \\end{gathered}$$';
+  const c = LM.caption(t), sp = LM.speech(t);
+  if (/begin|\[0\.6em\]|\\\\/.test(c + sp)) { console.log('FAIL gathered leaks', c, '|', sp); f++; } else console.log('gathered ok:', c, '|', sp); })();
 console.log(f ? 'MATH FAILURES ' + f : 'ALL MATH TESTS PASSED'); process.exit(f ? 1 : 0);

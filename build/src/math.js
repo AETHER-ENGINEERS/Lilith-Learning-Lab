@@ -75,6 +75,7 @@
 
   /* tiny recursive converter. mode 'u' = unicode caption, 's' = speech */
   function conv(t, mode) {
+    t = t.replace(/\\(?:begin|end)\{[a-z*]+\}/g, ' ').replace(/\\\\(?:\[[^\]]*\])?/g, ' ; ').replace(/&/g, ' ').replace(/\s+/g, ' ').trim();
     var i = 0, n = t.length;
     function group() {      // read {...} or one token; returns the raw inner string
       while (i < n && t[i] === ' ') i++;

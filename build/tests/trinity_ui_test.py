@@ -20,6 +20,20 @@ with sync_playwright() as p:
     check('\\frac' not in page.inner_text('#main') and '$$' not in page.inner_text('#main'), 'no raw delimiters visible')
     page.evaluate("document.querySelector('#main .katex').scrollIntoView({block:'center'})"); page.wait_for_timeout(200); page.screenshot(path=shots + '/trin_math.png')
     page.evaluate('__onBack()'); page.wait_for_timeout(300)
+    # Lecture: walk slides of ch9 until a formula appears; it must be KaTeX, not raw $$
+    page.click('#nav [data-t="lecture"]'); page.wait_for_timeout(300)
+    if not page.query_selector('[data-lec="1"]'): page.evaluate('__onBack()'); page.wait_for_timeout(300)
+    page.click('[data-lec="1"]'); page.wait_for_selector('#slide')
+    page.click('#lplay'); page.wait_for_timeout(300)
+    for _ in range(14):
+        if page.locator('#slide .katex').count(): break
+        page.click('#lns'); page.wait_for_timeout(500)
+    page.evaluate("document.querySelectorAll('#slide .b.hid').forEach(e=>e.classList.remove('hid'))"); page.wait_for_timeout(400)
+    txt = page.inner_text('#slide')
+    check('$$' not in txt and '\\begin' not in txt and '\\to' not in txt, 'raw LaTeX on lecture slide: ' + txt[:120])
+    check(page.locator('#slide .katex').count() >= 1, 'KaTeX formula shown on a lecture slide: ' + txt[:150].replace(chr(10), ' | '))
+    page.screenshot(path=shots + '/trin_lecture_math.png')
+    page.evaluate('__onBack()'); page.wait_for_timeout(300)
     page.click('#nav [data-t="practice"]'); page.wait_for_selector('[data-lab]')
     for lab in ['ch5/lab2', 'ch9/lab2']:
         page.click('[data-lab="%s"]' % lab); page.wait_for_selector('iframe'); page.wait_for_timeout(700)
