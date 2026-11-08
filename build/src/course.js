@@ -11,7 +11,7 @@
         "glossary": [ { "term": "...", "def": "..." } ],
         "keyPoints":["..."],
         "lesson":   [ {"type":"text","items":["..."]}, {"type":"code","lang":"bash","code":"..."},
-                      {"type":"figure","image":"fig.svg","caption":"..."}, {"type":"map","title":"...","links":[...]} ],
+                      {"type":"figure","image":"fig.svg","caption":"..."}, {"type":"math","tex":"\\frac{a}{b}"}, {"type":"map","title":"...","links":[...]} ],
         "quiz":     [ { "q": "...", "options": ["a","b","c"], "answer": 1, "explain": "..." } ],
         "cards":    [ { "q": "...", "a": "..." } ],
         "practice": [ labs: fill | order | match | write | code | terminal ]
@@ -57,6 +57,7 @@
     if (!b || typeof b !== 'object') return null;
     var t = s(b.type || (b.code !== undefined ? 'code' : b.image ? 'figure' : b.links ? 'map' : 'text'));
     if (t === 'text') { var it = strs(b.items !== undefined ? b.items : b.text); return it.length ? { type: 'text', items: it } : null; }
+    if (t === 'math') { var tex = s(b.tex !== undefined ? b.tex : b.text).trim(); return tex ? { type: 'text', items: ['$$' + tex + '$$'] } : null; }
     if (t === 'code') { var code = s(b.code).replace(/\s+$/, ''); return code ? { type: 'code', lang: s(b.lang) || 'text', code: code } : null; }
     if (t === 'figure') { return b.image ? { type: 'figure', image: s(b.image), caption: s(b.caption) } : null; }
     if (t === 'map') { var ms = normMaps({ maps: [b] }, w, where); return ms.length ? { type: 'map', map: ms[0] } : null; }

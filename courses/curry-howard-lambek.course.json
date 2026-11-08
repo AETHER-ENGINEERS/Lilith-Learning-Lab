@@ -1,0 +1,3903 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "curry-howard-lambek",
+ "title": "Curry-Howard-Lambek",
+ "subtitle": "Computational trinitarianism: logic, programs and categories",
+ "author": "Lilith Learning Lab",
+ "description": "A course on the three-way correspondence between logic, programming languages and category theory, usually called computational trinitarianism. It builds from natural deduction and the simply typed lambda calculus to cartesian closed categories, then dependent types, proof assistants and the wider family of correspondences. Math uses LaTeX. Lean examples were checked against Lean 4; other code is illustrative.",
+ "pronounce": {
+  "Lambek": "lam beck",
+  "Curry": "curry",
+  "Howard": "how ward",
+  "Martin-Löf": "mar tin loff",
+  "Martin-Lof": "mar tin loff",
+  "Girard": "zhee rar",
+  "Gentzen": "gent sen",
+  "Rocq": "rock",
+  "Coq": "coke",
+  "Agda": "ag dah",
+  "Idris": "id riss",
+  "STLC": "S T L C",
+  "HoTT": "hot",
+  "BHK": "B H K",
+  "Heyting": "hay ting",
+  "Tait": "tate",
+  "Moggi": "mow jee",
+  "Voevodsky": "vo evod sky",
+  "Wadler": "wad ler",
+  "Abramsky": "a bram ski",
+  "Coecke": "coo kuh",
+  "Baez": "by ez",
+  "Mathlib": "math lib",
+  "CompCert": "comp cert",
+  "seL4": "S E L 4",
+  "Isabelle": "iz a bell",
+  "Lean": "lean",
+  "Prop": "prop",
+  "CCC": "C C C",
+  "Sigma": "sigma",
+  "Pi": "pie",
+  "refl": "reflexivity",
+  "rfl": "reflexivity",
+  "Haskell": "has kell",
+  "Church": "church",
+  "Prawitz": "prah wits",
+  "Lawvere": "law veer",
+  "Scott": "scott",
+  "Hilbert": "hill bert",
+  "Brouwer": "brow er",
+  "Kolmogorov": "kol mo gor off",
+  "Tarski": "tar ski",
+  "Kleisli": "kly slee",
+  "isomorphism": "eye so mor fizm",
+  "morphism": "mor fizm",
+  "functor": "funk tor",
+  "Heyting algebra": "hay ting algebra"
+ },
+ "chapters": [
+  {
+   "title": "Three views of one idea",
+   "maps": [
+    {
+     "title": "Computational trinitarianism",
+     "links": [
+      "Logic [ch2] | has | Propositions and proofs",
+      "Programming [ch3] | has | Types and programs",
+      "Category theory [ch7] | has | Objects and morphisms",
+      "Propositions and proofs | correspond to | Types and programs",
+      "Types and programs | correspond to | Objects and morphisms",
+      "Objects and morphisms | correspond to | Propositions and proofs",
+      "Curry-Howard [ch4] | links | Logic [ch2]",
+      "Curry-Howard [ch4] | links | Programming [ch3]",
+      "Lambek [ch9] | links | Programming [ch3]",
+      "Lambek [ch9] | links | Category theory [ch7]"
+     ]
+    }
+   ],
+   "summary": [
+    "Logic, programming and category theory look like three separate subjects, but they describe the same structure in three vocabularies. A proposition is a type, a proof is a program, and both are an object and a morphism in a category.",
+    "The first link is the Curry-Howard correspondence between proofs and programs. The second is the Lambek correspondence between typed programs and categories.",
+    "Together they are often called the Curry-Howard-Lambek correspondence, or computational trinitarianism, a slogan associated with Robert Harper.",
+    "Why care? Each view brings tools to the others. Logic gives you a way to say what a program means. Programming gives a proof something you can run. Category theory gives the common language that shows the three are the same shape."
+   ],
+   "glossary": [
+    {
+     "term": "Curry-Howard correspondence",
+     "def": "The match between logical propositions and types, and between proofs and programs."
+    },
+    {
+     "term": "Lambek correspondence",
+     "def": "The match between typed lambda calculus and cartesian closed categories."
+    },
+    {
+     "term": "Computational trinitarianism",
+     "def": "The slogan that logic, type theory and category theory are three aspects of one thing."
+    },
+    {
+     "term": "Proposition",
+     "def": "A statement that can be true or false, such as A implies B."
+    },
+    {
+     "term": "Type",
+     "def": "A classification of programs by the kind of value they compute."
+    },
+    {
+     "term": "Category",
+     "def": "A collection of objects with arrows (morphisms) between them that compose."
+    },
+    {
+     "term": "Constructive proof",
+     "def": "A proof that shows how to build the thing it claims exists."
+    }
+   ],
+   "keyPoints": [
+    "Three views: logic (propositions, proofs), programs (types, terms), categories (objects, morphisms).",
+    "Curry-Howard: a proof of A implies B is a function from proofs of A to proofs of B.",
+    "Lambek: a typed program is an arrow between objects in a cartesian closed category.",
+    "The correspondence is exact for constructive (intuitionistic) logic, not for classical logic out of the box.",
+    "This is the idea behind proof assistants such as Lean, Rocq and Agda.",
+    "You do not need advanced math to start: every idea in this course is introduced with small examples."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Start with something you already know. A function that takes a pair and returns its first component has the type from A and B to A. Now read the same shape as logic: from A and B, conclude A. It is a valid inference. The function is a proof, and the type is the statement it proves."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "def first(pair: tuple[int, str]) -> int:\n    return pair[0]\n\n# As logic:   A and B  implies  A\n# As a type:  (A x B) -> A\n# As a proof: the program first"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now the identity function. It has the type from A to A. As a statement, A implies A. As a program, it returns its argument. As a proof, assume A and conclude A, which is exactly what the function does with its input.",
+      "Notice how little work the word proof does here. The program is the proof. Checking that the program has that type is checking the proof."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} A \\to A \\\\[0.6em] A \\wedge B \\to A \\\\[0.6em] A \\to (B \\to A) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Three statements, three programs: the identity, the first projection, and the function that takes a and then b and returns a. All of them are provable, all of them are programs, and all of them are arrows in a category.",
+      "The third view says the same again. Treat each type as a dot and each function as an arrow between dots. Programs compose by running one after another. There is an identity arrow at every dot. That is already the definition of a category, which you meet in chapter 7."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "Logic               Programming            Category theory\n---------------------------------------------------------------\nproposition         type                   object\nproof               program (term)         morphism (arrow)\nA implies B         function type A -> B   exponential object\nA and B             pair type A x B        product\nA or B              sum type A + B         coproduct\ntrue                unit type              terminal object\nfalse               empty type             initial object"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A word of care. Not every logic fits so neatly. Classical logic, which allows excluded middle and double negation elimination, needs extra machinery, and chapter 6 shows how it connects to control operators like call with current continuation.",
+      "Where we are going: logic and natural deduction in chapter 2, typed lambda calculus in chapter 3, the correspondence in chapter 4, computation as proof simplification in chapter 5, classical versus constructive in chapter 6, categories in chapters 7 and 8, the Lambek step in chapter 9, then dependent types, proof assistants and the wider picture."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A little history, hedged because the details are debated. Haskell Curry noticed in the 1930s and 1950s that the types of combinators look like axioms of implicational logic. William Howard wrote down the full correspondence for natural deduction in 1969, circulated as a note and published in 1980.",
+      "Joachim Lambek connected deductive systems and categories in the late 1960s and 1970s. Per Martin-Lof's type theory then made the idea a foundation for mathematics and programming."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "In the Curry-Howard correspondence, what corresponds to a proof?",
+     "options": [
+      "A type",
+      "A program",
+      "A category",
+      "A symbol"
+     ],
+     "answer": 1,
+     "explain": "A proof of a proposition is a program whose type is that proposition."
+    },
+    {
+     "q": "Which type is the logical statement A and B implies A?",
+     "options": [
+      "A -> B",
+      "(A x B) -> A",
+      "A + B",
+      "A -> (B + A)"
+     ],
+     "answer": 1,
+     "explain": "From a pair you can take the first component, so (A x B) -> A is inhabited by the first projection."
+    },
+    {
+     "q": "What is the Lambek side of the triangle?",
+     "options": [
+      "Typed programs as arrows in a cartesian closed category",
+      "Proofs as truth tables",
+      "Types as numbers",
+      "Logic as hardware"
+     ],
+     "answer": 0,
+     "explain": "Lambek connected typed lambda calculus with cartesian closed categories."
+    },
+    {
+     "q": "What does the unit type correspond to in logic?",
+     "options": [
+      "False",
+      "True",
+      "A or B",
+      "Negation"
+     ],
+     "answer": 1,
+     "explain": "The unit type has exactly one value, so it is always inhabited, like the proposition true."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Propositions as ...?",
+     "a": "Types."
+    },
+    {
+     "q": "Proofs as ...?",
+     "a": "Programs."
+    },
+    {
+     "q": "Types and programs as ...?",
+     "a": "Objects and morphisms of a category."
+    },
+    {
+     "q": "Who is the slogan computational trinitarianism associated with?",
+     "a": "Robert Harper (it is also used on the nLab)."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Translate the vocabulary",
+     "intro": "Match each logic word with its programming word.",
+     "pairs": [
+      [
+       "Proposition",
+       "Type"
+      ],
+      [
+       "Proof",
+       "Program"
+      ],
+      [
+       "A implies B",
+       "Function from A to B"
+      ],
+      [
+       "A and B",
+       "Pair of A and B"
+      ],
+      [
+       "True",
+       "Unit type"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Fill the triangle",
+     "text": "Logic says {{proposition}}, programming says {{type}}, and category theory says {{object}}. A proof is a {{program|term}}, which is also a {{morphism|arrow}}."
+    },
+    {
+     "type": "write",
+     "title": "Read it three ways",
+     "prompt": "Take the identity function from A to A. In one or two sentences, say what it is as a proof, as a program and as a category-theory arrow.",
+     "checks": [
+      {
+       "re": "proof|prove",
+       "msg": "mentions proof"
+      },
+      {
+       "re": "program|function",
+       "msg": "mentions program"
+      },
+      {
+       "re": "arrow|morphism|identity",
+       "msg": "mentions arrow or identity"
+      }
+     ],
+     "solution": "As a proof it shows A implies A. As a program it returns its input. As an arrow it is the identity morphism on A."
+    }
+   ]
+  },
+  {
+   "title": "Logic and natural deduction",
+   "maps": [
+    {
+     "title": "Natural deduction",
+     "links": [
+      "Judgment | has form | Context turnstile Proposition",
+      "Connective | has | Introduction rule",
+      "Connective | has | Elimination rule",
+      "Introduction rule | builds | Proof",
+      "Elimination rule | uses | Proof",
+      "BHK interpretation | explains | Proofs as constructions",
+      "Implication | introduced by | Discharging assumption",
+      "Intuitionistic logic [ch6] | omits | Excluded middle [ch6]",
+      "Natural deduction | becomes | Lambda calculus [ch3]"
+     ]
+    }
+   ],
+   "summary": [
+    "Natural deduction is a way to write proofs as trees of small rules. Each logical connective has an introduction rule, which says how to prove it, and an elimination rule, which says how to use it.",
+    "A judgment has the form Gamma proves A: from the assumptions in Gamma we can conclude A. Proving an implication means assuming the premise and proving the conclusion; that assumption is then discharged.",
+    "The Brouwer-Heyting-Kolmogorov, or BHK, reading explains the rules constructively: a proof of A and B is a pair of proofs, a proof of A implies B is a method turning proofs of A into proofs of B, and there is no proof of false."
+   ],
+   "glossary": [
+    {
+     "term": "Judgment",
+     "def": "A claim of the form Gamma proves A, meaning A follows from assumptions Gamma."
+    },
+    {
+     "term": "Context",
+     "def": "The list of assumptions available, written Gamma."
+    },
+    {
+     "term": "Introduction rule",
+     "def": "A rule that tells you how to prove a connective."
+    },
+    {
+     "term": "Elimination rule",
+     "def": "A rule that tells you how to use a proven connective."
+    },
+    {
+     "term": "Discharge",
+     "def": "To remove an assumption once the implication that depends on it has been proven."
+    },
+    {
+     "term": "BHK interpretation",
+     "def": "The constructive meaning of proofs: pairs for and, functions for implies, tagged proofs for or."
+    },
+    {
+     "term": "Ex falso",
+     "def": "From false you may conclude anything."
+    },
+    {
+     "term": "Intuitionistic logic",
+     "def": "Logic without excluded middle, matching constructive proofs."
+    }
+   ],
+   "keyPoints": [
+    "Propositions: atoms, true, false, and, or, implies. Negation of A is A implies false.",
+    "Every connective has an introduction rule and an elimination rule.",
+    "Implication introduction discharges an assumption.",
+    "Or elimination is proof by cases.",
+    "BHK: and is a pair, implies is a function, or is a tagged choice, false has no proof.",
+    "A proof tree is a data structure, and that is why it can later be read as a program."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The grammar of propositions is small. A proposition is an atom P, or true, or false, or A and B, or A or B, or A implies B. We write negation not A as an abbreviation for A implies false."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} A, B \\;::=\\; P \\;\\mid\\; \\top \\;\\mid\\; \\bot \\;\\mid\\; A \\wedge B \\;\\mid\\; A \\vee B \\;\\mid\\; A \\to B \\\\[0.6em] \\neg A := A \\to \\bot \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A judgment Gamma proves A is read: assuming everything in Gamma, A holds. The rules say how judgments follow from other judgments. We write the premises above a line and the conclusion below. Here are the rules for implication."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\frac{\\Gamma, A \\vdash B}{\\Gamma \\vdash A \\to B}\\;(\\to\\!I) \\\\[0.6em] \\frac{\\Gamma \\vdash A \\to B \\\\[0.6em] \\Gamma \\vdash A}{\\Gamma \\vdash B}\\;(\\to\\!E) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Implication introduction says: to prove A implies B, assume A and prove B. The assumption is only available inside that proof. Implication elimination is modus ponens: from A implies B and A, conclude B. Now the rules for and."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\frac{\\Gamma \\vdash A \\\\[0.6em] \\Gamma \\vdash B}{\\Gamma \\vdash A \\wedge B}\\;(\\wedge I) \\\\[0.6em] \\frac{\\Gamma \\vdash A \\wedge B}{\\Gamma \\vdash A}\\;(\\wedge E_1) \\\\[0.6em] \\frac{\\Gamma \\vdash A \\wedge B}{\\Gamma \\vdash B}\\;(\\wedge E_2) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "To prove A and B, prove both. From A and B you can take either part. Now the rules for or, where the elimination rule is a proof by cases."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\frac{\\Gamma \\vdash A}{\\Gamma \\vdash A \\vee B}\\;(\\vee I_1) \\\\[0.6em] \\frac{\\Gamma \\vdash B}{\\Gamma \\vdash A \\vee B}\\;(\\vee I_2) \\\\[0.6em] \\frac{\\Gamma \\vdash A \\vee B \\\\[0.6em] \\Gamma, A \\vdash C \\\\[0.6em] \\Gamma, B \\vdash C}{\\Gamma \\vdash C}\\;(\\vee E) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "To prove A or B, prove one of them and say which. To use A or B, show that C follows in both cases. Finally, false has no introduction rule, and its elimination rule says that from false anything follows."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\frac{\\Gamma \\vdash \\bot}{\\Gamma \\vdash C}\\;(\\bot E) \\\\[0.6em] \\frac{}{\\Gamma, A \\vdash A}\\;(\\text{hyp}) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Example: prove A and B implies B and A. Assume p of type A and B. By the two elimination rules we get B and A. By and introduction we get B and A. Discharging the assumption gives the implication."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The BHK reading, from Brouwer, Heyting and Kolmogorov, says what a proof is. A proof of A and B is a pair of a proof of A and a proof of B. A proof of A or B is a proof of A or a proof of B, together with a tag saying which.",
+      "A proof of A implies B is a method that transforms any proof of A into a proof of B. There is no proof of false.",
+      "Read like this, a proof is a thing you can build and inspect. In chapter 3 we make that literal with lambda calculus."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How do you prove A implies B in natural deduction?",
+     "options": [
+      "Prove A and prove B separately",
+      "Assume A and prove B",
+      "Prove not B",
+      "Assume B and prove A"
+     ],
+     "answer": 1,
+     "explain": "Implication introduction assumes A, proves B, and discharges the assumption."
+    },
+    {
+     "q": "What does the elimination rule for or look like?",
+     "options": [
+      "Take the first component",
+      "Proof by cases: show C follows from A and from B",
+      "Assume false",
+      "Apply modus ponens"
+     ],
+     "answer": 1,
+     "explain": "To use A or B you must handle both cases."
+    },
+    {
+     "q": "In the BHK interpretation, a proof of A and B is...",
+     "options": [
+      "A choice of A or B",
+      "A pair of a proof of A and a proof of B",
+      "A function",
+      "Nothing"
+     ],
+     "answer": 1,
+     "explain": "And corresponds to a pair."
+    },
+    {
+     "q": "How is not A defined here?",
+     "options": [
+      "A and false",
+      "A implies false",
+      "false implies A",
+      "A or false"
+     ],
+     "answer": 1,
+     "explain": "Negation is the implication from A to false."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Rule name for modus ponens?",
+     "a": "Implication elimination (arrow elimination)."
+    },
+    {
+     "q": "What does discharging an assumption mean?",
+     "a": "The assumption is used inside an implication proof and then removed from the context."
+    },
+    {
+     "q": "Ex falso quodlibet?",
+     "a": "From false, anything follows."
+    },
+    {
+     "q": "BHK for or?",
+     "a": "A proof of A or a proof of B, tagged with which one."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Rules and what they do",
+     "intro": "Match each rule to its job.",
+     "pairs": [
+      [
+       "Implication introduction",
+       "Assume the premise, prove the conclusion"
+      ],
+      [
+       "Implication elimination",
+       "Modus ponens"
+      ],
+      [
+       "And introduction",
+       "Prove both parts"
+      ],
+      [
+       "Or elimination",
+       "Proof by cases"
+      ],
+      [
+       "Ex falso",
+       "From false conclude anything"
+      ]
+     ]
+    },
+    {
+     "type": "order",
+     "title": "Prove A and B implies B and A",
+     "intro": "Put the proof steps in order.",
+     "items": [
+      "Assume p proves A and B",
+      "Take the second part of p, which proves B",
+      "Take the first part of p, which proves A",
+      "Combine them with and introduction to get B and A",
+      "Discharge p to conclude A and B implies B and A"
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "BHK in words",
+     "text": "A proof of A and B is a {{pair}}. A proof of A implies B is a {{function|method}}. A proof of A or B is a tagged proof of one side, either {{left|inl}} or {{right|inr}}. There is no proof of {{false}}."
+    }
+   ]
+  },
+  {
+   "title": "The simply typed lambda calculus",
+   "maps": [
+    {
+     "title": "Simply typed lambda calculus",
+     "links": [
+      "Term | is | Variable",
+      "Term | is | Abstraction",
+      "Term | is | Application",
+      "Abstraction | has type | Function type",
+      "Application | removes | Function type",
+      "Typing rules | assign | Types to terms",
+      "Beta reduction | computes | Application",
+      "Normal form | is | Result",
+      "Typing rules [ch4] | match | Natural deduction [ch2]"
+     ]
+    }
+   ],
+   "summary": [
+    "The lambda calculus is the smallest programming language: variables, functions written with lambda, and application. The simply typed version gives every term a type built from base types and function arrows.",
+    "Three typing rules do everything: a variable has the type its context gives it, a lambda abstraction has a function type, and applying a function of type A to B to an argument of type A gives type B. Computation is beta reduction, which substitutes the argument into the body.",
+    "Well-typed terms in this calculus always finish computing. That strong normalization property is the computational reflection of logical consistency, which we use in chapter 5."
+   ],
+   "glossary": [
+    {
+     "term": "Lambda abstraction",
+     "def": "An anonymous function written lambda x. M, where x is the parameter and M the body."
+    },
+    {
+     "term": "Application",
+     "def": "Calling a function on an argument, written M N."
+    },
+    {
+     "term": "Type context",
+     "def": "A list of variables with their types, written Gamma."
+    },
+    {
+     "term": "Function type",
+     "def": "The type A to B of functions that take an A and return a B."
+    },
+    {
+     "term": "Beta reduction",
+     "def": "The computation step that replaces a parameter with the argument inside the body."
+    },
+    {
+     "term": "Substitution",
+     "def": "Replacing a variable by a term, taking care not to capture other variables."
+    },
+    {
+     "term": "Normal form",
+     "def": "A term with no beta redex left, so no further computation is possible."
+    },
+    {
+     "term": "Strong normalization",
+     "def": "Every reduction sequence from a well-typed term ends in a normal form."
+    }
+   ],
+   "keyPoints": [
+    "Terms: variables, lambda abstractions, applications.",
+    "Types: base types and A to B, where the arrow is right associative.",
+    "Typing judgment: Gamma proves M has type A.",
+    "Beta: applying lambda x. M to N reduces to M with x replaced by N.",
+    "Well-typed terms cannot loop; the untyped lambda calculus can.",
+    "The identity has type A to A. The constant function K has type A to B to A."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Here is the whole syntax. A term M is a variable, or a lambda abstraction with a type annotation on the parameter, or an application. A type is a base type or a function type."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} M, N \\;::=\\; x \\;\\mid\\; \\lambda x{:}A.\\, M \\;\\mid\\; M\\, N \\\\[0.6em] A, B \\;::=\\; b \\;\\mid\\; A \\to B \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The arrow associates to the right, so A to B to C means A to the function type B to C. Application associates to the left, so f a b means the application of f a to b."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\frac{x{:}A \\in \\Gamma}{\\Gamma \\vdash x : A}\\;(\\text{var}) \\\\[0.6em] \\frac{\\Gamma, x{:}A \\vdash M : B}{\\Gamma \\vdash \\lambda x{:}A.\\, M : A \\to B}\\;(\\text{abs}) \\\\[0.6em] \\frac{\\Gamma \\vdash M : A \\to B \\\\[0.6em] \\Gamma \\vdash N : A}{\\Gamma \\vdash M\\, N : B}\\;(\\text{app}) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Read these as logic and you have the rules of implication from chapter 2: the variable rule is hypothesis, abstraction is implication introduction, and application is implication elimination. That is the Curry-Howard correspondence for the arrow fragment, and the next chapter spells it out."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two examples of typing. The identity function takes any x of type A and returns it. The function K takes x and then y and returns x."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\vdash \\lambda x{:}A.\\, x \\;:\\; A \\to A \\\\[0.6em] \\vdash \\lambda x{:}A.\\, \\lambda y{:}B.\\, x \\;:\\; A \\to B \\to A \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Computation is beta reduction. Applying a lambda abstraction to an argument replaces the parameter by the argument."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "(\\lambda x{:}A.\\, M)\\, N \\;\\to_\\beta\\; M[N/x]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Substitution has one subtlety. If the argument mentions a variable with the same name as a bound variable in the body, the bound variable must be renamed first, otherwise it captures the wrong thing.",
+      "This is called capture-avoiding substitution, and implementations usually rename bound variables or use de Bruijn indices.",
+      "Eta conversion is the other common equation: lambda x. f x equals f when x is not free in f. Together, beta and eta make function equality extensional."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# The same idea in Python\nidentity = lambda x: x\nK = lambda x: lambda y: x\n\nassert identity(5) == 5\nassert K(\"a\")(\"b\") == \"a\"\n\n# Types in Python hints (checked by mypy, not at run time)\nfrom typing import Callable, TypeVar\nA = TypeVar(\"A\"); B = TypeVar(\"B\")\ndef K_typed(x: A) -> Callable[[B], A]:\n    return lambda y: x"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why simply typed? Because the types are just function arrows and base types, nothing else. There is no polymorphism and no dependent types yet. That keeps the calculus small enough to match intuitionistic implication exactly. We will add pairs, sums, unit and empty types in the next chapter."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A striking fact, proved by Tait with logical relations and by others since: every well-typed term in this calculus reaches a normal form. The Y combinator and the self-applying term omega cannot be typed, so non-termination is excluded. We use this in chapter 5 to show that logic is consistent."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the type of lambda x:A. x?",
+     "options": [
+      "A",
+      "A to A",
+      "A to B",
+      "B to A"
+     ],
+     "answer": 1,
+     "explain": "The identity takes an A and returns an A."
+    },
+    {
+     "q": "What is the typing rule for application?",
+     "options": [
+      "If M : A to B and N : A then M N : B",
+      "If M : A and N : B then M N : A to B",
+      "If M : A then M N : A",
+      "Application has no rule"
+     ],
+     "answer": 0,
+     "explain": "Applying a function to an argument of the right type gives the result type."
+    },
+    {
+     "q": "What does beta reduction do?",
+     "options": [
+      "Renames a variable",
+      "Substitutes the argument into the body",
+      "Deletes a term",
+      "Changes a type"
+     ],
+     "answer": 1,
+     "explain": "(lambda x. M) N becomes M with N substituted for x."
+    },
+    {
+     "q": "Which property do all well-typed STLC terms have?",
+     "options": [
+      "They contain pairs",
+      "They always reach a normal form",
+      "They are polymorphic",
+      "They use side effects"
+     ],
+     "answer": 1,
+     "explain": "Strong normalization: no infinite reduction from a well-typed term."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Typing rule for lambda?",
+     "a": "If Gamma, x : A proves M : B then Gamma proves lambda x:A. M : A to B."
+    },
+    {
+     "q": "Beta rule?",
+     "a": "(lambda x. M) N reduces to M[N/x]."
+    },
+    {
+     "q": "Type of K?",
+     "a": "A to B to A."
+    },
+    {
+     "q": "Which rule matches hypothesis in logic?",
+     "a": "The variable rule."
+    }
+   ],
+   "practice": [
+    {
+     "type": "code",
+     "title": "A type checker",
+     "intro": "Write typeOf(term, ctx) for the simply typed lambda calculus. A term is [\"var\", x], [\"lam\", x, T, body] or [\"app\", f, a]. A type is a string such as \"A\" or [\"->\", T1, T2]. ctx maps variable names to types. Return the type, or the string \"error\" if the term is not typable.",
+     "fn": "typeOf",
+     "starter": "function typeOf(term, ctx) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        [
+         "lam",
+         "x",
+         "A",
+         [
+          "var",
+          "x"
+         ]
+        ],
+        {}
+       ],
+       "expect": [
+        "->",
+        "A",
+        "A"
+       ]
+      },
+      {
+       "args": [
+        [
+         "lam",
+         "x",
+         "A",
+         [
+          "lam",
+          "y",
+          "B",
+          [
+           "var",
+           "x"
+          ]
+         ]
+        ],
+        {}
+       ],
+       "expect": [
+        "->",
+        "A",
+        [
+         "->",
+         "B",
+         "A"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "app",
+         [
+          "lam",
+          "x",
+          "A",
+          [
+           "var",
+           "x"
+          ]
+         ],
+         [
+          "var",
+          "a"
+         ]
+        ],
+        {
+         "a": "A"
+        }
+       ],
+       "expect": "A"
+      },
+      {
+       "args": [
+        [
+         "app",
+         [
+          "var",
+          "a"
+         ],
+         [
+          "var",
+          "a"
+         ]
+        ],
+        {
+         "a": "A"
+        }
+       ],
+       "expect": "error"
+      },
+      {
+       "args": [
+        [
+         "var",
+         "z"
+        ],
+        {}
+       ],
+       "expect": "error"
+      },
+      {
+       "args": [
+        [
+         "app",
+         [
+          "lam",
+          "x",
+          "A",
+          [
+           "var",
+           "x"
+          ]
+         ],
+         [
+          "var",
+          "b"
+         ]
+        ],
+        {
+         "b": "B"
+        }
+       ],
+       "expect": "error"
+      }
+     ],
+     "hint": "var: look in ctx. lam: extend ctx with x:T and return [\"->\", T, typeOf(body)]. app: the function type must be [\"->\", A, B] and the argument must have type A (compare with JSON.stringify).",
+     "solution": "function typeOf(term, ctx) {\n  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);\n  if (term[0] === 'var') return term[1] in ctx ? ctx[term[1]] : 'error';\n  if (term[0] === 'lam') {\n    const body = typeOf(term[3], Object.assign({}, ctx, { [term[1]]: term[2] }));\n    return body === 'error' ? 'error' : ['->', term[2], body];\n  }\n  const f = typeOf(term[1], ctx), a = typeOf(term[2], ctx);\n  if (f === 'error' || a === 'error') return 'error';\n  return Array.isArray(f) && f[0] === '->' && same(f[1], a) ? f[2] : 'error';\n}"
+    },
+    {
+     "type": "match",
+     "title": "Rules as logic",
+     "intro": "Match each typing rule to the logical rule it mirrors.",
+     "pairs": [
+      [
+       "Variable rule",
+       "Hypothesis"
+      ],
+      [
+       "Lambda abstraction",
+       "Implication introduction"
+      ],
+      [
+       "Application",
+       "Implication elimination (modus ponens)"
+      ],
+      [
+       "Beta reduction",
+       "Removing a detour in a proof"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Parse the arrows",
+     "text": "The type A to B to C means A to (B to C), so the arrow is {{right|right-associative|right associative}}. The term f a b means (f a) b, so application is {{left|left-associative|left associative}}. The identity function has type A {{to|->}} A."
+    }
+   ]
+  },
+  {
+   "title": "Propositions as types",
+   "maps": [
+    {
+     "title": "The Curry-Howard dictionary",
+     "links": [
+      "Proposition | is | Type",
+      "Proof | is | Program",
+      "Implication | is | Function type",
+      "Conjunction | is | Pair type",
+      "Disjunction | is | Sum type",
+      "True | is | Unit type",
+      "False | is | Empty type",
+      "Implication introduction | is | Lambda abstraction",
+      "Implication elimination | is | Application",
+      "Provable | means | Inhabited",
+      "Proof assistants [ch11] | check | Types"
+     ]
+    }
+   ],
+   "summary": [
+    "Extend the lambda calculus with pairs, tagged sums, a unit type and an empty type, and every rule of natural deduction has a matching program construct. Implication becomes the function type, and becomes the pair type, or becomes the sum type, true becomes unit and false becomes the empty type.",
+    "A proposition is provable exactly when its type has a closed program, we say the type is inhabited. Writing the program is writing the proof, and type checking is proof checking.",
+    "Currying is the first famous example: the proposition A and B implies C is equivalent to A implies B implies C, and the two functions curry and uncurry are the proofs of each direction."
+   ],
+   "glossary": [
+    {
+     "term": "Inhabited type",
+     "def": "A type that has at least one program (closed term). Inhabited means provable."
+    },
+    {
+     "term": "Product type",
+     "def": "The type A x B of pairs, matching logical and."
+    },
+    {
+     "term": "Sum type",
+     "def": "The type A + B of values tagged left or right, matching logical or."
+    },
+    {
+     "term": "Unit type",
+     "def": "The type with exactly one value, matching true."
+    },
+    {
+     "term": "Empty type",
+     "def": "The type with no values, matching false. Also called Void."
+    },
+    {
+     "term": "Currying",
+     "def": "Turning a function of a pair into a function that takes its arguments one at a time."
+    },
+    {
+     "term": "Case analysis",
+     "def": "Program construct that handles each side of a sum, matching or elimination."
+    },
+    {
+     "term": "Absurd",
+     "def": "The function from the empty type to any type, matching ex falso."
+    }
+   ],
+   "keyPoints": [
+    "A and B is the pair type; its introduction is making a pair and its eliminations are fst and snd.",
+    "A or B is the sum type; its introductions are inl and inr, and its elimination is case.",
+    "A implies B is the function type; introduction is lambda, elimination is application.",
+    "True is the unit type with one value. False is the empty type with none.",
+    "Not A is the function type A to empty. A proof of a negation is a program that turns any A into a contradiction.",
+    "Provable means inhabited. Type checking is proof checking."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Here is the full dictionary. Each row is a logical rule and the programming construct that implements it."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "Logic rule                    Program                      Typing\n------------------------------------------------------------------------------\nhypothesis                    variable x                   x : A\nimplies introduction          lambda x. M                  A -> B\nimplies elimination           application M N              B\nand introduction              pair (M, N)                  A x B\nand elimination               fst P, snd P                 A, B\nor introduction               inl M, inr N                 A + B\nor elimination                case S of inl x.. | inr y..  C\ntrue introduction             unit value ()                1\nfalse elimination             absurd M                     C   (from 0)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "In Haskell the correspondence is visible in the standard library. The tuple type is and, Either is or, the function arrow is implies and Void is false."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "haskell",
+     "code": "swap :: (a, b) -> (b, a)\nswap (x, y) = (y, x)               -- proves  A and B  implies  B and A\n\norSwap :: Either a b -> Either b a\norSwap (Left x)  = Right x\norSwap (Right y) = Left y          -- proves  A or B  implies  B or A\n\ncurryProof :: ((a, b) -> c) -> (a -> b -> c)\ncurryProof f = \\x y -> f (x, y)    -- A and B implies C  gives  A implies B implies C\n\nabsurd' :: Void -> a\nabsurd' v = case v of {}           -- false implies anything"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The same proofs in Python type hints. A static checker such as mypy verifies them, which is a small version of proof checking."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from typing import Callable, TypeVar\nA = TypeVar(\"A\"); B = TypeVar(\"B\"); C = TypeVar(\"C\")\n\ndef swap(p: tuple[A, B]) -> tuple[B, A]:\n    return (p[1], p[0])\n\ndef curry(f: Callable[[tuple[A, B]], C]) -> Callable[[A], Callable[[B], C]]:\n    return lambda a: lambda b: f((a, b))\n\ndef uncurry(f: Callable[[A], Callable[[B], C]]) -> Callable[[tuple[A, B]], C]:\n    return lambda p: f(p[0])(p[1])"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now negation. Not A means A implies false. A proof of not A is a program that, given any A, produces a value of the empty type. Since no such value exists, the program can only be written if A has no values either.",
+      "The program that turns a value into a negation of a negation is easy: given a, and given k a proof of not A, apply k to a."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\lambda a.\\, \\lambda k.\\, k\\, a \\;:\\; A \\to \\neg\\neg A"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Equally important are the types that have no program. The type A to B with unrelated A and B cannot be inhabited, which matches the fact that A implies B is not provable for arbitrary propositions.",
+      "And the types that correspond to excluded middle or double negation elimination have no program in this calculus; chapter 6 explains why.",
+      "This is the gain of proofs as programs. Proving a theorem means finding a program; refuting provability means a type that no program can have; and checking a proof is type checking."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which type corresponds to A or B?",
+     "options": [
+      "A x B",
+      "A + B (a sum type)",
+      "A -> B",
+      "The unit type"
+     ],
+     "answer": 1,
+     "explain": "Or corresponds to a tagged sum such as Either."
+    },
+    {
+     "q": "A proposition is provable exactly when...",
+     "options": [
+      "Its type has a program",
+      "Its type has a name",
+      "Its type is a base type",
+      "Its type has a function"
+     ],
+     "answer": 0,
+     "explain": "Provable means inhabited by a closed program."
+    },
+    {
+     "q": "What is the type of the proof of A implies not not A?",
+     "options": [
+      "A to ((A to 0) to 0)",
+      "A + A",
+      "(A to 0) to A",
+      "0 to A"
+     ],
+     "answer": 0,
+     "explain": "Not not A is (A to 0) to 0, and lambda a. lambda k. k a has that type."
+    },
+    {
+     "q": "What does the Haskell function absurd correspond to?",
+     "options": [
+      "Modus ponens",
+      "Ex falso: from false anything follows",
+      "Or introduction",
+      "Currying"
+     ],
+     "answer": 1,
+     "explain": "Void to a is the proof of false implies A."
+    }
+   ],
+   "cards": [
+    {
+     "q": "And as a type?",
+     "a": "The pair (product) type A x B."
+    },
+    {
+     "q": "Or as a type?",
+     "a": "The sum type A + B (Either)."
+    },
+    {
+     "q": "False as a type?",
+     "a": "The empty type, Void."
+    },
+    {
+     "q": "Not A as a type?",
+     "a": "A -> Void (A to the empty type)."
+    }
+   ],
+   "practice": [
+    {
+     "type": "code",
+     "title": "Swap a pair",
+     "intro": "Write swapPair(p): given [a, b] return [b, a]. This is the proof of A and B implies B and A.",
+     "fn": "swapPair",
+     "starter": "function swapPair(p) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2
+        ]
+       ],
+       "expect": [
+        2,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         "x",
+         "y"
+        ]
+       ],
+       "expect": [
+        "y",
+        "x"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1
+         ],
+         {
+          "k": 2
+         }
+        ]
+       ],
+       "expect": [
+        {
+         "k": 2
+        },
+        [
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Return a new array with the components in the other order.",
+     "solution": "function swapPair(p) {\n  return [p[1], p[0]];\n}"
+    },
+    {
+     "type": "code",
+     "title": "Distribute and over or",
+     "intro": "Prove A and (B or C) implies (A and B) or (A and C). A pair is [a, s], where s is {\"tag\": \"inl\" or \"inr\", \"v\": value}. Return {\"tag\": same tag, \"v\": [a, value]}.",
+     "fn": "distribute",
+     "starter": "function distribute(p) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         {
+          "tag": "inl",
+          "v": 2
+         }
+        ]
+       ],
+       "expect": {
+        "tag": "inl",
+        "v": [
+         1,
+         2
+        ]
+       }
+      },
+      {
+       "args": [
+        [
+         "a",
+         {
+          "tag": "inr",
+          "v": "c"
+         }
+        ]
+       ],
+       "expect": {
+        "tag": "inr",
+        "v": [
+         "a",
+         "c"
+        ]
+       }
+      }
+     ],
+     "hint": "Case analysis on the tag: keep the tag, pair the first component with the value.",
+     "solution": "function distribute(p) {\n  const a = p[0], s = p[1];\n  return { tag: s.tag, v: [a, s.v] };\n}"
+    },
+    {
+     "type": "match",
+     "title": "Logic to types",
+     "intro": "Match each proposition to its type.",
+     "pairs": [
+      [
+       "A and B",
+       "Pair type A x B"
+      ],
+      [
+       "A or B",
+       "Sum type A + B"
+      ],
+      [
+       "A implies B",
+       "Function type A to B"
+      ],
+      [
+       "True",
+       "Unit type"
+      ],
+      [
+       "False",
+       "Empty type"
+      ],
+      [
+       "Not A",
+       "A to the empty type"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Computation is proof simplification",
+   "maps": [
+    {
+     "title": "Normalization",
+     "links": [
+      "Detour | is | Introduction then elimination",
+      "Detour | matches | Beta redex",
+      "Cut elimination | matches | Beta reduction",
+      "Normal proof | matches | Normal form",
+      "Strong normalization | implies | Termination",
+      "Strong normalization | implies | Consistency",
+      "Consistency | means | No proof of false",
+      "Type safety | needs | Progress and preservation",
+      "Consistency [ch6] | is tested by | Classical axioms [ch6]"
+     ]
+    }
+   ],
+   "summary": [
+    "A proof can contain a detour: you build a conjunction with and introduction and immediately take it apart with and elimination. Simplifying that detour away is the proof-theoretic twin of a beta reduction in a program.",
+    "Running a program corresponds to normalizing a proof, and a normal proof is a program that has finished computing. Gentzen's cut elimination theorem is the same idea for his sequent calculus.",
+    "Strong normalization of the simply typed lambda calculus shows that every well-typed program terminates, and as a bonus that the logic is consistent: there is no closed normal term of the empty type, so false cannot be proved."
+   ],
+   "glossary": [
+    {
+     "term": "Detour",
+     "def": "A step in a proof where an introduction rule is immediately followed by the matching elimination rule."
+    },
+    {
+     "term": "Redex",
+     "def": "A reducible expression, such as a lambda applied to an argument."
+    },
+    {
+     "term": "Normal form",
+     "def": "A term or proof with no redexes, so no detours."
+    },
+    {
+     "term": "Cut elimination",
+     "def": "Gentzen's result that proofs with detours can be rewritten to proofs without."
+    },
+    {
+     "term": "Confluence",
+     "def": "Different reduction orders reach the same normal form (Church-Rosser)."
+    },
+    {
+     "term": "Preservation",
+     "def": "If a term has type A and reduces, the result still has type A."
+    },
+    {
+     "term": "Progress",
+     "def": "A closed well-typed term is either a value or can take a reduction step."
+    },
+    {
+     "term": "Consistency",
+     "def": "The logic cannot prove false."
+    }
+   ],
+   "keyPoints": [
+    "A beta redex is a proof detour; reducing it removes the detour.",
+    "Normalization of a proof is evaluation of a program.",
+    "Well-typed terms of the simply typed lambda calculus always terminate.",
+    "Consistency follows: a closed proof of false would normalize to a closed normal term of the empty type, and there is none.",
+    "Type safety is progress plus preservation: well-typed programs do not get stuck.",
+    "Confluence says the normal form does not depend on the order of reduction."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Look at a detour. Take proofs of A and B, combine them with and introduction into a proof of A and B, then take the first component by and elimination. That proof is a roundabout way of writing the original proof of A. Removing the detour leaves the shorter proof."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\mathrm{fst}\\,(M, N) \\;\\to\\; M \\\\[0.6em] \\mathrm{snd}\\,(M, N) \\;\\to\\; N \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "In programs these are reduction rules. For functions the detour is implication introduction followed by implication elimination, and the reduction is beta."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "(\\lambda x.\\, M)\\, N \\;\\to_\\beta\\; M[N/x]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "For sums the detour is an injection followed by a case analysis. The case picks the matching branch and substitutes the carried value."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\mathrm{case}\\;(\\mathrm{inl}\\, a)\\;\\mathrm{of}\\;\\{\\mathrm{inl}\\, x \\Rightarrow M \\mid \\mathrm{inr}\\, y \\Rightarrow N\\} \\;\\to\\; M[a/x]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A proof with no detours is in normal form. Normal proofs have a pleasant property, the subformula property: every formula that appears in the proof is a part of the conclusion or of an assumption. That makes normal proofs analyzable, and it is a key tool in proof theory."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now the big theorem. For the simply typed lambda calculus every well-typed term has a normal form, and every reduction sequence from it ends. This is strong normalization. The standard proof uses a method called logical relations or reducibility candidates, introduced by Tait.",
+      "The point to retain is the consequence: there are no infinite computations in typed programs of this kind."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Consistency follows by a short argument. Suppose the logic could prove false. Then there would be a closed term of the empty type. By strong normalization it would reduce to a closed normal term of the empty type.",
+      "But there is no closed normal term of that type, because normal closed terms have a constructor at the head, and the empty type has no constructors. So false is not provable."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Type safety is a different guarantee, and is for programming languages with more features than STLC. It is stated as two lemmas. Progress: a closed well-typed term is a value or can step. Preservation: if a well-typed term steps, the result has the same type.",
+      "Together they say that well-typed programs never get stuck."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Contrast with the untyped lambda calculus. The self-applying term omega applies a function to itself and reduces to itself forever. It cannot be typed in the simply typed calculus, because the type of x would have to be A and also A to B.",
+      "That is exactly why typed calculi are consistent as logics, and why general recursion in a language is a logical danger: a recursive proof of anything would be a proof of false."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Use the Lambda Stepper in the practice section to watch beta reduction happen one step at a time, including the term omega that never stops."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a beta redex correspond to in a proof?",
+     "options": [
+      "An axiom",
+      "A detour: introduction followed by elimination",
+      "A hypothesis",
+      "A truth table"
+     ],
+     "answer": 1,
+     "explain": "Beta reduction removes the detour created by a lambda applied to an argument."
+    },
+    {
+     "q": "What does strong normalization of the simply typed lambda calculus guarantee?",
+     "options": [
+      "Every program is fast",
+      "Every well-typed term reaches a normal form",
+      "Every term is typable",
+      "No term uses lambda"
+     ],
+     "answer": 1,
+     "explain": "No infinite reduction sequences exist from well-typed terms."
+    },
+    {
+     "q": "Why does normalization give consistency?",
+     "options": [
+      "There is no closed normal term of the empty type",
+      "All proofs are short",
+      "Types are hidden",
+      "Every term has a pair"
+     ],
+     "answer": 0,
+     "explain": "A closed proof of false would normalize to such a term, and none exists."
+    },
+    {
+     "q": "Which two properties give type safety?",
+     "options": [
+      "Progress and preservation",
+      "Confluence and eta",
+      "Sums and products",
+      "Currying and uncurrying"
+     ],
+     "answer": 0,
+     "explain": "Well-typed closed terms can step or are values, and stepping keeps the type."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a detour?",
+     "a": "An introduction rule immediately followed by its matching elimination."
+    },
+    {
+     "q": "Why can omega not be typed?",
+     "a": "x would have to have type A and type A to B at once."
+    },
+    {
+     "q": "Proof normalization equals?",
+     "a": "Evaluating a program."
+    },
+    {
+     "q": "Progress + preservation gives?",
+     "a": "Type safety."
+    }
+   ],
+   "practice": [
+    {
+     "type": "code",
+     "title": "Is it in normal form?",
+     "intro": "Terms are [\"var\", x], [\"lam\", x, body] or [\"app\", f, a]. Write isNormal(term): true when the term contains no beta redex, meaning no application whose function part is a lambda.",
+     "fn": "isNormal",
+     "starter": "function isNormal(term) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        [
+         "var",
+         "x"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "lam",
+         "x",
+         [
+          "var",
+          "x"
+         ]
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "app",
+         [
+          "var",
+          "f"
+         ],
+         [
+          "var",
+          "x"
+         ]
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "app",
+         [
+          "lam",
+          "x",
+          [
+           "var",
+           "x"
+          ]
+         ],
+         [
+          "var",
+          "y"
+         ]
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         "lam",
+         "z",
+         [
+          "app",
+          [
+           "lam",
+           "x",
+           [
+            "var",
+            "x"
+           ]
+          ],
+          [
+           "var",
+           "z"
+          ]
+         ]
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         "app",
+         [
+          "var",
+          "f"
+         ],
+         [
+          "app",
+          [
+           "lam",
+           "x",
+           [
+            "var",
+            "x"
+           ]
+          ],
+          [
+           "var",
+           "y"
+          ]
+         ]
+        ]
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Recurse. An application is normal only if its function is not a lam and both its parts are normal.",
+     "solution": "function isNormal(t) {\n  if (t[0] === 'var') return true;\n  if (t[0] === 'lam') return isNormal(t[2]);\n  if (t[1][0] === 'lam') return false;\n  return isNormal(t[1]) && isNormal(t[2]);\n}"
+    },
+    {
+     "type": "match",
+     "title": "Proof and program",
+     "intro": "Match each proof idea to its program idea.",
+     "pairs": [
+      [
+       "Detour",
+       "Beta redex"
+      ],
+      [
+       "Proof normalization",
+       "Evaluation"
+      ],
+      [
+       "Normal proof",
+       "Program that has finished"
+      ],
+      [
+       "Consistency",
+       "No closed term of the empty type"
+      ]
+     ]
+    },
+    {
+     "type": "webxdc",
+     "title": "Lambda Stepper",
+     "intro": "Type a lambda term, then step through beta reduction. Reduce any term to normal form in at least three steps to finish.",
+     "height": 560,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px 3px 3px 0}\nbutton.t{background:#2d2046;color:#e7d9ff}input{font:16px ui-monospace,monospace;width:100%;padding:8px;border-radius:10px;border:1px solid #4a3770;background:#1e1336;color:#f1ebff}\n.m{color:#c9b8e8}pre{background:#1e1336;border-radius:10px;padding:10px;margin:8px 0;white-space:pre-wrap;font:14px ui-monospace,monospace}.err{color:#ff9bb0}.row{display:flex;flex-wrap:wrap;gap:4px}\n.cur{outline:1px solid #b26bff}</style></head><body>\n<div class=\"m\">Untyped lambda calculus. Write \\x. or λx. for a function; application is a space. Example: (\\x. x x) (\\y. y)</div>\n<input id=\"in\" value=\"(\\x. \\y. \\z. x z (y z)) (\\x. \\y. x) (\\x. \\y. x) a\" autocomplete=\"off\" autocapitalize=\"off\" spellcheck=\"false\">\n<div class=\"row\"><button id=\"go\">Start</button><button id=\"st\" class=\"t\">Step</button><button id=\"all\" class=\"t\">Run to the end</button></div>\n<div class=\"row\" id=\"ex\"></div><pre id=\"out\"></pre><div class=\"m\" id=\"msg\"></div>\n<script>\nfunction done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nfunction parse(s){s=s.replace(/\\\\/g,'λ');var t=[],i=0;\nwhile(i<s.length){var c=s[i];if(/\\s/.test(c)){i++}else if('()λ.'.indexOf(c)>=0){t.push(c);i++}else{var j=i;while(j<s.length&&/[A-Za-z0-9_']/.test(s[j]))j++;if(j===i)throw new Error('Unexpected character '+c);t.push(s.slice(i,j));i=j}}\nvar p=0;function peek(){return t[p]}function eat(x){if(t[p]!==x)throw new Error('Expected '+x);p++}\nfunction atom(){var c=peek();if(c==='('){p++;var e=expr();eat(')');return e}if(c==='λ')return lam();\nif(c&&/^[A-Za-z0-9_']/.test(c)){p++;return {k:'v',n:c}}throw new Error('Unexpected '+(c||'end of input'))}\nfunction lam(){eat('λ');var xs=[];while(peek()&&/^[A-Za-z0-9_']/.test(peek())){xs.push(t[p++])}if(!xs.length)throw new Error('Missing parameter');eat('.');var b=expr();for(var i=xs.length-1;i>=0;i--)b={k:'l',x:xs[i],b:b};return b}\nfunction expr(){if(peek()==='λ')return lam();var e=atom();while(peek()&&peek()!==')'&&peek()!=='.'){e={k:'a',f:e,x:atom()}}return e}\nvar r=expr();if(p<t.length)throw new Error('Unexpected '+t[p]);return r}\nfunction fv(e,s){s=s||{};if(e.k==='v')s[e.n]=1;else if(e.k==='a'){fv(e.f,s);fv(e.x,s)}else{var o={};fv(e.b,o);delete o[e.x];for(var k in o)s[k]=1}return s}\nfunction fresh(n,avoid){var m=n.replace(/'+$/,'');while(avoid[n])n+=\"'\";return n}\nfunction sub(e,x,v){if(e.k==='v')return e.n===x?v:e;if(e.k==='a')return {k:'a',f:sub(e.f,x,v),x:sub(e.x,x,v)};\nif(e.x===x)return e;var f=fv(v);if(f[e.x]){var a=fv(e.b);a[x]=1;for(var k in f)a[k]=1;var n=fresh(e.x,a);return sub({k:'l',x:n,b:sub(e.b,e.x,{k:'v',n:n})},x,v)}\nreturn {k:'l',x:e.x,b:sub(e.b,x,v)}}\nfunction step(e){if(e.k==='a'){if(e.f.k==='l')return sub(e.f.b,e.f.x,e.x);var f=step(e.f);if(f)return {k:'a',f:f,x:e.x};var x=step(e.x);if(x)return {k:'a',f:e.f,x:x};return null}\nif(e.k==='l'){var b=step(e.b);return b?{k:'l',x:e.x,b:b}:null}return null}\nfunction show(e,pa){if(e.k==='v')return e.n;if(e.k==='l'){var s='λ'+e.x+'. '+show(e.b,false);return pa?'('+s+')':s}\nvar s2=show(e.f,e.f.k==='l')+' '+show(e.x,e.x.k!=='v');return pa?'('+s2+')':s2}\nvar cur=null,n=0,out=document.getElementById('out'),msg=document.getElementById('msg'),reduced=0;\nfunction start(){try{cur=parse(document.getElementById('in').value);n=0;reduced=0;out.textContent='0: '+show(cur,false);msg.textContent='Parsed. Press Step.';msg.className='m'}catch(e){cur=null;out.textContent='';msg.textContent=e.message;msg.className='err'}}\nfunction one(){if(!cur){start();return false}var nx=step(cur);if(!nx){msg.textContent='Normal form reached after '+n+' steps.';msg.className='m';if(n>=3)done();return false}\ncur=nx;n++;out.textContent+='\\n'+n+': '+show(cur,false);if(n>200){msg.textContent='Stopped after 200 steps (this term may not terminate).';return false}return true}\ndocument.getElementById('go').onclick=start;document.getElementById('st').onclick=function(){if(!cur)start();else one()};\ndocument.getElementById('all').onclick=function(){if(!cur)start();var g=0;while(cur&&g++<200&&one());};\nvar EX=[['S K K a','(\\\\x. \\\\y. \\\\z. x z (y z)) (\\\\x. \\\\y. x) (\\\\x. \\\\y. x) a'],['K','(\\\\x. \\\\y. x) a b'],['Self-apply','(\\\\x. x x) (\\\\y. y)'],['Church 2','(\\\\f. \\\\x. f (f x)) g z'],['Capture','(\\\\x. \\\\y. x y) y'],['Omega (loops)','(\\\\x. x x) (\\\\x. x x)']];\nEX.forEach(function(p){var b=document.createElement('button');b.className='t';b.textContent=p[0];b.onclick=function(){document.getElementById('in').value=p[1];start()};document.getElementById('ex').appendChild(b)});\nstart();\n</script></body></html>\n"
+    }
+   ]
+  },
+  {
+   "title": "Constructive and classical logic",
+   "maps": [
+    {
+     "title": "Constructive vs classical",
+     "links": [
+      "Intuitionistic logic | matches | Typed lambda calculus",
+      "Classical logic | adds | Excluded middle",
+      "Excluded middle | is equivalent to | Double negation elimination",
+      "Excluded middle | is equivalent to | Peirce's law",
+      "Peirce's law | matches | call/cc",
+      "Double negation translation | embeds | Classical in intuitionistic",
+      "Constructive existence | gives | A witness",
+      "Heyting algebra | models | Intuitionistic logic",
+      "Control operators | match | Classical reasoning"
+     ]
+    }
+   ],
+   "summary": [
+    "Constructive, or intuitionistic, logic is the logic that matches programs: to prove something exists you must be able to build it. It rejects the law of excluded middle, A or not A, as a general principle, because that law gives no way to decide which side holds.",
+    "Classical logic adds excluded middle, or equivalently double negation elimination or Peirce's law. None of these has a program in the pure typed lambda calculus.",
+    "Remarkably, Griffin discovered in 1990 that the type of Peirce's law is exactly the type of the call with current continuation operator, so control operators give classical logic a computational meaning.",
+    "Classical logic is not lost: the double negation translation maps classical statements to intuitionistic ones, so constructive proofs can still carry classical reasoning, at the price of weaker conclusions."
+   ],
+   "glossary": [
+    {
+     "term": "Excluded middle",
+     "def": "The law that for every proposition A, either A or not A holds."
+    },
+    {
+     "term": "Double negation elimination",
+     "def": "The law that not not A implies A."
+    },
+    {
+     "term": "Peirce's law",
+     "def": "The law ((A to B) to A) to A. Classically valid, constructively not provable."
+    },
+    {
+     "term": "Constructive proof",
+     "def": "A proof that gives an explicit witness or algorithm."
+    },
+    {
+     "term": "call/cc",
+     "def": "Call with current continuation: a control operator that captures the rest of the computation."
+    },
+    {
+     "term": "Double negation translation",
+     "def": "A translation that embeds classical logic into intuitionistic logic by inserting double negations."
+    },
+    {
+     "term": "Heyting algebra",
+     "def": "A lattice with an implication operation. It is the algebra of intuitionistic logic."
+    }
+   ],
+   "keyPoints": [
+    "Intuitionistic logic matches pure typed programs; classical logic needs more.",
+    "A to not not A is provable constructively. Not not A to A is not.",
+    "Excluded middle, double negation elimination and Peirce's law are equivalent over intuitionistic logic.",
+    "A constructive proof of an exists statement yields a witness.",
+    "call/cc has the type of Peirce's law, so classical reasoning means control effects.",
+    "Classical logic can be embedded into intuitionistic logic by a double negation translation."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Excluded middle says every statement is either true or false. It sounds obvious, but as a program it would be a function that, for any proposition, hands you either a proof or a refutation.",
+      "For the statement that a given program halts, no such function can exist, since the halting problem is undecidable. A constructive logic therefore does not assume it."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} A \\vee \\neg A \\\\[0.6em] \\neg\\neg A \\to A \\\\[0.6em] ((A \\to B) \\to A) \\to A \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "These three laws are the classical principles: excluded middle, double negation elimination and Peirce's law. Over intuitionistic logic they are equivalent, meaning that if you add any one as an axiom you can derive the other two. None is derivable without it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Some of their neighbors are provable constructively. From a you can get not not a, since given a refutation k of a you can apply it to a. And not not not A implies not A holds too. What fails is the converse for double negation."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\lambda a.\\, \\lambda k.\\, k\\, a \\;:\\; A \\to \\neg\\neg A \\\\[0.6em] \\lambda h.\\, \\lambda a.\\, h\\,(\\lambda k.\\, k\\, a) \\;:\\; \\neg\\neg\\neg A \\to \\neg A \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A classic example of a non-constructive proof: there exist irrational numbers x and y such that x to the y is rational. Consider the square root of two to the square root of two. Either it is rational, and we are done, or it is irrational, and then raise it to the square root of two to get two.",
+      "The proof never says which case holds, so it gives no witness. Constructive proofs avoid this."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Classical reasoning is not rejected as unsound. It just has a computational cost. In 1990 Timothy Griffin observed that the type of the control operator call with current continuation is Peirce's law.",
+      "The operator captures what remains of the computation and lets you jump back to it, which is exactly the freedom classical logic gives you to change your mind.",
+      "Another approach is to translate. The Godel-Gentzen negative translation puts double negations in front of the atoms and some connectives, and it turns every classically provable statement into an intuitionistically provable one.",
+      "So constructive logic can express classical reasoning, in the weaker form that the statement is not false."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "On the semantic side, intuitionistic logic is interpreted in Heyting algebras and, more generally, in toposes. A classic example takes the open sets of a topological space as the truth values.",
+      "Implication is then an operation on open sets, and excluded middle fails unless every open set is also closed.",
+      "The practical lesson for proof assistants is that Lean, Rocq and Agda are constructive by default, and you opt into classical axioms when you need them. In Lean the axiom is called Classical.em, and a proof that uses it is clearly marked as classical."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which of these is provable in intuitionistic logic?",
+     "options": [
+      "not not A implies A",
+      "A implies not not A",
+      "A or not A",
+      "Peirce's law"
+     ],
+     "answer": 1,
+     "explain": "Given a and a refutation k of A, apply k to a. The other three need a classical axiom."
+    },
+    {
+     "q": "What is the type of Peirce's law?",
+     "options": [
+      "A to A",
+      "((A to B) to A) to A",
+      "A to B to A",
+      "(A and B) to A"
+     ],
+     "answer": 1,
+     "explain": "That is the statement; Griffin showed call/cc inhabits it."
+    },
+    {
+     "q": "Why does constructive logic not assume excluded middle?",
+     "options": [
+      "It is false",
+      "It gives no algorithm to decide which side holds",
+      "It is too short",
+      "It uses types"
+     ],
+     "answer": 1,
+     "explain": "A proof of A or not A would have to tell you which one holds."
+    },
+    {
+     "q": "What does the double negation translation do?",
+     "options": [
+      "Embeds classical logic into intuitionistic logic",
+      "Removes all negations",
+      "Turns programs into types",
+      "Makes proofs shorter"
+     ],
+     "answer": 0,
+     "explain": "It maps classically valid statements to intuitionistically provable ones."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Which direction of double negation is constructive?",
+     "a": "A implies not not A. Not not A implies A needs a classical axiom."
+    },
+    {
+     "q": "What type does call/cc have?",
+     "a": "Peirce's law, ((A to B) to A) to A."
+    },
+    {
+     "q": "Why is excluded middle not computable in general?",
+     "a": "It would decide statements such as halting."
+    },
+    {
+     "q": "Name the usual classical axioms.",
+     "a": "Excluded middle, double negation elimination, Peirce's law."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Provable or not?",
+     "intro": "Match each statement to whether it is provable in intuitionistic logic.",
+     "pairs": [
+      [
+       "A implies not not A",
+       "Provable"
+      ],
+      [
+       "not not not A implies not A",
+       "Provable"
+      ],
+      [
+       "A or not A",
+       "Needs a classical axiom"
+      ],
+      [
+       "not not A implies A",
+       "Needs a classical axiom"
+      ],
+      [
+       "((A to B) to A) to A",
+       "Needs a classical axiom"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Griffin's observation",
+     "text": "The type of {{Peirce's law|peirce}} is the type of {{call/cc|callcc|call with current continuation}}. So {{classical|classical logic}} reasoning has a computational meaning as control {{effects|operators}}."
+    },
+    {
+     "type": "write",
+     "title": "No algorithm",
+     "prompt": "In one or two sentences, explain why a function that decides A or not A for every statement A cannot exist, using the halting problem.",
+     "checks": [
+      {
+       "re": "halt",
+       "msg": "mentions halting"
+      },
+      {
+       "re": "decid|algorithm|program|function",
+       "msg": "mentions deciding"
+      }
+     ],
+     "solution": "If it existed it would decide for every program whether it halts, but the halting problem is undecidable."
+    }
+   ]
+  },
+  {
+   "title": "Categories: objects, arrows and composition",
+   "maps": [
+    {
+     "title": "Category basics",
+     "links": [
+      "Category | has | Objects",
+      "Category | has | Morphisms",
+      "Morphism | has | Domain and codomain",
+      "Morphisms | compose by | Composition",
+      "Composition | is | Associative",
+      "Every object | has | Identity",
+      "Isomorphism | is | Invertible morphism",
+      "Functor | maps | Categories to categories",
+      "Types and functions [ch8] | form | A category",
+      "Proofs [ch9] | form | A category"
+     ]
+    }
+   ],
+   "summary": [
+    "A category is a collection of objects and arrows between them. Arrows compose, composition is associative, and each object has an identity arrow that changes nothing. That is the whole definition.",
+    "Many things are categories: sets and functions, a preorder where there is an arrow when one element is below another, a monoid with a single object, and, most importantly for us, a logic whose objects are propositions and whose arrows are proofs of entailment.",
+    "An isomorphism is an arrow with a two-sided inverse. Category theory studies structure through arrows, not through what the objects are made of, which is exactly the right level to compare logic and programming."
+   ],
+   "glossary": [
+    {
+     "term": "Object",
+     "def": "A thing in a category; for us a proposition, a type or a set."
+    },
+    {
+     "term": "Morphism",
+     "def": "An arrow f : A to B from a domain A to a codomain B."
+    },
+    {
+     "term": "Composition",
+     "def": "Given f : A to B and g : B to C, the arrow g after f : A to C."
+    },
+    {
+     "term": "Identity",
+     "def": "For each object A, an arrow id on A that leaves any arrow unchanged under composition."
+    },
+    {
+     "term": "Isomorphism",
+     "def": "An arrow f : A to B with an inverse g : B to A such that both composites are identities."
+    },
+    {
+     "term": "Functor",
+     "def": "A map between categories that sends objects to objects and arrows to arrows, keeping identities and composition."
+    },
+    {
+     "term": "Commuting diagram",
+     "def": "A drawing in which any two paths between the same objects give equal arrows."
+    }
+   ],
+   "keyPoints": [
+    "Category: objects, morphisms, composition, identities.",
+    "Laws: (h after g) after f equals h after (g after f); id after f equals f equals f after id.",
+    "Examples: Set (sets and functions), preorders, monoids, types and programs.",
+    "A proof system is a category: objects are propositions, arrows are proofs of A entails B.",
+    "Isomorphic objects are interchangeable for every purpose the category cares about.",
+    "A functor preserves structure; later it maps syntax to meaning."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The definition fits on one line of notation. A category has objects, and for every pair of objects A and B a collection of arrows from A to B. Arrows that line up compose."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} f : A \\to B,\\;\\; g : B \\to C \\;\\;\\Longrightarrow\\;\\; g \\circ f : A \\to C \\\\[0.6em] \\mathrm{id}_A : A \\to A \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two laws must hold. Composition is associative, so you can drop the brackets. Identity arrows do nothing."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} h \\circ (g \\circ f) = (h \\circ g) \\circ f \\\\[0.6em] \\mathrm{id}_B \\circ f = f = f \\circ \\mathrm{id}_A \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Example one: the category Set. Its objects are sets and its arrows are functions. Composition is ordinary function composition and the identity is the function that returns its input.",
+      "Example two: a preorder, such as the natural numbers with less than or equal. There is exactly one arrow from m to n when m is at most n. Composition says that m at most n and n at most k give m at most k, and the identity says that every number is at most itself.",
+      "Here an arrow is a fact, not a function."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Example three: a monoid, such as strings with concatenation, is a category with a single object. The arrows are the elements, composition is the monoid operation and the identity arrow is the empty string."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Example four, which matters most to us: types and programs. Objects are types and arrows are programs, taken up to computation. This category is what Haskell programmers call Hask, although the real thing has some wrinkles with laziness.",
+      "In a logic the same recipe gives a category whose objects are propositions and whose arrows from A to B are proofs of A entails B. Composition of proofs is cut, and identity is the trivial proof from A to A."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# Categories hide inside everyday code\ndef compose(g, f):\n    return lambda x: g(f(x))\n\nidentity = lambda x: x\n\n# Laws, spot-checked\nf = lambda x: x + 1\ng = lambda x: x * 2\nh = lambda x: x - 3\nfor x in range(5):\n    assert compose(h, compose(g, f))(x) == compose(compose(h, g), f)(x)   # associativity\n    assert compose(identity, f)(x) == f(x) == compose(f, identity)(x)     # identity"
+    },
+    {
+     "type": "text",
+     "items": [
+      "An isomorphism is an arrow with an inverse in both directions. In Set the isomorphisms are the bijections. The type of pairs A x B is isomorphic to B x A via the swap function, which is its own inverse. Isomorphic types carry the same information in different clothes."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} A \\times B \\;\\cong\\; B \\times A \\\\[0.6em] (A \\times B) \\times C \\;\\cong\\; A \\times (B \\times C) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A functor is a map between categories that sends each object to an object and each arrow to an arrow, preserving identities and composition. In programming, a functor in the Haskell sense is a type constructor with a map operation.",
+      "In logic and semantics, a functor takes syntax to meaning: it sends each type to a set and each program to a function, which is how chapter 9 interprets lambda calculus."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What data does a category consist of?",
+     "options": [
+      "Objects, morphisms, composition and identities",
+      "Sets and truth tables",
+      "Only functions",
+      "Types and values"
+     ],
+     "answer": 0,
+     "explain": "Plus the associativity and identity laws."
+    },
+    {
+     "q": "In a preorder viewed as a category, what is an arrow from m to n?",
+     "options": [
+      "A function",
+      "The fact that m is below or equal to n",
+      "A number",
+      "A proof of false"
+     ],
+     "answer": 1,
+     "explain": "There is at most one arrow, and it expresses the order."
+    },
+    {
+     "q": "What is an isomorphism?",
+     "options": [
+      "Any arrow",
+      "An arrow with a two-sided inverse",
+      "An identity",
+      "A functor"
+     ],
+     "answer": 1,
+     "explain": "f and g with g after f and f after g both identities."
+    },
+    {
+     "q": "In the logic-as-category, what are the arrows from A to B?",
+     "options": [
+      "Truth values",
+      "Proofs that A entails B",
+      "Programs only",
+      "Symbols"
+     ],
+     "answer": 1,
+     "explain": "Composition of such arrows is cut, and identities are trivial proofs."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Category laws?",
+     "a": "Associativity of composition, and identity arrows."
+    },
+    {
+     "q": "Category with one object?",
+     "a": "A monoid."
+    },
+    {
+     "q": "Isomorphism in Set?",
+     "a": "A bijection."
+    },
+    {
+     "q": "What does a functor preserve?",
+     "a": "Identities and composition."
+    }
+   ],
+   "practice": [
+    {
+     "type": "code",
+     "title": "Compose finite functions",
+     "intro": "A function from {0..n-1} is an array f, meaning f(i) = f[i]. Write composeTables(f, g): the array for g after f, so h[i] = g[f[i]].",
+     "fn": "composeTables",
+     "starter": "function composeTables(f, g) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0,
+         2
+        ],
+        [
+         2,
+         2,
+         0
+        ]
+       ],
+       "expect": [
+        2,
+        2,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         1
+        ],
+        [
+         1,
+         0
+        ]
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         2,
+         2
+        ],
+        [
+         5,
+         6,
+         7
+        ]
+       ],
+       "expect": [
+        7,
+        7,
+        7
+       ]
+      }
+     ],
+     "hint": "Map each index of f through g.",
+     "solution": "function composeTables(f, g) {\n  return f.map(x => g[x]);\n}"
+    },
+    {
+     "type": "code",
+     "title": "Is it an isomorphism?",
+     "intro": "In the category of finite sets an arrow f from {0..n-1} to {0..n-1} (an array of length n) is an isomorphism exactly when it is a bijection. Write isIso(f): true when every value 0 to n-1 appears exactly once.",
+     "fn": "isIso",
+     "starter": "function isIso(f) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0,
+         2
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         1
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         2,
+         1,
+         0,
+         3
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         0,
+         3
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Use a Set of the values and check its size and range.",
+     "solution": "function isIso(f) {\n  const n = f.length;\n  const s = new Set(f);\n  return s.size === n && f.every(x => Number.isInteger(x) && x >= 0 && x < n);\n}"
+    },
+    {
+     "type": "match",
+     "title": "Categories in the wild",
+     "intro": "Match each category to its objects and arrows.",
+     "pairs": [
+      [
+       "Set",
+       "Sets and functions"
+      ],
+      [
+       "A preorder",
+       "Elements and order facts"
+      ],
+      [
+       "A monoid",
+       "One object, elements as arrows"
+      ],
+      [
+       "A logic",
+       "Propositions and proofs of entailment"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Products, sums and exponentials",
+   "maps": [
+    {
+     "title": "Universal constructions",
+     "links": [
+      "Product | is defined by | Projections and pairing",
+      "Coproduct | is defined by | Injections and copairing",
+      "Exponential | is defined by | Evaluation and currying",
+      "Terminal object | is | Empty product",
+      "Initial object | is | Empty coproduct",
+      "Product [ch4] | models | Conjunction",
+      "Coproduct [ch4] | models | Disjunction",
+      "Exponential [ch4] | models | Implication",
+      "Cartesian closed category | has | Terminal, products, exponentials",
+      "Cartesian closed category [ch9] | is | Model of lambda calculus [ch9]"
+     ]
+    }
+   ],
+   "summary": [
+    "Products, coproducts and exponentials are characterized by universal properties: each is the best object with a given set of arrows, unique up to isomorphism. They are the category-theory versions of pairs, sums and function types.",
+    "A product A x B has two projections and a pairing operation. A coproduct A + B has two injections and a case operation.",
+    "An exponential B to the A has an evaluation arrow and a currying operation, which turns arrows out of C x A into arrows C to B to the A.",
+    "A category with a terminal object, binary products and exponentials is called cartesian closed. Adding an initial object and coproducts makes it bicartesian closed. This is the structure needed to interpret the typed lambda calculus."
+   ],
+   "glossary": [
+    {
+     "term": "Universal property",
+     "def": "A description of an object by how arrows into or out of it behave, which determines it up to isomorphism."
+    },
+    {
+     "term": "Product",
+     "def": "An object A x B with projections to A and B such that any pair of arrows into A and B factors uniquely through it."
+    },
+    {
+     "term": "Coproduct",
+     "def": "An object A + B with injections from A and B such that any pair of arrows out of A and B factors uniquely through it."
+    },
+    {
+     "term": "Terminal object",
+     "def": "An object with exactly one arrow into it from every object. Written 1."
+    },
+    {
+     "term": "Initial object",
+     "def": "An object with exactly one arrow out of it to every object. Written 0."
+    },
+    {
+     "term": "Exponential",
+     "def": "An object B to the A with an evaluation arrow from (B to the A) x A to B, representing arrows A to B inside the category."
+    },
+    {
+     "term": "Cartesian closed category",
+     "def": "A category with a terminal object, finite products and exponentials."
+    },
+    {
+     "term": "Adjunction",
+     "def": "A pair of functors with a natural bijection between arrows. Currying is the adjunction between product with A and exponential by A."
+    }
+   ],
+   "keyPoints": [
+    "Product: arrows into A x B correspond to pairs of arrows into A and into B.",
+    "Coproduct: arrows out of A + B correspond to pairs of arrows out of A and out of B.",
+    "Exponential: arrows C x A to B correspond to arrows C to B to the A (currying).",
+    "Terminal is the empty product and initial is the empty coproduct.",
+    "Cartesian closed: terminal object, products, exponentials. These model simply typed lambda calculus.",
+    "In finite sets the sizes obey: product is multiplication, coproduct is addition, exponential is power."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "A product is defined by what arrows do, not by what it is made of. The product of A and B is an object P with two projection arrows, one to A and one to B, such that for every object C with arrows f to A and g to B there is exactly one arrow from C to P that gives f and g back when followed by the projections."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\pi_1 \\circ \\langle f, g\\rangle = f \\\\[0.6em] \\pi_2 \\circ \\langle f, g\\rangle = g \\\\[0.6em] \\langle f, g\\rangle : C \\to A \\times B \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "In Set the product is the set of pairs, and the pairing arrow builds a pair from the two component functions. The dual notion, the coproduct, swaps the direction of every arrow. It has injections into the sum and a case arrow out of it."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} [f, g] \\circ \\mathrm{in}_1 = f \\\\[0.6em] [f, g] \\circ \\mathrm{in}_2 = g \\\\[0.6em] [f, g] : A + B \\to C \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "In Set the coproduct is the disjoint union, and in programs it is the sum type: a value tagged left or right. Terminal and initial objects are the zero-fold cases. The terminal object 1 has one arrow in from everything, and in Set it is a one-element set.",
+      "The initial object 0 has one arrow out to everything, and in Set it is the empty set."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now the exponential, which is the interesting one. We want an object that stands for all arrows from A to B, so that functions become ordinary values. It comes with an evaluation arrow that applies such a function to an argument."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\mathrm{ev} : B^A \\times A \\to B \\\\[0.6em] \\Lambda f : C \\to B^A \\;\\text{ for each } f : C \\times A \\to B \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is currying. An arrow from C times A to B can be turned into an arrow from C to the function object, and back again. The correspondence is a bijection."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\mathrm{Hom}(C \\times A,\\, B) \\;\\cong\\; \\mathrm{Hom}(C,\\, B^A)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A cartesian closed category, or CCC, has a terminal object, binary products, and exponentials. Set is one. So is the category of types and functions in a typed language.",
+      "A preorder that is cartesian closed has meets as products and a Heyting-style implication as the exponential, and the isomorphism above becomes the rule that C and A entails B exactly when C entails A implies B.",
+      "Add joins and a bottom element and you have a Heyting algebra, the algebra of intuitionistic logic."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There is also a pleasant arithmetic. In the category of finite sets, a set with m elements and a set with n elements have a product of m times n elements, a coproduct of m plus n, and an exponential of n to the m, which is the number of functions.",
+      "Many identities of school algebra then come for free as isomorphisms of types: the exponent of a sum is a product of exponents, and the exponent of a product is an iterated exponent, which is currying again."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} C^{A+B} \\;\\cong\\; C^A \\times C^B \\\\[0.6em] C^{A \\times B} \\;\\cong\\; (C^B)^A \\\\[0.6em] A \\times (B + C) \\;\\cong\\; (A \\times B) + (A \\times C) \\end{gathered}"
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the product of A and B come with?",
+     "options": [
+      "Two projections and a unique pairing property",
+      "Two injections",
+      "A single arrow",
+      "An evaluation arrow"
+     ],
+     "answer": 0,
+     "explain": "Projections to A and to B, and each pair of arrows into them factors uniquely."
+    },
+    {
+     "q": "What is the terminal object in Set?",
+     "options": [
+      "The empty set",
+      "A one-element set",
+      "The natural numbers",
+      "A two-element set"
+     ],
+     "answer": 1,
+     "explain": "Every set has exactly one function into a one-element set."
+    },
+    {
+     "q": "Which statement is currying?",
+     "options": [
+      "Hom(C x A, B) is isomorphic to Hom(C, B to the A)",
+      "A x B is isomorphic to B x A",
+      "A + 0 is isomorphic to A",
+      "1 is isomorphic to 0"
+     ],
+     "answer": 0,
+     "explain": "Arrows out of a product correspond to arrows into an exponential."
+    },
+    {
+     "q": "How many functions are there from a 3-element set to a 2-element set?",
+     "options": [
+      "6",
+      "8",
+      "9",
+      "5"
+     ],
+     "answer": 1,
+     "explain": "Exponential: 2 to the power 3 equals 8."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Coproduct in Set?",
+     "a": "Disjoint union."
+    },
+    {
+     "q": "Exponential in Set?",
+     "a": "The set of functions B to the A."
+    },
+    {
+     "q": "What makes a category cartesian closed?",
+     "a": "Terminal object, binary products and exponentials."
+    },
+    {
+     "q": "Sizes in finite sets?",
+     "a": "Product multiplies, coproduct adds, exponential is a power."
+    }
+   ],
+   "practice": [
+    {
+     "type": "code",
+     "title": "Counting inhabitants",
+     "intro": "Write homSize(kind, a, b) for finite sets with a and b elements: 'product' gives a*b, 'coproduct' gives a+b, 'exponential' gives the number of functions from an a-element set to a b-element set, 'terminal' gives 1 and 'initial' gives 0.",
+     "fn": "homSize",
+     "starter": "function homSize(kind, a, b) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        "product",
+        3,
+        4
+       ],
+       "expect": 12
+      },
+      {
+       "args": [
+        "coproduct",
+        3,
+        4
+       ],
+       "expect": 7
+      },
+      {
+       "args": [
+        "exponential",
+        3,
+        2
+       ],
+       "expect": 8
+      },
+      {
+       "args": [
+        "exponential",
+        2,
+        3
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        "terminal",
+        5,
+        5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "initial",
+        5,
+        5
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "An exponential from an a-set to a b-set is Math.pow(b, a).",
+     "solution": "function homSize(kind, a, b) {\n  if (kind === 'product') return a * b;\n  if (kind === 'coproduct') return a + b;\n  if (kind === 'exponential') return Math.pow(b, a);\n  if (kind === 'terminal') return 1;\n  return 0;\n}"
+    },
+    {
+     "type": "match",
+     "title": "Universal constructions",
+     "intro": "Match each construction to its logical and programming reading.",
+     "pairs": [
+      [
+       "Product",
+       "And, pair type"
+      ],
+      [
+       "Coproduct",
+       "Or, sum type"
+      ],
+      [
+       "Exponential",
+       "Implies, function type"
+      ],
+      [
+       "Terminal object",
+       "True, unit type"
+      ],
+      [
+       "Initial object",
+       "False, empty type"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "School algebra for types",
+     "text": "A function from Bool times Bool to Bool: there are {{16}} of them, since 2 to the power 4 is 16. The type A to (B to C) is isomorphic to (A times B) to C by {{currying|curry}}. A sum type adds the sizes and a pair type {{multiplies|multiply}} them."
+    }
+   ]
+  },
+  {
+   "title": "The Lambek correspondence",
+   "maps": [
+    {
+     "title": "Lambek's dictionary",
+     "links": [
+      "Type | is interpreted as | Object",
+      "Context | is interpreted as | Product of objects",
+      "Term | is interpreted as | Morphism",
+      "Lambda abstraction | is interpreted as | Currying",
+      "Application | is interpreted as | Evaluation",
+      "Pair | is interpreted as | Pairing arrow",
+      "Beta and eta | match | Universal property laws",
+      "Cartesian closed category [ch8] | is | Model of the calculus",
+      "Syntax [ch3] | builds | Free cartesian closed category",
+      "Heyting algebra | is | Posetal model [ch6]"
+     ]
+    }
+   ],
+   "summary": [
+    "The Lambek correspondence reads the typed lambda calculus inside any cartesian closed category. Each type is an object, each context is a product of objects, and each term of type B in context Gamma is an arrow from the context to B.",
+    "Lambda abstraction becomes currying, application becomes the evaluation arrow, and pairs become the pairing arrow. The beta and eta equations of the calculus become exactly the universal property laws of products and exponentials.",
+    "Going the other way, the syntax of the calculus itself forms a cartesian closed category, so the lambda calculus is the internal language of such categories. Proofs, programs and arrows are three descriptions of the same structure, which is the slogan computational trinitarianism."
+   ],
+   "glossary": [
+    {
+     "term": "Interpretation",
+     "def": "A map from syntax (types and terms) to a category (objects and arrows)."
+    },
+    {
+     "term": "Internal language",
+     "def": "The typed calculus that you can use to reason about a category as if its objects were types."
+    },
+    {
+     "term": "Soundness",
+     "def": "If two terms are equal by beta and eta, their interpretations are the same arrow."
+    },
+    {
+     "term": "Syntactic category",
+     "def": "The category whose objects are types and whose arrows are terms up to equality."
+    },
+    {
+     "term": "Denotational semantics",
+     "def": "Giving programs meaning as mathematical objects, such as functions between sets."
+    },
+    {
+     "term": "Heyting algebra",
+     "def": "A bicartesian closed preorder: the posetal case of the correspondence."
+    },
+    {
+     "term": "Cartesian closed category",
+     "def": "A category with a terminal object, products and exponentials."
+    }
+   ],
+   "keyPoints": [
+    "Types are objects. A context x1:A1, ..., xn:An is the product A1 x ... x An.",
+    "A term Gamma proves M : B is an arrow from the context to B.",
+    "Lambda is currying, application is evaluation, pairs are pairing.",
+    "Beta and eta equal the universal-property equations.",
+    "Taking sets and functions as the category gives the standard set-theoretic semantics.",
+    "Posetal case: propositions as objects, entailment as arrows, a Heyting algebra."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Fix a cartesian closed category. We interpret every type A as an object, written with double brackets. Base types are chosen objects, the arrow type is the exponential, and the pair type is the product."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} [\\![A \\to B]\\!] = [\\![B]\\!]^{[\\![A]\\!]} \\\\[0.6em] [\\![A \\times B]\\!] = [\\![A]\\!] \\times [\\![B]\\!] \\\\[0.6em] [\\![1]\\!] = 1 \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A typing judgment says that in a context Gamma the term M has type B. The context itself becomes the product of its types. The judgment is interpreted as an arrow from that product to the object for B."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\Gamma \\vdash M : B ;\\leadsto; [\\![M]\\!] : [\\![\\Gamma]\\!] \\to [\\![B]\\!]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Every term constructor then has a categorical meaning. A variable is a projection out of the context product. A lambda abstraction is currying: if the body is an arrow from the context times A to B, the abstraction is the curried arrow from the context to the exponential.",
+      "Application is evaluation applied to the pair of the function and the argument."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} [\\![\\lambda x.\\, M]\\!] = \\Lambda [\\![M]\\!] \\\\[0.6em] [\\![M\\, N]\\!] = \\mathrm{ev} \\circ \\langle [\\![M]\\!], [\\![N]\\!] \\rangle \\\\[0.6em] [\\![(M, N)]\\!] = \\langle [\\![M]\\!], [\\![N]\\!] \\rangle \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The equations of the calculus are not extra data; they are the universal properties again. Beta reduction is the statement that evaluating a curried arrow recovers the original arrow. Eta, which says lambda x. f x equals f, is the uniqueness half of the exponential property.",
+      "Likewise fst of a pair is the first component, and a pair of the two projections of p is p."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\mathrm{ev} \\circ (\\Lambda f \\times \\mathrm{id}_A) = f \\\\[0.6em] \\Lambda(\\mathrm{ev} \\circ (g \\times \\mathrm{id}_A)) = g \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This gives soundness: if two terms are equal by beta and eta, they denote the same arrow in every cartesian closed category. And there is a converse of sorts. The terms of the calculus, taken up to equality, form a cartesian closed category themselves, which is free on the chosen base types.",
+      "The calculus is therefore the internal language of cartesian closed categories. Lambek and Scott made this precise, and it is what lets you reason about a category by writing programs in it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Take the category of sets and functions. Interpret each base type as a set, and the interpretation becomes the usual set-theoretic semantics of the calculus: functions are functions, pairs are pairs.",
+      "Take instead a Heyting algebra viewed as a category and the same recipe gives the semantics of intuitionistic propositional logic, where there is at most one arrow between objects, and so proofs of the same statement are all equal."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Put the three columns together. Logic: proposition, proof, implication, conjunction, true, false. Programming: type, program, function type, pair type, unit type, empty type. Category theory: object, morphism, exponential, product, terminal object, initial object.",
+      "This table is the heart of the course, and the Trinity Explorer in the practice section lets you click through it row by row."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does lambda abstraction become in a cartesian closed category?",
+     "options": [
+      "Evaluation",
+      "Currying",
+      "Projection",
+      "A product"
+     ],
+     "answer": 1,
+     "explain": "The body is an arrow out of context times A, and the abstraction is its curried form."
+    },
+    {
+     "q": "What does application become?",
+     "options": [
+      "Currying",
+      "The evaluation arrow",
+      "A coproduct",
+      "The terminal arrow"
+     ],
+     "answer": 1,
+     "explain": "Application is evaluation composed with the pairing of function and argument."
+    },
+    {
+     "q": "What is a context x:A, y:B interpreted as?",
+     "options": [
+      "A + B",
+      "A x B",
+      "B to the A",
+      "The terminal object"
+     ],
+     "answer": 1,
+     "explain": "A context is interpreted as the product of its types."
+    },
+    {
+     "q": "What does it mean to call the lambda calculus the internal language of a CCC?",
+     "options": [
+      "Programs can be compiled to machine code",
+      "You can reason about the category by writing typed programs in it",
+      "Types are hidden",
+      "It has only products"
+     ],
+     "answer": 1,
+     "explain": "Terms are arrows, so equations between terms are equations between arrows."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Interpretation of an arrow type?",
+     "a": "The exponential object."
+    },
+    {
+     "q": "Interpretation of a context?",
+     "a": "The product of its types."
+    },
+    {
+     "q": "Beta and eta correspond to?",
+     "a": "The universal property equations of exponentials and products."
+    },
+    {
+     "q": "Who made the correspondence precise?",
+     "a": "Lambek (and Scott)."
+    }
+   ],
+   "practice": [
+    {
+     "type": "code",
+     "title": "Count the denotation",
+     "intro": "Interpret types in finite sets. A type is a number n (a base type with n elements), \"unit\" (1 element), \"void\" (0), [\"x\", A, B] (product), [\"+\", A, B] (sum) or [\"->\", A, B] (function). Write cardinality(type): the number of elements of the set it denotes.",
+     "fn": "cardinality",
+     "starter": "function cardinality(t) {\n  // your code\n}",
+     "tests": [
+      {
+       "args": [
+        3
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        "unit"
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "void"
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         "x",
+         2,
+         3
+        ]
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        [
+         "+",
+         "unit",
+         [
+          "x",
+          2,
+          3
+         ]
+        ]
+       ],
+       "expect": 7
+      },
+      {
+       "args": [
+        [
+         "->",
+         2,
+         3
+        ]
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        [
+         "->",
+         [
+          "x",
+          2,
+          2
+         ],
+         2
+        ]
+       ],
+       "expect": 16
+      },
+      {
+       "args": [
+        [
+         "->",
+         [
+          "+",
+          "unit",
+          "unit"
+         ],
+         [
+          "->",
+          "unit",
+          3
+         ]
+        ]
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        [
+         "->",
+         "void",
+         5
+        ]
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Recurse. A function type from A to B has cardinality(B) to the power cardinality(A).",
+     "solution": "function cardinality(t) {\n  if (typeof t === 'number') return t;\n  if (t === 'unit') return 1;\n  if (t === 'void') return 0;\n  const a = cardinality(t[1]), b = cardinality(t[2]);\n  if (t[0] === 'x') return a * b;\n  if (t[0] === '+') return a + b;\n  return Math.pow(b, a);\n}"
+    },
+    {
+     "type": "match",
+     "title": "The dictionary",
+     "intro": "Match each programming construct to its categorical meaning.",
+     "pairs": [
+      [
+       "Lambda abstraction",
+       "Currying"
+      ],
+      [
+       "Application",
+       "Evaluation arrow"
+      ],
+      [
+       "Pair",
+       "Pairing arrow"
+      ],
+      [
+       "Variable",
+       "Projection from the context"
+      ],
+      [
+       "Context",
+       "Product of the types"
+      ]
+     ]
+    },
+    {
+     "type": "webxdc",
+     "title": "Trinity Explorer",
+     "intro": "Tap rows to see one idea in logic, in programs and in category theory. Explore six rows to finish.",
+     "height": 520,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\n.m{color:#c9b8e8}.row{display:grid;grid-template-columns:1fr;gap:4px;background:#1e1336;border-radius:12px;padding:8px 10px;margin:6px 0;border:1px solid #3a2a5c;cursor:pointer}\n.row.on{border-color:#b26bff;background:#2a1b47}.h{font-weight:700}.c{display:none}.row.on .c{display:block}\n.tag{display:inline-block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#b26bff;margin-right:6px}.bar{height:8px;border-radius:4px;background:#261b3b;margin:8px 0}.bar i{display:block;height:100%;width:0;background:#b26bff;border-radius:4px}\n</style></head><body>\n<div class=\"m\">One idea, three languages. Tap a row to open it. Open six rows to finish.</div>\n<div class=\"bar\"><i id=\"pg\"></i></div><div id=\"rows\"></div>\n<script>\nfunction done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar R=[\n['Implication','A implies B','Function type A to B','Exponential object B^A'],\n['Conjunction','A and B','Pair type A x B','Product A x B'],\n['Truth','True','Unit type, one value ()','Terminal object 1'],\n['Falsity','False','Empty type, no values','Initial object 0'],\n['Disjunction','A or B','Sum type, Left or Right','Coproduct A + B'],\n['Proof','A proof of A','A program of type A','An arrow into A'],\n['Assume a hypothesis','Use an assumption x:A','A variable','Projection from the context'],\n['Implication introduction','Assume A, prove B','Lambda abstraction','Currying'],\n['Modus ponens','From A->B and A infer B','Function application','Evaluation arrow'],\n['Normalization','Cut elimination','Evaluation of the program','Equality of arrows (beta, eta)'],\n['Negation','Not A is A implies False','A to the empty type','Exponential into 0'],\n['Universal quantifier','For all x, P(x)','Dependent function (Pi)','Right adjoint to pullback'],\n['Existential quantifier','There exists x, P(x)','Dependent pair (Sigma)','Left adjoint to pullback']\n];\nvar open={},c=0,box=document.getElementById('rows');\nR.forEach(function(r,i){var d=document.createElement('div');d.className='row';\nd.innerHTML='<div class=\"h\">'+r[0]+'</div><div class=\"c\"><div><span class=\"tag\">Logic</span>'+r[1]+'</div><div><span class=\"tag\">Program</span>'+r[2]+'</div><div><span class=\"tag\">Category</span>'+r[3]+'</div></div>';\nd.onclick=function(){d.classList.toggle('on');if(!open[i]){open[i]=1;c++;document.getElementById('pg').style.width=Math.min(100,c/6*100)+'%';if(c>=6)done()}};box.appendChild(d)});\n</script></body></html>\n"
+    }
+   ]
+  },
+  {
+   "title": "Dependent types and quantifiers",
+   "maps": [
+    {
+     "title": "Dependent types",
+     "links": [
+      "Dependent function type | is | Pi type",
+      "Dependent pair type | is | Sigma type",
+      "Pi type | matches | Universal quantifier",
+      "Sigma type | matches | Existential quantifier",
+      "Identity type | matches | Equality",
+      "Induction | is | Recursion",
+      "Vector | has type | Indexed by length",
+      "Martin-Lof type theory | is | Foundation",
+      "Lean [ch11] | implements | Dependent types"
+     ]
+    }
+   ],
+   "summary": [
+    "When a type can depend on a value, propositions can talk about values too. A dependent function type, or Pi type, matches the universal quantifier. A dependent pair type, or Sigma type, matches the existential quantifier. Equality becomes an identity type whose proofs are built from reflexivity.",
+    "Proof by induction is the same thing as writing a recursive function. A vector type that records its length in the type makes some bugs impossible, such as taking the head of an empty list.",
+    "This is Martin-Lof type theory and the logic of Lean, Rocq and Agda. The correspondence is the same, one dimension up: propositions about values are types that depend on values."
+   ],
+   "glossary": [
+    {
+     "term": "Dependent type",
+     "def": "A type that depends on a value, such as a vector of length n."
+    },
+    {
+     "term": "Pi type",
+     "def": "The type of functions whose result type depends on the argument. Matches for all."
+    },
+    {
+     "term": "Sigma type",
+     "def": "The type of pairs whose second component's type depends on the first. Matches there exists."
+    },
+    {
+     "term": "Identity type",
+     "def": "The type a equals b of proofs that a and b are equal. Reflexivity proves a equals a."
+    },
+    {
+     "term": "Induction principle",
+     "def": "The rule for proving a statement about every natural number from a base case and a step. As a program it is recursion."
+    },
+    {
+     "term": "Witness",
+     "def": "The value that proves an existence statement."
+    },
+    {
+     "term": "Universe",
+     "def": "A type whose elements are types. Needed to avoid paradoxes."
+    },
+    {
+     "term": "Indexed family",
+     "def": "A family of types parameterized by values, such as Vec A n."
+    }
+   ],
+   "keyPoints": [
+    "For all x in A, P(x) is the Pi type: a function giving a proof of P(x) for each x.",
+    "There exists x in A with P(x) is the Sigma type: a witness plus a proof about it.",
+    "Equality is an inductive type whose constructor is reflexivity.",
+    "Induction on the natural numbers is a recursive function.",
+    "Indexing a vector by its length lets the type checker reject head of the empty vector.",
+    "Dependent types are what make programs and proofs live in one language."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "So far propositions were about abstract atoms. To prove statements about numbers, lists and programs, we want types to mention values. A dependent function type is a function whose result type depends on its argument. A dependent pair is a pair whose second part has a type depending on the first."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\forall x{:}A.\\, P(x) \\;\\;\\leftrightarrow\\;\\; \\Pi x{:}A.\\, P(x) \\\\[0.6em] \\exists x{:}A.\\, P(x) \\;\\;\\leftrightarrow\\;\\; \\Sigma x{:}A.\\, P(x) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "When P does not mention x, the Pi type is the ordinary function type and the Sigma type is the ordinary pair type. So the quantifiers generalize the arrow and the product, just as the arrow and the product were the logical implication and conjunction."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A proof of the existence of a number n with n plus n equal to four is a witness together with a proof. In Lean the witness is two and the proof is reflexivity, because two plus two computes to four."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "lean",
+     "code": "theorem exists_two : ∃ n : Nat, n + n = 4 := ⟨2, rfl⟩\n\ntheorem all_succ_pos : ∀ n : Nat, 0 < n + 1 := fun n => Nat.succ_pos n\n\n#check (⟨2, rfl⟩ : ∃ n : Nat, n + n = 4)   -- Exists.intro 2 rfl : ∃ n, n + n = 4"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Equality is a type too. The equality a equals b has one constructor, reflexivity, which proves a equals a. Because Lean computes, if two sides reduce to the same value then reflexivity proves them equal.",
+      "That is why n plus zero equals n is proved by rfl, while zero plus n equals n needs induction: addition recurses on its second argument."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "lean",
+     "code": "theorem add_zero' (n : Nat) : n + 0 = n := rfl          -- computes: n + 0 reduces to n\n\ntheorem zero_add' (n : Nat) : 0 + n = n := by            -- needs induction\n  induction n with\n  | zero => rfl\n  | succ k ih => exact congrArg Nat.succ ih"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Look at what induction is. To prove a statement for all n you give a proof for zero and a function that turns a proof for k into a proof for k plus one. That is exactly a recursive function whose result type depends on its argument. The induction principle is the dependent recursor."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Vectors show the practical payoff. A vector type carries its length. Append adds lengths in the type, and taking the head only works on a vector whose length is a successor, so the empty case is ruled out by the type checker rather than by a runtime error."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "lean",
+     "code": "inductive Vec (α : Type) : Nat → Type where\n  | nil : Vec α 0\n  | cons : α → Vec α n → Vec α (n + 1)\n\ndef Vec.append : Vec α m → Vec α n → Vec α (n + m)\n  | .nil, ys => ys\n  | .cons x xs, ys => .cons x (append xs ys)\n\ndef Vec.head : Vec α (n + 1) → α\n  | .cons x _ => x            -- no case for nil: it cannot occur\n\n#check @Vec.append   -- {α : Type} → {m n : Nat} → Vec α m → Vec α n → Vec α (n + m)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where does this come from? Per Martin-Lof's intuitionistic type theory of the 1970s and 80s, which is the foundation behind Agda, Rocq and Lean.",
+      "A dependent type theory unifies the logic and the programming language in a single system, so a verified program is just a program whose type is a precise specification."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A caution. The step from simple to dependent types raises the stakes of totality. Every function must terminate, because a non-terminating proof would prove anything.",
+      "Proof assistants therefore check termination for recursive definitions, and that is why recursion in these languages has structural rules."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which type corresponds to the existential quantifier?",
+     "options": [
+      "Pi type",
+      "Sigma type",
+      "Function type",
+      "Unit type"
+     ],
+     "answer": 1,
+     "explain": "A dependent pair of a witness and a proof."
+    },
+    {
+     "q": "What is a proof of there exists n with n + n = 4?",
+     "options": [
+      "A truth table",
+      "A witness such as 2 and a proof that 2 + 2 = 4",
+      "A function",
+      "Nothing is needed"
+     ],
+     "answer": 1,
+     "explain": "A Sigma value: the witness and a proof about it."
+    },
+    {
+     "q": "What is proof by induction in programming terms?",
+     "options": [
+      "Case analysis",
+      "A recursive function whose result type depends on its argument",
+      "A pair",
+      "A wrapper"
+     ],
+     "answer": 1,
+     "explain": "The induction principle is the dependent recursor."
+    },
+    {
+     "q": "Why can Vec.head omit the nil case?",
+     "options": [
+      "It is ignored at run time",
+      "Its argument type is Vec A (n + 1), which is never empty",
+      "nil cannot be written",
+      "It is a bug"
+     ],
+     "answer": 1,
+     "explain": "The type excludes the empty vector."
+    }
+   ],
+   "cards": [
+    {
+     "q": "For all as a type?",
+     "a": "The Pi type (dependent function)."
+    },
+    {
+     "q": "There exists as a type?",
+     "a": "The Sigma type (dependent pair)."
+    },
+    {
+     "q": "Constructor of equality?",
+     "a": "Reflexivity, refl (rfl in Lean)."
+    },
+    {
+     "q": "Why must proof assistant functions terminate?",
+     "a": "A non-terminating function could prove anything, including false."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Quantifiers and types",
+     "intro": "Match each logical idea to its type-theory form.",
+     "pairs": [
+      [
+       "For all x in A, P(x)",
+       "Pi type"
+      ],
+      [
+       "There exists x in A with P(x)",
+       "Sigma type"
+      ],
+      [
+       "a equals b",
+       "Identity type"
+      ],
+      [
+       "Proof by induction",
+       "Recursion"
+      ],
+      [
+       "A vector of length n",
+       "Indexed family"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Witnesses",
+     "text": "A proof of an existence statement is a {{witness}} together with a proof about it, which is a {{Sigma|dependent pair}} value. A proof of a universal statement is a {{function|Pi|dependent function}} from every x to a proof for x. Equality is proved by {{reflexivity|rfl|refl}}."
+    },
+    {
+     "type": "write",
+     "title": "Spot the benefit",
+     "prompt": "In one or two sentences, explain how a vector type that includes its length helps prevent a bug.",
+     "checks": [
+      {
+       "re": "length|size",
+       "msg": "mentions length"
+      },
+      {
+       "re": "head|empty|index|bounds|error|bug",
+       "msg": "mentions the bug it prevents"
+      }
+     ],
+     "solution": "The type records the length, so the checker can reject taking the head of an empty vector at compile time."
+    }
+   ]
+  },
+  {
+   "title": "Proof assistants in practice",
+   "maps": [
+    {
+     "title": "Using a proof assistant",
+     "links": [
+      "Proof assistant | checks | Types",
+      "Theorem | is | Type",
+      "Proof | is | Term",
+      "Tactic | builds | Term",
+      "Kernel | checks | Term",
+      "Lean | is | Proof assistant",
+      "Rocq | is | Proof assistant",
+      "Agda | is | Proof assistant",
+      "Classical axioms [ch6] | are marked by | Axiom check",
+      "Verified software | is | Specification as type"
+     ]
+    }
+   ],
+   "summary": [
+    "A proof assistant is a programming language whose type checker is a proof checker. You state a theorem as a type, build a term of that type, and the kernel verifies it. Lean, Rocq and Agda are well-known examples.",
+    "You can write proofs directly as terms, as in earlier chapters, or use tactics, small commands that build the term step by step. Either way the kernel checks the final term, so a tactic bug cannot sneak in a wrong proof.",
+    "Proof assistants have been used for verified compilers, operating system kernels and large libraries of mathematics. You can ask which axioms a proof depends on, which shows whether it used classical logic."
+   ],
+   "glossary": [
+    {
+     "term": "Proof assistant",
+     "def": "A program for writing and checking formal proofs, built on a type theory."
+    },
+    {
+     "term": "Kernel",
+     "def": "The small trusted core that type checks every proof term."
+    },
+    {
+     "term": "Tactic",
+     "def": "A command that constructs part of a proof term, such as induction or rewrite."
+    },
+    {
+     "term": "Term-mode proof",
+     "def": "A proof written directly as a lambda term."
+    },
+    {
+     "term": "Prop",
+     "def": "The Lean universe of propositions, whose proofs are irrelevant to computation."
+    },
+    {
+     "term": "Axiom",
+     "def": "A statement assumed without proof. Classical logic enters through axioms."
+    },
+    {
+     "term": "Formal verification",
+     "def": "Proving that a program meets a precise specification with a proof the machine checks."
+    }
+   ],
+   "keyPoints": [
+    "A theorem is a type, a proof is a term of that type, the kernel is the checker.",
+    "Term mode is the Curry-Howard correspondence written directly.",
+    "Tactics build terms; only the kernel is trusted.",
+    "#check shows a type, #eval runs a program, #print axioms lists assumptions.",
+    "Lean, Rocq and Agda are constructive by default.",
+    "A proof that depends on classical axioms is visible through #print axioms."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Here is the Curry-Howard correspondence in a real proof assistant. These proofs are written in Lean 4. Each theorem states a proposition as a type, and each proof is a function."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "lean",
+     "code": "theorem a_imp_a (A : Prop) : A → A := fun a => a\n\ntheorem and_swap' (A B : Prop) : A ∧ B → B ∧ A :=\n  fun ⟨a, b⟩ => ⟨b, a⟩\n\ntheorem or_swap' (A B : Prop) : A ∨ B → B ∨ A :=\n  fun h => h.elim (fun a => Or.inr a) (fun b => Or.inl b)\n\ntheorem curry' (A B C : Prop) : (A ∧ B → C) → (A → B → C) :=\n  fun f a b => f ⟨a, b⟩\n\ntheorem dni (A : Prop) : A → ¬¬A := fun a k => k a\n\ntheorem distrib (A B C : Prop) : A ∧ (B ∨ C) → (A ∧ B) ∨ (A ∧ C) :=\n  fun ⟨a, h⟩ => h.elim (fun b => Or.inl ⟨a, b⟩) (fun c => Or.inr ⟨a, c⟩)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Compare with chapter 4. The pair is the proof of and, the Or.inl and Or.inr are the injections, elimination is case analysis, and the double negation proof is the lambda that applies the refutation to the value. Nothing is new; only the syntax is Lean's."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The checker answers queries. The command check shows the type of an expression. The command eval runs a program. Typing a wrong proof gives a type error that reads like a failed type check, because it is one."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "lean",
+     "code": "#check Nat → Nat                         -- Nat → Nat : Type\n#check fun (x : Nat) => x + 1            -- fun x => x + 1 : Nat → Nat\n#check And.intro                         -- And.intro {a b : Prop} (left : a) (right : b) : a ∧ b\n#check Prop                              -- Prop : Type\n#eval 2 + 2                              -- 4\n\nexample : 2 + 2 = 4 := rfl               -- accepted\nexample : 2 + 2 = 5 := rfl               -- error: type mismatch"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Tactics let you build proofs interactively. A tactic proof starts with by, and each command transforms the goal. The tactic framework produces a proof term at the end, and the kernel checks it, so you can use powerful automation without trusting it."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "lean",
+     "code": "theorem double_eq (n : Nat) : n + n = 2 * n := by omega\n\ntheorem and_comm' (A B : Prop) : A ∧ B → B ∧ A := by\n  intro h\n  exact ⟨h.2, h.1⟩"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Axioms matter. Lean has a classical axiom, and you can ask which axioms a theorem uses. The swap proof depends on none. A proof of Peirce's law needs classical logic, and the check shows it. This is the constructive-versus-classical distinction of chapter 6, made visible to a tool."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "lean",
+     "code": "#print axioms and_swap'\n-- 'and_swap'' does not depend on any axioms\n\ntheorem peirce (A B : Prop) : ((A → B) → A) → A :=\n  fun f => Classical.byContradiction (fun na => na (f (fun a => absurd a na)))\n\n#print axioms peirce\n-- 'peirce' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "What is this used for? Mathematicians use Lean's Mathlib library to formalize mathematics. Software engineers use proof assistants to verify compilers and operating system kernels, such as the CompCert C compiler in Rocq and the seL4 microkernel in Isabelle.",
+      "The common idea is the one you have learned: a specification is a type, a verified program is a term of that type.",
+      "The Simulated Lean terminal in the practice section lets you try the commands from this chapter. Its outputs were copied from a real Lean run, but it is not a real Lean installation, so install Lean from the official site to go further."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the kernel of a proof assistant do?",
+     "options": [
+      "Suggests tactics",
+      "Type checks every proof term",
+      "Compiles to C",
+      "Stores files"
+     ],
+     "answer": 1,
+     "explain": "It is the small trusted core that verifies the final term."
+    },
+    {
+     "q": "What is a theorem in a proof assistant?",
+     "options": [
+      "A comment",
+      "A type",
+      "A string",
+      "A tactic"
+     ],
+     "answer": 1,
+     "explain": "A proof is a term inhabiting that type."
+    },
+    {
+     "q": "What does #print axioms tell you?",
+     "options": [
+      "The file size",
+      "Which axioms a proof relies on",
+      "The running time",
+      "The tactic names"
+     ],
+     "answer": 1,
+     "explain": "A classical proof shows axioms such as Classical.choice."
+    },
+    {
+     "q": "Why can tactics be used without trusting them?",
+     "options": [
+      "They are always correct",
+      "They only produce terms, and the kernel checks the result",
+      "They are slow",
+      "They only work on small proofs"
+     ],
+     "answer": 1,
+     "explain": "A buggy tactic can fail, but cannot produce an invalid accepted proof."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Theorem is to proof as?",
+     "a": "Type is to term."
+    },
+    {
+     "q": "Command to see a type in Lean?",
+     "a": "#check"
+    },
+    {
+     "q": "Command to see assumptions?",
+     "a": "#print axioms"
+    },
+    {
+     "q": "Three proof assistants?",
+     "a": "Lean, Rocq (formerly Coq), Agda."
+    }
+   ],
+   "practice": [
+    {
+     "type": "terminal",
+     "title": "Simulated Lean",
+     "intro": "A scripted Lean shell. Outputs were copied from a real Lean 4 run, but this is not a real Lean installation. Try the chips or type the commands.",
+     "prompt": "lean>",
+     "chips": [
+      "#check Nat → Nat",
+      "#check And.intro",
+      "#eval 2 + 2",
+      "theorem and_swap' (A B : Prop) : A ∧ B → B ∧ A := fun ⟨a, b⟩ => ⟨b, a⟩",
+      "#print axioms and_swap'",
+      "example : 2 + 2 = 5 := rfl",
+      "#check Classical.em"
+     ],
+     "commands": [
+      {
+       "re": "^#check Nat (→|->) Nat$",
+       "out": [
+        "Nat → Nat : Type"
+       ]
+      },
+      {
+       "re": "^#check \\(?fun \\(x : Nat\\) (=>|↦) x \\+ 1\\)?$",
+       "out": [
+        "fun x => x + 1 : Nat → Nat"
+       ]
+      },
+      {
+       "re": "^#check And\\.intro$",
+       "out": [
+        "And.intro {a b : Prop} (left : a) (right : b) : a ∧ b"
+       ]
+      },
+      {
+       "re": "^#check @Or\\.elim$",
+       "out": [
+        "@Or.elim : ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c"
+       ]
+      },
+      {
+       "re": "^#check Prop$",
+       "out": [
+        "Prop : Type"
+       ]
+      },
+      {
+       "re": "^#check Type$",
+       "out": [
+        "Type : Type 1"
+       ]
+      },
+      {
+       "re": "^#check Classical\\.em$",
+       "out": [
+        "Classical.em : ∀ (p : Prop), p ∨ ¬p"
+       ]
+      },
+      {
+       "re": "^#eval 2 \\+ 2$",
+       "out": [
+        "4"
+       ]
+      },
+      {
+       "re": "^example : 2 \\+ 2 = 4 := rfl$",
+       "out": [
+        "(no messages: Lean accepted it)"
+       ]
+      },
+      {
+       "re": "^example : 2 \\+ 2 = 5 := rfl$",
+       "out": [
+        "error: Type mismatch",
+        "  rfl",
+        "has type",
+        "  ?m.16 = ?m.16",
+        "but is expected to have type",
+        "  2 + 2 = 5"
+       ],
+       "cls": "err"
+      },
+      {
+       "re": "^theorem and_swap'? .*:= *fun",
+       "out": [
+        "(no messages: Lean accepted the theorem)"
+       ],
+       "set": {
+        "swap": "1"
+       }
+      },
+      {
+       "re": "^#print axioms and_swap'?$",
+       "when": {
+        "swap": "1"
+       },
+       "out": [
+        "'and_swap'' does not depend on any axioms"
+       ]
+      },
+      {
+       "re": "^#print axioms and_swap'?$",
+       "out": [
+        "error: unknown constant 'and_swap'' (state the theorem first)"
+       ],
+       "cls": "warn"
+      },
+      {
+       "re": "^#print axioms peirce$",
+       "out": [
+        "'peirce' depends on axioms: [propext, Classical.choice, Quot.sound]"
+       ]
+      }
+     ],
+     "tasks": [
+      {
+       "text": "Check the type of a function type",
+       "cmd": "^#check Nat"
+      },
+      {
+       "text": "Check And.intro",
+       "cmd": "^#check And\\.intro$"
+      },
+      {
+       "text": "State and prove the swap theorem",
+       "cmd": "^theorem and_swap"
+      },
+      {
+       "text": "Print its axioms",
+       "cmd": "^#print axioms and_swap"
+      },
+      {
+       "text": "See an incorrect proof rejected",
+       "cmd": "^example : 2 \\+ 2 = 5"
+      }
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Proofs as terms",
+     "text": "theorem a_imp_a (A : Prop) : A → A := {{fun a => a|fun x => x|fun h => h}}\nA theorem is a {{type}}, a proof is a {{term}}, and the {{kernel}} checks it."
+    },
+    {
+     "type": "order",
+     "title": "From idea to checked proof",
+     "intro": "Put the proof assistant workflow in order.",
+     "items": [
+      "State the theorem as a type",
+      "Write a proof term or tactics to build one",
+      "The kernel type checks the term",
+      "Check which axioms the proof uses",
+      "Use the theorem in later proofs"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Beyond the triangle",
+   "maps": [
+    {
+     "title": "Extensions of the correspondence",
+     "links": [
+      "Linear logic | matches | Linear types",
+      "Linear types | model | Resources used once",
+      "Linear logic | matches | Monoidal closed categories",
+      "Monads | model | Computational effects",
+      "Homotopy type theory | reads types as | Spaces",
+      "Identity type | reads as | Paths",
+      "Univalence | says | Equivalence is equality",
+      "Quantum computing | uses | Dagger compact categories",
+      "Rosetta Stone | connects | Physics, topology, logic, computation"
+     ]
+    }
+   ],
+   "summary": [
+    "The correspondence is a pattern, not a single theorem. Change the logic and you change the programming language and the categories. Linear logic, where assumptions must be used exactly once, matches linear types and symmetric monoidal closed categories.",
+    "Moggi showed that monads model computational effects such as state, exceptions and input and output. Homotopy type theory reads types as spaces and equalities as paths, and adds the univalence axiom. Categorical quantum mechanics uses categories with extra structure to describe quantum processes.",
+    "You now have the core triangle. The best next steps are to try a proof assistant, to read a category theory text for programmers, and to write your own small type checker."
+   ],
+   "glossary": [
+    {
+     "term": "Linear logic",
+     "def": "A logic by Girard where each assumption must be used exactly once, so hypotheses behave like resources."
+    },
+    {
+     "term": "Linear type",
+     "def": "A type whose values must be used exactly once. Related ideas include ownership in Rust."
+    },
+    {
+     "term": "Monad",
+     "def": "A structure for sequencing computations with effects, introduced into semantics by Moggi."
+    },
+    {
+     "term": "Homotopy type theory",
+     "def": "Type theory read as homotopy theory, with types as spaces and equalities as paths."
+    },
+    {
+     "term": "Univalence",
+     "def": "Voevodsky's axiom that equivalent types are equal."
+    },
+    {
+     "term": "Monoidal category",
+     "def": "A category with a tensor product and unit, more general than a cartesian product."
+    },
+    {
+     "term": "Rosetta Stone",
+     "def": "Baez and Stay's table of analogies between physics, topology, logic and computation, via category theory."
+    }
+   ],
+   "keyPoints": [
+    "Change the logic, and the types and categories change with it.",
+    "Linear logic: use each assumption exactly once. Linear types and monoidal categories match.",
+    "Rust-style ownership is closely related to affine and linear types.",
+    "Monads package effects. Effects are not part of the pure correspondence.",
+    "Homotopy type theory: types are spaces, equalities are paths.",
+    "Next steps: use Lean, read about categories, implement a small type checker."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The correspondence is not a one-off. Whenever a logic has a good proof theory, you can look for a matching calculus and a matching class of categories. This chapter surveys four directions and then suggests where to go next."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "First, linear logic, introduced by Jean-Yves Girard in 1987. In ordinary logic you can use an assumption as many times as you like, or not at all. In linear logic each assumption is used exactly once, so hypotheses behave like physical resources: a coin cannot be spent twice.",
+      "The matching programs are linear lambda calculi, and the matching categories are symmetric monoidal closed categories, where the tensor product replaces the cartesian product."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} A \\otimes B \\;\\;\\text{(both resources)} \\\\[0.6em] A \\multimap B \\;\\;\\text{(consume an } A \\text{ to produce a } B\\text{)} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Programming languages use the idea. Rust's ownership system is closely related to affine types, where a value may be used at most once. Linear types are also used to control memory, protocols and quantum data, which cannot be copied."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Second, effects. Pure typed lambda calculus has no state, exceptions or input and output. Eugenio Moggi showed in 1989 and 1991 that a monad, a categorical structure, gives a uniform semantics for these effects, and Philip Wadler brought the idea into Haskell.",
+      "Logically, monads correspond to a form of modality sometimes called lax logic, though this link is less tidy than the core triangle."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Third, homotopy type theory. Take dependent type theory and read each type as a space, each element as a point, and each equality proof as a path between points. Identity types then behave like path spaces, and the induction principle for equality is path induction.",
+      "Vladimir Voevodsky's univalence axiom says that equivalent types are equal. Cubical type theory gives a version in which univalence also computes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Fourth, physics. John Baez and Mike Stay's Rosetta Stone paper sets out a table of analogies between physics, topology, logic and computation, all through category theory.",
+      "In categorical quantum mechanics, work by Abramsky and Coecke, quantum processes are arrows in a dagger compact category, and the diagrammatic calculus replaces linear algebra for some purposes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Each of these pairs a logic with a calculus and a category. The core triangle you learned is the simplest member of the family, and it is the best place to start."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where to go next. Install Lean and work through the official introductory book, Theorem Proving in Lean. Read an introduction to category theory for programmers. Write a small type checker for the simply typed lambda calculus in your favorite language; the lab in chapter 3 was a start.",
+      "Try proving the exercises of this course in Lean. And look for the pattern: whenever you meet a new logic, ask what programs and what categories it has."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the key rule in linear logic?",
+     "options": [
+      "Use each assumption exactly once",
+      "Use assumptions any number of times",
+      "Never use assumptions",
+      "Only use true assumptions"
+     ],
+     "answer": 0,
+     "explain": "Hypotheses behave like consumable resources."
+    },
+    {
+     "q": "Which categories match linear logic?",
+     "options": [
+      "Cartesian closed categories only",
+      "Symmetric monoidal closed categories",
+      "Preorders",
+      "Groups"
+     ],
+     "answer": 1,
+     "explain": "The tensor product replaces the cartesian product."
+    },
+    {
+     "q": "Who introduced monads into semantics of effects?",
+     "options": [
+      "Eugenio Moggi",
+      "Haskell Curry",
+      "Joachim Lambek",
+      "William Howard"
+     ],
+     "answer": 0,
+     "explain": "Moggi, with Wadler bringing monads into Haskell."
+    },
+    {
+     "q": "In homotopy type theory what does an equality proof correspond to?",
+     "options": [
+      "A path between points",
+      "A number",
+      "A program",
+      "A function"
+     ],
+     "answer": 0,
+     "explain": "Identity types behave like path spaces."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Linear logic slogan?",
+     "a": "Use each hypothesis exactly once."
+    },
+    {
+     "q": "Monads are for?",
+     "a": "Modeling computational effects."
+    },
+    {
+     "q": "HoTT slogan?",
+     "a": "Types are spaces, equalities are paths."
+    },
+    {
+     "q": "Good first project?",
+     "a": "Write a type checker for the simply typed lambda calculus."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Logic, calculus and category",
+     "intro": "Match each logic to its related programming idea.",
+     "pairs": [
+      [
+       "Intuitionistic logic",
+       "Simply typed lambda calculus"
+      ],
+      [
+       "Linear logic",
+       "Linear types, ownership"
+      ],
+      [
+       "Dependent type theory",
+       "Lean, Rocq, Agda"
+      ],
+      [
+       "Homotopy type theory",
+       "Types as spaces"
+      ]
+     ]
+    },
+    {
+     "type": "write",
+     "title": "Your next step",
+     "prompt": "In one or two sentences, name one thing you will do next with this material, such as installing Lean or writing a type checker.",
+     "checks": [
+      {
+       "re": "Lean|Rocq|Agda|type checker|category|proof",
+       "msg": "names a next step"
+      },
+      {
+       "re": ".{20,}",
+       "msg": "has a real sentence"
+      }
+     ],
+     "solution": "I will install Lean and prove the exercises from chapter 11."
+    },
+    {
+     "type": "order",
+     "title": "Learning path",
+     "intro": "Put a sensible learning path in order.",
+     "items": [
+      "Learn natural deduction",
+      "Learn the simply typed lambda calculus",
+      "See the Curry-Howard dictionary",
+      "Meet categories and the Lambek step",
+      "Try a proof assistant"
+     ]
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Curry-Howard-Lambek",
+  "passMark": 70,
+  "size": 16,
+  "questions": [
+   {
+    "q": "Under Curry-Howard, a proof of A implies B corresponds to what?",
+    "options": [
+     "A pair",
+     "A function from A to B",
+     "A set",
+     "A tautology"
+    ],
+    "answer": 1,
+    "explain": "Implication is the function type."
+   },
+   {
+    "q": "Which type corresponds to logical conjunction?",
+    "options": [
+     "Sum type",
+     "Product (pair) type",
+     "Function type",
+     "Unit type"
+    ],
+    "answer": 1,
+    "explain": "A proof of A and B is a pair."
+   },
+   {
+    "q": "Which type corresponds to disjunction?",
+    "options": [
+     "Product",
+     "Sum (tagged union)",
+     "Unit",
+     "Function"
+    ],
+    "answer": 1,
+    "explain": "A proof of A or B is a tagged value of one side."
+   },
+   {
+    "q": "Which type has no values and corresponds to falsity?",
+    "options": [
+     "Unit",
+     "Bool",
+     "The empty type",
+     "Nat"
+    ],
+    "answer": 2,
+    "explain": "No closed term inhabits it."
+   },
+   {
+    "q": "Normalizing a program corresponds to what in logic?",
+    "options": [
+     "Weakening",
+     "Cut elimination",
+     "Contraction",
+     "Negation"
+    ],
+    "answer": 1,
+    "explain": "Reducing a redex removes a detour in the proof."
+   },
+   {
+    "q": "What does the combinator K prove?",
+    "options": [
+     "A implies A",
+     "A implies (B implies A)",
+     "Excluded middle",
+     "Double negation elimination"
+    ],
+    "answer": 1,
+    "explain": "K ignores its second argument, which is weakening."
+   },
+   {
+    "q": "Which of these is NOT provable intuitionistically?",
+    "options": [
+     "A implies not not A",
+     "A or not A for arbitrary A",
+     "(A and B) implies (B and A)",
+     "Not (A and not A)"
+    ],
+    "answer": 1,
+    "explain": "Excluded middle needs a classical axiom."
+   },
+   {
+    "q": "Which fact makes simply typed lambda calculus a good logic?",
+    "options": [
+     "It has loops",
+     "Every well-typed term normalizes",
+     "It has no functions",
+     "It has side effects"
+    ],
+    "answer": 1,
+    "explain": "Strong normalization keeps the logic consistent."
+   },
+   {
+    "q": "What does the exponential object B^A represent?",
+    "options": [
+     "Maps from B to A",
+     "Maps from A to B",
+     "Pairs of A and B",
+     "A union B"
+    ],
+    "answer": 1,
+    "explain": "It is the object of functions from A to B."
+   },
+   {
+    "q": "What does lambda abstraction become in a CCC?",
+    "options": [
+     "Evaluation",
+     "Currying",
+     "Projection",
+     "Coproduct"
+    ],
+    "answer": 1,
+    "explain": "It is the transpose across the exponential adjunction."
+   },
+   {
+    "q": "A context x:A, y:B is interpreted as what?",
+    "options": [
+     "A + B",
+     "A x B",
+     "B^A",
+     "1"
+    ],
+    "answer": 1,
+    "explain": "Contexts are products."
+   },
+   {
+    "q": "A Heyting algebra is what, categorically?",
+    "options": [
+     "A group",
+     "A bicartesian closed preorder",
+     "A monoid",
+     "A topos only"
+    ],
+    "answer": 1,
+    "explain": "It is the posetal case of the correspondence."
+   },
+   {
+    "q": "Which type corresponds to the existential quantifier?",
+    "options": [
+     "Pi type",
+     "Sigma type",
+     "Function type",
+     "Sum type"
+    ],
+    "answer": 1,
+    "explain": "A witness paired with a proof about it."
+   },
+   {
+    "q": "What is induction on the naturals in programming terms?",
+    "options": [
+     "A loop",
+     "A recursive function with a dependent result type",
+     "An exception",
+     "A module"
+    ],
+    "answer": 1,
+    "explain": "The induction principle is the dependent recursor."
+   },
+   {
+    "q": "What do tactics produce in a proof assistant?",
+    "options": [
+     "Comments",
+     "Proof terms checked by the kernel",
+     "Machine code only",
+     "Axioms"
+    ],
+    "answer": 1,
+    "explain": "Only the kernel needs to be trusted."
+   },
+   {
+    "q": "In linear logic, how often is each assumption used?",
+    "options": [
+     "Any number of times",
+     "Exactly once",
+     "Never",
+     "At least twice"
+    ],
+    "answer": 1,
+    "explain": "Hypotheses behave like resources."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Trinity lookup",
+  "prompt": "trinity>",
+  "intro": "A scripted lookup tool, not a real type checker. Try: type K, type S, type I, type fst, type swap, type curry, dict, help",
+  "chips": [
+   "type I",
+   "type K",
+   "type S",
+   "type fst",
+   "type swap",
+   "type curry",
+   "dict",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "type <I|K|S|fst|snd|swap|curry|uncurry|compose>   principal type and the tautology it proves",
+     "dict                                              the logic / program / category dictionary"
+    ]
+   },
+   {
+    "re": "^type I$",
+    "out": [
+     "I = λx. x : A → A",
+     "Proves: A implies A. Category: the identity arrow."
+    ]
+   },
+   {
+    "re": "^type K$",
+    "out": [
+     "K = λx. λy. x : A → B → A",
+     "Proves: weakening, A implies (B implies A)."
+    ]
+   },
+   {
+    "re": "^type S$",
+    "out": [
+     "S = λf. λg. λx. f x (g x) : (A → B → C) → (A → B) → A → C",
+     "Proves: distribution of implication. Uses x twice (contraction)."
+    ]
+   },
+   {
+    "re": "^type fst$",
+    "out": [
+     "fst = λp. p.1 : A × B → A",
+     "Proves: A and B implies A. Category: a projection."
+    ]
+   },
+   {
+    "re": "^type snd$",
+    "out": [
+     "snd = λp. p.2 : A × B → B",
+     "Proves: A and B implies B. Category: a projection."
+    ]
+   },
+   {
+    "re": "^type swap$",
+    "out": [
+     "swap = λp. (p.2, p.1) : A × B → B × A",
+     "Proves: and is commutative. Category: the symmetry isomorphism."
+    ]
+   },
+   {
+    "re": "^type curry$",
+    "out": [
+     "curry = λf. λa. λb. f (a, b) : (A × B → C) → A → B → C",
+     "Category: the exponential adjunction, forward."
+    ]
+   },
+   {
+    "re": "^type uncurry$",
+    "out": [
+     "uncurry = λf. λp. f p.1 p.2 : (A → B → C) → A × B → C",
+     "Category: the exponential adjunction, backward."
+    ]
+   },
+   {
+    "re": "^type compose$",
+    "out": [
+     "compose = λf. λg. λx. f (g x) : (B → C) → (A → B) → A → C",
+     "Proves: implication is transitive. Category: composition."
+    ]
+   },
+   {
+    "re": "^type ",
+    "out": [
+     "Unknown name. Try: I K S fst snd swap curry uncurry compose"
+    ],
+    "cls": "warn"
+   },
+   {
+    "re": "^dict$",
+    "out": [
+     "logic         program        category",
+     "implication   function type  exponential",
+     "and           pair           product",
+     "true          unit           terminal object",
+     "false         empty type     initial object",
+     "or            sum            coproduct",
+     "proof         program        arrow",
+     "cut elim.     evaluation     equality of arrows"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "warn"
+   }
+  ],
+  "tasks": []
+ }
+}

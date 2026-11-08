@@ -12,6 +12,7 @@ A standalone, offline Android app with a talking, animated Teacher. It comes **e
 
 * `jetson-agx-xavier.course.json`: the NVIDIA Jetson AGX Xavier course (23 chapters).
 * `rl-python-gymnasium-sb3.course.json`: Reinforcement Learning with Python (12 chapters: RL basics, Gymnasium, MDPs, bandits, Q-learning, custom environments, DQN, Stable-Baselines3, PPO/SAC, training in practice, reward design, next steps). Has a final exam, a bandit lab and a gridworld Q-learning lab.
+* `curry-howard-lambek.course.json`: Curry-Howard-Lambek, computational trinitarianism (12 chapters: natural deduction, the lambda calculus, propositions as types, normalization, constructive vs classical logic, categories, products/sums/exponentials, the Lambek correspondence, dependent types, proof assistants, linear logic/monads/HoTT). Uses LaTeX math, has a Lambda Stepper app, a Trinity Explorer app, a simulated Lean terminal and a final exam. Lean examples were checked with Lean 4.35; other code is illustrative.
 * `sample-percentages.course.json`: a tiny second-subject sample.
 
 Course format: see the header of `build/src/course.js` or use "Template" and "AI prompt" in the app's library.
@@ -28,3 +29,8 @@ Course format: see the header of `build/src/course.js` or use "Template" and "AI
 `jade/tools/lilith_tool.js` (search, read, quiz, validate courses) and `jade/skills/lilith-learning-lab/SKILL.md`. `xavier_tool.js` adds a trtexec builder, DLA checker and simulated shell for the Xavier course.
 
 Avatar art is the non-explicit frame set only. The APK is untested on a physical device from the build environment.
+
+
+## Math (LaTeX)
+
+Lesson text, quiz options, glossary entries and labs accept LaTeX: `$x^2$` inline, `$$...$$` or `\[...\]` displayed, `\(...\)` inline, `\$` for a literal dollar sign. A lesson block `{"type":"math","tex":"..."}` is a displayed formula. KaTeX 0.19.1 (MIT) is bundled and runs offline. The Teacher's voice reads formulas as words and captions show a plain unicode form. In JSON, double every backslash.

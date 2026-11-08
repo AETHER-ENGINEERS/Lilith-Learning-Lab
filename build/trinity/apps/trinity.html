@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+.m{color:#c9b8e8}.row{display:grid;grid-template-columns:1fr;gap:4px;background:#1e1336;border-radius:12px;padding:8px 10px;margin:6px 0;border:1px solid #3a2a5c;cursor:pointer}
+.row.on{border-color:#b26bff;background:#2a1b47}.h{font-weight:700}.c{display:none}.row.on .c{display:block}
+.tag{display:inline-block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#b26bff;margin-right:6px}.bar{height:8px;border-radius:4px;background:#261b3b;margin:8px 0}.bar i{display:block;height:100%;width:0;background:#b26bff;border-radius:4px}
+</style></head><body>
+<div class="m">One idea, three languages. Tap a row to open it. Open six rows to finish.</div>
+<div class="bar"><i id="pg"></i></div><div id="rows"></div>
+<script>
+function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var R=[
+['Implication','A implies B','Function type A to B','Exponential object B^A'],
+['Conjunction','A and B','Pair type A x B','Product A x B'],
+['Truth','True','Unit type, one value ()','Terminal object 1'],
+['Falsity','False','Empty type, no values','Initial object 0'],
+['Disjunction','A or B','Sum type, Left or Right','Coproduct A + B'],
+['Proof','A proof of A','A program of type A','An arrow into A'],
+['Assume a hypothesis','Use an assumption x:A','A variable','Projection from the context'],
+['Implication introduction','Assume A, prove B','Lambda abstraction','Currying'],
+['Modus ponens','From A->B and A infer B','Function application','Evaluation arrow'],
+['Normalization','Cut elimination','Evaluation of the program','Equality of arrows (beta, eta)'],
+['Negation','Not A is A implies False','A to the empty type','Exponential into 0'],
+['Universal quantifier','For all x, P(x)','Dependent function (Pi)','Right adjoint to pullback'],
+['Existential quantifier','There exists x, P(x)','Dependent pair (Sigma)','Left adjoint to pullback']
+];
+var open={},c=0,box=document.getElementById('rows');
+R.forEach(function(r,i){var d=document.createElement('div');d.className='row';
+d.innerHTML='<div class="h">'+r[0]+'</div><div class="c"><div><span class="tag">Logic</span>'+r[1]+'</div><div><span class="tag">Program</span>'+r[2]+'</div><div><span class="tag">Category</span>'+r[3]+'</div></div>';
+d.onclick=function(){d.classList.toggle('on');if(!open[i]){open[i]=1;c++;document.getElementById('pg').style.width=Math.min(100,c/6*100)+'%';if(c>=6)done()}};box.appendChild(d)});
+</script></body></html>

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="stylesheet" href="katex.css">
+<script src="katex.min.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Lilith Learning Lab</title>
@@ -176,6 +178,7 @@ a{color:var(--blue)}
 .fb{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--g);background:rgba(178,107,255,.12);font-size:clamp(13px,3.7vw,16px)}
 .fb.ok{border-color:var(--ok)}.fb.bad{border-color:var(--err)}
 .fb.hid{display:none}
+.katex-display{overflow-x:auto;overflow-y:hidden;padding:2px 0}.katex{font-size:1.08em}
 .qmeta{margin-top:8px;font-size:12px;color:var(--dim)}
 .pl{display:flex;flex-direction:column;gap:8px;margin-top:6px}
 .pl button{display:flex;gap:10px;align-items:center;text-align:left}
@@ -275,6 +278,7 @@ dialog textarea{margin-top:8px}
 /*__MAPS__*/
 </script>
 <script>
+/*__MATH__*/
 /*__NARRATE__*/
 </script>
 <script>
@@ -286,7 +290,7 @@ dialog textarea{margin-top:8px}
 const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const inline = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+const LM = LilithMath, inline = s => LM.render(s), cap = s => LM.caption(s);
 const N = LilithNarrate, M = LilithMaps, S = LilithSlides, K = LilithCourse, X = LilithXdc, ICONS = LilithIcons;
 const LET = 'ABCDEFGH';
 
@@ -443,7 +447,7 @@ const GUIDE_PROMPT = 'Create a course for Lilith Learning Lab as ONE JSON file (
   'Lab types: {"type":"fill","title":"","text":"Water boils at {{100|one hundred}} degrees Celsius."}; {"type":"order","title":"","items":["step 1","step 2","step 3"]} (items in the correct order); {"type":"match","title":"","pairs":[["left","right"]]}; ' +
   '{"type":"write","title":"","prompt":"","checks":[{"re":"regex","msg":"what it checks"}]}; {"type":"code","title":"","fn":"name","starter":"function name(x) {\\n}","tests":[{"args":[2],"expect":4}],"hint":"","solution":""} (JavaScript); ' +
   '{"type":"terminal","title":"","prompt":"$","commands":[{"re":"^ls$","out":["file.txt"]}],"tasks":[{"text":"List the files","cmd":"^ls$"}],"chips":["ls"]}.\n' +
-  'Return only valid JSON, no commentary. Include a quiz and at least one practice lab in every chapter.';
+  'Return only valid JSON, no commentary. Include a quiz and at least one practice lab in every chapter. Math: write LaTeX between dollar signs, $x^2$ inline or $$...$$ for a displayed formula, and remember to double every backslash inside JSON strings (\\\\lambda, \\\\to). Keep formulas short and say what they mean in plain words nearby, because the Teacher reads them aloud.';
 
 function renderLibrary() {
   let h = '';
@@ -641,11 +645,11 @@ function mapSVG(L, all) {
   L.edges.forEach((e, i) => { h += '<path class="e" pathLength="1" data-i="' + i + '" d="' + e.d + '" marker-end="url(#mh)"/>'; });
   L.edges.forEach((e, i) => {
     const w = Math.max(30, e.rel.length * 5.6 + 10);
-    h += '<g class="el" data-i="' + i + '"><rect x="' + (e.lx - w / 2) + '" y="' + (e.ly - 9) + '" width="' + w + '" height="17" rx="8"/><text x="' + e.lx + '" y="' + (e.ly + 3.5) + '" text-anchor="middle">' + esc(e.rel) + '</text></g>';
+    h += '<g class="el" data-i="' + i + '"><rect x="' + (e.lx - w / 2) + '" y="' + (e.ly - 9) + '" width="' + w + '" height="17" rx="8"/><text x="' + e.lx + '" y="' + (e.ly + 3.5) + '" text-anchor="middle">' + esc(cap(e.rel)) + '</text></g>';
   });
   L.nodes.forEach(n => {
     h += '<g class="n' + (n.ch !== null ? ' link' : '') + '" data-id="' + esc(n.id) + '"><rect x="' + n.x + '" y="' + n.y + '" width="' + n.w + '" height="' + n.h + '" rx="9"/>';
-    n.lines.forEach((t, k) => { h += '<text x="' + (n.x + n.w / 2) + '" y="' + (n.y + 19 + k * 14) + '" text-anchor="middle">' + esc(t) + '</text>'; });
+    n.lines.forEach((t, k) => { h += '<text x="' + (n.x + n.w / 2) + '" y="' + (n.y + 19 + k * 14) + '" text-anchor="middle">' + esc(cap(t)) + '</text>'; });
     h += '</g>';
   });
   return h + '<defs><marker id="mh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a99dc7"/></marker></defs></svg>';
@@ -840,8 +844,8 @@ function selectNode(L, id) {
   $$('.e', $('#mapbox')).forEach((e, k) => e.classList.toggle('hl', L.edges[k].from === id || L.edges[k].to === id));
   const out = L.edges.filter(e => e.from === id), inn = L.edges.filter(e => e.to === id);
   let h = '<h3>' + esc(n.label) + '</h3>';
-  if (out.length) h += '<div class="muted">It...</div><ul>' + out.map(e => '<li><b>' + esc(e.rel) + '</b> ' + esc(e.to) + '</li>').join('') + '</ul>';
-  if (inn.length) h += '<div class="muted">Linked from...</div><ul>' + inn.map(e => '<li>' + esc(e.from) + ' <b>' + esc(e.rel) + '</b> it</li>').join('') + '</ul>';
+  if (out.length) h += '<div class="muted">It...</div><ul>' + out.map(e => '<li><b>' + esc(cap(e.rel)) + '</b> ' + esc(cap(e.to)) + '</li>').join('') + '</ul>';
+  if (inn.length) h += '<div class="muted">Linked from...</div><ul>' + inn.map(e => '<li>' + esc(cap(e.from)) + ' <b>' + esc(cap(e.rel)) + '</b> it</li>').join('') + '</ul>';
   const target = n.ch !== null && chBy(n.ch);
   if (target) h += '<div class="row">' + btn('opench', 'menu_book', 'Read chapter ' + n.ch, 'pri sm') + btn('lecch', 'school', 'Lecture ' + n.ch, 'sm') + '</div>';
   $('#ninfo').innerHTML = h;
@@ -918,7 +922,7 @@ function renderLab() {
     draw();
   } else if (lab.type === 'match') {
     const rights = shuffle(lab.pairs.map(q => q[1])), saved = p.drafts[key] || [];
-    body.innerHTML = lab.pairs.map((q, i) => '<div class="matchr"><div>' + inline(q[0]) + '</div><select data-i="' + i + '"><option value="">choose...</option>' + rights.map(r => '<option ' + (saved[i] === r ? 'selected' : '') + ' value="' + esc(r) + '">' + esc(r) + '</option>').join('') + '</select></div>').join('') +
+    body.innerHTML = lab.pairs.map((q, i) => '<div class="matchr"><div>' + inline(q[0]) + '</div><select data-i="' + i + '"><option value="">choose...</option>' + rights.map(r => '<option ' + (saved[i] === r ? 'selected' : '') + ' value="' + esc(r) + '">' + esc(cap(r)) + '</option>').join('') + '</select></div>').join('') +
       '<div class="row" style="margin-top:8px">' + btn('chk', 'check', 'Check', 'pri') + '</div><div class="out hide" id="res"></div>' + extra(lab.hint, true);
     const sels = $$('select', body); sels.forEach(s => s.onchange = () => { p.drafts[key] = sels.map(z => z.value); save(); });
     $('#chk').onclick = () => { const r = K.checkMatch(lab, sels.map(z => z.value)); sels.forEach((z, j) => { z.style.borderColor = r.msgs[j].startsWith('PASS') ? 'var(--ok)' : 'var(--err)'; }); show(r); };

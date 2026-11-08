@@ -58,6 +58,7 @@ ok(files.length >= 2, 'two course files');
             'Build the FP16 GPU engine': 'trtexec --onnx=model.onnx --fp16 --saveEngine=gpu.engine', 'Load it again': 'trtexec --loadEngine=gpu.engine',
             'Build model.onnx for DLA with fallback and --verbose': 'trtexec --onnx=model.onnx --fp16 --useDLACore=0 --allowGPUFallback --verbose', 'Try decoder.onnx and read why layers fall back': 'trtexec --onnx=decoder.onnx --fp16 --useDLACore=0 --allowGPUFallback',
             'Install gymnasium': 'pip install gymnasium', 'Check that it imports': 'python -c "import gymnasium"', 'Run the random CartPole script': 'python cartpole_random.py', 'Install Stable-Baselines3': 'pip install "stable-baselines3[extra]"', 'Run the training script': 'python train_cartpole.py', 'List the files to see the saved model': 'ls', 'Run train.py': 'python train.py', 'Start TensorBoard': 'tensorboard --logdir ./tb/', 'Check the best model was saved': 'ls best',
+            'Check the type of a function type': '#check Nat → Nat', 'Check And.intro': '#check And.intro', 'State and prove the swap theorem': "theorem and_swap' (A B : Prop) : A ∧ B → B ∧ A := fun ⟨a, b⟩ => ⟨b, a⟩", 'Print its axioms': "#print axioms and_swap'", 'See an incorrect proof rejected': 'example : 2 + 2 = 5 := rfl',
             'Find 20% of 80': 'calc 20 of 80', 'Find 10% of 350': 'calc 10 of 350'
           };
           T.tasks.forEach(t => { const cmd = cmds[t.text]; ok(cmd, tag + ' no scripted command for ' + t.text); if (cmd) T.exec(cmd); });
@@ -73,6 +74,9 @@ ok(files.length >= 2, 'two course files');
       const run = l => T.exec(l).map(x => x.t).join('\n');
       if (c.id === 'rl-python-gymnasium-sb3') {
         ok(/clipped objective/.test(run('algo ppo')), 'algo ppo'); ok(/discrete only/i.test(run('algo dqn')), 'algo dqn'); ok(/n_steps 2048/.test(run('defaults ppo')), 'defaults'); ok(/Unknown/.test(run('xyz')), 'unknown');
+      }
+      if (c.id === 'curry-howard-lambek') {
+        ok(/A → B → A/.test(run('type K')), 'type K'); ok(/B × A/.test(run('type swap')), 'type swap'); ok(/exponential/.test(run('dict')), 'dict'); ok(/Unknown name/.test(run('type zzz')), 'unknown type'); ok(/Unknown command/.test(run('xyz')), 'unknown');
       }
       if (c.id === 'jetson-agx-xavier') {
         ok(/MAXN/.test(run('sudo nvpmodel -q')), 'nvpmodel -q');

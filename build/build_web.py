@@ -12,7 +12,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 def make_html():
     tpl = open(os.path.join(HERE, "src", "app.html"), encoding="utf-8").read()
     js = lambda n: open(os.path.join(HERE, "src", n), encoding="utf-8").read().replace("</", "<\\/")
-    for tag, f in (("ICONS", "icons.js"), ("XDC", "xdc.js"), ("COURSE", "course.js"), ("MAPS", "maps.js"), ("NARRATE", "narrate.js"), ("SLIDES", "slides.js")):
+    for tag, f in (("ICONS", "icons.js"), ("XDC", "xdc.js"), ("COURSE", "course.js"), ("MAPS", "maps.js"), ("MATH", "math.js"), ("NARRATE", "narrate.js"), ("SLIDES", "slides.js")):
         tpl = tpl.replace("/*__%s__*/" % tag, js(f))
     return tpl
 
@@ -23,6 +23,8 @@ def main():
         out = args[1]
         os.makedirs(os.path.join(out, "avatar"), exist_ok=True)
         open(os.path.join(out, "index.html"), "w", encoding="utf-8").write(make_html())
+        for f in ("katex.min.js", "katex.css"):
+            shutil.copy(os.path.join(HERE, "vendor", "katex", f), os.path.join(out, f))
         d = os.path.join(HERE, "assets", "avatar")
         for f in sorted(os.listdir(d)):
             if f.endswith(".webp"):

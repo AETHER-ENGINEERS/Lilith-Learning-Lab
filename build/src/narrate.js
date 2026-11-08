@@ -3,6 +3,7 @@
    Web Speech, silent read-along) and the avatar frame controller. No DOM access except in makeEnv(). */
 (function (root) {
   'use strict';
+  var LM = root.LilithMath || (typeof module !== 'undefined' && typeof require === 'function' ? require('./math.js') : null);
 
   /* ---------- speech-friendly text ---------- */
   var SAY = [   // generic computing words; course-specific ones come from the course's "pronounce" map
@@ -15,6 +16,7 @@
 
   function speakable(s) {
     s = String(s);
+    if (LM) s = LM.speech(s);
     s = s.replace(/!\[([^\]]*)\]\([^)]*\)/g, 'Figure: $1.');
     s = s.replace(/\[ch(\d+)\]/g, '');
     s = s.replace(/\*\*([^*]+)\*\*/g, '$1');
@@ -33,6 +35,8 @@
     SAY.forEach(function (p) { s = s.split(p[0]).join(p[1]); });
     return s.replace(/\s+/g, ' ').trim();
   }
+
+  function caption(s) { return plain(LM ? LM.caption(s) : s); }
 
   function plain(s) {
     return String(s).replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/\[ch(\d+)\]/g, '').replace(/\*\*([^*]+)\*\*/g, '$1').replace(/`([^`]+)`/g, '$1').replace(/\s+/g, ' ').trim();
@@ -104,7 +108,7 @@
       var spoken = speakable(shown);
       if (!spoken) return;
       group(spoken, MAX).forEach(function (t, k) {
-        out.push({ label: lab, kind: kind || 'text', text: t, shown: k === 0 ? plain(shown) : '', emotion: emotionFor(shown, lab) });
+        out.push({ label: lab, kind: kind || 'text', text: t, shown: k === 0 ? caption(shown) : '', emotion: emotionFor(shown, lab) });
       });
     }
     function mapSay(m) { m.links.forEach(function (l) { var p = l.split('|'); add('Concept map', p[0].replace(/\[ch\d+\]/, '').trim() + ', ' + p[1].trim() + ', ' + p[2].replace(/\[ch\d+\]/, '').trim() + '.'); }); }
@@ -266,7 +270,7 @@
     };
   }
 
-  var api = { setPronounce: setPronounce, speakable: speakable, plain: plain, emotionFor: emotionFor, buildChunks: buildChunks, createNarrator: createNarrator, makeEnv: makeEnv, silentEnv: silentEnv, createAvatar: createAvatar, blocks: blocks, sentences: sentences };
+  var api = { setPronounce: setPronounce, speakable: speakable, plain: plain, caption: caption, emotionFor: emotionFor, buildChunks: buildChunks, createNarrator: createNarrator, makeEnv: makeEnv, silentEnv: silentEnv, createAvatar: createAvatar, blocks: blocks, sentences: sentences };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.LilithNarrate = api;
 })(typeof window !== 'undefined' ? window : globalThis);

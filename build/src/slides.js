@@ -27,7 +27,7 @@
     function say(si, step, label, shown, extra) {
       var spoken = N.speakable(shown);
       if (!spoken && !(extra && (extra.wait || extra.hold))) return;
-      var c = { slide: si, step: step, label: label, text: spoken, shown: N.plain(shown), emotion: N.emotionFor(shown, label) };
+      var c = { slide: si, step: step, label: label, text: spoken, shown: N.caption(shown), emotion: N.emotionFor(shown, label) };
       if (extra) for (var k in extra) c[k] = extra[k];
       chunks.push(c);
       if (slides[si].steps < step + 1) slides[si].steps = step + 1;
