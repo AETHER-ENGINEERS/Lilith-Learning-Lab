@@ -5,7 +5,7 @@ description: Make, check and teach from Lilith Learning Lab course files (JSON, 
 
 # Lilith Learning Lab courses
 
-Lilith Learning Lab is an offline Android app with a talking "Teacher". It starts empty; everything it teaches is a **course file**: one JSON file the user imports (Library > Import file, or Paste JSON). Four courses ship with the project: `jetson-agx-xavier.course.json`, `rl-python-gymnasium-sb3.course.json`, `curry-howard-lambek.course.json` and `sample-percentages.course.json`.
+Lilith Learning Lab is an offline Android app with a talking "Teacher". It starts empty; everything it teaches is a **course file**: one JSON file the user imports (Library > Import file, or Paste JSON). Five courses ship with the project: `operating-systems.course.json` (Python labs), `jetson-agx-xavier.course.json`, `rl-python-gymnasium-sb3.course.json`, `curry-howard-lambek.course.json` and `sample-percentages.course.json`.
 
 **Math:** course text supports LaTeX (`$x^2$`, `$$...$$`, `\\(..\\)`, `\\[..\\]`, and a `{"type":"math","tex":"..."}` lesson block). Double the backslashes in JSON. Keep narration chunks under 450 characters.
 
@@ -25,7 +25,7 @@ Search first, read the matching chapter part, answer in a few sentences and name
 
 1. Ask only for what you cannot infer: subject, level, how many chapters. Otherwise decide and go.
 2. Every chapter has, in this order of teaching: `maps` (concept map links `"A [chN] | relation | B"`, the `[chN]` tag jumps to chapter N), `summary`, `glossary`, `keyPoints`, `lesson` blocks (`text`, `code`, `figure`, `map`), then `quiz` (3 or more questions, `answer` is the 0-based index) and `practice` labs. Optional: `cards` (flashcards), course-level `finalExam`, `pronounce` (word to spoken form for the voice), `images` (name to SVG), `sandbox` (free terminal), `apps` (extra webxdc apps).
-3. Lab types: `fill` (`{{answer|alt}}` blanks), `order` (`items` in correct order), `match` (`pairs`), `write` (regex `checks`), `code` (JavaScript: `fn`, `starter`, `tests[{args,expect}]`), `terminal` (scripted shell: `commands[{re,out}]`, `tasks[{text,cmd}]`), `webxdc` (an interactive app: `html`, `files{}` or base64 `xdc`; the app calls `lilith.complete()` to finish the lab). Prefer a mix; use `webxdc` for anything that needs real interaction.
+3. Lab types: `fill` (`{{answer|alt}}` blanks), `order` (`items` in correct order), `match` (`pairs`), `write` (regex `checks`), `code` (JavaScript: `fn`, `starter`, `tests[{args,expect}]`), `python` (MicroPython runs in the app: `fn`, `starter`, `tests[{args,expect,approx}]`, optional `checks[{re,msg}]` on printed output; args and results are JSON, so no sets, no tuples as keys; stick to core Python, no `threading` or `os`), `terminal` (scripted shell: `commands[{re,out}]`, `tasks[{text,cmd}]`), `webxdc` (an interactive app: `html`, `files{}` or base64 `xdc`; the app calls `lilith.complete()` to finish the lab). Prefer a mix; use `webxdc` for anything that needs real interaction.
 4. Write plain sentences: the Teacher reads everything aloud. Avoid symbols that sound bad when spoken; put exact text in code blocks.
 5. Save the JSON, run `lilith_tool.js validate file.json`, fix every error and read the notes, then give the user the file. Do not hand over a file that has not validated.
 

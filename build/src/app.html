@@ -3,6 +3,7 @@
 <head>
 <link rel="stylesheet" href="katex.css">
 <script src="katex.min.js"></script>
+<script src="mp.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Lilith Learning Lab</title>
@@ -301,7 +302,7 @@ const setIcon = (sel, n) => { const e = $(sel); if (e) e.innerHTML = ic(n); };
 setIcon('#libbtn', 'library_books'); setIcon('#gear', 'settings'); setIcon('#dprev', 'skip_previous'); setIcon('#dnext', 'skip_next'); setIcon('#dclose', 'close'); setIcon('#dplay', 'play_arrow');
 const NAVI = { lecture: 'school', read: 'menu_book', maps: 'account_tree', practice: 'science', progress: 'insights' };
 $$('#nav button').forEach(b => { $('.pill', b).innerHTML = ic(NAVI[b.dataset.t]); });
-const KIND = { fill: 'Fill in', order: 'Order', match: 'Match', write: 'Write', code: 'Code', terminal: 'Terminal', webxdc: 'App' };
+const KIND = { fill: 'Fill in', order: 'Order', match: 'Match', write: 'Write', code: 'Code', python: 'Python', terminal: 'Terminal', webxdc: 'App' };
 
 /* ---------- storage: course library + progress ---------- */
 const IDX = 'lilith-lab-v1', CKEY = id => 'lilith-course:' + id;
@@ -445,7 +446,7 @@ const GUIDE_PROMPT = 'Create a course for Lilith Learning Lab as ONE JSON file (
   'Every chapter has: "title"; "maps":[{"title":"","links":["Concept A | relation | Concept B", ...]}] (6-10 links, optionally tag a node "[ch3]" to link to chapter 3); "summary":[2-4 sentences]; "glossary":[{"term":"","def":""}]; "keyPoints":[4-8 short points]; ' +
   '"lesson":[{"type":"text","items":[""]},{"type":"code","lang":"","code":""},{"type":"figure","image":"name.svg","caption":""}] ; "quiz":[3 questions {"q":"","options":["","",""],"answer":0,"explain":""}] (answer is the 0-based index of the right option); "cards":[{"q":"","a":""}]; and "practice":[labs].\n' +
   'Lab types: {"type":"fill","title":"","text":"Water boils at {{100|one hundred}} degrees Celsius."}; {"type":"order","title":"","items":["step 1","step 2","step 3"]} (items in the correct order); {"type":"match","title":"","pairs":[["left","right"]]}; ' +
-  '{"type":"write","title":"","prompt":"","checks":[{"re":"regex","msg":"what it checks"}]}; {"type":"code","title":"","fn":"name","starter":"function name(x) {\\n}","tests":[{"args":[2],"expect":4}],"hint":"","solution":""} (JavaScript); ' +
+  '{"type":"write","title":"","prompt":"","checks":[{"re":"regex","msg":"what it checks"}]}; {"type":"code","title":"","fn":"name","starter":"function name(x) {\\n}","tests":[{"args":[2],"expect":4}],"hint":"","solution":""} (JavaScript); {"type":"python","title":"","fn":"name","starter":"def name(x):\\n    pass","tests":[{"args":[2],"expect":4}],"checks":[{"re":"regex on printed output","msg":""}],"hint":"","solution":""} (MicroPython, core language only: no threading, os or sets in results); ' +
   '{"type":"terminal","title":"","prompt":"$","commands":[{"re":"^ls$","out":["file.txt"]}],"tasks":[{"text":"List the files","cmd":"^ls$"}],"chips":["ls"]}.\n' +
   'Return only valid JSON, no commentary. Include a quiz and at least one practice lab in every chapter. Math: write LaTeX between dollar signs, $x^2$ inline or $$...$$ for a displayed formula, and remember to double every backslash inside JSON strings (\\\\lambda, \\\\to). Keep formulas short and say what they mean in plain words nearby, because the Teacher reads them aloud.';
 
@@ -662,7 +663,7 @@ function slideHTML(s, idx) {
     case 'code': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="codeblk">' + chartLines(s.code) + '</div>';
     case 'map': return '<h3 class="sh">' + esc(s.heading) + '</h3><div style="flex:1;min-height:0">' + mapSVG(s.layout, false) + '</div>';
     case 'quiz': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="q">' + inline(s.q) + '</div><div class="opts">' + s.options.map((o, k) => '<button class="opt" data-k="' + k + '"><b>' + LET[k] + '</b><span>' + inline(o) + '</span></button>').join('') + '</div><div class="fb hid" id="fb"></div>';
-    case 'practice': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="muted">Try these to lock in the chapter. Tap one; Teacher waits here.</div><div class="pl">' + s.labs.map(l => '<button class="btn tonal" data-lab="' + esc(l.id) + '">' + ic(l.kind === 'terminal' ? 'terminal' : l.kind === 'code' ? 'code' : 'extension') + '<span>' + esc(l.title) + '</span><span class="kind">' + KIND[l.kind] + '</span>' + (P().lab[LEC.ch.id + '/' + l.id] ? ic('check_circle', 'okc') : '') + '</button>').join('') + '</div>';
+    case 'practice': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="muted">Try these to lock in the chapter. Tap one; Teacher waits here.</div><div class="pl">' + s.labs.map(l => '<button class="btn tonal" data-lab="' + esc(l.id) + '">' + ic(l.kind === 'terminal' ? 'terminal' : (l.kind === 'code' || l.kind === 'python') ? 'code' : 'extension') + '<span>' + esc(l.title) + '</span><span class="kind">' + KIND[l.kind] + '</span>' + (P().lab[LEC.ch.id + '/' + l.id] ? ic('check_circle', 'okc') : '') + '</button>').join('') + '</div>';
     case 'end': {
       let cf = ''; const cols = ['#b26bff', '#e06aa8', '#6bb6ff', '#e3b341', '#7be0a4'];
       for (let i = 0; i < 22; i++) cf += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;background:' + cols[i % 5] + ';animation-delay:' + (Math.random() * 2.5).toFixed(2) + 's"></i>';
@@ -789,7 +790,7 @@ function renderChapter(n) {
   if (c.points) h += '<div class="card"><h3>Key points</h3>' + md(c.points) + '</div>';
   if (c.examples.trim()) h += '<div class="card"><h3>Lesson</h3>' + md(c.examples) + '</div>';
   if (c.quiz.length) { const q = P().q[c.id]; h += '<div class="card"><h3>Quiz</h3><div class="muted">' + c.quiz.length + ' questions' + (q ? '. Best score ' + q.best + ' / ' + q.total : '') + '</div><div class="row" style="margin-top:8px">' + btn('doquiz', 'quiz', q ? 'Take it again' : 'Take the quiz', 'pri') + '</div></div>'; }
-  if (c.practice.length) h += '<div class="card"><h3>Practice</h3><div class="pl">' + c.practice.map(l => '<button class="btn tonal" data-lab="' + esc(l.id) + '">' + ic(l.type === 'terminal' ? 'terminal' : l.type === 'code' ? 'code' : 'extension') + '<span>' + esc(l.title) + '</span><span class="kind">' + KIND[l.type] + '</span>' + (P().lab[c.id + '/' + l.id] ? ic('check_circle', 'okc') : '') + '</button>').join('') + '</div></div>';
+  if (c.practice.length) h += '<div class="card"><h3>Practice</h3><div class="pl">' + c.practice.map(l => '<button class="btn tonal" data-lab="' + esc(l.id) + '">' + ic(l.type === 'terminal' ? 'terminal' : (l.type === 'code' || l.type === 'python') ? 'code' : 'extension') + '<span>' + esc(l.title) + '</span><span class="kind">' + KIND[l.type] + '</span>' + (P().lab[c.id + '/' + l.id] ? ic('check_circle', 'okc') : '') + '</button>').join('') + '</div></div>';
   if (c.cards.length) { h += '<div class="card"><h3>Check yourself</h3>'; c.cards.forEach(q => { h += '<div class="qa"><div>' + inline(q.q) + '</div><div class="a">' + inline(q.a) + '</div><button class="btn sm" style="margin-top:6px">Show answer</button></div>'; }); h += '</div>'; }
   h += '<div class="row" style="margin:14px 0">' + btn('mark', 'done_all', 'Mark text sections as read', 'tonal') + '</div>';
   h += '<div class="row">' + (i > 0 ? btn('prev', 'chevron_left', 'Previous', '') : '') + (i < CUR.ch.length - 1 ? btn('next', 'chevron_right', 'Next', 'pri') : '') + '</div>';
@@ -872,7 +873,7 @@ function renderPractice() {
     const total = labs.reduce((a, c) => a + c.practice.length, 0), done = labs.reduce((a, c) => a + labsDone(c), 0);
     let x = '<div class="muted">' + done + ' of ' + total + ' labs complete.</div>';
     labs.forEach(c => {
-      x += '<div class="card"><h3>Chapter ' + c.n + ': ' + esc(c.title) + '</h3><div class="pl">' + c.practice.map(l => '<button class="btn tonal" data-lab="' + esc(c.id + '/' + l.id) + '">' + ic(l.type === 'terminal' ? 'terminal' : l.type === 'code' ? 'code' : 'extension') + '<span>' + esc(l.title) + '</span><span class="kind">' + KIND[l.type] + '</span>' + (P().lab[c.id + '/' + l.id] ? ic('check_circle', 'okc') : '') + '</button>').join('') + '</div></div>';
+      x += '<div class="card"><h3>Chapter ' + c.n + ': ' + esc(c.title) + '</h3><div class="pl">' + c.practice.map(l => '<button class="btn tonal" data-lab="' + esc(c.id + '/' + l.id) + '">' + ic(l.type === 'terminal' ? 'terminal' : (l.type === 'code' || l.type === 'python') ? 'code' : 'extension') + '<span>' + esc(l.title) + '</span><span class="kind">' + KIND[l.type] + '</span>' + (P().lab[c.id + '/' + l.id] ? ic('check_circle', 'okc') : '') + '</button>').join('') + '</div></div>';
     });
     body.innerHTML = x;
     $$('[data-lab]', body).forEach(b => b.onclick = () => { const [cid, lid] = b.dataset.lab.split('/'); openLab(cid, lid, false); });
@@ -936,6 +937,13 @@ function renderLab() {
     body.innerHTML = '<textarea id="code" spellcheck="false" autocapitalize="off" autocorrect="off">' + esc(p.drafts[key] != null ? p.drafts[key] : lab.starter) + '</textarea><div class="row" style="margin-top:8px">' + btn('run', 'play_arrow', 'Run tests', 'pri') + '</div><div class="out hide" id="res"></div>' + extra(lab.hint, lab.solution) + '<div class="muted" style="margin-top:6px">JavaScript. Runs on this device, offline.</div>';
     const t = $('#code'); t.oninput = () => { p.drafts[key] = t.value; save(); };
     $('#run').onclick = async () => { const r = await K.runCode(lab, t.value); show(r); };
+    wire(lab.hint, lab.solution, () => renderLab());
+  } else if (lab.type === 'python') {
+    body.innerHTML = '<textarea id="code" spellcheck="false" autocapitalize="off" autocorrect="off">' + esc(p.drafts[key] != null ? p.drafts[key] : lab.starter) + '</textarea><div class="row" style="margin-top:8px">' + btn('run', 'play_arrow', 'Run tests', 'pri') + btn('runo', 'terminal', 'Run code', 'tonal') + '</div><div class="muted" style="margin-top:6px">Python runs on this device (MicroPython, a small Python 3). The first run takes a moment.</div><div class="out hide" id="res"></div>' + extra(lab.hint, !!lab.solution);
+    const t = $('#code'); t.oninput = () => { p.drafts[key] = t.value; save(); };
+    const busy = (on) => { $('#run').disabled = on; $('#runo').disabled = on; };
+    $('#run').onclick = async () => { busy(true); const o = $('#res'); o.classList.remove('hide'); o.textContent = 'Running...'; const r = await K.runPython(lab, t.value); busy(false); show(r); };
+    $('#runo').onclick = async () => { busy(true); const o = $('#res'); o.classList.remove('hide'); o.textContent = 'Running...'; const r = await K.runPython(lab, t.value, { outputOnly: true }); busy(false); o.innerHTML = '<span>' + r.msgs.map(m => '<span class="' + (/^ERROR/.test(m) ? 'f' : '') + '">' + esc(m.replace(/^OUT /, '')) + '</span>').join('\n') + '</span>'; };
     wire(lab.hint, lab.solution, () => renderLab());
   } else if (lab.type === 'terminal') {
     renderTerminal(body, lab, key);

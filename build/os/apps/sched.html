@@ -1,0 +1,41 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}
+button{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#2d2046;color:#e7d9ff;font-weight:600;margin:3px 3px 3px 0}
+button.on{background:#b26bff;color:#1b0b33}.m{color:#c9b8e8;margin:6px 0}
+table{border-collapse:collapse;font-size:14px}td,th{padding:3px 8px;border-bottom:1px solid #3a2a5c;text-align:left}
+.g{display:flex;margin:10px 0 2px;overflow-x:auto}.c{min-width:22px;height:30px;text-align:center;font:12px ui-monospace,monospace;line-height:30px;border-right:1px solid #150d27;color:#150d27}
+.t{display:flex;font:10px ui-monospace,monospace;color:#c9b8e8}.t span{min-width:22px;text-align:center}.row{display:flex;flex-wrap:wrap;gap:4px}
+</style></head><body>
+<div class="m">Processes: P0 arrives 0, needs 5. P1 arrives 1, needs 3. P2 arrives 2, needs 8. P3 arrives 3, needs 6. Pick an algorithm.</div>
+<div class="row" id="b"></div>
+<div class="g" id="g"></div><div class="t" id="tl"></div>
+<table id="tb"></table><div class="m" id="msg"></div>
+<script>
+var P=[["P0",0,5],["P1",1,3],["P2",2,8],["P3",3,6]],COL=["#c79bff","#7fd6ff","#ffd27f","#8fe3a8"],seen={},Q=3;
+function sim(algo){var n=P.length,rem=P.map(function(p){return p[2]}),fin=[0,0,0,0],tl=[],t=0,left=n,queue=[],nxt=0,cur=-1,used=0;
+if(algo=="RR"){var order=[0,1,2,3];
+while(left){while(nxt<n&&P[order[nxt]][1]<=t){queue.push(order[nxt]);nxt++}
+if(!queue.length){tl.push(-1);t++;continue}
+var i=queue.shift(),run=Math.min(Q,rem[i]);
+for(var k=0;k<run;k++){tl.push(i);t++;rem[i]--;while(nxt<n&&P[order[nxt]][1]<=t){queue.push(order[nxt]);nxt++}}
+if(rem[i]>0)queue.push(i);else{fin[i]=t;left--}}
+return {tl:tl,fin:fin}}
+while(left){var rd=[];for(var i=0;i<n;i++)if(rem[i]>0&&P[i][1]<=t)rd.push(i);
+if(!rd.length){tl.push(-1);t++;continue}
+var pick;
+if(algo=="FCFS"){pick=cur>=0&&rem[cur]>0?cur:rd[0]}
+else if(algo=="SJN"){pick=cur>=0&&rem[cur]>0?cur:rd.reduce(function(a,b){return P[b][2]<P[a][2]?b:a})}
+else{pick=rd.reduce(function(a,b){return rem[b]<rem[a]?b:a})}
+cur=pick;rem[pick]--;tl.push(pick);t++;if(rem[pick]==0){fin[pick]=t;left--;cur=-1}}
+return {tl:tl,fin:fin}}
+function show(a){seen[a]=1;var r=sim(a),g=document.getElementById("g"),tl=document.getElementById("tl");g.innerHTML="";tl.innerHTML="";
+r.tl.forEach(function(x,i){var d=document.createElement("div");d.className="c";d.style.background=x<0?"#3a2a5c":COL[x];d.textContent=x<0?"-":x;g.appendChild(d);var s=document.createElement("span");s.textContent=i;tl.appendChild(s)});
+var h="<tr><th>Process</th><th>Finish</th><th>Wait</th></tr>",tot=0;
+P.forEach(function(p,i){var w=r.fin[i]-p[1]-p[2];tot+=w;h+="<tr><td>"+p[0]+"</td><td>"+r.fin[i]+"</td><td>"+w+"</td></tr>"});
+document.getElementById("tb").innerHTML=h;
+document.getElementById("msg").textContent=a+(a=="RR"?" (quantum "+Q+")":"")+": average wait "+(tot/P.length)+". Algorithms tried: "+Object.keys(seen).length+" of 4.";
+Array.prototype.forEach.call(document.querySelectorAll("#b button"),function(b){b.className=b.textContent==a?"on":""});
+if(Object.keys(seen).length>=4){try{if(window.lilith)lilith.complete()}catch(e){}}}
+["FCFS","SJN","SRT","RR"].forEach(function(a){var b=document.createElement("button");b.textContent=a;b.onclick=function(){show(a)};document.getElementById("b").appendChild(b)});
+show("FCFS");
+</script></body></html>

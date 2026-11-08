@@ -7,6 +7,7 @@ const files = fs.readdirSync(dir).filter(f => f.endsWith('.course.json'));
 ok(files.length >= 2, 'two course files');
 
 (async () => {
+  const MPY = await import(require('url').pathToFileURL(path.join(__dirname, '..', 'vendor', 'micropython', 'micropython.mjs')).href);
   // template validates and covers every lab type
   const tv = K.validate(K.template()); ok(tv.ok && tv.warnings.length === 0, 'template valid: ' + JSON.stringify(tv.warnings));
   ok(tv.course.chapters[0].practice.length === 5, 'template has 5 labs');
@@ -50,6 +51,11 @@ ok(files.length >= 2, 'two course files');
           ok(lab.solution, tag + ' has solution');
           const r = K.runCodeSync(lab, lab.solution); ok(r.pass, tag + ' solution passes: ' + r.msgs.slice(-3).join(' | '));
           const r2 = K.runCodeSync(lab, lab.starter); ok(!r2.pass, tag + ' starter fails');
+        } else if (lab.type === 'python') {
+          ok(lab.solution, tag + ' has solution');
+          const run = async (code) => { const out = []; const mp = await MPY.loadMicroPython({ url: path.join(__dirname, '..', 'vendor', 'micropython', 'micropython.wasm'), heapsize: 8 << 20, stdout: l => out.push(l), stderr: l => out.push(l) }); return K.runPythonCore(mp, lab, code, out, false); };
+          const r = await run(lab.solution); ok(r.pass, tag + ' solution passes: ' + r.msgs.slice(-4).join(' | '));
+          const r2 = await run(lab.starter); ok(!r2.pass, tag + ' starter fails');
         } else if (lab.type === 'terminal') {
           const T = K.makeScriptTerm(lab); ok(T.tasks.length >= 1, tag + ' has tasks');
           // run each task's own regex as a command (strip regex anchors to make a command)
@@ -59,7 +65,7 @@ ok(files.length >= 2, 'two course files');
             'Build model.onnx for DLA with fallback and --verbose': 'trtexec --onnx=model.onnx --fp16 --useDLACore=0 --allowGPUFallback --verbose', 'Try decoder.onnx and read why layers fall back': 'trtexec --onnx=decoder.onnx --fp16 --useDLACore=0 --allowGPUFallback',
             'Install gymnasium': 'pip install gymnasium', 'Check that it imports': 'python -c "import gymnasium"', 'Run the random CartPole script': 'python cartpole_random.py', 'Install Stable-Baselines3': 'pip install "stable-baselines3[extra]"', 'Run the training script': 'python train_cartpole.py', 'List the files to see the saved model': 'ls', 'Run train.py': 'python train.py', 'Start TensorBoard': 'tensorboard --logdir ./tb/', 'Check the best model was saved': 'ls best',
             'Check the type of a function type': '#check Nat → Nat', 'Check And.intro': '#check And.intro', 'State and prove the swap theorem': "theorem and_swap' (A B : Prop) : A ∧ B → B ∧ A := fun ⟨a, b⟩ => ⟨b, a⟩", 'Print its axioms': "#print axioms and_swap'", 'See an incorrect proof rejected': 'example : 2 + 2 = 5 := rfl',
-            'Find 20% of 80': 'calc 20 of 80', 'Find 10% of 350': 'calc 10 of 350'
+            'List the root directory': 'ls /', 'List the processes': 'ps', 'Find out who you are': 'whoami', 'Find 20% of 80': 'calc 20 of 80', 'Find 10% of 350': 'calc 10 of 350'
           };
           T.tasks.forEach(t => { const cmd = cmds[t.text]; ok(cmd, tag + ' no scripted command for ' + t.text); if (cmd) T.exec(cmd); });
           ok(T.tasks.every(t => T.state.done[t.id]), tag + ' all tasks done: ' + JSON.stringify(T.state.done));

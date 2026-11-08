@@ -14,7 +14,7 @@
                       {"type":"figure","image":"fig.svg","caption":"..."}, {"type":"math","tex":"\\frac{a}{b}"}, {"type":"map","title":"...","links":[...]} ],
         "quiz":     [ { "q": "...", "options": ["a","b","c"], "answer": 1, "explain": "..." } ],
         "cards":    [ { "q": "...", "a": "..." } ],
-        "practice": [ labs: fill | order | match | write | code | terminal ]
+        "practice": [ labs: fill | order | match | write | code | python | terminal | webxdc ]
      } ],
      "finalExam": { "title": "Final exam", "passMark": 70, "size": 20, "questions": [ same shape as quiz ] },   (optional; a plain list of questions also works.
                   Without it the app builds the exam from every chapter quiz.)
@@ -26,7 +26,7 @@
   'use strict';
 
   var FORMAT = 'lilith-course', VERSION = 1;
-  var LAB_TYPES = ['fill', 'order', 'match', 'write', 'code', 'terminal', 'webxdc'];
+  var LAB_TYPES = ['fill', 'order', 'match', 'write', 'code', 'python', 'terminal', 'webxdc'];
   var LIMITS = { chapters: 200, text: 6000, items: 400 };
 
   function s(x) { return x === null || x === undefined ? '' : String(x); }
@@ -98,6 +98,12 @@
       lab.tests = arr(l.tests).filter(function (x) { return x && typeof x === 'object'; });
       if (!lab.fn && !lab.isBody) { w.push(where + ': code lab needs "fn" (function name) or "isBody": true'); return null; }
       if (!lab.tests.length && !lab.checkJs) { w.push(where + ': code lab needs "tests" or "checkJs"'); return null; }
+    } else if (t === 'python') {
+      lab.starter = s(l.starter); lab.fn = s(l.fn);
+      lab.tests = arr(l.tests).filter(function (x) { return x && typeof x === 'object'; });
+      lab.checks = arr(l.checks).map(function (c) { return typeof c === 'string' ? { re: c, msg: c } : { re: s(c.re), flags: s(c.flags) || 'i', msg: s(c.msg || c.re), not: !!c.not }; }).filter(function (c) { return c.re; });
+      if (lab.fn && !/^[A-Za-z_]\w*$/.test(lab.fn)) { w.push(where + ': python lab "fn" must be a plain function name'); return null; }
+      if (!(lab.fn && lab.tests.length) && !lab.checks.length) { w.push(where + ': python lab needs "fn" with "tests", or "checks" on the printed output'); return null; }
     } else if (t === 'webxdc') {
       lab.xdc = s(l.xdc).replace(/\s+/g, ''); lab.html = s(l.html);
       lab.files = (l.files && typeof l.files === 'object' && !Array.isArray(l.files)) ? l.files : null;
@@ -298,6 +304,55 @@
     });
   }
 
+  /* ----- Python labs: MicroPython (WebAssembly) in a Worker ----- */
+  /* The core takes an already loaded MicroPython instance, so Node tests and the Worker share it. */
+  async function runPythonCore(mp, lab, code, out, outputOnly) {
+    var msgs = [], pass = true;
+    function trim(m) { m = String(m || '').split('\n').filter(function (x) { return x.trim(); }); return m.slice(-4).join(' | '); }
+    function printed() { return out.slice(0, 40).map(function (l) { return 'OUT ' + l; }); }
+    try { mp.runPython(code); } catch (e) { return { pass: false, msgs: printed().concat(['ERROR ' + trim(e && e.message ? e.message : e)]) }; }
+    if (outputOnly) return { pass: null, msgs: out.length ? printed() : ['(the code printed nothing)'] };
+    var text = out.join('\n');
+    (lab.checks || []).forEach(function (c) {
+      var hit = new RegExp(c.re, c.flags || 'i').test(text);
+      var ok = c.not ? !hit : hit; pass = pass && ok; msgs.push((ok ? 'PASS ' : 'FAIL ') + c.msg);
+    });
+    if (lab.fn && lab.tests && lab.tests.length) {
+      var argsJson = JSON.stringify(JSON.stringify(lab.tests.map(function (t) { return t.args || []; })));
+      var h = 'import json\n_t = json.loads(' + argsJson + ')\n_o = []\nfor _a in _t:\n    try:\n        _o.append(["ok", json.dumps(' + lab.fn + '(*_a))])\n    except Exception as _e:\n        _o.append(["err", repr(_e)])\n_res = json.dumps(_o)\n';
+      var res;
+      try { mp.runPython(h); res = JSON.parse(mp.globals.get('_res')); } catch (e) { return { pass: false, msgs: msgs.concat(['ERROR ' + trim(e && e.message ? e.message : e)]) }; }
+      lab.tests.forEach(function (t, i) {
+        var label = t.label || lab.fn + '(' + (t.args || []).map(function (a) { return JSON.stringify(a); }).join(', ') + ')';
+        if (res[i][0] === 'err') { pass = false; msgs.push('FAIL ' + label + ' raised ' + res[i][1]); return; }
+        var got = JSON.parse(res[i][1]), ok = same(got, t.expect, t.approx);
+        pass = pass && ok; msgs.push((ok ? 'PASS ' : 'FAIL ') + label + ' = ' + JSON.stringify(got) + (ok ? '' : ' (expected ' + JSON.stringify(t.expect) + ')'));
+      });
+    }
+    return { pass: pass, msgs: printed().slice(0, 12).concat(msgs) };
+  }
+  var pyWasm = null;
+  function runPython(lab, code, opts) {
+    opts = opts || {};
+    return new Promise(function (resolve) {
+      var MP = typeof window !== 'undefined' ? window.LilithMP : null;
+      if (!MP || typeof Worker === 'undefined' || typeof Blob === 'undefined') { resolve({ pass: false, msgs: ['ERROR Python is not available in this build'] }); return; }
+      var w, url, done = false;
+      function finish(r) { if (done) return; done = true; try { w.terminate(); } catch (e) {} try { URL.revokeObjectURL(url); } catch (e) {} resolve(r); }
+      try {
+        if (!pyWasm) { var bin = atob(MP.wasm), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); pyWasm = u.buffer; }
+        var glue = '\nvar same=' + same.toString() + ',arr=' + arr.toString() + ';\nvar runPythonCore=' + runPythonCore.toString() + ';\n' +
+          'onmessage=async function(e){var out=[];try{var wurl=URL.createObjectURL(new Blob([e.data.wasm],{type:\'application/wasm\'}));var mp=await loadMicroPython({url:wurl,heapsize:8*1024*1024,stdout:function(s){out.push(s)},stderr:function(s){out.push(s)}});postMessage(await runPythonCore(mp,e.data.lab,e.data.code,out,e.data.outputOnly));}catch(err){postMessage({pass:false,msgs:["ERROR "+String(err&&err.message||err)]});}};';
+        url = URL.createObjectURL(new Blob([MP.mjs + glue], { type: 'text/javascript' }));
+        w = new Worker(url);
+        w.onmessage = function (e) { finish(e.data); };
+        w.onerror = function (e) { finish({ pass: false, msgs: ['ERROR Python could not start on this device'] }); };
+        setTimeout(function () { finish({ pass: false, msgs: ['ERROR your code ran longer than 8 seconds (endless loop?)'] }); }, 8000);
+        w.postMessage({ lab: lab, code: code, outputOnly: !!opts.outputOnly, wasm: pyWasm.slice(0) });
+      } catch (e) { finish({ pass: false, msgs: ['ERROR ' + (e && e.message ? e.message : e)] }); }
+    });
+  }
+
   /* ----- scripted terminal: data-driven shell for any subject ----- */
   function subst(t, vars, caps) {
     return s(t).replace(/\{\{(\w+)\}\}/g, function (m, k) {
@@ -380,7 +435,7 @@
   }
 
   var api = { FORMAT: FORMAT, VERSION: VERSION, LAB_TYPES: LAB_TYPES, validate: validate, chapterView: chapterView, template: template, slug: slug,
-    parseFill: parseFill, checkFill: checkFill, checkOrder: checkOrder, checkMatch: checkMatch, checkWrite: checkWrite, runCode: runCode, runCodeSync: runCodeSync, makeScriptTerm: makeScriptTerm, mapBlock: mapBlock };
+    parseFill: parseFill, checkFill: checkFill, checkOrder: checkOrder, checkMatch: checkMatch, checkWrite: checkWrite, runCode: runCode, runCodeSync: runCodeSync, runPython: runPython, runPythonCore: runPythonCore, makeScriptTerm: makeScriptTerm, mapBlock: mapBlock };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.LilithCourse = api;
 })(typeof window !== 'undefined' ? window : globalThis);

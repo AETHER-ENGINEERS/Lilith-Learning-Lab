@@ -1,0 +1,367 @@
+"""Operating Systems course, chapters 11-15."""
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "trinity"))
+from tlib import T, C, M
+
+CH = []
+
+# ---------------------------------------------------------------- 11
+CH.append({
+    "title": "I/O hardware",
+    "maps": [{"title": "I/O hardware", "links": [
+        "I/O devices | are | Block, character or network",
+        "Device controller | connects | Device and computer",
+        "Polling | wastes | CPU cycles",
+        "Interrupt | signals | Device ready",
+        "DMA controller | moves data without | CPU",
+        "Memory-mapped I/O | uses | Memory addresses",
+        "Port-mapped I/O | uses | Separate I/O instructions"]}],
+    "summary": [
+        "One of the OS's jobs is to manage devices. I/O devices are block devices, character devices or network-like devices, and each is attached to the computer through a controller.",
+        "The CPU talks to a device by memory-mapped I/O, special I/O instructions or direct memory access. Polling keeps the CPU busy checking a status bit; interrupts let the device signal when it is done.",
+        "With DMA, a controller moves a whole block between the device and memory and interrupts the CPU once, which saves one interrupt per word."],
+    "glossary": [
+        {"term": "Block device", "def": "A device that stores data in fixed-size blocks, each addressable. A disk is an example."},
+        {"term": "Character device", "def": "A device that delivers or accepts a stream of characters, such as a keyboard or serial port."},
+        {"term": "Device controller", "def": "The electronic part that operates a device and connects it to the computer."},
+        {"term": "Polling", "def": "The CPU repeatedly checks a status bit to see if the device is ready."},
+        {"term": "Interrupt", "def": "A signal from a device that makes the CPU stop and run a handler."},
+        {"term": "DMA", "def": "Direct memory access: a controller transfers data between memory and a device without CPU involvement per word."},
+        {"term": "Memory-mapped I/O", "def": "Device registers share the memory address space and are read and written like memory."},
+        {"term": "Port-mapped I/O", "def": "Special I/O instructions address a separate port space."}],
+    "keyPoints": [
+        "Block devices: fixed blocks, random access. Character devices: streams, no addressing.",
+        "Controllers hide device details from the OS.",
+        "Polling is simple but wastes CPU time.",
+        "Interrupts let the CPU do other work while the device operates.",
+        "DMA: one interrupt per block rather than per word.",
+        "Memory-mapped I/O avoids special instructions."],
+    "lesson": [
+        T("One of the important jobs of an operating system is to manage various I/O devices, including mouse, keyboards, touch pad, disk drives, display adapters, USB devices, bit-mapped screens, LEDs, analog-to-digital converters, on/off switches, network connections, audio I/O, printers and more."),
+        T("An I/O system is required to take an application's I/O request and send it to the physical device, then take whatever response comes back and send it to the application. I/O devices can be divided into two broad categories."),
+        T("Block devices store data in fixed-size blocks, usually 512 bytes to 32 kilobytes, and each block has its own address. Transfers are in whole blocks, and the device can read any block independently of others. Hard disks, USB cameras and Blu-ray discs are examples.",
+          "Character devices deliver or accept a stream of characters with no block structure. They are not addressable and have no seek operation. Examples are printers, network interfaces, mice and keyboards."),
+        T("Device drivers are software modules that can be plugged into an OS to handle a particular device. The OS takes help from them to handle all I/O devices."),
+        T("The device controller works like an interface between a device and the device driver. I/O units, keyboard and mouse, generally have a mechanical component and an electronic component, and the electronic component is the device controller. There is always a device controller and a device driver for each device so the two can communicate."),
+        T("There are several ways to talk to a device. One is the special I/O instruction. It usually specifies a byte or word to transfer and a port number that selects the device. The CPU does the work itself, so it ties up the processor while the transfer happens."),
+        T("Memory-mapped I/O. The device registers are mapped into the address space of the CPU, so reading and writing them is the same as reading and writing memory, and no special instructions are needed. The disadvantage is that a cache must be disabled for the device addresses, or it will hold stale values."),
+        T("The CPU can also learn the status of a device by polling. It repeatedly reads a status register until a ready bit is set. That wastes CPU time, because the processor is busy waiting. The alternative is interrupts: the device sends a signal when it is ready, and the CPU runs an interrupt handler, then returns to the interrupted work."),
+        T("Interrupt-driven I/O has a cost per word when moving large amounts of data. Direct memory access fixes this. A DMA controller is given the memory address, the count and the direction. It moves the whole block between device and memory by itself, stealing bus cycles from the CPU, and raises one interrupt when the whole transfer is done."),
+        T("Here are the numbers. Transferring a 4096-byte block with a 4-byte word and one interrupt per word needs 1024 interrupts. With DMA it needs one. The practice section lets you count and compare polling cost too.")],
+    "quiz": [
+        {"q": "Which is a character device?", "options": ["Hard disk", "Keyboard", "SSD", "Blu-ray disc"], "answer": 1, "explain": "A keyboard is a stream without addressable blocks."},
+        {"q": "What is wrong with polling?", "options": ["It is too fast", "The CPU wastes time busy waiting", "It needs DMA", "It corrupts disks"], "answer": 1, "explain": "The CPU repeats a status check instead of doing useful work."},
+        {"q": "How many interrupts does DMA raise for one block transfer?", "options": ["One per byte", "One per word", "One per block", "None"], "answer": 2, "explain": "It interrupts when the whole transfer is done."},
+        {"q": "What is memory-mapped I/O?", "options": ["Device registers share the address space with memory", "Disks are mapped to RAM chips", "A cache type", "Printer paging"], "answer": 0, "explain": "No special I/O instructions are needed."}],
+    "cards": [
+        {"q": "Block device example?", "a": "Hard disk."},
+        {"q": "Character device example?", "a": "Keyboard, mouse, printer."},
+        {"q": "DMA advantage?", "a": "One interrupt per block instead of per word."},
+        {"q": "Memory-mapped I/O drawback?", "a": "Caching of device addresses must be disabled."}],
+    "practice": [
+        {"type": "match", "title": "Device types", "intro": "Match each device to its class.", "pairs": [["Hard disk", "Block device"], ["Keyboard", "Character device"], ["Printer", "Character device"], ["Blu-ray disc", "Block device"]]},
+        {"type": "python", "title": "Interrupts per transfer", "intro": "Write interrupts_needed(block_bytes, word_bytes, dma). Without DMA the device interrupts once per word, rounded up. With DMA it interrupts once for the whole block. Return the number of interrupts.", "fn": "interrupts_needed",
+         "starter": "def interrupts_needed(block_bytes, word_bytes, dma):\n    # your code\n    pass\n",
+         "tests": [{"args": [4096, 4, False], "expect": 1024}, {"args": [4096, 4, True], "expect": 1}, {"args": [10, 4, False], "expect": 3}, {"args": [0, 4, False], "expect": 0}],
+         "hint": "Words = ceiling of block / word. The ceiling of a / b is (a + b - 1) // b.",
+         "solution": "def interrupts_needed(block_bytes, word_bytes, dma):\n    if block_bytes <= 0:\n        return 0\n    if dma:\n        return 1\n    return (block_bytes + word_bytes - 1) // word_bytes\n"},
+        {"type": "python", "title": "Polling waste", "intro": "A device becomes ready after ready_ms milliseconds. The CPU polls every poll_ms milliseconds, starting at time 0, and each poll costs one wasted check. Write polls_until_ready(ready_ms, poll_ms): how many polls happen up to and including the first one that finds the device ready.", "fn": "polls_until_ready",
+         "starter": "def polls_until_ready(ready_ms, poll_ms):\n    # your code\n    pass\n",
+         "tests": [{"args": [0, 10], "expect": 1}, {"args": [25, 10], "expect": 4}, {"args": [30, 10], "expect": 4}, {"args": [1, 5], "expect": 2}],
+         "hint": "Polls happen at 0, poll_ms, 2*poll_ms ... The first that is >= ready_ms is at index ceil(ready/poll). Count includes the poll at time 0.",
+         "solution": "def polls_until_ready(ready_ms, poll_ms):\n    k = (ready_ms + poll_ms - 1) // poll_ms\n    return k + 1\n"},
+        {"type": "fill", "title": "I/O vocabulary", "text": "A {{DMA}} controller moves a block of data without the CPU handling each word. Busy-waiting on a status bit is called {{polling}}. A device signals the CPU with an {{interrupt}}."}]
+})
+
+# ---------------------------------------------------------------- 12
+CH.append({
+    "title": "I/O software",
+    "maps": [{"title": "I/O software layers", "links": [
+        "User-level I/O software | calls | Device-independent software",
+        "Device-independent software | calls | Device driver",
+        "Device driver | talks to | Device controller",
+        "Interrupt handler | wakes | Device driver",
+        "Buffering | smooths | Speed mismatch",
+        "Spooling | queues output for | Dedicated device",
+        "Caching | keeps copies in | Faster memory"]}],
+    "summary": [
+        "I/O software is organized in layers: interrupt handlers at the bottom, then device drivers, then device-independent OS software, then user-level libraries. Each layer hides details from the one above.",
+        "Device drivers contain the device-specific code. The device-independent layer gives uniform naming, buffering, error reporting, allocation and protection.",
+        "Three ideas smooth device speed differences: buffering holds data in memory during a transfer, caching keeps copies in faster memory, and spooling queues jobs for a device like a printer that cannot share."],
+    "glossary": [
+        {"term": "Device driver", "def": "Software that knows how to operate one kind of device and presents a standard interface to the OS."},
+        {"term": "Interrupt handler", "def": "Code that runs when a device interrupts. It saves state, services the device and wakes the waiting driver."},
+        {"term": "Device-independent I/O software", "def": "The OS layer providing uniform interfacing, buffering, error reporting, allocation and protection."},
+        {"term": "Buffering", "def": "Storing data temporarily in memory while it moves between two places."},
+        {"term": "Caching", "def": "Keeping a copy of data in faster memory."},
+        {"term": "Spooling", "def": "Placing jobs for a device in a queue (on disk) and serving them one at a time."},
+        {"term": "Synchronous I/O", "def": "The process waits until the I/O completes."},
+        {"term": "Asynchronous I/O", "def": "The process continues while the I/O proceeds."}],
+    "keyPoints": [
+        "Layers: user-level, device-independent, driver, interrupt handler, hardware.",
+        "Drivers are device specific; the layer above is not.",
+        "Uniform interface: all devices look like files.",
+        "Buffering deals with speed mismatch and block size mismatch.",
+        "Spooling lets many processes share a non-shareable device in turn.",
+        "Caching keeps a copy; a buffer may hold the only copy."],
+    "lesson": [
+        T("I/O software is often organized in layers. From the bottom: interrupt handlers, device drivers, device-independent operating system software, and user-level software. Each layer has a well-defined function and interface to its neighbours."),
+        T("Device drivers are software modules that can be plugged into an OS to handle a particular device. The operating system takes help from device drivers to handle all I/O devices. A driver encapsulates device-dependent code and accepts abstract commands, such as read block n, from the layer above."),
+        T("A device driver issues commands to the controller, then either blocks until an interrupt arrives or checks status itself. Its tasks include accepting requests from the layer above, checking input parameters, translating abstract requests into concrete ones, checking whether the device is in use, issuing commands, and checking for errors."),
+        T("The interrupt handler is the lowest layer. Interrupts are unpleasant, but hidden. The best way is to block the driver that started an I/O operation until the I/O completes and the interrupt occurs. The handler saves registers, services the interrupt, wakes the blocked driver and restores state."),
+        T("Device-independent I/O software does functions common to all devices. Its main functions: uniform interfacing for drivers, buffering, error reporting, allocating and releasing dedicated devices, and providing a device-independent block size. For example, a disk read of a block is the same request to the OS whichever disk it is."),
+        T("User-space I/O software is the layer of library procedures such as printf or read, and spooling systems. Library procedures format data, and make system calls. Spooling is a way to deal with dedicated devices in a multiprogramming system."),
+        T("Take the printer. Though it is possible to let a process open its special file directly, a process could hog it for hours. Instead, a special process called a daemon is created, with a special directory called the spooling directory. To print a file, a process first generates the file, then puts it in the spooling directory. The daemon is the only process allowed to use the printer."),
+        T("Buffering stores data temporarily while it is transferred between two devices, or between a device and an application. Reasons for buffering: coping with a speed mismatch between producer and consumer, adapting to devices with different transfer sizes, and maintaining copy semantics for application I/O."),
+        T("Caching is a different idea. A cache is a region of fast memory that holds a copy of data. Access to the cached copy is more efficient than access to the original. A buffer may hold the only existing copy of a data item, whereas a cache just holds a copy on faster storage."),
+        T("I/O can also be synchronous or asynchronous. With synchronous I/O the process waits until the operation is complete. With asynchronous I/O the process carries on and is notified later. The practice section has you build the bounded buffer between a producer and a consumer, and a spool queue for a printer.")],
+    "quiz": [
+        {"q": "Which layer contains device-specific code?", "options": ["User-level library", "Device driver", "Application", "File names"], "answer": 1, "explain": "The driver knows the controller's registers and commands."},
+        {"q": "What does a spooler do?", "options": ["Compiles code", "Queues jobs for a device that cannot be shared", "Encrypts disks", "Speeds the CPU"], "answer": 1, "explain": "The daemon prints jobs one at a time."},
+        {"q": "What distinguishes a buffer from a cache?", "options": ["A buffer may hold the only copy; a cache holds a copy", "They are identical", "A cache is slower", "A buffer is in the CPU"], "answer": 0, "explain": "A cache only duplicates data held elsewhere."},
+        {"q": "Which I/O type lets the process continue while the operation runs?", "options": ["Synchronous", "Asynchronous", "Blocking", "Serial"], "answer": 1, "explain": "The process is notified on completion."}],
+    "cards": [
+        {"q": "Lowest I/O software layer?", "a": "Interrupt handlers."},
+        {"q": "Who is the only process allowed to use the printer in spooling?", "a": "The spooling daemon."},
+        {"q": "Why buffer?", "a": "Speed mismatch, transfer size mismatch and copy semantics."},
+        {"q": "Device-independent layer provides?", "a": "Uniform interface, buffering, error reporting, allocation, protection."}],
+    "practice": [
+        {"type": "match", "title": "I/O layers", "intro": "Match each task to the layer that does it.", "pairs": [["Write bytes to a controller register", "Device driver"], ["Wake the driver after the device finishes", "Interrupt handler"], ["Provide a uniform block size and buffering", "Device-independent software"], ["printf and spool daemon", "User-level software"]]},
+        {"type": "python", "title": "Bounded buffer", "intro": "A producer puts items into a buffer of a given capacity and a consumer takes them out. Write buffer_run(capacity, ops). ops is a list of \"P\" (produce one item) and \"C\" (consume one item). A P into a full buffer, or a C from an empty buffer, is dropped (it would have to wait). Return [items left in buffer, dropped operations].", "fn": "buffer_run",
+         "starter": "def buffer_run(capacity, ops):\n    # your code\n    pass\n",
+         "tests": [{"args": [2, ["P", "P", "P", "C", "C", "C"]], "expect": [0, 2]}, {"args": [3, ["P", "C", "P", "P"]], "expect": [2, 0]}, {"args": [1, ["C", "P", "P"]], "expect": [1, 2]}, {"args": [5, []], "expect": [0, 0]}],
+         "hint": "Keep count and dropped. P: if count < capacity add one, else dropped += 1. C: if count > 0 remove one, else dropped += 1.",
+         "solution": "def buffer_run(capacity, ops):\n    count = 0\n    dropped = 0\n    for op in ops:\n        if op == 'P':\n            if count < capacity:\n                count += 1\n            else:\n                dropped += 1\n        else:\n            if count > 0:\n                count -= 1\n            else:\n                dropped += 1\n    return [count, dropped]\n"},
+        {"type": "python", "title": "Print spooler", "intro": "The printer prints one page per time unit, and the spooler serves jobs first come first served. jobs is a list of [name, arrival, pages]. Write spool_finish(jobs): return [[name, finish_time]] in the same order. A job cannot start before it arrives.", "fn": "spool_finish",
+         "starter": "def spool_finish(jobs):\n    # your code\n    pass\n",
+         "tests": [{"args": [[["a", 0, 3], ["b", 1, 2], ["c", 10, 1]]], "expect": [["a", 3], ["b", 5], ["c", 11]]}, {"args": [[]], "expect": []}, {"args": [[["x", 4, 2]]], "expect": [["x", 6]]}],
+         "hint": "Keep a clock t. start = max(t, arrival), finish = start + pages, then t = finish.",
+         "solution": "def spool_finish(jobs):\n    t = 0\n    out = []\n    for name, arrival, pages in jobs:\n        start = max(t, arrival)\n        t = start + pages\n        out.append([name, t])\n    return out\n"},
+        {"type": "fill", "title": "I/O layers", "text": "A device {{driver}} contains device-specific code. A {{spooler|daemon}} lets many processes share a printer by queueing jobs. Data held in memory while moving between two places is a {{buffer}}."}]
+})
+
+# ---------------------------------------------------------------- 13
+CH.append({
+    "title": "File system",
+    "maps": [{"title": "File systems", "links": [
+        "File | has | Attributes",
+        "File | is stored by | File system",
+        "Directory | organizes | Files",
+        "Contiguous allocation | suffers from | External fragmentation",
+        "Linked allocation | has | No random access",
+        "Indexed allocation | uses | Index block",
+        "File access | can be | Sequential or direct",
+        "Free space | is tracked by | Bit map or free list"]}],
+    "summary": [
+        "A file is a named collection of related information on secondary storage. The file system gives users a way to name, organize, store, retrieve and protect files, and maps files onto disk blocks.",
+        "Files have attributes such as name, type, location, size, protection and time. Directories organize files, and access is sequential or direct.",
+        "Three ways to allocate disk blocks: contiguous, linked and indexed. Each trades speed, fragmentation and random access differently."],
+    "glossary": [
+        {"term": "File", "def": "A named collection of related information recorded on secondary storage."},
+        {"term": "File system", "def": "The part of the OS that names, stores, organizes and protects files."},
+        {"term": "Directory", "def": "A structure that holds information about files."},
+        {"term": "Sequential access", "def": "Records are read in order, one after another."},
+        {"term": "Direct access", "def": "Any block can be read or written directly by its number."},
+        {"term": "Contiguous allocation", "def": "A file occupies a set of adjacent blocks."},
+        {"term": "Linked allocation", "def": "Each block holds a pointer to the next block of the file."},
+        {"term": "Indexed allocation", "def": "An index block lists all the blocks of the file."},
+        {"term": "Bit map", "def": "One bit per disk block records whether it is free."}],
+    "keyPoints": [
+        "File attributes: name, type, location, size, protection, time and date.",
+        "File types: ordinary, directory and special files.",
+        "Contiguous: fast direct access, external fragmentation, files hard to grow.",
+        "Linked: no external fragmentation, slow direct access, pointers lost if damaged.",
+        "Indexed: supports direct access, needs an index block.",
+        "Free space can be tracked with a bit map or a linked list."],
+    "lesson": [
+        T("A file is a named collection of related information that is recorded on secondary storage such as magnetic disks, magnetic tapes and optical disks. In general a file is a sequence of bits, bytes, lines or records, whose meaning is defined by the file's creator and user."),
+        T("File structure. A file has a structure that depends on its type. A text file is a sequence of characters organized into lines. A source file is a sequence of procedures and functions. An object file is a sequence of bytes organized into blocks understandable by the machine. The OS decides the structure when the file is created."),
+        T("File type refers to the ability of the OS to distinguish different types of file, such as text files and source files and binary files. Many operating systems support many types of files. They fall into three categories. Ordinary files hold user information, usually ASCII or binary. Directory files contain information about other files. Special files are device files and hold no data."),
+        T("The file system maintains attributes for each file: the name, which is kept in human-readable form; the type; the location of the device and place on disk; the size; the protection, who may read, write or execute; and the time, date and user identification, useful for protection, security and usage monitoring."),
+        T("Directory structure. A directory is a way to organize files. The simplest is a single-level directory, where all files are in one place. It is easy to support but has naming problems: names must be unique. A two-level directory gives each user a directory. A tree-structured directory allows users to create their own subdirectories."),
+        T("Access methods. Sequential access reads records one after another, as on tape. Direct access, also called relative access, lets a program read or write blocks in any order, using the block number. Disks make direct access possible, and databases use it a great deal."),
+        T("Now allocation. The disk is divided into blocks, and the file system decides which blocks to give a file. In contiguous allocation each file occupies a set of contiguous blocks. The directory needs only the starting block and the length. It supports sequential and direct access easily. The problems: external fragmentation, and files are difficult to grow."),
+        T("In linked allocation each file is a linked list of disk blocks that may be scattered anywhere on disk. The directory stores pointers to the first and last blocks, and each block contains a pointer to the next. There is no external fragmentation and files can grow easily. But direct access is inefficient, because to reach block i you follow i pointers, and a damaged pointer loses the rest of the file."),
+        T("In indexed allocation all the pointers are brought together into one index block. Each file has its own index block, an array of disk block addresses; entry i points to block i of the file. It supports direct access without external fragmentation, but the index block takes space, and small files waste most of it."),
+        T("Free space management. The system must know which blocks are free. A bit map has one bit per block, for example 1 for free, and the first free block is found by scanning for a set bit. A free list links the free blocks together. Grouping and counting are refinements."),
+        T("In practice you can compute the block a byte lives in, follow a linked chain, and allocate a contiguous run. That is what the practice section asks you to code.")],
+    "quiz": [
+        {"q": "Which allocation method has external fragmentation and hard-to-grow files?", "options": ["Linked", "Contiguous", "Indexed", "None"], "answer": 1, "explain": "Each file needs a run of adjacent blocks."},
+        {"q": "Why is direct access slow in linked allocation?", "options": ["Blocks are encrypted", "You must follow pointers through every earlier block", "The disk is small", "Index blocks are missing"], "answer": 1, "explain": "To reach block i you read i blocks first."},
+        {"q": "What does an index block hold?", "options": ["File contents", "The disk addresses of the file's blocks", "Passwords", "Timestamps only"], "answer": 1, "explain": "Entry i points to the i-th block."},
+        {"q": "Which is a special file?", "options": ["A text file", "A device file", "A source file", "A directory of text"], "answer": 1, "explain": "Special files represent devices and hold no data."}],
+    "cards": [
+        {"q": "Directory entry in contiguous allocation?", "a": "Starting block and length."},
+        {"q": "Linked allocation weakness?", "a": "Slow direct access and fragile pointers."},
+        {"q": "Bit map?", "a": "One bit per block marking free or used."},
+        {"q": "Three file type categories?", "a": "Ordinary, directory and special."}],
+    "practice": [
+        {"type": "match", "title": "Allocation methods", "intro": "Match each method with its feature.", "pairs": [["Contiguous", "Directory stores start and length; external fragmentation"], ["Linked", "Each block points to the next; slow direct access"], ["Indexed", "One index block lists all blocks; direct access"], ["Bit map", "One bit per block records free space"]]},
+        {"type": "python", "title": "Follow a linked file", "intro": "A linked file's blocks are in a table: next[b] is the block after b, and -1 ends the file. Write linked_blocks(next_table, start, n): return the first n blocks of the file, starting at block start, or the whole file if it is shorter than n.", "fn": "linked_blocks",
+         "starter": "def linked_blocks(next_table, start, n):\n    # your code\n    pass\n",
+         "tests": [{"args": [[-1, 4, 0, -1, 7, -1, -1, 2], 1, 10], "expect": [1, 4, 7, 2, 0]}, {"args": [[-1, 4, 0, -1, 7, -1, -1, 2], 1, 3], "expect": [1, 4, 7]}, {"args": [[-1, 4, 0, -1, 7, -1, -1, 2], 3, 5], "expect": [3]}, {"args": [[-1], 0, 0], "expect": []}],
+         "hint": "Start at block b = start. While b != -1 and fewer than n collected: append b and set b = next[b].",
+         "solution": "def linked_blocks(next_table, start, n):\n    out = []\n    b = start\n    while b != -1 and len(out) < n:\n        out.append(b)\n        b = next_table[b]\n    return out\n"},
+        {"type": "python", "title": "Contiguous first fit", "intro": "A disk is a list of 0 (free) and 1 (used) blocks. Write alloc_contiguous(disk, n): find the first run of n free blocks, mark it used in the list and return the starting index. Return -1 if no run is long enough.", "fn": "alloc_contiguous",
+         "starter": "def alloc_contiguous(disk, n):\n    # your code\n    pass\n",
+         "tests": [{"args": [[0, 1, 0, 0, 0, 1, 0], 3], "expect": 2}, {"args": [[0, 1, 0, 0, 0, 1, 0], 4], "expect": -1}, {"args": [[1, 1, 0], 1], "expect": 2}, {"args": [[0, 0, 0], 3], "expect": 0}],
+         "hint": "Scan with a running count of free blocks; reset the count when you meet a used block.",
+         "solution": "def alloc_contiguous(disk, n):\n    run = 0\n    for i in range(len(disk)):\n        if disk[i] == 0:\n            run += 1\n            if run == n:\n                start = i - n + 1\n                for j in range(start, i + 1):\n                    disk[j] = 1\n                return start\n        else:\n            run = 0\n    return -1\n"},
+        {"type": "python", "title": "Block of a byte", "intro": "Files are stored in blocks of block_size bytes. Write locate(offset, block_size, blocks): blocks is the list of the file's disk blocks in order (indexed allocation). Return [disk block number, offset inside that block] for a byte offset, or [-1, -1] if the offset is beyond the file.", "fn": "locate",
+         "starter": "def locate(offset, block_size, blocks):\n    # your code\n    pass\n",
+         "tests": [{"args": [0, 512, [9, 4, 7]], "expect": [9, 0]}, {"args": [700, 512, [9, 4, 7]], "expect": [4, 188]}, {"args": [1535, 512, [9, 4, 7]], "expect": [7, 511]}, {"args": [1536, 512, [9, 4, 7]], "expect": [-1, -1]}],
+         "hint": "index = offset // block_size and inside = offset % block_size.",
+         "solution": "def locate(offset, block_size, blocks):\n    i = offset // block_size\n    if offset < 0 or i >= len(blocks):\n        return [-1, -1]\n    return [blocks[i], offset % block_size]\n"},
+        {"type": "fill", "title": "File system facts", "text": "Reading a file's blocks in order is {{sequential}} access. In {{linked}} allocation each block points to the next. A single block that lists all of a file's blocks is an {{index}} block."}]
+})
+
+# ---------------------------------------------------------------- 14
+CH.append({
+    "title": "Security",
+    "maps": [{"title": "Operating system security", "links": [
+        "Security | protects | System resources",
+        "Authentication | verifies | User identity",
+        "Authentication | uses | Passwords, tokens or biometrics",
+        "One time password | can be used | Only once",
+        "Program threat | includes | Trojan horse and trap door",
+        "System threat | includes | Worms and viruses",
+        "Security classes | rate | Trusted systems",
+        "Access control | decides | Who may do what"]}],
+    "summary": [
+        "Security means protecting the system's resources from unauthorized access. Operating system security measures include authentication, one-time passwords, and monitoring against program and system threats.",
+        "Authentication proves the user's identity by something they know, have or are. One-time passwords protect against replay of captured passwords.",
+        "Threats include trojan horses, trap doors, worms, viruses and denial of service. Defences include least privilege, monitoring, and a trusted computing base, rated in classes from D (minimal) up to A (verified design)."],
+    "glossary": [
+        {"term": "Authentication", "def": "Verifying the identity of a user or process."},
+        {"term": "One-time password", "def": "A password valid for one use only, so a captured password is useless later."},
+        {"term": "Trojan horse", "def": "A program that appears useful but performs hidden harmful actions."},
+        {"term": "Trap door", "def": "A hidden entry point left in a program that bypasses normal security."},
+        {"term": "Logic bomb", "def": "Code that does harm only when a condition occurs."},
+        {"term": "Virus", "def": "Code that attaches to other programs and replicates."},
+        {"term": "Worm", "def": "A program that copies itself across a network without needing a host program."},
+        {"term": "Least privilege", "def": "Giving each user or process only the access it needs."},
+        {"term": "Access matrix", "def": "A table of subjects by objects with the rights each subject holds."}],
+    "keyPoints": [
+        "Security covers authentication, one-time passwords, and defence against program and system threats.",
+        "Authentication factors: what you know, have or are.",
+        "Program threats: trojan horse, trap door, logic bomb, buffer overflow.",
+        "System threats: worms, viruses, denial of service.",
+        "Computer security classes: D, C1, C2, B1, B2, B3, A.",
+        "Least privilege limits damage."],
+    "lesson": [
+        T("Security refers to providing a protection system to computer system resources such as the CPU, memory, disk, software programs and, most importantly, the data and information stored in the system. If a computer program is run by an unauthorized user, he or she may cause severe damage to the computer or its data."),
+        T("Security can be addressed by two means: authentication and one-time passwords. And the operating system must monitor for program threats and system threats. Authentication refers to identifying each user of the system and associating the executing programs with those users. It is the OS's responsibility to create a protection system that ensures a user who runs a particular program is authentic."),
+        T("Operating systems generally identify users in three ways. Username and password: the user enters a registered name and a password, which the system checks. User card or key: the user must punch a card in a slot or enter a key produced by a key generator. User attribute, such as a fingerprint, eye retina pattern or signature."),
+        T("One-time passwords provide additional security along with normal authentication. In a one-time password system, a unique password is required every time a user tries to log in. Once used, the password cannot be used again. They are implemented in various ways: random numbers, where the user gets cards with numbers printed with corresponding letters; a secret key, where the user gets a hardware device that creates a secret id mapped to the user id; and a network password, where the system sends a password by email or text to the user."),
+        T("Now program threats. If a user program makes processes do malicious tasks, it is known as a program threat. A common example is a Trojan horse: a code segment that misuses its environment, for example a program that appears to be a login but steals the password. A trap door is a hole left by the program's author so that he or she can bypass the security. Programs with trap doors are hard to detect."),
+        T("A logic bomb is a program that misbehaves only when certain conditions are met, otherwise it works as a genuine program. It is hard to detect. And there is the stack and buffer overflow: an exploit that enters more data than a buffer can hold, so the extra data overwrites neighbouring memory and may run attacker code."),
+        T("System threats refer to misuse of system services and network connections to put the user in trouble. They can be used to launch program threats on a complete network, called a program attack. System threats create an environment in which operating system resources and user files are misused."),
+        T("A worm is a process that can choke a system's performance by using system resources to extreme levels. It generates multiple copies of itself, each using resources and preventing other processes from getting any. Worms can shut down a whole network. Ports scanning is a mechanism by which a cracker tries to detect system vulnerabilities. Denial of service attacks stop users from legitimate use of the system, usually by overloading it."),
+        T("A virus loads itself into a computer system and attaches to a program. Unlike a worm it needs a host. Its aim is to modify or destroy files and make programs misbehave. Defence includes least privilege, antivirus software, and being careful with downloads and attachments."),
+        T("Computer security classifications. The US Department of Defense Trusted Computer System Evaluation Criteria specifies four security divisions. Type A is the highest, with verified design, and Type B and C are in the middle. Type D is minimal protection.",
+          "Class B1 gives labelled protection, B2 structured protection, B3 security domains. C1 is discretionary security protection and C2 is controlled access protection, with auditing and accountability. D is for systems that failed higher evaluation, like DOS."),
+        T("The practice section codes a one-time password check, an access-matrix lookup and a threat classifier. It also asks you to rank security classes. These are small, but they show the logic that real systems use.")],
+    "quiz": [
+        {"q": "What makes a one-time password useful?", "options": ["It is long", "A captured password cannot be reused", "It never expires", "It is stored in plain text"], "answer": 1, "explain": "Each login needs a fresh value."},
+        {"q": "What is a trap door?", "options": ["A firewall rule", "A hidden entry point that bypasses security", "A type of virus scanner", "A dialog box"], "answer": 1, "explain": "It is left by the author."},
+        {"q": "How do worms differ from viruses?", "options": ["Worms copy themselves without needing a host program", "Worms need a host", "They are identical", "Worms only affect printers"], "answer": 0, "explain": "Viruses attach to other programs."},
+        {"q": "Which TCSEC division is highest?", "options": ["D", "C", "B", "A"], "answer": 3, "explain": "Type A is verified design."}],
+    "cards": [
+        {"q": "Three ways to identify users?", "a": "Password, card or key, and user attribute such as a fingerprint."},
+        {"q": "Which program threat looks like a useful program?", "a": "A Trojan horse."},
+        {"q": "Least privilege?", "a": "Give only the access that is needed."},
+        {"q": "Order of security classes, lowest to highest?", "a": "D, C1, C2, B1, B2, B3, A."}],
+    "practice": [
+        {"type": "match", "title": "Threats", "intro": "Match each threat with its description.", "pairs": [["Trojan horse", "Looks useful but does hidden harm"], ["Trap door", "Hidden entry point left by the author"], ["Logic bomb", "Misbehaves only when a condition is met"], ["Worm", "Copies itself across a system or network"], ["Virus", "Attaches to a host program and replicates"]]},
+        {"type": "python", "title": "One-time password list", "intro": "A server holds a list of valid one-time passwords. Write otp_login(valid, attempts). Process each attempt in order. If it is in valid, it succeeds and is removed (cannot be used again). Return a list of true/false per attempt.", "fn": "otp_login",
+         "starter": "def otp_login(valid, attempts):\n    # your code\n    pass\n",
+         "tests": [{"args": [["a1", "b2", "c3"], ["a1", "a1", "c3", "zz"]], "expect": [True, False, True, False]}, {"args": [[], ["x"]], "expect": [False]}, {"args": [["k"], []], "expect": []}],
+         "hint": "Copy the list. If an attempt is in it, remove it and record True.",
+         "solution": "def otp_login(valid, attempts):\n    pool = list(valid)\n    out = []\n    for a in attempts:\n        if a in pool:\n            pool.remove(a)\n            out.append(True)\n        else:\n            out.append(False)\n    return out\n"},
+        {"type": "python", "title": "Access matrix", "intro": "The access matrix is a list of [subject, object, rights] where rights is a string such as \"rw\". Write has_access(matrix, subject, obj, right): True if that subject holds that right on that object. A right is one letter.", "fn": "has_access",
+         "starter": "def has_access(matrix, subject, obj, right):\n    # your code\n    pass\n",
+         "tests": [{"args": [[["alice", "f1", "rw"], ["bob", "f1", "r"]], "alice", "f1", "w"], "expect": True}, {"args": [[["alice", "f1", "rw"], ["bob", "f1", "r"]], "bob", "f1", "w"], "expect": False}, {"args": [[["alice", "f1", "rw"]], "alice", "f2", "r"], "expect": False}, {"args": [[], "x", "y", "r"], "expect": False}],
+         "hint": "Look for a row with the same subject and object and test whether the right is in its rights string.",
+         "solution": "def has_access(matrix, subject, obj, right):\n    for s, o, rights in matrix:\n        if s == subject and o == obj and right in rights:\n            return True\n    return False\n"},
+        {"type": "python", "title": "Rank security classes", "intro": "Write best_class(classes). The order from lowest to highest is D, C1, C2, B1, B2, B3, A. Return the highest class in the list, or \"none\" if the list is empty.", "fn": "best_class",
+         "starter": "def best_class(classes):\n    # your code\n    pass\n",
+         "tests": [{"args": [["C2", "B1", "D"]], "expect": "B1"}, {"args": [["A", "B3"]], "expect": "A"}, {"args": [[]], "expect": "none"}, {"args": [["D"]], "expect": "D"}],
+         "hint": "Use a list of the classes in order and pick the one with the largest index.",
+         "solution": "def best_class(classes):\n    order = ['D', 'C1', 'C2', 'B1', 'B2', 'B3', 'A']\n    if not classes:\n        return 'none'\n    return max(classes, key=lambda c: order.index(c))\n"}]
+})
+
+# ---------------------------------------------------------------- 15
+CH.append({
+    "title": "Linux",
+    "maps": [{"title": "Linux", "links": [
+        "Linux | is | Open source Unix-like OS",
+        "Linux | has | Kernel, system libraries and utilities",
+        "Kernel | runs in | Kernel mode",
+        "Utilities | run in | User mode",
+        "Shell | interprets | User commands",
+        "Linux architecture | has layers | Hardware, kernel, shell, utilities",
+        "Linux | supports | Multiuser and multitasking"]}],
+    "summary": [
+        "Linux is a popular open source Unix-like operating system whose kernel was written by Linus Torvalds. Its main parts are the kernel, system libraries and system utilities.",
+        "The kernel runs in kernel mode with full access to hardware; utilities and applications run in user mode. System libraries are standard functions applications use to reach the kernel.",
+        "Key features are portability, open source, multiuser and multiprogramming support, a hierarchical file system, a shell and security. The architecture has four layers: hardware, kernel, shell and utilities."],
+    "glossary": [
+        {"term": "Linux", "def": "An open source Unix-like operating system built around the Linux kernel."},
+        {"term": "Kernel", "def": "The core of the OS. It abstracts hardware, manages memory, processes and devices, and runs in kernel mode."},
+        {"term": "System library", "def": "Special functions through which applications reach kernel features without needing kernel code access rights."},
+        {"term": "System utility", "def": "A program performing a specialized task, such as listing processes or managing files."},
+        {"term": "Kernel mode", "def": "The privileged mode with unrestricted access to hardware and memory."},
+        {"term": "User mode", "def": "The restricted mode in which applications run."},
+        {"term": "Shell", "def": "The program that reads user commands and asks the kernel to run them."},
+        {"term": "Loadable module", "def": "Kernel code that can be added or removed while the system is running."}],
+    "keyPoints": [
+        "Linux has a kernel, system libraries and system utilities.",
+        "The kernel runs in kernel mode; applications and utilities run in user mode.",
+        "Features: portable, open source, multiuser, multiprogramming, hierarchical file system, shell, security.",
+        "Layers: hardware, kernel, shell, utilities.",
+        "The shell turns commands into kernel requests.",
+        "Everything is a file: devices are files in the file system."],
+    "lesson": [
+        T("Linux is one of the popular versions of the UNIX operating system. It is open source, as its source code is freely available, and it is free to use. Linux was designed with UNIX compatibility in mind, and its functionality list is quite similar to that of UNIX."),
+        T("The Linux operating system has three major components. The kernel is the core part and abstracts the hardware: it consists of all the code that needs to run in kernel mode. System libraries are special functions or programs that application programs and system utilities use to access the kernel's features. System utilities are programs responsible for individual, specialized tasks."),
+        T("Kernel code executes in kernel mode. Kernel mode has full access to all the resources of the computer. This code represents a single process, executes in a single address space, and does not require any context switch, which is why it is very efficient and fast. The kernel runs each process and provides system services, plus protected access to hardware."),
+        T("Support code that is not required to run in kernel mode is in the system libraries. User programs and other system programs work in user mode, which has no direct access to system hardware or kernel code. They use the system libraries to call kernel functions to perform low-level tasks."),
+        T("The kernel is also modular: loadable kernel modules can be added or removed while the system runs. A module typically implements a device driver, a file system or a networking protocol. This keeps the core small and lets new hardware be supported without rebuilding the kernel."),
+        T("Linux has basic features. It is portable, working on different hardware platforms. It is open source, with a community developing and enhancing it. It is multiuser and supports multiprogramming. It has a hierarchical file system with a standard directory structure, and a shell, a command interpreter, that can run external programs. It includes security with authentication, access control and encryption."),
+        T("Architecture. Linux has four layers. The hardware layer is made of all peripheral devices: RAM, hard disk, CPU and so on. The kernel is the core and interacts directly with hardware, and hides low-level details from system and application programs. The shell is an interface to the kernel; it takes commands from the user and executes the kernel's functions. Utilities provide the functionality of the operating system to the user."),
+        T("In Linux, nearly everything is a file, including devices. That is why the same open, read and write system calls work for a disk file, a terminal or a pipe. In the file system the top is a single root directory, written with a slash, and directories such as bin, etc, home and dev hang below it."),
+        T("A shell session shows the pieces. A command like ps lists processes, using kernel data. The practice section gives you a scripted Linux terminal and a Python parser that reads the output of ps. This ties the course together: processes, memory, files and devices all appear in one place."),
+        T("That is the course. To review: processes are programs in execution described by PCBs and moved among queues; schedulers choose who runs; memory management, paging and virtual memory give each process a private view; I/O software and file systems hide devices behind files; and security protects all of it. Linux is one real system that puts these ideas to work.")],
+    "quiz": [
+        {"q": "Which component runs in kernel mode?", "options": ["System utilities", "The kernel", "User applications", "Documentation"], "answer": 1, "explain": "The kernel has full access to hardware."},
+        {"q": "What do system libraries do?", "options": ["Store user files", "Let applications use kernel features from user mode", "Replace the kernel", "Format disks"], "answer": 1, "explain": "They are standard functions that call into the kernel."},
+        {"q": "Which of these is a Linux architecture layer?", "options": ["Shell", "Cache", "Thread", "Spool"], "answer": 0, "explain": "The layers are hardware, kernel, shell and utilities."},
+        {"q": "What does the shell do?", "options": ["It reads commands and has the kernel run them", "It cools the CPU", "It compiles the kernel", "It encrypts disks"], "answer": 0, "explain": "It is the command interpreter."}],
+    "cards": [
+        {"q": "Three components of Linux?", "a": "Kernel, system libraries and system utilities."},
+        {"q": "Four layers of the architecture?", "a": "Hardware, kernel, shell and utilities."},
+        {"q": "Who wrote the Linux kernel?", "a": "Linus Torvalds."},
+        {"q": "Why is kernel code fast?", "a": "It runs in one address space and needs no context switch."}],
+    "practice": [
+        {"type": "match", "title": "Linux components", "intro": "Match each component with its role.", "pairs": [["Kernel", "Runs in kernel mode and abstracts hardware"], ["System library", "Lets applications call kernel features"], ["System utility", "A program for one specialized task"], ["Shell", "Command interpreter between user and kernel"]]},
+        {"type": "terminal", "title": "Linux shell", "prompt": "$", "intro": "A scripted shell, not a real Linux system. Try the listed commands.", "chips": ["ls /", "ps", "uname -a", "cat /proc/version", "whoami"],
+         "commands": [
+            {"re": "^ls /$", "out": ["bin  dev  etc  home  lib  proc  tmp  usr  var"]},
+            {"re": "^ps$", "out": ["  PID TTY          TIME CMD", "    1 ?        00:00:01 init", "  214 pts/0    00:00:00 bash", "  301 pts/0    00:00:00 ps"]},
+            {"re": "^uname -a$", "out": ["Linux lab 6.1.0 #1 SMP x86_64 GNU/Linux"]},
+            {"re": "^cat /proc/version$", "out": ["Linux version 6.1.0 (gcc 12.2) #1 SMP"]},
+            {"re": "^whoami$", "out": ["student"]},
+            {"re": ".", "out": ["command not found"], "cls": "err"}],
+         "tasks": [{"text": "List the root directory", "cmd": "^ls /$"}, {"text": "List the processes", "cmd": "^ps$"}, {"text": "Find out who you are", "cmd": "^whoami$"}]},
+        {"type": "python", "title": "Parse ps output", "intro": "Write parse_ps(text): text is the output of ps with a header line. Return a list of [pid, command] pairs, with pid as an integer, in the order printed. Columns are PID, TTY, TIME, CMD separated by spaces.", "fn": "parse_ps",
+         "starter": "def parse_ps(text):\n    # your code\n    pass\n",
+         "tests": [{"args": ["  PID TTY          TIME CMD\n    1 ?        00:00:01 init\n  214 pts/0    00:00:00 bash\n"], "expect": [[1, "init"], [214, "bash"]]}, {"args": ["  PID TTY          TIME CMD\n"], "expect": []}],
+         "hint": "Split into lines, skip the first, split each line on whitespace: parts[0] is the pid and parts[3] is the command.",
+         "solution": "def parse_ps(text):\n    out = []\n    lines = text.split('\\n')\n    for line in lines[1:]:\n        parts = line.split()\n        if len(parts) >= 4:\n            out.append([int(parts[0]), parts[3]])\n    return out\n"},
+        {"type": "python", "title": "Kernel or user mode", "intro": "Write mode_of(action). Return \"kernel\" for the actions \"disk_io\", \"set_timer\", \"halt\" and \"map_memory\" (privileged), and \"user\" for anything else.", "fn": "mode_of",
+         "starter": "def mode_of(action):\n    # your code\n    pass\n",
+         "tests": [{"args": ["disk_io"], "expect": "kernel"}, {"args": ["add_numbers"], "expect": "user"}, {"args": ["halt"], "expect": "kernel"}, {"args": ["print_text"], "expect": "user"}],
+         "hint": "Use a list of privileged action names and test membership.",
+         "solution": "def mode_of(action):\n    if action in ['disk_io', 'set_timer', 'halt', 'map_memory']:\n        return 'kernel'\n    return 'user'\n"},
+        {"type": "fill", "title": "Linux basics", "text": "Linux has a {{kernel}}, system libraries and system utilities. The kernel runs in {{kernel}} mode, while applications run in {{user}} mode. The {{shell}} interprets user commands."}]
+})

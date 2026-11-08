@@ -3,7 +3,7 @@
 A standalone, offline Android app with a talking, animated Teacher. It comes **empty**: you import courses as JSON files, and it teaches them as animated lectures with concept maps, glossary, key points, quizzes, practice labs, a final exam and progress tracking.
 
 * Every chapter: concept map (with an animated tour), summary, glossary, key points, lesson, then quiz and practice.
-* Practice labs: fill, order, match, write, code (JavaScript, runs on the device), scripted terminal, and **webxdc** apps that can travel inside the course JSON.
+* Practice labs: fill, order, match, write, code (JavaScript, runs on the device), **python** (MicroPython 1.29 in WebAssembly, built in, runs on the device, ~0.7 MB), scripted terminal, and **webxdc** apps that can travel inside the course JSON.
 * Final exam: a course can define `finalExam`; otherwise it is built from the chapter quizzes.
 * Courses are stored on the device, can be deleted, and can be shared as JSON. Progress is kept per course.
 * No internet permission. Voice uses the phone's own text-to-speech.
@@ -13,6 +13,7 @@ A standalone, offline Android app with a talking, animated Teacher. It comes **e
 * `jetson-agx-xavier.course.json`: the NVIDIA Jetson AGX Xavier course (23 chapters).
 * `rl-python-gymnasium-sb3.course.json`: Reinforcement Learning with Python (12 chapters: RL basics, Gymnasium, MDPs, bandits, Q-learning, custom environments, DQN, Stable-Baselines3, PPO/SAC, training in practice, reward design, next steps). Has a final exam, a bandit lab and a gridworld Q-learning lab.
 * `curry-howard-lambek.course.json`: Curry-Howard-Lambek, computational trinitarianism (12 chapters: natural deduction, the lambda calculus, propositions as types, normalization, constructive vs classical logic, categories, products/sums/exponentials, the Lambek correspondence, dependent types, proof assistants, linear logic/monads/HoTT). Uses LaTeX math, has a Lambda Stepper app, a Trinity Explorer app, a simulated Lean terminal and a final exam. Lean examples were checked with Lean 4.35; other code is illustrative.
+* `operating-systems.course.json`: Operating Systems, theory and practice (15 chapters based on the Tutorialspoint OS tutorial: overview, types, services, processes, scheduling, threads, memory, virtual memory, I/O, file systems, security, Linux). 60 labs, 30 of them Python labs that run on the built-in MicroPython, a Scheduler Gantt app and a 24-question exam pool. The PDF's scheduling figures were lost, so the scheduling examples use one consistent data set; the PDF's swap-time arithmetic slip (2 s written as 200 ms) is corrected. Built by `build/make_os_course.py`.
 * `sample-percentages.course.json`: a tiny second-subject sample.
 
 Course format: see the header of `build/src/course.js` or use "Template" and "AI prompt" in the app's library.
