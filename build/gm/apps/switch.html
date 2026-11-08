@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}
+button{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#2d2046;color:#e7d9ff;font-weight:600;margin:3px 3px 3px 0}
+label{display:block;margin:6px 0 2px;color:#c9b8e8}input[type=number]{font:16px ui-monospace,monospace;width:100%;padding:8px;border-radius:10px;border:1px solid #4a3770;background:#1e1336;color:#f1ebff}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}.m{color:#c9b8e8;margin:8px 0}
+.bar{height:22px;border-radius:6px;margin:4px 0;background:#b26bff;color:#1b0b33;font-weight:700;padding:0 8px;line-height:22px;white-space:nowrap;overflow:hidden}
+.bar.s{background:#6bd3ff}.v{font-size:18px;margin:10px 0}.ok{color:#8fe3a8}.no{color:#ff9bb0}
+</style></head><body>
+<div class="m">Current policy earns r_old per step. A switchprog earns r_new per step after a switch that takes s steps with no reward. n steps remain.</div>
+<div class="g">
+<div><label for="a">r_old</label><input id="a" type="number" value="10"></div>
+<div><label for="b">r_new</label><input id="b" type="number" value="12"></div>
+<div><label for="c">switch steps s</label><input id="c" type="number" value="5"></div>
+<div><label for="d">steps remaining n</label><input id="d" type="number" value="100"></div></div>
+<div class="row"><button id="e1">Example: theorem holds</button><button id="e2">Example: theorem fails</button></div>
+<div id="o"></div>
+<script>
+var seenT=false,seenF=false;
+function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+function num(id){var v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v}
+function calc(){var a=num("a"),b=num("b"),s=num("c"),n=num("d");var stay=a*n,left=Math.max(0,n-s),go=b*left;
+var mx=Math.max(stay,go,1),holds=go>stay;
+if(holds)seenT=true;else seenF=true;
+document.getElementById("o").innerHTML="<div class='bar' style='width:"+Math.max(4,100*stay/mx)+"%'>stay: "+stay+"</div><div class='bar s' style='width:"+Math.max(4,100*go/mx)+"%'>switch: "+go+"</div><div class='v "+(holds?"ok":"no")+"'>Target theorem "+(holds?"holds: switching is strictly better.":"does not hold: the machine keeps searching.")+"</div><div class='m'>"+(seenT&&seenF?"You have seen both cases.":"Find "+(seenT?"a case where it fails.":"a case where it holds."))+"</div>";
+if(seenT&&seenF)done()}
+Array.prototype.forEach.call(document.querySelectorAll("input"),function(i){i.oninput=calc});
+function setv(a,b,c,d){document.getElementById("a").value=a;document.getElementById("b").value=b;document.getElementById("c").value=c;document.getElementById("d").value=d;calc()}
+document.getElementById("e1").onclick=function(){setv(10,12,5,100)};
+document.getElementById("e2").onclick=function(){setv(10,12,20,100)};
+calc();
+</script></body></html>

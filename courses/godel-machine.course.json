@@ -1,0 +1,4410 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "godel-machine",
+ "title": "Gödel Machine",
+ "subtitle": "Self-referential, provably optimal self-improvement",
+ "author": "Lilith Learning Lab",
+ "description": "A 12-chapter course on the Gödel machine, Jürgen Schmidhuber's 2003 design for a self-referential, self-improving problem solver that rewrites its own code only after proving the rewrite helps. Based on the Wikipedia article, Schmidhuber's technical report, the Steunebrink and Schmidhuber paper on implementation and the Yudkowsky and Herreshoff work on the Löbian obstacle. Covers Gödel's ideas, the machine model, the axioms, the proof searcher, the target theorem, global optimality, bias-optimal proof search, examples, related work and limits, with Python labs on the built-in MicroPython engine. It is a theoretical design with no full implementation; speculative claims are marked as the author's own.",
+ "pronounce": {
+  "Gödel": "gur dull",
+  "Goedel": "gur dull",
+  "Schmidhuber's": "shmid hoo ber's",
+  "Schmidhuber": "shmid hoo ber",
+  "Löbian": "lurb ian",
+  "Löb's": "lurb's",
+  "Löb": "lurb",
+  "Hutter's": "hoot er's",
+  "Hutter": "hoot er",
+  "AIXI(t,l)": "eye ksee T L",
+  "AIXI": "eye ksee",
+  "Solomonoff": "sol o mon off",
+  "Steunebrink": "stoy ne brink",
+  "Yudkowsky": "yud kow ski",
+  "Herreshoff": "herr es off",
+  "Kolmogorov": "kol mo gor off",
+  "Levin": "lev in",
+  "IDSIA": "id see ah",
+  "BIOPS": "bye ops",
+  "OOPS": "oops",
+  "HSEARCH": "H search",
+  "switchprog": "switch prog",
+  "switchbit": "switch bit",
+  "Sleight": "slight",
+  "Blum": "bloom",
+  "Goldbach": "gold bahk",
+  "expectimax": "expecti max",
+  "Expectimax": "Expecti max",
+  "Kt": "K T",
+  "MIRI": "meer ee"
+ },
+ "chapters": [
+  {
+   "title": "What is a Gödel machine?",
+   "maps": [
+    {
+     "title": "The big idea",
+     "links": [
+      "Gödel machine | is | Self-improving program",
+      "Gödel machine | rewrites | Its own code",
+      "Rewrite | requires | Proof of improvement",
+      "Jürgen Schmidhuber | proposed | Gödel machine in 2003",
+      "Kurt Gödel | inspired | Self-referential formulas",
+      "Gödel machine | belongs to | Meta-learning",
+      "AIXI [ch10] | is compared with | Gödel machine"
+     ]
+    }
+   ],
+   "summary": [
+    "A Gödel machine is a hypothetical self-improving computer program that aims to solve problems optimally. It rewrites its own code, but only when it can prove that the new code gives a better strategy.",
+    "Jürgen Schmidhuber proposed it in 2003, and it is named after Kurt Gödel, whose work inspired its mathematical foundations.",
+    "It belongs to meta-learning, or learning to learn. The motivation is that an ordinary program has one hardwired algorithm and does not account for a changing environment, whereas a Gödel machine can change its own algorithm, including the part that does the changing.",
+    "No full implementation has been created. The course treats it as a theory: you learn the machine step by step and build toy versions of its parts in Python."
+   ],
+   "glossary": [
+    {
+     "term": "Gödel machine",
+     "def": "A hypothetical self-improving program that rewrites any part of its own code once it has proved the rewrite is useful."
+    },
+    {
+     "term": "Self-improvement",
+     "def": "A change to the program's own code that raises its expected future success."
+    },
+    {
+     "term": "Self-referential",
+     "def": "Able to describe and reason about its own code, including the reasoning part."
+    },
+    {
+     "term": "Meta-learning",
+     "def": "Learning to learn: improving the learning procedure itself."
+    },
+    {
+     "term": "Provably optimal",
+     "def": "Justified by a formal proof within the machine's axiom system, not by testing."
+    },
+    {
+     "term": "Utility",
+     "def": "The quantity the machine tries to maximize, such as expected future reward."
+    }
+   ],
+   "keyPoints": [
+    "A Gödel machine rewrites its own code only after proving the rewrite helps.",
+    "It was proposed by Jürgen Schmidhuber in 2003 and named after Kurt Gödel.",
+    "It can rewrite any part of itself, including its proof searcher.",
+    "It is a theoretical design; no full implementation exists.",
+    "It is a form of meta-learning and is often compared with Hutter's AIXI."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "A Gödel machine is a hypothetical self-improving computer program that aims to solve problems in an optimal way. It rewrites its own code when it can prove that the new code provides a better strategy.",
+      "It was invented by Jürgen Schmidhuber, first proposed in 2003, and is named after the logician Kurt Gödel, whose work inspired its mathematical foundations."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The idea sits within meta-learning, also called learning to learn. Proposed uses include automating human design decisions, transferring knowledge between related tasks, and designing more robust and general learning architectures.",
+      "The Wikipedia article is explicit that this is theory: no full implementation has been created."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why is the design needed? A traditional computer solves a problem with one input and one output, and its initial algorithm is hardwired. That ignores a dynamic natural environment, where inputs keep arriving and the best behaviour changes. The Gödel machine was meant to overcome that."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The machine's name and power come from using provably useful changes of any part of its own code, in a self-referential way. Schmidhuber's paper calls it a class of mathematically rigorous, general, fully self-referential, self-improving problem solvers.",
+      "Those are the author's own claims; this course explains them and also covers the limits."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In outline, the machine starts with software that has three ingredients. An initial policy for dealing with the environment, which is allowed to be poor. A proof searcher, which hunts for formal proofs.",
+      "And an axiomatic description of itself and its world: its hardware, its goal, what is known about the environment, and what actions and computation cost."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The searcher looks for a proof of one special statement, called the target theorem. It says: rewriting myself in this particular way will give a higher expected utility than not rewriting. If a proof is found, the machine executes the rewrite.",
+      "The rewrite may change any part of the software, even the proof searcher itself."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper then argues that such a rewrite is globally optimal, not just locally. By then the machine has also had to prove that continuing to search for better rewrites is not worth waiting for. Chapter 7 covers this carefully."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Here is the machine's main loop, in words. Run the current policy and keep collecting reward. Meanwhile the proof searcher runs. When it proves a target theorem, switch to the proposed new code. Then carry on, with the new code now doing both the acting and the searching."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The route through the course follows the paper. Chapters 2 to 4 give the background and the machine model: Gödel's ideas, the state and the utility, and the axioms. Chapters 5 to 8 give the proof searcher, the target theorem, the optimality theorem and bias-optimal proof search.",
+      "The last chapters cover examples, related work, limits and a toy machine you build yourself."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A note on sources. They are the Wikipedia article on the Gödel machine, Schmidhuber's technical report on arXiv, the paper by Steunebrink and Schmidhuber on implementations, and the work of Yudkowsky and Herreshoff on the Löbian obstacle."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What triggers a Gödel machine to rewrite its code?",
+     "options": [
+      "A timer",
+      "A proof that the rewrite gives higher utility",
+      "A user request",
+      "A random choice"
+     ],
+     "answer": 1,
+     "explain": "The rewrite happens only after a proof."
+    },
+    {
+     "q": "Who proposed the Gödel machine?",
+     "options": [
+      "Kurt Gödel",
+      "Alan Turing",
+      "Jürgen Schmidhuber",
+      "Marcus Hutter"
+     ],
+     "answer": 2,
+     "explain": "He first proposed it in 2003."
+    },
+    {
+     "q": "What is the state of implementation according to Wikipedia?",
+     "options": [
+      "Widely deployed",
+      "No full implementation has been created",
+      "Used in all phones",
+      "Only in games"
+     ],
+     "answer": 1,
+     "explain": "It remains largely theoretical."
+    },
+    {
+     "q": "Which part of its software may a Gödel machine rewrite?",
+     "options": [
+      "Only the policy",
+      "Only the axioms",
+      "Any part, including the proof searcher",
+      "Nothing"
+     ],
+     "answer": 2,
+     "explain": "It is fully self-referential."
+    }
+   ],
+   "cards": [
+    {
+     "q": "When was the Gödel machine first proposed?",
+     "a": "2003, by Jürgen Schmidhuber."
+    },
+    {
+     "q": "What field is it part of?",
+     "a": "Meta-learning."
+    },
+    {
+     "q": "What is the target theorem for?",
+     "a": "To justify a self-rewrite."
+    },
+    {
+     "q": "Why 'Gödel'?",
+     "a": "Gödel's self-referential formulas inspired the construction."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "The main loop",
+     "intro": "Put the steps of the machine's cycle in order.",
+     "items": [
+      "Run the current policy and collect reward",
+      "Search for a proof of the target theorem",
+      "Find a proof that switching beats continuing",
+      "Execute the switchprog (the rewrite)",
+      "Continue with the rewritten code"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Key terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Policy",
+       "How the machine acts in its environment"
+      ],
+      [
+       "Proof searcher",
+       "The part that hunts for formal proofs"
+      ],
+      [
+       "Target theorem",
+       "The claim that a rewrite raises utility"
+      ],
+      [
+       "Utility",
+       "The quantity to maximize"
+      ],
+      [
+       "Meta-learning",
+       "Learning to learn"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Basics",
+     "text": "A Gödel machine rewrites its code only after a {{proof|proving}} that the change helps. It was proposed by Jürgen {{Schmidhuber}} in {{2003}}."
+    }
+   ]
+  },
+  {
+   "title": "Gödel's ideas and the limits of proof",
+   "maps": [
+    {
+     "title": "Gödel and limits",
+     "links": [
+      "Gödel 1931 | showed | Incompleteness",
+      "Formal system | can encode | Statements about itself",
+      "Gödel numbering | maps | Formulas to numbers",
+      "Gödel sentence | says | I am not provable",
+      "Consistent system | cannot prove | Its own consistency",
+      "Rice's theorem | limits | Deciding program properties",
+      "Gödel machine [ch1] | inherits | These limits"
+     ]
+    }
+   ],
+   "summary": [
+    "Gödel showed in 1931 that any consistent formal system strong enough to express arithmetic contains true statements it cannot prove. His proof encodes formulas as numbers, which lets a system talk about its own proofs and build a sentence that says it is not provable.",
+    "Related limits: a consistent system cannot prove its own consistency, and Rice's theorem says every non-trivial question about what a program computes is undecidable in general.",
+    "A Gödel machine reasons inside a formal system, so it inherits these limits. The paper accepts this: the machine ignores self-improvements whose usefulness it cannot prove."
+   ],
+   "glossary": [
+    {
+     "term": "Formal system",
+     "def": "A set of axioms and inference rules from which theorems are derived."
+    },
+    {
+     "term": "Consistent",
+     "def": "Not able to prove both a statement and its negation."
+    },
+    {
+     "term": "Incompleteness",
+     "def": "A consistent system covering arithmetic has true statements it cannot prove."
+    },
+    {
+     "term": "Gödel numbering",
+     "def": "Assigning each formula a unique natural number so statements can be about statements."
+    },
+    {
+     "term": "Gödel sentence",
+     "def": "A statement that asserts its own unprovability."
+    },
+    {
+     "term": "Rice's theorem",
+     "def": "Every non-trivial semantic property of programs is undecidable."
+    }
+   ],
+   "keyPoints": [
+    "Gödel's incompleteness theorem: powerful consistent systems have unprovable truths.",
+    "Gödel numbering lets a system reason about its own formulas.",
+    "The Gödel machine uses self-reference, so it is bound by the same limits.",
+    "Rice's theorem: no general procedure decides non-trivial program properties.",
+    "The machine simply ignores improvements it cannot prove."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The machine is named for Kurt Gödel because of how he turned logic on itself. In 1931 he introduced a way to encode formulas and proofs as natural numbers, now called Gödel numbering.",
+      "Once formulas are numbers, a statement about numbers can be a statement about formulas, so a system can talk about its own proofs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "With that, he built a sentence that says, in effect, I am not provable in this system. If the system is consistent, it cannot prove this sentence, yet the sentence is true.",
+      "That is the first incompleteness theorem: any formal system that encompasses arithmetic is either flawed, meaning inconsistent, or contains statements that it cannot prove."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Schmidhuber describes Gödel as the founder of theoretical computer science, because he introduced a universal coding language based on integers.",
+      "The Gödel machine reuses that trick in a practical direction: its software and its proofs are strings, and the axioms include a description of its own code."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\text{Gödel number of } s_1 s_2 \\dots s_n \\;=\\; 2^{c(s_1)} \\cdot 3^{c(s_2)} \\cdots p_n^{\\,c(s_n)}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Here is a simple version of numbering, with my own symbol codes. Give each symbol a positive code c. Then raise the first prime, 2, to the code of the first symbol, the second prime, 3, to the code of the second symbol, and so on, and multiply.",
+      "Unique factorization into primes means the number can be decoded back into the symbols."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A second famous limit: a consistent system cannot prove its own consistency. Later chapters connect this to Löb's theorem and to a problem that arises when an agent must trust its own proofs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A third limit comes from computability. Rice's theorem says that any non-trivial property of what a program computes is undecidable in general. So no algorithm can decide, for every program, whether it is better than another.",
+      "A system that must prove such properties will be able to prove only some of them."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "What does this mean for a Gödel machine? The wiki article states it directly: even a Gödel machine with unlimited computational resources must ignore those self-improvements whose effectiveness it cannot prove.",
+      "The paper adds a point about resources: a machine with limited time and space cannot profit from improvements it cannot prove within its limits."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper also notes that the machine does not exceed ordinary computers in power. In an interview Schmidhuber says it is not computationally more powerful than a Turing machine. Its claim is about efficiency: it can exploit any provably useful speed-up of any part of its software."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section has a numbering lab: you encode a symbol list as a Gödel number and decode it back. Keep to short lists, since the numbers grow very fast."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What did Gödel's first incompleteness theorem show?",
+     "options": [
+      "Every statement can be proved",
+      "A consistent system covering arithmetic has true unprovable statements",
+      "Computers are impossible",
+      "Primes are infinite"
+     ],
+     "answer": 1,
+     "explain": "Powerful consistent systems are incomplete."
+    },
+    {
+     "q": "What does Gödel numbering do?",
+     "options": [
+      "Assigns each formula a number so systems can refer to their own formulas",
+      "Counts proofs",
+      "Sorts axioms",
+      "Encrypts data"
+     ],
+     "answer": 0,
+     "explain": "It makes self-reference possible."
+    },
+    {
+     "q": "What must a Gödel machine do with improvements it cannot prove?",
+     "options": [
+      "Apply them anyway",
+      "Ignore them",
+      "Delete the machine",
+      "Ask a human"
+     ],
+     "answer": 1,
+     "explain": "Provability is the gate."
+    },
+    {
+     "q": "Is a Gödel machine more powerful than a Turing machine?",
+     "options": [
+      "Yes, it solves undecidable problems",
+      "No, the claim is about efficiency",
+      "Only with quantum hardware",
+      "Only with a large memory"
+     ],
+     "answer": 1,
+     "explain": "It cannot overcome the limits of computability."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Who introduced Gödel numbering?",
+     "a": "Kurt Gödel, in 1931."
+    },
+    {
+     "q": "What does Rice's theorem say?",
+     "a": "Non-trivial program properties are undecidable in general."
+    },
+    {
+     "q": "Gödel sentence?",
+     "a": "A statement that says it cannot be proved."
+    },
+    {
+     "q": "Can a consistent system prove its own consistency?",
+     "a": "No."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Limits",
+     "intro": "Match each result with its message.",
+     "pairs": [
+      [
+       "Incompleteness",
+       "True statements can be unprovable"
+      ],
+      [
+       "Gödel numbering",
+       "Formulas coded as numbers"
+      ],
+      [
+       "Rice's theorem",
+       "Program properties are undecidable in general"
+      ],
+      [
+       "Consistency",
+       "No statement and its negation are both provable"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Gödel numbering",
+     "intro": "Give each symbol a positive integer code. Write godel_number(codes): the product of the n-th prime raised to the n-th code (primes 2, 3, 5, 7, 11, ...). The empty list gives 1. Keep inputs short: the numbers get large quickly.",
+     "fn": "godel_number",
+     "starter": "def godel_number(codes):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": 2250
+      },
+      {
+       "args": [
+        [
+         4
+        ]
+       ],
+       "expect": 16
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         2,
+         1,
+         1,
+         2
+        ]
+       ],
+       "expect": 2940
+      },
+      {
+       "args": [
+        [
+         3,
+         3,
+         3,
+         3,
+         3
+        ]
+       ],
+       "expect": 12326391000
+      }
+     ],
+     "hint": "Take primes in order and multiply prime ** code.",
+     "solution": "def godel_number(codes):\n    primes = [2, 3, 5, 7, 11, 13, 17, 19]\n    n = 1\n    for i in range(len(codes)):\n        n = n * primes[i] ** codes[i]\n    return n\n"
+    },
+    {
+     "type": "python",
+     "title": "Decode a Gödel number",
+     "intro": "Write decode_godel(n): the inverse of the numbering. Divide n by 2 as many times as possible and count, then by 3, and so on, until n is 1. Return the list of exponents. Assume every code is at least 1, so there are no gaps.",
+     "fn": "decode_godel",
+     "starter": "def decode_godel(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        108
+       ],
+       "expect": [
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        16
+       ],
+       "expect": [
+        4
+       ]
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        9072000
+       ],
+       "expect": [
+        7,
+        4,
+        3,
+        1
+       ]
+      },
+      {
+       "args": [
+        5336100
+       ],
+       "expect": [
+        2,
+        2,
+        2,
+        2,
+        2
+       ]
+      }
+     ],
+     "hint": "Loop over primes. For each prime count how many times it divides n.",
+     "solution": "def decode_godel(n):\n    primes = [2, 3, 5, 7, 11, 13, 17, 19]\n    out = []\n    i = 0\n    while n > 1:\n        count = 0\n        while n % primes[i] == 0:\n            n = n // primes[i]\n            count += 1\n        out.append(count)\n        i += 1\n    return out\n"
+    },
+    {
+     "type": "fill",
+     "title": "Limits",
+     "text": "Gödel's first theorem says a consistent system covering arithmetic is {{incomplete}}. Gödel {{numbering}} codes formulas as numbers. A Gödel machine must {{ignore|skip}} improvements it cannot prove."
+    }
+   ]
+  },
+  {
+   "title": "The machine model and utility",
+   "maps": [
+    {
+     "title": "State, inputs and utility",
+     "links": [
+      "Hardware | runs in | Discrete cycles",
+      "State s(t) | is changed by | Transition function F",
+      "Variable time | holds | Binary encoding of t",
+      "Variable x | holds | Environment input",
+      "Variable y | holds | Machine output",
+      "Software p | contains | Policy and proof searcher",
+      "Utility u | is | Expected future reward",
+      "Environment | is drawn from | Set of distributions"
+     ]
+    }
+   ],
+   "summary": [
+    "The machine's hardware has a single life made of discrete cycles t = 1, 2, ..., T. The state s(t) changes by a hardwired transition function that depends on the previous state and the environment.",
+    "Four variables matter: time holds the binary encoding of t; x holds the environment's input; y holds the machine's output; and p is the software, which at the start contains an initial policy and an initial proof searcher.",
+    "The goal is to maximize expected utility: the conditional expectation of the sum of future rewards from now until the end of life, under an unknown environment distribution drawn from a set of possible ones."
+   ],
+   "glossary": [
+    {
+     "term": "Cycle",
+     "def": "One discrete time step of the machine's single life."
+    },
+    {
+     "term": "State",
+     "def": "Everything stored in the machine at time t: memory, registers, variables."
+    },
+    {
+     "term": "Transition function",
+     "def": "The hardwired rule that maps the previous state and the environment's reaction to the next state."
+    },
+    {
+     "term": "Policy",
+     "def": "The part of the software that decides how to interact with the environment."
+    },
+    {
+     "term": "Reward",
+     "def": "A real number the machine receives at a time step, encoded in its state."
+    },
+    {
+     "term": "Utility",
+     "def": "The expected sum of rewards from the current time to the end of life."
+    },
+    {
+     "term": "Environment distribution",
+     "def": "An unknown probability law over the environment's behaviour, drawn from a set M."
+    }
+   ],
+   "keyPoints": [
+    "The machine lives for T cycles; T may or may not be known.",
+    "s(t) = F(s(t-1), Env(t-1)).",
+    "time, x, y and p are the main variables.",
+    "u(s, Env) is the expected sum of future rewards given the current state.",
+    "Variants: worst-case performance, or reward per time interval.",
+    "Utility is defined in terms of the current state, so it changes if the machine rewrites u."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "To define the machine precisely, Schmidhuber's report starts with the hardware. It has a single life, which consists of discrete cycles or time steps t = 1, 2, and so on up to T. The final time T may or may not be known in advance."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The hardware can be a universal Turing machine, a space-bounded Turing machine or the abstract model of a personal computer. At any moment it has a state s(t), a finite binary string.",
+      "The state changes by a hardwired state transition function F, which takes the previous state and the environment's reaction and returns the new state."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} s(t) = F\\big(s(t-1),\\, \\mathrm{Env}(t-1)\\big) \\\\[0.6em] (t > 1) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Four variables are stored in the state. Time holds a binary encoding of the current step, starting from 1 and increasing every cycle. The variable x holds input from the environment; it changes only when a program executes an instruction that requests input.",
+      "The variable y holds the outputs; its default value at the start is zero. And p is the software, which includes an initial policy for interacting with the environment, plus an initial proof searcher."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The goal. At every time the machine tries to maximize its expected future success. The paper formalizes this as the utility u of the current state and environment: the conditional expectation of the sum of all rewards from the present time up to the end of life."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "u(s, \\mathrm{Env}) \\;=\\; E_{\\mu}\\!\\left[\\, \\sum_{\\tau = \\mathrm{time}}^{T} r(\\tau) \\;\\Big|\\; s,\\ \\mathrm{Env} \\right]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "In this formula r of tau is the real-valued reward encoded in the state at step tau. The expectation uses a distribution mu, which is unknown. It is drawn from a set M of distributions that could describe the environment. The variable time is the current time, taken from the state s."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "This formulation allows alternatives. A designer could use worst-case performance over M instead of the expectation, or reward per time interval. The Wikipedia article adds that the utility accounts for the possibility of extending the machine's expected lifespan."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An important consequence: since the utility function is stored in the machine's state, the machine can reason about it, and may in principle change it. But a change of the utility function is allowed only if the new one is provably better according to the present utility function.",
+      "This is the reply to the worry that the machine might adopt a bogus goal."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section computes expected utility over a few environment distributions and the cumulative reward between two times."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the variable x hold?",
+     "options": [
+      "The machine's output",
+      "Input from the environment",
+      "The utility",
+      "The proof"
+     ],
+     "answer": 1,
+     "explain": "y holds outputs."
+    },
+    {
+     "q": "What is utility in the paper?",
+     "options": [
+      "Expected sum of future rewards",
+      "Memory used",
+      "Number of proofs",
+      "Clock speed"
+     ],
+     "answer": 0,
+     "explain": "From the current time to the end of life."
+    },
+    {
+     "q": "What is mu in the utility formula?",
+     "options": [
+      "The reward",
+      "An unknown environment distribution from a set M",
+      "The proof length",
+      "A prime"
+     ],
+     "answer": 1,
+     "explain": "The expectation is taken under mu."
+    },
+    {
+     "q": "May the machine change its own utility function?",
+     "options": [
+      "Never",
+      "Only if the change is provably better under the present utility",
+      "Whenever it likes",
+      "Only at time one"
+     ],
+     "answer": 1,
+     "explain": "That blocks bogus goals."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is T?",
+     "a": "The final time step of the machine's life."
+    },
+    {
+     "q": "What is r(t)?",
+     "a": "The reward at step t."
+    },
+    {
+     "q": "Which variable holds p?",
+     "a": "p is the software, with the policy and proof searcher."
+    },
+    {
+     "q": "Alternatives to expectation?",
+     "a": "Worst-case performance or reward per interval."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Variables",
+     "intro": "Match each variable with what it holds.",
+     "pairs": [
+      [
+       "time",
+       "Binary encoding of the current step"
+      ],
+      [
+       "x",
+       "Input from the environment"
+      ],
+      [
+       "y",
+       "Output to the environment"
+      ],
+      [
+       "p",
+       "The software: policy and proof searcher"
+      ],
+      [
+       "s",
+       "The whole machine state"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Expected utility",
+     "intro": "The environment is one of several possibilities, each [probability, rewards] where rewards[0] is the reward at step 1. Write expected_utility(envs, t): the expected sum of rewards from step t (1-based) to the end, averaged using the probabilities.",
+     "fn": "expected_utility",
+     "starter": "def expected_utility(envs, t):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0.5,
+          [
+           1,
+           1,
+           1,
+           1
+          ]
+         ],
+         [
+          0.5,
+          [
+           0,
+           2,
+           2,
+           0
+          ]
+         ]
+        ],
+        1
+       ],
+       "expect": 4.0
+      },
+      {
+       "args": [
+        [
+         [
+          0.5,
+          [
+           1,
+           1,
+           1,
+           1
+          ]
+         ],
+         [
+          0.5,
+          [
+           0,
+           2,
+           2,
+           0
+          ]
+         ]
+        ],
+        3
+       ],
+       "expect": 2.0
+      },
+      {
+       "args": [
+        [
+         [
+          1.0,
+          [
+           5,
+           5
+          ]
+         ]
+        ],
+        3
+       ],
+       "expect": 0.0
+      }
+     ],
+     "hint": "Slice the reward list from index t-1 and sum it, weight by the probability.",
+     "solution": "def expected_utility(envs, t):\n    total = 0\n    for p, rewards in envs:\n        total += p * sum(rewards[t - 1:])\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "Reward between two times",
+     "intro": "The paper's axioms use R(t1, t2): the cumulative reward between times t1 and t2. Write reward_between(rewards, t1, t2) for a list of per-step rewards (step 1 is index 0), including both t1 and t2. Return 0 if t1 is greater than t2.",
+     "fn": "reward_between",
+     "starter": "def reward_between(rewards, t1, t2):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         3,
+         1,
+         4,
+         1,
+         5
+        ],
+        2,
+        4
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        [
+         3,
+         1,
+         4,
+         1,
+         5
+        ],
+        1,
+        5
+       ],
+       "expect": 14
+      },
+      {
+       "args": [
+        [
+         3,
+         1,
+         4
+        ],
+        3,
+        2
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Both ends are included, so slice from t1-1 to t2.",
+     "solution": "def reward_between(rewards, t1, t2):\n    if t1 > t2:\n        return 0\n    return sum(rewards[t1 - 1:t2])\n"
+    },
+    {
+     "type": "fill",
+     "title": "Model",
+     "text": "The state changes by a hardwired {{transition}} function. The goal is expected future {{reward}}. The environment is drawn from a set of {{distributions}}."
+    }
+   ]
+  },
+  {
+   "title": "The axioms",
+   "maps": [
+    {
+     "title": "The initial axiom system",
+     "links": [
+      "Axiom system | is stored in | Initial software p(1)",
+      "Hardware axioms | describe | State changes",
+      "Reward axioms | describe | Costs and lifetime",
+      "Environment axioms | restrict | Future inputs",
+      "Uncertainty axioms | give | Probability and arithmetic",
+      "Initial state axioms | describe | Contents of s(1)",
+      "Utility axioms | define | Goal u"
+     ]
+    }
+   ],
+   "summary": [
+    "The machine's initial software includes an axiomatic description of itself and its world. The proof searcher derives theorems from these axioms by inference rules.",
+    "The axiom groups are hardware axioms, reward axioms, environment axioms, uncertainty and string-manipulation axioms, initial-state axioms and utility axioms. Together they let the machine prove statements about its own future states and rewards.",
+    "Because the axiom system is part of the software, it can itself be rewritten, but only by a proven-useful rewrite. Optimality claims hold relative to a consistent axiom system."
+   ],
+   "glossary": [
+    {
+     "term": "Axiom",
+     "def": "A statement accepted without proof, from which theorems are derived."
+    },
+    {
+     "term": "Hardware axioms",
+     "def": "Describe how the state can change from one cycle to the next."
+    },
+    {
+     "term": "Reward axioms",
+     "def": "Describe the costs of instructions and outputs, rewards in the input, and the lifetime."
+    },
+    {
+     "term": "Environment axioms",
+     "def": "Restrict how new inputs are produced from earlier inputs and outputs."
+    },
+    {
+     "term": "Uncertainty axioms",
+     "def": "Standard arithmetic, calculus and probability theory, plus string manipulation."
+    },
+    {
+     "term": "Initial state axioms",
+     "def": "Statements about the contents of the state at time 1."
+    },
+    {
+     "term": "Utility axioms",
+     "def": "The definition of the utility function u."
+    }
+   ],
+   "keyPoints": [
+    "Six axiom groups: hardware, reward, environment, uncertainty, initial state, utility.",
+    "The axioms are part of the software and can be improved by proven rewrites.",
+    "The environment axioms can be as weak as 'any computable distribution' or as strong as 'deterministic'.",
+    "Optimality holds if the axiom system is consistent.",
+    "Standard mathematics lets the machine reason about expected rewards."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The machine's initial software p(1) carries an axiomatic system A. The proof searcher derives theorems from A with a few inference rules, and a theorem of the right form triggers a rewrite. The paper lists what A contains."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Hardware axioms describe how the state can change from one cycle to the next. For a Turing machine they cover the tape contents, the head positions and the internal state. For a microprocessor they cover registers and instruction pointers.",
+      "With these the machine can derive what its hardware will do if it runs a given program."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Reward axioms describe the costs of hardware instructions and the physical costs of output actions. They also describe reward events arriving in the input, and the total lifetime as a scalar. A typical derived quantity is R of t1 and t2, the cumulative reward between two times."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Environment axioms restrict how new inputs are produced, given earlier inputs and outputs. They can be very weak, for example saying the true distribution is any computable one, or the Speed Prior. They can be strong, for example a Markovian interface or a fully predictable environment."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Uncertainty axioms and string-manipulation axioms are the standard axioms of arithmetic, calculus, probability theory, statistics and string manipulation. They allow proofs about future values of variables, expected rewards and remaining lifetime.",
+      "This is why the framework can handle uncertainty with ordinary formal mathematics."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Initial-state axioms are statements about the contents of the state at time 1, for instance that a particular substring of the state equals a particular string. They let the machine reconstruct its own initial code, which is needed to talk about itself."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Utility axioms define the goal: the utility function u, for example the expected sum of future rewards. Because the utility is an axiom, a target theorem can compare utilities of different futures."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now two cautions. First, consistency. The optimality theorem in chapter 7 assumes the axiom system is consistent. If it were inconsistent, it could prove anything, including target theorems for harmful rewrites.",
+      "Second, the system is not fixed: since the axioms are part of the software, a proven rewrite may add theorems derived from the axioms, or replace axioms, as the paper lists among possible self-improvements."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section lets you classify statements by axiom group and use the standard result that makes hardware axioms useful: simulate a tiny machine's state transitions."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which axioms define the goal?",
+     "options": [
+      "Hardware axioms",
+      "Utility axioms",
+      "Environment axioms",
+      "Initial state axioms"
+     ],
+     "answer": 1,
+     "explain": "They define u."
+    },
+    {
+     "q": "Which axioms say how registers and the instruction pointer change?",
+     "options": [
+      "Reward axioms",
+      "Hardware axioms",
+      "Uncertainty axioms",
+      "None"
+     ],
+     "answer": 1,
+     "explain": "They describe transitions between cycles."
+    },
+    {
+     "q": "What do uncertainty axioms contain?",
+     "options": [
+      "Standard arithmetic, probability and string manipulation",
+      "The user's wishes",
+      "Proof searcher code",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "They support proofs about expected rewards."
+    },
+    {
+     "q": "What does the optimality theorem assume about the axioms?",
+     "options": [
+      "They are consistent",
+      "They are short",
+      "They are random",
+      "They are secret"
+     ],
+     "answer": 0,
+     "explain": "Inconsistent axioms prove anything."
+    }
+   ],
+   "cards": [
+    {
+     "q": "How many axiom groups?",
+     "a": "Six."
+    },
+    {
+     "q": "Strong vs weak environment axioms?",
+     "a": "Weak: any computable distribution. Strong: deterministic."
+    },
+    {
+     "q": "Why initial-state axioms?",
+     "a": "To let the machine reconstruct its own initial state and code."
+    },
+    {
+     "q": "What if the axioms are inconsistent?",
+     "a": "They prove everything, so the guarantees fail."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Axiom groups",
+     "intro": "Match each group with what it describes.",
+     "pairs": [
+      [
+       "Hardware axioms",
+       "How the state changes each cycle"
+      ],
+      [
+       "Reward axioms",
+       "Costs, rewards and lifetime"
+      ],
+      [
+       "Environment axioms",
+       "How inputs depend on earlier inputs and outputs"
+      ],
+      [
+       "Uncertainty axioms",
+       "Arithmetic, probability, strings"
+      ],
+      [
+       "Utility axioms",
+       "The definition of u"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Which axiom group?",
+     "intro": "Write axiom_group(statement). Return \"hardware\" if the statement mentions \"register\" or \"instruction pointer\"; \"reward\" if it mentions \"cost\" or \"lifetime\"; \"environment\" if it mentions \"input\"; \"utility\" if it mentions \"utility\"; otherwise \"other\". Check them in that order.",
+     "fn": "axiom_group",
+     "starter": "def axiom_group(statement):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "The instruction pointer advances by 1"
+       ],
+       "expect": "hardware"
+      },
+      {
+       "args": [
+        "Each output has a cost of 3 units"
+       ],
+       "expect": "reward"
+      },
+      {
+       "args": [
+        "The next input depends on the last output"
+       ],
+       "expect": "environment"
+      },
+      {
+       "args": [
+        "Utility is the sum of future rewards"
+       ],
+       "expect": "utility"
+      },
+      {
+       "args": [
+        "2 + 2 = 4"
+       ],
+       "expect": "other"
+      }
+     ],
+     "hint": "Lower-case the text, then test the keywords in the given order.",
+     "solution": "def axiom_group(statement):\n    s = statement.lower()\n    if 'register' in s or 'instruction pointer' in s:\n        return 'hardware'\n    if 'cost' in s or 'lifetime' in s:\n        return 'reward'\n    if 'input' in s:\n        return 'environment'\n    if 'utility' in s:\n        return 'utility'\n    return 'other'\n"
+    },
+    {
+     "type": "python",
+     "title": "Hardware axiom in action",
+     "intro": "A tiny machine has one register r and instructions \"INC\", \"DEC\" and \"DBL\" (double). Write run_hw(r, program): the hardware axioms say each instruction changes r by one rule; return the register after the whole program. An unknown instruction leaves r unchanged.",
+     "fn": "run_hw",
+     "starter": "def run_hw(r, program):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        [
+         "INC",
+         "DBL",
+         "DEC"
+        ]
+       ],
+       "expect": 7
+      },
+      {
+       "args": [
+        0,
+        []
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        5,
+        [
+         "DBL",
+         "DBL",
+         "NOP"
+        ]
+       ],
+       "expect": 20
+      }
+     ],
+     "hint": "Apply the rule for each instruction in order.",
+     "solution": "def run_hw(r, program):\n    for ins in program:\n        if ins == 'INC':\n            r += 1\n        elif ins == 'DEC':\n            r -= 1\n        elif ins == 'DBL':\n            r *= 2\n    return r\n"
+    },
+    {
+     "type": "fill",
+     "title": "Axioms",
+     "text": "{{Hardware}} axioms describe state changes. {{Utility}} axioms define the goal. The optimality theorem assumes the axioms are {{consistent}}."
+    }
+   ]
+  },
+  {
+   "title": "The proof searcher",
+   "maps": [
+    {
+     "title": "Searching for proofs",
+     "links": [
+      "Proof searcher | searches | Proof techniques",
+      "Proof technique | is | Program that outputs proofs",
+      "Proof-modifying instructions | number | Six",
+      "get-axiom | appends | An axiom",
+      "apply-rule | derives | New theorem",
+      "Only valid proofs | can be built | Verification is trivial",
+      "Proof | is stored in | Variable proof"
+     ]
+    }
+   ],
+   "summary": [
+    "The proof searcher does not enumerate proofs by brute force, which would take time exponential in the proof size. It tests proof techniques: programs, written in a universal language, whose output is a proof.",
+    "A proof technique can modify the proof only through six instructions: get-axiom, apply-rule, delete-theorem, set-switchprog, check and state2theorem. Since there is no other way to change the proof, an incorrect theorem can never be inserted, which makes verifying a proof trivial.",
+    "A proof is a list of theorems. Each theorem is either an axiom or follows from earlier theorems by an inference rule, such as modus ponens."
+   ],
+   "glossary": [
+    {
+     "term": "Proof technique",
+     "def": "A program, in a universal language, that outputs a proof by calling the proof-modifying instructions."
+    },
+    {
+     "term": "get-axiom",
+     "def": "Appends the n-th axiom of the axiom scheme to the proof."
+    },
+    {
+     "term": "apply-rule",
+     "def": "Applies the k-th inference rule to the m-th and n-th theorems and appends the result."
+    },
+    {
+     "term": "delete-theorem",
+     "def": "Removes a theorem to free storage; it can no longer be used."
+    },
+    {
+     "term": "set-switchprog",
+     "def": "Sets the candidate rewrite to a substring of the proof technique's scratch memory."
+    },
+    {
+     "term": "check",
+     "def": "Tests whether the last theorem is a target theorem and, if so, arranges the switch."
+    },
+    {
+     "term": "state2theorem",
+     "def": "Turns a currently observable part of the state into a time-stamped theorem."
+    }
+   ],
+   "keyPoints": [
+    "Proofs are built only by six instructions, so a wrong theorem cannot appear.",
+    "Verification is therefore trivial.",
+    "Proof techniques are programs that produce proofs; they are faster than brute-force enumeration.",
+    "delete-theorem saves space but deleted theorems cannot be reused.",
+    "state2theorem lets the machine use observations about its own current state.",
+    "check ends the search when the last theorem is a target theorem."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The proof searcher is the part of the initial software that hunts for a proof of the target theorem. The simplest way to search for proofs is brute force: enumerate all proofs in order of size. That takes exponential time in the proof size, so it is hopeless for anything but tiny proofs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper instead lets the searcher test proof techniques. A proof technique is a program, written in a universal language such as a variant of PROLOG or a FORTH-like language, whose output is a proof.",
+      "Techniques can read parts of the machine's state, including the input x and the code of the initial software, and they write temporary results to a scratch area. Their output goes into a string variable called proof."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A proof technique may change the proof only through six instructions. Because these are the only ways to modify the proof, it is impossible to insert an incorrect theorem, so checking that a proof is valid is trivial. The six are as follows."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "One, get-axiom with an index n: it appends the n-th axiom from the axiom scheme to the proof. Two, apply-rule with k, m and n: it applies the k-th inference rule, for example modus ponens, to the m-th and n-th theorems, and appends the result.",
+      "If the rule does not apply, the current proof technique is interrupted."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Three, delete-theorem with m: it removes the m-th theorem, which frees storage; deleted theorems can no longer be used. Four, set-switchprog with m and n: it sets the candidate rewrite, the switchprog, to the substring of the scratch area from m to n, provided that substring is not empty."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Five, check: it tests whether the last theorem is a target theorem. If it is, and there is still enough time to set the switch bit before the deadline, it sets the bit, waits, and transfers control to the switchprog.",
+      "Six, state2theorem with m and n: it converts the currently observable contents of part of the state into a time-stamped theorem. Observed facts need no proof, because the observation has already happened."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Let us see a tiny version. Suppose the axioms are p, p implies q, and q implies r. A proof technique runs: get-axiom 1, get-axiom 2, apply modus ponens to theorems 1 and 2, which gives q. Then get-axiom 3 and apply modus ponens again to get r.",
+      "Every line is either an axiom or a valid consequence, so the final proof is correct by construction."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The searcher is an online variant of universal search. It tests techniques one after another, giving each a budget of steps, and undoes their effects on the scratch area between tests. Chapter 8 covers the exact scheme and why it is asymptotically optimal."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you implement the proof builder with get-axiom, modus ponens and delete-theorem, and see that an invalid step is rejected, so no wrong theorem ever enters."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Why is proof verification trivial in this design?",
+     "options": [
+      "Proofs are short",
+      "Only six instructions can modify the proof, and each yields a valid theorem",
+      "A human checks them",
+      "Proofs are random"
+     ],
+     "answer": 1,
+     "explain": "No instruction can insert an incorrect theorem."
+    },
+    {
+     "q": "What is a proof technique?",
+     "options": [
+      "A theorem",
+      "A program that outputs proofs",
+      "An axiom",
+      "A rewrite"
+     ],
+     "answer": 1,
+     "explain": "The searcher tests such programs."
+    },
+    {
+     "q": "What does apply-rule do?",
+     "options": [
+      "Deletes an axiom",
+      "Applies an inference rule to two earlier theorems",
+      "Changes the hardware",
+      "Prints the proof"
+     ],
+     "answer": 1,
+     "explain": "For example modus ponens."
+    },
+    {
+     "q": "What does state2theorem allow?",
+     "options": [
+      "Using an observed part of the state as a time-stamped theorem",
+      "Deleting the state",
+      "Changing the utility",
+      "Running faster"
+     ],
+     "answer": 0,
+     "explain": "Observations need no proof."
+    }
+   ],
+   "cards": [
+    {
+     "q": "How many proof-modifying instructions?",
+     "a": "Six."
+    },
+    {
+     "q": "Which instruction ends the search?",
+     "a": "check, when it sees a target theorem."
+    },
+    {
+     "q": "Why not brute force?",
+     "a": "It is exponential in proof size."
+    },
+    {
+     "q": "What does delete-theorem save?",
+     "a": "Storage."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Instructions",
+     "intro": "Match each instruction to its job.",
+     "pairs": [
+      [
+       "get-axiom",
+       "Append an axiom to the proof"
+      ],
+      [
+       "apply-rule",
+       "Derive a new theorem from two earlier ones"
+      ],
+      [
+       "delete-theorem",
+       "Free the space of a theorem"
+      ],
+      [
+       "set-switchprog",
+       "Choose the candidate rewrite"
+      ],
+      [
+       "check",
+       "See whether the last theorem is the target theorem"
+      ],
+      [
+       "state2theorem",
+       "Turn an observed part of the state into a theorem"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "A tiny proof builder",
+     "intro": "Theorems are strings: an atom like \"p\" or an implication \"p->q\" between atoms. Write run_proof(axioms, steps). Each step is a string: \"axiom n\" appends axioms[n-1]; \"mp m n\" applies modus ponens to theorem m (a statement X) and theorem n (the statement X->Y) and appends Y; \"delete m\" removes theorem m. Indices are 1-based into the current list of theorems. Return the final list of theorems. If a step is not valid (bad index, or modus ponens does not apply), return \"error at \" and the 1-based step number, and add nothing.",
+     "fn": "run_proof",
+     "starter": "def run_proof(axioms, steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "p",
+         "p->q",
+         "q->r"
+        ],
+        [
+         "axiom 1",
+         "axiom 2",
+         "mp 1 2"
+        ]
+       ],
+       "expect": [
+        "p",
+        "p->q",
+        "q"
+       ]
+      },
+      {
+       "args": [
+        [
+         "p",
+         "p->q",
+         "q->r"
+        ],
+        [
+         "axiom 1",
+         "axiom 2",
+         "mp 1 2",
+         "axiom 3",
+         "mp 3 4",
+         "delete 2"
+        ]
+       ],
+       "expect": [
+        "p",
+        "q",
+        "q->r",
+        "r"
+       ]
+      },
+      {
+       "args": [
+        [
+         "p",
+         "p->q"
+        ],
+        [
+         "axiom 1",
+         "mp 1 1"
+        ]
+       ],
+       "expect": "error at 2"
+      },
+      {
+       "args": [
+        [
+         "p"
+        ],
+        [
+         "axiom 5"
+        ]
+       ],
+       "expect": "error at 1"
+      },
+      {
+       "args": [
+        [
+         "p",
+         "q->r"
+        ],
+        [
+         "axiom 1",
+         "axiom 2",
+         "mp 1 2"
+        ]
+       ],
+       "expect": "error at 3"
+      }
+     ],
+     "hint": "Keep a list of theorems. Check indices before using them. For mp, split the implication at '->' and compare its left side with theorem m.",
+     "solution": "def run_proof(axioms, steps):\n    thms = []\n    for k in range(len(steps)):\n        parts = steps[k].split()\n        err = 'error at ' + str(k + 1)\n        cmd = parts[0]\n        if cmd == 'axiom':\n            n = int(parts[1])\n            if n < 1 or n > len(axioms):\n                return err\n            thms.append(axioms[n - 1])\n        elif cmd == 'mp':\n            m = int(parts[1])\n            n = int(parts[2])\n            if m < 1 or n < 1 or m > len(thms) or n > len(thms):\n                return err\n            x = thms[m - 1]\n            imp = thms[n - 1]\n            if '->' not in imp:\n                return err\n            a, b = imp.split('->')\n            if a != x:\n                return err\n            thms.append(b)\n        elif cmd == 'delete':\n            m = int(parts[1])\n            if m < 1 or m > len(thms):\n                return err\n            thms.pop(m - 1)\n        else:\n            return err\n    return thms\n"
+    },
+    {
+     "type": "python",
+     "title": "Can the target be proved in budget?",
+     "intro": "A proof technique is given by the number of steps it needs. The searcher gives each technique in turn a budget. Write first_success(costs, budget): the 0-based index of the first technique whose cost is at most the budget, or -1 if there is none.",
+     "fn": "first_success",
+     "starter": "def first_success(costs, budget):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         50,
+         20,
+         10
+        ],
+        15
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         50,
+         20
+        ],
+        10
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        [],
+        5
+       ],
+       "expect": -1
+      }
+     ],
+     "hint": "Scan in order and return the first index that fits.",
+     "solution": "def first_success(costs, budget):\n    for i in range(len(costs)):\n        if costs[i] <= budget:\n            return i\n    return -1\n"
+    },
+    {
+     "type": "fill",
+     "title": "Proof searcher",
+     "text": "A proof {{technique}} is a program that outputs proofs. There are {{six|6}} proof-modifying instructions. Because they only build valid proofs, {{verification}} is trivial."
+    }
+   ]
+  },
+  {
+   "title": "The target theorem and the switch",
+   "maps": [
+    {
+     "title": "Target theorem",
+     "links": [
+      "Switchprog | is | Candidate rewrite",
+      "Switchbit | decides | Whether to switch",
+      "Target theorem | compares | Utility with and without switching",
+      "check | executes | Switch if target theorem proved",
+      "t1 | is | Time of the switch",
+      "Rewrite | may change | Any part of p, including the proof searcher",
+      "Switching | is delayed by | Proof finding time"
+     ]
+    }
+   ],
+   "summary": [
+    "A switchprog is a candidate program that can rewrite any part of the machine's software. The machine runs it only if it has proved a target theorem: the utility with the switch bit set to 1 is higher than with the bit set to 0.",
+    "Setting the bit to 0 means continuing as before, with the searcher still looking for other rewrites. Setting it to 1 means running the switchprog at time t1. The time t1 accounts for the delay between finding the proof and acting on it.",
+    "A relaxed version replaces the strict inequality with at least as high, so the machine rewrites itself as soon as the change is provably not harmful."
+   ],
+   "glossary": [
+    {
+     "term": "Switchprog",
+     "def": "The proposed rewrite: a program that may change any part of the software."
+    },
+    {
+     "term": "Switchbit",
+     "def": "A bit that is 0 for continue as before and 1 for run the switchprog."
+    },
+    {
+     "term": "Target theorem",
+     "def": "The statement that utility with switchbit = 1 exceeds utility with switchbit = 0."
+    },
+    {
+     "term": "t1",
+     "def": "The time step at which the switch would occur, after the proof is found."
+    },
+    {
+     "term": "Relaxed target theorem",
+     "def": "The version with at-least-as-high instead of strictly higher."
+    }
+   ],
+   "keyPoints": [
+    "Target theorem: u(switch) > u(continue), at time t1.",
+    "The switch is executed only after the proof.",
+    "The comparison need not compute exact utilities, only which is higher.",
+    "A relaxed version uses at-least-as-high.",
+    "The switchprog can rewrite anything, even the axioms and the proof searcher."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "When a proof technique calls set-switchprog, it names a substring of its scratch area as the candidate rewrite. That candidate is the switchprog. It is a program that, when run, may rewrite any part of the machine's software p, including the axioms, the policy and the proof searcher itself."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The machine will run the switchprog only if it has proved that doing so is better than not doing so. The statement to prove is called the target theorem. To state it, the machine uses a switch bit. When the bit is 0, the machine continues as before.",
+      "When it is 1, the machine runs the switchprog at a time t1."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "u\\big[\\, s(t_1) \\oplus (\\mathrm{switchbit}(t_1) = 1),\\ \\mathrm{Env}(t_1) \\big] \\;>\\; u\\big[\\, s(t_1) \\oplus (\\mathrm{switchbit}(t_1) = 0),\\ \\mathrm{Env}(t_1) \\big]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Read this as: the utility of the world in which the switch bit is one is higher than the utility of the world in which it is zero. The symbol with the circled plus means replace the switch bit value in the state. The time t1 handles the delay between finding a proof and acting on it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The check instruction, from the previous chapter, does the rest. It looks at the last theorem. If that is a target theorem, it checks that there is still time to set the bit before t1. If so it sets the bit, waits until t1 passes, and transfers control to the switchprog."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Importantly, the continue-as-before option is not the same as doing nothing. Continuing as before means the proof searcher keeps looking for other rewrites. So the target theorem effectively says that the switchprog is better than waiting for any later rewrite the searcher might find.",
+      "Chapter 7 uses exactly this point to explain global optimality."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The proof does not need exact numbers. The paper stresses that the machine only has to show which of the two utilities is higher, not to compute them. For example, a factor-2 speed-up of a proof-searcher subroutine can be shown worthwhile without knowing the exact utility."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The relaxed version. Replace the strict greater-than with at-least-as-high. Then the machine rewrites itself as soon as it can prove the change will not make things worse, and the optimality theorem holds with the weaker inequality."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Here is a worked example with numbers. The current policy earns 10 reward per step, and 100 steps remain. A switchprog gives 12 per step but needs 5 steps to run, during which nothing is earned. Continuing earns 1000. Switching earns 12 times 95, which is 1140. So the target theorem is true.",
+      "If instead the switch took 20 steps, switching would earn 12 times 80, which is 960, so it is false."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you check target theorems for numbers like these, order the steps of a switch, and use the Switch Explorer app."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does switchbit = 0 mean?",
+     "options": [
+      "Run the switchprog",
+      "Continue as before, with the searcher still running",
+      "Halt",
+      "Reset the clock"
+     ],
+     "answer": 1,
+     "explain": "It is the continue option."
+    },
+    {
+     "q": "Why is the target theorem comparing with 'continue as before' and not 'do nothing'?",
+     "options": [
+      "It is a typo",
+      "Continuing includes future search for better rewrites",
+      "Doing nothing is illegal",
+      "It is faster"
+     ],
+     "answer": 1,
+     "explain": "That is what makes the choice non-greedy."
+    },
+    {
+     "q": "Does the machine need to compute exact utilities?",
+     "options": [
+      "Yes",
+      "No, only to prove which one is higher",
+      "Only at time 1",
+      "Only for rewards"
+     ],
+     "answer": 1,
+     "explain": "A comparison suffices."
+    },
+    {
+     "q": "What does the relaxed version change?",
+     "options": [
+      "The hardware",
+      "Strictly greater becomes at least as high",
+      "The axioms are removed",
+      "The reward is doubled"
+     ],
+     "answer": 1,
+     "explain": "It allows no-harm rewrites."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is t1?",
+     "a": "The time of the switch."
+    },
+    {
+     "q": "What may a switchprog rewrite?",
+     "a": "Any part of the software."
+    },
+    {
+     "q": "What does check do?",
+     "a": "Executes the switch once a target theorem is proved."
+    },
+    {
+     "q": "Strict vs relaxed?",
+     "a": "> versus >=."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "Making a switch",
+     "intro": "Put the steps in order.",
+     "items": [
+      "A proof technique sets the switchprog",
+      "The technique proves the target theorem",
+      "check sees that the last theorem is a target theorem",
+      "check sets the switch bit before t1",
+      "Control passes to the switchprog"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Switch terms",
+     "intro": "Match each term to its role.",
+     "pairs": [
+      [
+       "switchprog",
+       "The candidate rewrite"
+      ],
+      [
+       "switchbit",
+       "0 to continue, 1 to switch"
+      ],
+      [
+       "target theorem",
+       "Switching has higher utility"
+      ],
+      [
+       "t1",
+       "When the switch takes effect"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Does the target theorem hold?",
+     "intro": "The current policy earns r_old per step. A switchprog earns r_new per step but needs switch_time steps with no reward. There are remaining steps left. Write target_holds(r_old, r_new, switch_time, remaining, strict). Compare the total reward of switching, r_new times the steps left after the switch (not below zero), with continuing, r_old times remaining. Return true if switching is strictly greater (when strict is true) or at least as high (when strict is false).",
+     "fn": "target_holds",
+     "starter": "def target_holds(r_old, r_new, switch_time, remaining, strict):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        12,
+        5,
+        100,
+        true
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        10,
+        12,
+        20,
+        100,
+        true
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        10,
+        10,
+        0,
+        50,
+        true
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        10,
+        10,
+        0,
+        50,
+        false
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        5,
+        100,
+        200,
+        100,
+        true
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Compute both totals and compare.",
+     "solution": "def target_holds(r_old, r_new, switch_time, remaining, strict):\n    stay = r_old * remaining\n    left = remaining - switch_time\n    if left < 0:\n        left = 0\n    go = r_new * left\n    if strict:\n        return go > stay\n    return go >= stay\n"
+    },
+    {
+     "type": "python",
+     "title": "Break-even switch time",
+     "intro": "For the same setting, write max_switch_time(r_old, r_new, remaining): the largest whole number of steps the switch may take so that switching is still strictly better than continuing. If even a switch of zero steps is not better, return -1. Assume r_new is greater than 0.",
+     "fn": "max_switch_time",
+     "starter": "def max_switch_time(r_old, r_new, remaining):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        12,
+        100
+       ],
+       "expect": 16
+      },
+      {
+       "args": [
+        10,
+        10,
+        100
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        10,
+        20,
+        40
+       ],
+       "expect": 19
+      },
+      {
+       "args": [
+        10,
+        11,
+        1
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Try every switch time from 0 up to remaining and keep the largest that works.",
+     "solution": "def max_switch_time(r_old, r_new, remaining):\n    best = -1\n    for s in range(remaining + 1):\n        if r_new * (remaining - s) > r_old * remaining:\n            best = s\n    return best\n"
+    },
+    {
+     "type": "webxdc",
+     "title": "Switch explorer",
+     "intro": "Change the numbers and watch the two utilities. Try one case where the target theorem holds and one where it does not.",
+     "height": 520,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#2d2046;color:#e7d9ff;font-weight:600;margin:3px 3px 3px 0}\nlabel{display:block;margin:6px 0 2px;color:#c9b8e8}input[type=number]{font:16px ui-monospace,monospace;width:100%;padding:8px;border-radius:10px;border:1px solid #4a3770;background:#1e1336;color:#f1ebff}\n.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}.m{color:#c9b8e8;margin:8px 0}\n.bar{height:22px;border-radius:6px;margin:4px 0;background:#b26bff;color:#1b0b33;font-weight:700;padding:0 8px;line-height:22px;white-space:nowrap;overflow:hidden}\n.bar.s{background:#6bd3ff}.v{font-size:18px;margin:10px 0}.ok{color:#8fe3a8}.no{color:#ff9bb0}\n</style></head><body>\n<div class=\"m\">Current policy earns r_old per step. A switchprog earns r_new per step after a switch that takes s steps with no reward. n steps remain.</div>\n<div class=\"g\">\n<div><label for=\"a\">r_old</label><input id=\"a\" type=\"number\" value=\"10\"></div>\n<div><label for=\"b\">r_new</label><input id=\"b\" type=\"number\" value=\"12\"></div>\n<div><label for=\"c\">switch steps s</label><input id=\"c\" type=\"number\" value=\"5\"></div>\n<div><label for=\"d\">steps remaining n</label><input id=\"d\" type=\"number\" value=\"100\"></div></div>\n<div class=\"row\"><button id=\"e1\">Example: theorem holds</button><button id=\"e2\">Example: theorem fails</button></div>\n<div id=\"o\"></div>\n<script>\nvar seenT=false,seenF=false;\nfunction done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nfunction num(id){var v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v}\nfunction calc(){var a=num(\"a\"),b=num(\"b\"),s=num(\"c\"),n=num(\"d\");var stay=a*n,left=Math.max(0,n-s),go=b*left;\nvar mx=Math.max(stay,go,1),holds=go>stay;\nif(holds)seenT=true;else seenF=true;\ndocument.getElementById(\"o\").innerHTML=\"<div class='bar' style='width:\"+Math.max(4,100*stay/mx)+\"%'>stay: \"+stay+\"</div><div class='bar s' style='width:\"+Math.max(4,100*go/mx)+\"%'>switch: \"+go+\"</div><div class='v \"+(holds?\"ok\":\"no\")+\"'>Target theorem \"+(holds?\"holds: switching is strictly better.\":\"does not hold: the machine keeps searching.\")+\"</div><div class='m'>\"+(seenT&&seenF?\"You have seen both cases.\":\"Find \"+(seenT?\"a case where it fails.\":\"a case where it holds.\"))+\"</div>\";\nif(seenT&&seenF)done()}\nArray.prototype.forEach.call(document.querySelectorAll(\"input\"),function(i){i.oninput=calc});\nfunction setv(a,b,c,d){document.getElementById(\"a\").value=a;document.getElementById(\"b\").value=b;document.getElementById(\"c\").value=c;document.getElementById(\"d\").value=d;calc()}\ndocument.getElementById(\"e1\").onclick=function(){setv(10,12,5,100)};\ndocument.getElementById(\"e2\").onclick=function(){setv(10,12,20,100)};\ncalc();\n</script></body></html>\n"
+    },
+    {
+     "type": "fill",
+     "title": "Target theorem",
+     "text": "The {{switchprog}} is the candidate rewrite. The machine switches only after proving the {{target}} theorem. The relaxed version allows {{equal|equality|at least as high}} utility."
+    }
+   ]
+  },
+  {
+   "title": "Global optimality",
+   "maps": [
+    {
+     "title": "Why the rewrite is globally optimal",
+     "links": [
+      "Target theorem | compares | Switch versus continue search",
+      "Continue branch | includes | Later better rewrites",
+      "Theorem 4.1 | states | Rewrite is globally optimal",
+      "Greedy rewrite | is not | Required",
+      "Relaxed target theorem | still gives | Global optimality",
+      "Meta-levels | collapse into | One level"
+     ]
+    }
+   ],
+   "summary": [
+    "Theorem 4.1 in the paper says that once the machine has proved a target theorem and switched, the resulting change is globally optimal: no other self-rewrite, now or later, could have done better, given the axioms.",
+    "The reason is that the continue option already includes every future rewrite the searcher might find.",
+    "So the machine is not greedy. It does not take the first improvement; it takes a switch only when the proof says that switching now beats everything it could do by waiting. The paper also argues that all meta-levels collapse into one, because the same proof searcher improves itself.",
+    "The guarantee is relative to the axioms and requires them to be consistent. It is not a guarantee about the real world beyond what the axioms say."
+   ],
+   "glossary": [
+    {
+     "term": "Globally optimal",
+     "def": "No other rewrite, available now or later, would have a higher expected utility, according to the axioms."
+    },
+    {
+     "term": "Greedy",
+     "def": "Taking the first improvement found, without comparing with future improvements."
+    },
+    {
+     "term": "Meta-level",
+     "def": "A level of learning that improves a lower level, such as a learner that improves the learner."
+    },
+    {
+     "term": "Relaxed version",
+     "def": "Rewrite when the change is provably not worse; optimality holds in the weaker sense."
+    }
+   ],
+   "keyPoints": [
+    "The continue branch of the target theorem contains all later rewrites.",
+    "Therefore a proved target theorem means switching now is at least as good as any alternative.",
+    "The machine is not greedy: it can leave a worse-looking but later-better path alone.",
+    "All meta-levels collapse into one level.",
+    "Guarantees hold only if the axioms are consistent.",
+    "A bogus utility change cannot be proved better under the present utility."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Chapter 6 ended with a subtle point: the target theorem compares switching with continuing, and continuing includes the possibility that the proof searcher finds something even better later. This chapter spells out what follows from it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Theorem 4.1 in the paper reads, in plain words: given the initial axiom system, once the machine has executed a rewrite after proving a target theorem, no other rewrite, whether at that moment or at any later moment, can have higher expected utility. The proof is short.",
+      "At the time of the switch the machine has proved that u with the switch is greater than u without it. The without-it branch contains every future rewrite. So no future rewrite beats this switch."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "That makes the machine non-greedy. A greedy learner takes any improvement it can find. The Gödel machine may instead decline an improvement now, because it can prove that waiting for a better one pays off more, for example a rewrite that makes the proof searcher itself faster.",
+      "The comparison is not with the present policy; it is with the best future."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Take a small example with numbers. Policy A earns 10 per step. Candidate B earns 12 per step but costs 30 steps to apply. Candidate C earns 20 per step but costs 40 steps to apply, and it is provable only later.",
+      "With 100 steps left, B gives 12 times 70, which is 840, against 1000 for staying, so B is not worth it. A greedy rule that only checks rate would jump to B and lose."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} u_{\\text{switch}} \\;=\\; r_{\\text{new}}\\,(T - t_1 - c) \\\\[0.6em] u_{\\text{stay}} \\;=\\; r_{\\text{old}}\\,(T - t_1) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper also discusses the relaxed target theorem, with at-least-as-high in place of strictly higher, and shows that global optimality still holds in the sense that no later rewrite can be strictly better. The strict version avoids pointless rewrites with equal utility."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The collapse of meta-levels. In many learning systems you stack levels: a learner, a meta-learner that tunes the learner, a meta-meta-learner, and so on, each fixed by the designer. Here the proof searcher can rewrite the entire software, including itself, so there is a single level.",
+      "Improvements to improvement happen inside the same loop and are judged by the same target theorem."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper answers common worries in a short question and answer section. What if a later self-change breaks the machine? Any change was proved to raise utility before it was executed, so a later change is judged the same way.",
+      "What if the machine adopts a bogus utility? A new utility is acceptable only if the present utility says it is better, so a reward-hacking replacement would fail the test."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Be careful about what is claimed. These are mathematical results inside a formal framework, and they inherit its assumptions: a consistent axiom system, a correct hardware model, and enough resources to find proofs. Whether a real machine could ever satisfy them is open, as chapter 11 discusses."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you compute the total reward of a plan with several switches, and find the best single switch, which shows why comparing with the stay option matters."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the continue branch of the target theorem contain?",
+     "options": [
+      "Nothing",
+      "Every later rewrite the searcher might find",
+      "Only the current policy",
+      "The hardware"
+     ],
+     "answer": 1,
+     "explain": "That is why the choice is globally optimal."
+    },
+    {
+     "q": "Is the Gödel machine greedy?",
+     "options": [
+      "Yes, it takes the first improvement",
+      "No, it can decline an improvement because waiting is provably better",
+      "Only at the start",
+      "Only for rewards"
+     ],
+     "answer": 1,
+     "explain": "It compares with the best future."
+    },
+    {
+     "q": "What does 'all meta-levels collapse' mean?",
+     "options": [
+      "Memory is freed",
+      "One proof searcher improves everything, including itself",
+      "There are no levels",
+      "The machine halts"
+     ],
+     "answer": 1,
+     "explain": "A single level suffices."
+    },
+    {
+     "q": "What do the optimality guarantees assume?",
+     "options": [
+      "The axioms are consistent",
+      "The environment is deterministic",
+      "Infinite time",
+      "A human supervises"
+     ],
+     "answer": 0,
+     "explain": "Inconsistent axioms prove anything."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is Theorem 4.1?",
+     "a": "A proved-and-executed rewrite is globally optimal."
+    },
+    {
+     "q": "Why not greedy?",
+     "a": "Waiting for a better rewrite can be provably better."
+    },
+    {
+     "q": "Relaxed version?",
+     "a": "At least as high utility."
+    },
+    {
+     "q": "Bogus utility?",
+     "a": "Needs a proof that it is better under the present utility."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Total reward with switches",
+     "intro": "The machine earns rate0 per step for horizon steps. A switch is [time, new_rate, cost]: at that time it spends cost steps earning nothing, then continues at new_rate. Write total_reward(rate0, horizon, switches) for switches sorted by time. Steps are numbered from 0 to horizon-1. Ignore any switch whose time is at or after the horizon, and cut off a switch cost that runs past the end.",
+     "fn": "total_reward",
+     "starter": "def total_reward(rate0, horizon, switches):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        100,
+        []
+       ],
+       "expect": 1000
+      },
+      {
+       "args": [
+        10,
+        100,
+        [
+         [
+          0,
+          12,
+          5
+         ]
+        ]
+       ],
+       "expect": 1140
+      },
+      {
+       "args": [
+        10,
+        100,
+        [
+         [
+          0,
+          12,
+          30
+         ]
+        ]
+       ],
+       "expect": 840
+      },
+      {
+       "args": [
+        10,
+        100,
+        [
+         [
+          20,
+          15,
+          10
+         ],
+         [
+          60,
+          20,
+          5
+         ]
+        ]
+       ],
+       "expect": 1350
+      },
+      {
+       "args": [
+        10,
+        50,
+        [
+         [
+          60,
+          99,
+          1
+         ]
+        ]
+       ],
+       "expect": 500
+      },
+      {
+       "args": [
+        10,
+        50,
+        [
+         [
+          45,
+          99,
+          20
+         ]
+        ]
+       ],
+       "expect": 450
+      }
+     ],
+     "hint": "Accumulate reward up to each switch, jump over the cost steps, then change the rate.",
+     "solution": "def total_reward(rate0, horizon, switches):\n    t = 0\n    rate = rate0\n    total = 0\n    for sw in switches:\n        when = sw[0]\n        if when >= horizon:\n            break\n        total += (when - t) * rate\n        t = when\n        t = min(horizon, t + sw[2])\n        rate = sw[1]\n    total += (horizon - t) * rate\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "Best single switch",
+     "intro": "Candidates are [time, new_rate, cost] as before. Write best_switch(rate0, horizon, candidates): the index of the candidate whose single switch gives the highest total reward, but only if it is strictly better than not switching; otherwise return -1. For ties, choose the first. Use the same reward rules as before.",
+     "fn": "best_switch",
+     "starter": "def best_switch(rate0, horizon, candidates):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        100,
+        [
+         [
+          0,
+          12,
+          30
+         ],
+         [
+          0,
+          20,
+          40
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        10,
+        100,
+        [
+         [
+          0,
+          12,
+          5
+         ],
+         [
+          0,
+          11,
+          0
+         ]
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        10,
+        100,
+        [
+         [
+          0,
+          10,
+          0
+         ]
+        ]
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        10,
+        100,
+        []
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        10,
+        100,
+        [
+         [
+          50,
+          30,
+          10
+         ],
+         [
+          0,
+          15,
+          20
+         ]
+        ]
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Compute each candidate's total and keep the first strict maximum above the stay total.",
+     "solution": "def best_switch(rate0, horizon, candidates):\n    def total(sw):\n        when = sw[0]\n        if when >= horizon:\n            return rate0 * horizon\n        t = min(horizon, when + sw[2])\n        return when * rate0 + (horizon - t) * sw[1]\n    best = rate0 * horizon\n    idx = -1\n    for i in range(len(candidates)):\n        v = total(candidates[i])\n        if v > best:\n            best = v\n            idx = i\n    return idx\n"
+    },
+    {
+     "type": "match",
+     "title": "Optimality",
+     "intro": "Match each idea with its role.",
+     "pairs": [
+      [
+       "Continue branch",
+       "Includes every future rewrite"
+      ],
+      [
+       "Strict target theorem",
+       "Avoids pointless equal rewrites"
+      ],
+      [
+       "Collapsed meta-levels",
+       "One searcher improves everything"
+      ],
+      [
+       "Consistent axioms",
+       "Needed for the guarantee"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Optimality",
+     "text": "A proved rewrite is {{globally}} optimal. The machine is not {{greedy}}. All meta-levels {{collapse}} into one."
+    }
+   ]
+  },
+  {
+   "title": "Bias-optimal proof search (BIOPS)",
+   "maps": [
+    {
+     "title": "Universal search for proofs",
+     "links": [
+      "Universal search | allots | Time in proportion to probability",
+      "Phase i | gives | Budget 2^i times P(w)",
+      "BIOPS | is | Bias-optimal proof search",
+      "BIOPS | finds | Proof of target theorem",
+      "Bias-optimal | means | Optimal given the bias",
+      "OOPS | reuses | Earlier solutions"
+     ]
+    }
+   ],
+   "summary": [
+    "Bias-optimal proof search, or BIOPS, is the paper's search scheme for the proof searcher. It tests proof techniques in phases: in phase i, each technique w with probability P(w) of at least 2 to the minus i receives a budget of 2 to the i times P(w) steps.",
+    "Theorem 5.1 says that if a proof technique exists that proves the target theorem in time t, BIOPS finds it in time of order t divided by P(w), up to a constant factor. Bias-optimal means optimal given the bias, which is the probability distribution P over techniques.",
+    "BIOPS is an online search. When a technique fails, the effects on the scratch memory are undone, and the next one runs. A successful technique may be reused: the Optimal Ordered Problem Solver shares this idea."
+   ],
+   "glossary": [
+    {
+     "term": "Universal search",
+     "def": "Levin's scheme for searching programs in order, giving each a time share proportional to its prior probability."
+    },
+    {
+     "term": "P(w)",
+     "def": "The probability of technique w, often 2 to the minus its code length."
+    },
+    {
+     "term": "Phase",
+     "def": "One round of the search; phase i doubles the total time of the previous phase."
+    },
+    {
+     "term": "Bias",
+     "def": "The prior distribution over techniques, which says which are tried first."
+    },
+    {
+     "term": "Bias-optimal",
+     "def": "Within a constant factor of the best possible, given the bias."
+    },
+    {
+     "term": "BIOPS",
+     "def": "Bias-optimal proof search, Schmidhuber's scheme for the Gödel machine's searcher."
+    },
+    {
+     "term": "OOPS",
+     "def": "Optimal Ordered Problem Solver, a related method that reuses earlier solutions."
+    }
+   ],
+   "keyPoints": [
+    "BIOPS runs in phases i = 1, 2, 3, ...",
+    "In phase i a technique w with P(w) >= 2^-i gets 2^i * P(w) steps.",
+    "Total time per phase is at most 2^i.",
+    "If a technique proves the theorem in t steps, BIOPS finds it in O(t / P(w)).",
+    "It is optimal only given the bias P.",
+    "The O() hides a constant factor, which may be large."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The proof searcher needs a schedule for trying proof techniques. Chapter 5 said the simplest way, enumerating all proofs by size, is exponential. Universal search, invented by Leonid Levin, does better: it tries programs in a way that spends time in proportion to their probability."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Say each proof technique w has a probability P of w. A natural choice is 2 to the minus the length of its code, so shorter techniques are more likely. The schedule works in phases. In phase i, every technique with P of w at least 2 to the minus i is run for 2 to the i times P of w steps."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\text{phase } i: \\\\[0.6em] P(w) \\ge 2^{-i} \\;\\Rightarrow\\; \\text{budget}(w) = 2^{i}\\,P(w) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Consider the total time. In phase i the budgets add up to at most 2 to the i times the sum of the probabilities, which is at most 2 to the i. Each phase costs at most twice the previous one, so the search time is dominated by the last phase."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now the guarantee. Suppose technique w proves the target theorem in t steps. It first gets a large enough budget in the phase where 2 to the i times P of w is at least t. That phase i satisfies 2 to the i of order t divided by P of w. All phases up to i together take at most about twice that.",
+      "So BIOPS finds the proof in time of order t over P of w. This is Theorem 5.1."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is what bias-optimal means. BIOPS is not faster than a perfect searcher, but it is within a constant factor of the best searcher that uses the same bias. It cannot avoid the constant, which is large when the winning technique is improbable, that is, long."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper also defines n-bias-optimal variants, in which the search is allowed to be a factor n slower in exchange for other properties, and notes that a proof technique's effects are undone before the next one starts, so each test is independent."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Relation to OOPS. The Optimal Ordered Problem Solver, also by Schmidhuber, applies the same time allocation to a sequence of tasks and lets later tasks reuse the code that solved earlier ones. The paper suggests the Gödel machine's searcher can profit from this by keeping useful proof fragments."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you implement a small Levin-style search. Each technique has a code length k, so P is 2 to the minus k, and a step count needed to succeed or minus one if it never succeeds."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "In BIOPS phase i, what budget does technique w get?",
+     "options": [
+      "P(w)",
+      "2^i * P(w)",
+      "i",
+      "1"
+     ],
+     "answer": 1,
+     "explain": "Higher phases give more time."
+    },
+    {
+     "q": "What does Theorem 5.1 promise?",
+     "options": [
+      "Constant-time proofs",
+      "The proof is found within O(t / P(w)) steps",
+      "No proof is needed",
+      "Only short proofs"
+     ],
+     "answer": 1,
+     "explain": "Up to a constant factor given the bias."
+    },
+    {
+     "q": "What does 'bias-optimal' mean?",
+     "options": [
+      "Optimal for any distribution",
+      "Optimal up to a constant given the prior over techniques",
+      "Biased toward errors",
+      "Optimal for random inputs"
+     ],
+     "answer": 1,
+     "explain": "The prior is the bias."
+    },
+    {
+     "q": "What is a drawback of universal search?",
+     "options": [
+      "It is unsound",
+      "The constant factor can be huge",
+      "It cannot find proofs",
+      "It needs a human"
+     ],
+     "answer": 1,
+     "explain": "Improbable (long) techniques are costly."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Who invented universal search?",
+     "a": "Leonid Levin."
+    },
+    {
+     "q": "What is P(w) typically?",
+     "a": "2 to the minus code length."
+    },
+    {
+     "q": "Cost per phase?",
+     "a": "At most 2^i."
+    },
+    {
+     "q": "What does OOPS add?",
+     "a": "Reuse of earlier solutions across tasks."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "A Levin-style search",
+     "intro": "Each technique is [name, k, steps] with probability P = 2^-k, where steps is how many steps it needs to prove the target, or -1 if it never will. In phase i = 1, 2, 3, ... every technique with k <= i runs with a budget of 2^(i-k) steps (the integer 2^i * P). Each run, successful or not, uses its whole budget unless it finishes earlier, and costs its steps used. Write levin_search(techs): return [phase, name, total_steps], where phase is the first phase in which some technique finishes (its steps <= its budget), name is the first such technique in list order, and total_steps adds the steps used by all runs up to and including that run (each earlier run uses its full budget, the finishing run uses its real steps). If nothing finishes in 40 phases, return [0, \"none\", total_steps] with the steps used in those 40 phases.",
+     "fn": "levin_search",
+     "starter": "def levin_search(techs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          1,
+          8
+         ],
+         [
+          "b",
+          2,
+          3
+         ]
+        ]
+       ],
+       "expect": [
+        4,
+        "a",
+        18
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          3,
+          2
+         ],
+         [
+          "b",
+          1,
+          -1
+         ]
+        ]
+       ],
+       "expect": [
+        4,
+        "a",
+        10
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          2,
+          -1
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        "none",
+        549755813887
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "x",
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        "x",
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          1,
+          3
+         ],
+         [
+          "b",
+          1,
+          3
+         ]
+        ]
+       ],
+       "expect": [
+        3,
+        "a",
+        9
+       ]
+      }
+     ],
+     "hint": "Loop over phases, then techniques. Skip a technique if k > i, compute 2 ** (i - k), finish if steps fits.",
+     "solution": "def levin_search(techs):\n    total = 0\n    for i in range(1, 41):\n        for t in techs:\n            name = t[0]\n            k = t[1]\n            steps = t[2]\n            if k > i:\n                continue\n            budget = 2 ** (i - k)\n            if steps != -1 and steps <= budget:\n                total += steps\n                return [i, name, total]\n            total += budget\n    return [0, 'none', total]\n"
+    },
+    {
+     "type": "match",
+     "title": "BIOPS terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "P(w)",
+       "Prior probability of a technique"
+      ],
+      [
+       "Phase",
+       "One round of the doubling schedule"
+      ],
+      [
+       "Bias",
+       "The prior that sets try-order"
+      ],
+      [
+       "OOPS",
+       "Reuses solutions across tasks"
+      ],
+      [
+       "O(t / P(w))",
+       "Time to find a proof taking t steps"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Search",
+     "text": "In phase i a technique gets a budget of {{2^i * P(w)|2^i P(w)}}. BIOPS is optimal only up to a {{constant}} factor, given its {{bias|prior}}."
+    }
+   ]
+  },
+  {
+   "title": "Examples and kinds of self-improvement",
+   "maps": [
+    {
+     "title": "What can a Gödel machine improve?",
+     "links": [
+      "Gödel machine | improves | Policy and searcher",
+      "Self-improvement | includes | Speed-ups",
+      "Proof of speed-up | needs | Axioms about hardware",
+      "Example | is | Goldbach counterexample search",
+      "Example | is | Fuel robot with Speed Prior",
+      "Example | is | Graph or TSP solver"
+     ]
+    }
+   ],
+   "summary": [
+    "The paper lists several kinds of self-improvement the machine could prove useful, from small speed-ups of a subroutine to replacing the utility function or the axioms themselves. Each kind needs a proof inside the axiom system.",
+    "Three illustrative scenarios appear in the paper: a program that speeds up a graph or travelling-salesman solver, a search for a counterexample to Goldbach's conjecture, and a robot with limited fuel that must plan around depots under a weak environment assumption, the Speed Prior.",
+    "These are thought experiments, not experimental results. They show how a target theorem could be stated and what must be proved."
+   ],
+   "glossary": [
+    {
+     "term": "Speed-up",
+     "def": "A rewrite that makes a subroutine faster, so that more reward or more search fits in the remaining time."
+    },
+    {
+     "term": "Goldbach's conjecture",
+     "def": "Every even integer greater than 2 is the sum of two primes; unproven."
+    },
+    {
+     "term": "Counterexample search",
+     "def": "A program that checks even numbers one by one and stops if it finds one that is not a sum of two primes."
+    },
+    {
+     "term": "Speed Prior",
+     "def": "A prior that favours environments computable quickly; it gives a weak, plausible environment assumption."
+    },
+    {
+     "term": "Depot",
+     "def": "A place where the robot can refuel."
+    },
+    {
+     "term": "Travelling salesman problem",
+     "def": "Find the shortest tour through a set of cities."
+    }
+   ],
+   "keyPoints": [
+    "The paper lists eight kinds of self-improvement.",
+    "A Gödel machine may improve its policy, its searcher, its axioms and even its utility function, always with a proof.",
+    "Speed-ups are the most direct example: a faster subroutine raises expected reward.",
+    "The Goldbach example shows search under a time limit.",
+    "The robot example shows planning under uncertainty about the environment.",
+    "No example has been demonstrated experimentally."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "What can a Gödel machine improve? In section 6.1 the paper lists several kinds of self-improvement, all of them proved useful by the target theorem.",
+      "They include: changing the initial policy; speeding up a subroutine, which gives more reward or more search per step; changing the proof searcher or its search order; adding axioms or lemmas that shorten future proofs; modifying the hardware model after the real hardware changes; and, in principle, changing the utility function or the axioms themselves."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A key point is that a speed-up of the proof searcher is a self-improvement like any other. A faster searcher finds later proofs sooner, and this can be proved worthwhile even without knowing the exact utility, as chapter 6 noted. This is how the machine's efficiency can compound."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Example one: a graph or travelling-salesman solver. Suppose the policy is a slow heuristic. A rewrite replaces it with a faster algorithm.",
+      "The machine proves from the hardware axioms that the new code runs in fewer steps and returns the same answer, and from the utility axioms that finishing earlier gives more reward. That proves the target theorem."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Example two: Goldbach's conjecture. Suppose the machine's task is to find a counterexample. The policy checks even numbers in turn. If a counterexample exists, the reward comes when it is found, so a faster check is useful.",
+      "If none exists the policy runs forever and the reward never arrives, so the machine should not spend unlimited resources on it. The paper uses this to show how time budgeting matters."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Here is the check itself. For an even number n, look for a prime p up to n over 2 such that n minus p is also prime. If you find one, n is fine. If you reach no such p, n is a counterexample. The practice section implements this for small numbers.",
+      "No counterexample is known to exist; it has been checked far beyond what the lab will do."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Example three: a fuel robot. A robot uses one liter of fuel per hour and must keep running to earn reward. The environment contains fuel depots at certain times, but the robot does not know the true environment.",
+      "The paper uses the Speed Prior as a weak assumption: the environment is computable, and fast-computable environments are more likely. The machine can then prove statements about expected survival under that prior."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The point of all three: a self-improvement is justified by a proof about future reward, and the proof depends on the axioms. The more precise the axioms, the more improvements the machine can justify. The weaker the axioms, the fewer."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you search for Goldbach pairs, scan for a counterexample below a limit, and compute how long a robot survives."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What justifies a self-improvement in a Gödel machine?",
+     "options": [
+      "A user vote",
+      "A proof of higher expected utility",
+      "A random test",
+      "A deadline"
+     ],
+     "answer": 1,
+     "explain": "Every rewrite needs a proof."
+    },
+    {
+     "q": "What is a speed-up of the proof searcher?",
+     "options": [
+      "A forbidden change",
+      "A self-improvement like any other",
+      "A hardware fault",
+      "A new reward"
+     ],
+     "answer": 1,
+     "explain": "It may compound the machine's efficiency."
+    },
+    {
+     "q": "What is the Speed Prior used for in the fuel robot example?",
+     "options": [
+      "To count fuel",
+      "As a weak assumption about the environment",
+      "To choose depots",
+      "To encrypt data"
+     ],
+     "answer": 1,
+     "explain": "Fast-computable environments get more weight."
+    },
+    {
+     "q": "What does the Goldbach example illustrate?",
+     "options": [
+      "That the conjecture is true",
+      "Time budgeting for a search that might never finish",
+      "Prime factorization",
+      "Proof checking"
+     ],
+     "answer": 1,
+     "explain": "No counterexample is known."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Goldbach's conjecture?",
+     "a": "Every even number above 2 is a sum of two primes."
+    },
+    {
+     "q": "Is it proved?",
+     "a": "No."
+    },
+    {
+     "q": "What does the robot burn?",
+     "a": "One liter of fuel per hour in the example."
+    },
+    {
+     "q": "Are these results?",
+     "a": "No, they are thought experiments."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Kinds of improvement",
+     "intro": "Match each change with its effect.",
+     "pairs": [
+      [
+       "Faster subroutine",
+       "More reward per unit time"
+      ],
+      [
+       "Faster proof searcher",
+       "Later proofs are found sooner"
+      ],
+      [
+       "New lemma axiom",
+       "Shorter future proofs"
+      ],
+      [
+       "Better hardware model",
+       "Axioms match real hardware"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Goldbach pair",
+     "intro": "Write goldbach_pair(n) for an even n at least 4: return [p, n-p] with p the smallest prime such that n-p is also prime, or [] if none exists.",
+     "fn": "goldbach_pair",
+     "starter": "def goldbach_pair(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        4
+       ],
+       "expect": [
+        2,
+        2
+       ]
+      },
+      {
+       "args": [
+        10
+       ],
+       "expect": [
+        3,
+        7
+       ]
+      },
+      {
+       "args": [
+        28
+       ],
+       "expect": [
+        5,
+        23
+       ]
+      },
+      {
+       "args": [
+        100
+       ],
+       "expect": [
+        3,
+        97
+       ]
+      },
+      {
+       "args": [
+        98
+       ],
+       "expect": [
+        19,
+        79
+       ]
+      }
+     ],
+     "hint": "Try p from 2 upward; test both p and n - p with a primality helper.",
+     "solution": "def goldbach_pair(n):\n    def is_prime(k):\n        if k < 2:\n            return False\n        d = 2\n        while d * d <= k:\n            if k % d == 0:\n                return False\n            d += 1\n        return True\n    p = 2\n    while p <= n // 2:\n        if is_prime(p) and is_prime(n - p):\n            return [p, n - p]\n        p += 1\n    return []\n"
+    },
+    {
+     "type": "python",
+     "title": "First counterexample",
+     "intro": "Write first_counterexample(limit): scan even numbers 4, 6, 8, ... up to limit (inclusive) and return the first one with no Goldbach pair, or -1 if there is none. (Expect -1.)",
+     "fn": "first_counterexample",
+     "starter": "def first_counterexample(limit):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        200
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        3
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        4
+       ],
+       "expect": -1
+      }
+     ],
+     "hint": "For each even n look for a pair; return n if you find none.",
+     "solution": "def first_counterexample(limit):\n    def is_prime(k):\n        if k < 2:\n            return False\n        d = 2\n        while d * d <= k:\n            if k % d == 0:\n                return False\n            d += 1\n        return True\n    n = 4\n    while n <= limit:\n        found = False\n        p = 2\n        while p <= n // 2:\n            if is_prime(p) and is_prime(n - p):\n                found = True\n                break\n            p += 1\n        if not found:\n            return n\n        n += 2\n    return -1\n"
+    },
+    {
+     "type": "python",
+     "title": "Fuel robot",
+     "intro": "A robot starts with initial liters and burns 1 liter per hour. Depots are [time, liters]: at that hour it picks up fuel if it is still running (fuel is above 0 just before the hour). Write robot_lifetime(initial, depots): the hour at which it runs out, counting hours from 0. Depots are sorted by time. If fuel is 0 at the start, return 0.",
+     "fn": "robot_lifetime",
+     "starter": "def robot_lifetime(initial, depots):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        []
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        5,
+        [
+         [
+          3,
+          4
+         ]
+        ]
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        5,
+        [
+         [
+          6,
+          4
+         ]
+        ]
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        0,
+        [
+         [
+          1,
+          5
+         ]
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        3,
+        [
+         [
+          2,
+          3
+         ],
+         [
+          4,
+          10
+         ]
+        ]
+       ],
+       "expect": 16
+      }
+     ],
+     "hint": "Move from depot to depot. If the next depot is farther than the fuel lasts, the robot stops before it.",
+     "solution": "def robot_lifetime(initial, depots):\n    fuel = initial\n    t = 0\n    for d in depots:\n        when = d[0]\n        if fuel <= 0:\n            return t\n        if when > t + fuel:\n            return t + fuel\n        fuel -= when - t\n        t = when\n        fuel += d[1]\n    return t + max(fuel, 0)\n"
+    },
+    {
+     "type": "fill",
+     "title": "Examples",
+     "text": "Goldbach's conjecture says every even number above 2 is a sum of two {{primes}}. The robot example uses the {{Speed}} Prior as a weak assumption about the environment."
+    }
+   ]
+  },
+  {
+   "title": "Relations to other work",
+   "maps": [
+    {
+     "title": "Related ideas",
+     "links": [
+      "AIXI | combines | Solomonoff induction and expectimax",
+      "AIXI(t,l) | uses | Bounded resources",
+      "HSEARCH | is | Hardwired proof search",
+      "Gödel machine | rewrites | Its own searcher",
+      "OOPS | is | Ordered problem solver",
+      "Success-story algorithm | evaluates | Self-modifications"
+     ]
+    }
+   ],
+   "summary": [
+    "The Gödel machine is compared with several earlier ideas. Hutter's AIXI is a theoretically optimal agent that combines Solomonoff's universal prediction with expectimax planning, but it is incomputable. A resource-bounded variant, AIXI(t,l), is computable but still has a huge constant.",
+    "Hutter's HSEARCH is a hardwired proof searcher whose search is bias-optimal but cannot be rewritten.",
+    "The Gödel machine differs in that its proof searcher can rewrite itself. Related Schmidhuber methods include OOPS, the Success-Story Algorithm for evaluating self-modifications, and Universal Search.",
+    "The differences are about what is fixed and what can change, so a table of what is hardwired in each approach is a good way to remember them."
+   ],
+   "glossary": [
+    {
+     "term": "AIXI",
+     "def": "Hutter's theoretically optimal reinforcement learning agent: Solomonoff induction plus expectimax. Incomputable."
+    },
+    {
+     "term": "AIXI(t,l)",
+     "def": "A computable, resource-bounded variant of AIXI with time t and length l, with a very large constant factor."
+    },
+    {
+     "term": "HSEARCH",
+     "def": "Hutter's hardwired search for proofs of program properties, bias-optimal but not self-modifying."
+    },
+    {
+     "term": "Solomonoff induction",
+     "def": "A universal prediction method that weights every computable hypothesis by 2 to the minus its length."
+    },
+    {
+     "term": "Expectimax",
+     "def": "A planning rule: maximize over actions, average over chance outcomes."
+    },
+    {
+     "term": "Success-Story Algorithm",
+     "def": "A method that keeps a self-modification only if reward rate improved since it was made."
+    },
+    {
+     "term": "KT",
+     "def": "The Levin complexity: program length plus the log of its running time."
+    }
+   ],
+   "keyPoints": [
+    "AIXI is optimal but incomputable; AIXI(t,l) is computable but impractical.",
+    "HSEARCH uses a fixed bias-optimal proof search; the Gödel machine can rewrite its search.",
+    "OOPS is Schmidhuber's earlier solver that reuses solutions.",
+    "The Success-Story Algorithm checks self-modifications empirically, not by proof.",
+    "Levin's Kt measures length plus the log of running time.",
+    "Each approach differs in what is fixed."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The Gödel machine did not appear in a vacuum. The paper compares it with several lines of work. The most important comparison is with Marcus Hutter's AIXI, which was published at around the same time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "AIXI combines two ideas. Solomonoff induction predicts the future by giving every computable hypothesis a weight of 2 to the minus its length. Expectimax planning then picks, at each step, the action that maximizes expected reward over the predicted futures.",
+      "The result is optimal in a certain sense for a wide class of environments, but it is incomputable."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Hutter also gave AIXI(t,l), a computable variant that considers only policies of length at most l and runs each for at most t steps. It is asymptotically optimal in some sense, but the constant is enormous, so it is not practical.",
+      "Hutter's HSEARCH searches for proofs that a program is optimal, using a fixed bias-optimal scheme."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper's comparison, in short. AIXI(t,l) and HSEARCH have hardwired searchers and do not improve themselves. The Gödel machine's searcher, which is also a bias-optimal proof searcher, can be rewritten by a proven-useful switch, so it can overcome the initial constants over time.",
+      "That is the claim; it has not been shown in practice."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Related Schmidhuber methods. The Optimal Ordered Problem Solver, OOPS, solves a sequence of problems and keeps useful earlier programs for reuse. The Success-Story Algorithm, SSA, lets a learner modify itself and keeps a modification only if the reward rate since it was made beats the rate before.",
+      "SSA checks success empirically, whereas the Gödel machine checks by proof."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Universal Search by Levin, chapter 8, is the root of the time-allocation idea. A related quantity is Levin complexity, Kt: the length of a program plus the logarithm of its running time. It trades off short code against slow code, and it is the quantity that universal search implicitly minimizes."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "Kt(x) \\;=\\; \\min_{p}\\big\\{\\, |p| + \\lceil \\log_2 \\text{steps}(p) \\rceil \\,\\big\\}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Speed Prior, also by Schmidhuber, is a prior on environments that favours those computable quickly. It is a weaker, more realistic assumption than the Solomonoff prior, and it appears in the fuel robot example."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Note the difference between approaches in kind. AIXI is a mathematical definition of an optimal agent. The Gödel machine is a design for an agent that improves itself by proof.",
+      "They are not competing implementations; they answer different questions, and the paper explicitly discusses how its machine could use AIXI-like components."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does AIXI combine?",
+     "options": [
+      "Hashing and sorting",
+      "Solomonoff induction and expectimax",
+      "Gödel numbering and Rice's theorem",
+      "OOPS and SSA"
+     ],
+     "answer": 1,
+     "explain": "That is Hutter's construction."
+    },
+    {
+     "q": "What is the key difference between HSEARCH and the Gödel machine's searcher?",
+     "options": [
+      "HSEARCH is hardwired; the Gödel machine can rewrite its searcher",
+      "HSEARCH is slower",
+      "HSEARCH is a neural network",
+      "There is none"
+     ],
+     "answer": 0,
+     "explain": "Self-modification of the searcher."
+    },
+    {
+     "q": "How does the Success-Story Algorithm judge a self-modification?",
+     "options": [
+      "By a proof",
+      "By whether the reward rate improved since it was made",
+      "By its length",
+      "By a vote"
+     ],
+     "answer": 1,
+     "explain": "It is empirical."
+    },
+    {
+     "q": "What does Kt measure?",
+     "options": [
+      "Program length plus log running time",
+      "Only length",
+      "Only speed",
+      "Memory use"
+     ],
+     "answer": 0,
+     "explain": "Levin complexity."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Is AIXI computable?",
+     "a": "No."
+    },
+    {
+     "q": "Is AIXI(t,l) practical?",
+     "a": "No, the constant is huge."
+    },
+    {
+     "q": "What does OOPS reuse?",
+     "a": "Programs that solved earlier tasks."
+    },
+    {
+     "q": "Speed Prior?",
+     "a": "A prior that favours quickly computable environments."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Expectimax",
+     "intro": "A decision tree is a number (a leaf's value), or [\"max\", [children]] (pick the best child), or [\"exp\", [[p, child], ...]] (probability-weighted average of the children). Write expectimax(node): the value of the root.",
+     "fn": "expectimax",
+     "starter": "def expectimax(node):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         "max",
+         [
+          3,
+          7,
+          4
+         ]
+        ]
+       ],
+       "expect": 7
+      },
+      {
+       "args": [
+        [
+         "exp",
+         [
+          [
+           0.5,
+           10
+          ],
+          [
+           0.5,
+           0
+          ]
+         ]
+        ]
+       ],
+       "expect": 5.0
+      },
+      {
+       "args": [
+        [
+         "max",
+         [
+          [
+           "exp",
+           [
+            [
+             0.5,
+             10
+            ],
+            [
+             0.5,
+             0
+            ]
+           ]
+          ],
+          4
+         ]
+        ]
+       ],
+       "expect": 5.0
+      },
+      {
+       "args": [
+        [
+         "exp",
+         [
+          [
+           0.25,
+           [
+            "max",
+            [
+             1,
+             8
+            ]
+           ]
+          ],
+          [
+           0.75,
+           4
+          ]
+         ]
+        ]
+       ],
+       "expect": 5.0
+      }
+     ],
+     "hint": "Recurse. A number is a leaf; max takes the largest child value; exp sums probability times child value.",
+     "solution": "def expectimax(node):\n    if not isinstance(node, list):\n        return node\n    kind = node[0]\n    if kind == 'max':\n        best = None\n        for c in node[1]:\n            v = expectimax(c)\n            if best is None or v > best:\n                best = v\n        return best\n    total = 0\n    for pc in node[1]:\n        total += pc[0] * expectimax(pc[1])\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "Levin complexity cost",
+     "intro": "Write kt_cost(length, steps): the program length plus the number of bits needed to write the step count, that is, the smallest b with 2^b at least steps (use a loop, not a library). Treat steps of 1 as 0 bits.",
+     "fn": "kt_cost",
+     "starter": "def kt_cost(length, steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        1
+       ],
+       "expect": 10
+      },
+      {
+       "args": [
+        10,
+        2
+       ],
+       "expect": 11
+      },
+      {
+       "args": [
+        10,
+        1000
+       ],
+       "expect": 20
+      },
+      {
+       "args": [
+        3,
+        1024
+       ],
+       "expect": 13
+      },
+      {
+       "args": [
+        3,
+        1025
+       ],
+       "expect": 14
+      }
+     ],
+     "hint": "Count how many times you double 1 before reaching steps.",
+     "solution": "def kt_cost(length, steps):\n    b = 0\n    while 2 ** b < steps:\n        b += 1\n    return length + b\n"
+    },
+    {
+     "type": "match",
+     "title": "Related work",
+     "intro": "Match each method with its main idea.",
+     "pairs": [
+      [
+       "AIXI",
+       "Solomonoff prediction plus expectimax"
+      ],
+      [
+       "AIXI(t,l)",
+       "Computable bounded variant"
+      ],
+      [
+       "HSEARCH",
+       "Hardwired bias-optimal proof search"
+      ],
+      [
+       "OOPS",
+       "Reuse solutions across tasks"
+      ],
+      [
+       "SSA",
+       "Keep modifications that improved reward rate"
+      ],
+      [
+       "Speed Prior",
+       "Prefers quickly computable environments"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Related work",
+     "text": "AIXI combines Solomonoff {{induction}} with {{expectimax}} planning. Unlike HSEARCH, the Gödel machine can rewrite its own {{searcher|proof searcher}}."
+    }
+   ]
+  },
+  {
+   "title": "Limits, criticism and open problems",
+   "maps": [
+    {
+     "title": "What is known and unknown",
+     "links": [
+      "No full implementation | exists | Yet",
+      "Resource bounds | limit | Provable improvements",
+      "Blum speed-up | shows | Some problems lack optimal programs",
+      "Löb's theorem | creates | Löbian obstacle",
+      "Steunebrink and Schmidhuber | studied | Implementation",
+      "Speculation | is | Author's own"
+     ]
+    }
+   ],
+   "summary": [
+    "The Gödel machine remains a theoretical design. Resource limits mean it can prove only improvements whose proofs fit in time and space; by Rice's theorem it must ignore many useful changes; and by Blum's speed-up theorem some problems have no optimal program at all.",
+    "Löb's theorem, a relative of Gödel's second incompleteness theorem, creates the Löbian obstacle: an agent that trusts its own proofs seems to run into a barrier when it tries to prove that a successor which uses the same reasoning is safe.",
+    "Yudkowsky and Herreshoff studied this in the context of self-modifying systems.",
+    "Steunebrink and Schmidhuber explored what an implementation would need, such as a solver and searcher pair and meta-circular evaluators. Claims about consciousness or about humans being Gödel machines are speculation by the author and are not results."
+   ],
+   "glossary": [
+    {
+     "term": "Löb's theorem",
+     "def": "If a system can prove that provability of P implies P, then it can prove P. It restricts self-trust."
+    },
+    {
+     "term": "Löbian obstacle",
+     "def": "The difficulty that an agent cannot straightforwardly prove that a proof-using successor is safe, because of Löb's theorem."
+    },
+    {
+     "term": "Blum speed-up theorem",
+     "def": "There are computable problems for which every program can be replaced by a much faster one, so no optimal program exists."
+    },
+    {
+     "term": "Meta-circular evaluator",
+     "def": "An interpreter for a language written in that language itself."
+    },
+    {
+     "term": "Resource bound",
+     "def": "A limit on time or space available for finding proofs."
+    },
+    {
+     "term": "Speculative claim",
+     "def": "A statement not backed by a theorem or an experiment."
+    }
+   ],
+   "keyPoints": [
+    "No complete implementation of the Gödel machine exists.",
+    "Unprovable improvements are ignored; Rice's theorem makes many properties undecidable.",
+    "Blum: some problems have no fastest program.",
+    "Löb's theorem limits an agent's trust in its own proofs.",
+    "Implementation studies define Solver and Searcher parts and use meta-circular evaluators.",
+    "Philosophical claims such as that humans are Gödel machines are speculation."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "This chapter collects the limits, in the spirit of reading the paper with a critical eye. The first is the simplest: there is no complete implementation. The design is mathematically precise, but running it needs a lot of engineering that nobody has shown to work."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Second, resources. The paper admits that a machine with limited time and space cannot profit from improvements whose proofs are too long. It also admits that by Rice's theorem many useful improvements are undecidable.",
+      "Even with unlimited resources, the machine must ignore those self-improvements whose effectiveness it cannot prove."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Third, the Blum speed-up theorem. Manuel Blum showed that there are computable problems for which every program has a much faster one, so there is no optimal program. The paper notes that for such problems no solver can be best, and a Gödel machine can only keep speeding up."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Fourth, the Löbian obstacle. Löb's theorem says that if a system proves that provability of a statement implies the statement, then it proves the statement. As a result a consistent system cannot assert that its own proofs are sound.",
+      "For a self-modifying agent that approves a successor only when it can prove the successor safe, this blocks a naive proof that a successor with the same reasoning is safe."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Yudkowsky and Herreshoff's work at the Machine Intelligence Research Institute discusses this obstacle in detail and explores partial ways around it. Their conclusion is that tiling, an agent trusting a successor of its own kind, is hard under the straightforward proof-based approach.",
+      "This is a research problem, not a refutation: the Gödel machine's target theorem asks about utility, not trust in the successor's proofs, and it is not settled how the two connect."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Fifth, the question of implementation. Steunebrink and Schmidhuber's paper on Gödel machine implementations describes an architecture with a Solver, which acts in the environment, and a Searcher, which looks for proofs, using meta-circular evaluators so that the system can interpret and modify its own code. They also describe a system called Sleight. Their work shows how much is needed beyond the original mathematical description."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Finally, a word on speculation. Schmidhuber has suggested connections between the Gödel machine and consciousness, and has suggested that humans may be Gödel machines in a loose sense. These are the author's own views; they are not derived from the theorems and are not established.",
+      "The course marks them as speculative, and so should anyone who cites them."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practical lesson is to read the guarantees carefully. They say: given consistent axioms, correct hardware and enough time, each executed rewrite is globally optimal. They do not say that a real system exists, that the axioms are right, or that proofs will be found in time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you simulate a resource-bounded machine that can use only provable rewrites that fit in a proof budget, which shows what the ignore-the-unprovable rule means in practice."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the status of the Gödel machine?",
+     "options": [
+      "Fully implemented",
+      "A theoretical design with no complete implementation",
+      "A product",
+      "Refuted"
+     ],
+     "answer": 1,
+     "explain": "Implementation studies exist but no full system."
+    },
+    {
+     "q": "What does the Blum speed-up theorem imply?",
+     "options": [
+      "All problems have fastest programs",
+      "Some problems have no optimal program",
+      "Proofs are short",
+      "P equals NP"
+     ],
+     "answer": 1,
+     "explain": "Every program can be beaten."
+    },
+    {
+     "q": "What does Löb's theorem restrict?",
+     "options": [
+      "Memory size",
+      "A system's ability to assert that its own proofs are sound",
+      "Prime numbers",
+      "Search speed"
+     ],
+     "answer": 1,
+     "explain": "That leads to the Löbian obstacle."
+    },
+    {
+     "q": "How should claims that humans are Gödel machines be treated?",
+     "options": [
+      "As proven",
+      "As speculation by the author",
+      "As refuted",
+      "As axioms"
+     ],
+     "answer": 1,
+     "explain": "They are not derived from the theorems."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What do Steunebrink and Schmidhuber describe?",
+     "a": "An implementation architecture with a Solver and a Searcher."
+    },
+    {
+     "q": "Who studied the Löbian obstacle?",
+     "a": "Yudkowsky and Herreshoff, among others."
+    },
+    {
+     "q": "Rice's theorem effect?",
+     "a": "Many improvements cannot be proved."
+    },
+    {
+     "q": "Are guarantees unconditional?",
+     "a": "No, they depend on consistent axioms and enough resources."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Provable rewrites within a budget",
+     "intro": "Candidates are [name, gain, provable, proof_cost]. The machine has a proof budget. It considers only provable candidates, in order of gain from highest to lowest (ties keep the original order), and takes a candidate if its proof_cost fits in what is left of the budget, subtracting the cost. Skip candidates that do not fit and carry on. Write choose_rewrites(cands, budget): the list of chosen names in the order taken.",
+     "fn": "choose_rewrites",
+     "starter": "def choose_rewrites(cands, budget):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          5,
+          true,
+          10
+         ],
+         [
+          "b",
+          9,
+          true,
+          20
+         ],
+         [
+          "c",
+          12,
+          false,
+          1
+         ]
+        ],
+        25
+       ],
+       "expect": [
+        "b"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          5,
+          true,
+          10
+         ],
+         [
+          "b",
+          9,
+          true,
+          20
+         ]
+        ],
+        100
+       ],
+       "expect": [
+        "b",
+        "a"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          5,
+          true,
+          10
+         ],
+         [
+          "b",
+          5,
+          true,
+          10
+         ]
+        ],
+        10
+       ],
+       "expect": [
+        "a"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          5,
+          false,
+          1
+         ]
+        ],
+        10
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [],
+        10
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Filter to provable ones, sort by gain descending (stable), then take greedily while the budget lasts.",
+     "solution": "def choose_rewrites(cands, budget):\n    items = []\n    for i in range(len(cands)):\n        c = cands[i]\n        if c[2]:\n            items.append([-c[1], i, c[0], c[3]])\n    items.sort()\n    left = budget\n    out = []\n    for it in items:\n        if it[3] <= left:\n            left -= it[3]\n            out.append(it[2])\n    return out\n"
+    },
+    {
+     "type": "match",
+     "title": "Limits",
+     "intro": "Match each limit with its source.",
+     "pairs": [
+      [
+       "Some problems have no fastest program",
+       "Blum speed-up theorem"
+      ],
+      [
+       "Many program properties are undecidable",
+       "Rice's theorem"
+      ],
+      [
+       "Self-trust obstacle",
+       "Löb's theorem"
+      ],
+      [
+       "Unprovable improvements are skipped",
+       "Provability gate"
+      ],
+      [
+       "Consciousness claims",
+       "Speculation"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Limits",
+     "text": "No full {{implementation}} of the Gödel machine exists. The {{Löbian}} obstacle comes from Löb's theorem. Claims about consciousness are {{speculative|speculation}}."
+    }
+   ]
+  },
+  {
+   "title": "Build a toy Gödel machine",
+   "maps": [
+    {
+     "title": "A toy model",
+     "links": [
+      "Toy machine | has | Rate and horizon",
+      "Candidate | has | New rate, cost and proof time",
+      "Proof time | uses | Part of the horizon",
+      "Switch rule | compares | Stay and switch totals",
+      "Share | is | Fraction spent on searching",
+      "Toy machine | omits | Real proof search"
+     ]
+    }
+   ],
+   "summary": [
+    "The capstone is a toy model that keeps the essential logic: the machine earns reward at a rate, searches for proofs about candidate rewrites, and switches only when the proved total reward is strictly higher than staying.",
+    "Each candidate has a new rate, a switching cost and a proof time. Searching takes part of the machine's effort, modelled by a share. The toy leaves out real logic: the proofs are replaced by arithmetic.",
+    "Building it ties the earlier chapters together: the target theorem is the comparison, the proof time is the delay, and the order of candidates is the search order."
+   ],
+   "glossary": [
+    {
+     "term": "Rate",
+     "def": "Reward per step of the current policy."
+    },
+    {
+     "term": "Horizon",
+     "def": "The total number of steps in the machine's life."
+    },
+    {
+     "term": "Candidate",
+     "def": "A possible rewrite with a new rate, a switch cost and a proof time."
+    },
+    {
+     "term": "Proof time",
+     "def": "Steps needed to prove the candidate's target theorem."
+    },
+    {
+     "term": "Share",
+     "def": "Percentage of effort spent on searching, which reduces earned reward."
+    },
+    {
+     "term": "Toy model",
+     "def": "A simplified model that keeps the main logic and drops the details."
+    }
+   ],
+   "keyPoints": [
+    "Process candidates in order.",
+    "Searching for the proof of a candidate takes its proof time, during which reward is earned at a reduced rate.",
+    "Switch only if switching is strictly better than staying for the remaining time.",
+    "Skip candidates whose proof would not finish before the end.",
+    "Integer arithmetic keeps results exact.",
+    "This is a model, not an implementation."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Now put it together. The toy machine has an integer reward rate and a horizon, the number of steps in its life. It also has a list of candidate rewrites. Each candidate has a name, a new rate, a switching cost in steps, and a proof time, the number of steps its proof search needs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The machine works through the candidates in order. For each one it spends the proof time searching. During the search it still acts, but a share of its effort goes to searching, so the reward is reduced to the rate times 100 minus the share, divided by 100, using integer division."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\text{reward}(n,\\ r) \\;=\\; \\left\\lfloor \\frac{n \\cdot r \\cdot (100 - \\text{share})}{100} \\right\\rfloor"
+    },
+    {
+     "type": "text",
+     "items": [
+      "When the proof is done, the machine compares two totals for the remaining time. Staying earns the remaining steps at the current rate, with the share applied. Switching loses the cost steps, then earns the rest at the new rate, with the share applied.",
+      "If switching is strictly greater, the machine switches: it spends the cost steps, sets the new rate and records the candidate's name."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A candidate is skipped when its proof time would not finish before the end: if the current time plus the proof time is at least the horizon, the machine stops searching and just earns until the end. A rejected candidate still costs its proof time, as in a real search."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "At the end, add the reward from the current time to the horizon at the current rate. Return the total and the names of the candidates that were switched to, in order. This function is the capstone lab."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Try it with numbers. Rate 10, horizon 100, share 0. Candidate A: new rate 14, cost 5, proof time 10. After 10 steps, t is 10 and total 100. Remaining 90. Stay: 900. Switch: 85 times 14 which is 1190. Switch, t becomes 15, rate 14. Then 85 steps at 14 add 1190. The total is 1290."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Compare with the theory. The toy keeps three properties: a rewrite happens only when the comparison says it is strictly better, comparison is with staying for the rest of the time, and time spent searching is paid for.",
+      "It omits the axioms, the logic, the self-reference and the rewriting of the searcher. So it illustrates the decision rule, not the machine."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "You have reached the end of the course. The exam mixes questions from every chapter. Keep the sources in mind: the Wikipedia article, Schmidhuber's report, the Steunebrink and Schmidhuber paper, and the Yudkowsky and Herreshoff work. Treat the speculative parts as the author's opinions."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "When does the toy machine switch?",
+     "options": [
+      "Whenever a candidate exists",
+      "When switching is strictly better than staying for the remaining time",
+      "At random",
+      "At time zero"
+     ],
+     "answer": 1,
+     "explain": "That mirrors the target theorem."
+    },
+    {
+     "q": "What does the share model?",
+     "options": [
+      "Memory",
+      "The fraction of effort spent on searching",
+      "The reward",
+      "The cost"
+     ],
+     "answer": 1,
+     "explain": "It reduces the earned reward."
+    },
+    {
+     "q": "What does the toy model omit?",
+     "options": [
+      "The decision rule",
+      "The axioms, logic and self-reference",
+      "Time",
+      "Rewards"
+     ],
+     "answer": 1,
+     "explain": "It keeps only the arithmetic."
+    },
+    {
+     "q": "What happens to a candidate whose proof time runs past the horizon?",
+     "options": [
+      "It is applied anyway",
+      "The machine stops searching and just earns",
+      "It is doubled",
+      "It is repeated"
+     ],
+     "answer": 1,
+     "explain": "There is no time left to use it."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is the strict rule?",
+     "a": "Switch only if switch total > stay total."
+    },
+    {
+     "q": "What is the share?",
+     "a": "Percentage of effort used for searching."
+    },
+    {
+     "q": "What is a rejected candidate?",
+     "a": "One whose proof was found but whose switch is not strictly better."
+    },
+    {
+     "q": "Does the toy prove anything?",
+     "a": "No, it computes the comparison directly."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "The toy Gödel machine",
+     "intro": "Write toy_godel(rate0, horizon, candidates, share). Start with t = 0, total = 0, rate = rate0, and an empty list of switched names. For each candidate [name, new_rate, cost, proof_time] in order: if t + proof_time >= horizon, stop. Otherwise add the reward for proof_time steps at the current rate, namely proof_time * rate * (100 - share) // 100, and move t forward by proof_time. Let remaining = horizon - t. stay = remaining * rate * (100 - share) // 100. switch = (remaining - cost) * new_rate * (100 - share) // 100, but never below 0 (if remaining < cost use 0). If switch > stay, then t += cost, rate = new_rate, and append the name (the cost steps earn nothing). At the end add (horizon - t) * rate * (100 - share) // 100. Return [total, switched_names].",
+     "fn": "toy_godel",
+     "starter": "def toy_godel(rate0, horizon, candidates, share):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        100,
+        [
+         [
+          "A",
+          14,
+          5,
+          10
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        1290,
+        [
+         "A"
+        ]
+       ]
+      },
+      {
+       "args": [
+        10,
+        100,
+        [
+         [
+          "A",
+          11,
+          40,
+          10
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        1000,
+        []
+       ]
+      },
+      {
+       "args": [
+        10,
+        100,
+        [
+         [
+          "A",
+          14,
+          5,
+          10
+         ],
+         [
+          "B",
+          20,
+          10,
+          20
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        1480,
+        [
+         "A",
+         "B"
+        ]
+       ]
+      },
+      {
+       "args": [
+        10,
+        100,
+        [
+         [
+          "A",
+          14,
+          5,
+          95
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        1000,
+        []
+       ]
+      },
+      {
+       "args": [
+        10,
+        100,
+        [
+         [
+          "A",
+          12,
+          5,
+          10
+         ],
+         [
+          "B",
+          12,
+          5,
+          10
+         ]
+        ],
+        20
+       ],
+       "expect": [
+        896,
+        [
+         "A"
+        ]
+       ]
+      },
+      {
+       "args": [
+        10,
+        100,
+        [],
+        50
+       ],
+       "expect": [
+        500,
+        []
+       ]
+      }
+     ],
+     "hint": "Follow the steps in order. Use integer arithmetic exactly as described. Break out of the loop when the proof cannot finish before the horizon.",
+     "solution": "def toy_godel(rate0, horizon, candidates, share):\n    t = 0\n    total = 0\n    rate = rate0\n    names = []\n    for c in candidates:\n        name = c[0]\n        new_rate = c[1]\n        cost = c[2]\n        ptime = c[3]\n        if t + ptime >= horizon:\n            break\n        total += ptime * rate * (100 - share) // 100\n        t += ptime\n        remaining = horizon - t\n        stay = remaining * rate * (100 - share) // 100\n        if remaining < cost:\n            sw = 0\n        else:\n            sw = (remaining - cost) * new_rate * (100 - share) // 100\n        if sw > stay:\n            t += cost\n            rate = new_rate\n            names.append(name)\n    total += (horizon - t) * rate * (100 - share) // 100\n    return [total, names]\n"
+    },
+    {
+     "type": "match",
+     "title": "Toy and theory",
+     "intro": "Match each part of the toy with the theory it mirrors.",
+     "pairs": [
+      [
+       "switch > stay",
+       "Strict target theorem"
+      ],
+      [
+       "proof_time",
+       "Delay before the switch"
+      ],
+      [
+       "Candidate order",
+       "Search order"
+      ],
+      [
+       "share",
+       "Cost of running the searcher"
+      ],
+      [
+       "Break when out of time",
+       "No time left to use a proof"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Capstone",
+     "text": "The toy machine switches only if the switch total is {{strictly|strictly greater}} better than staying. Time spent on {{proof|proof search|searching}} is paid for in reward."
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Gödel Machine",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "Who proposed the Gödel machine?",
+    "options": [
+     "Kurt Gödel",
+     "Jürgen Schmidhuber",
+     "Marcus Hutter",
+     "Alan Turing"
+    ],
+    "answer": 1,
+    "explain": "Schmidhuber first proposed it in 2003."
+   },
+   {
+    "q": "A Gödel machine rewrites its code only when...",
+    "options": [
+     "A timer fires",
+     "It has proved the rewrite raises expected utility",
+     "A user asks",
+     "It is bored"
+    ],
+    "answer": 1,
+    "explain": "The proof is the gate."
+   },
+   {
+    "q": "What does Gödel numbering allow?",
+    "options": [
+     "Faster sorting",
+     "Formulas to be coded as numbers so a system can talk about itself",
+     "Encrypting proofs",
+     "Counting axioms"
+    ],
+    "answer": 1,
+    "explain": "It makes self-reference possible."
+   },
+   {
+    "q": "What must a Gödel machine do with improvements it cannot prove?",
+    "options": [
+     "Apply them",
+     "Ignore them",
+     "Randomize them",
+     "Ask a human"
+    ],
+    "answer": 1,
+    "explain": "Even with unlimited resources."
+   },
+   {
+    "q": "Is the Gödel machine more powerful than a Turing machine?",
+    "options": [
+     "Yes",
+     "No, its claim is about efficiency",
+     "Only with more memory",
+     "Only for proofs"
+    ],
+    "answer": 1,
+    "explain": "It cannot overcome computability limits."
+   },
+   {
+    "q": "Which variable holds environment input?",
+    "options": [
+     "y",
+     "x",
+     "p",
+     "time"
+    ],
+    "answer": 1,
+    "explain": "y holds outputs."
+   },
+   {
+    "q": "What is utility in the paper?",
+    "options": [
+     "Memory used",
+     "Expected sum of future rewards",
+     "Number of proofs",
+     "Program length"
+    ],
+    "answer": 1,
+    "explain": "From the current time to the end of life."
+   },
+   {
+    "q": "May the machine change its utility function?",
+    "options": [
+     "Never",
+     "Only if the change is provably better under the present utility",
+     "Whenever",
+     "Only at the start"
+    ],
+    "answer": 1,
+    "explain": "That blocks bogus goals."
+   },
+   {
+    "q": "Which axioms describe how the state changes each cycle?",
+    "options": [
+     "Utility axioms",
+     "Hardware axioms",
+     "Reward axioms",
+     "Uncertainty axioms"
+    ],
+    "answer": 1,
+    "explain": "They model the hardware."
+   },
+   {
+    "q": "What do the guarantees assume about the axiom system?",
+    "options": [
+     "It is consistent",
+     "It is short",
+     "It is random",
+     "It is hidden"
+    ],
+    "answer": 0,
+    "explain": "An inconsistent system proves anything."
+   },
+   {
+    "q": "How many proof-modifying instructions are there?",
+    "options": [
+     "Three",
+     "Six",
+     "Ten",
+     "One"
+    ],
+    "answer": 1,
+    "explain": "get-axiom, apply-rule, delete-theorem, set-switchprog, check, state2theorem."
+   },
+   {
+    "q": "Why is proof verification trivial?",
+    "options": [
+     "Proofs are tiny",
+     "Only the six instructions can modify a proof, and each keeps it valid",
+     "Humans check",
+     "Proofs are random"
+    ],
+    "answer": 1,
+    "explain": "No wrong theorem can be inserted."
+   },
+   {
+    "q": "What is a proof technique?",
+    "options": [
+     "An axiom",
+     "A program that outputs proofs",
+     "A theorem",
+     "A reward"
+    ],
+    "answer": 1,
+    "explain": "The searcher tests such programs."
+   },
+   {
+    "q": "What does the switchbit mean when it is 0?",
+    "options": [
+     "Switch now",
+     "Continue as before, with the searcher still running",
+     "Halt",
+     "Reset"
+    ],
+    "answer": 1,
+    "explain": "It is the continue option."
+   },
+   {
+    "q": "What does the target theorem say?",
+    "options": [
+     "The axioms are consistent",
+     "Switching has higher utility than continuing",
+     "The program halts",
+     "The proof is short"
+    ],
+    "answer": 1,
+    "explain": "u with switchbit 1 exceeds u with switchbit 0."
+   },
+   {
+    "q": "Why is the machine not greedy?",
+    "options": [
+     "It never switches",
+     "Continuing includes better future rewrites, so it can decline an early improvement",
+     "It is random",
+     "It is slow"
+    ],
+    "answer": 1,
+    "explain": "The comparison is with the best future."
+   },
+   {
+    "q": "What does the relaxed target theorem change?",
+    "options": [
+     "Removes the proof",
+     "Strictly higher becomes at least as high",
+     "Doubles the reward",
+     "Changes the hardware"
+    ],
+    "answer": 1,
+    "explain": "It allows no-harm rewrites."
+   },
+   {
+    "q": "In BIOPS phase i, a technique w gets how many steps?",
+    "options": [
+     "P(w)",
+     "2^i * P(w)",
+     "i",
+     "1"
+    ],
+    "answer": 1,
+    "explain": "If P(w) is at least 2^-i."
+   },
+   {
+    "q": "What does Theorem 5.1 promise?",
+    "options": [
+     "Constant-time proofs",
+     "A proof of t steps is found in O(t / P(w))",
+     "No proofs needed",
+     "Proofs always exist"
+    ],
+    "answer": 1,
+    "explain": "Up to a constant, given the bias."
+   },
+   {
+    "q": "What does bias-optimal mean?",
+    "options": [
+     "Optimal for every prior",
+     "Optimal up to a constant given the prior over techniques",
+     "Biased toward errors",
+     "Random"
+    ],
+    "answer": 1,
+    "explain": "The prior is the bias."
+   },
+   {
+    "q": "Which example uses the Speed Prior?",
+    "options": [
+     "Graph solver",
+     "Fuel robot",
+     "Sorting",
+     "Compiler"
+    ],
+    "answer": 1,
+    "explain": "It is a weak environment assumption."
+   },
+   {
+    "q": "What is Goldbach's conjecture?",
+    "options": [
+     "Primes are infinite",
+     "Every even number above 2 is a sum of two primes",
+     "P equals NP",
+     "Every number is prime"
+    ],
+    "answer": 1,
+    "explain": "It is unproven."
+   },
+   {
+    "q": "What does AIXI combine?",
+    "options": [
+     "Hashing and sorting",
+     "Solomonoff induction and expectimax",
+     "OOPS and SSA",
+     "Rice and Blum"
+    ],
+    "answer": 1,
+    "explain": "Hutter's agent is incomputable."
+   },
+   {
+    "q": "How does the Success-Story Algorithm judge a self-modification?",
+    "options": [
+     "By proof",
+     "By whether the reward rate improved since it was made",
+     "By its length",
+     "By a vote"
+    ],
+    "answer": 1,
+    "explain": "It is empirical."
+   },
+   {
+    "q": "What does the Blum speed-up theorem imply?",
+    "options": [
+     "All problems have a fastest program",
+     "Some problems have no optimal program",
+     "Proofs are short",
+     "P equals NP"
+    ],
+    "answer": 1,
+    "explain": "Every program can be beaten."
+   },
+   {
+    "q": "What does Löb's theorem restrict?",
+    "options": [
+     "Memory",
+     "A system's ability to assert that its own proofs are sound",
+     "Primes",
+     "Search speed"
+    ],
+    "answer": 1,
+    "explain": "It gives the Löbian obstacle."
+   },
+   {
+    "q": "What is the status of the Gödel machine?",
+    "options": [
+     "Widely deployed",
+     "A theoretical design without a full implementation",
+     "Refuted",
+     "A product"
+    ],
+    "answer": 1,
+    "explain": "Implementation studies exist."
+   },
+   {
+    "q": "How should claims that humans are Gödel machines be treated?",
+    "options": [
+     "As theorems",
+     "As the author's speculation",
+     "As refuted",
+     "As axioms"
+    ],
+    "answer": 1,
+    "explain": "They do not follow from the theorems."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Gödel machine lookup",
+  "prompt": "gm>",
+  "intro": "A scripted lookup, not a real machine. Try: loop, parts, theorem, axioms, help",
+  "chips": [
+   "loop",
+   "parts",
+   "theorem",
+   "axioms",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "loop      the main cycle",
+     "parts     the ingredients of the initial software",
+     "theorem   the target theorem",
+     "axioms    the six axiom groups"
+    ]
+   },
+   {
+    "re": "^loop$",
+    "out": [
+     "run policy -> search for a proof -> prove target theorem -> switch to the new code -> continue"
+    ]
+   },
+   {
+    "re": "^parts$",
+    "out": [
+     "initial policy, proof searcher, axiomatic description of the machine and its world"
+    ]
+   },
+   {
+    "re": "^theorem$",
+    "out": [
+     "u(switchbit = 1) > u(switchbit = 0) at time t1",
+     "switchbit 0 means continue as before, including future search"
+    ]
+   },
+   {
+    "re": "^axioms$",
+    "out": [
+     "hardware, reward, environment, uncertainty, initial state, utility"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ }
+}
