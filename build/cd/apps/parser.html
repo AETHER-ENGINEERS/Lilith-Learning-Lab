@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}
+button{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px 3px 3px 0}
+button.t{background:#2d2046;color:#e7d9ff}input{font:16px ui-monospace,monospace;width:100%;padding:8px;border-radius:10px;border:1px solid #4a3770;background:#1e1336;color:#f1ebff}
+.m{color:#c9b8e8;margin:6px 0}table{border-collapse:collapse;font:13px ui-monospace,monospace;width:100%}td,th{padding:3px 6px;border-bottom:1px solid #3a2a5c;text-align:left;vertical-align:top}
+.err{color:#ff9bb0}.ok{color:#8fe3a8}.row{display:flex;flex-wrap:wrap;gap:4px}
+</style></head><body>
+<div class="m">LL(1) parser for E → T E', E' → + T E' | ε, T → F T', T' → * F T' | ε, F → ( E ) | id. Type tokens separated by spaces.</div>
+<input id="in" value="id + id * id" autocomplete="off" autocapitalize="off" spellcheck="false">
+<div class="row"><button id="go">Start</button><button id="st" class="t">Step</button><button id="all" class="t">Run to the end</button>
+<button class="t" data-x="id * ( id + id )">Valid example</button><button class="t" data-x="id + * id">Error example</button></div>
+<table id="tb"></table><div class="m" id="msg"></div>
+<script>
+var TABLE={"E":{"id":["T","E'"],"(":["T","E'"]},"E'":{"+":["+","T","E'"],")":[],"$":[]},"T":{"id":["F","T'"],"(":["F","T'"]},"T'":{"*":["*","F","T'"],"+":[],")":[],"$":[]},"F":{"id":["id"],"(":["(","E",")"]}};
+var st,toks,ip,rows,fin,seenOk=false,seenErr=false;
+function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+function start(){toks=document.getElementById("in").value.trim().split(/\s+/).filter(Boolean).concat(["$"]);st=["$","E"];ip=0;rows=[];fin=false;draw("")}
+function draw(note){var h="<tr><th>Stack (top right)</th><th>Input</th><th>Action</th></tr>";
+rows.forEach(function(r){h+="<tr><td>"+r[0]+"</td><td>"+r[1]+"</td><td>"+r[2]+"</td></tr>"});
+document.getElementById("tb").innerHTML=h;document.getElementById("msg").innerHTML=note;
+if(seenOk&&seenErr)done()}
+function step(){if(!st||fin)return;var X=st.pop(),a=toks[ip],snap=st.concat([X]).join(" "),inp=toks.slice(ip).join(" "),act;
+if(!TABLE[X]){if(X===a){if(X==="$"){fin=true;seenOk=true;rows.push([snap,inp,"accept"]);draw("<span class='ok'>Accepted.</span> Valid input and an error case are both needed to finish the lab."+(seenErr?"":" Now try the error example."));return}
+ ip++;act="match "+X}else{fin=true;seenErr=true;rows.push([snap,inp,"<span class='err'>error: expected "+X+"</span>"]);draw("<span class='err'>Syntax error.</span>"+(seenOk?"":" Now try a valid input."));return}}
+else{var r=TABLE[X][a];if(r===undefined){fin=true;seenErr=true;rows.push([snap,inp,"<span class='err'>error: no rule for "+X+" on "+a+"</span>"]);draw("<span class='err'>Syntax error.</span>"+(seenOk?"":" Now try a valid input."));return}
+ act=X+" → "+(r.length?r.join(" "):"ε");for(var i=r.length-1;i>=0;i--)st.push(r[i])}
+rows.push([snap,inp,act]);draw("")}
+document.getElementById("go").onclick=start;document.getElementById("st").onclick=function(){if(!st)start();step()};
+document.getElementById("all").onclick=function(){start();var n=0;while(!fin&&n++<300)step()};
+Array.prototype.forEach.call(document.querySelectorAll("button[data-x]"),function(b){b.onclick=function(){document.getElementById("in").value=b.getAttribute("data-x");start();var n=0;while(!fin&&n++<300)step()}});
+start();
+</script></body></html>

@@ -34,7 +34,7 @@ ok(files.length >= 2, 'two course files');
       ok(JSON.stringify(order) === JSON.stringify(want), f + ' ch' + ch.n + ' stage order ' + order.join(','));
       ok(order.indexOf('map') === 1, f + ' ch' + ch.n + ' map comes right after the title');
       ok(order[order.length - 2] === 'practice' && order.indexOf('quiz') < order.indexOf('practice'), f + ' ch' + ch.n + ' quiz then practice at the end');
-      L.chunks.forEach((k, i) => { ok(k.text.length <= 450, f + ' ch' + ch.n + ' chunk ' + i + ' too long ' + k.text.length); ok(k.slide >= 0 && k.slide < L.slides.length, 'chunk slide index'); });
+      L.chunks.forEach((k, i) => { ok(k.text.length <= 450, f + ' ch' + ch.n + ' chunk ' + i + ' too long ' + k.text.length + ': ' + k.text.slice(0, 90)); ok(k.slide >= 0 && k.slide < L.slides.length, 'chunk slide index'); });
       const qs = L.slides.map((s, i) => [s, i]).filter(x => x[0].type === 'quiz');
       qs.forEach(([s, i]) => { const cs = L.chunks.filter(k => k.slide === i); ok(cs.length === 2 && cs[0].hold && cs[1].feedback, 'quiz chunks hold+feedback'); });
       // reading mode chunks
