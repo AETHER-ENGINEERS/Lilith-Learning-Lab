@@ -115,6 +115,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. Reinforcement learning is learning by trying. An agent acts, sees what happens and a reward tells it how it did. Like training a dog: treats for good, nothing for bad, and over time it learns.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what are the agent, the environment, and the reward?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Imagine teaching a dog a trick. You cannot explain it in words. You wait for a good attempt and give a treat. Over many tries the dog connects what it did with the treat. That is reinforcement learning in one picture: the dog is the agent, the room is the environment, the treat is the reward.",
       "Compare this with supervised learning. There, every example comes with the correct answer, like a photo labeled cat. In RL nobody tells the agent the correct move. It only learns afterwards whether things went well, and the result of an action can show up many steps later. A chess move may only prove good or bad twenty moves on."
      ]
@@ -315,6 +322,13 @@
     "env.action_space.sample() gives a random valid action, handy for testing."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Gymnasium is a toy box of practice worlds with one shared way to talk to them: reset to start, step to act. Learn the two calls and you can try any world.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what do reset and step return?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -584,6 +598,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. A Markov decision process says: the world is in a state, you choose an action, you get a reward and a new state. What matters is only where you are now. It is the board on which all of RL is played.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what do state, action, reward and transition mean?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Everything in the first chapter fits in one tidy model. At each time step the agent is in a state s, picks an action a, the world moves to a new state s prime with some probability, and a reward r arrives. Repeat.",
       "The Markov property is a statement about the state, not about the world. If the state includes everything you need to predict what happens next, it is Markov. In CartPole, position and velocity of both cart and pole are enough. A single photo of the pole would not be, because it hides velocity. People then stack several frames."
      ]
@@ -840,6 +861,13 @@
     "Evaluate a trained agent greedily, with exploration turned off."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Exploration is trying new things; exploitation is using what works. Like choosing between your favourite restaurant and a new one. Bandits are the simplest version of this tension.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: when would you explore more, and when less?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -1115,6 +1143,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. Q-learning keeps a table of how good each action is in each state, and updates the number with each experience. It is like a notebook of scores for every move, slowly corrected.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does one Q-value update look at?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Q-learning is the Bellman idea turned into a learning rule. You do not need a model of the environment. You just act, watch what happens and adjust.",
       "Each experience is a tuple (s, a, r, s prime, done). From it compute a target: if the episode ended, the target is r. Otherwise it is r plus gamma times the best Q in s prime. The old estimate then moves a fraction alpha toward the target."
      ]
@@ -1349,6 +1384,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. A custom environment is your own practice world with your own rules. Wrappers change an existing one, such as scaling rewards, without rewriting it.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: which methods must a custom environment provide?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Here is a tiny custom environment. The agent stands on a line of cells and must walk to the right end. It is small enough to read in one go, and it follows every rule SB3 expects."
      ]
     },
@@ -1573,6 +1615,13 @@
     "Start training after the buffer has some data (learning_starts in SB3)."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. When there are too many states for a table, a neural network estimates the values instead. DQN adds a memory of past experience and a steady target so learning does not wobble.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why does DQN replay old experience?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -1880,6 +1929,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. Stable-Baselines3 is a library of ready-made agents. You pick one, give it an environment, and call learn. A quick way to get a baseline.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what three lines make a minimal training script?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "This is the hello world of SB3. It trains PPO on CartPole and watches the result. It usually reaches the maximum of 500 within about fifty thousand steps."
      ]
     },
@@ -2147,6 +2203,13 @@
     "Advantage estimates (GAE) trade bias against variance with lambda, typically 0.95."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Policy gradient methods learn the behaviour directly instead of values. PPO is a popular steady choice. Pick an algorithm by the action type and how much data you can afford.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: how do discrete and continuous actions change the choice?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -2448,6 +2511,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. Training in practice means running many copies of the world at once, saving checkpoints and watching curves. Callbacks let you act during training.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what would you log to know if training is working?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Here is a complete small training script with the features you will want in any project. Read it top to bottom."
      ]
     },
@@ -2710,6 +2780,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. The agent does what the reward says, not what you meant. Careful reward design and debugging prevent silly shortcuts. Always watch the agent play.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what is reward hacking, with an example?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "The classic story is a boat racing game where the agent learned to spin in circles collecting small bonus items, scoring higher than any agent that finished the race. The reward said points, not finish. The agent did what the reward said.",
       "A simpler example: a cleaning robot rewarded for dust collected could learn to dump dust and re-collect it. A walking robot rewarded for forward speed might learn to fall forward as fast as it can. These are not bugs in the learning algorithm. They are bugs in the reward."
      ]
@@ -2959,6 +3036,13 @@
     "Share environments and models you build so others can check them."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Where next: harder environments, safer methods and real robots. Each step builds on the loop you now know.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: which topic do you want to try first, and why?"
+     ]
+    },
     {
      "type": "text",
      "items": [

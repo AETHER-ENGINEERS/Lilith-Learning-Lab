@@ -107,6 +107,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. AlphaZero learns chess, shogi and Go from nothing but the rules. It plays itself, notices what wins, and improves. Like a child who learns a game by playing a thousand times and never reading a book.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does AlphaZero know at the start, and what does it learn?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "AlphaZero is a reinforcement learning algorithm published by DeepMind in a preprint in December 2017, with a peer-reviewed version in the journal Science on 7 December 2018.",
       "Its abstract claims that, starting from random play and given no domain knowledge except the game rules, it reached superhuman play in chess and shogi as well as Go within 24 hours, and convincingly defeated a world-champion program in each."
      ]
@@ -341,6 +348,13 @@
     "Stockfish later adopted a small neural evaluation, so the contrast is no longer absolute."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Classical chess engines look at millions of positions per second and use rules written by humans. They are fast calculators with human advice. AlphaZero swaps the advice for what it learns.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: how do classical engines differ from AlphaZero?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -704,6 +718,13 @@
     "The root's visit counts are the output of the search."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Monte Carlo tree search builds a tree of moves by trying ideas, scoring them and returning to the promising ones. Like exploring a maze: you walk down a path, note how it went, and next time take better turns.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what are the four steps of one search iteration?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -1080,6 +1101,13 @@
     "Value target z is -1 for a loss, 0 for a draw, +1 for a win."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. One network with two heads looks at the board. One head says which moves look good, the other says who is winning. It is a coach whispering a hunch and a score.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what are the two outputs of the network?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -1527,6 +1555,13 @@
     "Training used 800 simulations per move."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. PUCT is the rule for picking which move to explore: a mix of how well it has done, how promising the network thinks it is, and how little it has been tried. Like choosing which restaurant to try again.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what three things does the PUCT score balance?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -2064,6 +2099,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. To keep learning, the program must sometimes try odd moves. Noise at the root adds surprise, and temperature controls how boldly it picks. Without it, it would repeat its own habits forever.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why add noise and temperature during self-play?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Self-play only teaches the program something if the games vary. A program that always plays its best-looking move, from the same start, would repeat one game. So AlphaZero deliberately injects randomness, in two places."
      ]
     },
@@ -2570,6 +2612,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. Each self-played game becomes homework: the positions, what the search decided, and who won. The network studies these examples and gets better, then plays better games. A loop that lifts itself.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what three things are stored for each training position?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "What does a game of self-play teach? Each game is a sequence of positions s1, s2, up to a final position sT. At every position the program ran a search and played a move. After the game ends, the rules say who won. The program then writes one record for every position played."
      ]
     },
@@ -3026,6 +3075,13 @@
     "Search = policy improvement; game outcome = policy evaluation."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. The loss asks the network to match two things: the search's stronger move choice, and the actual game result. Like a student checking answers against both the teacher's notes and the final exam.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: which two targets does the training loss compare to?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -3544,6 +3600,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. AlphaGo Zero dropped human games; AlphaZero then dropped Go-specific tricks. Each step removed a crutch. The result is one general recipe for many board games.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what did each generation remove from the previous one?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "AlphaZero grew out of AlphaGo Zero, and the AlphaZero paper lists the differences with care. They show which parts of the earlier design were Go-specific or only precautions."
      ]
     },
@@ -3890,6 +3953,13 @@
     "Elo difference = 400 log10(s / (1 - s)) for score s."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Elo measures how often you beat another player. AlphaZero beat top engines after hours of training. People argue about hardware and match conditions, so read the claim carefully.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does the debate about the results question?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -4246,6 +4316,13 @@
     "More simulations sharpen the counts."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. The build puts the parts together at toy size: a small network, a search and a self-play loop. Seeing each piece working makes the big system feel less magical.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: how do the search and network call each other in the toy?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -4637,6 +4714,13 @@
     "The original program and training code were never published."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Later systems added planning with learned models and games with hidden information. Limits remain: it needs a simulator, lots of compute and clear rules.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what must a problem provide for AlphaZero to work?"
+     ]
+    },
     {
      "type": "text",
      "items": [

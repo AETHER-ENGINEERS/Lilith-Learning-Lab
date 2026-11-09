@@ -95,6 +95,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. A VQ-VAE squeezes a picture into a short list of codes from a fixed dictionary, then rebuilds it. Like describing a face with words from a small word list, so someone else can redraw it.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what is the dictionary, and what is stored per image?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Many things we care about are naturally discrete. Language is a string of words. Speech is a sequence of phonemes. Even images can be described in words.",
       "A model whose hidden representation is discrete may therefore match the data better, and it can be handled by tools made for symbols, such as autoregressive sequence models."
      ]
@@ -306,6 +313,13 @@
     "In the paper, 128 by 128 ImageNet images were compressed to a 32 by 32 grid of discrete codes."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. An autoencoder shrinks data to a small summary and expands it back. The squeeze forces it to keep only what matters. Like a summary that must still let you retell the story.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why must the middle be smaller than the input?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -690,6 +704,13 @@
     "The paper used a codebook of 512 vectors with dimension 64 in its image experiments, and mentions K and D as the main sizes."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. The codebook is the dictionary of vectors. Quantisation replaces each piece of the summary with the nearest dictionary entry, like rounding to the nearest word.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: how is the nearest code chosen?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -1225,6 +1246,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. Picking the nearest entry has no smooth slope, so learning would stop. The straight-through trick copies the gradient across as if rounding did nothing. A shortcut that works.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does the gradient skip over?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Consider a one-dimensional codebook with entries at zero, one and two. The quantizer maps any number to the nearest of them. Plot it and you see a staircase: flat at 0 until one half, a jump to 1, flat until three halves, a jump to 2.",
       "The slope is zero on every flat part, and the jumps have infinite slope. For gradient descent, this is a disaster."
      ]
@@ -1645,6 +1673,13 @@
     "The paper's first experiments used the squared error for images and a categorical output for audio."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. The loss has three parts: rebuild the input well, move the dictionary toward the encoder outputs, and keep the encoder committed to its choices. Three small pulls that keep the system consistent.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does the commitment term prevent?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -2170,6 +2205,13 @@
     "The EMA variant needs no codebook gradient and is often steadier."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Dictionary entries can be updated like clusters that follow the data, with k-means or moving averages. Some entries may never get used; they are dead codes and are reset.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what is a dead code and how do we fix it?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -2889,6 +2931,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. Perplexity counts how many codes are effectively in use. If only a few get used, the dictionary is wasted. Rate is how many bits it costs to describe an image.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does low perplexity warn you about?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Imagine two codebooks of 512 entries. In the first, every entry is used about equally often. In the second, ten entries are used all the time and the rest almost never. Both can be called codebooks of 512, but the second behaves like a codebook of ten. A single number should tell them apart."
      ]
     },
@@ -3328,6 +3377,13 @@
     "Because the prior is over a small grid, it is far cheaper than a PixelCNN on pixels."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Once images become code sequences, a second model can learn to write new sequences, and the decoder turns them into images. That is how it generates, like writing a sentence in the picture language.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why do we need a prior over codes to generate?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -3947,6 +4003,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. Extensions stack levels of codes, use several small codebooks or add residuals. Each makes the description richer at the same cost.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: how do hierarchy and residual codes add detail?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "The original model uses one grid of one codebook. That works, but images contain details at many scales: global layout, objects, textures. A single coarse grid has to hold everything. A natural extension is to use more than one level of codes."
      ]
     },
@@ -4477,6 +4540,13 @@
     "The core idea, discrete learned tokens, now underpins many generative systems."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Problems include codebook collapse and blurry detail. Alternatives such as continuous VAEs or diffusion make different trades. Know when discrete codes help.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: when are discrete latents a better fit than continuous?"
+     ]
+    },
     {
      "type": "text",
      "items": [

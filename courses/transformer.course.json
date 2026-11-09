@@ -95,6 +95,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. A transformer reads a whole sentence at once and lets every word look at every other word to decide what matters. Like a room where everyone can talk to everyone, instead of passing a note down a line.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what did attention replace, and why is it faster?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Before 2017 the best translation systems used recurrent networks. A recurrent network reads a sentence one word at a time, updating a hidden state. That is slow to train, since each step waits for the one before.",
       "Long-range links are also hard: information from the first word must survive many updates to reach the last."
      ]
@@ -299,6 +306,13 @@
     "The encoding is added, not concatenated."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Words become lists of numbers called embeddings, so similar words are near each other. Position encoding adds a sense of order, because without it the sentence would be a bag of words.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why does the model need positional information?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -699,6 +713,13 @@
     "Each output is a convex combination of the value vectors."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Attention is a lookup. Each word asks a question (query), others offer labels (keys), and the best matches hand over their content (values). Scaling keeps the scores from growing too big.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what do query, key and value each do?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -1347,6 +1368,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. Multi-head attention runs several lookups side by side, each paying attention to something different, like grammar, meaning or position. Their results are combined.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why use many heads instead of one?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "A single attention step produces one weighted average per position. That is limiting: the position may need to look at one word for its subject, another for the verb, and another for a nearby modifier. With a single average, those signals blur together."
      ]
     },
@@ -1944,6 +1972,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. A padding mask hides empty filler slots. A causal mask hides future words, so when guessing the next word the model cannot peek.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why must the decoder not see the future?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "When sentences are batched, short ones are padded with a special token to the length of the longest. The padding carries no information. If a real word attended to a pad, it would mix in a meaningless vector.",
       "So we mask: the scores for pad positions are replaced by a huge negative number before the softmax. The exponential of that is zero, so these positions get no weight."
      ]
@@ -2508,6 +2543,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. After attention, a small network refines each word on its own. Residual connections add the input back so information is not lost, and normalisation keeps the numbers steady.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what would break without the residual path?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Attention mixes information between positions. The feed-forward network then processes each position by itself. The paper describes it as two linear transformations with a ReLU between.",
       "Think of it as a small two-layer perceptron applied identically at every position, with the same weights for all positions but different weights in each layer."
      ]
@@ -3065,6 +3107,13 @@
     "The encoder runs once per sentence, not once per output word."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. The encoder is a tower of identical layers that read the input and build a rich understanding of every word in context.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does each encoder layer contain?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -3628,6 +3677,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. The decoder writes the output one word at a time. It looks at what it wrote so far, and at the encoder's understanding of the input.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what are the three attention steps in a decoder layer?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "The decoder writes the target sentence. It receives the target tokens produced so far, shifted right so that the first input is a start marker. These are embedded and given positional encodings, as in the encoder."
      ]
     },
@@ -4139,6 +4195,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. Training shows sentences and asks the model to guess correct words. A loss measures the mistake; the optimiser nudges the weights. A schedule warms the step size up and then lowers it.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why warm up the learning rate?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "The training objective is the standard one for sequence generation. For each target position, the model gives a probability to every token. The loss is the negative log of the probability of the correct token, averaged over positions.",
       "Because of the mask, all positions of a sentence are trained at the same time."
      ]
@@ -4578,6 +4641,13 @@
     "Encoder-only (BERT) and decoder-only (GPT) models are descendants (background)."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. At use time the model picks the next word again and again, with beam search or sampling. The transformer beat older models and led to today's large language models.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: how does decoding differ from training?"
+     ]
+    },
     {
      "type": "text",
      "items": [

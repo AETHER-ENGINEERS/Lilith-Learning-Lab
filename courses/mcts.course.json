@@ -102,6 +102,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. Monte Carlo tree search picks a move by trying lots of imagined games and remembering which first moves led to wins. Like a coach testing plays on a practice field before the real match.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does the search do before it chooses a move?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Suppose you must pick a move in a game with far too many positions to search fully. Chess programs use a hand-written evaluation function to judge positions. In Go, nobody could write a good one. MCTS found another way: judge a move by playing many quick games from it and counting how often you win."
      ]
     },
@@ -308,6 +315,13 @@
     "MCTS estimates what minimax computes, using samples."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A game tree is every move, every reply and every reply to that, branching like a family tree. It grows so fast we cannot look at all of it, so we need to choose where to look.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why does the tree become too big to search fully?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -722,6 +736,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. A random playout plays the rest of a game with random moves and notes who won. One is noisy; thousands give a fair guess. Like flipping a coin many times to judge whether it is loaded.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why does averaging many random games estimate a position?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Take the Nim position with five stones. We know the exact answer: it is won for the player to move, by taking one stone. Pretend we do not know. We could play random games from here and count how often the player to move wins. If the estimate is above one half, the position looks good."
      ]
     },
@@ -1118,6 +1139,13 @@
     "In MCTS the arm is a child move; the reward is a playout result."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A bandit is a row of slot machines where you do not know which pays best. UCB1 says: try the ones that look good, but also the ones you have barely tried. It balances greed with curiosity.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what two terms does UCB1 add together?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -1595,6 +1623,13 @@
     "After the iterations, the move is chosen from the root's children."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Each round has four steps: walk down the tree by the best looking path, add a new node, play randomly to the end, then update the scores back up the path.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: can you name the four steps in order?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -2161,6 +2196,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. UCT is MCTS using UCB1 inside the tree. As more rounds run, the tree grows toward the best lines and ignores hopeless ones. It gets better the longer it thinks.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: how does UCT decide which child to enter?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Now we assemble the full algorithm. At each node reached in selection that has all its moves tried, use the UCT rule to choose among its children. Where it has untried moves, expand one. Then simulate and back up."
      ]
     },
@@ -2562,6 +2604,13 @@
     "Disagreement signals that more iterations are needed."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. At the end, pick the move that was visited most, not the one with the highest average. Many visits mean the search came back to it again and again. It is the more robust choice.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why is the most visited move often better than the best average?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -3100,6 +3149,13 @@
     "Parallelisation: tree parallelism with virtual loss, leaf or root parallelism."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Enhancements add hints: share what is learned across similar moves, give moves starting scores, or look at fewer branches. They speed up learning when the search has little time.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: which enhancement adds prior knowledge?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -3652,6 +3708,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. In a two-player game, a good move for me is a bad move for you. The scores flip with each turn. Heuristics can also replace the random playout with a smarter guess.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: how must the scores be signed at each level?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "In a two-player game, one side's gain is the other's loss. That structure has to be respected in the tree. At a node where the opponent is to move, the opponent will pick the child that is best for them, which is worst for us.",
       "If the node stores the result from the viewpoint of whoever moved into it, the choice at the parent is always a plain maximisation over children, one level at a time."
      ]
@@ -4058,6 +4121,13 @@
     "MCTS needs a model of the environment, or a learned one as in MuZero."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. MCTS suits problems with a simulator and a hard-to-score position. It is the base of AlphaGo and many planners. It struggles when random play tells you nothing.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: when does random playout stop being useful?"
+     ]
+    },
     {
      "type": "text",
      "items": [

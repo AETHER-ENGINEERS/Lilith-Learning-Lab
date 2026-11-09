@@ -92,6 +92,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. RLHF teaches a model what people like through a judge and a long training loop. DPO says: skip the judge. Show the model pairs of answers, good and bad, and nudge it directly toward the good one.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what part of RLHF does DPO remove?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "A language model trained on text can write fluently but does not know what people prefer. To align it, the standard pipeline of RLHF has three stages. Fine-tune on good examples. Train a reward model on human comparisons.",
       "Then optimise the language model against the reward model with reinforcement learning, with a penalty that keeps it close to the starting model."
      ]
@@ -294,6 +301,13 @@
     "The model assumes preferences come from a single underlying score."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Preference data is pairs: this answer is better than that one. Bradley-Terry turns this into odds, like a ranking in a tournament where each item has a strength and stronger ones win more often.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: how does a score difference become a win probability?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -750,6 +764,13 @@
     "The paper derives this as a known result in the appendix."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. We want a model that earns high reward but does not wander far from what it was. Think of a dog trained with treats on a leash: free to learn, but kept close. The best behaviour has a neat closed form.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does the KL term keep the policy from doing?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -1279,6 +1300,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. The trick is to rewrite reward using the model itself. Plug that into the preference odds and the reward drops out. What is left is a simple loss: raise the good answer, lower the bad one, relative to the start.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: which quantities appear in the DPO loss, and what cancels?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Start from the closed-form optimal policy of the last chapter. Take logarithms and rearrange. The log of the optimal policy equals the log of the reference, plus the reward over beta, minus log Z. Solve for the reward."
      ]
     },
@@ -1719,6 +1747,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. The gradient says: push up the chosen answer and push down the rejected one, harder when the model currently gets the order wrong. Like a teacher who spends more time on the questions you got wrong.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: when is the update largest?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "What does a step of DPO do? Differentiate the loss with respect to the policy parameters. The result has a pleasingly interpretable form. It increases the log-probability of the chosen response, it decreases the log-probability of the rejected one, and it multiplies this by a weight."
      ]
     },
@@ -2155,6 +2190,13 @@
     "Longer responses have lower total log-probability, which can interact with the loss."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. In practice each answer is a sequence of words, so we add up the log-probability of every word. Batches hold many pairs, and a frozen copy of the starting model gives the baseline.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why do we need a frozen reference model in code?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -2680,6 +2722,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. Beta is a knob for how tightly the leash is held. Small beta lets the model move far; large beta keeps it near the start. Too loose and it may drift; too tight and it learns nothing.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what happens when beta is too small or too large?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Consider the roles of beta again. In the loss, beta multiplies the log-ratio. In the optimal policy it sets the temperature of the reward tilt. A small beta says: I trust the preference data, and I let the policy drift. A large beta says: stay close.",
       "The paper's experiments use values such as 0.1 and compare behaviour as the KL to the reference grows."
      ]
@@ -3104,6 +3153,13 @@
     "These variants are later than the DPO paper; evidence on which is best is mixed."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. DPO has relatives: variants that change the loss or use other data. They all try to learn from preferences with less machinery. DPO sits between plain fine-tuning and full reinforcement learning.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: where does DPO sit between SFT and RLHF?"
+     ]
+    },
     {
      "type": "text",
      "items": [

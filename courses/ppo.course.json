@@ -98,6 +98,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. Policy gradient learns by making good actions more likely. PPO adds a safety rule: do not change too much at once. Like steering a car: small corrections keep you on the road.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why does too big an update hurt learning?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Reinforcement learning teaches an agent by reward. In policy gradient methods, the agent's behaviour is a neural network that outputs action probabilities, and we adjust its weights to make rewarding actions more likely. The simple version is the algorithm called REINFORCE."
      ]
     },
@@ -299,6 +306,13 @@
     "Common gamma in practice: 0.99."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. The agent plays, gets rewards and then raises the probability of the actions that preceded high rewards. Like a dog repeating tricks that earned treats.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does the policy gradient push up and down?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -806,6 +820,13 @@
     "Normalising advantages per minibatch is common in implementations."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. An advantage says how much better an action was than usual. If you scored 90 on a test where the average is 70, your advantage is plus 20. GAE blends short and long views to make a steadier estimate.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does a positive or negative advantage mean?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -1333,6 +1354,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. A trust region is a fence round the current policy. The ratio compares the new probability of an action to the old one. KL divergence measures how far apart two behaviours are.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does a ratio of 1.5 tell you?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "The samples in our batch were collected by the old policy. But the policy gradient involves expectations under the policy being improved. To correct, weight each sample by the ratio of its probability under the new policy to that under the old. This is importance sampling.",
       "The weighted advantage is the surrogate objective."
      ]
@@ -1797,6 +1825,13 @@
     "eps = 0.2 was a good value in the paper's experiments (the paper compared several)."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. The clipped objective cuts off the reward for moving too far. If an action was good, you may raise its probability, but only up to a limit. A speed limit on the update.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what stops the ratio from running away?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -2266,6 +2301,13 @@
     "The PPO paper presents this combined objective for shared architectures."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. The full loss has three parts: the policy term, a value term to learn the baseline, and an entropy bonus to keep exploring. Like a student who does homework, checks answers and tries new methods.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what is each of the three parts of the loss for?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -2763,6 +2805,13 @@
     {
      "type": "text",
      "items": [
+      "Explain it simply. The algorithm collects a batch of experience, then runs several passes over it, then collects fresh data. Details like normalising advantages and clipping gradients keep it stable.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why reuse each batch for several epochs?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
       "Now the whole algorithm. A round has two phases. In the collection phase, N actors each run the current policy for T steps. Record for each step the observation, the action, the reward, whether the episode ended, the value estimate and the log-probability of the action.",
       "This gives a batch of N times T samples."
      ]
@@ -3225,6 +3274,13 @@
     "Alternatives skip the RL step: DPO trains directly on preferences (see the DPO course)."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. In language models, the agent is the model, an action is a word and the reward comes from a learned judge. A KL penalty keeps it close to its starting self, so it does not game the judge.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does the KL penalty protect in RLHF?"
+     ]
+    },
     {
      "type": "text",
      "items": [
@@ -3729,6 +3785,13 @@
     "PPO is on-policy and sample-hungry; off-policy methods can be more data-efficient."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. When PPO fails, plots tell you why: KL spikes, entropy collapses or value loss explodes. Learning to read them is half the skill. Relatives like TRPO and A2C make different trades.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: which curve would show the policy collapsing?"
+     ]
+    },
     {
      "type": "text",
      "items": [

@@ -1,0 +1,18 @@
+FEY = [
+ ("RLHF teaches a model what people like through a judge and a long training loop. DPO says: skip the judge. Show the model pairs of answers, good and bad, and nudge it directly toward the good one.",
+  "what part of RLHF does DPO remove?"),
+ ("Preference data is pairs: this answer is better than that one. Bradley-Terry turns this into odds, like a ranking in a tournament where each item has a strength and stronger ones win more often.",
+  "how does a score difference become a win probability?"),
+ ("We want a model that earns high reward but does not wander far from what it was. Think of a dog trained with treats on a leash: free to learn, but kept close. The best behaviour has a neat closed form.",
+  "what does the KL term keep the policy from doing?"),
+ ("The trick is to rewrite reward using the model itself. Plug that into the preference odds and the reward drops out. What is left is a simple loss: raise the good answer, lower the bad one, relative to the start.",
+  "which quantities appear in the DPO loss, and what cancels?"),
+ ("The gradient says: push up the chosen answer and push down the rejected one, harder when the model currently gets the order wrong. Like a teacher who spends more time on the questions you got wrong.",
+  "when is the update largest?"),
+ ("In practice each answer is a sequence of words, so we add up the log-probability of every word. Batches hold many pairs, and a frozen copy of the starting model gives the baseline.",
+  "why do we need a frozen reference model in code?"),
+ ("Beta is a knob for how tightly the leash is held. Small beta lets the model move far; large beta keeps it near the start. Too loose and it may drift; too tight and it learns nothing.",
+  "what happens when beta is too small or too large?"),
+ ("DPO has relatives: variants that change the loss or use other data. They all try to learn from preferences with less machinery. DPO sits between plain fine-tuning and full reinforcement learning.",
+  "where does DPO sit between SFT and RLHF?"),
+]

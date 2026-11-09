@@ -108,6 +108,13 @@
    ],
    "lesson": [
     {
+     "type": "text",
+     "items": [
+      "Explain it simply. This page tells you how to use the guide so you can find what you need. Treat it like the map at the entrance of a park: look for the sections you will use.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: which sections do you need first for your own project?"
+     ]
+    },
+    {
      "type": "code",
      "lang": "bash",
      "code": "# The first three commands to run on any Jetson, to learn what you have\n$ cat /etc/nv_tegra_release        # the Jetson Linux (L4T) release\n$ sudo nvpmodel -q                 # the current power mode\n$ tegrastats                       # live CPU/GPU/memory load (Ctrl+C to stop)"
@@ -219,6 +226,13 @@
     "It is not a PC: there is no BIOS setup menu for boot order; you flash images onto it from a host PC."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. The Xavier is a small computer with several kinds of brain on one chip: a normal CPU, a graphics GPU and special helpers for AI and vision. Each is best at a different job.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what is each processor on the chip best at?"
+     ]
+    },
     {
      "type": "code",
      "lang": "text",
@@ -354,6 +368,13 @@
     "Helper cores (from memory): Arm Cortex-R5 cores for boot and power management (BPMP), a safety cluster running in lockstep, and an audio processing engine. You rarely touch these directly."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Think of the hardware as a team: each processor is a specialist. The CPU is a manager, the GPU a big crew doing the same task on many things, the DLA a quiet efficient worker for neural nets.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: which job would you give to the GPU and which to the DLA?"
+     ]
+    },
     {
      "type": "figure",
      "image": "soc-overview.svg",
@@ -533,6 +554,13 @@
    ],
    "lesson": [
     {
+     "type": "text",
+     "items": [
+      "Explain it simply. The processors share one pool of memory, like a team around one table. The carrier board is the base that adds ports and connectors for cameras and drives.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why does shared memory help and what limits it?"
+     ]
+    },
+    {
      "type": "figure",
      "image": "memory-unified.svg",
      "caption": "Desktop PC copies data between CPU and GPU memory, while Jetson processors share one LPDDR4x pool"
@@ -646,6 +674,13 @@
     "The dev kit power input is about 19 V; a weak supply causes brownouts and throttling under load."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Power and heat are tied: faster clocks use more power and warm the chip. Power modes are presets, like a car's eco and sport settings. When too hot, the chip slows itself down.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what trade does a power mode make?"
+     ]
+    },
     {
      "type": "code",
      "lang": "bash",
@@ -1458,6 +1493,13 @@
    ],
    "lesson": [
     {
+     "type": "text",
+     "items": [
+      "Explain it simply. JetPack is the bundle of software that comes with the board, and its version decides which tools you get. Match versions across tools or they will not work together.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why must library versions match JetPack?"
+     ]
+    },
+    {
      "type": "figure",
      "image": "software-stack.svg",
      "caption": "The Jetson software stack from hardware to application, and which JetPack lines support the Xavier"
@@ -1602,6 +1644,13 @@
    ],
    "lesson": [
     {
+     "type": "text",
+     "items": [
+      "Explain it simply. Flashing writes a fresh system onto the board, like reinstalling an operating system on a phone. First boot is when you check it actually works.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what do you check after first boot?"
+     ]
+    },
+    {
      "type": "figure",
      "image": "flash-workflow.svg",
      "caption": "Four steps to flash a Jetson from a host PC"
@@ -1718,6 +1767,13 @@
     "To see DLA use, watch the engine view in `jtop` (if available) or time your engine with `trtexec`."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Monitoring tools show what the machine is doing: CPU load, GPU use, temperature, power. They are the dashboard lights of the car.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: which tool shows GPU load live?"
+     ]
+    },
     {
      "type": "code",
      "lang": "bash",
@@ -2563,6 +2619,13 @@
    ],
    "lesson": [
     {
+     "type": "text",
+     "items": [
+      "Explain it simply. CUDA is how you give the GPU many small identical jobs at once. Think of a thousand cooks each chopping one carrot. Good for work where each piece is independent.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what is a thread, a block and a kernel?"
+     ]
+    },
+    {
      "type": "code",
      "lang": "cuda",
      "code": "// vector_add.cu  -  compile: nvcc -arch=sm_72 -O2 vector_add.cu -o vector_add\n#include <cstdio>\n#include <cuda_runtime.h>\n\n__global__ void add(const float* a, const float* b, float* c, int n) {\n    int i = blockIdx.x * blockDim.x + threadIdx.x;\n    if (i < n) c[i] = a[i] + b[i];\n}\n\nint main() {\n    const int n = 1 << 20;\n    float *a, *b, *c;\n    cudaMallocManaged(&a, n * sizeof(float));\n    cudaMallocManaged(&b, n * sizeof(float));\n    cudaMallocManaged(&c, n * sizeof(float));\n    for (int i = 0; i < n; i++) { a[i] = 1.0f; b[i] = 2.0f; }\n\n    int threads = 256;\n    int blocks = (n + threads - 1) / threads;\n    add<<<blocks, threads>>>(a, b, c, n);\n    cudaError_t err = cudaGetLastError();\n    if (err != cudaSuccess) { printf(\"launch failed: %s\\n\", cudaGetErrorString(err)); return 1; }\n    cudaDeviceSynchronize();\n\n    printf(\"c[0] = %f (expected 3.0)\\n\", c[0]);\n    cudaFree(a); cudaFree(b); cudaFree(c);\n    return 0;\n}"
@@ -2750,6 +2813,13 @@
     "In Python, TensorRT is installed system-wide with JetPack (`import tensorrt`); virtual environments need `--system-site-packages` to see it."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. TensorRT takes a trained model and rebuilds it for speed on this chip. Like repacking a suitcase to fit more with less weight. The result is an engine file.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does TensorRT change and what stays the same?"
+     ]
+    },
     {
      "type": "figure",
      "image": "trt-workflow.svg",
@@ -3602,6 +3672,13 @@
    ],
    "lesson": [
     {
+     "type": "text",
+     "items": [
+      "Explain it simply. The DLA is a low-power accelerator for common neural layers. It does fewer things than the GPU but uses less energy. Layers it cannot do fall back to the GPU.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what happens to a layer the DLA cannot run?"
+     ]
+    },
+    {
      "type": "figure",
      "image": "dla-partition.svg",
      "caption": "A good model keeps one DLA subgraph; a bad one switches between DLA and GPU many times"
@@ -4451,6 +4528,13 @@
    ],
    "lesson": [
     {
+     "type": "text",
+     "items": [
+      "Explain it simply. A model that suits the DLA uses simple, supported layers and fixed sizes. Designing with that in mind avoids slow fallbacks, like packing for a trip with a small bag.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: which layer choices make a model DLA friendly?"
+     ]
+    },
+    {
      "type": "figure",
      "image": "vq-dla-pipeline.svg",
      "caption": "VQ-VAE pipeline: encoder and scores on the DLA, argmin and lookup on CPU or GPU, decoder on the DLA"
@@ -4980,6 +5064,13 @@
    ],
    "lesson": [
     {
+     "type": "text",
+     "items": [
+      "Explain it simply. The PVA and VPI are for vision tasks like filtering and tracking, not neural nets. They are specialists for image chores that free up the GPU.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what kind of work suits the PVA?"
+     ]
+    },
+    {
      "type": "code",
      "lang": "python",
      "code": "# VPI sketch: blur an image on the PVA (check the VPI docs for exact algorithm support on your version)\nimport numpy as np, vpi\nfrom PIL import Image\n\nframe = np.asarray(Image.open(\"in.png\").convert(\"L\"))      # grayscale uint8\nwith vpi.Backend.PVA:\n    blurred = vpi.asimage(frame).box_filter(5, border=vpi.Border.ZERO)\nImage.fromarray(blurred.cpu()).save(\"out.png\")"
@@ -5106,6 +5197,13 @@
    ],
    "lesson": [
     {
+     "type": "text",
+     "items": [
+      "Explain it simply. Cameras send frames, and GStreamer connects them like pipes: capture, convert, process, display. Each element does one job and hands the frame on.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what is a pipeline element and a pad?"
+     ]
+    },
+    {
      "type": "figure",
      "image": "camera-pipeline.svg",
      "caption": "Camera frames flow through ISP and VIC to DLA or GPU inference without CPU copies"
@@ -5231,6 +5329,13 @@
    ],
    "lesson": [
     {
+     "type": "text",
+     "items": [
+      "Explain it simply. Containers pack the software and its libraries into a box that runs the same everywhere. For machine learning on the board it avoids version trouble.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why use a container instead of installing by hand?"
+     ]
+    },
+    {
      "type": "code",
      "lang": "bash",
      "code": "$ cat /etc/nv_tegra_release                         # note the R35.x release number\n$ sudo docker run -it --rm --runtime nvidia --network host \\\n      nvcr.io/nvidia/l4t-ml:<tag-matching-your-L4T>   # replace the placeholder with a real tag\n\n$ python3 - <<'EOF'\nimport torch\nprint(torch.__version__, torch.cuda.is_available())   # expect True with a Jetson build\nEOF"
@@ -5339,6 +5444,13 @@
     "Design for degradation: if temperatures climb and clocks drop, the always-on path should still meet its deadline."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A pipeline can use all engines at once: camera feeds the GPU, the DLA does detection, the CPU runs logic. The art is keeping all of them busy without waiting on each other.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: where might the pipeline stall and how would you see it?"
+     ]
+    },
     {
      "type": "figure",
      "image": "sentry-pipeline.svg",
@@ -5498,6 +5610,13 @@
    ],
    "lesson": [
     {
+     "type": "text",
+     "items": [
+      "Explain it simply. Tuning means measuring first, then changing one thing at a time. Look for the slowest stage, then fix it. Guessing wastes time.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why measure before changing anything?"
+     ]
+    },
+    {
      "type": "code",
      "lang": "bash",
      "code": "# Latency/throughput with clocks locked, GPU vs DLA\n$ sudo nvpmodel -m 0 && sudo jetson_clocks\n$ trtexec --loadEngine=gpu.engine --warmUp=500 --iterations=500 --avgRuns=100\n$ trtexec --loadEngine=dla0.engine --useDLACore=0 --warmUp=500 --iterations=500 --avgRuns=100"
@@ -5625,6 +5744,13 @@
    ],
    "lesson": [
     {
+     "type": "text",
+     "items": [
+      "Explain it simply. Troubleshooting is detective work: symptom, likely cause, test, fix. Most problems come from versions, power or heat.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what are the three first things to check when it misbehaves?"
+     ]
+    },
+    {
      "type": "code",
      "lang": "text",
      "code": "Symptom                              Likely cause / first fix\n-----------------------------------  ---------------------------------------------------------\n\"CUDA out of memory\" or process killed  Shared RAM full: add swap, shrink workspace/batch, free memory\nEngine fails to deserialize             Built with a different TensorRT/JetPack: rebuild on this device\nDLA build error: layer not supported    Use --allowGPUFallback or change the layer (chapter 11)\ntorch.cuda.is_available() is False      Wrong PyTorch wheel: install the Jetson build\nCamera pipeline hangs                   Restart nvargus-daemon: sudo systemctl restart nvargus-daemon\nSlow after a few minutes                Thermal throttling: check fan, tegrastats temperatures\nNot seen in lsusb on host               Not in recovery mode, bad cable, or wrong port"
@@ -5750,6 +5876,13 @@
     "Keep your flashed image, engine build scripts and a record of exact versions to make the system reproducible."
    ],
    "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Hardware has a life: how long it is supported and what replaces it. Knowing this helps you decide whether to build on it or move on.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does end of support mean for your project?"
+     ]
+    },
     {
      "type": "code",
      "lang": "text",
