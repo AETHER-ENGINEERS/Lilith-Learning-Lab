@@ -1,0 +1,5356 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "vq-vae",
+ "title": "VQ-VAE: Discrete Latents",
+ "subtitle": "Codebooks, straight-through gradients and priors, with Python labs",
+ "author": "Lilith Learning Lab",
+ "description": "Neural Discrete Representation Learning (van den Oord, Vinyals, Kavukcuoglu, 2017): the codebook and nearest-neighbour quantizer, the straight-through estimator, the three-part loss, EMA and dead codes, perplexity, autoregressive priors, and extensions. Theory plus Python labs.",
+ "pronounce": {
+  "VQ-VAE-2": "V Q V A E two",
+  "VQ-VAE": "V Q V A E",
+  "VQGAN": "V Q gan",
+  "VAE": "V A E",
+  "VAEs": "V A Es",
+  "PixelCNN": "pixel C N N",
+  "WaveNet": "wave net",
+  "SoundStream": "sound stream",
+  "Jukebox": "juke box",
+  "Kavukcuoglu": "kah voo koo loo",
+  "Razavi": "rah zah vee",
+  "van den Oord": "van den ord",
+  "Vinyals": "vin yalls",
+  "NeurIPS": "neur ips",
+  "ImageNet": "image net",
+  "EMA": "E M A",
+  "MSE": "M S E",
+  "GAN": "gan",
+  "NLL": "N L L",
+  "k-means": "k means",
+  "K-means": "K means",
+  "argmin": "arg min",
+  "sg": "stop gradient",
+  "Gaussian": "gaussian",
+  "bigram": "bi gram",
+  "Bigram": "Bi gram",
+  "PPL": "perplexity"
+ },
+ "chapters": [
+  {
+   "title": "What is VQ-VAE?",
+   "maps": [
+    {
+     "title": "The big picture",
+     "links": [
+      "VQ-VAE | is | A discrete latent autoencoder",
+      "Encoder | outputs | Continuous vectors",
+      "Codebook | holds | K embedding vectors",
+      "Quantizer | picks | Nearest codebook vector",
+      "Decoder | reads | Quantized vectors",
+      "Prior | models | Sequences of code indices",
+      "VQ-VAE | introduced by | van den Oord et al."
+     ]
+    }
+   ],
+   "summary": [
+    "VQ-VAE, the Vector Quantised Variational AutoEncoder, is a generative model that learns discrete codes. It was introduced by Aaron van den Oord, Oriol Vinyals and Koray Kavukcuoglu in the 2017 paper Neural Discrete Representation Learning.",
+    "An encoder turns the input into vectors. Each vector is replaced by the nearest entry of a learned codebook. A decoder rebuilds the input from the chosen entries. What remains between them is a grid of integer indices.",
+    "A second model, an autoregressive prior such as PixelCNN, learns to generate those indices, and sampling from it plus decoding makes new data."
+   ],
+   "glossary": [
+    {
+     "term": "Autoencoder",
+     "def": "A network that compresses its input into a code and rebuilds the input from it."
+    },
+    {
+     "term": "Latent",
+     "def": "The hidden representation between encoder and decoder."
+    },
+    {
+     "term": "Codebook",
+     "def": "A table of K learned vectors; each is a possible discrete code."
+    },
+    {
+     "term": "Quantization",
+     "def": "Replacing a continuous vector by its nearest codebook vector."
+    },
+    {
+     "term": "Prior",
+     "def": "A model of how the codes are distributed, used to generate new samples."
+    },
+    {
+     "term": "Straight-through estimator",
+     "def": "A trick that copies gradients across the non-differentiable quantizer."
+    }
+   ],
+   "keyPoints": [
+    "Published at NeurIPS 2017 by van den Oord, Vinyals and Kavukcuoglu.",
+    "Latents are discrete: each position holds an index into a codebook of K vectors.",
+    "The quantizer is a nearest-neighbour lookup; gradients are copied across it.",
+    "The loss has three parts: reconstruction, codebook and commitment.",
+    "Generation needs a separate prior over the code indices, such as PixelCNN or WaveNet.",
+    "The discrete bottleneck avoids the posterior collapse seen in many VAEs with powerful decoders."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Many things we care about are naturally discrete. Language is a string of words. Speech is a sequence of phonemes. Even images can be described in words.",
+      "A model whose hidden representation is discrete may therefore match the data better, and it can be handled by tools made for symbols, such as autoregressive sequence models."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The VQ-VAE paper, presented at NeurIPS 2017, builds a variational autoencoder whose latent codes are discrete. The abstract says it incorporates ideas from vector quantisation.",
+      "It differs from ordinary VAEs in two ways: the encoder outputs discrete codes, not continuous ones, and the prior is learned instead of fixed."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Here is the whole pipeline. An input image goes through an encoder network and comes out as a grid of vectors, each of dimension D. A codebook holds K vectors of the same dimension. At each grid position the nearest codebook vector replaces the encoder's output.",
+      "The decoder reads the grid of chosen vectors and produces a reconstruction. The thing the codebook indices form, a grid of integers between one and K, is the discrete representation."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "x \\;\\xrightarrow{\\ \\text{encoder}\\ }\\; z_e(x) \\;\\xrightarrow{\\ \\text{nearest code}\\ }\\; z_q(x) \\;\\xrightarrow{\\ \\text{decoder}\\ }\\; \\hat{x}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "There is one technical obstacle. Picking the nearest codebook vector is not differentiable, so gradients from the decoder cannot flow back into the encoder by the usual rule.",
+      "The paper's solution is the straight-through estimator: in the backward pass, copy the gradient at the decoder input straight to the encoder output as if the quantizer were not there. Chapter 4 covers it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Generation is separate from training. The autoencoder only learns to encode and decode. To make new samples, the paper trains an autoregressive prior over the grid of discrete codes after the autoencoder is done: PixelCNN for images and WaveNet for raw audio.",
+      "Sample a grid of codes from the prior, look up the codebook vectors and decode."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A note on sources. This course follows the 2017 paper, and is supplemented by later descriptions of the method, for example the common implementations and the many tutorials. Numbers such as the commitment weight of 0.25 are the usual settings. Later work is labelled as background knowledge.",
+      "The labs are tiny teaching examples in plain Python, with no neural network library."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the quantizer do?",
+     "options": [
+      "Replaces an encoder output by the nearest codebook vector",
+      "Adds noise",
+      "Trains the decoder",
+      "Samples from a Gaussian"
+     ],
+     "answer": 0,
+     "explain": "A nearest-neighbour lookup."
+    },
+    {
+     "q": "Why is the prior learned after training?",
+     "options": [
+      "Generation needs a model of the code indices",
+      "To save memory",
+      "The decoder needs it",
+      "It is not learned"
+     ],
+     "answer": 0,
+     "explain": "PixelCNN or WaveNet."
+    },
+    {
+     "q": "What kind of latents does VQ-VAE use?",
+     "options": [
+      "Discrete",
+      "Gaussian",
+      "Binary images",
+      "None"
+     ],
+     "answer": 0,
+     "explain": "Indices into a codebook."
+    },
+    {
+     "q": "Who introduced VQ-VAE?",
+     "options": [
+      "van den Oord, Vinyals and Kavukcuoglu",
+      "Kingma and Welling",
+      "Goodfellow",
+      "Vaswani"
+     ],
+     "answer": 0,
+     "explain": "NeurIPS 2017."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What are the three parts of VQ-VAE?",
+     "a": "Encoder, codebook with quantizer, decoder."
+    },
+    {
+     "q": "How big is the codebook?",
+     "a": "K vectors of dimension D."
+    },
+    {
+     "q": "What is generated by the prior?",
+     "a": "Grids of code indices."
+    },
+    {
+     "q": "Why discrete?",
+     "a": "It matches language and speech and allows sequence models."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "VQ-VAE pipeline",
+     "intro": "Put the steps in order.",
+     "items": [
+      "Encode the input into vectors",
+      "Find the nearest codebook vector for each",
+      "Replace the vectors by their codebook entries",
+      "Decode the quantized grid",
+      "Compare the output with the input"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Parts",
+     "intro": "Match each part with its role.",
+     "pairs": [
+      [
+       "Encoder",
+       "Produces continuous vectors"
+      ],
+      [
+       "Codebook",
+       "K learned embedding vectors"
+      ],
+      [
+       "Quantizer",
+       "Nearest-neighbour lookup"
+      ],
+      [
+       "Decoder",
+       "Rebuilds the input"
+      ],
+      [
+       "Prior",
+       "Generates code grids"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Basics",
+     "text": "VQ-VAE replaces each encoder output by its nearest {{codebook}} vector. Gradients are copied across the quantizer by the {{straight-through|straight through}} estimator."
+    }
+   ]
+  },
+  {
+   "title": "Autoencoders and bottlenecks",
+   "maps": [
+    {
+     "title": "Autoencoders",
+     "links": [
+      "Autoencoder | compresses | Input to a code",
+      "Bottleneck | forces | Information loss",
+      "Reconstruction loss | measures | Difference from input",
+      "VAE | adds | A prior on latents",
+      "Posterior collapse | ignores | The latent",
+      "Discrete bottleneck | limits | Bits per position",
+      "Rate | counts | Bits in the code"
+     ]
+    }
+   ],
+   "summary": [
+    "An autoencoder squeezes an input through a narrow code and tries to rebuild it. The narrowness, the bottleneck, forces the network to keep only what matters.",
+    "A variational autoencoder, VAE, makes the code random and pushes it toward a simple prior. A known weakness is posterior collapse: a strong decoder learns to ignore the code. VQ-VAE avoids it, since the discrete code carries a fixed number of bits that the decoder must use.",
+    "The size of the bottleneck is measurable. This chapter counts the bits and the compression."
+   ],
+   "glossary": [
+    {
+     "term": "Reconstruction loss",
+     "def": "A measure of how different the output is from the input, often mean squared error."
+    },
+    {
+     "term": "Bottleneck",
+     "def": "A layer much smaller than the input, limiting information."
+    },
+    {
+     "term": "VAE",
+     "def": "A variational autoencoder with a random latent and a prior."
+    },
+    {
+     "term": "Posterior collapse",
+     "def": "The decoder ignores the latent and the encoder outputs the prior."
+    },
+    {
+     "term": "Bit",
+     "def": "A unit of information: one yes-or-no choice."
+    },
+    {
+     "term": "Compression ratio",
+     "def": "Input size divided by code size."
+    }
+   ],
+   "keyPoints": [
+    "An autoencoder trains encoder and decoder together to minimize reconstruction error.",
+    "A code with K possible values per position carries log2(K) bits per position.",
+    "The compression ratio is input bits over code bits.",
+    "VAEs with powerful decoders can suffer posterior collapse.",
+    "A discrete code forces the decoder to use the bits it gets.",
+    "In the paper, 128 by 128 ImageNet images were compressed to a 32 by 32 grid of discrete codes."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The simplest autoencoder has two halves. The encoder takes an input, say an image, and produces a short vector. The decoder takes the vector and tries to produce the original image.",
+      "Training reduces the difference between the output and the input, usually the mean squared error, averaged over all numbers."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "L_{\\mathrm{rec}} \\;=\\; \\frac{1}{n}\\sum_{i=1}^{n}\\,(x_i - \\hat{x}_i)^2"
+    },
+    {
+     "type": "text",
+     "items": [
+      "If the code is as large as the input, the network can copy and learn nothing useful. The code must be small. That bottleneck is what forces the encoder to find structure: edges, shapes, parts. What it throws away is what the model considers unimportant."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A variational autoencoder adds probability. The encoder gives a distribution over codes, a sample is drawn, and a penalty keeps the distribution near a prior, usually a standard Gaussian. This gives a neat way to generate: draw from the prior and decode.",
+      "A well-known difficulty is that if the decoder is powerful, such as an autoregressive model over the pixels, it can model the data without any help from the code. The code then carries almost nothing. This is posterior collapse."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The VQ-VAE paper notes that its model does not suffer from this problem. Its code is discrete, with a fixed set of values per position, and the decoder gets nothing about the input except the chosen codes.",
+      "There is no sampling noise in the code and no penalty pushing it to the prior during training, so there is nothing to collapse into."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How much information is in a discrete code? A position that can take K values holds log base two of K bits, if all values are equally likely. A grid of positions holds that many bits for each.",
+      "For the paper's ImageNet setting, a 128 by 128 colour image, with 24 bits per pixel, was encoded as a 32 by 32 grid with 512 possible values per position, which is 9 bits. The practice section computes the compression from these numbers.",
+      "The grid sizes come from the paper's description and the result is my own arithmetic."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The labs in this chapter write the reconstruction error and count the bits and the compression ratio."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a bottleneck force?",
+     "options": [
+      "The network to keep only important information",
+      "Larger images",
+      "Random output",
+      "Slower training"
+     ],
+     "answer": 0,
+     "explain": "Less capacity than the input."
+    },
+    {
+     "q": "How many bits does a position with 512 values hold at most?",
+     "options": [
+      "9",
+      "512",
+      "5",
+      "64"
+     ],
+     "answer": 0,
+     "explain": "log2(512) = 9."
+    },
+    {
+     "q": "What is posterior collapse?",
+     "options": [
+      "The decoder ignores the latent",
+      "The encoder crashes",
+      "The loss is zero",
+      "The prior is fixed"
+     ],
+     "answer": 0,
+     "explain": "Common with powerful decoders."
+    },
+    {
+     "q": "What does the compression ratio divide?",
+     "options": [
+      "Input bits by code bits",
+      "Code bits by input bits",
+      "Pixels by colours",
+      "Loss by steps"
+     ],
+     "answer": 0,
+     "explain": "A bigger ratio means more compression."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is MSE?",
+     "a": "The mean of squared differences."
+    },
+    {
+     "q": "What is a bit?",
+     "a": "One yes-or-no choice."
+    },
+    {
+     "q": "Why a small code?",
+     "a": "To force useful features."
+    },
+    {
+     "q": "What avoids posterior collapse here?",
+     "a": "The discrete code with no sampling noise."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Reconstruction error",
+     "intro": "Write mse(x, y): the mean of (x_i - y_i)^2 over two equal-length lists.",
+     "fn": "mse",
+     "starter": "def mse(x, y):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         1.0,
+         2.0
+        ],
+        [
+         2.0,
+         4.0
+        ]
+       ],
+       "expect": 2.5,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        [
+         3
+        ]
+       ],
+       "expect": 4.0,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Average the squared differences.",
+     "solution": "def mse(x, y):\n    total = 0.0\n    for a, b in zip(x, y):\n        total += (a - b) ** 2\n    return total / len(x)\n"
+    },
+    {
+     "type": "python",
+     "title": "Bits in a code",
+     "intro": "Write bits_per_code(k): the number of bits needed to name one of k values, that is the smallest b with 2^b at least k.",
+     "fn": "bits_per_code",
+     "starter": "def bits_per_code(k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        512
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        3
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        1024
+       ],
+       "expect": 10
+      }
+     ],
+     "hint": "Count doublings until 2^b reaches k.",
+     "solution": "def bits_per_code(k):\n    b = 0\n    while 2 ** b < k:\n        b += 1\n    return b\n"
+    },
+    {
+     "type": "python",
+     "title": "Compression ratio",
+     "intro": "An image has h by w pixels with c channels of bits_per_channel bits. It is encoded as a gh by gw grid of codes from a codebook of k entries (bits per code as in the previous lab, rounded up). Write compression(h, w, c, bits_per_channel, gh, gw, k): input bits divided by code bits.",
+     "fn": "compression",
+     "starter": "def compression(h, w, c, bits_per_channel, gh, gw, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        128,
+        128,
+        3,
+        8,
+        32,
+        32,
+        512
+       ],
+       "expect": 42.666666666666664,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        32,
+        32,
+        3,
+        8,
+        8,
+        8,
+        512
+       ],
+       "expect": 42.666666666666664,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        28,
+        28,
+        1,
+        8,
+        7,
+        7,
+        64
+       ],
+       "expect": 21.333333333333332,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        64,
+        64,
+        3,
+        8,
+        16,
+        16,
+        256
+       ],
+       "expect": 48.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Input bits over latent grid bits.",
+     "solution": "def compression(h, w, c, bits_per_channel, gh, gw, k):\n    b = 0\n    while 2 ** b < k:\n        b += 1\n    return (h * w * c * bits_per_channel) / (gh * gw * b)\n"
+    },
+    {
+     "type": "order",
+     "title": "Autoencoder training",
+     "intro": "Order one training step.",
+     "items": [
+      "Feed an input to the encoder",
+      "Pass the code to the decoder",
+      "Compare the output with the input",
+      "Compute the reconstruction loss",
+      "Update the weights"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Bottleneck",
+       "Narrow code"
+      ],
+      [
+       "Posterior collapse",
+       "Latent ignored"
+      ],
+      [
+       "Bit",
+       "Yes-or-no choice"
+      ],
+      [
+       "MSE",
+       "Mean squared error"
+      ],
+      [
+       "Compression ratio",
+       "Input bits over code bits"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Autoencoders",
+     "text": "A narrow {{bottleneck}} forces the network to keep important information. A code with 512 values carries {{9}} bits per position."
+    }
+   ]
+  },
+  {
+   "title": "The codebook and nearest-neighbour quantization",
+   "maps": [
+    {
+     "title": "Quantizer",
+     "links": [
+      "Codebook | is | K by D table",
+      "Quantizer | uses | Nearest neighbour",
+      "Distance | is | Squared Euclidean",
+      "Index | names | Codebook row",
+      "Code usage | can be | Uneven",
+      "Grid of indices | is | The latent",
+      "Decoder | gets | Looked-up vectors"
+     ]
+    }
+   ],
+   "summary": [
+    "The codebook is a table e with K rows, each a vector of dimension D. At each position, the encoder's output vector z is compared with every row, and the closest one wins.",
+    "The index of the winner is the discrete code. The looked-up row, not the original vector, goes to the decoder.",
+    "How well the codebook is used matters. If only a few rows ever win, the capacity is wasted. The labs count the usage."
+   ],
+   "glossary": [
+    {
+     "term": "Codebook",
+     "def": "A table of K embedding vectors e_1 to e_K, each of dimension D."
+    },
+    {
+     "term": "Nearest neighbour",
+     "def": "The codebook entry with the smallest distance to the input."
+    },
+    {
+     "term": "Squared Euclidean distance",
+     "def": "The sum of squared differences between two vectors."
+    },
+    {
+     "term": "Index",
+     "def": "The position k of the chosen codebook row; the discrete code."
+    },
+    {
+     "term": "Latent grid",
+     "def": "The spatial arrangement of indices; 32 by 32 in the paper for ImageNet."
+    },
+    {
+     "term": "Code usage",
+     "def": "How often each codebook row is chosen."
+    }
+   ],
+   "keyPoints": [
+    "z_q(x) = e_k with k = argmin_j of the squared distance between z_e(x) and e_j.",
+    "Ties go to the lowest index in the labs.",
+    "The posterior is deterministic: one-hot on the nearest code.",
+    "The latent for an image is a grid of indices; the decoder sees the vectors, not the indices.",
+    "Codebook usage should be spread across many rows.",
+    "The paper used a codebook of 512 vectors with dimension 64 in its image experiments, and mentions K and D as the main sizes."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Think of the codebook as a dictionary of visual words. Each entry is a vector that the model can say. The encoder produces a vector at each position of a grid, a kind of rough, continuous word.",
+      "The quantizer snaps that vector to the nearest dictionary entry, so each position holds exactly one of K words."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} k \\;=\\; \\arg\\min_{j}\\ \\lVert z_e(x) - e_j \\rVert_2^2, \\\\[0.6em] z_q(x) \\;=\\; e_k \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The nearest neighbour is measured with the ordinary Euclidean distance, usually squared since the square root does not change which is nearest. If two codebook entries are equally near, any rule will do; the labs take the lower index.",
+      "The posterior is therefore deterministic: the probability is one for the closest entry and zero for every other."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper describes the shapes this way. The encoder output is a grid of vectors, each of dimension D. The codebook has K rows. Every position is quantized independently. For the image experiments the paper reduces a 128 by 128 image to a 32 by 32 grid.",
+      "In many reimplementations the codebook has K of 512 and D of 64."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Because only the index matters for later models, the quantized latent is equivalent to a grid of integers. This is what makes the next step possible. A grid of integers can be modelled by any model for categorical sequences, which we use in chapter 8."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Code usage is the practical worry. At the start, the codebook vectors are random and the encoder outputs are somewhere else, and a few codebook rows may be nearest to all the outputs. Those rows win again and again and get trained, while the others never win and never get trained.",
+      "Chapter 6 comes back to this. For now, count how often each row is used."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The labs find the nearest code, quantize a batch of vectors and count the usage of each row."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How is the code chosen?",
+     "options": [
+      "Nearest codebook vector",
+      "Random",
+      "Highest value",
+      "Average"
+     ],
+     "answer": 0,
+     "explain": "argmin of the distance."
+    },
+    {
+     "q": "What does the decoder receive?",
+     "options": [
+      "The codebook vector",
+      "The index",
+      "The input image",
+      "Noise"
+     ],
+     "answer": 0,
+     "explain": "z_q, the looked-up row."
+    },
+    {
+     "q": "What is in a codebook row?",
+     "options": [
+      "A vector of dimension D",
+      "An image",
+      "A word",
+      "A probability"
+     ],
+     "answer": 0,
+     "explain": "K rows."
+    },
+    {
+     "q": "Why is the squared distance enough?",
+     "options": [
+      "The square root does not change the nearest",
+      "It is faster only",
+      "Square roots fail",
+      "It changes the answer"
+     ],
+     "answer": 0,
+     "explain": "Monotonic."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is the posterior?",
+     "a": "One-hot on the nearest code."
+    },
+    {
+     "q": "What shape is the latent grid for ImageNet in the paper?",
+     "a": "32 by 32."
+    },
+    {
+     "q": "What can go wrong with usage?",
+     "a": "A few rows win all the time."
+    },
+    {
+     "q": "What is K?",
+     "a": "The codebook size."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Nearest code",
+     "intro": "Write nearest_code(z, codebook): the index of the codebook row with the smallest squared distance to the vector z (ties go to the lowest index).",
+     "fn": "nearest_code",
+     "starter": "def nearest_code(z, codebook):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.9,
+         1.1
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          2,
+          2
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         [
+          1,
+          1
+         ],
+         [
+          -1,
+          -1
+         ]
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         5,
+         5
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          4,
+          6
+         ],
+         [
+          6,
+          4
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         0.5
+        ],
+        [
+         [
+          0
+         ],
+         [
+          1
+         ]
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         2.0,
+         0.0
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          4,
+          0
+         ],
+         [
+          2,
+          3
+         ]
+        ]
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Compute the squared distance to each row and keep the smallest.",
+     "solution": "def nearest_code(z, codebook):\n    best = None\n    arg = 0\n    for i in range(len(codebook)):\n        d = 0.0\n        for a, b in zip(z, codebook[i]):\n            d += (a - b) ** 2\n        if best is None or d < best - 1e-12:\n            best = d\n            arg = i\n    return arg\n"
+    },
+    {
+     "type": "python",
+     "title": "Quantize a batch",
+     "intro": "Write quantize(zs, codebook): for each vector in zs return [index, the chosen codebook vector] as two parallel lists: [list of indices, list of chosen vectors].",
+     "fn": "quantize",
+     "starter": "def quantize(zs, codebook):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0.1,
+          0.1
+         ],
+         [
+          0.9,
+          1.0
+         ],
+         [
+          2.1,
+          1.9
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          2,
+          2
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         1,
+         2
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          2,
+          2
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          3
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          4,
+          4
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1
+        ],
+        [
+         [
+          4,
+          4
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0.5,
+          0.5
+         ],
+         [
+          0.4,
+          0.6
+         ]
+        ],
+        [
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ],
+        [
+         [
+          0,
+          1
+         ],
+         [
+          0,
+          1
+         ]
+        ]
+       ]
+      }
+     ],
+     "hint": "Reuse the nearest-code search for every vector.",
+     "solution": "def quantize(zs, codebook):\n    idx = []\n    chosen = []\n    for z in zs:\n        best = None\n        arg = 0\n        for i in range(len(codebook)):\n            d = 0.0\n            for a, b in zip(z, codebook[i]):\n                d += (a - b) ** 2\n            if best is None or d < best - 1e-12:\n                best = d\n                arg = i\n        idx.append(arg)\n        chosen.append(list(codebook[arg]))\n    return [idx, chosen]\n"
+    },
+    {
+     "type": "python",
+     "title": "Code usage",
+     "intro": "Write code_counts(indices, k): a list of length k with the number of times each index appears.",
+     "fn": "code_counts",
+     "starter": "def code_counts(indices, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         1,
+         1,
+         2,
+         1
+        ],
+        3
+       ],
+       "expect": [
+        1,
+        3,
+        1
+       ]
+      },
+      {
+       "args": [
+        [],
+        4
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         3,
+         3,
+         3
+        ],
+        4
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         1
+        ],
+        2
+       ],
+       "expect": [
+        2,
+        1
+       ]
+      }
+     ],
+     "hint": "Add one for each index.",
+     "solution": "def code_counts(indices, k):\n    counts = [0] * k\n    for i in indices:\n        counts[i] += 1\n    return counts\n"
+    },
+    {
+     "type": "order",
+     "title": "Quantizing one vector",
+     "intro": "Order the steps.",
+     "items": [
+      "Take the encoder output vector",
+      "Compute its distance to every codebook row",
+      "Pick the row with the smallest distance",
+      "Record its index",
+      "Pass the row to the decoder"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Shapes",
+     "intro": "Match each object with its shape.",
+     "pairs": [
+      [
+       "Codebook",
+       "K by D"
+      ],
+      [
+       "Encoder output",
+       "Grid of D-vectors"
+      ],
+      [
+       "Latent indices",
+       "Grid of integers"
+      ],
+      [
+       "Chosen row",
+       "D-vector"
+      ],
+      [
+       "Counts",
+       "Length K"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Quantizer",
+     "text": "The quantizer picks the {{nearest}} codebook vector. The discrete code is its {{index}}. Unused rows waste {{capacity}}."
+    }
+   ]
+  },
+  {
+   "title": "The straight-through estimator",
+   "maps": [
+    {
+     "title": "Gradients",
+     "links": [
+      "Quantizer | has | Zero gradient almost everywhere",
+      "Straight-through | copies | Decoder gradient to encoder",
+      "Forward pass | uses | Quantized vector",
+      "Backward pass | pretends | Identity",
+      "Stop-gradient | blocks | Flow",
+      "Encoder | learns | Through copied gradient",
+      "Codebook | learns | Through its own loss"
+     ]
+    }
+   ],
+   "summary": [
+    "Training by gradient descent needs derivatives all the way back. The nearest-neighbour step is a staircase: its derivative is zero almost everywhere, and undefined at the jumps. Gradients from the decoder would never reach the encoder.",
+    "The straight-through estimator ignores the staircase in the backward pass. The forward pass uses the quantized vector; the backward pass passes the gradient at z_q straight to z_e as if the quantizer were the identity.",
+    "It is a biased approximation but works well in practice. The labs measure the true derivative and train a one-dimensional example with the trick."
+   ],
+   "glossary": [
+    {
+     "term": "Stop-gradient",
+     "def": "sg[x]: equals x in the forward pass and has zero gradient in the backward pass."
+    },
+    {
+     "term": "Straight-through estimator",
+     "def": "Copy the gradient of the quantized output to the unquantized input."
+    },
+    {
+     "term": "Staircase function",
+     "def": "A function that is flat between jumps; its derivative is zero almost everywhere."
+    },
+    {
+     "term": "Backpropagation",
+     "def": "Computing gradients backwards through the network."
+    },
+    {
+     "term": "Bias",
+     "def": "A systematic error of an estimate."
+    },
+    {
+     "term": "Identity",
+     "def": "The function f(x) = x with derivative 1."
+    }
+   ],
+   "keyPoints": [
+    "The quantizer's true derivative is zero almost everywhere.",
+    "Straight-through: dL/dz_e is set equal to dL/dz_q.",
+    "Common implementation: z_q_st = z_e + sg[z_q - z_e]; the value is z_q, the gradient is that of z_e.",
+    "The decoder gradient moves the encoder output toward better codes.",
+    "The codebook gets no gradient from reconstruction, so it needs its own loss.",
+    "The estimate is biased but effective."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Consider a one-dimensional codebook with entries at zero, one and two. The quantizer maps any number to the nearest of them. Plot it and you see a staircase: flat at 0 until one half, a jump to 1, flat until three halves, a jump to 2.",
+      "The slope is zero on every flat part, and the jumps have infinite slope. For gradient descent, this is a disaster."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "If we applied the chain rule honestly, the gradient of the loss with respect to the encoder output would be the decoder's gradient multiplied by the quantizer's slope, which is zero. The encoder would never learn. The paper observes this and proposes a simple fix.",
+      "Since the encoder output z e and the decoder input z q have the same dimension, copy the gradient from one to the other."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\frac{\\partial L}{\\partial z_e} \\;:=\\; \\frac{\\partial L}{\\partial z_q} \\\\[0.6em] \\text{(straight-through)} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "In code the trick is a single line. Write z q st equal to z e plus the stop-gradient of z q minus z e. In the forward pass the two z e terms cancel and the result is exactly z q. In the backward pass the stop-gradient term contributes nothing, and the gradient flows into z e with slope one.",
+      "Deep learning libraries provide stop-gradient as detach or stop_gradient."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "What does the copied gradient mean? The decoder says: if z q moved in this direction, the reconstruction would be better. The encoder obliges by moving z e in the same direction. Eventually z e crosses a boundary and snaps to a different code.",
+      "The decoder's wish is passed along to the encoder even though the quantizer is in the way."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The estimate is biased: it is not the gradient of any real function of the weights. It works because the encoder output and the chosen code are close, thanks to the commitment loss of chapter 5. If they were far apart, the gradient computed at z q would say little about the encoder's output."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The codebook itself gets no gradient from reconstruction. The decoder's input is a copy, and the straight-through path ends at the encoder. So the codebook learns from separate loss terms, the subject of the next chapter.",
+      "The labs here measure the derivative of the staircase with a finite difference, copy a gradient and train a toy encoder with the trick."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the quantizer's derivative almost everywhere?",
+     "options": [
+      "Zero",
+      "One",
+      "Infinity",
+      "Undefined"
+     ],
+     "answer": 0,
+     "explain": "It is a staircase."
+    },
+    {
+     "q": "What does the straight-through estimator do?",
+     "options": [
+      "Copies the gradient from z_q to z_e",
+      "Zeroes the gradient",
+      "Doubles the gradient",
+      "Blocks the encoder"
+     ],
+     "answer": 0,
+     "explain": "As if the quantizer were the identity."
+    },
+    {
+     "q": "What is stop-gradient?",
+     "options": [
+      "Identity forward, zero gradient backward",
+      "A stopping rule",
+      "Early stopping",
+      "A learning rate"
+     ],
+     "answer": 0,
+     "explain": "sg[x]."
+    },
+    {
+     "q": "Does reconstruction train the codebook?",
+     "options": [
+      "No, it needs its own loss",
+      "Yes, directly",
+      "Only the first layer",
+      "Always"
+     ],
+     "answer": 0,
+     "explain": "The gradient ends at the encoder."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is the forward value of z_e + sg[z_q - z_e]?",
+     "a": "z_q."
+    },
+    {
+     "q": "What is its gradient?",
+     "a": "That of z_e."
+    },
+    {
+     "q": "Is the estimator exact?",
+     "a": "No, it is biased."
+    },
+    {
+     "q": "Why is the commitment loss needed?",
+     "a": "To keep z_e near z_q so the copy is meaningful."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Finite-difference derivative",
+     "intro": "A 1-D quantizer maps z to the nearest entry of codebook (a list of numbers, ties to the lower index). Write fd_derivative(z, codebook, h): (q(z + h) - q(z)) / h.",
+     "fn": "fd_derivative",
+     "starter": "def fd_derivative(z, codebook, h):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.2,
+        [
+         0,
+         1,
+         2
+        ],
+        0.01
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.49,
+        [
+         0,
+         1,
+         2
+        ],
+        0.01
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.495,
+        [
+         0,
+         1,
+         2
+        ],
+        0.01
+       ],
+       "expect": 100.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1.2,
+        [
+         0,
+         1,
+         2
+        ],
+        0.1
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1.45,
+        [
+         0,
+         1,
+         2
+        ],
+        0.1
+       ],
+       "expect": 10.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Evaluate the quantizer at z and z + h.",
+     "solution": "def fd_derivative(z, codebook, h):\n    def q(v):\n        best = None\n        val = 0\n        for e in codebook:\n            d = (v - e) ** 2\n            if best is None or d < best - 1e-12:\n                best = d\n                val = e\n        return val\n    return (q(z + h) - q(z)) / h\n"
+    },
+    {
+     "type": "python",
+     "title": "Straight-through gradient",
+     "intro": "Write ste_backward(grad_zq): the gradient passed to the encoder output. It is a copy of the list grad_zq.",
+     "fn": "ste_backward",
+     "starter": "def ste_backward(grad_zq):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         -0.5
+        ]
+       ],
+       "expect": [
+        0.5,
+        -0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         1
+        ]
+       ],
+       "expect": [
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         3
+        ]
+       ],
+       "expect": [
+        0,
+        0,
+        3
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Return the same numbers.",
+     "solution": "def ste_backward(grad_zq):\n    return list(grad_zq)\n"
+    },
+    {
+     "type": "python",
+     "title": "Train a toy encoder",
+     "intro": "A scalar encoder has z_e = w * x. The codebook is a list of numbers. The decoder is the identity: x_hat = z_q (the nearest codebook entry, ties to the lower index). The loss is (x - z_q)^2. With the straight-through estimator the gradient with respect to w is 2 * (z_q - x) * x. Write ste_train(w, x, codebook, lr, steps): run steps gradient steps and return [final w rounded to 6 decimals, final loss rounded to 6 decimals].",
+     "fn": "ste_train",
+     "starter": "def ste_train(w, x, codebook, lr, steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.1,
+        1.0,
+        [
+         0,
+         1,
+         2
+        ],
+        0.2,
+        20
+       ],
+       "expect": [
+        0.9,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        0.5,
+        2.0,
+        [
+         0,
+         1,
+         2
+        ],
+        0.1,
+        10
+       ],
+       "expect": [
+        0.9,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        3.0,
+        1.0,
+        [
+         0,
+         1,
+         2
+        ],
+        0.2,
+        10
+       ],
+       "expect": [
+        1.4,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        0.0,
+        1.5,
+        [
+         0,
+         1,
+         2,
+         3
+        ],
+        0.1,
+        10
+       ],
+       "expect": [
+        0.9,
+        0.25
+       ]
+      }
+     ],
+     "hint": "Quantize w * x, compute the copied gradient, update w.",
+     "solution": "def ste_train(w, x, codebook, lr, steps):\n    def q(v):\n        best = None\n        val = 0\n        for e in codebook:\n            d = (v - e) ** 2\n            if best is None or d < best - 1e-12:\n                best = d\n                val = e\n        return val\n    for t in range(steps):\n        zq = q(w * x)\n        w = w - lr * 2 * (zq - x) * x\n    zq = q(w * x)\n    return [round(w, 6), round((x - zq) ** 2, 6)]\n"
+    },
+    {
+     "type": "order",
+     "title": "Straight-through step",
+     "intro": "Order the steps.",
+     "items": [
+      "Forward: encode and quantize",
+      "Decode the quantized vector",
+      "Compute the loss",
+      "Backward: gradient at z_q",
+      "Copy that gradient to z_e"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Gradients",
+     "intro": "Match each item with its behaviour.",
+     "pairs": [
+      [
+       "Quantizer derivative",
+       "Zero almost everywhere"
+      ],
+      [
+       "sg[x]",
+       "Value x, gradient zero"
+      ],
+      [
+       "z_e + sg[z_q - z_e]",
+       "Value z_q, gradient of z_e"
+      ],
+      [
+       "Codebook",
+       "Needs its own loss"
+      ],
+      [
+       "Commitment loss",
+       "Keeps z_e near z_q"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Trick",
+     "text": "The quantizer has a {{zero}} derivative almost everywhere, so the {{straight-through|straight through}} estimator copies the gradient from z_q to z_e."
+    }
+   ]
+  },
+  {
+   "title": "The VQ-VAE loss",
+   "maps": [
+    {
+     "title": "Three terms",
+     "links": [
+      "Reconstruction loss | trains | Encoder and decoder",
+      "Codebook loss | moves | Codebook toward encoder",
+      "Commitment loss | keeps | Encoder near codebook",
+      "Stop-gradient | separates | The two roles",
+      "Beta | weights | Commitment loss",
+      "Beta | set to | 0.25",
+      "Total | sums | Three terms"
+     ]
+    }
+   ],
+   "summary": [
+    "The VQ-VAE loss has three terms. The reconstruction term trains the encoder and decoder; its gradient reaches the encoder by the straight-through path. The codebook term pulls the chosen codebook vector toward the encoder's output.",
+    "The commitment term pulls the encoder's output toward the chosen vector.",
+    "The stop-gradient operator keeps the two pulls apart, so that each only moves one side. A weight beta, 0.25 in the paper's experiments, scales the commitment term; the authors report the results are robust to its value.",
+    "The labs compute each term and the gradients that result."
+   ],
+   "glossary": [
+    {
+     "term": "Codebook loss",
+     "def": "||sg[z_e] - e||^2: moves the codebook vector toward the encoder output."
+    },
+    {
+     "term": "Commitment loss",
+     "def": "beta ||z_e - sg[e]||^2: keeps the encoder output close to its codebook vector."
+    },
+    {
+     "term": "beta",
+     "def": "The weight of the commitment loss; 0.25 in the paper."
+    },
+    {
+     "term": "Stop-gradient",
+     "def": "sg[.]: a constant in the backward pass."
+    },
+    {
+     "term": "Embedding space",
+     "def": "The space in which the codebook vectors live."
+    },
+    {
+     "term": "Volume growth",
+     "def": "The encoder outputs can grow without bound if not committed."
+    }
+   ],
+   "keyPoints": [
+    "L = ||x - D(z_q)||^2 + ||sg[z_e] - e||^2 + beta ||z_e - sg[e]||^2.",
+    "Only the decoder and encoder see the first term (encoder via straight-through).",
+    "Only the codebook sees the second term.",
+    "Only the encoder sees the third term.",
+    "beta was 0.25 in the paper, which found results robust for values from about 0.1 to 2.",
+    "The paper's first experiments used the squared error for images and a categorical output for audio."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Here is the loss as given in the paper. It has three terms, and each trains a different group of parameters."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "L \\;=\\; \\log p\\bigl(x \\mid z_q(x)\\bigr) \\;+\\; \\bigl\\lVert \\mathrm{sg}[z_e(x)] - e \\bigr\\rVert_2^2 \\;+\\; \\beta\\,\\bigl\\lVert z_e(x) - \\mathrm{sg}[e] \\bigr\\rVert_2^2"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The first term is the reconstruction. In the paper's formula it is a log likelihood that, for a Gaussian output, is the squared error between the input and the decoder output, up to constants. It trains the decoder directly. It reaches the encoder only through the straight-through copy.",
+      "It does not touch the codebook."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The second term is the codebook loss, also called the vector quantisation objective. It measures the distance between the encoder output and the chosen codebook vector, with a stop-gradient on the encoder output. Only the codebook vector e moves. It moves toward the encoder output.",
+      "It is the same as one step of k-means: the centre moves to the data point."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The third term is the commitment loss. It has the same distance but with the stop-gradient on the codebook vector instead, so only the encoder moves, toward its chosen vector. Why is it needed? The codebook vectors only move as fast as their loss allows.",
+      "Without a constraint the encoder outputs could grow in magnitude and jump between codes without ever settling. The commitment loss makes the encoder stay close."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper gives the weight beta of this term as robust: it reports that results did not change much for beta between 0.1 and 2.0, and used 0.25 in all experiments. The squared distance between the encoder output and the code is exactly the quantization error."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Be careful with a detail. Many implementations use means over elements rather than sums, so the numbers differ by a constant factor, and some swap which term carries beta. The labs use the mean squared error for each of the three, matching common code.",
+      "Next you compute them and the matching gradients."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which term moves the codebook?",
+     "options": [
+      "The codebook loss",
+      "The commitment loss",
+      "The reconstruction loss",
+      "None"
+     ],
+     "answer": 0,
+     "explain": "||sg[z_e] - e||^2."
+    },
+    {
+     "q": "What does the commitment loss do?",
+     "options": [
+      "Keeps the encoder output near its code",
+      "Trains the decoder",
+      "Sets K",
+      "Adds noise"
+     ],
+     "answer": 0,
+     "explain": "It moves only the encoder."
+    },
+    {
+     "q": "What value of beta did the paper use?",
+     "options": [
+      "0.25",
+      "10",
+      "0",
+      "100"
+     ],
+     "answer": 0,
+     "explain": "Robust between about 0.1 and 2."
+    },
+    {
+     "q": "What does stop-gradient do in the loss?",
+     "options": [
+      "Selects which side moves",
+      "Stops training",
+      "Rounds numbers",
+      "Doubles loss"
+     ],
+     "answer": 0,
+     "explain": "It separates the roles."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What reaches the encoder?",
+     "a": "Reconstruction (via straight-through) and commitment."
+    },
+    {
+     "q": "What reaches the codebook?",
+     "a": "Only the codebook loss."
+    },
+    {
+     "q": "Why commit?",
+     "a": "To stop encoder outputs growing and flipping."
+    },
+    {
+     "q": "What is the second term like?",
+     "a": "A k-means update."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Loss terms",
+     "intro": "Write vq_losses(x, xhat, ze, e, beta): return [recon, codebook, commit, total] where recon is the mean squared error between x and xhat, codebook is the mean squared difference between ze and e (the value of ||sg[ze] - e||^2 averaged over elements), commit is beta times the same mean, and total is their sum. Round each to 6 decimals.",
+     "fn": "vq_losses",
+     "starter": "def vq_losses(x, xhat, ze, e, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         1,
+         2
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        0.25
+       ],
+       "expect": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         1
+        ],
+        [
+         0,
+         0
+        ],
+        0.25
+       ],
+       "expect": [
+        0.5,
+        1.0,
+        0.25,
+        1.75
+       ]
+      },
+      {
+       "args": [
+        [
+         0.5
+        ],
+        [
+         0.0
+        ],
+        [
+         2.0
+        ],
+        [
+         1.0
+        ],
+        1.0
+       ],
+       "expect": [
+        0.25,
+        1.0,
+        1.0,
+        2.25
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         0,
+         1,
+         2
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         3,
+         4
+        ],
+        0.25
+       ],
+       "expect": [
+        0.666667,
+        12.5,
+        3.125,
+        16.291667
+       ]
+      }
+     ],
+     "hint": "Three means; the commitment loss is beta times the codebook distance.",
+     "solution": "def vq_losses(x, xhat, ze, e, beta):\n    recon = sum((a - b) ** 2 for a, b in zip(x, xhat)) / len(x)\n    cb = sum((a - b) ** 2 for a, b in zip(ze, e)) / len(ze)\n    commit = beta * cb\n    total = recon + cb + commit\n    return [round(recon, 6), round(cb, 6), round(commit, 6), round(total, 6)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Codebook gradient",
+     "intro": "The codebook loss is the sum over elements of (ze - e)^2 with ze held constant. Write codebook_grad(ze, e): the gradient with respect to e, that is 2 * (e_i - ze_i) for each element.",
+     "fn": "codebook_grad",
+     "starter": "def codebook_grad(ze, e):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        -2,
+        -4
+       ]
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         3
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": [
+        -4
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         -1,
+         2
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        2,
+        4,
+        -2
+       ]
+      }
+     ],
+     "hint": "Differentiate (ze - e)^2 with respect to e.",
+     "solution": "def codebook_grad(ze, e):\n    return [2 * (b - a) for a, b in zip(ze, e)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Commitment gradient",
+     "intro": "The commitment loss is beta times the sum over elements of (ze - e)^2 with e held constant. Write commit_grad(ze, e, beta): the gradient with respect to ze, 2 * beta * (ze_i - e_i).",
+     "fn": "commit_grad",
+     "starter": "def commit_grad(ze, e, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         0,
+         0
+        ],
+        0.25
+       ],
+       "expect": [
+        0.5,
+        1.0
+       ],
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0.5
+        ],
+        [
+         0.5
+        ],
+        0.25
+       ],
+       "expect": [
+        0.0
+       ],
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         3,
+         3
+        ],
+        [
+         1,
+         5
+        ],
+        1.0
+       ],
+       "expect": [
+        4.0,
+        -4.0
+       ],
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Differentiate with respect to ze this time.",
+     "solution": "def commit_grad(ze, e, beta):\n    return [2 * beta * (a - b) for a, b in zip(ze, e)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Move the code",
+     "intro": "A single SGD step on the codebook loss moves e toward ze. Write codebook_step(ze, e, lr): return the new e (rounded to 6 decimals each), e - lr * 2 * (e - ze) for each element.",
+     "fn": "codebook_step",
+     "starter": "def codebook_step(ze, e, lr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1.0,
+         1.0
+        ],
+        [
+         0.0,
+         0.0
+        ],
+        0.25
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        [
+         0.0
+        ],
+        0.5
+       ],
+       "expect": [
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         2.0,
+         -2.0
+        ],
+        [
+         0.0,
+         0.0
+        ],
+        0.1
+       ],
+       "expect": [
+        0.4,
+        -0.4
+       ]
+      }
+     ],
+     "hint": "Subtract the gradient times the learning rate.",
+     "solution": "def codebook_step(ze, e, lr):\n    return [round(b - lr * 2 * (b - a), 6) for a, b in zip(ze, e)]\n"
+    },
+    {
+     "type": "order",
+     "title": "The three pulls",
+     "intro": "Order the story of one step.",
+     "items": [
+      "Decoder error moves the decoder and, through the copy, the encoder",
+      "The codebook vector moves toward the encoder output",
+      "The encoder output moves toward its code",
+      "Both sides get closer",
+      "The next batch starts"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Terms",
+     "intro": "Match each term with who moves.",
+     "pairs": [
+      [
+       "Reconstruction",
+       "Decoder and encoder"
+      ],
+      [
+       "Codebook loss",
+       "Codebook vector"
+      ],
+      [
+       "Commitment loss",
+       "Encoder"
+      ],
+      [
+       "beta",
+       "Weight of commitment"
+      ],
+      [
+       "sg",
+       "Blocks one side's gradient"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Loss",
+     "text": "The {{codebook}} loss moves the code toward the encoder output; the {{commitment}} loss moves the encoder toward the code. The paper used beta equal to {{0.25}}."
+    }
+   ]
+  },
+  {
+   "title": "Learning the codebook: k-means, EMA and dead codes",
+   "maps": [
+    {
+     "title": "Codebook learning",
+     "links": [
+      "Codebook update | resembles | K-means",
+      "EMA | smooths | Cluster statistics",
+      "Dead code | is | Never chosen",
+      "Reinitialisation | revives | Dead codes",
+      "Decay | sets | Memory of EMA",
+      "Counts | track | Code usage",
+      "Laplace smoothing | avoids | Division by zero"
+     ]
+    }
+   ],
+   "summary": [
+    "Updating the codebook entry toward the vectors assigned to it is the k-means algorithm. The VQ-VAE codebook loss does this by gradient descent. The paper's appendix describes an alternative with exponential moving averages: keep a running count and sum for each code and set the code to their ratio.",
+    "A frequent failure is the dead code: an entry that is never nearest to anything, so it never moves. Typical repairs replace dead entries with encoder outputs from the batch.",
+    "The labs write a k-means step, an EMA update and a dead-code repair."
+   ],
+   "glossary": [
+    {
+     "term": "K-means",
+     "def": "Alternate assigning points to the nearest centre and moving each centre to the mean of its points."
+    },
+    {
+     "term": "EMA",
+     "def": "Exponential moving average: new = decay * old + (1 - decay) * observation."
+    },
+    {
+     "term": "Dead code",
+     "def": "A codebook entry that no encoder output is nearest to."
+    },
+    {
+     "term": "Reinitialisation",
+     "def": "Replacing a dead code by a vector from the data."
+    },
+    {
+     "term": "Decay",
+     "def": "The EMA memory, for example 0.99."
+    },
+    {
+     "term": "Cluster size",
+     "def": "The running count of vectors assigned to a code."
+    }
+   ],
+   "keyPoints": [
+    "The codebook loss is a gradient-descent form of k-means.",
+    "EMA update: N_i = g N_i + (1 - g) n_i; m_i = g m_i + (1 - g) sum of assigned z; e_i = m_i / N_i.",
+    "The paper's appendix suggests decay 0.99 for the EMA variant.",
+    "Dead codes never receive updates and waste capacity.",
+    "Fixes: reinitialise from data, lower codebook dimension, or normalise.",
+    "The EMA variant needs no codebook gradient and is often steadier."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Look again at the codebook loss. For one code, summed over the vectors assigned to it, it is a sum of squared distances. Minimizing it by moving the code gives the average of the assigned vectors.",
+      "That is exactly the update of k-means, an old and well-understood clustering method: assign every point to the nearest centre, then move each centre to the mean of its points."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "So the VQ-VAE codebook is a set of k-means centres in the encoder's output space, with the twist that the encoder is also moving. The assignments change as the encoder learns, and the centres chase them."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper's appendix suggests replacing gradient descent on the codebook by an exponential moving average. Keep for each code two running quantities: a count of the vectors assigned to it, and the sum of those vectors.",
+      "After each batch, multiply the old values by a decay close to one and add the batch's contributions with the remaining weight. The code is the running sum divided by the running count."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} N_i \\leftarrow \\gamma N_i + (1-\\gamma)\\, n_i, \\\\[0.6em] m_i \\leftarrow \\gamma m_i + (1-\\gamma) \\sum_j z_{i,j}, \\\\[0.6em] e_i \\leftarrow \\frac{m_i}{N_i} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Here n i is the number of encoder outputs in this batch assigned to code i, the z i j are those outputs, and gamma is the decay. Gamma of 0.99 is the value suggested in the paper.",
+      "This version has no learning rate for the codebook, and removes the codebook loss from the objective, leaving reconstruction and commitment."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The failure mode is the dead code. A code that is not the nearest to any output gets no updates. With the EMA, its count decays toward zero, and it never recovers. The more codes die, the fewer values the grid can really use, and the reconstruction suffers.",
+      "Repairs include periodically replacing codes whose usage is under a threshold with vectors taken from the current batch, a trick used by later work."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you write a k-means step, the EMA step on two-dimensional vectors, a dead-code detector and a repair that copies batch vectors."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a k-means step do?",
+     "options": [
+      "Assigns points then moves centres to the means",
+      "Adds noise",
+      "Trains a decoder",
+      "Halves K"
+     ],
+     "answer": 0,
+     "explain": "Two alternating steps."
+    },
+    {
+     "q": "What is a dead code?",
+     "options": [
+      "Never the nearest to any output",
+      "Too large",
+      "A duplicate",
+      "A zero vector"
+     ],
+     "answer": 0,
+     "explain": "It never gets updated."
+    },
+    {
+     "q": "What does the EMA decay control?",
+     "options": [
+      "How long the memory is",
+      "The codebook size",
+      "The loss weight",
+      "The batch size"
+     ],
+     "answer": 0,
+     "explain": "gamma close to 1 remembers more."
+    },
+    {
+     "q": "What does the codebook loss resemble?",
+     "options": [
+      "K-means",
+      "Dropout",
+      "Attention",
+      "Softmax"
+     ],
+     "answer": 0,
+     "explain": "Centres move to the data."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is e_i in EMA?",
+     "a": "Running sum divided by running count."
+    },
+    {
+     "q": "What decay did the paper suggest?",
+     "a": "0.99."
+    },
+    {
+     "q": "How to fix dead codes?",
+     "a": "Reinitialise from data."
+    },
+    {
+     "q": "Why no codebook loss in EMA?",
+     "a": "The codebook is updated directly."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "K-means step",
+     "intro": "Write kmeans_step(points, centers): assign each point (list of numbers) to the nearest centre (squared distance, ties to the lower index) and return the new centres, each the mean of its assigned points, rounded to 6 decimals (a centre with no points stays unchanged).",
+     "fn": "kmeans_step",
+     "starter": "def kmeans_step(points, centers):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          0,
+          2
+         ],
+         [
+          10,
+          10
+         ],
+         [
+          10,
+          12
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          10,
+          10
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0.0,
+         1.0
+        ],
+        [
+         10.0,
+         11.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1
+         ],
+         [
+          2
+         ],
+         [
+          3
+         ]
+        ],
+        [
+         [
+          0
+         ],
+         [
+          100
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         2.0
+        ],
+        [
+         100
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          5,
+          5
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0.0,
+         0.0
+        ],
+        [
+         1.0,
+         1.0
+        ],
+        [
+         5,
+         5
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          2
+         ],
+         [
+          4,
+          4
+         ]
+        ],
+        [
+         [
+          3,
+          3
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         3.0,
+         3.0
+        ]
+       ]
+      }
+     ],
+     "hint": "Accumulate sums and counts per centre, then divide.",
+     "solution": "def kmeans_step(points, centers):\n    k = len(centers)\n    d = len(centers[0])\n    sums = [[0.0] * d for i in range(k)]\n    cnt = [0] * k\n    for p in points:\n        best = None\n        arg = 0\n        for i in range(k):\n            dist = sum((a - b) ** 2 for a, b in zip(p, centers[i]))\n            if best is None or dist < best - 1e-12:\n                best = dist\n                arg = i\n        cnt[arg] += 1\n        for j in range(d):\n            sums[arg][j] += p[j]\n    out = []\n    for i in range(k):\n        if cnt[i] == 0:\n            out.append(list(centers[i]))\n        else:\n            out.append([round(s / cnt[i], 6) for s in sums[i]])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "EMA update",
+     "intro": "Write ema_step(N, m, zs, idx, gamma): N is the list of running counts, m the list of running sums (each a 2-vector), zs the batch of 2-vectors, idx their assigned codes. Return the new codebook (each e_i = m_i / N_i, rounded to 6 decimals) after updating N_i = gamma N_i + (1 - gamma) n_i and m_i = gamma m_i + (1 - gamma) sum of its assigned z.",
+     "fn": "ema_step",
+     "starter": "def ema_step(N, m, zs, idx, gamma):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1.0,
+         1.0
+        ],
+        [
+         [
+          0.0,
+          0.0
+         ],
+         [
+          5.0,
+          5.0
+         ]
+        ],
+        [
+         [
+          1,
+          1
+         ],
+         [
+          6,
+          4
+         ]
+        ],
+        [
+         0,
+         1
+        ],
+        0.9
+       ],
+       "expect": [
+        [
+         0.1,
+         0.1
+        ],
+        [
+         5.1,
+         4.9
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1.0,
+         1.0
+        ],
+        [
+         [
+          1.0,
+          1.0
+         ],
+         [
+          2.0,
+          2.0
+         ]
+        ],
+        [
+         [
+          3,
+          3
+         ]
+        ],
+        [
+         0
+        ],
+        0.5
+       ],
+       "expect": [
+        [
+         2.0,
+         2.0
+        ],
+        [
+         2.0,
+         2.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         2.0
+        ],
+        [
+         [
+          2.0,
+          4.0
+         ]
+        ],
+        [
+         [
+          1,
+          1
+         ],
+         [
+          3,
+          3
+         ]
+        ],
+        [
+         0,
+         0
+        ],
+        0.99
+       ],
+       "expect": [
+        [
+         1.01,
+         2.0
+        ]
+       ]
+      }
+     ],
+     "hint": "Update the counts and sums, then divide.",
+     "solution": "def ema_step(N, m, zs, idx, gamma):\n    k = len(N)\n    n = [0] * k\n    s = [[0.0, 0.0] for i in range(k)]\n    for z, i in zip(zs, idx):\n        n[i] += 1\n        s[i][0] += z[0]\n        s[i][1] += z[1]\n    book = []\n    for i in range(k):\n        Ni = gamma * N[i] + (1 - gamma) * n[i]\n        mi = [gamma * m[i][0] + (1 - gamma) * s[i][0], gamma * m[i][1] + (1 - gamma) * s[i][1]]\n        book.append([round(mi[0] / Ni, 6), round(mi[1] / Ni, 6)])\n    return book\n"
+    },
+    {
+     "type": "python",
+     "title": "Find dead codes",
+     "intro": "Write dead_codes(counts, threshold): the indices of codes whose count is at most the threshold.",
+     "fn": "dead_codes",
+     "starter": "def dead_codes(counts, threshold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         5,
+         0,
+         3,
+         0
+        ],
+        0
+       ],
+       "expect": [
+        1,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         1,
+         3,
+         0
+        ],
+        1
+       ],
+       "expect": [
+        1,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         9,
+         9
+        ],
+        0
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [],
+        0
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Compare each count with the threshold.",
+     "solution": "def dead_codes(counts, threshold):\n    return [i for i in range(len(counts)) if counts[i] <= threshold]\n"
+    },
+    {
+     "type": "python",
+     "title": "Revive them",
+     "intro": "Write revive(codebook, dead, batch): replace the dead codes in order by the batch vectors in order (the first dead code gets batch[0], the next batch[1], wrapping around if there are more dead codes than batch vectors). Return the new codebook.",
+     "fn": "revive",
+     "starter": "def revive(codebook, dead, batch):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          2,
+          2
+         ]
+        ],
+        [
+         1
+        ],
+        [
+         [
+          9,
+          9
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ],
+        [
+         9,
+         9
+        ],
+        [
+         2,
+         2
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          2,
+          2
+         ]
+        ],
+        [
+         0,
+         2
+        ],
+        [
+         [
+          7,
+          7
+         ],
+         [
+          8,
+          8
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         7,
+         7
+        ],
+        [
+         1,
+         1
+        ],
+        [
+         8,
+         8
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ]
+        ],
+        [],
+        [
+         [
+          5,
+          5
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0
+         ],
+         [
+          1
+         ],
+         [
+          2
+         ]
+        ],
+        [
+         0,
+         1,
+         2
+        ],
+        [
+         [
+          4
+         ],
+         [
+          5
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         4
+        ],
+        [
+         5
+        ],
+        [
+         4
+        ]
+       ]
+      }
+     ],
+     "hint": "Copy the codebook and overwrite the dead rows.",
+     "solution": "def revive(codebook, dead, batch):\n    new = [list(c) for c in codebook]\n    for j in range(len(dead)):\n        new[dead[j]] = list(batch[j % len(batch)])\n    return new\n"
+    },
+    {
+     "type": "order",
+     "title": "EMA codebook update",
+     "intro": "Order the steps.",
+     "items": [
+      "Assign each encoder output to its nearest code",
+      "Count the outputs per code",
+      "Sum the outputs per code",
+      "Update running counts and sums with the decay",
+      "Set each code to the sum divided by the count"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Ideas",
+     "intro": "Match each idea with its effect.",
+     "pairs": [
+      [
+       "K-means",
+       "Centres move to means"
+      ],
+      [
+       "EMA",
+       "Running averages of statistics"
+      ],
+      [
+       "Dead code",
+       "Never used"
+      ],
+      [
+       "Revive",
+       "Copy a batch vector"
+      ],
+      [
+       "gamma",
+       "Decay of the EMA"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Codebook",
+     "text": "The codebook loss is like {{k-means|kmeans|k means}}. An {{EMA|exponential moving average}} update uses a decay such as {{0.99}}."
+    }
+   ]
+  },
+  {
+   "title": "Information: rate, perplexity and usage",
+   "maps": [
+    {
+     "title": "Measuring codes",
+     "links": [
+      "Entropy | measures | Information per code",
+      "Perplexity | is | Exponential of entropy",
+      "Perplexity | counts | Effective codes in use",
+      "Rate | is | Bits per latent",
+      "Uniform usage | maximizes | Perplexity",
+      "Low perplexity | signals | Collapse",
+      "Bits | bound | Compression"
+     ]
+    }
+   ],
+   "summary": [
+    "How many of the K codes does a trained model really use? Entropy and perplexity give the answer. Entropy measures the average information per code in bits. Perplexity, two to the power of the entropy, is the effective number of equally likely codes.",
+    "If all K codes are used equally, perplexity is K. If one code takes everything, it is 1. Perplexity is tracked in many VQ-VAE implementations as a health check on the codebook.",
+    "The labs compute entropy, perplexity and the fraction of the codebook in use."
+   ],
+   "glossary": [
+    {
+     "term": "Entropy",
+     "def": "The average information of a distribution: minus the sum of p log p."
+    },
+    {
+     "term": "Perplexity",
+     "def": "2 to the entropy in bits (or e to the entropy in nats); the effective number of codes."
+    },
+    {
+     "term": "Rate",
+     "def": "The number of bits needed to send the code."
+    },
+    {
+     "term": "Distribution of usage",
+     "def": "The fraction of positions assigned to each code."
+    },
+    {
+     "term": "Effective codebook size",
+     "def": "The perplexity of the usage distribution."
+    },
+    {
+     "term": "Codebook utilisation",
+     "def": "The fraction of codes ever used."
+    }
+   ],
+   "keyPoints": [
+    "H = -sum p_i log2 p_i bits; perplexity = 2^H.",
+    "Uniform usage over K codes: H = log2 K and perplexity = K.",
+    "One code used: H = 0 and perplexity = 1.",
+    "A model with perplexity far below K is wasting its codebook.",
+    "The fraction of unused codes is another simple diagnostic.",
+    "Rate is bounded by log2 K per position; the prior can code the indices in fewer bits."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Imagine two codebooks of 512 entries. In the first, every entry is used about equally often. In the second, ten entries are used all the time and the rest almost never. Both can be called codebooks of 512, but the second behaves like a codebook of ten. A single number should tell them apart."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Take the usage distribution: the fraction p i of grid positions assigned to code i over a large sample. The entropy of this distribution is the average number of bits needed to name a code if you design the best possible binary code for it. Perplexity is two to that power."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} H \\;=\\; -\\sum_{i} p_i \\log_2 p_i, \\\\[0.6em] \\mathrm{PPL} \\;=\\; 2^{H} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "For a uniform distribution over K codes the entropy is log base two of K and the perplexity is K. For a distribution concentrated on one code, the entropy is zero and the perplexity is one. In between, perplexity reads as the number of equally popular codes that would give the same entropy.",
+      "Implementations often use natural logarithms; the perplexity is the same."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "This gives a health check. During training, log the perplexity of the codes used in each batch. If it rises toward K, the codebook is in good use. If it sinks toward a small number, codes are dying out. Many public implementations print exactly this number during training."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There is a link to compression. The raw rate of the grid is log base two of K bits per position. If the usage is uneven, the entropy is lower than that, so an entropy coder or a good prior could encode the grid in fewer bits.",
+      "A prior that models the dependence between neighbouring positions can go lower still, which is how chapter 8 uses the grid."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The labs compute entropy and perplexity from counts, the utilisation fraction, and the rate in bits for a whole grid."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is perplexity here?",
+     "options": [
+      "2 to the entropy of code usage",
+      "The loss",
+      "The codebook size",
+      "The number of epochs"
+     ],
+     "answer": 0,
+     "explain": "The effective number of codes."
+    },
+    {
+     "q": "What is perplexity for uniform usage of K codes?",
+     "options": [
+      "K",
+      "1",
+      "log K",
+      "0"
+     ],
+     "answer": 0,
+     "explain": "Entropy is log2 K."
+    },
+    {
+     "q": "What does low perplexity signal?",
+     "options": [
+      "Wasted codebook",
+      "A good model",
+      "Fast training",
+      "A big decoder"
+     ],
+     "answer": 0,
+     "explain": "Few codes in use."
+    },
+    {
+     "q": "What is the entropy of one code used always?",
+     "options": [
+      "0",
+      "1",
+      "K",
+      "Undefined"
+     ],
+     "answer": 0,
+     "explain": "No uncertainty."
+    }
+   ],
+   "cards": [
+    {
+     "q": "How are probabilities found?",
+     "a": "Counts divided by their total."
+    },
+    {
+     "q": "Is perplexity at most K?",
+     "a": "Yes."
+    },
+    {
+     "q": "Why monitor it?",
+     "a": "It reveals codebook collapse."
+    },
+    {
+     "q": "What is the rate of the grid?",
+     "a": "Positions times log2 K bits."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Entropy in bits",
+     "intro": "Write entropy_bits(counts): the entropy in bits of the distribution given by the counts (ignore zero counts). Use import math.",
+     "fn": "entropy_bits",
+     "starter": "def entropy_bits(counts):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         4,
+         0,
+         0,
+         0
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": 2.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         3,
+         1
+        ]
+       ],
+       "expect": 0.8112781244591328,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         10,
+         10,
+         10,
+         10,
+         10,
+         10,
+         10,
+         10
+        ]
+       ],
+       "expect": 3.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Use p log2 p and skip zero counts.",
+     "solution": "import math\ndef entropy_bits(counts):\n    total = sum(counts)\n    h = 0.0\n    for c in counts:\n        if c > 0:\n            p = c / total\n            h -= p * math.log(p, 2)\n    return h\n"
+    },
+    {
+     "type": "python",
+     "title": "Perplexity",
+     "intro": "Write perplexity(counts): 2 raised to the entropy in bits of the counts. Use import math.",
+     "fn": "perplexity",
+     "starter": "def perplexity(counts):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": 2.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         5,
+         0,
+         0
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": 4.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         9,
+         1
+        ]
+       ],
+       "expect": 1.384145488461686,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         100,
+         100,
+         100
+        ]
+       ],
+       "expect": 3.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Compute entropy then exponentiate.",
+     "solution": "import math\ndef perplexity(counts):\n    total = sum(counts)\n    h = 0.0\n    for c in counts:\n        if c > 0:\n            p = c / total\n            h -= p * math.log(p, 2)\n    return 2 ** h\n"
+    },
+    {
+     "type": "python",
+     "title": "Utilisation",
+     "intro": "Write utilisation(counts): the fraction of codes with a count above zero.",
+     "fn": "utilisation",
+     "starter": "def utilisation(counts):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         3,
+         0,
+         1,
+         0
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         5
+        ]
+       ],
+       "expect": 0.3333333333333333,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         7
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Count the used entries.",
+     "solution": "def utilisation(counts):\n    used = 0\n    for c in counts:\n        if c > 0:\n            used += 1\n    return used / len(counts)\n"
+    },
+    {
+     "type": "python",
+     "title": "Raw rate of a grid",
+     "intro": "Write grid_bits(gh, gw, k): the raw number of bits in a gh by gw grid of codes from k choices, with bits per code rounded up to a whole number.",
+     "fn": "grid_bits",
+     "starter": "def grid_bits(gh, gw, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        32,
+        32,
+        512
+       ],
+       "expect": 9216
+      },
+      {
+       "args": [
+        8,
+        8,
+        64
+       ],
+       "expect": 384
+      },
+      {
+       "args": [
+        1,
+        1,
+        2
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        16,
+        16,
+        1000
+       ],
+       "expect": 2560
+      }
+     ],
+     "hint": "Positions times bits per code.",
+     "solution": "def grid_bits(gh, gw, k):\n    b = 0\n    while 2 ** b < k:\n        b += 1\n    return gh * gw * b\n"
+    },
+    {
+     "type": "order",
+     "title": "Reading usage",
+     "intro": "Order the steps to compute perplexity.",
+     "items": [
+      "Count how often each code is used",
+      "Divide by the total to get probabilities",
+      "Compute the entropy",
+      "Exponentiate in base 2",
+      "Compare the result with K"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Numbers",
+     "intro": "Match each case with its perplexity.",
+     "pairs": [
+      [
+       "Uniform over 8 codes",
+       "8"
+      ],
+      [
+       "One code only",
+       "1"
+      ],
+      [
+       "Two codes equally",
+       "2"
+      ],
+      [
+       "Four codes equally",
+       "4"
+      ],
+      [
+       "Uniform over 512",
+       "512"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Usage",
+     "text": "Perplexity is two to the {{entropy}} of the code usage. A low perplexity signals a wasted {{codebook}}."
+    }
+   ]
+  },
+  {
+   "title": "The prior: generating with PixelCNN",
+   "maps": [
+    {
+     "title": "Generation",
+     "links": [
+      "Prior | models | Distribution of codes",
+      "Autoregressive prior | factorizes | Joint into conditionals",
+      "PixelCNN | models | Image code grids",
+      "WaveNet | models | Audio codes",
+      "Raster order | flattens | The grid",
+      "Sampling | draws | One code at a time",
+      "Decoder | turns | Codes into data"
+     ]
+    }
+   ],
+   "summary": [
+    "Training the autoencoder gives codes but not new data. To generate we need a model of which grids of codes are likely: a prior. The VQ-VAE paper trains an autoregressive prior after the autoencoder is fixed.",
+    "An autoregressive model predicts each code from the ones before it in a fixed order, such as raster order for an image grid. Sampling goes one code at a time, then the decoder turns the grid into an image. For audio the paper uses a WaveNet.",
+    "The labs build a tiny autoregressive prior, a bigram model on code sequences, with training, scoring and sampling."
+   ],
+   "glossary": [
+    {
+     "term": "Prior",
+     "def": "A model of the probability of code grids."
+    },
+    {
+     "term": "Autoregressive",
+     "def": "Predicting each element given the earlier ones."
+    },
+    {
+     "term": "Raster order",
+     "def": "Reading a grid row by row, left to right."
+    },
+    {
+     "term": "PixelCNN",
+     "def": "An autoregressive convolutional network for images."
+    },
+    {
+     "term": "WaveNet",
+     "def": "An autoregressive convolutional network for audio."
+    },
+    {
+     "term": "Negative log likelihood",
+     "def": "Minus the log probability of the data; the training loss of a prior."
+    }
+   ],
+   "keyPoints": [
+    "p(z) = product of p(z_t | z_1 ... z_(t-1)) over the codes in raster order.",
+    "The paper used PixelCNN for images and WaveNet for audio.",
+    "In training the prior, the autoencoder is frozen.",
+    "Sampling: draw a code, append, repeat; then decode.",
+    "The paper's ImageNet latents are 32 by 32 grids; the prior models these 1,024 positions.",
+    "Because the prior is over a small grid, it is far cheaper than a PixelCNN on pixels."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "After training, a VQ-VAE can compress and reconstruct. To make new images we also need to know which code grids are plausible. The autoencoder says nothing about that.",
+      "The paper therefore separates the work into two stages: first train the encoder, codebook and decoder; then, with them frozen, train a prior over the grids of indices."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "p(z) \\;=\\; \\prod_{t=1}^{T} p\\bigl(z_t \\mid z_1, \\dots, z_{t-1}\\bigr)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "An autoregressive model chooses an order for the positions and predicts each from the earlier ones. For an image grid, the natural order is raster scan: left to right in each row, rows from top to bottom.",
+      "The paper uses PixelCNN, a convolutional network with masks so that each position sees only the earlier ones, for images, and WaveNet for audio."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why is this a good division of labour? A PixelCNN on raw pixels must spend its capacity on fine detail. The VQ-VAE already took care of detail, compressing a 128 by 128 image to a 32 by 32 grid.",
+      "The prior has to model only 1,024 positions each with 512 choices, and focuses on the large-scale structure of the picture. The paper reports that this gives samples of good quality at a lower cost."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sampling goes step by step. Ask the prior for the distribution over the first code, draw one, then ask for the second given the first, draw, and so on to the end of the grid. Then look up each index in the codebook and run the decoder. The only randomness is in the draws."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section we use the simplest possible autoregressive model, a bigram model in which each code depends only on the previous one. It is far weaker than PixelCNN, yet everything else is the same: a conditional table, a likelihood to score sequences and a sampling loop."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The labs flatten a grid in raster order, estimate a smoothed bigram table, score a sequence and sample from the table with given random numbers."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the prior model?",
+     "options": [
+      "Distributions over code grids",
+      "Pixels directly",
+      "The decoder weights",
+      "The loss"
+     ],
+     "answer": 0,
+     "explain": "It makes generation possible."
+    },
+    {
+     "q": "Which order is used for an image grid?",
+     "options": [
+      "Raster order",
+      "Random",
+      "Diagonal only",
+      "Spiral"
+     ],
+     "answer": 0,
+     "explain": "Row by row."
+    },
+    {
+     "q": "Why train the prior on codes rather than pixels?",
+     "options": [
+      "The grid is much smaller",
+      "Pixels are discrete",
+      "Codes are colours",
+      "It is required by law"
+     ],
+     "answer": 0,
+     "explain": "A 32 by 32 grid instead of 128 by 128 pixels."
+    },
+    {
+     "q": "What does sampling need?",
+     "options": [
+      "Random draws one code at a time",
+      "A single draw for the whole image",
+      "No randomness",
+      "The input image"
+     ],
+     "answer": 0,
+     "explain": "Then decode."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Which networks did the paper use?",
+     "a": "PixelCNN for images and WaveNet for audio."
+    },
+    {
+     "q": "Is the autoencoder frozen?",
+     "a": "Yes, during prior training."
+    },
+    {
+     "q": "What is a bigram model?",
+     "a": "Each element depends on the previous one."
+    },
+    {
+     "q": "What is NLL?",
+     "a": "Minus log likelihood."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Raster order",
+     "intro": "Write raster(grid): the list of the entries of the grid (a list of rows) read row by row from top to bottom.",
+     "fn": "raster",
+     "starter": "def raster(grid):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        3,
+        4
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5
+         ]
+        ]
+       ],
+       "expect": [
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          1,
+          2
+         ],
+         [
+          3,
+          4,
+          5
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Nested loops.",
+     "solution": "def raster(grid):\n    out = []\n    for row in grid:\n        for v in row:\n            out.append(v)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Bigram prior",
+     "intro": "Write train_bigram(seqs, k, alpha): estimate a k by k table T where T[a][b] is the smoothed probability that code b follows code a: (count(a then b) + alpha) / (count(a followed by anything) + alpha * k). Count all adjacent pairs in all the sequences. Round each entry to 6 decimals.",
+     "fn": "train_bigram",
+     "starter": "def train_bigram(seqs, k, alpha):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          1,
+          0,
+          1
+         ]
+        ],
+        2,
+        1.0
+       ],
+       "expect": [
+        [
+         0.25,
+         0.75
+        ],
+        [
+         0.666667,
+         0.333333
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          1
+         ],
+         [
+          1,
+          1,
+          0
+         ]
+        ],
+        2,
+        0.5
+       ],
+       "expect": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          1,
+          0,
+          2
+         ]
+        ],
+        3,
+        1.0
+       ],
+       "expect": [
+        [
+         0.25,
+         0.25,
+         0.5
+        ],
+        [
+         0.5,
+         0.25,
+         0.25
+        ],
+        [
+         0.25,
+         0.5,
+         0.25
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0
+         ]
+        ],
+        2,
+        1.0
+       ],
+       "expect": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ]
+      }
+     ],
+     "hint": "Count pairs, then add alpha and normalize each row.",
+     "solution": "def train_bigram(seqs, k, alpha):\n    c = [[0] * k for i in range(k)]\n    for s in seqs:\n        for a, b in zip(s[:-1], s[1:]):\n            c[a][b] += 1\n    T = []\n    for a in range(k):\n        tot = sum(c[a]) + alpha * k\n        T.append([round((c[a][b] + alpha) / tot, 6) for b in range(k)])\n    return T\n"
+    },
+    {
+     "type": "python",
+     "title": "Score a sequence",
+     "intro": "Write sequence_nll(seq, T): the negative natural log likelihood of the code sequence, taking the first code to have probability 1/k and each next code the table probability T[prev][cur]. Use import math.",
+     "fn": "sequence_nll",
+     "starter": "def sequence_nll(seq, T):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         1,
+         0,
+         1
+        ],
+        [
+         [
+          0.25,
+          0.75
+         ],
+         [
+          0.75,
+          0.25
+         ]
+        ]
+       ],
+       "expect": 1.5561933979152878,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         [
+          0.9,
+          0.1
+         ],
+         [
+          0.5,
+          0.5
+         ]
+        ]
+       ],
+       "expect": 0.9038682118755978,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        [
+         [
+          0.5,
+          0.5
+         ],
+         [
+          0.5,
+          0.5
+         ]
+        ]
+       ],
+       "expect": 0.6931471805599453,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0,
+         1,
+         2
+        ],
+        [
+         [
+          0.2,
+          0.5,
+          0.3
+         ],
+         [
+          0.1,
+          0.1,
+          0.8
+         ],
+         [
+          0.3,
+          0.3,
+          0.4
+         ]
+        ]
+       ],
+       "expect": 2.0149030205422647,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Add up -log of each factor.",
+     "solution": "import math\ndef sequence_nll(seq, T):\n    k = len(T)\n    total = -math.log(1.0 / k)\n    for a, b in zip(seq[:-1], seq[1:]):\n        total -= math.log(T[a][b])\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "Sample from the prior",
+     "intro": "Write generate(T, first, us): start with the code first, and for each uniform number u in us choose the next code from the row of the current code by the cumulative rule (the first code whose cumulative probability exceeds u, the last code otherwise). Return the whole list of codes.",
+     "fn": "generate",
+     "starter": "def generate(T, first, us):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0.9,
+          0.1
+         ],
+         [
+          0.2,
+          0.8
+         ]
+        ],
+        0,
+        [
+         0.5,
+         0.95,
+         0.1
+        ]
+       ],
+       "expect": [
+        0,
+        0,
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0.5,
+          0.5
+         ],
+         [
+          0.5,
+          0.5
+         ]
+        ],
+        1,
+        [
+         0.3,
+         0.7
+        ]
+       ],
+       "expect": [
+        1,
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0.1,
+          0.2,
+          0.7
+         ],
+         [
+          0.3,
+          0.3,
+          0.4
+         ],
+         [
+          0.0,
+          1.0,
+          0.0
+         ]
+        ],
+        0,
+        [
+         0.9,
+         0.5,
+         0.99,
+         0.2
+        ]
+       ],
+       "expect": [
+        0,
+        2,
+        1,
+        2,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1.0
+         ]
+        ],
+        0,
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": [
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Walk along the cumulative sum of the current row.",
+     "solution": "def generate(T, first, us):\n    out = [first]\n    for u in us:\n        row = T[out[-1]]\n        total = 0.0\n        pick = len(row) - 1\n        for j in range(len(row)):\n            total += row[j]\n            if total > u:\n                pick = j\n                break\n        out.append(pick)\n    return out\n"
+    },
+    {
+     "type": "order",
+     "title": "Generation",
+     "intro": "Order the steps.",
+     "items": [
+      "Train the autoencoder",
+      "Freeze it and encode the data to code grids",
+      "Train the autoregressive prior on the grids",
+      "Sample a new grid from the prior",
+      "Look up the codes and decode"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Models",
+     "intro": "Match each model with its job.",
+     "pairs": [
+      [
+       "PixelCNN",
+       "Prior over image code grids"
+      ],
+      [
+       "WaveNet",
+       "Prior over audio codes"
+      ],
+      [
+       "Encoder",
+       "Produces continuous vectors"
+      ],
+      [
+       "Decoder",
+       "Turns codes into data"
+      ],
+      [
+       "Bigram",
+       "Each code depends on the previous one"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Prior",
+     "text": "An {{autoregressive}} prior predicts each code from the earlier ones in {{raster}} order. The autoencoder is {{frozen}} during prior training."
+    }
+   ]
+  },
+  {
+   "title": "Extensions: hierarchies, residual and product codes",
+   "maps": [
+    {
+     "title": "Beyond the basics",
+     "links": [
+      "VQ-VAE-2 | uses | Hierarchy of codes",
+      "Residual quantization | stacks | Quantizers",
+      "Product quantization | splits | Vector into parts",
+      "Larger capacity | needs | More codes or levels",
+      "Applications | include | Images, audio, speech",
+      "Prior | works on | Compressed codes",
+      "Discrete tokens | feed | Transformers"
+     ]
+    }
+   ],
+   "summary": [
+    "The VQ-VAE idea has been extended in many directions. VQ-VAE-2 uses a hierarchy: a coarse top-level code grid for global structure and finer codes conditioned on it. Residual quantization uses several codebooks in a row, each coding what the previous ones missed.",
+    "Product quantization splits a vector into parts and quantizes each part with its own small codebook.",
+    "All of these raise the capacity of the code: with several levels or parts, the number of distinct combinations multiplies, while each codebook stays small.",
+    "These extensions are background knowledge in this course, beyond the original paper. The labs implement residual and product quantization."
+   ],
+   "glossary": [
+    {
+     "term": "VQ-VAE-2",
+     "def": "A 2019 hierarchical extension by Razavi, van den Oord and Vinyals."
+    },
+    {
+     "term": "Hierarchical codes",
+     "def": "Several grids of codes at different resolutions."
+    },
+    {
+     "term": "Residual quantization",
+     "def": "Quantize, subtract the result, then quantize the remainder with the next codebook."
+    },
+    {
+     "term": "Product quantization",
+     "def": "Split a vector into pieces and quantize each piece separately."
+    },
+    {
+     "term": "Capacity",
+     "def": "How many distinct vectors the code can represent."
+    },
+    {
+     "term": "Token",
+     "def": "A discrete symbol fed to a sequence model."
+    }
+   ],
+   "keyPoints": [
+    "Capacity of m codebooks of K entries each is K^m with residual or product quantization.",
+    "Residual: z_q = e1[k1] + e2[k2] + ..., where each k is chosen on the remainder.",
+    "Product: split z into parts and quantize each part with its own codebook.",
+    "VQ-VAE-2 (Razavi et al., 2019) used a top and bottom level of codes with PixelCNN priors.",
+    "Later systems for images (such as VQGAN), music (Jukebox) and audio codecs (such as SoundStream) build on discrete codes; this is background, not from the 2017 paper.",
+    "Discrete tokens let Transformers do generation over images and audio."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The original model uses one grid of one codebook. That works, but images contain details at many scales: global layout, objects, textures. A single coarse grid has to hold everything. A natural extension is to use more than one level of codes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "VQ-VAE-2, by Ali Razavi, Aaron van den Oord and Oriol Vinyals in 2019, uses a hierarchy. A top level of codes on a small grid captures global structure. A bottom level on a larger grid captures the details left over, conditioned on the top. Separate autoregressive priors are trained for each level.",
+      "This detail is background knowledge: it is outside the 2017 paper that this course follows."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Another route to more capacity is residual quantization. Quantize the vector with the first codebook, subtract the chosen entry, and quantize the remainder with the second codebook, and so on. The final approximation is the sum of the chosen entries.",
+      "With m codebooks of K entries, you can express K to the m different vectors while storing only m times K entries. Audio codecs such as SoundStream use this idea, again as background knowledge."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} z \\;\\approx\\; e^{(1)}_{k_1} + e^{(2)}_{k_2} + \\dots + e^{(m)}_{k_m}, \\\\[0.6em] r_1 = z - e^{(1)}_{k_1},\\ \\ k_2 = \\mathrm{nearest}\\bigl(r_1\\bigr),\\ \\dots \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A third route is product quantization. Cut the vector into m pieces. Quantize each piece independently with its own small codebook. The code is the tuple of m indices. The capacity is again K to the m. Unlike residual quantization, the pieces are quantized independently, so the search is parallel."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why does this matter? Discrete codes turn images and audio into token sequences, the kind of data that Transformers handle well. Systems such as VQGAN for images and Jukebox for music use VQ-VAE-like tokenizers followed by autoregressive models.",
+      "These are later developments I mention for orientation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The labs implement residual quantization and product quantization on small vectors, and count capacity."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does residual quantization quantize in stage 2?",
+     "options": [
+      "The remainder after stage 1",
+      "The original vector again",
+      "The codebook",
+      "Noise"
+     ],
+     "answer": 0,
+     "explain": "Subtract and repeat."
+    },
+    {
+     "q": "How many vectors can m codebooks of K entries express?",
+     "options": [
+      "K^m",
+      "K*m",
+      "m^K",
+      "K+m"
+     ],
+     "answer": 0,
+     "explain": "Tuples of indices."
+    },
+    {
+     "q": "What does product quantization do?",
+     "options": [
+      "Quantizes parts separately",
+      "Multiplies vectors",
+      "Prunes the codebook",
+      "Trains a prior"
+     ],
+     "answer": 0,
+     "explain": "Split, then quantize each piece."
+    },
+    {
+     "q": "Who wrote VQ-VAE-2?",
+     "options": [
+      "Razavi, van den Oord and Vinyals",
+      "Vaswani",
+      "Kingma",
+      "Goodfellow"
+     ],
+     "answer": 0,
+     "explain": "2019."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does the top level of VQ-VAE-2 hold?",
+     "a": "Global structure."
+    },
+    {
+     "q": "What do residual levels hold?",
+     "a": "What earlier levels missed."
+    },
+    {
+     "q": "Why discrete tokens?",
+     "a": "They suit sequence models."
+    },
+    {
+     "q": "Is this in the 2017 paper?",
+     "a": "No, it is later work."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Residual quantization",
+     "intro": "Write residual_quantize(z, books): books is a list of codebooks (each a list of vectors). For each in order, pick the nearest entry to the current remainder (ties to the lower index), record its index and subtract it. Return [list of indices, final remainder rounded to 6 decimals].",
+     "fn": "residual_quantize",
+     "starter": "def residual_quantize(z, books):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1.5,
+         1.5
+        ],
+        [
+         [
+          [
+           0,
+           0
+          ],
+          [
+           1,
+           1
+          ],
+          [
+           2,
+           2
+          ]
+         ],
+         [
+          [
+           0,
+           0
+          ],
+          [
+           0.5,
+           0.5
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         1
+        ],
+        [
+         0.0,
+         0.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         3.0
+        ],
+        [
+         [
+          [
+           0
+          ],
+          [
+           2
+          ]
+         ],
+         [
+          [
+           0
+          ],
+          [
+           1
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         1
+        ],
+        [
+         0.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.2
+        ],
+        [
+         [
+          [
+           0,
+           0
+          ]
+         ],
+         [
+          [
+           0,
+           0
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ],
+        [
+         0.2,
+         0.2
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         2.2,
+         -1.1
+        ],
+        [
+         [
+          [
+           2,
+           -1
+          ],
+          [
+           0,
+           0
+          ]
+         ],
+         [
+          [
+           0.2,
+           -0.1
+          ],
+          [
+           0,
+           0
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ],
+        [
+         0.0,
+         -0.0
+        ]
+       ]
+      }
+     ],
+     "hint": "Subtract the chosen entry before moving to the next book.",
+     "solution": "def residual_quantize(z, books):\n    r = list(z)\n    idx = []\n    for book in books:\n        best = None\n        arg = 0\n        for i in range(len(book)):\n            d = sum((a - b) ** 2 for a, b in zip(r, book[i]))\n            if best is None or d < best - 1e-12:\n                best = d\n                arg = i\n        idx.append(arg)\n        r = [a - b for a, b in zip(r, book[arg])]\n    return [idx, [round(x, 6) for x in r]]\n"
+    },
+    {
+     "type": "python",
+     "title": "Product quantization",
+     "intro": "Write product_quantize(z, books): z is split into len(books) equal parts; part j is quantized with books[j] (a list of vectors of the part length; nearest by squared distance, ties to the lower index). Return the list of indices.",
+     "fn": "product_quantize",
+     "starter": "def product_quantize(z, books):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.1,
+         0.9,
+         2.0,
+         0.0
+        ],
+        [
+         [
+          [
+           0,
+           0
+          ],
+          [
+           0,
+           1
+          ]
+         ],
+         [
+          [
+           2,
+           0
+          ],
+          [
+           0,
+           2
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         [
+          [
+           0
+          ],
+          [
+           1
+          ]
+         ],
+         [
+          [
+           0
+          ],
+          [
+           2
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         5,
+         5,
+         5,
+         5,
+         5
+        ],
+        [
+         [
+          [
+           5,
+           5
+          ]
+         ],
+         [
+          [
+           5,
+           5
+          ],
+          [
+           0,
+           0
+          ]
+         ],
+         [
+          [
+           0,
+           0
+          ],
+          [
+           5,
+           5
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        0,
+        1
+       ]
+      }
+     ],
+     "hint": "Slice z into equal pieces and search each book.",
+     "solution": "def product_quantize(z, books):\n    m = len(books)\n    n = len(z) // m\n    idx = []\n    for j in range(m):\n        part = z[j * n:(j + 1) * n]\n        best = None\n        arg = 0\n        for i in range(len(books[j])):\n            d = sum((a - b) ** 2 for a, b in zip(part, books[j][i]))\n            if best is None or d < best - 1e-12:\n                best = d\n                arg = i\n        idx.append(arg)\n    return idx\n"
+    },
+    {
+     "type": "python",
+     "title": "Capacity",
+     "intro": "Write capacity(k, m): the number of distinct code combinations of m codebooks with k entries each.",
+     "fn": "capacity",
+     "starter": "def capacity(k, m):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        512,
+        1
+       ],
+       "expect": 512
+      },
+      {
+       "args": [
+        512,
+        2
+       ],
+       "expect": 262144
+      },
+      {
+       "args": [
+        16,
+        4
+       ],
+       "expect": 65536
+      },
+      {
+       "args": [
+        2,
+        10
+       ],
+       "expect": 1024
+      }
+     ],
+     "hint": "k to the m.",
+     "solution": "def capacity(k, m):\n    return k ** m\n"
+    },
+    {
+     "type": "order",
+     "title": "Residual quantization",
+     "intro": "Order the steps.",
+     "items": [
+      "Quantize the vector with codebook 1",
+      "Subtract the chosen entry",
+      "Quantize the remainder with codebook 2",
+      "Repeat for each codebook",
+      "Sum the chosen entries for the approximation"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Extensions",
+     "intro": "Match each method with its idea.",
+     "pairs": [
+      [
+       "VQ-VAE-2",
+       "Top and bottom code grids"
+      ],
+      [
+       "Residual quantization",
+       "Quantize what is left"
+      ],
+      [
+       "Product quantization",
+       "Quantize parts separately"
+      ],
+      [
+       "Prior",
+       "Models the code grid"
+      ],
+      [
+       "Tokens",
+       "Input for sequence models"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Capacity",
+     "text": "Residual quantization quantizes the {{remainder|residual}}. With m codebooks of K entries the capacity is K to the {{m}}."
+    }
+   ]
+  },
+  {
+   "title": "Problems, comparisons and where it stands",
+   "maps": [
+    {
+     "title": "Critique",
+     "links": [
+      "Codebook collapse | wastes | Capacity",
+      "Straight-through | is | Biased",
+      "VAE | uses | Continuous latents",
+      "GAN | needs | No encoder",
+      "Prior | is | Trained separately",
+      "Reconstruction | can be | Blurry",
+      "Later tokenizers | improve | Codebook use"
+     ]
+    }
+   ],
+   "summary": [
+    "VQ-VAE solved posterior collapse and gave a clean way to learn discrete representations, but it has its own weak points. Codebook collapse leaves most codes unused. The straight-through gradient is a biased approximation. The two-stage training means the prior never influences the codes.",
+    "Compared with a standard VAE, the latent is discrete and the prior is learned. Compared with a GAN, VQ-VAE has an explicit encoder and likelihood-based training, but its reconstructions can be blurry, a reason later work added adversarial and perceptual losses.",
+    "The labs finish with diagnostic tools: a collapse report and a quantization error summary."
+   ],
+   "glossary": [
+    {
+     "term": "Codebook collapse",
+     "def": "Only a small part of the codebook is ever used."
+    },
+    {
+     "term": "Bias",
+     "def": "The straight-through gradient is not the true gradient."
+    },
+    {
+     "term": "Two-stage training",
+     "def": "First the autoencoder, then the prior."
+    },
+    {
+     "term": "Blurry reconstruction",
+     "def": "Squared error alone tends to average away fine detail."
+    },
+    {
+     "term": "Perceptual loss",
+     "def": "A loss based on features of a pretrained network, used to sharpen results."
+    },
+    {
+     "term": "Quantization error",
+     "def": "The distance between the encoder output and its code."
+    }
+   ],
+   "keyPoints": [
+    "Codebook collapse is the main training failure; diagnose it with usage and perplexity.",
+    "The straight-through gradient is biased but works if the commitment loss keeps z_e close to z_q.",
+    "The prior is trained after the autoencoder, so generation quality depends on both stages.",
+    "Squared error tends to give blurry reconstructions; later work adds adversarial and perceptual losses (background).",
+    "Alternatives: EMA codebooks, reinitialisation, lower-dimensional codes, residual codes.",
+    "The core idea, discrete learned tokens, now underpins many generative systems."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "What goes wrong in practice? The most common problem is codebook collapse. Early in training, a few codes win most assignments and get trained, while the rest are left behind. Over time the model uses a fraction of the codebook and the reconstructions are worse than a full codebook would give.",
+      "The diagnostics of chapter 7, usage and perplexity, show it. The repairs of chapter 6, EMA updates and reinitialisation, reduce it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A second problem is the straight-through estimator. It is biased, as chapter 4 showed. Its quality depends on the encoder output being near the chosen code, which is why the commitment loss matters.",
+      "If the two are far apart, the gradient at the code says little about where the encoder output should go. Some later methods replace the hard assignment with a softened one or add extra losses."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A third issue is that the two stages are separate. The encoder and the codebook are trained without regard to how easily a prior can model the codes. A code that reconstructs well but is a chaotic jumble of symbols is hard for the prior. Some later models train both together."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Compare with the alternatives. A standard VAE has continuous latents with a fixed Gaussian prior, and tends to give blurry samples, and can suffer posterior collapse. A GAN generates images without an encoder, with sharp results but unstable training and no explicit likelihood.",
+      "VQ-VAE with a PixelCNN prior is likelihood-based, covers the data well and is stable to train. Its reconstructions from squared error can still be soft, and later systems add adversarial and perceptual losses to sharpen them. That is background knowledge."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "What is its legacy? The idea of learning a discrete vocabulary for continuous data, then modelling sequences of those tokens, is now widespread. Image generators, music generators and audio codecs use variants of it.",
+      "The VQ-VAE paper itself showed images, audio and video frames, and reported speech samples with recognisable words when a WaveNet prior was used on the codes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The course ends with diagnostic labs: a collapse report, the average quantization error, and the choice of the best codebook size under a budget."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where to go next: read the 2017 paper itself, then VQ-VAE-2, then the work on residual and finite scalar quantization. Implement a small VQ-VAE on a toy image set in your favourite deep-learning library and plot the perplexity during training."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is codebook collapse?",
+     "options": [
+      "Most codes are never used",
+      "The decoder fails",
+      "The loss is zero",
+      "The prior diverges"
+     ],
+     "answer": 0,
+     "explain": "Detected with usage and perplexity."
+    },
+    {
+     "q": "Why is the straight-through gradient biased?",
+     "options": [
+      "It ignores the quantizer's real derivative",
+      "It is exact",
+      "It uses noise",
+      "It is random"
+     ],
+     "answer": 0,
+     "explain": "It is a copy, not a derivative."
+    },
+    {
+     "q": "What can sharpen blurry reconstructions?",
+     "options": [
+      "Adversarial and perceptual losses",
+      "Smaller codebooks",
+      "Fewer layers",
+      "Lower resolution only"
+     ],
+     "answer": 0,
+     "explain": "Later work, background."
+    },
+    {
+     "q": "Why train the prior separately?",
+     "options": [
+      "The autoencoder is fixed first",
+      "It is faster only",
+      "It is mandatory by the loss",
+      "It avoids data"
+     ],
+     "answer": 0,
+     "explain": "Two-stage training."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is the main failure?",
+     "a": "Codebook collapse."
+    },
+    {
+     "q": "What helps?",
+     "a": "EMA, reinitialisation and monitoring."
+    },
+    {
+     "q": "Is VQ-VAE likelihood based?",
+     "a": "With the prior, yes."
+    },
+    {
+     "q": "What was the legacy?",
+     "a": "Discrete tokens for continuous data."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Collapse report",
+     "intro": "Write collapse_report(counts): return [number of used codes, number of dead codes, 1 if fewer than a quarter of the codes are used else 0].",
+     "fn": "collapse_report",
+     "starter": "def collapse_report(counts):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         5,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        1,
+        7,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        4,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         3,
+         3,
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        2,
+        2,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         9
+        ]
+       ],
+       "expect": [
+        1,
+        3,
+        0
+       ]
+      }
+     ],
+     "hint": "Count the used entries and compare with a quarter.",
+     "solution": "def collapse_report(counts):\n    used = 0\n    for c in counts:\n        if c > 0:\n            used += 1\n    dead = len(counts) - used\n    flag = 0\n    if used * 4 < len(counts):\n        flag = 1\n    return [used, dead, flag]\n"
+    },
+    {
+     "type": "python",
+     "title": "Average quantization error",
+     "intro": "Write quant_error(zs, quantized): the mean over the vectors of the squared distance between each vector and its quantized version (sum over elements, mean over vectors), rounded to 6 decimals.",
+     "fn": "quant_error",
+     "starter": "def quant_error(zs, quantized):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          0
+         ]
+        ]
+       ],
+       "expect": 0.5
+      },
+      {
+       "args": [
+        [
+         [
+          1.0
+         ]
+        ],
+        [
+         [
+          0.5
+         ]
+        ]
+       ],
+       "expect": 0.25
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          2
+         ],
+         [
+          0,
+          0
+         ]
+        ],
+        [
+         [
+          2,
+          2
+         ],
+         [
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": 0.0
+      }
+     ],
+     "hint": "Sum squared differences and average over vectors.",
+     "solution": "def quant_error(zs, quantized):\n    total = 0.0\n    for z, q in zip(zs, quantized):\n        total += sum((a - b) ** 2 for a, b in zip(z, q))\n    return round(total / len(zs), 6)\n"
+    },
+    {
+     "type": "python",
+     "title": "Pick a codebook size",
+     "intro": "Candidates are lists [k, error, bits_per_position]. Write choose_k(cands, max_bits): among the candidates with bits_per_position at most max_bits, return the k with the smallest error (ties go to the smaller k); return 0 if none fits.",
+     "fn": "choose_k",
+     "starter": "def choose_k(cands, max_bits):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          64,
+          0.5,
+          6
+         ],
+         [
+          512,
+          0.2,
+          9
+         ],
+         [
+          1024,
+          0.15,
+          10
+         ]
+        ],
+        9
+       ],
+       "expect": 512
+      },
+      {
+       "args": [
+        [
+         [
+          64,
+          0.5,
+          6
+         ],
+         [
+          512,
+          0.2,
+          9
+         ]
+        ],
+        5
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         [
+          32,
+          0.3,
+          5
+         ],
+         [
+          64,
+          0.3,
+          6
+         ]
+        ],
+        6
+       ],
+       "expect": 32
+      },
+      {
+       "args": [
+        [
+         [
+          8,
+          1.0,
+          3
+         ]
+        ],
+        4
+       ],
+       "expect": 8
+      }
+     ],
+     "hint": "Filter by bits, then minimize the error.",
+     "solution": "def choose_k(cands, max_bits):\n    best = None\n    arg = 0\n    for k, err, bits in cands:\n        if bits <= max_bits:\n            if best is None or err < best - 1e-12 or (abs(err - best) <= 1e-12 and k < arg):\n                best = err\n                arg = k\n    return arg\n"
+    },
+    {
+     "type": "order",
+     "title": "Fixing collapse",
+     "intro": "Order a sensible response.",
+     "items": [
+      "Log perplexity and usage during training",
+      "Notice that usage is low",
+      "Revive dead codes from batch vectors",
+      "Consider EMA updates",
+      "Check that perplexity recovers"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Problems and fixes",
+     "intro": "Match each problem with a remedy.",
+     "pairs": [
+      [
+       "Codebook collapse",
+       "Reinitialise or EMA"
+      ],
+      [
+       "Blurry output",
+       "Perceptual or adversarial loss (later work)"
+      ],
+      [
+       "Biased gradient",
+       "Commitment loss"
+      ],
+      [
+       "Poor generation",
+       "Stronger prior"
+      ],
+      [
+       "Low capacity",
+       "Residual or product codes"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Problems",
+     "text": "Codebook {{collapse}} wastes capacity. The straight-through gradient is {{biased|an approximation}}. Training happens in {{two}} stages."
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: VQ-VAE: Discrete Latents",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What does the VQ-VAE quantizer do?",
+    "options": [
+     "Replaces each encoder output by the nearest codebook vector",
+     "Adds Gaussian noise",
+     "Trains the prior",
+     "Normalizes the batch"
+    ],
+    "answer": 0,
+    "explain": "A nearest-neighbour lookup."
+   },
+   {
+    "q": "Who introduced VQ-VAE?",
+    "options": [
+     "van den Oord, Vinyals and Kavukcuoglu",
+     "Kingma and Welling",
+     "Vaswani et al.",
+     "Goodfellow et al."
+    ],
+    "answer": 0,
+    "explain": "NeurIPS 2017."
+   },
+   {
+    "q": "What are the latents of a VQ-VAE?",
+    "options": [
+     "Discrete indices into a codebook",
+     "Gaussian vectors",
+     "Binary images",
+     "Words"
+    ],
+    "answer": 0,
+    "explain": "One index per grid position."
+   },
+   {
+    "q": "Why is a straight-through estimator needed?",
+    "options": [
+     "The quantizer has zero gradient almost everywhere",
+     "The decoder is discrete",
+     "Adam fails",
+     "The data is binary"
+    ],
+    "answer": 0,
+    "explain": "A staircase function."
+   },
+   {
+    "q": "What does the straight-through estimator do?",
+    "options": [
+     "Copies the gradient from z_q to z_e",
+     "Zeroes gradients",
+     "Scales gradients by K",
+     "Adds noise to gradients"
+    ],
+    "answer": 0,
+    "explain": "As if the quantizer were the identity."
+   },
+   {
+    "q": "What is the forward value of z_e + sg[z_q - z_e]?",
+    "options": [
+     "z_q",
+     "z_e",
+     "0",
+     "z_q - z_e"
+    ],
+    "answer": 0,
+    "explain": "The z_e terms cancel."
+   },
+   {
+    "q": "Which loss term moves the codebook vector toward the encoder output?",
+    "options": [
+     "The codebook loss",
+     "The commitment loss",
+     "Reconstruction",
+     "None"
+    ],
+    "answer": 0,
+    "explain": "||sg[z_e] - e||^2."
+   },
+   {
+    "q": "What does the commitment loss do?",
+    "options": [
+     "Keeps the encoder output near its chosen code",
+     "Moves the codebook",
+     "Trains the decoder",
+     "Samples codes"
+    ],
+    "answer": 0,
+    "explain": "Only the encoder moves."
+   },
+   {
+    "q": "What value of beta did the paper use?",
+    "options": [
+     "0.25",
+     "0",
+     "10",
+     "100"
+    ],
+    "answer": 0,
+    "explain": "The paper reports robustness to beta."
+   },
+   {
+    "q": "Does the reconstruction loss train the codebook directly?",
+    "options": [
+     "No",
+     "Yes",
+     "Only in the first step",
+     "Only with EMA"
+    ],
+    "answer": 0,
+    "explain": "The gradient ends at the encoder."
+   },
+   {
+    "q": "How many bits does one code from 512 entries hold at most?",
+    "options": [
+     "9",
+     "512",
+     "5",
+     "64"
+    ],
+    "answer": 0,
+    "explain": "log2 512."
+   },
+   {
+    "q": "The codebook loss resembles which algorithm?",
+    "options": [
+     "K-means",
+     "Dropout",
+     "Attention",
+     "Beam search"
+    ],
+    "answer": 0,
+    "explain": "Centres move toward their points."
+   },
+   {
+    "q": "What decay does the paper suggest for EMA updates?",
+    "options": [
+     "0.99",
+     "0.5",
+     "0.1",
+     "1.5"
+    ],
+    "answer": 0,
+    "explain": "The appendix suggests gamma 0.99."
+   },
+   {
+    "q": "What is a dead code?",
+    "options": [
+     "A code never nearest to any output",
+     "A code with big norm",
+     "A repeated code",
+     "The first code"
+    ],
+    "answer": 0,
+    "explain": "It never gets updated."
+   },
+   {
+    "q": "How can dead codes be repaired?",
+    "options": [
+     "Reinitialise them from batch vectors",
+     "Lower beta to 0",
+     "Remove the decoder",
+     "Train longer without change"
+    ],
+    "answer": 0,
+    "explain": "A common trick."
+   },
+   {
+    "q": "What is the perplexity of uniform usage over K codes?",
+    "options": [
+     "K",
+     "1",
+     "log K",
+     "0"
+    ],
+    "answer": 0,
+    "explain": "2 to the log2 K."
+   },
+   {
+    "q": "What does low perplexity signal?",
+    "options": [
+     "Codebook collapse",
+     "A strong decoder",
+     "Fast training",
+     "A good prior"
+    ],
+    "answer": 0,
+    "explain": "Few codes in use."
+   },
+   {
+    "q": "What is the entropy of a code that is always the same?",
+    "options": [
+     "0",
+     "1",
+     "K",
+     "Infinite"
+    ],
+    "answer": 0,
+    "explain": "No uncertainty."
+   },
+   {
+    "q": "Which prior did the paper use for images?",
+    "options": [
+     "PixelCNN",
+     "WaveNet",
+     "LSTM only",
+     "None"
+    ],
+    "answer": 0,
+    "explain": "WaveNet was used for audio."
+   },
+   {
+    "q": "Which prior did the paper use for audio?",
+    "options": [
+     "WaveNet",
+     "PixelCNN",
+     "GAN",
+     "Transformer"
+    ],
+    "answer": 0,
+    "explain": "A convolutional autoregressive model."
+   },
+   {
+    "q": "When is the prior trained?",
+    "options": [
+     "After the autoencoder, which is frozen",
+     "Jointly from step 0",
+     "Before the encoder",
+     "Never"
+    ],
+    "answer": 0,
+    "explain": "Two-stage training."
+   },
+   {
+    "q": "In what order is an image code grid usually modelled?",
+    "options": [
+     "Raster order",
+     "Random order",
+     "Reverse order only",
+     "Diagonal only"
+    ],
+    "answer": 0,
+    "explain": "Row by row."
+   },
+   {
+    "q": "Why model codes rather than pixels with PixelCNN?",
+    "options": [
+     "The grid is far smaller",
+     "Codes are colours",
+     "Pixels are discrete",
+     "It is required"
+    ],
+    "answer": 0,
+    "explain": "32 by 32 instead of 128 by 128."
+   },
+   {
+    "q": "How are latents of a 128 by 128 ImageNet image shaped in the paper?",
+    "options": [
+     "32 by 32 grid",
+     "1 by 1",
+     "128 by 128",
+     "8 by 8"
+    ],
+    "answer": 0,
+    "explain": "A 4 times reduction per side."
+   },
+   {
+    "q": "What does posterior collapse mean?",
+    "options": [
+     "The decoder ignores the latent",
+     "The loss reaches zero",
+     "The prior diverges",
+     "The codebook doubles"
+    ],
+    "answer": 0,
+    "explain": "Seen in VAEs with strong decoders."
+   },
+   {
+    "q": "What does residual quantization do?",
+    "options": [
+     "Quantizes what the previous codebook left over",
+     "Quantizes parts separately",
+     "Removes codes",
+     "Averages codebooks"
+    ],
+    "answer": 0,
+    "explain": "Background knowledge, later work."
+   },
+   {
+    "q": "What does product quantization do?",
+    "options": [
+     "Splits the vector and quantizes each part separately",
+     "Multiplies codes",
+     "Prunes the book",
+     "Trains a prior"
+    ],
+    "answer": 0,
+    "explain": "Parts are independent."
+   },
+   {
+    "q": "How many combinations do m codebooks of K entries give?",
+    "options": [
+     "K^m",
+     "K*m",
+     "m^K",
+     "K+m"
+    ],
+    "answer": 0,
+    "explain": "Tuples of indices."
+   },
+   {
+    "q": "Who wrote VQ-VAE-2?",
+    "options": [
+     "Razavi, van den Oord and Vinyals",
+     "Vaswani",
+     "Kingma",
+     "Radford"
+    ],
+    "answer": 0,
+    "explain": "2019, hierarchical codes."
+   },
+   {
+    "q": "What is the main training failure of VQ-VAE?",
+    "options": [
+     "Codebook collapse",
+     "Vanishing prior",
+     "Over-large beta",
+     "Missing decoder"
+    ],
+    "answer": 0,
+    "explain": "Few codes win everything."
+   },
+   {
+    "q": "Why is the straight-through gradient called biased?",
+    "options": [
+     "It is not the true derivative",
+     "It uses noise",
+     "It is random",
+     "It is exact"
+    ],
+    "answer": 0,
+    "explain": "It is a copy."
+   },
+   {
+    "q": "Why does the commitment loss matter for straight-through?",
+    "options": [
+     "It keeps z_e near z_q so the copied gradient is meaningful",
+     "It trains the decoder",
+     "It increases K",
+     "It is optional with no effect"
+    ],
+    "answer": 0,
+    "explain": "Otherwise the gradient says little."
+   },
+   {
+    "q": "What can sharpen blurry VQ-VAE reconstructions in later work?",
+    "options": [
+     "Adversarial and perceptual losses",
+     "Fewer codes",
+     "Smaller images",
+     "Larger beta"
+    ],
+    "answer": 0,
+    "explain": "Background knowledge."
+   },
+   {
+    "q": "Which is a nearest code with ties?",
+    "options": [
+     "The lowest index in the labs",
+     "A random one",
+     "The highest index",
+     "Both"
+    ],
+    "answer": 0,
+    "explain": "A convention for determinism."
+   },
+   {
+    "q": "What do the labs use instead of a deep-learning library?",
+    "options": [
+     "Plain Python on toy examples",
+     "TensorFlow",
+     "PyTorch",
+     "JAX"
+    ],
+    "answer": 0,
+    "explain": "Teaching examples."
+   },
+   {
+    "q": "What does an autoencoder bottleneck force?",
+    "options": [
+     "Keeping only the important information",
+     "More pixels",
+     "Random output",
+     "A bigger decoder"
+    ],
+    "answer": 0,
+    "explain": "Less capacity than the input."
+   },
+   {
+    "q": "What does the second term of the loss equal in a k-means view?",
+    "options": [
+     "Moving a centre toward its points",
+     "Reassigning points",
+     "Splitting clusters",
+     "Nothing"
+    ],
+    "answer": 0,
+    "explain": "Same objective."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "VQ-VAE lookup",
+  "prompt": "vq>",
+  "intro": "A scripted lookup, not a real model. Try: loss, sizes, ste, ema, help",
+  "chips": [
+   "loss",
+   "sizes",
+   "ste",
+   "ema",
+   "prior",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "loss       L = ||x - D(z_q)||^2 + ||sg[z_e] - e||^2 + beta ||z_e - sg[e",
+     "sizes      codebook K=512, dimension D=64",
+     "ste        z_q_st = z_e + sg[z_q - z_e]",
+     "ema        N = g N + (1-g) n",
+     "prior      PixelCNN for images, WaveNet for audio, trained on frozen co"
+    ]
+   },
+   {
+    "re": "^loss$",
+    "out": [
+     "L = ||x - D(z_q)||^2 + ||sg[z_e] - e||^2 + beta ||z_e - sg[e]||^2",
+     "beta = 0.25"
+    ]
+   },
+   {
+    "re": "^sizes$",
+    "out": [
+     "codebook K=512, dimension D=64",
+     "ImageNet 128x128 -> 32x32 grid of indices"
+    ]
+   },
+   {
+    "re": "^ste$",
+    "out": [
+     "z_q_st = z_e + sg[z_q - z_e]",
+     "forward value z_q, backward gradient of z_e"
+    ]
+   },
+   {
+    "re": "^ema$",
+    "out": [
+     "N = g N + (1-g) n",
+     "m = g m + (1-g) sum z",
+     "e = m / N, decay g = 0.99"
+    ]
+   },
+   {
+    "re": "^prior$",
+    "out": [
+     "PixelCNN for images, WaveNet for audio, trained on frozen codes"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ }
+}
