@@ -1,0 +1,4633 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "jade-agent-kit",
+ "title": "Jade Agent Kit: A Workspace for AI Agents",
+ "subtitle": "Files, shell, code, search, tools, agents and safe automation in the browser, with Python labs",
+ "author": "Lilith Learning Lab",
+ "description": "Learn the Jade Agent Kit (version 3), a lean browser workspace for AI agents: the virtual file system, shell, Python, JavaScript and SQLite runtimes, BM25 and vector search, tools for language models, the agent loop and brain, decisions, scheduling, Sentry, notes and safe automation with approvals and secrets. Each chapter has an ELI5 block and Python labs that rebuild the ideas.",
+ "pronounce": {
+  "Jade": "jade",
+  "kit": "kit",
+  "createKit": "create kit",
+  "kit.use": "kit dot use",
+  "kit.run": "kit dot run",
+  "kit.vfs": "kit dot V F S",
+  "vfs": "V F S",
+  "VFS": "V F S",
+  "BusyBox": "busy box",
+  "WebAssembly": "web assembly",
+  "MicroPython": "micro python",
+  "SQLite": "S Q L ite",
+  "sqlite": "S Q L ite",
+  "sqlite-vec": "S Q L ite vec",
+  "FTS5": "F T S five",
+  "BM25": "B M twenty five",
+  "IDF": "I D F",
+  "ELI5": "E L I five",
+  "IndexedDB": "indexed D B",
+  "CDN": "C D N",
+  "npm": "N P M",
+  "JSON": "jason",
+  "API": "A P I",
+  "LLM": "L L M",
+  "Ollama": "oh llama",
+  "Ollaya": "oh lie uh",
+  "MCP": "M C P",
+  "cron": "cron",
+  "n8n": "N eight N",
+  "HEARTBEAT_OK": "heartbeat okay",
+  "Anthropic": "an throp ik",
+  "OpenAI": "open A I",
+  "stdout": "standard out",
+  "stderr": "standard error",
+  "Obsidian": "ob sid ee an",
+  "Sentry": "sentry",
+  "ONNX": "onyx",
+  "WebGPU": "web G P U",
+  "Ansible": "an sib ul",
+  "gzipped": "G zipped"
+ },
+ "chapters": [
+  {
+   "title": "Meet the kit and lean loading",
+   "maps": [
+    {
+     "title": "The kit",
+     "links": [
+      "Jade Agent Kit | is | A browser workspace for agents",
+      "createKit | creates | The kit with a file system",
+      "kit.use | loads | A feature on demand",
+      "Lean loading | downloads | Only what you use",
+      "Module | is | One feature file",
+      "Version pin | protects | Your app from changes",
+      "Jade Vault | is | Where the pieces come from"
+     ]
+    }
+   ],
+   "summary": [
+    "The Jade Agent Kit is a workspace that lives inside a web page and gives an AI agent a place to get things done. It has a virtual file system, a shell, Python, JavaScript, SQLite, search, decisions, scheduling and an agent, and every piece is optional.",
+    "Its main idea is lean loading. The first call, createKit, sets up only the file system. Each other feature is its own module that downloads the first time a page uses it. A page that needs only files stays tiny.",
+    "This course follows the kit's documentation, version 3, and builds small working models of each idea in Python so you understand how the real thing behaves."
+   ],
+   "glossary": [
+    {
+     "term": "Kit",
+     "def": "The object that createKit returns; every feature hangs off it."
+    },
+    {
+     "term": "Feature",
+     "def": "An optional module such as shell, python, sqlite or agent."
+    },
+    {
+     "term": "kit.use",
+     "def": "Loads one or more features and returns them."
+    },
+    {
+     "term": "Lean loading",
+     "def": "Downloading a feature only when it is first used."
+    },
+    {
+     "term": "Pinning",
+     "def": "Importing a fixed version so the code never changes under you."
+    },
+    {
+     "term": "VFS",
+     "def": "The virtual file system, kit.vfs."
+    }
+   ],
+   "keyPoints": [
+    "You import createKit from a CDN, pinned to a version such as v3.0.0.",
+    "createKit alone loads just the file system (about 6.6 KB gzipped).",
+    "kit.use('python') loads Python; kit.use('sqlite', 'bm25') loads several.",
+    "Helpers such as kit.run, kit.tool, kit.decide, kit.embed and kit.agent load what they need by themselves.",
+    "kit.has('python') tells whether a feature is loaded.",
+    "createKit({ use: [...] }) preloads; use: 'all' loads everything."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The kit is a toolbox you carry in a tiny box. Only the workbench comes with you; the saw and the drill are fetched from the shop the moment a job needs them."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine a toolbox where every tool stays at the shop until you ask for it. That is lean loading. You carry a small box with a workbench in it, the file system, and fetch a saw or a drill only when a job needs one."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The first step is one import from a CDN. You pin the version, because the CDN caches tagged versions permanently and an unpinned import could change your app later."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "import { createKit } from 'https://cdn.jsdelivr.net/gh/lucky-edgelord/Jade-agent-kit@v3.0.0/dist/jade-agent-kit.js';\n\nconst kit = await createKit({ persist: 'my-app' });\nkit.vfs.write('/hello.txt', 'hello world\\n');\nconst r = await kit.run('cat /hello.txt | tr a-z A-Z');\nconsole.log(r.stdout); // HELLO WORLD"
+    },
+    {
+     "type": "text",
+     "items": [
+      "In this example createKit loads only the file system and keeps it in the browser's IndexedDB under the name my-app. The call to kit.run then loads the shell and its BusyBox program on first use, which is why the output appears after a short wait the first time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sizes show the idea. The core is about 6.6 kilobytes gzipped. The shell adds about 12.6 plus 5 kilobytes and a 300 kilobyte WebAssembly file. Python adds 8.5 kilobytes plus about half a megabyte for MicroPython. SQLite adds 9 kilobytes and about 900 kilobytes of WebAssembly.",
+      "BM25 search is only 2.1 kilobytes with no extra download."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "You can also load features yourself with kit.use, preload them in createKit, or import single modules without createKit at all. Shared code sits in common chunk files so nothing downloads twice, and you can self-host by copying the dist and assets folders together."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does createKit load by itself?",
+     "options": [
+      "Only the file system",
+      "The shell and Python",
+      "Everything",
+      "Only the agent"
+     ],
+     "answer": 0,
+     "explain": "Everything else is loaded on demand."
+    },
+    {
+     "q": "Why pin the CDN import to a version?",
+     "options": [
+      "Tagged versions are cached permanently and will not change",
+      "It is faster to type",
+      "It enables Python",
+      "It is required for IndexedDB"
+     ],
+     "answer": 0,
+     "explain": "A fixed version keeps your app stable."
+    },
+    {
+     "q": "Which call tells whether Python is loaded?",
+     "options": [
+      "kit.has('python')",
+      "kit.use('python')",
+      "kit.python()",
+      "kit.load()"
+     ],
+     "answer": 0,
+     "explain": "kit.has checks without loading."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does persist do?",
+     "a": "Keeps the file system in IndexedDB under a name."
+    },
+    {
+     "q": "What does kit.run load on first use?",
+     "a": "The shell and BusyBox."
+    },
+    {
+     "q": "How do you preload features?",
+     "a": "createKit({ use: [...] })."
+    },
+    {
+     "q": "Where do runtimes come from?",
+     "a": "A CDN, set by the cdn option."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Load costs",
+     "intro": "Match each feature with what it downloads.",
+     "pairs": [
+      [
+       "shell",
+       "BusyBox as WebAssembly"
+      ],
+      [
+       "python",
+       "MicroPython"
+      ],
+      [
+       "sqlite",
+       "SQLite WebAssembly"
+      ],
+      [
+       "bm25",
+       "Nothing extra"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Using features",
+     "text": "Call kit.{{use}}('python') to load Python, and kit.{{has}}('python') to check whether it is already loaded."
+    },
+    {
+     "type": "python",
+     "title": "Download cost",
+     "intro": "Write total_kb(features): features is a list of names from shell, python, sqlite, bm25. Each costs its gzipped code plus its extra download in KB: shell 12.6+5.0+300, python 8.5+500, sqlite 9.0+900, bm25 2.1+0. Add the core 6.6 KB once. Return the total rounded to 1 decimal.",
+     "fn": "total_kb",
+     "starter": "def total_kb(features):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        []
+       ],
+       "expect": 6.6,
+       "approx": 0.05
+      },
+      {
+       "args": [
+        [
+         "bm25"
+        ]
+       ],
+       "expect": 8.7,
+       "approx": 0.05
+      },
+      {
+       "args": [
+        [
+         "shell",
+         "python"
+        ]
+       ],
+       "expect": 832.7,
+       "approx": 0.05
+      },
+      {
+       "args": [
+        [
+         "shell",
+         "python",
+         "sqlite",
+         "bm25"
+        ]
+       ],
+       "expect": 1743.8,
+       "approx": 0.05
+      }
+     ],
+     "hint": "Start at the core and add each feature.",
+     "solution": "def total_kb(features):\n    cost = {'shell': 12.6 + 5.0 + 300, 'python': 8.5 + 500, 'sqlite': 9.0 + 900, 'bm25': 2.1}\n    t = 6.6\n    for f in features:\n        t += cost[f]\n    return round(t, 1)\n"
+    }
+   ]
+  },
+  {
+   "title": "The virtual file system",
+   "maps": [
+    {
+     "title": "VFS",
+     "links": [
+      "kit.vfs | is | An in-memory file system",
+      "persist | saves to | IndexedDB",
+      "write | creates | Missing folders",
+      "read | returns | A string",
+      "readBytes | returns | A Uint8Array",
+      "on | reports | Changed paths",
+      "Everything else | shares | The VFS"
+     ]
+    }
+   ],
+   "summary": [
+    "kit.vfs is a small file system in the browser. Paths look like /notes/a.md. Writing a file creates any missing folders. Because the shell, Python, JavaScript, SQLite, the agent's tools and the brain all use the same file system, a file written by one is seen by all.",
+    "By default it lives in memory. With persist set to a name, changes are saved to IndexedDB shortly after each change, and flush saves immediately.",
+    "The lab builds a tiny file system to see how paths and folders work."
+   ],
+   "glossary": [
+    {
+     "term": "Path",
+     "def": "A slash-separated name such as /logs/run.txt."
+    },
+    {
+     "term": "mkdirp",
+     "def": "Create a folder and any missing parents."
+    },
+    {
+     "term": "flush",
+     "def": "Save to IndexedDB right now."
+    },
+    {
+     "term": "snapshot",
+     "def": "A copy of the current state."
+    },
+    {
+     "term": "import",
+     "def": "Load files from an object mapping paths to contents."
+    },
+    {
+     "term": "on",
+     "def": "Subscribe to changes."
+    }
+   ],
+   "keyPoints": [
+    "write(path, data) takes a string or bytes and creates missing folders.",
+    "read gives a string; readBytes gives a Uint8Array.",
+    "list(dir) returns the names in a folder.",
+    "exists, isDir and stat inspect a path.",
+    "move, copy and rm change the tree.",
+    "Data persists only if you set persist; otherwise it is memory only."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The file system is a pretend filing cabinet inside the web page. Everyone who works in the page, the shell, Python and the agent, opens the same cabinet."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Think of the VFS as a folder tree that exists only inside your web page. It behaves like a normal disk, but nothing touches the user's real files. That makes it a safe place to let an agent write and run things."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "kit.vfs.mkdirp('/logs');\nkit.vfs.write('/logs/run.txt', 'started');\nkit.vfs.write('/logs/data.bin', new Uint8Array([1, 2, 3]));\n\nkit.vfs.read('/logs/run.txt');        // string\nkit.vfs.readBytes('/logs/data.bin');  // Uint8Array\nkit.vfs.list('/logs');                // names in the folder\n\nkit.vfs.copy('/logs/run.txt', '/logs/run-backup.txt', true);\nkit.vfs.on(p => console.log('changed:', p));\nawait kit.vfs.flush();                // save to IndexedDB now\nkit.vfs.import({ '/config.json': '{}' });"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Writes create parent folders on their own, so you rarely call mkdirp. The on method lets your page react to changes, for example to redraw a file list when the agent saves a note."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Persistence is a choice. Pass persist with a name when you create the kit and the workspace survives reloads. Leave it out and everything vanishes when the page closes.",
+      "The brain, schedules, flows and notes all keep their files under a hidden /.kit folder in this same tree, so persisting the kit persists them too."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Because everything shares the VFS, it is also the meeting point between tools. The agent can write a CSV, Python can read it with open, SQLite can load it, and the shell can count its lines with wc. No copying between systems is needed."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What happens when you write to /a/b/c.txt and the folders do not exist?",
+     "options": [
+      "They are created",
+      "An error is thrown",
+      "The write is ignored",
+      "Only /a is created"
+     ],
+     "answer": 0,
+     "explain": "write creates missing folders."
+    },
+    {
+     "q": "When does the VFS survive a page reload?",
+     "options": [
+      "When persist is set",
+      "Always",
+      "Never",
+      "When Python is loaded"
+     ],
+     "answer": 0,
+     "explain": "Otherwise it is memory only."
+    },
+    {
+     "q": "Which method returns a Uint8Array?",
+     "options": [
+      "readBytes",
+      "read",
+      "list",
+      "stat"
+     ],
+     "answer": 0,
+     "explain": "read returns a string."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does list return?",
+     "a": "Names inside a folder."
+    },
+    {
+     "q": "What does on do?",
+     "a": "Calls you with each changed path."
+    },
+    {
+     "q": "What is /.kit?",
+     "a": "Where features keep their files."
+    },
+    {
+     "q": "How do you save at once?",
+     "a": "await kit.vfs.flush()."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "Saving work",
+     "intro": "Put the steps to keep files across reloads in order.",
+     "items": [
+      "Create the kit with persist set to a name",
+      "Write files to kit.vfs",
+      "The kit saves to IndexedDB shortly after each change",
+      "Reload the page and the files are still there"
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Tiny file system",
+     "intro": "Write run_fs(ops): ops is a list of [op, path, data] where op is 'write' or 'rm'. Start with an empty file system. A write creates the file. An rm removes the file. After all ops return the sorted list of the folders that still contain at least one file, directly or through subfolders, as paths without the file name (for example '/a' and '/a/b'); the root '/' is not included.",
+     "fn": "run_fs",
+     "starter": "def run_fs(ops):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "write",
+          "/a/b/c.txt",
+          "x"
+         ],
+         [
+          "write",
+          "/a/d.txt",
+          "y"
+         ]
+        ]
+       ],
+       "expect": [
+        "/a",
+        "/a/b"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "write",
+          "/a/b/c.txt",
+          "x"
+         ],
+         [
+          "rm",
+          "/a/b/c.txt",
+          ""
+         ]
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "write",
+          "/x.txt",
+          "1"
+         ]
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "write",
+          "/logs/run.txt",
+          "s"
+         ],
+         [
+          "write",
+          "/logs/old/a.txt",
+          "o"
+         ],
+         [
+          "rm",
+          "/logs/run.txt",
+          ""
+         ]
+        ]
+       ],
+       "expect": [
+        "/logs",
+        "/logs/old"
+       ]
+      }
+     ],
+     "hint": "Collect parent folders of surviving files.",
+     "solution": "def run_fs(ops):\n    files = {}\n    for op, path, data in ops:\n        if op == 'write':\n            files[path] = data\n        elif op == 'rm' and path in files:\n            del files[path]\n    dirs = set()\n    for p in files:\n        parts = p.split('/')\n        cur = ''\n        for part in parts[1:-1]:\n            cur += '/' + part\n            dirs.add(cur)\n    return sorted(dirs)\n"
+    },
+    {
+     "type": "python",
+     "title": "List a folder",
+     "intro": "Write list_dir(paths, dir): paths is a list of file paths; dir is a folder path like '/a' ('/' for the root). Return the sorted names directly inside dir (files and subfolder names, without duplicates).",
+     "fn": "list_dir",
+     "starter": "def list_dir(paths, dir):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "/a/b/c.txt",
+         "/a/d.txt",
+         "/e.txt"
+        ],
+        "/a"
+       ],
+       "expect": [
+        "b",
+        "d.txt"
+       ]
+      },
+      {
+       "args": [
+        [
+         "/a/b/c.txt",
+         "/a/d.txt",
+         "/e.txt"
+        ],
+        "/"
+       ],
+       "expect": [
+        "a",
+        "e.txt"
+       ]
+      },
+      {
+       "args": [
+        [
+         "/a/b/c.txt",
+         "/a/b/x.txt"
+        ],
+        "/a/b"
+       ],
+       "expect": [
+        "c.txt",
+        "x.txt"
+       ]
+      },
+      {
+       "args": [
+        [
+         "/a/b/c.txt"
+        ],
+        "/z"
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Strip the prefix; take the first segment.",
+     "solution": "def list_dir(paths, dir):\n    prefix = dir\n    if not prefix.endswith('/'):\n        prefix += '/'\n    names = set()\n    for p in paths:\n        if p.startswith(prefix):\n            rest = p[len(prefix):]\n            names.add(rest.split('/')[0])\n    return sorted(names)\n"
+    }
+   ]
+  },
+  {
+   "title": "The shell: kit.run and sessions",
+   "maps": [
+    {
+     "title": "Shell",
+     "links": [
+      "kit.run | runs | A command string",
+      "BusyBox | provides | Unix commands",
+      "Pipes | connect | Commands",
+      "Session | keeps | cwd and env",
+      "Custom command | is | A function",
+      "No if or for | means | Use node or python",
+      "Engine | can be | auto, wasm or js"
+     ]
+    }
+   ],
+   "summary": [
+    "kit.run executes a shell command string against the virtual file system. It understands pipes, redirects, and, or, variables, command substitution and globs. The commands come from BusyBox 1.37 compiled to WebAssembly, with JavaScript versions of common ones as a fallback.",
+    "A session gives you your own working directory and environment variables, with options for streaming output, a timeout and cancellation. You can also register your own commands as functions.",
+    "There are no if or for blocks in the shell. For real scripting, call node or python."
+   ],
+   "glossary": [
+    {
+     "term": "BusyBox",
+     "def": "A single program that provides many Unix commands."
+    },
+    {
+     "term": "Pipe",
+     "def": "Sends one command's output into the next as input."
+    },
+    {
+     "term": "Session",
+     "def": "A shell with its own cwd and env."
+    },
+    {
+     "term": "stdout and stderr",
+     "def": "Normal output and error output."
+    },
+    {
+     "term": "Exit code",
+     "def": "0 means success; other numbers mean failure."
+    },
+    {
+     "term": "Glob",
+     "def": "A pattern such as *.md that matches file names."
+    }
+   ],
+   "keyPoints": [
+    "kit.run returns an object with stdout (and the exit status).",
+    "A && B runs B only if A succeeds; A || B runs B only if A fails.",
+    "kit.shell.session({ cwd, env }) creates a separate shell.",
+    "session.run(cmd, { onOutput, timeoutMs, signal }) streams, limits time and can be cancelled.",
+    "kit.shell.commands.name = fn registers a custom command.",
+    "Built-in extras: node, js, python, python3, sqlite3, sh, xargs, cd, export, which, help."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The shell is a way to give the computer short written orders. Pipes pass one order's answer to the next, like handing a note down a line of people."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The shell lets an agent do what people do at a terminal: list files, search them, count lines, move things around. Because it is real BusyBox compiled to WebAssembly, the commands behave as you would expect from Linux."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "await kit.run('ls -la / && grep -rn TODO /src | head');\n\nconst sh = kit.shell.session({ cwd: '/project', env: { NAME: 'x' } });\nawait sh.run('cd lib && pwd', { onOutput: (text, isErr) => {}, timeoutMs: 30000, signal });"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Operators work as in a normal shell. A pipe sends output onward. The && operator runs the next command only if the first succeeded, and || runs it only if the first failed. Variables and command substitution with a dollar sign work too."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There is no if or for in the shell language. This is a deliberate limit: when you need loops or conditions, run a script with node or python, which are available as commands."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "kit.shell.commands.hello = c => {\n  c.o(`hello ${c.argv[0] ?? ''}\\n`);\n  return 0;\n};\nawait kit.run('hello world');"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A custom command receives a context. It has argv for the arguments, stdin for piped input, o for standard output, e for standard error, and sh.cwd for the working directory. It returns an exit code, and 0 means success.",
+      "The engine setting can be auto, wasm or js; auto uses BusyBox when it has loaded."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does A && B do?",
+     "options": [
+      "Runs B only if A succeeds",
+      "Runs both at once",
+      "Runs B only if A fails",
+      "Pipes A into B"
+     ],
+     "answer": 0,
+     "explain": "&& chains on success."
+    },
+    {
+     "q": "How do you do a loop in the kit's shell?",
+     "options": [
+      "Run node or python",
+      "Use a for block",
+      "Use while",
+      "You cannot"
+     ],
+     "answer": 0,
+     "explain": "The shell has no if or for blocks."
+    },
+    {
+     "q": "What does a custom command return?",
+     "options": [
+      "An exit code",
+      "A promise of text",
+      "A file",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "0 means success."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is BusyBox?",
+     "a": "Many Unix commands in one program."
+    },
+    {
+     "q": "What does c.o do?",
+     "a": "Writes to standard output."
+    },
+    {
+     "q": "What is a session for?",
+     "a": "Its own cwd and variables."
+    },
+    {
+     "q": "What does signal do?",
+     "a": "Lets you cancel a run."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Operators",
+     "intro": "Match each operator with its meaning.",
+     "pairs": [
+      [
+       "|",
+       "Send output to the next command"
+      ],
+      [
+       "&&",
+       "Run next only on success"
+      ],
+      [
+       "||",
+       "Run next only on failure"
+      ],
+      [
+       ">",
+       "Redirect output to a file"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Split a command",
+     "intro": "Write split_cmd(line): split a shell line on '&&' into groups, and each group on '|' into stages. Strip spaces around each part. Return a list of groups, each a list of stage strings.",
+     "fn": "split_cmd",
+     "starter": "def split_cmd(line):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "ls -la / && grep -rn TODO /src | head"
+       ],
+       "expect": [
+        [
+         "ls -la /"
+        ],
+        [
+         "grep -rn TODO /src",
+         "head"
+        ]
+       ]
+      },
+      {
+       "args": [
+        "cat a | tr a-z A-Z"
+       ],
+       "expect": [
+        [
+         "cat a",
+         "tr a-z A-Z"
+        ]
+       ]
+      },
+      {
+       "args": [
+        "pwd"
+       ],
+       "expect": [
+        [
+         "pwd"
+        ]
+       ]
+      },
+      {
+       "args": [
+        "a && b && c | d | e"
+       ],
+       "expect": [
+        [
+         "a"
+        ],
+        [
+         "b"
+        ],
+        [
+         "c",
+         "d",
+         "e"
+        ]
+       ]
+      }
+     ],
+     "hint": "Split on && first, then on |.",
+     "solution": "def split_cmd(line):\n    out = []\n    for g in line.split('&&'):\n        stages = [s.strip() for s in g.split('|')]\n        out.append(stages)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "And and or",
+     "intro": "Write run_chain(steps): steps is a list of [operator, exit_code] where operator is '' for the first command, '&&' or '||' for later ones, and exit_code is what that command WOULD return if it ran. Simulate the shell: a command after && runs only if the last run command returned 0; after || only if it returned non-zero. Return the list of indices of the commands that actually ran.",
+     "fn": "run_chain",
+     "starter": "def run_chain(steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "",
+          0
+         ],
+         [
+          "&&",
+          0
+         ],
+         [
+          "&&",
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        1,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "",
+          1
+         ],
+         [
+          "&&",
+          0
+         ],
+         [
+          "||",
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "",
+          0
+         ],
+         [
+          "||",
+          1
+         ],
+         [
+          "&&",
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "",
+          2
+         ]
+        ]
+       ],
+       "expect": [
+        0
+       ]
+      }
+     ],
+     "hint": "Track the exit code of the last command that ran.",
+     "solution": "def run_chain(steps):\n    ran = []\n    last = 0\n    for i in range(len(steps)):\n        op, code = steps[i]\n        go = False\n        if op == '':\n            go = True\n        elif op == '&&':\n            go = last == 0\n        elif op == '||':\n            go = last != 0\n        if go:\n            ran.append(i)\n            last = code\n    return ran\n"
+    }
+   ]
+  },
+  {
+   "title": "Python, JavaScript and SQLite",
+   "maps": [
+    {
+     "title": "Runtimes",
+     "links": [
+      "kit.python | runs | MicroPython",
+      "kit.js | runs | A Node-style sandbox",
+      "Web Worker | isolates | Each runtime",
+      "kit.sqlite | opens | Databases in the VFS",
+      "Parameters | prevent | Injection",
+      "sqlite-vec | adds | Vector search",
+      "FTS5 | adds | Full-text search"
+     ]
+    }
+   ],
+   "summary": [
+    "The kit can run code. kit.python runs MicroPython 1.27 in a Web Worker; its open and os see the same virtual file system. kit.js runs JavaScript in another worker with require, fs, path, node:sqlite and fetch, but no npm packages.",
+    "kit.sqlite opens database files stored in the VFS and runs SQLite 3.53 in WebAssembly. With sqlite-vec it can store and search vectors, and FTS5 gives full-text search.",
+    "In the lab you will build a safe parameterised query."
+   ],
+   "glossary": [
+    {
+     "term": "MicroPython",
+     "def": "A small Python for constrained environments."
+    },
+    {
+     "term": "Worker",
+     "def": "A background thread in the browser."
+    },
+    {
+     "term": "require",
+     "def": "Node's way to load a module."
+    },
+    {
+     "term": "Parameterised query",
+     "def": "SQL with ? placeholders and values passed separately."
+    },
+    {
+     "term": "db.save",
+     "def": "Writes the database back to the VFS."
+    },
+    {
+     "term": "vec0",
+     "def": "The sqlite-vec virtual table type."
+    }
+   ],
+   "keyPoints": [
+    "kit.python.run(code, { cwd }) runs Python; open() and os use the VFS.",
+    "kit.js.run(code, { cwd, timeoutMs, globals, network }) returns the script's return value as r.result.",
+    "Inside JavaScript, kit.tool(name, args) calls any kit tool.",
+    "kit.sqlite.open(path) takes a VFS path or ':memory:'.",
+    "db.exec for schema, db.run for writes with params, db.query for rows as objects.",
+    "Always pass values as parameters, never glue them into SQL."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Python and JavaScript are two helpers who can do sums and make decisions. SQLite is a very tidy notebook where facts go in rows you can ask questions about."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Reading and writing files is not enough for most jobs; sometimes the agent needs to compute. The kit offers two languages. Python is handy for data and text. JavaScript is natural in a browser and can use the kit's own tools."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "const r = await kit.python.run(`import json\\nprint(json.dumps({'n': 1}))`, { cwd: '/' });\n\nconst j = await kit.js.run(`\n  const { twice } = require('./lib/util.js');\n  const t = await kit.tool('read', { path: '/notes/a.md' });\n  return { ok: true };\n`, { cwd: '/', timeoutMs: 60000, globals: { input: 42 }, network: true });\n// j.result -> { ok: true }"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Both run in Web Workers, so a long calculation does not freeze the page, and the timeoutMs option stops runaway code. JavaScript can require fs, path, util, os, http, https and node:sqlite, plus local files, but no packages from npm."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "const db = await kit.sqlite.open('/data/notes.db');\ndb.exec(`create table if not exists note(id integer primary key, body text)`);\ndb.run(`insert into note(body) values (?)`, ['buy coffee']);\nconst rows = db.query(`select * from note where id > ?`, [0]);\ndb.save();"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Notice the question marks. A parameterised query keeps the SQL text and the values apart, so a value such as a quote character can never change the meaning of the statement. That is how SQL injection is prevented."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "db.exec(`create virtual table vec_notes using vec0(embedding float[3])`);\ndb.run(`insert into vec_notes(rowid, embedding) values (?, ?)`, [1, '[0.5, 0.1, 0.9]']);\nconst nearest = db.query(\n  `select rowid, distance from vec_notes where embedding match ? order by distance limit 3`,\n  ['[0.5, 0.1, 0.8]']);"
+    },
+    {
+     "type": "text",
+     "items": [
+      "With the sqlite-vec extension a vec0 table stores vectors of a fixed size, and a match query returns the nearest rows with their distance. The next chapters use this for meaning-based search."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does r.result hold after kit.js.run?",
+     "options": [
+      "The script's return value",
+      "Its console output",
+      "The exit code",
+      "The file list"
+     ],
+     "answer": 0,
+     "explain": "return becomes r.result."
+    },
+    {
+     "q": "Why use ? placeholders in SQL?",
+     "options": [
+      "Values cannot change the statement's meaning",
+      "They are faster to type",
+      "They enable FTS5",
+      "They save the database"
+     ],
+     "answer": 0,
+     "explain": "It prevents injection."
+    },
+    {
+     "q": "Can kit.js use npm packages?",
+     "options": [
+      "No",
+      "Yes, all",
+      "Only with network",
+      "Only in Python"
+     ],
+     "answer": 0,
+     "explain": "Only the listed modules and local files."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does db.save do?",
+     "a": "Writes the database to the VFS."
+    },
+    {
+     "q": "What is ':memory:'?",
+     "a": "A temporary database."
+    },
+    {
+     "q": "What does globals do?",
+     "a": "Passes values into the script."
+    },
+    {
+     "q": "Where does Python's open look?",
+     "a": "At the VFS."
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Database calls",
+     "text": "Use db.{{exec}} for schema, db.{{run}} for writes with parameters and db.{{query}} to read rows."
+    },
+    {
+     "type": "python",
+     "title": "Safe query",
+     "intro": "Write bind(sql, params): replace each '?' in sql, left to right, with the matching value: numbers as they are (str), strings in single quotes with every single quote doubled. Return the final string.",
+     "fn": "bind",
+     "starter": "def bind(sql, params):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "select * from note where id > ?",
+        [
+         0
+        ]
+       ],
+       "expect": "select * from note where id > 0"
+      },
+      {
+       "args": [
+        "insert into note(body) values (?)",
+        [
+         "buy coffee"
+        ]
+       ],
+       "expect": "insert into note(body) values ('buy coffee')"
+      },
+      {
+       "args": [
+        "select * from t where a = ? and b = ?",
+        [
+         "o'brien",
+         3
+        ]
+       ],
+       "expect": "select * from t where a = 'o''brien' and b = 3"
+      },
+      {
+       "args": [
+        "x",
+        []
+       ],
+       "expect": "x"
+      }
+     ],
+     "hint": "Walk the string; swap each ?.",
+     "solution": "def bind(sql, params):\n    out = ''\n    i = 0\n    for ch in sql:\n        if ch == '?':\n            v = params[i]\n            i += 1\n            if isinstance(v, str):\n                out += \"'\" + v.replace(\"'\", \"''\") + \"'\"\n            else:\n                out += str(v)\n        else:\n            out += ch\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "BM25 keyword search",
+   "maps": [
+    {
+     "title": "BM25",
+     "links": [
+      "BM25 | ranks | Documents for a query",
+      "Term frequency | rewards | Repeated words",
+      "Inverse document frequency | rewards | Rare words",
+      "Length normalisation | penalises | Long documents",
+      "kit.bm25.search | searches | An array",
+      "BM25 class | builds | A reusable index",
+      "searchFiles | searches | Files in a folder"
+     ]
+    }
+   ],
+   "summary": [
+    "BM25 is a ranking formula for keyword search: documents that contain the query words more often, especially rare words, and that are not too long, score higher. It needs no downloads and is only 2.1 KB in the kit.",
+    "kit.bm25.search ranks an array of texts for one query. The BM25 class builds an index once for many queries. searchFiles ranks files under a folder, which is how an agent finds the right note.",
+    "The lab implements the scoring yourself."
+   ],
+   "glossary": [
+    {
+     "term": "Term frequency",
+     "def": "How many times a word appears in a document."
+    },
+    {
+     "term": "Document frequency",
+     "def": "How many documents contain the word."
+    },
+    {
+     "term": "IDF",
+     "def": "Inverse document frequency: rarer words weigh more."
+    },
+    {
+     "term": "k1 and b",
+     "def": "BM25's saturation and length-normalisation parameters."
+    },
+    {
+     "term": "Index",
+     "def": "A prepared structure for quick searching."
+    },
+    {
+     "term": "Snippet",
+     "def": "The matching line returned by searchFiles."
+    }
+   ],
+   "keyPoints": [
+    "search(docs, query) returns objects with id, text and score.",
+    "new kit.bm25.BM25(docs) builds a reusable index; index.search(query, { limit }).",
+    "searchFiles(query, { root }) returns path, score, line and snippet.",
+    "Scores are relative: compare them within one search, not across searches.",
+    "BM25 matches words, not meaning; embeddings come next.",
+    "The page says its scoring follows Python's rank_bm25."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. BM25 is a score for how well a page matches your words: more mentions help, rare words count extra, and a huge page does not win just for being big."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When you search a pile of notes for the word coffee, which note should come first? One that mentions coffee three times is a better guess than one that mentions it once. A note that mentions the rare word espresso is more special than one that only says the common word the.",
+      "BM25 turns those instincts into a number."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "kit.bm25.search(['the cat sat', 'a dog ran', 'cats and dogs'], 'cat');\n\nconst index = new kit.bm25.BM25([{ id: 'a', text: '…' }, { id: 'b', text: '…' }]);\nindex.search('query', { limit: 5 });\n\nkit.bm25.searchFiles('error handling', { root: '/src' });"
+    },
+    {
+     "type": "math",
+     "tex": "\\mathrm{score}(D,Q)=\\sum_{q\\in Q}\\mathrm{IDF}(q)\\cdot\\frac{f(q,D)\\,(k_1+1)}{f(q,D)+k_1\\,(1-b+b\\,|D|/\\mathrm{avgdl})}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "For each query word, IDF measures how rare it is. The fraction rewards frequent use inside the document, but with diminishing returns controlled by k1, so saying a word ten times is not ten times better. The b term shrinks the score for documents longer than average."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The kit's documentation says its scoring follows the Python library rank_bm25 and does not spell out the constants, so check the source if you need exact numbers. In practice you use the order of results, not the raw scores."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The agent's search_files tool is built on searchFiles. Given a folder, it returns the best matching lines with their file path, which lets an agent find the right place in a big workspace without reading everything."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which words does IDF weigh more?",
+     "options": [
+      "Rare words",
+      "Common words",
+      "Short words",
+      "The first word"
+     ],
+     "answer": 0,
+     "explain": "Rarity carries information."
+    },
+    {
+     "q": "What does length normalisation do?",
+     "options": [
+      "Reduces the score of long documents",
+      "Removes short words",
+      "Sorts by length",
+      "Counts letters"
+     ],
+     "answer": 0,
+     "explain": "Otherwise long texts would always win."
+    },
+    {
+     "q": "What does searchFiles return?",
+     "options": [
+      "path, score, line and snippet",
+      "Only file names",
+      "The whole file",
+      "A boolean"
+     ],
+     "answer": 0,
+     "explain": "It points at the matching line."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Does BM25 understand meaning?",
+     "a": "No, it matches words."
+    },
+    {
+     "q": "What does limit do?",
+     "a": "Caps the number of results."
+    },
+    {
+     "q": "When use the BM25 class?",
+     "a": "For many queries on one set of documents."
+    },
+    {
+     "q": "Where do scores compare?",
+     "a": "Within the same search."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "Ranking",
+     "intro": "Put the BM25 steps in order.",
+     "items": [
+      "Split the query into words",
+      "Count each word in each document",
+      "Weigh each word by how rare it is",
+      "Adjust for document length",
+      "Sort documents by total score"
+     ]
+    },
+    {
+     "type": "python",
+     "title": "BM25 score",
+     "intro": "Write bm25(docs, query): docs is a list of strings, query a string. Lower-case and split on spaces. Use k1=1.5, b=0.75, IDF = ln(1 + (N - n + 0.5) / (n + 0.5)) where N is the number of docs and n the number containing the word. Return each document's score, rounded to 6 decimals, in the original order. Use import math.",
+     "fn": "bm25",
+     "starter": "def bm25(docs, query):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "the cat sat",
+         "a dog ran",
+         "cats and dogs"
+        ],
+        "cat"
+       ],
+       "expect": [
+        0.980829,
+        0.0,
+        0.0
+       ],
+       "approx": 1e-05
+      },
+      {
+       "args": [
+        [
+         "coffee coffee tea",
+         "coffee",
+         "tea tea tea tea"
+        ],
+        "coffee"
+       ],
+       "expect": [
+        0.645499,
+        0.653918,
+        0.0
+       ],
+       "approx": 1e-05
+      },
+      {
+       "args": [
+        [
+         "a b c",
+         "a a a"
+        ],
+        "a b"
+       ],
+       "expect": [
+        0.875469,
+        0.303869
+       ],
+       "approx": 1e-05
+      },
+      {
+       "args": [
+        [
+         "x y",
+         "y z",
+         "z x"
+        ],
+        "z"
+       ],
+       "expect": [
+        0.0,
+        0.470004,
+        0.470004
+       ],
+       "approx": 1e-05
+      }
+     ],
+     "hint": "Compute idf per word, then sum per document.",
+     "solution": "import math\ndef bm25(docs, query):\n    toks = [d.lower().split() for d in docs]\n    N = len(docs)\n    avg = sum(len(t) for t in toks) / N\n    k1 = 1.5\n    b = 0.75\n    scores = []\n    for t in toks:\n        s = 0.0\n        for q in query.lower().split():\n            n = 0\n            for u in toks:\n                if q in u:\n                    n += 1\n            if n == 0:\n                continue\n            idf = math.log(1 + (N - n + 0.5) / (n + 0.5))\n            f = t.count(q)\n            s += idf * f * (k1 + 1) / (f + k1 * (1 - b + b * len(t) / avg))\n        scores.append(round(s, 6))\n    return scores\n"
+    }
+   ]
+  },
+  {
+   "title": "Embeddings and vector search",
+   "maps": [
+    {
+     "title": "Vectors",
+     "links": [
+      "Embedding | is | A vector for text",
+      "kit.embed | uses | Local Ollama",
+      "Distance | measures | Similarity",
+      "kit.vectors | stores | Embeddings in SQLite",
+      "Hybrid search | merges | Meaning and keywords",
+      "Model tag | prevents | Mixing models",
+      "Cloud | has no | Embedding models"
+     ]
+    }
+   ],
+   "summary": [
+    "An embedding turns text into a list of numbers so that texts with similar meaning have nearby vectors. kit.embed makes them using a model running locally through Ollama, such as embeddinggemma or nomic-embed-text. Ollama Cloud has no embedding models.",
+    "kit.vectors keeps embeddings in a SQLite file using sqlite-vec. A search embeds your question and returns the nearest records. Hybrid search also uses BM25 and merges the two rankings.",
+    "The labs compute similarity and merge rankings."
+   ],
+   "glossary": [
+    {
+     "term": "Embedding",
+     "def": "A vector that captures meaning."
+    },
+    {
+     "term": "Cosine similarity",
+     "def": "Closeness of direction of two vectors."
+    },
+    {
+     "term": "Nearest neighbour",
+     "def": "The stored vector closest to the query."
+    },
+    {
+     "term": "Hybrid search",
+     "def": "Combining semantic and keyword rankings."
+    },
+    {
+     "term": "Store",
+     "def": "A vector database opened with kit.vectors.open."
+    },
+    {
+     "term": "Rank fusion",
+     "def": "Merging rankings by position."
+    }
+   ],
+   "keyPoints": [
+    "kit.embed(text) gives one vector; kit.embed(array, { model }) gives many.",
+    "store = await kit.vectors.open(path); store.add(items); store.search(query, { limit }).",
+    "Results have id, text, meta, distance and score.",
+    "{ hybrid: true } merges meaning search with BM25.",
+    "A store remembers its model and rejects vectors from another.",
+    "Pull an embedding model in Ollama first."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. An embedding turns a sentence into a spot on a big map, where sentences that mean the same live close together. Searching is finding the nearest neighbours."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Keyword search fails when the words differ: a note about cats sleeping many hours will not match the question how long do kittens nap. An embedding places both near each other because their meanings are close."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "const store = await kit.vectors.open('/data/notes.db');\nawait store.add([{ id: 'n1', text: 'Cats sleep many hours a day', meta: { source: 'wiki' } }]);\nconst hits = await store.search('how long do cats sleep', { limit: 5 });\nconst merged = await store.search('cats sleep', { hybrid: true });\nstore.close();"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The store embeds each text when you add it and the query when you search. Closeness is usually measured by cosine similarity, which compares direction, not length.",
+      "A store records which model made its vectors and refuses vectors from a different model, because numbers from different models cannot be compared."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\cos(a,b)=\\frac{a\\cdot b}{\\|a\\|\\,\\|b\\|}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Meaning search and keyword search each miss things the other finds, so hybrid mode runs both and merges the results. One common way to merge is reciprocal rank fusion: each list gives a document the score one over a constant plus its rank, and the scores are added."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The memory and skills parts of the agent brain can use the same embeddings to find the most relevant facts or skills for each prompt, which is covered in a later chapter."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does an embedding capture?",
+     "options": [
+      "Meaning as a vector",
+      "Spelling only",
+      "File size",
+      "Word count"
+     ],
+     "answer": 0,
+     "explain": "Similar meaning means nearby vectors."
+    },
+    {
+     "q": "Why does a store reject vectors from another model?",
+     "options": [
+      "They cannot be compared",
+      "They are too long",
+      "They are slower",
+      "They use more disk"
+     ],
+     "answer": 0,
+     "explain": "Different models, different spaces."
+    },
+    {
+     "q": "What does hybrid: true do?",
+     "options": [
+      "Merges meaning and BM25 results",
+      "Disables search",
+      "Uses the cloud",
+      "Sorts by id"
+     ],
+     "answer": 0,
+     "explain": "Best of both."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Which models can embed?",
+     "a": "Local Ollama models like embeddinggemma."
+    },
+    {
+     "q": "Does Ollama Cloud embed?",
+     "a": "No."
+    },
+    {
+     "q": "What is cosine similarity?",
+     "a": "Direction closeness."
+    },
+    {
+     "q": "What does store.remove do?",
+     "a": "Deletes a record."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Search types",
+     "intro": "Match each search with what it matches.",
+     "pairs": [
+      [
+       "BM25",
+       "Words in common"
+      ],
+      [
+       "Vector search",
+       "Similar meaning"
+      ],
+      [
+       "Hybrid",
+       "Both, merged"
+      ],
+      [
+       "searchFiles",
+       "Lines in files"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Cosine similarity",
+     "intro": "Write cosine(a, b): the cosine similarity of two equal-length vectors, rounded to 6 decimals. Use import math.",
+     "fn": "cosine",
+     "starter": "def cosine(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0
+        ],
+        [
+         1,
+         0
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-05
+      },
+      {
+       "args": [
+        [
+         1,
+         0
+        ],
+        [
+         0,
+         1
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-05
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         2,
+         4,
+         6
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-05
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.1,
+         0.9
+        ],
+        [
+         0.5,
+         0.1,
+         0.8
+        ]
+       ],
+       "expect": 0.998649,
+       "approx": 1e-05
+      }
+     ],
+     "hint": "Dot product over the product of lengths.",
+     "solution": "import math\ndef cosine(a, b):\n    d = 0.0\n    na = 0.0\n    nb = 0.0\n    for x, y in zip(a, b):\n        d += x * y\n        na += x * x\n        nb += y * y\n    return round(d / (math.sqrt(na) * math.sqrt(nb)), 6)\n"
+    },
+    {
+     "type": "python",
+     "title": "Reciprocal rank fusion",
+     "intro": "Write fuse(a, b, k): a and b are lists of ids ordered best first; each id gets 1/(k + rank) from every list it appears in (rank starts at 1). Return the ids sorted by total score, best first; ties by first appearance in a then b.",
+     "fn": "fuse",
+     "starter": "def fuse(a, b, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c"
+        ],
+        [
+         "c",
+         "b",
+         "d"
+        ],
+        60
+       ],
+       "expect": [
+        "c",
+        "b",
+        "a",
+        "d"
+       ]
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        [
+         "b"
+        ],
+        60
+       ],
+       "expect": [
+        "a",
+        "b"
+       ]
+      },
+      {
+       "args": [
+        [
+         "x",
+         "y"
+        ],
+        [
+         "x",
+         "y"
+        ],
+        10
+       ],
+       "expect": [
+        "x",
+        "y"
+       ]
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         "c",
+         "a"
+        ],
+        1
+       ],
+       "expect": [
+        "a",
+        "c",
+        "b"
+       ]
+      }
+     ],
+     "hint": "Add reciprocal ranks.",
+     "solution": "def fuse(a, b, k):\n    score = {}\n    order = []\n    for lst in (a, b):\n        for i in range(len(lst)):\n            x = lst[i]\n            if x not in score:\n                score[x] = 0.0\n                order.append(x)\n            score[x] += 1.0 / (k + i + 1)\n    ranked = sorted(range(len(order)), key=lambda j: (-round(score[order[j]], 12), j))\n    return [order[j] for j in ranked]\n"
+    }
+   ]
+  },
+  {
+   "title": "Tools for language models",
+   "maps": [
+    {
+     "title": "Tools",
+     "links": [
+      "kit.tools | describes | Tools to a model",
+      "OpenAI shape | uses | type function",
+      "Anthropic shape | uses | input_schema",
+      "kit.tool | runs | A tool by name",
+      "Result | is always | A string",
+      "Failure | starts with | Error:",
+      "tools.add | registers | Your own tool"
+     ]
+    }
+   ],
+   "summary": [
+    "A language model cannot touch files or run code by itself. It can only ask for a tool call. kit.tools gives the model a description of each tool, and kit.tool(name, args) runs the call and returns the result as text.",
+    "The kit generates definitions in two shapes: the OpenAI shape, which Ollama also uses, and the Anthropic shape. You can add your own tools with a description, a JSON Schema for the inputs and a run function.",
+    "The labs build a dispatcher and a schema generator."
+   ],
+   "glossary": [
+    {
+     "term": "Tool",
+     "def": "A function the model may ask to run."
+    },
+    {
+     "term": "JSON Schema",
+     "def": "A standard way to describe the shape of arguments."
+    },
+    {
+     "term": "Dispatcher",
+     "def": "Code that runs a tool by name."
+    },
+    {
+     "term": "Tool call",
+     "def": "The model's request: a name and arguments."
+    },
+    {
+     "term": "Tool result",
+     "def": "Text returned to the model."
+    },
+    {
+     "term": "Subset",
+     "def": "A chosen list of tools to offer."
+    }
+   ],
+   "keyPoints": [
+    "kit.tools.openai() returns { type: 'function', function: { name, description, parameters } } entries.",
+    "kit.tools.anthropic(['read', 'bash']) returns { name, description, input_schema } entries.",
+    "kit.tool(name, args) always returns a string; errors begin with 'Error:'.",
+    "Built in: read, write, edit, bash, python, javascript, sqlite, search_files, decide, tasks, schedule, sentry, search, fetch.",
+    "kit.tools.add(name, { description, parameters, run }) registers a tool.",
+    "edit needs oldText to be unique unless replaceAll is set."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Tools are the things a helper is allowed to ask for, like passing a note through a slot: please read this file. Whatever comes back is always a note of words."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Picture a model as a clever person in a locked room who can pass notes through a slot. The note says: please read this file. You do it and pass the contents back. Tools are the list of requests you are willing to carry out, and the description of each tells the model how to ask."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "kit.tools.add('now', {\n  description: 'the time',\n  parameters: { type: 'object', properties: {} },\n  run: () => new Date().toISOString()\n});\n\nconst tools = kit.tools.openai();   // now includes 'now'\nconst time = await kit.tool('now', {});"
+    },
+    {
+     "type": "text",
+     "items": [
+      "There are two description shapes because providers differ. In the OpenAI shape every entry says type function and holds the name, a description and a parameters schema. In the Anthropic shape the entry has name, description and input_schema. The content is the same."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The dispatcher kit.tool takes a name and an arguments object and always returns a string. If something goes wrong, the string begins with the word Error and a colon. Checking that prefix is how your code, or the model, notices failure.",
+      "Returning text instead of throwing lets the model read the error and try again."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The edit tool shows careful tool design. It replaces exact text, and the old text must appear exactly once unless replaceAll is set. That stops the model from changing the wrong place by accident."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Most of the other built-ins are tools you have already met: python, javascript and sqlite run code, search_files uses BM25, decide asks a decision model, and tasks, schedule and sentry manage lists, jobs and rules. The search and fetch tools use Ollama Cloud and need a cloud key."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does kit.tool always return?",
+     "options": [
+      "A string",
+      "An object",
+      "A promise of a file",
+      "A boolean"
+     ],
+     "answer": 0,
+     "explain": "Failures start with Error:."
+    },
+    {
+     "q": "What is the Anthropic tool shape's schema field called?",
+     "options": [
+      "input_schema",
+      "parameters",
+      "args",
+      "schema"
+     ],
+     "answer": 0,
+     "explain": "The OpenAI shape uses parameters."
+    },
+    {
+     "q": "Why must edit's oldText be unique?",
+     "options": [
+      "To avoid changing the wrong place",
+      "To save memory",
+      "To speed up search",
+      "It is a style rule"
+     ],
+     "answer": 0,
+     "explain": "Unless replaceAll is set."
+    }
+   ],
+   "cards": [
+    {
+     "q": "How do you offer a subset of tools?",
+     "a": "Pass a list of names."
+    },
+    {
+     "q": "What do search and fetch need?",
+     "a": "An Ollama Cloud key."
+    },
+    {
+     "q": "What does bash keep?",
+     "a": "A persistent shell session."
+    },
+    {
+     "q": "What does a tool definition need?",
+     "a": "description, parameters, run."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Tool shapes",
+     "intro": "Match the shape with its field.",
+     "pairs": [
+      [
+       "OpenAI function",
+       "parameters"
+      ],
+      [
+       "Anthropic tool",
+       "input_schema"
+      ],
+      [
+       "Custom tool",
+       "run"
+      ],
+      [
+       "kit.tool result",
+       "Always a string"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Dispatcher",
+     "intro": "Write call_tool(tools, name, args): tools is a dict name -> [required_args list, kind] where kind is 'echo' (return the value of args['text']), 'add' (return the string of args['a'] + args['b']) or 'fail' (always fails). Return a string. Unknown name: 'Error: unknown tool NAME'. Missing required arg: 'Error: missing ARG'. A 'fail' tool: 'Error: failed'.",
+     "fn": "call_tool",
+     "starter": "def call_tool(tools, name, args):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "say": [
+          [
+           "text"
+          ],
+          "echo"
+         ],
+         "sum": [
+          [
+           "a",
+           "b"
+          ],
+          "add"
+         ],
+         "boom": [
+          [],
+          "fail"
+         ]
+        },
+        "say",
+        {
+         "text": "hi"
+        }
+       ],
+       "expect": "hi"
+      },
+      {
+       "args": [
+        {
+         "say": [
+          [
+           "text"
+          ],
+          "echo"
+         ],
+         "sum": [
+          [
+           "a",
+           "b"
+          ],
+          "add"
+         ],
+         "boom": [
+          [],
+          "fail"
+         ]
+        },
+        "sum",
+        {
+         "a": 2,
+         "b": 3
+        }
+       ],
+       "expect": "5"
+      },
+      {
+       "args": [
+        {
+         "say": [
+          [
+           "text"
+          ],
+          "echo"
+         ]
+        },
+        "sum",
+        {}
+       ],
+       "expect": "Error: unknown tool sum"
+      },
+      {
+       "args": [
+        {
+         "sum": [
+          [
+           "a",
+           "b"
+          ],
+          "add"
+         ]
+        },
+        "sum",
+        {
+         "a": 1
+        }
+       ],
+       "expect": "Error: missing b"
+      },
+      {
+       "args": [
+        {
+         "boom": [
+          [],
+          "fail"
+         ]
+        },
+        "boom",
+        {}
+       ],
+       "expect": "Error: failed"
+      }
+     ],
+     "hint": "Look the tool up, check args, run.",
+     "solution": "def call_tool(tools, name, args):\n    if name not in tools:\n        return 'Error: unknown tool ' + name\n    req, kind = tools[name][0], tools[name][1]\n    for r in req:\n        if r not in args:\n            return 'Error: missing ' + r\n    if kind == 'echo':\n        return str(args['text'])\n    if kind == 'add':\n        return str(args['a'] + args['b'])\n    return 'Error: failed'\n"
+    },
+    {
+     "type": "python",
+     "title": "Anthropic to OpenAI",
+     "intro": "Write to_openai(tool): tool is [name, description, input_schema_properties_names]. Return the OpenAI-shaped function as a list [type, name, description, required_list_of_names] where type is 'function' and required is the property names sorted.",
+     "fn": "to_openai",
+     "starter": "def to_openai(tool):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "read",
+         "Read a file",
+         [
+          "path",
+          "offset"
+         ]
+        ]
+       ],
+       "expect": [
+        "function",
+        "read",
+        "Read a file",
+        [
+         "offset",
+         "path"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "now",
+         "the time",
+         []
+        ]
+       ],
+       "expect": [
+        "function",
+        "now",
+        "the time",
+        []
+       ]
+      },
+      {
+       "args": [
+        [
+         "edit",
+         "Replace text",
+         [
+          "path",
+          "oldText",
+          "newText"
+         ]
+        ]
+       ],
+       "expect": [
+        "function",
+        "edit",
+        "Replace text",
+        [
+         "newText",
+         "oldText",
+         "path"
+        ]
+       ]
+      }
+     ],
+     "hint": "Rearrange the fields.",
+     "solution": "def to_openai(tool):\n    return ['function', tool[0], tool[1], sorted(tool[2])]\n"
+    }
+   ]
+  },
+  {
+   "title": "The agent loop",
+   "maps": [
+    {
+     "title": "Agent",
+     "links": [
+      "kit.agent | is | A small coding agent",
+      "Loop | alternates | Model and tools",
+      "maxSteps | limits | The loop",
+      "onEvent | streams | text, tool_call, tool_result",
+      "Six tools | are | read write edit bash search fetch",
+      "Provider | is | cloud or local",
+      "abort | stops | The run"
+     ]
+    }
+   ],
+   "summary": [
+    "kit.agent() builds a small coding agent in the style of the pi agent. It pairs a model running on Ollama with a loop and a fixed set of tools: read, write, edit, bash, search and fetch. Ask it to write a file, run it and report, and it does so.",
+    "The loop is simple. Send the conversation to the model. If the reply asks for tools, run them and add the results to the conversation, then ask again. When the reply is plain text, the turn is over. maxSteps stops runaway loops.",
+    "The lab simulates the loop with a scripted model."
+   ],
+   "glossary": [
+    {
+     "term": "Agent",
+     "def": "A model plus a loop plus tools."
+    },
+    {
+     "term": "Turn",
+     "def": "One prompt and everything the agent does to answer it."
+    },
+    {
+     "term": "Step",
+     "def": "One model call in the loop."
+    },
+    {
+     "term": "Event",
+     "def": "A message sent to onEvent while the agent works."
+    },
+    {
+     "term": "Provider",
+     "def": "Where the model runs: cloud or local."
+    },
+    {
+     "term": "Messages",
+     "def": "The conversation so far, agent.messages."
+    }
+   ],
+   "keyPoints": [
+    "Pass ollamaKey to createKit for Ollama Cloud; omit it for Ollama on your machine.",
+    "Defaults: gpt-oss:120b on cloud, qwen3:8b locally; maxSteps defaults to 40.",
+    "Methods: prompt(text), abort(), reset(), and the messages list.",
+    "Events: text, thinking, tool_call, tool_result, turn_end, done, error (and route, context, compaction with a brain).",
+    "search and fetch always use Ollama Cloud, so they need a cloud key.",
+    "Give extra tools with tools: [...DEFAULT_TOOLS, 'tasks', 'schedule']."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The agent loop is ask, do, tell, repeat. The model asks for a tool, the kit does it and reports back, and this goes on until the model just answers in words."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The agent is a loop in which a model asks for things and the kit does them. That is all. The surprise is how much a small loop can accomplish when the tools are good, since reading, writing, editing and running a shell cover most of what a programmer does."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "const kit = await createKit({ ollamaKey: 'YOUR_KEY' });\nconst agent = await kit.agent({\n  onEvent: e => { if (e.type === 'text') console.log(e.delta); },\n});\nconst answer = await agent.prompt('List the files in the workspace.');"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Each pass through the loop is a step. The model may stream thinking and text, and it may emit a tool call. The kit runs the tool, produces a tool result, appends it, and calls the model again. When the model answers without asking for a tool, the turn ends and prompt resolves with the answer."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Options let you tune this. The system option sets the instructions. The think option asks supporting models to reason at low, medium or high effort. The tools option picks which tools the model may use. maxSteps, 40 by default, stops a confused agent from looping forever."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where the model runs is a choice. With a cloud key the default is Ollama Cloud. Without one, the agent uses Ollama on the machine at the default address. The two clients are available as kit.ollama and kit.local, and both offer chat, models, embed, webSearch and webFetch."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Because everything happens in the shared virtual file system, an agent task like write fizzbuzz.py, run it and show me the output is just three tool calls: write, bash, then a final reply. Nothing leaves the browser except the model calls."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "When does an agent turn end?",
+     "options": [
+      "When the model replies without asking for a tool",
+      "After one tool call",
+      "After 40 minutes",
+      "When the file is saved"
+     ],
+     "answer": 0,
+     "explain": "That reply is the answer."
+    },
+    {
+     "q": "What does maxSteps protect against?",
+     "options": [
+      "Endless loops",
+      "Slow networks",
+      "Large files",
+      "Wrong passwords"
+     ],
+     "answer": 0,
+     "explain": "Default 40."
+    },
+    {
+     "q": "Which tools need an Ollama Cloud key even with a local agent?",
+     "options": [
+      "search and fetch",
+      "read and write",
+      "bash",
+      "edit"
+     ],
+     "answer": 0,
+     "explain": "They call Ollama Cloud's web endpoints."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does agent.abort do?",
+     "a": "Stops the current run."
+    },
+    {
+     "q": "What does reset do?",
+     "a": "Clears history."
+    },
+    {
+     "q": "What is the tool_result event?",
+     "a": "A tool's output."
+    },
+    {
+     "q": "What is the default provider with a key?",
+     "a": "Cloud."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "One turn",
+     "intro": "Put one agent turn in order.",
+     "items": [
+      "The user prompt is added to the messages",
+      "The model is called",
+      "The model asks to run a tool",
+      "The kit runs it and adds the result",
+      "The model is called again and replies with text",
+      "The turn ends"
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Simulated loop",
+     "intro": "Write run_agent(script, max_steps): script is a list of model replies. Each reply is ['tool', result_text] (asks for a tool, whose result is result_text) or ['text', answer]. Each reply consumes one step. Run until a 'text' reply, then return ['done', answer, steps_used]. If max_steps replies pass without text, return ['stopped', '', max_steps]. If the script runs out first, return ['error', '', steps_used].",
+     "fn": "run_agent",
+     "starter": "def run_agent(script, max_steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "tool",
+          "ok"
+         ],
+         [
+          "text",
+          "hi"
+         ]
+        ],
+        5
+       ],
+       "expect": [
+        "done",
+        "hi",
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "tool",
+          "a"
+         ],
+         [
+          "tool",
+          "b"
+         ],
+         [
+          "tool",
+          "c"
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        "stopped",
+        "",
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "tool",
+          "a"
+         ]
+        ],
+        5
+       ],
+       "expect": [
+        "error",
+        "",
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "text",
+          "now"
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        "done",
+        "now",
+        1
+       ]
+      }
+     ],
+     "hint": "Count a step per reply.",
+     "solution": "def run_agent(script, max_steps):\n    steps = 0\n    for r in script:\n        if steps >= max_steps:\n            break\n        steps += 1\n        if r[0] == 'text':\n            return ['done', r[1], steps]\n    if steps >= max_steps:\n        return ['stopped', '', max_steps]\n    return ['error', '', steps]\n"
+    },
+    {
+     "type": "python",
+     "title": "Collect events",
+     "intro": "Write events(script): same script format. Return the list of event names the agent would emit: for 'tool' replies emit 'tool_call' then 'tool_result'; for the 'text' reply emit 'text' then 'turn_end' then 'done' and stop.",
+     "fn": "events",
+     "starter": "def events(script):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "tool",
+          "x"
+         ],
+         [
+          "text",
+          "y"
+         ]
+        ]
+       ],
+       "expect": [
+        "tool_call",
+        "tool_result",
+        "text",
+        "turn_end",
+        "done"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "text",
+          "y"
+         ]
+        ]
+       ],
+       "expect": [
+        "text",
+        "turn_end",
+        "done"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "tool",
+          "a"
+         ],
+         [
+          "tool",
+          "b"
+         ],
+         [
+          "text",
+          "c"
+         ]
+        ]
+       ],
+       "expect": [
+        "tool_call",
+        "tool_result",
+        "tool_call",
+        "tool_result",
+        "text",
+        "turn_end",
+        "done"
+       ]
+      }
+     ],
+     "hint": "Emit per reply.",
+     "solution": "def events(script):\n    out = []\n    for r in script:\n        if r[0] == 'tool':\n            out.append('tool_call')\n            out.append('tool_result')\n        else:\n            out.append('text')\n            out.append('turn_end')\n            out.append('done')\n            break\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "The agent brain",
+   "maps": [
+    {
+     "title": "Brain",
+     "links": [
+      "Brain | adds | Optional agent parts",
+      "Memory | stores | Durable facts",
+      "Skills | are | SKILL.md folders",
+      "Guard | compacts | Long chats",
+      "Router | limits | Which tools are sent",
+      "Delegate | spawns | A sub-agent",
+      "Think | searches | Tree of thoughts"
+     ]
+    }
+   ],
+   "summary": [
+    "The brain is a set of optional parts you switch on with kit.agent({ brain }). Each part downloads on first use, adds its own tool and hooks into the loop. Their files live as plain text under /.kit/ in the file system, so people can read and edit them.",
+    "Memory remembers facts and finds the right ones for each prompt. Skills are instructions the agent loads when needed. The guard keeps long chats inside the model's context window. The router sends only the tools a message seems to need.",
+    "Other parts add a knowledge graph with proofs, tree-of-thoughts thinking, sub-agents and chat history.",
+    "The labs build a compactor, a secret filter and a tool router."
+   ],
+   "glossary": [
+    {
+     "term": "Context window",
+     "def": "How much text the model can read at once."
+    },
+    {
+     "term": "Compaction",
+     "def": "Replacing older turns with a summary."
+    },
+    {
+     "term": "Skill",
+     "def": "A folder with a SKILL.md of instructions."
+    },
+    {
+     "term": "Plugin",
+     "def": "Code that hooks into the agent loop."
+    },
+    {
+     "term": "Journal",
+     "def": "A short note written after each prompt."
+    },
+    {
+     "term": "Router",
+     "def": "Chooses tools or models for each prompt."
+    }
+   ],
+   "keyPoints": [
+    "brain: ['memory', 'skills', 'history', 'guard'] picks parts; brain: true turns on memory, skills, history and guard; 'all' loads everything.",
+    "memory keeps /.kit/memory/Memory.md, retrieves by BM25 (or embeddings) and filters out anything that looks like a password or key.",
+    "skills reads /.kit/SOUL.md, /AGENTS.md and /.kit/SYSTEM.md, and skills in /.kit/skills/<name>/SKILL.md.",
+    "guard estimates request size and compacts older turns near the limit.",
+    "router sends core tools and exposes the rest through more_tools.",
+    "delegate spawns a read-only sub-agent unless write: true; knowledge proves or contradicts claims; think runs a verified search."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The brain adds a notebook for remembering, a recipe folder for skills, a backpack that shrinks old chats, and a short list of tools so the helper is not overwhelmed."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A bare agent has a short memory and a big appetite for context. The brain adds the things a long-lived assistant needs, and you choose which. This matches the kit's lean spirit: a part you do not enable costs nothing."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "const kit = await createKit({ persist: 'my-app', ollamaKey, memory: { journal: true } });\nconst agent = await kit.agent({ brain: ['memory', 'skills', 'history', 'guard'] });\nawait agent.prompt('Remember that I take my coffee black');\nconst later = await kit.agent({ brain: true, resume: agent.id });"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Memory stores facts as plain text under sections. For each new prompt it retrieves the best-matching lines, so the model sees only what is relevant. It refuses to save anything that looks like a password or key.",
+      "With the journal option the model writes a short entry after each prompt, and durable facts it names are remembered."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Skills give the agent know-how without bloating every prompt. A skill is a folder with a SKILL.md. When there are more than fifteen, only the closest matches are listed. Persona and standing instructions come from SOUL.md and AGENTS.md.",
+      "The agent course you are reading is itself built on the idea that instructions can be files."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The guard watches the size of each request. When the chat nears the context window, it compacts older turns into a summary and keeps the latest turns whole. It even learns a model's true limit from prompt is too long errors and retries."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The router saves tokens. Offering forty tools to a model costs context, so it sends the core tools plus those a message seems to need and lets the model ask for more with more_tools.",
+      "The knowledge part holds facts and rules and returns proven, contradicted or unknown with a proof, so claims can be checked rather than trusted."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Delegate hands a sub-task to a fresh sub-agent that is read-only by default, limited in steps and time, and returns one report. Think explores several approaches and verifies each by running code, a shell command, a file check or a rubric; a failed hard check removes that branch."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the guard do near the context limit?",
+     "options": [
+      "Compacts older turns into a summary",
+      "Deletes the chat",
+      "Switches the model",
+      "Stops the agent"
+     ],
+     "answer": 0,
+     "explain": "It keeps recent turns."
+    },
+    {
+     "q": "What does memory refuse to store?",
+     "options": [
+      "Anything that looks like a password or key",
+      "Names",
+      "Numbers",
+      "Dates"
+     ],
+     "answer": 0,
+     "explain": "A safety filter."
+    },
+    {
+     "q": "Where do skills live?",
+     "options": [
+      "/.kit/skills/<name>/SKILL.md",
+      "In the model",
+      "On a server",
+      "In cookies"
+     ],
+     "answer": 0,
+     "explain": "As plain files."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does more_tools do?",
+     "a": "Reveals tools the router hid."
+    },
+    {
+     "q": "What is delegate for?",
+     "a": "A sub-task in a fresh context."
+    },
+    {
+     "q": "What does resume do?",
+     "a": "Continues a saved chat by id."
+    },
+    {
+     "q": "What is knowledge's verdict set?",
+     "a": "Proven, contradicted, unknown."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Brain parts",
+     "intro": "Match each part with its job.",
+     "pairs": [
+      [
+       "memory",
+       "Remember and recall facts"
+      ],
+      [
+       "guard",
+       "Keep chats inside the context window"
+      ],
+      [
+       "router",
+       "Send only needed tools"
+      ],
+      [
+       "delegate",
+       "Run a sub-agent"
+      ],
+      [
+       "skills",
+       "Load instructions from SKILL.md"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Looks like a secret",
+     "intro": "Write looks_secret(text): return true if text contains a word (split on spaces) that starts with 'sk-' or 'key_' or 'pass:' (case-insensitive), or contains the lowercase text 'password' followed by anything.",
+     "fn": "looks_secret",
+     "starter": "def looks_secret(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "I take my coffee black"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "my password is hunter2"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "use sk-abc123 for the api"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "the key_prod value"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "passing the salt"
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Check the word starts and a substring.",
+     "solution": "def looks_secret(text):\n    low = text.lower()\n    if 'password' in low:\n        return True\n    for w in low.split(' '):\n        if w.startswith('sk-') or w.startswith('key_') or w.startswith('pass:'):\n            return True\n    return False\n"
+    },
+    {
+     "type": "python",
+     "title": "Compact a chat",
+     "intro": "Write compact(messages, limit, keep): messages is a list of strings; size is the total length of all. If the size is at most limit return the list unchanged. Otherwise replace all but the last keep messages with ONE summary message 'summary of N messages' (N = number replaced) placed first, and return the new list.",
+     "fn": "compact",
+     "starter": "def compact(messages, limit, keep):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "aaaa",
+         "bbbb",
+         "cccc"
+        ],
+        100,
+        1
+       ],
+       "expect": [
+        "aaaa",
+        "bbbb",
+        "cccc"
+       ]
+      },
+      {
+       "args": [
+        [
+         "aaaa",
+         "bbbb",
+         "cccc",
+         "dddd"
+        ],
+        8,
+        2
+       ],
+       "expect": [
+        "summary of 2 messages",
+        "cccc",
+        "dddd"
+       ]
+      },
+      {
+       "args": [
+        [
+         "aaaa",
+         "bbbb"
+        ],
+        3,
+        5
+       ],
+       "expect": [
+        "aaaa",
+        "bbbb"
+       ]
+      },
+      {
+       "args": [
+        [
+         "xxxxxxxxxx",
+         "yyyyyyyyyy",
+         "zzzzzzzzzz"
+        ],
+        15,
+        1
+       ],
+       "expect": [
+        "summary of 2 messages",
+        "zzzzzzzzzz"
+       ]
+      }
+     ],
+     "hint": "Summarise the older ones.",
+     "solution": "def compact(messages, limit, keep):\n    total = 0\n    for m in messages:\n        total += len(m)\n    if total <= limit:\n        return messages\n    n = len(messages) - keep\n    if n <= 0:\n        return messages\n    return ['summary of ' + str(n) + ' messages'] + messages[n:]\n"
+    },
+    {
+     "type": "python",
+     "title": "Tool router",
+     "intro": "Write route(message, core, hints): core is a list of always-sent tool names; hints is a list of [keyword, tool] pairs. Return the sorted list of tool names to send: the core tools plus every tool whose keyword appears in the lower-cased message.",
+     "fn": "route",
+     "starter": "def route(message, core, hints):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Please search the web for cats",
+        [
+         "read",
+         "bash"
+        ],
+        [
+         [
+          "search",
+          "search"
+         ],
+         [
+          "schedule",
+          "schedule"
+         ]
+        ]
+       ],
+       "expect": [
+        "bash",
+        "read",
+        "search"
+       ]
+      },
+      {
+       "args": [
+        "hello",
+        [
+         "read"
+        ],
+        [
+         [
+          "search",
+          "search"
+         ]
+        ]
+       ],
+       "expect": [
+        "read"
+       ]
+      },
+      {
+       "args": [
+        "schedule it and search",
+        [
+         "read"
+        ],
+        [
+         [
+          "search",
+          "search"
+         ],
+         [
+          "schedule",
+          "schedule"
+         ]
+        ]
+       ],
+       "expect": [
+        "read",
+        "schedule",
+        "search"
+       ]
+      }
+     ],
+     "hint": "Core plus keyword matches.",
+     "solution": "def route(message, core, hints):\n    m = message.lower()\n    chosen = set(core)\n    for kw, tool in hints:\n        if kw in m:\n            chosen.add(tool)\n    return sorted(chosen)\n"
+    }
+   ]
+  },
+  {
+   "title": "Decisions: fast calibrated choices",
+   "maps": [
+    {
+     "title": "Decisions",
+     "links": [
+      "kit.decide | asks | A decision model",
+      "choice | picks | One option",
+      "score | rates | On a scale",
+      "yesno | answers | True or false",
+      "Probabilities | show | Confidence",
+      "kit.decisions | sets | Server and model",
+      "Servers | are | ollaya, ollama, cloud"
+     ]
+    }
+   ],
+   "summary": [
+    "Not every question needs a long conversation. kit.decide sends a state, such as a log line or a message, and a question to a small decision model that answers with calibrated probabilities. It is meant for quick, cheap jobs like triage, routing and checks.",
+    "There are three kinds. choice picks one of your options. score rates the state on a scale you define. yesno answers a question with a boolean. The result always includes how confident the model is.",
+    "The labs reshape probabilities into the kit's result form."
+   ],
+   "glossary": [
+    {
+     "term": "Decision model",
+     "def": "A small model trained to give probabilities for a choice."
+    },
+    {
+     "term": "Calibrated",
+     "def": "Probabilities that match how often the answer is right."
+    },
+    {
+     "term": "Option",
+     "def": "One possible answer."
+    },
+    {
+     "term": "Confidence",
+     "def": "The probability of the chosen answer."
+    },
+    {
+     "term": "Triage",
+     "def": "Sorting items by type or urgency."
+    },
+    {
+     "term": "Server",
+     "def": "Where the decision model runs."
+    }
+   ],
+   "keyPoints": [
+    "type: 'choice' (default) needs options; the result has result, choice, confidence and probabilities.",
+    "type: 'score' rates against your options such as low, medium, high.",
+    "type: 'yesno' returns a boolean answer.",
+    "kit.decisions picks the server: 'ollaya' (default), 'ollama' (0.35 or later) or 'cloud'.",
+    "The kit translates between server formats so answers look the same.",
+    "Give an agent the decide tool by adding it to tools."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A decision model answers quick questions with percentages, like a weather forecast for answers: 91 out of 100 sure it is a bug. If it is unsure, ask a person."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A language model that writes paragraphs is overkill for the question is this log line an error or a warning. A decision model is smaller and answers with numbers: 91 percent bug, 6 percent network, 3 percent user input.",
+      "The numbers let you act, for example by asking a person when the confidence is low."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "await kit.decide({ state: 'TypeError at list.js:42', question: 'What kind of problem?', options: ['bug', 'network', 'user input'] });\nawait kit.decide({ state: log, question: 'How urgent?', type: 'score', options: ['low', 'medium', 'high'] });\nawait kit.decide({ state: msg, question: 'Is this spam?', type: 'yesno' });\n\n// choice result\n// { type: 'choice', result: 'bug', choice: 'bug', confidence: 0.91,\n//   probabilities: { bug: 0.91, ... }, model, server }"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Servers differ in how they take options and report answers. Ollaya takes options as a list and returns a boolean for yes or no. Ollama takes options as an object and derives yes or no from the probability of true. The kit hides these differences so your code sees one shape."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Configure the backend with createKit decide settings or kit.decisions: the server, the model such as winnow:e4b, and optionally host and apiKey. Ollama Cloud needs a cloud key, and its clef model needs a paid plan or credits."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Because the answer includes probabilities, you can build rules like: if confidence is below 70 percent, ask the agent or the user. This pattern, a cheap fast check first and a larger model only when unsure, is a good way to make an agent both quick and careful."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which decision type returns a boolean?",
+     "options": [
+      "yesno",
+      "choice",
+      "score",
+      "none"
+     ],
+     "answer": 0,
+     "explain": "answer holds the boolean."
+    },
+    {
+     "q": "What does confidence mean in a choice result?",
+     "options": [
+      "The probability of the chosen option",
+      "The model size",
+      "The number of options",
+      "The time taken"
+     ],
+     "answer": 0,
+     "explain": "Calibrated."
+    },
+    {
+     "q": "Why use a decision model?",
+     "options": [
+      "Fast, cheap triage and checks",
+      "To write essays",
+      "To store files",
+      "To draw charts"
+     ],
+     "answer": 0,
+     "explain": "That is its purpose."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Default server?",
+     "a": "ollaya."
+    },
+    {
+     "q": "What does score return besides a number?",
+     "a": "A legend."
+    },
+    {
+     "q": "Which option gives choices?",
+     "a": "options."
+    },
+    {
+     "q": "How does an agent get decide?",
+     "a": "Add it to tools."
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Types",
+     "text": "Use type {{yesno}} for a boolean, type {{score}} for a rating and the default {{choice}} to pick one option."
+    },
+    {
+     "type": "python",
+     "title": "Choice result",
+     "intro": "Write choice_result(options, weights): weights are non-negative numbers, one per option. Normalise them into probabilities and return [chosen_option, confidence, probabilities] where the choice is the option with the highest probability (first on ties), confidence its probability and probabilities a list in option order; round to 4 decimals.",
+     "fn": "choice_result",
+     "starter": "def choice_result(options, weights):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "bug",
+         "network",
+         "user input"
+        ],
+        [
+         91,
+         6,
+         3
+        ]
+       ],
+       "expect": [
+        "bug",
+        0.91,
+        [
+         0.91,
+         0.06,
+         0.03
+        ]
+       ],
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        "a",
+        0.5,
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        [
+         "low",
+         "medium",
+         "high"
+        ],
+        [
+         0,
+         2,
+         8
+        ]
+       ],
+       "expect": [
+        "high",
+        0.8,
+        [
+         0.0,
+         0.2,
+         0.8
+        ]
+       ],
+       "approx": 0.0001
+      }
+     ],
+     "hint": "Divide by the total.",
+     "solution": "def choice_result(options, weights):\n    t = sum(weights)\n    p = [w / t for w in weights]\n    best = 0\n    for i in range(len(p)):\n        if p[i] > p[best]:\n            best = i\n    return [options[best], round(p[best], 4), [round(x, 4) for x in p]]\n"
+    },
+    {
+     "type": "python",
+     "title": "Ask a human when unsure",
+     "intro": "Write act(probs, options, threshold): probs is a list of probabilities for options. If the highest probability is at least threshold return the option name; otherwise return 'ask'.",
+     "fn": "act",
+     "starter": "def act(probs, options, threshold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.91,
+         0.06,
+         0.03
+        ],
+        [
+         "bug",
+         "network",
+         "user"
+        ],
+        0.7
+       ],
+       "expect": "bug"
+      },
+      {
+       "args": [
+        [
+         0.4,
+         0.35,
+         0.25
+        ],
+        [
+         "a",
+         "b",
+         "c"
+        ],
+        0.7
+       ],
+       "expect": "ask"
+      },
+      {
+       "args": [
+        [
+         0.7,
+         0.3
+        ],
+        [
+         "x",
+         "y"
+        ],
+        0.7
+       ],
+       "expect": "x"
+      }
+     ],
+     "hint": "Compare the best against the threshold.",
+     "solution": "def act(probs, options, threshold):\n    best = 0\n    for i in range(len(probs)):\n        if probs[i] > probs[best]:\n            best = i\n    if probs[best] >= threshold:\n        return options[best]\n    return 'ask'\n"
+    }
+   ]
+  },
+  {
+   "title": "Scheduling and tasks",
+   "maps": [
+    {
+     "title": "Schedule",
+     "links": [
+      "kit.schedule | runs | Jobs on a timetable",
+      "when | accepts | English or cron",
+      "Job kinds | are | command, prompt, js, python, run",
+      "kit.cron | parses | Schedules",
+      "Persistence | writes | /.kit/schedule.json",
+      "kit.tasks | keeps | A task list",
+      "Page open | is required | For jobs to run"
+     ]
+    }
+   ],
+   "summary": [
+    "kit.schedule runs jobs at times you describe in plain English, like every monday at 6pm, or in five-field cron form. A job can run a shell command, a JavaScript or Python snippet, an agent prompt, or a function. kit.tasks keeps a simple task list that people and agents share.",
+    "Jobs run only while a page with the kit is open. A job missed while the page was closed runs once when it reopens. Jobs are saved to /.kit/schedule.json, except function jobs, which you re-add on each load.",
+    "The labs write a cron matcher and a small task list."
+   ],
+   "glossary": [
+    {
+     "term": "Cron",
+     "def": "A five-field schedule: minute, hour, day of month, month, day of week."
+    },
+    {
+     "term": "Job",
+     "def": "A saved action with a when."
+    },
+    {
+     "term": "Missed run",
+     "def": "A scheduled time that passed while the page was closed."
+    },
+    {
+     "term": "Task",
+     "def": "A to-do with status and optional notes and due date."
+    },
+    {
+     "term": "runNow",
+     "def": "Run a job immediately."
+    },
+    {
+     "term": "Interval",
+     "def": "A repeat step such as */5."
+    }
+   ],
+   "keyPoints": [
+    "kit.schedule.add({ name, when, command | prompt | js | python | run }).",
+    "when understands 'every day at 2am', 'in 20 minutes', '@hourly' or 5-field cron, in local time.",
+    "list(), runNow(name), disable(name), remove(name); on emits run, error, change.",
+    "scheduler: false in createKit keeps it stopped until kit.schedule.start().",
+    "kit.cron has fromText, parse, next, upcoming and describe.",
+    "kit.tasks: add, start, done, update, list, text, on, clear."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The scheduler is an alarm clock that runs a job instead of ringing. Cron is just the five little boxes that say which minute, hour and day to go off."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A scheduler is an alarm clock that runs code. You describe when in the way you would say it aloud, and the kit turns it into cron, the classic five-field format that Unix has used for decades."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "kit.schedule.add({ name: 'backup', when: 'every day at 2am', command: 'tar -czf /backup.tgz /notes' });\nkit.schedule.add({ when: 'in 20 minutes', js: `require('fs').writeFileSync('/ping.txt', 'pong')` });\nkit.schedule.add({ when: '@hourly', python: 'print(\"hi\")' });"
+    },
+    {
+     "type": "text",
+     "items": [
+      "In cron the five fields are minute, hour, day of month, month and day of week. A star means every value, a number means that value, a comma lists several, a dash gives a range, and a slash gives a step, so star slash five in the minute field means every five minutes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Everything happens in a web page, so there is no background server. If the user closes the page, nothing runs. When they open it again, a job that was missed runs once to catch up. This is the right trade for a browser tool but means you should not rely on exact timing for critical work."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "const [a] = kit.tasks.add(['Plan the API', 'Write tests']);\nkit.tasks.start(a.id); kit.tasks.done(a.id);\nkit.tasks.update(2, { notes: 'edge cases' });\nkit.tasks.list({ status: 'pending' }); kit.tasks.text();\nkit.tasks.on(items => render(items)); kit.tasks.clear();"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Tasks give the agent and the user a shared checklist. The agent can add, start and finish tasks through the tasks tool, and your page can show the same list with kit.tasks.on. Give an agent both with tools set to the defaults plus tasks and schedule."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What do the five cron fields mean, in order?",
+     "options": [
+      "minute, hour, day of month, month, day of week",
+      "second, minute, hour, day, year",
+      "hour, minute, day, week, year",
+      "day, month, year, hour, minute"
+     ],
+     "answer": 0,
+     "explain": "That is standard cron."
+    },
+    {
+     "q": "What happens to a job missed while the page was closed?",
+     "options": [
+      "It runs once when the page reopens",
+      "It is lost",
+      "It runs many times",
+      "It runs on a server"
+     ],
+     "answer": 0,
+     "explain": "Catch-up run."
+    },
+    {
+     "q": "Which jobs are not saved?",
+     "options": [
+      "Function jobs",
+      "Command jobs",
+      "Python jobs",
+      "Prompt jobs"
+     ],
+     "answer": 0,
+     "explain": "Re-add them on each load."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does disable do?",
+     "a": "Pauses a job."
+    },
+    {
+     "q": "What does tasks.text return?",
+     "a": "A plain-text checklist."
+    },
+    {
+     "q": "What does @hourly mean?",
+     "a": "Every hour."
+    },
+    {
+     "q": "What does scheduler: false do?",
+     "a": "Keeps the scheduler stopped."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Cron forms",
+     "intro": "Match each cron field text with its meaning.",
+     "pairs": [
+      [
+       "*/5",
+       "Every five"
+      ],
+      [
+       "1-5",
+       "A range"
+      ],
+      [
+       "1,15",
+       "A list"
+      ],
+      [
+       "*",
+       "Every value"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Does this field match",
+     "intro": "Write field_matches(field, value): field is one cron field made of comma-separated parts; each part is '*', a number, a range 'a-b', or a step '*/n'. Return true if value matches any part.",
+     "fn": "field_matches",
+     "starter": "def field_matches(field, value):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "*",
+        7
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "*/5",
+        10
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "*/5",
+        11
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "1-5",
+        3
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "1-5",
+        6
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "1,15",
+        15
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "0,30",
+        29
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Check each comma-separated part.",
+     "solution": "def field_matches(field, value):\n    for part in field.split(','):\n        if part == '*':\n            return True\n        if part.startswith('*/'):\n            if value % int(part[2:]) == 0:\n                return True\n        elif '-' in part:\n            a, b = part.split('-')\n            if int(a) <= value <= int(b):\n                return True\n        elif int(part) == value:\n            return True\n    return False\n"
+    },
+    {
+     "type": "python",
+     "title": "Task list",
+     "intro": "Write run_tasks(cmds): cmds is a list of [command, argument]. Commands: 'add' (argument is a title; new tasks get id 1, 2, 3... and status 'pending'), 'start' (argument is an id; status 'active'), 'done' (status 'done'), 'clear' (removes done tasks). Return the final list of [id, title, status].",
+     "fn": "run_tasks",
+     "starter": "def run_tasks(cmds):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "add",
+          "Plan"
+         ],
+         [
+          "add",
+          "Test"
+         ],
+         [
+          "start",
+          1
+         ],
+         [
+          "done",
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         "Plan",
+         "done"
+        ],
+        [
+         2,
+         "Test",
+         "pending"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "add",
+          "a"
+         ],
+         [
+          "done",
+          1
+         ],
+         [
+          "clear",
+          0
+         ]
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "add",
+          "x"
+         ],
+         [
+          "add",
+          "y"
+         ],
+         [
+          "done",
+          2
+         ],
+         [
+          "clear",
+          0
+         ],
+         [
+          "add",
+          "z"
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         "x",
+         "pending"
+        ],
+        [
+         3,
+         "z",
+         "pending"
+        ]
+       ]
+      }
+     ],
+     "hint": "Keep ids increasing.",
+     "solution": "def run_tasks(cmds):\n    tasks = []\n    nid = 1\n    for c, a in cmds:\n        if c == 'add':\n            tasks.append([nid, a, 'pending'])\n            nid += 1\n        elif c == 'start' or c == 'done':\n            for t in tasks:\n                if t[0] == a:\n                    t[2] = 'active' if c == 'start' else 'done'\n        elif c == 'clear':\n            tasks = [t for t in tasks if t[2] != 'done']\n    return tasks\n"
+    }
+   ]
+  },
+  {
+   "title": "Sentry, notes and senses",
+   "maps": [
+    {
+     "title": "Sentry",
+     "links": [
+      "Sentry | watches | The page and device",
+      "Rule | has | A condition and an action",
+      "Sensitive systems | need | allow",
+      "Notes | are | An Obsidian-style vault",
+      "Wiki links | connect | Notes",
+      "Backlinks | show | Who links here",
+      "Senses | include | Camera and microphone"
+     ]
+    }
+   ],
+   "summary": [
+    "Sentry is a rule engine that watches the page and the device and acts when a condition occurs. It can watch things like battery, network, idle time, keys, motion, light, location, sound level, camera changes, and your own states and events. Sensitive sources must be allowed by the app.",
+    "The kit also includes a notes vault in the style of Obsidian, stored on the file system, with wiki links, backlinks, tags, search, renames that update links, daily notes and templates.",
+    "Senses let an agent reach the world: HTTP with secrets, MCP servers, camera, microphone, location, other sensors, and a look tool that lets the agent see an image."
+   ],
+   "glossary": [
+    {
+     "term": "Sentry rule",
+     "def": "A watch on a source with a condition and an action."
+    },
+    {
+     "term": "Wiki link",
+     "def": "A [[Note name]] reference to another note."
+    },
+    {
+     "term": "Backlink",
+     "def": "A note that links to this one."
+    },
+    {
+     "term": "Tag",
+     "def": "A #word that groups notes."
+    },
+    {
+     "term": "MCP",
+     "def": "Model Context Protocol: a standard way to connect tools."
+    },
+    {
+     "term": "Sensitive system",
+     "def": "A source that needs the app's permission, like location."
+    }
+   ],
+   "keyPoints": [
+    "Sentry watches battery, network, idle, keys, motion, light, location, sound level, camera change and custom events.",
+    "createKit({ sentry: { allow: ['location'] } }) lets the app permit sensitive systems.",
+    "Agents manage rules through the sentry tool.",
+    "Notes support [[wiki links]], backlinks, #tags, search, daily notes and templates.",
+    "Renaming a note updates every link to it.",
+    "look lets the agent see an image; backups can be gzip, optionally encrypted."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Sentry is a night watchman who looks for things you told him about, like low battery, and then does what you wrote on his list. Notes are linked pages, like a wiki."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Most of the kit waits for you to ask it something. Sentry turns that around: it watches and speaks up. A rule might say when the battery drops below twenty percent, save everything and tell the user."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sources include the battery, the network state, whether the user is idle, key presses, motion, light level, location, sound level and a change in what the camera sees. You can also define your own states and events so your app can feed rules with its own information."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "const kit = await createKit({\n  sentry: { allow: ['location'] },   // the app permits a sensitive system\n});"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Some sources are sensitive. The app must permit them through the allow option, so an agent can create a rule about location only when the page owner has said yes. This keeps the power to watch under the human's control."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The notes feature is a personal wiki stored in the file system. A note links to another with double square brackets. The kit can show backlinks, the notes that point to a note, search by text or tag, rename a note and fix every link to it, and make daily notes from a template."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Senses connect the workspace to the outside. HTTP calls can use secrets without exposing them. MCP servers add more tools. Camera, microphone, location and other sensors give the agent input, and the look tool lets it see an image. Backups compress the workspace and can encrypt it."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How does an app allow a sensitive Sentry source?",
+     "options": [
+      "Through the allow option",
+      "It is always allowed",
+      "By editing the VFS",
+      "It cannot"
+     ],
+     "answer": 0,
+     "explain": "The app decides."
+    },
+    {
+     "q": "What is a backlink?",
+     "options": [
+      "A note that links to this note",
+      "A broken link",
+      "A web link",
+      "A tag"
+     ],
+     "answer": 0,
+     "explain": "Who links here."
+    },
+    {
+     "q": "What does look do?",
+     "options": [
+      "Lets the agent see an image",
+      "Lists files",
+      "Opens a note",
+      "Starts Python"
+     ],
+     "answer": 0,
+     "explain": "Vision input."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What are wiki links?",
+     "a": "[[Note]] references."
+    },
+    {
+     "q": "What do daily notes use?",
+     "a": "Templates."
+    },
+    {
+     "q": "What happens on rename?",
+     "a": "Links update."
+    },
+    {
+     "q": "Can a rule use custom events?",
+     "a": "Yes."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "A sentry rule",
+     "intro": "Put the life of a rule in order.",
+     "items": [
+      "The app allows the system if it is sensitive",
+      "A rule is created with a condition and an action",
+      "Sentry watches the source",
+      "The condition becomes true",
+      "The action runs"
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Backlinks",
+     "intro": "Write backlinks(notes, target): notes is a list of [name, text]; text may contain wiki links like [[Other]]. Return the sorted names of notes whose text links to target (no duplicates, a note does not count as linking to itself).",
+     "fn": "backlinks",
+     "starter": "def backlinks(notes, target):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "A",
+          "see [[B]] and [[C]]"
+         ],
+         [
+          "B",
+          "back to [[A]]"
+         ],
+         [
+          "C",
+          "[[B]]"
+         ]
+        ],
+        "B"
+       ],
+       "expect": [
+        "A",
+        "C"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "A",
+          "x"
+         ],
+         [
+          "B",
+          "y"
+         ]
+        ],
+        "A"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "B",
+          "[[B]] self"
+         ],
+         [
+          "A",
+          "[[B]]"
+         ]
+        ],
+        "B"
+       ],
+       "expect": [
+        "A"
+       ]
+      }
+     ],
+     "hint": "Look for the double-bracket text.",
+     "solution": "def backlinks(notes, target):\n    out = set()\n    for name, text in notes:\n        if name == target:\n            continue\n        if '[[' + target + ']]' in text:\n            out.add(name)\n    return sorted(out)\n"
+    },
+    {
+     "type": "python",
+     "title": "Rename a note",
+     "intro": "Write rename_links(notes, old, new): notes is a list of [name, text]. Return the notes with the note named old renamed to new and every [[old]] in all texts replaced by [[new]].",
+     "fn": "rename_links",
+     "starter": "def rename_links(notes, old, new):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "A",
+          "see [[B]]"
+         ],
+         [
+          "B",
+          "text"
+         ]
+        ],
+        "B",
+        "Bee"
+       ],
+       "expect": [
+        [
+         "A",
+         "see [[Bee]]"
+        ],
+        [
+         "Bee",
+         "text"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "A",
+          "x"
+         ]
+        ],
+        "Z",
+        "Y"
+       ],
+       "expect": [
+        [
+         "A",
+         "x"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "A",
+          "[[A]] and [[B]]"
+         ]
+        ],
+        "A",
+        "Alpha"
+       ],
+       "expect": [
+        [
+         "Alpha",
+         "[[Alpha]] and [[B]]"
+        ]
+       ]
+      }
+     ],
+     "hint": "Rename the note and the links.",
+     "solution": "def rename_links(notes, old, new):\n    out = []\n    for name, text in notes:\n        if name == old:\n            name = new\n        out.append([name, text.replace('[[' + old + ']]', '[[' + new + ']]')])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Battery rule",
+     "intro": "Write sentry(rules, events): rules is a list of [source, op, limit, action] where op is '<' or '>'; events is a list of [source, value]. For each event in order, for each rule in order whose source matches and condition holds, append its action to the output. Return the list of actions.",
+     "fn": "sentry",
+     "starter": "def sentry(rules, events):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "battery",
+          "<",
+          20,
+          "save"
+         ],
+         [
+          "sound",
+          ">",
+          80,
+          "alert"
+         ]
+        ],
+        [
+         [
+          "battery",
+          50
+         ],
+         [
+          "battery",
+          15
+         ],
+         [
+          "sound",
+          90
+         ]
+        ]
+       ],
+       "expect": [
+        "save",
+        "alert"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "light",
+          "<",
+          10,
+          "lamp"
+         ]
+        ],
+        [
+         [
+          "light",
+          5
+         ],
+         [
+          "light",
+          10
+         ]
+        ]
+       ],
+       "expect": [
+        "lamp"
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         [
+          "battery",
+          1
+         ]
+        ]
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Check each rule per event.",
+     "solution": "def sentry(rules, events):\n    out = []\n    for src, val in events:\n        for r in rules:\n            if r[0] == src:\n                if (r[1] == '<' and val < r[2]) or (r[1] == '>' and val > r[2]):\n                    out.append(r[3])\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Automation and staying safe",
+   "maps": [
+    {
+     "title": "Automation",
+     "links": [
+      "Flows | are | n8n-style workflows",
+      "Playbooks | run | Without a model",
+      "Approval | gates | Playbooks",
+      "Autonomy | runs | A work queue",
+      "Heartbeat | checks | A checklist",
+      "Secrets | stay | Out of the file system",
+      "Agents | cannot | Approve their own playbooks"
+     ]
+    }
+   ],
+   "summary": [
+    "The kit can automate. Flows are n8n-style workflows of steps with triggers. Playbooks are Ansible-style task lists that run without a model. Autonomy keeps a work queue within budgets, a heartbeat checks a list every few minutes, and curiosity makes the agent explore on its own.",
+    "Automation needs guard rails. A playbook runs unattended only after your app approves it, and any change needs approval again. Agents can save playbooks but cannot approve them. Secrets such as API keys are passed in by the app, kept out of the file system, and referred to by name only.",
+    "This final chapter ties the kit together and ends with a design checklist."
+   ],
+   "glossary": [
+    {
+     "term": "Flow",
+     "def": "A saved workflow of steps with a trigger."
+    },
+    {
+     "term": "Playbook",
+     "def": "An approved task list that runs without a model."
+    },
+    {
+     "term": "Approval gate",
+     "def": "A human or app decision required before running."
+    },
+    {
+     "term": "Budget",
+     "def": "A limit on steps per hour or per day."
+    },
+    {
+     "term": "Heartbeat",
+     "def": "A periodic check of /.kit/HEARTBEAT.md."
+    },
+    {
+     "term": "Secret",
+     "def": "A value kept out of files and logs."
+    }
+   ],
+   "keyPoints": [
+    "Flows: step types include tool, js, shell, decide, llm, agent, file, set, if, switch, each, wait, notify, playbook, flow and stop; triggers are manual, schedule or file change.",
+    "Playbooks support when, loop, register, retries, block/rescue/always, assert, tags and secrets redacted from logs.",
+    "playbooks.approve(name) or an approve callback in createKit; changes require re-approval.",
+    "Autonomy: queue with priorities that age, deadlines, budgets, quiet hours; it pauses while the user is active.",
+    "Heartbeat: a reply of HEARTBEAT_OK stays silent; anything else raises an alert.",
+    "createKit({ secrets: { NAME: value } }); agents see names and use {{ NAME }}."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Automation lets the helper work while you are away, but safely: a grown-up must okay each routine first, keys stay in a locked drawer, and there is a limit on how much it may do."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Once an assistant can act, people want it to act on its own: summarise my inbox every evening, check my list every half hour. The kit supports this, and its design shows how to do it carefully."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "js",
+     "code": "const flows = await kit.use('flows');\nflows.save({ name: 'Digest', trigger: { type: 'schedule', when: 'every day at 18:00' }, steps: [\n  { type: 'file', action: 'read', path: '/inbox.md' },\n  { type: 'llm', prompt: 'Summarise in 3 bullets:\\n{{ $json }}' },\n  { type: 'notify', title: 'Digest', body: '{{ $json }}' }] });\nawait flows.run('Digest');"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A flow is a list of steps. Each step does one thing, like read a file, ask a model, or notify the user, and the output of one step is available to the next through double-brace expressions that run in a sandboxed worker. Triggers can be manual, on a schedule, or when a file changes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A playbook is stricter. It is a list of tasks run without any model in the loop, with conditions, loops, retries and cleanup blocks. Because it runs unattended, it must be approved by your app before its first run, and any edit requires approval again.",
+      "An agent may write a playbook, but cannot approve it. That separation is the central safety idea."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Autonomy lets the agent work through a queue by itself, but within budgets of steps per hour and per day, outside quiet hours, and pausing while the user is active. Tools on a deny list wait for an explicit allow.",
+      "The heartbeat is the gentlest form: every N minutes the agent reads a checklist and replies HEARTBEAT_OK if nothing needs attention, which stays silent."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Secrets are handled by name. The app hands API keys to the kit, which keeps them out of the file system and redacts them from logs. The agent sees only names and writes {{ NAME }} where the value is needed, so a prompt injection cannot make it print a key it never saw."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A design checklist to finish. Start lean and load only what you use. Persist the kit if work must survive. Give the agent only the tools it needs. Make the human the approver for anything unattended. Keep secrets out of files. Allow sensitive senses deliberately.",
+      "Prefer many small, checked steps to one large leap."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Who approves a playbook?",
+     "options": [
+      "The host app, not the agent",
+      "The agent",
+      "The model",
+      "Nobody"
+     ],
+     "answer": 0,
+     "explain": "Agents cannot approve their own."
+    },
+    {
+     "q": "How does an agent refer to a secret?",
+     "options": [
+      "By name, like {{ NAME }}",
+      "By its value",
+      "By file path",
+      "It cannot"
+     ],
+     "answer": 0,
+     "explain": "It never sees the value."
+    },
+    {
+     "q": "What does a HEARTBEAT_OK reply do?",
+     "options": [
+      "Stays silent",
+      "Sends an alert",
+      "Stops the kit",
+      "Clears the list"
+     ],
+     "answer": 0,
+     "explain": "Nothing needs attention."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What triggers a flow?",
+     "a": "Manual, schedule or file change."
+    },
+    {
+     "q": "What does autonomy respect?",
+     "a": "Budgets and quiet hours."
+    },
+    {
+     "q": "What is curiosity?",
+     "a": "Random exploring wake-ups."
+    },
+    {
+     "q": "What does Jade Lisp do?",
+     "a": "DSLs that can call every tool."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Safety",
+     "intro": "Match each safeguard with what it protects.",
+     "pairs": [
+      [
+       "Approval gate",
+       "Unattended playbooks"
+      ],
+      [
+       "allow option",
+       "Sensitive senses"
+      ],
+      [
+       "Secrets by name",
+       "API keys"
+      ],
+      [
+       "Budgets",
+       "Runaway automation"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Playbook gate",
+     "intro": "Write may_run(playbooks, approved, name): playbooks is a list of [name, version] pairs for saved playbooks; approved is a list of [name, version] pairs the host approved. Return 'run' if the exact [name, version] of the saved playbook is approved; 'needs approval' if saved but not approved (including a changed version); 'unknown' if no playbook has that name. The name argument is the playbook to run.",
+     "fn": "may_run",
+     "starter": "def may_run(playbooks, approved, name):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "backup",
+          1
+         ]
+        ],
+        [
+         [
+          "backup",
+          1
+         ]
+        ],
+        "backup"
+       ],
+       "expect": "run"
+      },
+      {
+       "args": [
+        [
+         [
+          "backup",
+          2
+         ]
+        ],
+        [
+         [
+          "backup",
+          1
+         ]
+        ],
+        "backup"
+       ],
+       "expect": "needs approval"
+      },
+      {
+       "args": [
+        [
+         [
+          "backup",
+          1
+         ]
+        ],
+        [],
+        "backup"
+       ],
+       "expect": "needs approval"
+      },
+      {
+       "args": [
+        [],
+        [],
+        "x"
+       ],
+       "expect": "unknown"
+      }
+     ],
+     "hint": "A change in version loses approval.",
+     "solution": "def may_run(playbooks, approved, name):\n    for n, v in playbooks:\n        if n == name:\n            for an, av in approved:\n                if an == n and av == v:\n                    return 'run'\n            return 'needs approval'\n    return 'unknown'\n"
+    },
+    {
+     "type": "python",
+     "title": "Fill in a flow",
+     "intro": "Write fill(text, values): replace every occurrence of '{{ NAME }}' (with the spaces) in text by values[NAME] for each NAME in values; leave unknown placeholders unchanged. Return the text.",
+     "fn": "fill",
+     "starter": "def fill(text, values):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Hello {{ NAME }}",
+        {
+         "NAME": "Ada"
+        }
+       ],
+       "expect": "Hello Ada"
+      },
+      {
+       "args": [
+        "{{ A }} and {{ B }}",
+        {
+         "A": "1",
+         "B": "2"
+        }
+       ],
+       "expect": "1 and 2"
+      },
+      {
+       "args": [
+        "{{ X }}",
+        {
+         "Y": "1"
+        }
+       ],
+       "expect": "{{ X }}"
+      },
+      {
+       "args": [
+        "no placeholders",
+        {}
+       ],
+       "expect": "no placeholders"
+      }
+     ],
+     "hint": "Replace by name.",
+     "solution": "def fill(text, values):\n    for k in values:\n        text = text.replace('{{ ' + k + ' }}', str(values[k]))\n    return text\n"
+    },
+    {
+     "type": "python",
+     "title": "Budget",
+     "intro": "Write run_queue(tasks, per_hour, quiet, hour): tasks is a list of [name, steps]; per_hour is the step budget for this hour; quiet is true if it is a quiet hour; hour unused. Run tasks in order while the budget remains: a task runs only if its steps fit in the remaining budget. Return the list of task names that ran; if quiet, return an empty list.",
+     "fn": "run_queue",
+     "starter": "def run_queue(tasks, per_hour, quiet, hour):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          5
+         ],
+         [
+          "b",
+          10
+         ],
+         [
+          "c",
+          3
+         ]
+        ],
+        10,
+        false,
+        14
+       ],
+       "expect": [
+        "a",
+        "c"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          5
+         ]
+        ],
+        10,
+        true,
+        3
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          4
+         ],
+         [
+          "b",
+          4
+         ],
+         [
+          "c",
+          4
+         ]
+        ],
+        10,
+        false,
+        9
+       ],
+       "expect": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "hint": "Spend the budget task by task.",
+     "solution": "def run_queue(tasks, per_hour, quiet, hour):\n    if quiet:\n        return []\n    left = per_hour\n    out = []\n    for name, steps in tasks:\n        if steps <= left:\n            out.append(name)\n            left -= steps\n    return out\n"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Jade Agent Kit: A Workspace for AI Agents",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What does createKit load by default?",
+    "options": [
+     "Only the file system",
+     "Everything",
+     "The agent",
+     "Python and SQLite"
+    ],
+    "answer": 0,
+    "explain": "Lean loading."
+   },
+   {
+    "q": "Why pin the CDN import to a version?",
+    "options": [
+     "Tags are cached permanently",
+     "It is shorter",
+     "It enables Python",
+     "It is required"
+    ],
+    "answer": 0,
+    "explain": "Stable code."
+   },
+   {
+    "q": "Which call loads Python?",
+    "options": [
+     "kit.use('python')",
+     "kit.python()",
+     "kit.load()",
+     "createKit.python"
+    ],
+    "answer": 0,
+    "explain": "Or call kit.python.run after use."
+   },
+   {
+    "q": "What does persist do?",
+    "options": [
+     "Saves the file system to IndexedDB",
+     "Starts the agent",
+     "Opens a shell",
+     "Encrypts keys"
+    ],
+    "answer": 0,
+    "explain": "Otherwise memory only."
+   },
+   {
+    "q": "Which VFS method returns bytes?",
+    "options": [
+     "readBytes",
+     "read",
+     "list",
+     "stat"
+    ],
+    "answer": 0,
+    "explain": "A Uint8Array."
+   },
+   {
+    "q": "What does write do for missing folders?",
+    "options": [
+     "Creates them",
+     "Fails",
+     "Ignores",
+     "Asks"
+    ],
+    "answer": 0,
+    "explain": "Parents are created."
+   },
+   {
+    "q": "What does A && B do in the shell?",
+    "options": [
+     "Runs B only if A succeeds",
+     "Runs both",
+     "Pipes A to B",
+     "Runs B on failure"
+    ],
+    "answer": 0,
+    "explain": "Chains on success."
+   },
+   {
+    "q": "How do you loop in the kit's shell?",
+    "options": [
+     "Use node or python",
+     "for block",
+     "while block",
+     "goto"
+    ],
+    "answer": 0,
+    "explain": "No if or for."
+   },
+   {
+    "q": "What does a custom command return?",
+    "options": [
+     "An exit code",
+     "Text",
+     "A file",
+     "A promise"
+    ],
+    "answer": 0,
+    "explain": "0 is success."
+   },
+   {
+    "q": "What does kit.js.run's result field hold?",
+    "options": [
+     "The return value",
+     "Console output",
+     "Exit code",
+     "Files"
+    ],
+    "answer": 0,
+    "explain": "r.result."
+   },
+   {
+    "q": "Why use ? placeholders in SQL?",
+    "options": [
+     "Prevent injection",
+     "Speed",
+     "FTS5",
+     "Saving"
+    ],
+    "answer": 0,
+    "explain": "Values stay separate."
+   },
+   {
+    "q": "Can kit.js use npm packages?",
+    "options": [
+     "No",
+     "Yes",
+     "Only with network",
+     "Only for tf"
+    ],
+    "answer": 0,
+    "explain": "Listed modules only."
+   },
+   {
+    "q": "What does BM25 reward?",
+    "options": [
+     "Frequent, rare query words",
+     "Long documents",
+     "Short words",
+     "Capital letters"
+    ],
+    "answer": 0,
+    "explain": "TF and IDF."
+   },
+   {
+    "q": "Which search matches meaning?",
+    "options": [
+     "Vector search",
+     "BM25",
+     "grep",
+     "ls"
+    ],
+    "answer": 0,
+    "explain": "Embeddings."
+   },
+   {
+    "q": "Where can kit.embed run?",
+    "options": [
+     "Local Ollama",
+     "Ollama Cloud",
+     "Python",
+     "SQLite"
+    ],
+    "answer": 0,
+    "explain": "Cloud has no embedding models."
+   },
+   {
+    "q": "What does hybrid: true do?",
+    "options": [
+     "Merge meaning and BM25 results",
+     "Use cloud",
+     "Disable search",
+     "Sort by id"
+    ],
+    "answer": 0,
+    "explain": "Rank fusion."
+   },
+   {
+    "q": "What does kit.tool always return?",
+    "options": [
+     "A string",
+     "An object",
+     "A boolean",
+     "A file"
+    ],
+    "answer": 0,
+    "explain": "Errors start with Error:."
+   },
+   {
+    "q": "Which field names the Anthropic schema?",
+    "options": [
+     "input_schema",
+     "parameters",
+     "args",
+     "spec"
+    ],
+    "answer": 0,
+    "explain": "OpenAI uses parameters."
+   },
+   {
+    "q": "When does an agent turn end?",
+    "options": [
+     "Model replies with no tool request",
+     "After one tool",
+     "After 40 seconds",
+     "When saved"
+    ],
+    "answer": 0,
+    "explain": "Plain text reply."
+   },
+   {
+    "q": "What is the default maxSteps?",
+    "options": [
+     "40",
+     "5",
+     "100",
+     "1"
+    ],
+    "answer": 0,
+    "explain": "Stops runaway loops."
+   },
+   {
+    "q": "Which tools need an Ollama Cloud key?",
+    "options": [
+     "search and fetch",
+     "read and write",
+     "bash",
+     "edit"
+    ],
+    "answer": 0,
+    "explain": "Web access via cloud."
+   },
+   {
+    "q": "What does the guard do?",
+    "options": [
+     "Compacts old turns near the context limit",
+     "Blocks tools",
+     "Encrypts files",
+     "Starts jobs"
+    ],
+    "answer": 0,
+    "explain": "Keeps chats in the window."
+   },
+   {
+    "q": "What does the router do?",
+    "options": [
+     "Sends only needed tools",
+     "Routes network",
+     "Picks files",
+     "Deletes tools"
+    ],
+    "answer": 0,
+    "explain": "Saves context."
+   },
+   {
+    "q": "Where do skills live?",
+    "options": [
+     "/.kit/skills/<name>/SKILL.md",
+     "On a server",
+     "In cookies",
+     "In the model"
+    ],
+    "answer": 0,
+    "explain": "Plain files."
+   },
+   {
+    "q": "What does a decide choice result include?",
+    "options": [
+     "probabilities and confidence",
+     "A file",
+     "A schedule",
+     "A diff"
+    ],
+    "answer": 0,
+    "explain": "Calibrated."
+   },
+   {
+    "q": "Which decide type gives a boolean?",
+    "options": [
+     "yesno",
+     "score",
+     "choice",
+     "rank"
+    ],
+    "answer": 0,
+    "explain": "answer."
+   },
+   {
+    "q": "What do the five cron fields start with?",
+    "options": [
+     "minute",
+     "second",
+     "hour",
+     "year"
+    ],
+    "answer": 0,
+    "explain": "minute hour dom month dow."
+   },
+   {
+    "q": "When do scheduled jobs run?",
+    "options": [
+     "While a page with the kit is open",
+     "Always on a server",
+     "Only at night",
+     "Never"
+    ],
+    "answer": 0,
+    "explain": "Browser only."
+   },
+   {
+    "q": "What allows a sensitive Sentry source?",
+    "options": [
+     "The allow option",
+     "Nothing",
+     "The agent",
+     "The model"
+    ],
+    "answer": 0,
+    "explain": "App decides."
+   },
+   {
+    "q": "What is a backlink?",
+    "options": [
+     "A note that links to this one",
+     "A web link",
+     "A tag",
+     "A template"
+    ],
+    "answer": 0,
+    "explain": "Who links here."
+   },
+   {
+    "q": "Who approves a playbook?",
+    "options": [
+     "The host app",
+     "The agent",
+     "The model",
+     "No one"
+    ],
+    "answer": 0,
+    "explain": "Not the agent."
+   },
+   {
+    "q": "How does an agent use a secret?",
+    "options": [
+     "By name with {{ NAME }}",
+     "By value",
+     "By path",
+     "It cannot"
+    ],
+    "answer": 0,
+    "explain": "It never sees the value."
+   },
+   {
+    "q": "What does HEARTBEAT_OK do?",
+    "options": [
+     "Stays silent",
+     "Alerts",
+     "Stops the kit",
+     "Clears tasks"
+    ],
+    "answer": 0,
+    "explain": "Nothing to report."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Kit cheat sheet",
+  "prompt": "kit>",
+  "intro": "A scripted lookup, not the real kit. Try: create, vfs, run, agent, decide, schedule, help",
+  "chips": [
+   "create",
+   "vfs",
+   "run",
+   "agent",
+   "decide",
+   "schedule",
+   "bm25",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "create     const kit = await createKit({ persist: 'my-app' });",
+     "vfs        kit.vfs.write(path, data)  kit.vfs.read(path)  kit.vfs.list(",
+     "run        await kit.run('ls / && cat a | head')",
+     "agent      const agent = await kit.agent({ onEvent }); await agent.prom",
+     "decide     await kit.decide({ state, question, options })",
+     "schedule   kit.schedule.add({ when: 'every day at 2am', command: '...' ",
+     "bm25       kit.bm25.search(docs, query)"
+    ]
+   },
+   {
+    "re": "^create$",
+    "out": [
+     "const kit = await createKit({ persist: 'my-app' });",
+     "only the file system loads; the rest loads on demand"
+    ]
+   },
+   {
+    "re": "^vfs$",
+    "out": [
+     "kit.vfs.write(path, data)  kit.vfs.read(path)  kit.vfs.list(dir)",
+     "persist saves to IndexedDB; flush() saves now"
+    ]
+   },
+   {
+    "re": "^run$",
+    "out": [
+     "await kit.run('ls / && cat a | head')",
+     "no if or for in the shell: use node or python"
+    ]
+   },
+   {
+    "re": "^agent$",
+    "out": [
+     "const agent = await kit.agent({ onEvent }); await agent.prompt('...')",
+     "tools: read write edit bash search fetch; maxSteps 40"
+    ]
+   },
+   {
+    "re": "^decide$",
+    "out": [
+     "await kit.decide({ state, question, options })",
+     "types: choice, score, yesno; returns probabilities"
+    ]
+   },
+   {
+    "re": "^schedule$",
+    "out": [
+     "kit.schedule.add({ when: 'every day at 2am', command: '...' })",
+     "jobs run only while a page with the kit is open"
+    ]
+   },
+   {
+    "re": "^bm25$",
+    "out": [
+     "kit.bm25.search(docs, query)",
+     "searchFiles(query, { root }) returns path, score, line, snippet"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Artificial Intelligence",
+ "level": "Intermediate",
+ "tags": [
+  "agents",
+  "jade",
+  "javascript",
+  "tools",
+  "llm",
+  "automation",
+  "search",
+  "python"
+ ]
+}

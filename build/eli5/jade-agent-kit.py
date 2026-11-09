@@ -1,0 +1,15 @@
+FEY = [
+ ("The kit is a toolbox you carry in a tiny box. Only the workbench comes with you; the saw and the drill are fetched from the shop the moment a job needs them.", None),
+ ("The file system is a pretend filing cabinet inside the web page. Everyone who works in the page, the shell, Python and the agent, opens the same cabinet.", None),
+ ("The shell is a way to give the computer short written orders. Pipes pass one order's answer to the next, like handing a note down a line of people.", None),
+ ("Python and JavaScript are two helpers who can do sums and make decisions. SQLite is a very tidy notebook where facts go in rows you can ask questions about.", None),
+ ("BM25 is a score for how well a page matches your words: more mentions help, rare words count extra, and a huge page does not win just for being big.", None),
+ ("An embedding turns a sentence into a spot on a big map, where sentences that mean the same live close together. Searching is finding the nearest neighbours.", None),
+ ("Tools are the things a helper is allowed to ask for, like passing a note through a slot: please read this file. Whatever comes back is always a note of words.", None),
+ ("The agent loop is ask, do, tell, repeat. The model asks for a tool, the kit does it and reports back, and this goes on until the model just answers in words.", None),
+ ("The brain adds a notebook for remembering, a recipe folder for skills, a backpack that shrinks old chats, and a short list of tools so the helper is not overwhelmed.", None),
+ ("A decision model answers quick questions with percentages, like a weather forecast for answers: 91 out of 100 sure it is a bug. If it is unsure, ask a person.", None),
+ ("The scheduler is an alarm clock that runs a job instead of ringing. Cron is just the five little boxes that say which minute, hour and day to go off.", None),
+ ("Sentry is a night watchman who looks for things you told him about, like low battery, and then does what you wrote on his list. Notes are linked pages, like a wiki.", None),
+ ("Automation lets the helper work while you are away, but safely: a grown-up must okay each routine first, keys stay in a locked drawer, and there is a limit on how much it may do.", None),
+]
