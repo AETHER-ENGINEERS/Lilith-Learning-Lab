@@ -1,0 +1,5817 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "artificial-intelligence",
+ "title": "Artificial Intelligence: A Modern Approach, Condensed",
+ "subtitle": "Agents, search, logic, probability, learning and more, with Python labs",
+ "author": "Lilith Learning Lab",
+ "description": "A condensed course based on the structure of Russell and Norvig's Artificial Intelligence: A Modern Approach (4th edition), written in original words: rational agents, search and games, constraint satisfaction, logic and planning, probability and Bayesian networks, temporal models, decisions and MDPs, game theory, machine learning, neural networks and reinforcement learning, and applications and ethics. Theory plus Python labs.",
+ "pronounce": {
+  "AI": "A I",
+  "AIMA": "A I M A",
+  "A*": "A star",
+  "CSP": "C S P",
+  "MDP": "M D P",
+  "POMDP": "pom D P",
+  "HMM": "H M M",
+  "BFS": "B F S",
+  "MRV": "M R V",
+  "SAT": "sat",
+  "PDDL": "P D D L",
+  "HTN": "H T N",
+  "CPT": "C P T",
+  "ReLU": "relu",
+  "IoU": "I o U",
+  "PID": "P I D",
+  "SLAM": "slam",
+  "KB": "K B",
+  "FOL": "F O L",
+  "MCTS": "M C T S",
+  "TD": "T D",
+  "Wumpus": "wum pus",
+  "Russell": "russell",
+  "Norvig": "nor vig",
+  "Vickrey": "vick ree",
+  "Skolem": "sko lem",
+  "Kalman": "kal man",
+  "Bayes": "bays",
+  "Bayesian": "bay zhun",
+  "Markov": "mar kov",
+  "Viterbi": "vi ter bee",
+  "Nash": "nash",
+  "softmax": "soft max",
+  "epsilon": "ep si lon",
+  "gamma": "gam uh"
+ },
+ "chapters": [
+  {
+   "title": "What AI is: rational agents",
+   "maps": [
+    {
+     "title": "Agents",
+     "links": [
+      "Agent | perceives with | Sensors",
+      "Agent | acts with | Actuators",
+      "Rational agent | maximises | Expected performance",
+      "Performance measure | defines | Success",
+      "PEAS | describes | A task environment",
+      "Environment | can be | Partially observable",
+      "Learning agent | improves | Its performance element"
+     ]
+    }
+   ],
+   "summary": [
+    "Artificial intelligence is the study of building agents: things that perceive an environment and act in it. This course follows the structure of the textbook Artificial Intelligence: A Modern Approach by Russell and Norvig, condensed and re-explained in original words.",
+    "The central idea is the rational agent. It picks the action that is expected to give the best score on a performance measure, given what it has perceived so far.",
+    "Rationality is not perfection. The agent cannot know what it could not perceive. It is judged on expected, not lucky, outcomes."
+   ],
+   "glossary": [
+    {
+     "term": "Agent",
+     "def": "Anything that perceives its environment through sensors and acts through actuators."
+    },
+    {
+     "term": "Percept sequence",
+     "def": "Everything the agent has perceived so far."
+    },
+    {
+     "term": "Rational agent",
+     "def": "An agent that chooses the action with the best expected performance."
+    },
+    {
+     "term": "Performance measure",
+     "def": "The score that says how well the environment is doing."
+    },
+    {
+     "term": "PEAS",
+     "def": "Performance measure, Environment, Actuators, Sensors."
+    },
+    {
+     "term": "Fully observable",
+     "def": "The sensors give the whole relevant state."
+    }
+   ],
+   "keyPoints": [
+    "An agent maps percept sequences to actions.",
+    "Rational means best expected performance, not omniscient.",
+    "Describe a task with PEAS before designing the agent.",
+    "Environments differ: observable or not, deterministic or not, episodic or sequential, static or dynamic.",
+    "Agent types: simple reflex, model-based, goal-based, utility-based, learning.",
+    "The standard model: optimise a fixed objective. Its danger is a wrong objective."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. An AI agent is like a thermostat with ambition: it senses the room, decides, and acts. A rational one picks whatever should work best on average, even though it cannot see everything.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what makes an agent rational, and why is that not the same as perfect?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Early definitions of AI argued about whether a machine should think like a human or act like one, and whether it should be judged by human behaviour or by an ideal standard.",
+      "The approach that won out in practice is to define AI by what an agent does: it should act to achieve its goals as well as it can."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An agent is a function from everything it has perceived to an action. A table listing an action for every possible history would be astronomically large, so real agents are programs that compute the action compactly."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Consider a vacuum cleaner agent in two rooms. Its sensors tell it which room it is in and whether that room is dirty. Its actuators let it move left, move right or suck. A sensible performance measure awards one point per clean room per time step.",
+      "Notice the measure is about the world, not about how the agent feels."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Task environments are described by PEAS. For an automated taxi: the performance measure covers safety, speed, comfort and cost; the environment is roads, traffic and pedestrians; the actuators are steering, brakes and horn; the sensors are cameras, radar and GPS."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Five agent designs grow in power. A simple reflex agent reacts to the current percept with condition-action rules. A model-based agent keeps an internal picture of the world. A goal-based agent searches for actions that reach a goal. A utility-based agent weighs trade-offs with a numeric utility.",
+      "A learning agent improves any of these from experience."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Modern AI mostly follows the standard model: build a machine that optimises an objective we give it. This works only if the objective is right. A very capable machine with a slightly wrong objective can do real harm, which is why later chapters return to uncertainty about objectives and to ethics."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which describes a rational agent?",
+     "options": [
+      "It maximises expected performance given what it perceived",
+      "It always makes the perfect move",
+      "It copies human behaviour",
+      "It never learns"
+     ],
+     "answer": 0,
+     "explain": "Rationality is about expected outcomes."
+    },
+    {
+     "q": "What does PEAS stand for?",
+     "options": [
+      "Performance, Environment, Actuators, Sensors",
+      "Plan, Execute, Act, Search",
+      "Percept, Effect, Action, State",
+      "Probability, Entropy, Axioms, Sets"
+     ],
+     "answer": 0,
+     "explain": "It describes the task environment."
+    },
+    {
+     "q": "Which agent weighs trade-offs between outcomes?",
+     "options": [
+      "Utility-based",
+      "Simple reflex",
+      "Table-driven",
+      "Random"
+     ],
+     "answer": 0,
+     "explain": "Utility scores compare outcomes."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a percept sequence?",
+     "a": "Everything perceived so far."
+    },
+    {
+     "q": "Why is a lookup table agent impractical?",
+     "a": "The table is astronomically large."
+    },
+    {
+     "q": "What is the standard model?",
+     "a": "Optimise a fixed objective."
+    },
+    {
+     "q": "What do actuators do?",
+     "a": "Let the agent act on the world."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Agent types",
+     "intro": "Match each agent with what it adds.",
+     "pairs": [
+      [
+       "Simple reflex",
+       "Condition-action rules"
+      ],
+      [
+       "Model-based",
+       "Internal state of the world"
+      ],
+      [
+       "Goal-based",
+       "Searches for goal states"
+      ],
+      [
+       "Utility-based",
+       "Numeric trade-offs"
+      ],
+      [
+       "Learning",
+       "Improves from experience"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "PEAS",
+     "text": "To describe a task, list the {{performance|performance measure}}, the environment, the {{actuators}} and the sensors."
+    },
+    {
+     "type": "python",
+     "title": "Vacuum score",
+     "intro": "Write vacuum_score(history): history is a list of states, each a list of two numbers (1 = room dirty, 0 = clean). Return the number of clean rooms summed over all time steps.",
+     "fn": "vacuum_score",
+     "starter": "def vacuum_score(history):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          1
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          1
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          0,
+          0
+         ],
+         [
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": 6
+      }
+     ],
+     "hint": "Count the zeros.",
+     "solution": "def vacuum_score(history):\n    s = 0\n    for st in history:\n        for d in st:\n            if d == 0:\n                s += 1\n    return s\n"
+    },
+    {
+     "type": "python",
+     "title": "Reflex vacuum",
+     "intro": "Write reflex_action(percept): percept is [location, status] with location 'A' or 'B' and status 'dirty' or 'clean'. Return 'suck' if dirty, otherwise 'right' at A and 'left' at B.",
+     "fn": "reflex_action",
+     "starter": "def reflex_action(percept):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "A",
+         "dirty"
+        ]
+       ],
+       "expect": "suck"
+      },
+      {
+       "args": [
+        [
+         "B",
+         "dirty"
+        ]
+       ],
+       "expect": "suck"
+      },
+      {
+       "args": [
+        [
+         "A",
+         "clean"
+        ]
+       ],
+       "expect": "right"
+      },
+      {
+       "args": [
+        [
+         "B",
+         "clean"
+        ]
+       ],
+       "expect": "left"
+      }
+     ],
+     "hint": "Three condition-action rules.",
+     "solution": "def reflex_action(percept):\n    loc, status = percept[0], percept[1]\n    if status == 'dirty':\n        return 'suck'\n    if loc == 'A':\n        return 'right'\n    return 'left'\n"
+    }
+   ]
+  },
+  {
+   "title": "Solving problems by search",
+   "maps": [
+    {
+     "title": "Search",
+     "links": [
+      "Search | explores | A state space",
+      "Frontier | holds | Unexpanded nodes",
+      "Breadth-first | finds | Shortest path in steps",
+      "Uniform-cost | finds | Cheapest path",
+      "A* | uses | Cost plus heuristic",
+      "Admissible heuristic | never | Overestimates",
+      "Iterative deepening | saves | Memory"
+     ]
+    }
+   ],
+   "summary": [
+    "A problem-solving agent looks ahead. It models the world as states and actions, then searches for a sequence of actions leading to a goal.",
+    "Uninformed methods use only the problem definition: breadth-first, uniform-cost, depth-first and iterative deepening. Informed methods use a heuristic estimate of the remaining cost. A star search combines the cost so far with that estimate and is optimal when the estimate never overestimates.",
+    "The labs write breadth-first search and A star on a small graph."
+   ],
+   "glossary": [
+    {
+     "term": "State space",
+     "def": "All states reachable from the start by any actions."
+    },
+    {
+     "term": "Frontier",
+     "def": "Nodes that are generated but not yet expanded."
+    },
+    {
+     "term": "Heuristic",
+     "def": "An estimate h(n) of the cost from n to the goal."
+    },
+    {
+     "term": "Admissible",
+     "def": "A heuristic that never overestimates the true cost."
+    },
+    {
+     "term": "Branching factor",
+     "def": "The number of successors per state, b."
+    },
+    {
+     "term": "Optimal",
+     "def": "A search that always finds a cheapest solution."
+    }
+   ],
+   "keyPoints": [
+    "Define a problem by initial state, actions, transition model, goal test and path cost.",
+    "BFS is complete and finds the fewest steps, but uses O(b^d) memory.",
+    "Uniform-cost search expands the cheapest frontier node first.",
+    "Depth-first uses little memory but may not find the best path.",
+    "A* orders by f = g + h; optimal if h is admissible (and consistent for graph search).",
+    "Heuristics come from relaxed problems."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Search is exploring a maze with a pencil. Breadth-first checks every nearby corridor first; A-star also guesses how far the exit is, so it wastes fewer steps.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why must the guess never be too big for A-star to stay correct?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine finding a route from one city to another. A state is a city, an action is a road, and a goal is reaching the destination. The set of all cities and roads forms a graph. Search explores this graph from the start, keeping a frontier of places it has seen but not yet explored."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Breadth-first search expands the oldest frontier node first, using a queue. It finds the path with the fewest steps. Its drawback is memory: the frontier can hold every node at the current depth, which grows like b to the power d."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Roads have different lengths. Uniform-cost search expands the node with the lowest cost so far, using a priority queue. It finds the cheapest path. Depth-first search uses a stack and little memory, but can wander down a long path and miss shorter ones."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Informed search adds knowledge. A heuristic h(n) estimates the remaining cost. For a map, the straight-line distance to the goal is a good one: no road is shorter than a straight line."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "f(n) \\;=\\; g(n) + h(n)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A star expands the node with the smallest f, where g is the cost so far and h the estimate of the cost to go. If h never overestimates, A star is optimal. If h is also consistent, meaning h(n) is at most the step cost plus h of the next node, it never needs to reopen a node."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where do heuristics come from? Often from a relaxed version of the problem. In the sliding tile puzzle, pretend tiles can pass through each other; the number of moves needed is the sum of tile distances, the Manhattan distance, which is admissible."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which search finds the path with fewest steps?",
+     "options": [
+      "Breadth-first",
+      "Depth-first",
+      "Greedy best-first",
+      "Random"
+     ],
+     "answer": 0,
+     "explain": "It expands level by level."
+    },
+    {
+     "q": "What does an admissible heuristic do?",
+     "options": [
+      "Never overestimates the true cost",
+      "Always equals the true cost",
+      "Overestimates slightly",
+      "Ignores cost"
+     ],
+     "answer": 0,
+     "explain": "That keeps A* optimal."
+    },
+    {
+     "q": "What does A* sort the frontier by?",
+     "options": [
+      "g(n) + h(n)",
+      "h(n) only",
+      "g(n) only",
+      "Depth"
+     ],
+     "answer": 0,
+     "explain": "Cost so far plus estimate."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Why is BFS memory hungry?",
+     "a": "It stores a whole level of nodes."
+    },
+    {
+     "q": "What is a relaxed problem?",
+     "a": "One with fewer restrictions."
+    },
+    {
+     "q": "What does uniform-cost optimise?",
+     "a": "Path cost."
+    },
+    {
+     "q": "What is the frontier?",
+     "a": "Generated but unexpanded nodes."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "A* loop",
+     "intro": "Put the A* steps in order.",
+     "items": [
+      "Put the start node on the frontier",
+      "Remove the node with the lowest f",
+      "If it is the goal, return the path",
+      "Expand it and add its successors with new f values",
+      "Repeat until the frontier is empty"
+     ]
+    },
+    {
+     "type": "python",
+     "title": "BFS steps",
+     "intro": "Write bfs_steps(graph, start, goal): graph is a dict from node name to a list of neighbours. Return the fewest number of edges from start to goal, or -1 if unreachable.",
+     "fn": "bfs_steps",
+     "starter": "def bfs_steps(graph, start, goal):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "a": [
+          "b",
+          "c"
+         ],
+         "b": [
+          "d"
+         ],
+         "c": [
+          "d"
+         ],
+         "d": []
+        },
+        "a",
+        "d"
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        {
+         "a": [
+          "b"
+         ],
+         "b": [],
+         "c": []
+        },
+        "a",
+        "c"
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        {
+         "a": [
+          "b",
+          "c"
+         ],
+         "b": [
+          "c"
+         ],
+         "c": [
+          "a"
+         ]
+        },
+        "a",
+        "a"
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        {
+         "s": [
+          "a",
+          "b"
+         ],
+         "a": [
+          "g"
+         ],
+         "b": [
+          "c"
+         ],
+         "c": [
+          "g"
+         ],
+         "g": []
+        },
+        "s",
+        "g"
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "Use a queue and a seen dict.",
+     "solution": "def bfs_steps(graph, start, goal):\n    seen = {start: 0}\n    queue = [start]\n    i = 0\n    while i < len(queue):\n        n = queue[i]\n        i += 1\n        if n == goal:\n            return seen[n]\n        for m in graph[n]:\n            if m not in seen:\n                seen[m] = seen[n] + 1\n                queue.append(m)\n    return -1\n"
+    },
+    {
+     "type": "python",
+     "title": "A* cost",
+     "intro": "Write astar_cost(graph, h, start, goal): graph maps node to a dict of neighbour to edge cost; h maps node to the heuristic. Return the cheapest path cost from start to goal using A star, or -1 if unreachable.",
+     "fn": "astar_cost",
+     "starter": "def astar_cost(graph, h, start, goal):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "s": {
+          "a": 1,
+          "b": 4
+         },
+         "a": {
+          "g": 5
+         },
+         "b": {
+          "g": 1
+         },
+         "g": {}
+        },
+        {
+         "s": 4,
+         "a": 4,
+         "b": 1,
+         "g": 0
+        },
+        "s",
+        "g"
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        {
+         "s": {
+          "a": 1
+         },
+         "a": {
+          "g": 1
+         },
+         "g": {},
+         "z": {}
+        },
+        {
+         "s": 2,
+         "a": 1,
+         "g": 0,
+         "z": 0
+        },
+        "s",
+        "z"
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        {
+         "s": {
+          "a": 2,
+          "b": 1
+         },
+         "a": {
+          "g": 1
+         },
+         "b": {
+          "a": 1
+         },
+         "g": {}
+        },
+        {
+         "s": 3,
+         "a": 1,
+         "b": 2,
+         "g": 0
+        },
+        "s",
+        "g"
+       ],
+       "expect": 3
+      }
+     ],
+     "hint": "Always expand the lowest f.",
+     "solution": "def astar_cost(graph, h, start, goal):\n    best = {start: 0}\n    frontier = [(h[start], start)]\n    while frontier:\n        k = 0\n        for i in range(len(frontier)):\n            if frontier[i][0] < frontier[k][0]:\n                k = i\n        f, n = frontier.pop(k)\n        if n == goal:\n            return best[n]\n        if f > best[n] + h[n]:\n            continue\n        for m in graph[n]:\n            g = best[n] + graph[n][m]\n            if m not in best or g < best[m]:\n                best[m] = g\n                frontier.append((g + h[m], m))\n    return -1\n"
+    }
+   ]
+  },
+  {
+   "title": "Beyond classical search: local search and games",
+   "maps": [
+    {
+     "title": "Local search and games",
+     "links": [
+      "Hill climbing | moves to | Best neighbour",
+      "Local maximum | traps | Hill climbing",
+      "Simulated annealing | accepts | Some worse moves",
+      "Minimax | assumes | A perfect opponent",
+      "Alpha-beta | prunes | Irrelevant branches",
+      "Evaluation function | scores | Cut-off positions",
+      "Monte Carlo tree search | uses | Random playouts"
+     ]
+    }
+   ],
+   "summary": [
+    "Some problems have no meaningful path, only a good final state. Local search keeps a single state and improves it step by step. Hill climbing can get stuck on a local maximum; random restarts and simulated annealing help.",
+    "In two-player games, minimax chooses the move that is best assuming the opponent also plays best. Alpha-beta pruning skips branches that cannot change the decision. Monte Carlo tree search, used in Go programs, chooses moves by many random playouts.",
+    "The labs compute a minimax value and a hill climb."
+   ],
+   "glossary": [
+    {
+     "term": "Local search",
+     "def": "Search that keeps only the current state."
+    },
+    {
+     "term": "Hill climbing",
+     "def": "Repeatedly move to the best neighbour."
+    },
+    {
+     "term": "Simulated annealing",
+     "def": "Hill climbing that sometimes accepts worse moves, less often over time."
+    },
+    {
+     "term": "Minimax",
+     "def": "Best move assuming optimal play by both sides."
+    },
+    {
+     "term": "Alpha-beta pruning",
+     "def": "Skipping branches that cannot matter."
+    },
+    {
+     "term": "Evaluation function",
+     "def": "An estimate of a position's value."
+    }
+   ],
+   "keyPoints": [
+    "Local search uses little memory and suits optimisation.",
+    "Hill climbing: local maxima, ridges and plateaus.",
+    "Simulated annealing accepts a worse move with probability exp(delta/T).",
+    "Minimax value: max at our turns, min at the opponent's.",
+    "Alpha-beta can double the reachable depth with good move ordering.",
+    "MCTS balances exploring and exploiting with random rollouts."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Hill climbing is climbing in fog: you always step up, and may end on a small hill. In games you plan by imagining your opponent always plays their very best reply.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what can trap hill climbing, and how does minimax think about the opponent?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Think of climbing a hill in fog: you can only see nearby ground. Hill climbing moves to the best neighbouring state and stops when none is better. It is fast, but can stop on a small hill that is not the highest one."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two cures are popular. Random restarts run hill climbing many times from different starting points. Simulated annealing sometimes accepts a worse move, with a probability that shrinks as a temperature value falls. Early on it explores widely; later it settles."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Games add an opponent. Minimax searches the game tree. At our moves we take the maximum value, at the opponent's moves the minimum. The value of the root is what we get if both sides play perfectly."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Games are big, so we cut off the search at some depth and use an evaluation function to score the position. Alpha-beta pruning keeps a window of values already guaranteed to each side and stops exploring a branch once it cannot beat them. The result is the same as minimax but with far fewer nodes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Monte Carlo tree search suits games like Go, where evaluation by hand is hard. It repeats four steps: select a promising node, expand it, play a random game to the end, and back up the result. Nodes that win more often get visited more."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Games with chance, such as backgammon, add chance nodes with expected values. Games with hidden information, such as poker, need reasoning about belief states."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does minimax assume?",
+     "options": [
+      "The opponent plays optimally",
+      "The opponent plays randomly",
+      "There is no opponent",
+      "The game is short"
+     ],
+     "answer": 0,
+     "explain": "Worst case for us."
+    },
+    {
+     "q": "What can trap hill climbing?",
+     "options": [
+      "A local maximum",
+      "A global maximum",
+      "Too much memory",
+      "A heuristic"
+     ],
+     "answer": 0,
+     "explain": "No neighbour is better."
+    },
+    {
+     "q": "What does alpha-beta change in the minimax result?",
+     "options": [
+      "Nothing, it only prunes",
+      "It makes it random",
+      "It lowers the value",
+      "It adds moves"
+     ],
+     "answer": 0,
+     "explain": "Same decision, fewer nodes."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does simulated annealing do?",
+     "a": "Sometimes accepts worse moves."
+    },
+    {
+     "q": "What is an evaluation function for?",
+     "a": "Score positions at the cut-off."
+    },
+    {
+     "q": "What does MCTS use?",
+     "a": "Random playouts."
+    },
+    {
+     "q": "Why random restarts?",
+     "a": "To escape local maxima."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Methods",
+     "intro": "Match each method with its idea.",
+     "pairs": [
+      [
+       "Hill climbing",
+       "Move to the best neighbour"
+      ],
+      [
+       "Simulated annealing",
+       "Accept worse moves with falling probability"
+      ],
+      [
+       "Minimax",
+       "Best move against a perfect opponent"
+      ],
+      [
+       "Alpha-beta",
+       "Prune branches that cannot matter"
+      ],
+      [
+       "MCTS",
+       "Random playouts"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Minimax value",
+     "intro": "Write minimax(tree, maximizing): tree is either a number (a leaf) or a list of subtrees. Return the minimax value; maximizing is true when it is the maximiser's turn.",
+     "fn": "minimax",
+     "starter": "def minimax(tree, maximizing):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        true
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         3,
+         5
+        ],
+        true
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          5
+         ],
+         [
+          2,
+          9
+         ]
+        ],
+        true
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          12,
+          8
+         ],
+         [
+          2,
+          4,
+          6
+         ],
+         [
+          14,
+          5,
+          2
+         ]
+        ],
+        true
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          12,
+          8
+         ],
+         [
+          2,
+          4,
+          6
+         ],
+         [
+          14,
+          5,
+          2
+         ]
+        ],
+        false
+       ],
+       "expect": 6
+      }
+     ],
+     "hint": "Recurse; alternate max and min.",
+     "solution": "def minimax(tree, maximizing):\n    if not isinstance(tree, list):\n        return tree\n    vals = [minimax(t, not maximizing) for t in tree]\n    if maximizing:\n        return max(vals)\n    return min(vals)\n"
+    },
+    {
+     "type": "python",
+     "title": "Hill climb",
+     "intro": "Write hill_climb(values, start): values is a list of numbers; neighbours of index i are i-1 and i+1 (if they exist). Repeatedly move to the better neighbour if it is larger than the current value; return the index where you stop.",
+     "fn": "hill_climb",
+     "starter": "def hill_climb(values, start):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         2,
+         5,
+         9,
+         4
+        ],
+        0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         1,
+         3,
+         2,
+         5,
+         9,
+         4
+        ],
+        3
+       ],
+       "expect": 4
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        0
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         4,
+         3,
+         2,
+         1
+        ],
+        3
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Stop when no neighbour is higher.",
+     "solution": "def hill_climb(values, start):\n    i = start\n    while True:\n        best = i\n        for j in (i - 1, i + 1):\n            if 0 <= j < len(values) and values[j] > values[best]:\n                best = j\n        if best == i:\n            return i\n        i = best\n"
+    }
+   ]
+  },
+  {
+   "title": "Constraint satisfaction",
+   "maps": [
+    {
+     "title": "CSP",
+     "links": [
+      "CSP | has | Variables, domains, constraints",
+      "Constraint graph | shows | Which variables interact",
+      "Backtracking | assigns | One variable at a time",
+      "Forward checking | prunes | Neighbour domains",
+      "Arc consistency | removes | Unsupported values",
+      "MRV | picks | Most constrained variable",
+      "Min-conflicts | repairs | Complete assignments"
+     ]
+    }
+   ],
+   "summary": [
+    "A constraint satisfaction problem, or CSP, is defined by variables, the values each may take, and constraints on which combinations are allowed. Map colouring, scheduling and Sudoku are classic examples.",
+    "Because constraints expose structure, a CSP solver can do much better than blind search. Backtracking assigns variables one at a time and undoes a choice when a constraint fails. Propagation, such as forward checking and arc consistency, removes impossible values early.",
+    "The labs write a constraint check and a backtracking colour solver."
+   ],
+   "glossary": [
+    {
+     "term": "Variable",
+     "def": "A thing to assign a value to."
+    },
+    {
+     "term": "Domain",
+     "def": "The set of allowed values for a variable."
+    },
+    {
+     "term": "Constraint",
+     "def": "A restriction on combinations of values."
+    },
+    {
+     "term": "Arc consistency",
+     "def": "Every value has a supporting value in each neighbour."
+    },
+    {
+     "term": "MRV",
+     "def": "Choose the variable with the fewest remaining values."
+    },
+    {
+     "term": "Min-conflicts",
+     "def": "Local search that reassigns a conflicted variable."
+    }
+   ],
+   "keyPoints": [
+    "CSP = variables + domains + constraints.",
+    "Backtracking is depth-first search over partial assignments.",
+    "Forward checking removes values that a new assignment rules out.",
+    "Arc consistency propagates constraints between variable pairs.",
+    "Order heuristics: MRV, degree, least-constraining value.",
+    "A tree-shaped constraint graph can be solved in linear time."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Colouring a map is a puzzle with rules. Instead of trying everything, you cross off colours that can no longer work and go back as soon as you hit a dead end.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: how does crossing off options early save work?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Colouring a map so that neighbouring regions differ is a classic CSP. The variables are the regions, the domain of each is the set of colours, and the constraints say neighbours must differ. A solution is a complete assignment that breaks no constraint."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Plain search would try combinations without noticing that a bad choice early on dooms everything after it. Backtracking assigns one variable at a time and as soon as a constraint is violated it goes back and tries a different value."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Constraint propagation makes this far stronger. Forward checking, after each assignment, removes from the neighbours' domains any value that now conflicts. If a domain empties, we back up at once. Arc consistency goes further: a value is removed if some neighbour has no value compatible with it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Heuristics for choosing matter a lot. Minimum remaining values picks the variable with the fewest legal values, so failures show up early. The degree heuristic breaks ties by choosing the variable involved in the most constraints.",
+      "The least-constraining value rule tries the value that rules out the fewest options for neighbours."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "For some problems local search works better. Min-conflicts starts from a full assignment, picks a conflicted variable and gives it the value that causes the fewest conflicts. It solves huge problems such as n-queens remarkably fast."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Structure helps. If the constraint graph is a tree, the problem can be solved in time linear in the number of variables. Otherwise we can cut the graph into a tree by assigning a few variables first."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a CSP consist of?",
+     "options": [
+      "Variables, domains and constraints",
+      "States and actions only",
+      "A heuristic",
+      "Probabilities"
+     ],
+     "answer": 0,
+     "explain": "That is the definition."
+    },
+    {
+     "q": "What does MRV choose?",
+     "options": [
+      "The variable with the fewest legal values",
+      "The most constrained value",
+      "A random variable",
+      "The last variable"
+     ],
+     "answer": 0,
+     "explain": "Fail early."
+    },
+    {
+     "q": "When can a CSP be solved in linear time?",
+     "options": [
+      "When the constraint graph is a tree",
+      "When domains are large",
+      "Never",
+      "When it has one variable"
+     ],
+     "answer": 0,
+     "explain": "Tree structure."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does forward checking do?",
+     "a": "Prunes neighbour domains."
+    },
+    {
+     "q": "What is min-conflicts?",
+     "a": "Local search repair."
+    },
+    {
+     "q": "What is backtracking?",
+     "a": "DFS over partial assignments."
+    },
+    {
+     "q": "What is a constraint graph?",
+     "a": "Variables as nodes, constraints as edges."
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Colouring",
+     "text": "In map colouring the {{variables}} are regions and the constraints say {{neighbours|neighbors|adjacent regions}} must differ."
+    },
+    {
+     "type": "python",
+     "title": "Consistent colouring",
+     "intro": "Write is_valid(edges, colors): edges is a list of [a, b] pairs of region names; colors maps a region to a colour. Return true if no edge joins two regions with the same colour.",
+     "fn": "is_valid",
+     "starter": "def is_valid(edges, colors):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          "b"
+         ],
+         [
+          "b",
+          "c"
+         ]
+        ],
+        {
+         "a": "r",
+         "b": "g",
+         "c": "r"
+        }
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "b"
+         ],
+         [
+          "b",
+          "c"
+         ]
+        ],
+        {
+         "a": "r",
+         "b": "r",
+         "c": "g"
+        }
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [],
+        {
+         "a": "r"
+        }
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "b"
+         ],
+         [
+          "b",
+          "c"
+         ],
+         [
+          "a",
+          "c"
+         ]
+        ],
+        {
+         "a": "r",
+         "b": "g",
+         "c": "b"
+        }
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Check every edge.",
+     "solution": "def is_valid(edges, colors):\n    for a, b in edges:\n        if colors[a] == colors[b]:\n            return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Backtracking colouring",
+     "intro": "Write colour_map(regions, edges, colors): regions is a list of names, edges a list of [a, b], colors a list of colour names. Try colours in the given order, assign regions in the given order with backtracking, and return the first solution as a list of colours in region order, or an empty list if none exists.",
+     "fn": "colour_map",
+     "starter": "def colour_map(regions, edges, colors):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c"
+        ],
+        [
+         [
+          "a",
+          "b"
+         ],
+         [
+          "b",
+          "c"
+         ]
+        ],
+        [
+         "r",
+         "g"
+        ]
+       ],
+       "expect": [
+        "r",
+        "g",
+        "r"
+       ]
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c"
+        ],
+        [
+         [
+          "a",
+          "b"
+         ],
+         [
+          "b",
+          "c"
+         ],
+         [
+          "a",
+          "c"
+         ]
+        ],
+        [
+         "r",
+         "g"
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c"
+        ],
+        [
+         [
+          "a",
+          "b"
+         ],
+         [
+          "b",
+          "c"
+         ],
+         [
+          "a",
+          "c"
+         ]
+        ],
+        [
+         "r",
+         "g",
+         "b"
+        ]
+       ],
+       "expect": [
+        "r",
+        "g",
+        "b"
+       ]
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        [],
+        [
+         "r"
+        ]
+       ],
+       "expect": [
+        "r"
+       ]
+      }
+     ],
+     "hint": "Recurse over regions; undo on failure.",
+     "solution": "def colour_map(regions, edges, colors):\n    nb = {r: [] for r in regions}\n    for a, b in edges:\n        nb[a].append(b)\n        nb[b].append(a)\n    assign = {}\n    def go(i):\n        if i == len(regions):\n            return True\n        r = regions[i]\n        for c in colors:\n            ok = True\n            for m in nb[r]:\n                if assign.get(m) == c:\n                    ok = False\n            if ok:\n                assign[r] = c\n                if go(i + 1):\n                    return True\n                del assign[r]\n        return False\n    if go(0):\n        return [assign[r] for r in regions]\n    return []\n"
+    }
+   ]
+  },
+  {
+   "title": "Logical agents: propositional logic",
+   "maps": [
+    {
+     "title": "Logic",
+     "links": [
+      "Knowledge base | holds | Sentences",
+      "Entailment | means | True in all models",
+      "Model checking | enumerates | Truth assignments",
+      "Resolution | is | Sound and complete",
+      "Horn clauses | allow | Linear inference",
+      "SAT solver | decides | Satisfiability",
+      "Wumpus world | illustrates | Logical agents"
+     ]
+    }
+   ],
+   "summary": [
+    "A knowledge-based agent keeps sentences in a knowledge base and uses inference to decide what to do. Propositional logic has symbols that are true or false, combined with not, and, or, implies and if and only if.",
+    "A sentence is entailed by the knowledge base if it is true in every model where the knowledge base is true. Inference algorithms are sound if they derive only entailed sentences and complete if they derive all of them. Resolution is sound and complete for propositional logic.",
+    "The labs evaluate sentences and test entailment by enumerating models."
+   ],
+   "glossary": [
+    {
+     "term": "Knowledge base",
+     "def": "A set of sentences held true."
+    },
+    {
+     "term": "Model",
+     "def": "An assignment of true or false to every symbol."
+    },
+    {
+     "term": "Entailment",
+     "def": "KB entails a when a holds in every model of KB."
+    },
+    {
+     "term": "Sound",
+     "def": "Derives only what is entailed."
+    },
+    {
+     "term": "Complete",
+     "def": "Can derive everything that is entailed."
+    },
+    {
+     "term": "Horn clause",
+     "def": "A clause with at most one positive literal."
+    }
+   ],
+   "keyPoints": [
+    "Syntax defines sentences; semantics defines their truth in a model.",
+    "Entailment: KB entails a iff KB and not a is unsatisfiable.",
+    "Model checking is exponential in the number of symbols.",
+    "Resolution proves entailment by deriving the empty clause.",
+    "Horn clauses admit forward and backward chaining in linear time.",
+    "Modern SAT solvers handle millions of clauses (DPLL, clause learning)."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Logic is a rulebook for certainty. If the rules say a thing must be true in every possible world that fits the facts, then it follows. Checking all worlds works, but gets huge fast.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does it mean for one sentence to follow from others?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A knowledge-based agent tells its knowledge base what it perceives and asks what to do. The strength of this design is that the knowledge is stated declaratively, and the same inference engine works on many problems."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In propositional logic a symbol such as Rain is either true or false. A model assigns a value to every symbol. We combine symbols with not, and, or, implies and if and only if. A sentence is true or false in each model by simple rules."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} KB \\models \\alpha \\\\[0.6em] \\Longleftrightarrow \\\\[0.6em] \\text{every model of } KB \\text{ is a model of } \\alpha \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The simplest inference is model checking: enumerate all assignments and check that alpha is true wherever the knowledge base is true. It is sound and complete, but with n symbols there are 2 to the n models."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Resolution works on clauses, which are disjunctions of literals. From two clauses that contain a complementary pair, it derives a new clause without that pair. To prove alpha, add not alpha to the knowledge base and try to derive the empty clause, which signals a contradiction."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "If the knowledge base consists of Horn clauses, inference is simpler. Forward chaining fires rules whose premises are known until the query appears. Backward chaining works from the goal. Both run in time linear in the size of the knowledge base."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Wumpus world is a small cave game used to show these ideas. Pits cause breezes in adjacent squares; the Wumpus causes a stench. By combining percepts with rules, the agent can prove which squares are safe."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does KB entails a mean?",
+     "options": [
+      "a is true in every model where KB is true",
+      "a is in KB",
+      "a is false",
+      "KB is false"
+     ],
+     "answer": 0,
+     "explain": "That is entailment."
+    },
+    {
+     "q": "Which inference method is sound and complete for propositional logic?",
+     "options": [
+      "Resolution",
+      "Forward chaining on any KB",
+      "Guessing",
+      "Hill climbing"
+     ],
+     "answer": 0,
+     "explain": "Refutation by resolution."
+    },
+    {
+     "q": "Why are Horn clauses attractive?",
+     "options": [
+      "Chaining is linear time",
+      "They are shorter to write",
+      "They are always false",
+      "They need no symbols"
+     ],
+     "answer": 0,
+     "explain": "Efficient inference."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a model?",
+     "a": "A truth assignment to all symbols."
+    },
+    {
+     "q": "What is resolution's goal?",
+     "a": "Derive the empty clause."
+    },
+    {
+     "q": "What does sound mean?",
+     "a": "Only entailed sentences are derived."
+    },
+    {
+     "q": "What does a SAT solver decide?",
+     "a": "Whether a formula can be true."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Terms",
+     "intro": "Match the term with its meaning.",
+     "pairs": [
+      [
+       "Entailment",
+       "True in all models of the KB"
+      ],
+      [
+       "Sound",
+       "Derives only entailed sentences"
+      ],
+      [
+       "Complete",
+       "Derives all entailed sentences"
+      ],
+      [
+       "Horn clause",
+       "At most one positive literal"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Entails",
+     "intro": "Write entails(kb, alpha, symbols): kb and alpha are lists of clauses (kb is a list of clauses that must all hold; alpha is a single clause). A clause is a list of strings, where a leading '-' means negation, and a clause is true if any literal is true. symbols lists all symbol names. Return true if every model satisfying all clauses of kb also satisfies alpha.",
+     "fn": "entails",
+     "starter": "def entails(kb, alpha, symbols):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "-p",
+          "q"
+         ],
+         [
+          "p"
+         ]
+        ],
+        [
+         "q"
+        ],
+        [
+         "p",
+         "q"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         [
+          "-p",
+          "q"
+         ]
+        ],
+        [
+         "q"
+        ],
+        [
+         "p",
+         "q"
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         [
+          "p",
+          "q"
+         ]
+        ],
+        [
+         "p"
+        ],
+        [
+         "p",
+         "q"
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         [
+          "-a",
+          "b"
+         ],
+         [
+          "-b",
+          "c"
+         ],
+         [
+          "a"
+         ]
+        ],
+        [
+         "c"
+        ],
+        [
+         "a",
+         "b",
+         "c"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [],
+        [
+         "p",
+         "-p"
+        ],
+        [
+         "p"
+        ]
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Enumerate all 2^n models.",
+     "solution": "def entails(kb, alpha, symbols):\n    n = len(symbols)\n    for mask in range(2 ** n):\n        m = {}\n        for i in range(n):\n            m[symbols[i]] = (mask >> i) & 1 == 1\n        def val(lit):\n            if lit[0] == '-':\n                return not m[lit[1:]]\n            return m[lit]\n        def holds(cl):\n            for lit in cl:\n                if val(lit):\n                    return True\n            return False\n        good = True\n        for cl in kb:\n            if not holds(cl):\n                good = False\n        if good and not holds(alpha):\n            return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Forward chaining",
+     "intro": "Write forward_chain(rules, facts, query): rules is a list of [premises, conclusion] with premises a list of symbols; facts a list of symbols. Return true if the query can be derived.",
+     "fn": "forward_chain",
+     "starter": "def forward_chain(rules, facts, query):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           "a",
+           "b"
+          ],
+          "c"
+         ],
+         [
+          [
+           "c"
+          ],
+          "d"
+         ]
+        ],
+        [
+         "a",
+         "b"
+        ],
+        "d"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           "a",
+           "b"
+          ],
+          "c"
+         ]
+        ],
+        [
+         "a"
+        ],
+        "c"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [],
+        [
+         "x"
+        ],
+        "x"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           "a"
+          ],
+          "b"
+         ],
+         [
+          [
+           "b"
+          ],
+          "c"
+         ]
+        ],
+        [
+         "a"
+        ],
+        "c"
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Keep firing rules until nothing new.",
+     "solution": "def forward_chain(rules, facts, query):\n    known = set(facts)\n    changed = True\n    while changed:\n        changed = False\n        for prem, concl in rules:\n            if concl not in known:\n                ok = True\n                for p in prem:\n                    if p not in known:\n                        ok = False\n                if ok:\n                    known.add(concl)\n                    changed = True\n    return query in known\n"
+    }
+   ]
+  },
+  {
+   "title": "First-order logic and inference",
+   "maps": [
+    {
+     "title": "FOL",
+     "links": [
+      "First-order logic | adds | Objects and relations",
+      "Quantifiers | are | For all and there exists",
+      "Unification | matches | Two expressions",
+      "Skolemisation | removes | Existentials",
+      "Resolution | proves | By contradiction",
+      "Prolog | uses | Backward chaining",
+      "Ontology | organises | Concepts"
+     ]
+    }
+   ],
+   "summary": [
+    "Propositional logic cannot say that all humans are mortal without listing every human. First-order logic adds objects, relations, functions and quantifiers, so general facts are stated once.",
+    "Inference uses unification: finding a substitution that makes two expressions identical. With unification, rules can be chained forward or backward, and resolution works on clauses with variables.",
+    "The labs write a small unifier and a term matcher."
+   ],
+   "glossary": [
+    {
+     "term": "Predicate",
+     "def": "A relation over objects, such as Brother(x, y)."
+    },
+    {
+     "term": "Quantifier",
+     "def": "For all (∀) or there exists (∃)."
+    },
+    {
+     "term": "Term",
+     "def": "An expression that names an object."
+    },
+    {
+     "term": "Unifier",
+     "def": "A substitution that makes two expressions the same."
+    },
+    {
+     "term": "Skolem constant",
+     "def": "A new name that stands for an existential witness."
+    },
+    {
+     "term": "Ontology",
+     "def": "A structured vocabulary of categories and relations."
+    }
+   ],
+   "keyPoints": [
+    "Use implies with for-all and and with there-exists.",
+    "Not-for-all x P is the same as there-exists x not P.",
+    "Unification finds the most general substitution.",
+    "The occur check stops a variable from binding to a term containing it.",
+    "FOL entailment is semi-decidable.",
+    "Prolog uses backward chaining on Horn clauses."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Variables in logic are blanks like 'someone'. Matching a rule to a fact is like fitting a puzzle piece: you fill the blanks the same way on both sides.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does unification do with the blanks?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "First-order logic talks about objects and the relations between them. Constants name objects, predicates state relations, and functions map objects to objects. With the quantifier for-all and there-exists we make general claims."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A common mistake is the wrong connective. For all x, if Human of x then Mortal of x uses implies. Writing and would claim that everything is human and mortal. For there-exists we use and: some x is human and happy."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To reason, we need to match general rules against specific facts. Unification does this. To unify Knows(John, x) with Knows(y, Mary), we bind y to John and x to Mary. The result is the most general unifier: it commits to as little as needed."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Forward chaining applies rules to facts to derive new facts until a goal appears. Backward chaining works from the goal, finding rules whose conclusion matches and treating their premises as sub-goals. Prolog is built on backward chaining."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Resolution extends to first-order logic by converting sentences to clauses: remove implications, move negations inward, replace existentials by Skolem constants or functions, drop universal quantifiers. Then resolve clauses that unify. It is refutation-complete."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Building a knowledge base is knowledge engineering. Decide the vocabulary, encode general axioms, add the specific problem, and test by asking queries. Large shared vocabularies, called ontologies, organise categories such as events, time and substances."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which connective goes with for-all?",
+     "options": [
+      "Implies",
+      "And",
+      "Or",
+      "Xor"
+     ],
+     "answer": 0,
+     "explain": "For all x, P(x) implies Q(x)."
+    },
+    {
+     "q": "What does unification produce?",
+     "options": [
+      "A substitution making expressions identical",
+      "A truth table",
+      "A probability",
+      "A heuristic"
+     ],
+     "answer": 0,
+     "explain": "Variable bindings."
+    },
+    {
+     "q": "What is Prolog based on?",
+     "options": [
+      "Backward chaining",
+      "Hill climbing",
+      "Minimax",
+      "Genetic search"
+     ],
+     "answer": 0,
+     "explain": "On Horn clauses."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a Skolem constant?",
+     "a": "A name for an existential witness."
+    },
+    {
+     "q": "What does the occur check prevent?",
+     "a": "A variable binding to a term containing itself."
+    },
+    {
+     "q": "Not-for-all x P equals?",
+     "a": "There exists x not P."
+    },
+    {
+     "q": "Is FOL entailment decidable?",
+     "a": "Only semi-decidable."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Quantifier rules",
+     "intro": "Match each statement to the right form.",
+     "pairs": [
+      [
+       "Everyone who is human is mortal",
+       "For all x: Human(x) implies Mortal(x)"
+      ],
+      [
+       "Someone is human and happy",
+       "Exists x: Human(x) and Happy(x)"
+      ],
+      [
+       "Not everyone is happy",
+       "Exists x: not Happy(x)"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Unify variables",
+     "intro": "Write unify(a, b): a and b are terms. A term is a string (a constant if it starts with an upper-case letter, a variable if lower-case) or a list [functor, arg1, ...]. Return the substitution as a list of [variable, term] pairs sorted by variable name, or the string 'fail'. You may skip the occur check.",
+     "fn": "unify",
+     "starter": "def unify(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "Knows",
+         "John",
+         "x"
+        ],
+        [
+         "Knows",
+         "y",
+         "Mary"
+        ]
+       ],
+       "expect": [
+        [
+         "x",
+         "Mary"
+        ],
+        [
+         "y",
+         "John"
+        ]
+       ]
+      },
+      {
+       "args": [
+        "A",
+        "A"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "A",
+        "B"
+       ],
+       "expect": "fail"
+      },
+      {
+       "args": [
+        [
+         "F",
+         "x",
+         "x"
+        ],
+        [
+         "F",
+         "A",
+         "B"
+        ]
+       ],
+       "expect": "fail"
+      },
+      {
+       "args": [
+        [
+         "F",
+         "x",
+         [
+          "G",
+          "y"
+         ]
+        ],
+        [
+         "F",
+         "A",
+         [
+          "G",
+          "B"
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         "x",
+         "A"
+        ],
+        [
+         "y",
+         "B"
+        ]
+       ]
+      }
+     ],
+     "hint": "Walk through bindings; recurse on arguments.",
+     "solution": "def is_var(t):\n    return isinstance(t, str) and t[0].islower()\n\ndef walk(t, s):\n    while is_var(t) and t in s:\n        t = s[t]\n    return t\n\ndef unify(a, b):\n    s = {}\n    def go(x, y):\n        x = walk(x, s)\n        y = walk(y, s)\n        if x == y:\n            return True\n        if is_var(x):\n            s[x] = y\n            return True\n        if is_var(y):\n            s[y] = x\n            return True\n        if isinstance(x, list) and isinstance(y, list) and len(x) == len(y) and x[0] == y[0]:\n            for i in range(1, len(x)):\n                if not go(x[i], y[i]):\n                    return False\n            return True\n        return False\n    if go(a, b):\n        return [[k, s[k]] for k in sorted(s)]\n    return 'fail'\n"
+    },
+    {
+     "type": "python",
+     "title": "Substitute",
+     "intro": "Write subst(term, s): apply the substitution dict s to term (a string or a list as in unify; variables are lower-case strings). Return the new term; replace variables repeatedly until none are bound.",
+     "fn": "subst",
+     "starter": "def subst(term, s):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "F",
+         "x",
+         "y"
+        ],
+        {
+         "x": "A",
+         "y": [
+          "G",
+          "z"
+         ],
+         "z": "B"
+        }
+       ],
+       "expect": [
+        "F",
+        "A",
+        [
+         "G",
+         "B"
+        ]
+       ]
+      },
+      {
+       "args": [
+        "x",
+        {
+         "x": "A"
+        }
+       ],
+       "expect": "A"
+      },
+      {
+       "args": [
+        "C",
+        {
+         "x": "A"
+        }
+       ],
+       "expect": "C"
+      },
+      {
+       "args": [
+        [
+         "P",
+         [
+          "Q",
+          "x"
+         ]
+        ],
+        {
+         "x": "R"
+        }
+       ],
+       "expect": [
+        "P",
+        [
+         "Q",
+         "R"
+        ]
+       ]
+      }
+     ],
+     "hint": "Recurse into lists; chase bindings.",
+     "solution": "def subst(term, s):\n    if isinstance(term, list):\n        return [term[0]] + [subst(t, s) for t in term[1:]]\n    if term[0].islower() and term in s:\n        return subst(s[term], s)\n    return term\n"
+    }
+   ]
+  },
+  {
+   "title": "Planning and knowledge representation",
+   "maps": [
+    {
+     "title": "Planning",
+     "links": [
+      "Planning | finds | Action sequences",
+      "PDDL | describes | Actions and states",
+      "Precondition | must hold | Before an action",
+      "Effect | changes | The state",
+      "Delete relaxation | gives | A heuristic",
+      "HTN | refines | High-level tasks",
+      "Ontology | structures | Categories"
+     ]
+    }
+   ],
+   "summary": [
+    "Classical planning finds a sequence of actions that turns an initial state into a goal in a deterministic, fully observable world. States are sets of facts. Each action has preconditions and effects that add and delete facts.",
+    "A planner can search forward from the start, backward from the goal, or use heuristics from relaxed problems. Hierarchical task networks plan with high-level tasks refined into primitive steps, and are the practical choice in many applications.",
+    "Knowledge representation organises the world into categories with inheritance, and supports default reasoning that can be withdrawn."
+   ],
+   "glossary": [
+    {
+     "term": "Fact",
+     "def": "An atomic statement that is true in a state."
+    },
+    {
+     "term": "Precondition",
+     "def": "Facts that must hold for an action to apply."
+    },
+    {
+     "term": "Effect",
+     "def": "Facts added and deleted by an action."
+    },
+    {
+     "term": "PDDL",
+     "def": "A standard language for describing planning problems."
+    },
+    {
+     "term": "HTN",
+     "def": "Hierarchical task network planning."
+    },
+    {
+     "term": "Default reasoning",
+     "def": "Concluding something unless told otherwise."
+    }
+   ],
+   "keyPoints": [
+    "A planning problem = initial state, actions, goal.",
+    "An action applies if its preconditions are a subset of the state.",
+    "Applying: remove the delete list, add the add list.",
+    "Forward search is simple; heuristics make it practical.",
+    "The delete-relaxation ignores deletions to estimate distance.",
+    "Nonmonotonic reasoning lets conclusions be withdrawn."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A plan is a recipe: each step needs some things in place and changes the kitchen. Planning is finding the recipe that goes from where you are to the dish you want.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what do preconditions and effects mean for one step?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Planning is search with structure. Instead of an opaque state, the state is a set of facts, such as At(Robot, Kitchen) and Holding(Cup). Each action lists what must be true to do it and what it changes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Take the action Move from X to Y. Its precondition is At(X). Its effect adds At(Y) and deletes At(X). To check whether an action applies, test that its preconditions are all in the state. To apply it, remove the deleted facts and add the new ones."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "With this representation a forward planner searches from the initial state by trying every applicable action. A backward planner starts at the goal and finds actions that could have produced it. Both can use A star with a heuristic."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A good heuristic comes from relaxation. Pretend actions never delete anything. Then each action only helps, and the number of steps to reach the goal in the relaxed problem is a lower bound on the real number. Modern planners are built on such heuristics."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Real tasks are better organised hierarchically. To travel, first book, then go to the airport, then fly. A hierarchical task network stores such recipes and refines abstract tasks into concrete steps. The designer's knowledge shrinks the search."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Knowledge representation also asks how to organise categories. Objects belong to categories, categories form hierarchies and properties are inherited. Defaults such as birds fly are useful even though penguins are exceptions, so reasoning must be able to withdraw a conclusion."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "When does an action apply?",
+     "options": [
+      "When its preconditions are in the state",
+      "When its effects are in the state",
+      "Always",
+      "When the goal is reached"
+     ],
+     "answer": 0,
+     "explain": "Preconditions must hold."
+    },
+    {
+     "q": "What does the delete relaxation ignore?",
+     "options": [
+      "Delete effects",
+      "Preconditions",
+      "The goal",
+      "Costs"
+     ],
+     "answer": 0,
+     "explain": "So actions only add."
+    },
+    {
+     "q": "What is HTN planning?",
+     "options": [
+      "Refining high-level tasks into primitive actions",
+      "Random search",
+      "Gradient descent",
+      "Table lookup"
+     ],
+     "answer": 0,
+     "explain": "Hierarchical decomposition."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is PDDL?",
+     "a": "A planning language."
+    },
+    {
+     "q": "What does an effect do?",
+     "a": "Adds and deletes facts."
+    },
+    {
+     "q": "Why default reasoning?",
+     "a": "To use typical facts."
+    },
+    {
+     "q": "Forward versus backward planning?",
+     "a": "Start-to-goal versus goal-to-start."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "Applying an action",
+     "intro": "Put the steps of applying an action in order.",
+     "items": [
+      "Check that all preconditions are in the state",
+      "Remove the facts on the delete list",
+      "Add the facts on the add list",
+      "Continue from the new state"
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Apply action",
+     "intro": "Write apply_action(state, pre, add, delete): all lists of fact strings. If every fact in pre is in state, return the new state as a sorted list (remove delete, add add, no duplicates); otherwise return the string 'no'.",
+     "fn": "apply_action",
+     "starter": "def apply_action(state, pre, add, delete):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "at_a",
+         "have_key"
+        ],
+        [
+         "at_a"
+        ],
+        [
+         "at_b"
+        ],
+        [
+         "at_a"
+        ]
+       ],
+       "expect": [
+        "at_b",
+        "have_key"
+       ]
+      },
+      {
+       "args": [
+        [
+         "at_a"
+        ],
+        [
+         "at_b"
+        ],
+        [
+         "x"
+        ],
+        []
+       ],
+       "expect": "no"
+      },
+      {
+       "args": [
+        [
+         "at_a"
+        ],
+        [
+         "at_a"
+        ],
+        [
+         "at_a"
+        ],
+        []
+       ],
+       "expect": [
+        "at_a"
+       ]
+      },
+      {
+       "args": [
+        [],
+        [],
+        [
+         "p"
+        ],
+        []
+       ],
+       "expect": [
+        "p"
+       ]
+      }
+     ],
+     "hint": "Check, delete, add, sort.",
+     "solution": "def apply_action(state, pre, add, delete):\n    for p in pre:\n        if p not in state:\n            return 'no'\n    s = set(state)\n    for d in delete:\n        s.discard(d)\n    for a in add:\n        s.add(a)\n    return sorted(s)\n"
+    },
+    {
+     "type": "python",
+     "title": "Plan length",
+     "intro": "Write plan_length(state, goal, actions): actions is a list of [pre, add, delete] lists of fact strings. Use breadth-first search over states (as frozensets or sorted tuples converted to strings). Return the fewest actions needed to reach a state containing every goal fact, or -1.",
+     "fn": "plan_length",
+     "starter": "def plan_length(state, goal, actions):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a"
+        ],
+        [
+         "c"
+        ],
+        [
+         [
+          [
+           "a"
+          ],
+          [
+           "b"
+          ],
+          [
+           "a"
+          ]
+         ],
+         [
+          [
+           "b"
+          ],
+          [
+           "c"
+          ],
+          [
+           "b"
+          ]
+         ]
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        [
+         "a"
+        ],
+        []
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        [
+         "z"
+        ],
+        [
+         [
+          [
+           "a"
+          ],
+          [
+           "b"
+          ],
+          []
+         ]
+        ]
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        [
+         "d"
+        ],
+        [
+         [
+          [
+           "a"
+          ],
+          [
+           "b"
+          ],
+          [
+           "a"
+          ]
+         ],
+         [
+          [
+           "b"
+          ],
+          [
+           "c"
+          ],
+          [
+           "b"
+          ]
+         ],
+         [
+          [
+           "c"
+          ],
+          [
+           "d"
+          ],
+          [
+           "c"
+          ]
+         ],
+         [
+          [
+           "a"
+          ],
+          [
+           "d"
+          ],
+          [
+           "a"
+          ]
+         ]
+        ]
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "BFS on sets of facts.",
+     "solution": "def plan_length(state, goal, actions):\n    start = tuple(sorted(set(state)))\n    seen = {start: 0}\n    queue = [start]\n    i = 0\n    while i < len(queue):\n        cur = queue[i]\n        i += 1\n        ok = True\n        for g in goal:\n            if g not in cur:\n                ok = False\n        if ok:\n            return seen[cur]\n        for pre, add, dele in actions:\n            good = True\n            for p in pre:\n                if p not in cur:\n                    good = False\n            if good:\n                s = set(cur)\n                for d in dele:\n                    s.discard(d)\n                for a in add:\n                    s.add(a)\n                nxt = tuple(sorted(s))\n                if nxt not in seen:\n                    seen[nxt] = seen[cur] + 1\n                    queue.append(nxt)\n    return -1\n"
+    }
+   ]
+  },
+  {
+   "title": "Uncertainty: probability and Bayes' rule",
+   "maps": [
+    {
+     "title": "Probability",
+     "links": [
+      "Probability | measures | Degrees of belief",
+      "Joint distribution | answers | Every query",
+      "Conditional probability | updates | Belief given evidence",
+      "Bayes' rule | reverses | Conditioning",
+      "Independence | factors | The joint",
+      "Naive Bayes | assumes | Conditional independence",
+      "Base rate | must be | Respected"
+     ]
+    }
+   ],
+   "summary": [
+    "An agent rarely knows the whole truth. Probability theory gives it a language for degrees of belief. Combined with utility it yields decision theory.",
+    "From a full joint distribution any query can be answered by summing matching entries and dividing. Bayes' rule reverses a conditional: it turns the chance of symptoms given a disease into the chance of the disease given symptoms.",
+    "The labs compute posteriors and a naive Bayes score."
+   ],
+   "glossary": [
+    {
+     "term": "Prior",
+     "def": "Belief before seeing evidence."
+    },
+    {
+     "term": "Posterior",
+     "def": "Belief after seeing evidence."
+    },
+    {
+     "term": "Conditional probability",
+     "def": "P(a | b) = P(a and b) / P(b)."
+    },
+    {
+     "term": "Independence",
+     "def": "Knowing one tells nothing about the other."
+    },
+    {
+     "term": "Likelihood",
+     "def": "P(evidence | hypothesis)."
+    },
+    {
+     "term": "Base rate",
+     "def": "How common the hypothesis is overall."
+    }
+   ],
+   "keyPoints": [
+    "Probabilities lie in 0..1 and sum to 1 over possible worlds.",
+    "P(a or b) = P(a) + P(b) - P(a and b).",
+    "Bayes: P(h | e) = P(e | h) P(h) / P(e).",
+    "Ignoring the base rate causes many errors.",
+    "Full joint tables grow as 2^n.",
+    "Naive Bayes: P(cause, e1..en) = P(cause) times the product of P(ei | cause)."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Probability is honest guessing with numbers. A rare disease and a good-but-imperfect test: most positives are false alarms because so few people are ill to begin with.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why is a positive result on a rare disease usually still unlikely to be real?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Logic fails when we are not sure. A patient with a toothache may have a cavity, or gum disease, or something else. Probability expresses how likely each is, given what we know."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The full joint distribution lists the probability of every combination of values. Given it, we can answer any question. To find the probability of a cavity given a toothache, sum the entries with both and divide by the sum of entries with a toothache."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "P(h \\mid e) \\;=\\; \\frac{P(e \\mid h)\\,P(h)}{P(e)}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is Bayes' rule. It is useful because diagnostic knowledge, the chance of a disease given symptoms, is hard to collect, while causal knowledge, the chance of symptoms given the disease, is easier and more stable."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Here is a worked case. A disease affects 1 person in 10,000. A test catches it 99 percent of the time but gives a false alarm 1 percent of the time. If you test positive, the chance you are ill is about 1 percent. In 10,000 people there is one true positive and about 100 false positives.",
+      "The base rate dominates."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Full joint tables are too large, so we use independence. Naive Bayes assumes the effects are independent given the cause, so the joint is the prior times a product of simple likelihoods. It is crude, but works well for tasks like spam filtering."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does Bayes' rule give?",
+     "options": [
+      "P(h | e) from P(e | h) and priors",
+      "P(e) only",
+      "A heuristic",
+      "A search tree"
+     ],
+     "answer": 0,
+     "explain": "It reverses conditioning."
+    },
+    {
+     "q": "In the rare disease example, why is the posterior small?",
+     "options": [
+      "The base rate is tiny",
+      "The test is random",
+      "Probabilities do not apply",
+      "False alarms are impossible"
+     ],
+     "answer": 0,
+     "explain": "Few ill people, many healthy."
+    },
+    {
+     "q": "What does naive Bayes assume?",
+     "options": [
+      "Effects are independent given the cause",
+      "Causes are equal",
+      "No priors",
+      "Effects are the same"
+     ],
+     "answer": 0,
+     "explain": "That keeps the model small."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a prior?",
+     "a": "Belief before evidence."
+    },
+    {
+     "q": "What is a likelihood?",
+     "a": "P(evidence | hypothesis)."
+    },
+    {
+     "q": "Why full joints are hard?",
+     "a": "They grow exponentially."
+    },
+    {
+     "q": "What does normalising do?",
+     "a": "Makes values sum to one."
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Bayes",
+     "text": "Bayes' rule multiplies the {{prior}} by the {{likelihood}} and divides by the probability of the evidence."
+    },
+    {
+     "type": "python",
+     "title": "Posterior",
+     "intro": "Write posterior(prior, sens, fpr): prior = P(disease); sens = P(positive | disease); fpr = P(positive | no disease). Return P(disease | positive), rounded to 9 decimals.",
+     "fn": "posterior",
+     "starter": "def posterior(prior, sens, fpr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.0001,
+        0.99,
+        0.01
+       ],
+       "expect": 0.009803922,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.5,
+        0.9,
+        0.1
+       ],
+       "expect": 0.9,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.01,
+        0.8,
+        0.096
+       ],
+       "expect": 0.077639752,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.3,
+        1.0,
+        0.0
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Total probability in the denominator.",
+     "solution": "def posterior(prior, sens, fpr):\n    num = sens * prior\n    den = num + fpr * (1 - prior)\n    return round(num / den, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Naive Bayes class",
+     "intro": "Write nb_classify(priors, likes, features): priors is a dict class to probability; likes is a dict class to a dict feature to P(feature | class); features is a list of observed feature names. Return the class with the highest prior times the product of likelihoods (ties: first in dict order).",
+     "fn": "nb_classify",
+     "starter": "def nb_classify(priors, likes, features):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "spam": 0.4,
+         "ham": 0.6
+        },
+        {
+         "spam": {
+          "free": 0.5,
+          "meet": 0.05
+         },
+         "ham": {
+          "free": 0.05,
+          "meet": 0.4
+         }
+        },
+        [
+         "free"
+        ]
+       ],
+       "expect": "spam"
+      },
+      {
+       "args": [
+        {
+         "spam": 0.4,
+         "ham": 0.6
+        },
+        {
+         "spam": {
+          "free": 0.5,
+          "meet": 0.05
+         },
+         "ham": {
+          "free": 0.05,
+          "meet": 0.4
+         }
+        },
+        [
+         "meet"
+        ]
+       ],
+       "expect": "ham"
+      },
+      {
+       "args": [
+        {
+         "a": 0.5,
+         "b": 0.5
+        },
+        {
+         "a": {
+          "x": 0.9,
+          "y": 0.1
+         },
+         "b": {
+          "x": 0.2,
+          "y": 0.8
+         }
+        },
+        [
+         "x",
+         "y"
+        ]
+       ],
+       "expect": "b"
+      }
+     ],
+     "hint": "Multiply prior by each likelihood.",
+     "solution": "def nb_classify(priors, likes, features):\n    best = None\n    bs = -1.0\n    for c in priors:\n        s = priors[c]\n        for f in features:\n            s = s * likes[c][f]\n        if s > bs:\n            bs = s\n            best = c\n    return best\n"
+    }
+   ]
+  },
+  {
+   "title": "Bayesian networks",
+   "maps": [
+    {
+     "title": "Bayes nets",
+     "links": [
+      "Bayesian network | is | A directed acyclic graph",
+      "CPT | quantifies | Each node",
+      "Parents | cause | Their child",
+      "D-separation | tests | Independence",
+      "Enumeration | sums out | Hidden variables",
+      "Variable elimination | speeds | Exact inference",
+      "Sampling | approximates | Posteriors"
+     ]
+    }
+   ],
+   "summary": [
+    "A Bayesian network shows how variables depend on one another. Each node is a variable with a table giving its probability conditioned on its parents. The network represents the full joint compactly as a product of those local tables.",
+    "To answer a query, sum over the hidden variables. Variable elimination does this efficiently. For networks that are too large, sampling methods approximate the answer.",
+    "The labs compute a joint probability and answer a query by enumeration."
+   ],
+   "glossary": [
+    {
+     "term": "Node",
+     "def": "A random variable."
+    },
+    {
+     "term": "CPT",
+     "def": "Conditional probability table for a node given its parents."
+    },
+    {
+     "term": "Parent",
+     "def": "A node with an arrow into another."
+    },
+    {
+     "term": "Hidden variable",
+     "def": "A variable that is neither evidence nor the query."
+    },
+    {
+     "term": "Markov blanket",
+     "def": "Parents, children and the children's other parents."
+    },
+    {
+     "term": "Explaining away",
+     "def": "Evidence for one cause lowers belief in another."
+    }
+   ],
+   "keyPoints": [
+    "The joint is the product of P(X | parents(X)).",
+    "A network with n Boolean nodes and at most k parents needs n times 2^k numbers.",
+    "Enumeration sums the joint over hidden variables.",
+    "A node is independent of non-descendants given its parents.",
+    "Exact inference is hard in general; easy on trees.",
+    "Likelihood weighting and Gibbs sampling approximate."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A Bayesian network is a map of what causes what, with a small table at each place. Together the tables answer questions like: the alarm rang, was it a burglar?",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what is explaining away?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine a burglar alarm. A burglary or an earthquake may set it off. If it rings, either neighbour may call you. A Bayesian network draws arrows from burglary and earthquake to alarm, and from alarm to each call."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Each node stores a table. Burglary has a small prior. The alarm's table gives its chance of ringing for each combination of burglary and earthquake. A call's table depends only on the alarm."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "P(x_1,\\dots,x_n) \\;=\\; \\prod_{i} P\\bigl(x_i \\mid \\mathrm{parents}(x_i)\\bigr)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "To find the chance of a burglary given that both neighbours called, enumerate: sum the joint over every value of the hidden variables (earthquake and alarm), then normalise across burglary or no burglary."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The network also shows independence. If you already know the alarm state, the calls tell you nothing more about the burglary. And when the alarm is observed, burglary and earthquake become competing explanations: hearing about an earthquake makes a burglary less likely. This is explaining away."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Variable elimination avoids repeating work by storing intermediate tables and summing out variables one at a time.",
+      "When exact inference is too costly, approximate methods draw samples: likelihood weighting fixes the evidence and weights each sample, and Gibbs sampling walks through states by resampling one variable at a time."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How does a Bayes net define the joint?",
+     "options": [
+      "Product of each node given its parents",
+      "Sum of the priors",
+      "Maximum of tables",
+      "Average of nodes"
+     ],
+     "answer": 0,
+     "explain": "The chain rule with independence."
+    },
+    {
+     "q": "What is explaining away?",
+     "options": [
+      "A cause becomes less likely when another is confirmed",
+      "Causes cancel",
+      "Evidence is ignored",
+      "A node is removed"
+     ],
+     "answer": 0,
+     "explain": "Competing explanations."
+    },
+    {
+     "q": "What does enumeration do with hidden variables?",
+     "options": [
+      "Sums over them",
+      "Ignores them",
+      "Fixes them to zero",
+      "Takes the maximum"
+     ],
+     "answer": 0,
+     "explain": "Marginalisation."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a CPT?",
+     "a": "A conditional probability table."
+    },
+    {
+     "q": "What is a Markov blanket?",
+     "a": "Parents, children and co-parents."
+    },
+    {
+     "q": "What is Gibbs sampling?",
+     "a": "Resampling one variable at a time."
+    },
+    {
+     "q": "What is d-separation?",
+     "a": "A graph test for independence."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "Answering a query",
+     "intro": "Put the steps of enumeration in order.",
+     "items": [
+      "Fix the evidence variables",
+      "For each query value, sum the joint over hidden variables",
+      "Compute each joint term as a product of CPT entries",
+      "Normalise the results so they sum to one"
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Joint probability",
+     "intro": "Write joint(cpt, parents, values): cpt maps a variable to a dict from a string key to P(variable true). The key is the parents' values joined as 'T'/'F' letters in the order given by parents[variable] (empty string if no parents). values maps variable to true/false. Return the probability of the full assignment, rounded to 9 decimals.",
+     "fn": "joint",
+     "starter": "def joint(cpt, parents, values):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "b": {
+          "": 0.01
+         },
+         "e": {
+          "": 0.02
+         },
+         "a": {
+          "TT": 0.95,
+          "TF": 0.94,
+          "FT": 0.29,
+          "FF": 0.001
+         }
+        },
+        {
+         "b": [],
+         "e": [],
+         "a": [
+          "b",
+          "e"
+         ]
+        },
+        {
+         "b": true,
+         "e": false,
+         "a": true
+        }
+       ],
+       "expect": 0.009212,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        {
+         "b": {
+          "": 0.01
+         },
+         "e": {
+          "": 0.02
+         },
+         "a": {
+          "TT": 0.95,
+          "TF": 0.94,
+          "FT": 0.29,
+          "FF": 0.001
+         }
+        },
+        {
+         "b": [],
+         "e": [],
+         "a": [
+          "b",
+          "e"
+         ]
+        },
+        {
+         "b": false,
+         "e": false,
+         "a": false
+        }
+       ],
+       "expect": 0.9692298,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        {
+         "x": {
+          "": 0.5
+         },
+         "y": {
+          "T": 0.9,
+          "F": 0.2
+         }
+        },
+        {
+         "x": [],
+         "y": [
+          "x"
+         ]
+        },
+        {
+         "x": true,
+         "y": true
+        }
+       ],
+       "expect": 0.45,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Multiply each node's probability.",
+     "solution": "def joint(cpt, parents, values):\n    p = 1.0\n    for v in cpt:\n        key = ''\n        for q in parents[v]:\n            if values[q]:\n                key += 'T'\n            else:\n                key += 'F'\n        pt = cpt[v][key]\n        if values[v]:\n            p = p * pt\n        else:\n            p = p * (1 - pt)\n    return round(p, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Burglary query",
+     "intro": "Write p_burglary(pb, pe, pa, pj, pm): pb = P(burglary), pe = P(earthquake), pa = a dict with keys 'TT','TF','FT','FF' (burglary then earthquake) for P(alarm), pj and pm are dicts with keys 'T','F' for P(John calls | alarm) and P(Mary calls | alarm). Return P(burglary | John and Mary both call), rounded to 6 decimals.",
+     "fn": "p_burglary",
+     "starter": "def p_burglary(pb, pe, pa, pj, pm):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.001,
+        0.002,
+        {
+         "TT": 0.95,
+         "TF": 0.94,
+         "FT": 0.29,
+         "FF": 0.001
+        },
+        {
+         "T": 0.9,
+         "F": 0.05
+        },
+        {
+         "T": 0.7,
+         "F": 0.01
+        }
+       ],
+       "expect": 0.284172,
+       "approx": 1e-06
+      }
+     ],
+     "hint": "Enumerate e and a; normalise over b.",
+     "solution": "def p_burglary(pb, pe, pa, pj, pm):\n    tot = {}\n    for b in (True, False):\n        s = 0.0\n        for e in (True, False):\n            for a in (True, False):\n                p = pb if b else 1 - pb\n                p = p * (pe if e else 1 - pe)\n                key = ('T' if b else 'F') + ('T' if e else 'F')\n                p = p * (pa[key] if a else 1 - pa[key])\n                ak = 'T' if a else 'F'\n                p = p * pj[ak] * pm[ak]\n                s += p\n        tot[b] = s\n    return round(tot[True] / (tot[True] + tot[False]), 6)\n"
+    }
+   ]
+  },
+  {
+   "title": "Reasoning over time",
+   "maps": [
+    {
+     "title": "Time",
+     "links": [
+      "Markov assumption | limits | History",
+      "Filtering | estimates | Current state",
+      "Prediction | looks | Ahead",
+      "HMM | has | One hidden state",
+      "Kalman filter | handles | Linear Gaussian",
+      "Particle filter | uses | Samples",
+      "Smoothing | revises | Past beliefs"
+     ]
+    }
+   ],
+   "summary": [
+    "Worlds change, and an agent must track hidden state over time from noisy observations. Temporal models assume the state depends on a bounded past (the Markov assumption) and each observation depends only on the current state.",
+    "Filtering computes the belief about the present from all evidence so far, and can be updated recursively in constant time per step. Hidden Markov models, Kalman filters and particle filters are the main tools.",
+    "The labs write one step of a prediction and a filtering update."
+   ],
+   "glossary": [
+    {
+     "term": "Hidden state",
+     "def": "What we want to know but cannot see."
+    },
+    {
+     "term": "Transition model",
+     "def": "P(next state | current state)."
+    },
+    {
+     "term": "Sensor model",
+     "def": "P(observation | state)."
+    },
+    {
+     "term": "Filtering",
+     "def": "Estimating the current state from all evidence."
+    },
+    {
+     "term": "HMM",
+     "def": "Hidden Markov model with one discrete state variable."
+    },
+    {
+     "term": "Particle filter",
+     "def": "Filtering by tracking weighted samples."
+    }
+   ],
+   "keyPoints": [
+    "Markov assumption: the present depends on a bounded past.",
+    "Sensor assumption: observation depends on the current state only.",
+    "Filtering update: predict, then weight by the evidence, then normalise.",
+    "Smoothing uses future evidence to improve past estimates.",
+    "Kalman filters: linear dynamics with Gaussian noise.",
+    "Particle filters: propagate, weight, resample."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Tracking something hidden over time is like guessing the weather from umbrellas. Each day you predict, then adjust your guess by what you actually saw.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what are the predict and update steps?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A guard in a windowless room wants to know whether it is raining outside. The only clue each day is whether the visitor carries an umbrella. The weather is a hidden state that changes slowly; the umbrella is a noisy observation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A model needs two tables. The transition model says how likely tomorrow's weather is, given today's. The sensor model says how likely an umbrella is, given the weather. With the Markov assumption, tomorrow depends on today only, not on the whole past."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "P(X_{t+1}\\mid e_{1:t+1}) \\;\\propto\\; P(e_{t+1}\\mid X_{t+1}) \\sum_{x_t} P(X_{t+1}\\mid x_t)\\,P(x_t\\mid e_{1:t})"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is the filtering update. First predict: push the current belief through the transition model. Then update: multiply by how well each state explains the new observation, and normalise. The cost per step does not grow with time, so an agent can filter forever."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Other tasks use the same machinery. Prediction runs the transition model forward with no new evidence. Smoothing improves an estimate of the past using later evidence. The most likely sequence, found by the Viterbi algorithm, is used in speech recognition."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When the state is continuous, a Kalman filter keeps a Gaussian belief and is exact for linear dynamics. For nonlinear or multimodal problems, a particle filter keeps many samples: it moves each, weights it by the evidence, and resamples. Robots use particle filters to locate themselves on maps."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the Markov assumption say?",
+     "options": [
+      "The present depends only on a bounded past",
+      "The future is random",
+      "Nothing changes",
+      "All history matters"
+     ],
+     "answer": 0,
+     "explain": "That keeps the model small."
+    },
+    {
+     "q": "What are the two steps of a filtering update?",
+     "options": [
+      "Predict, then weight by evidence",
+      "Sample, then sort",
+      "Search, then prune",
+      "Train, then test"
+     ],
+     "answer": 0,
+     "explain": "Then normalise."
+    },
+    {
+     "q": "What does a particle filter track?",
+     "options": [
+      "Weighted samples",
+      "A single mean",
+      "A table of rules",
+      "A tree"
+     ],
+     "answer": 0,
+     "explain": "Propagate, weight, resample."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is smoothing?",
+     "a": "Revising past estimates with later evidence."
+    },
+    {
+     "q": "What is the sensor model?",
+     "a": "P(observation | state)."
+    },
+    {
+     "q": "Why can filtering run forever?",
+     "a": "Constant cost per step."
+    },
+    {
+     "q": "Where are Kalman filters exact?",
+     "a": "Linear Gaussian systems."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Tasks",
+     "intro": "Match each task with what it computes.",
+     "pairs": [
+      [
+       "Filtering",
+       "Current state from evidence so far"
+      ],
+      [
+       "Prediction",
+       "Future state"
+      ],
+      [
+       "Smoothing",
+       "Past state using later evidence"
+      ],
+      [
+       "Viterbi",
+       "Most likely state sequence"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Predict step",
+     "intro": "Write predict(belief, trans): belief is a list of probabilities over states; trans[i][j] = P(next = j | current = i). Return the predicted belief list, each rounded to 9 decimals.",
+     "fn": "predict",
+     "starter": "def predict(belief, trans):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         [
+          0.7,
+          0.3
+         ],
+         [
+          0.3,
+          0.7
+         ]
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ],
+        [
+         [
+          0.7,
+          0.3
+         ],
+         [
+          0.3,
+          0.7
+         ]
+        ]
+       ],
+       "expect": [
+        0.7,
+        0.3
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.3,
+         0.5
+        ],
+        [
+         [
+          0.5,
+          0.25,
+          0.25
+         ],
+         [
+          0.2,
+          0.6,
+          0.2
+         ],
+         [
+          0.1,
+          0.1,
+          0.8
+         ]
+        ]
+       ],
+       "expect": [
+        0.21,
+        0.28,
+        0.51
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Sum over previous states.",
+     "solution": "def predict(belief, trans):\n    n = len(belief)\n    out = []\n    for j in range(n):\n        s = 0.0\n        for i in range(n):\n            s += belief[i] * trans[i][j]\n        out.append(round(s, 9))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Filter step",
+     "intro": "Write filter_step(belief, trans, sensor, obs): sensor[j][o] = P(observation o | state j); obs is the observed index. Predict with trans, weight by the observation, normalise; return the new belief, each rounded to 9 decimals.",
+     "fn": "filter_step",
+     "starter": "def filter_step(belief, trans, sensor, obs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         [
+          0.7,
+          0.3
+         ],
+         [
+          0.3,
+          0.7
+         ]
+        ],
+        [
+         [
+          0.9,
+          0.1
+         ],
+         [
+          0.2,
+          0.8
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        0.818181818,
+        0.181818182
+       ],
+       "approx": 1e-08
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         [
+          0.7,
+          0.3
+         ],
+         [
+          0.3,
+          0.7
+         ]
+        ],
+        [
+         [
+          0.9,
+          0.1
+         ],
+         [
+          0.2,
+          0.8
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        0.111111111,
+        0.888888889
+       ],
+       "approx": 1e-08
+      },
+      {
+       "args": [
+        [
+         0.818181818,
+         0.181818182
+        ],
+        [
+         [
+          0.7,
+          0.3
+         ],
+         [
+          0.3,
+          0.7
+         ]
+        ],
+        [
+         [
+          0.9,
+          0.1
+         ],
+         [
+          0.2,
+          0.8
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        0.883357041,
+        0.116642959
+       ],
+       "approx": 1e-08
+      }
+     ],
+     "hint": "Predict, weight, normalise.",
+     "solution": "def filter_step(belief, trans, sensor, obs):\n    n = len(belief)\n    pred = []\n    for j in range(n):\n        s = 0.0\n        for i in range(n):\n            s += belief[i] * trans[i][j]\n        pred.append(s)\n    w = [pred[j] * sensor[j][obs] for j in range(n)]\n    tot = sum(w)\n    return [round(x / tot, 9) for x in w]\n"
+    }
+   ]
+  },
+  {
+   "title": "Making decisions: utility and MDPs",
+   "maps": [
+    {
+     "title": "Decisions",
+     "links": [
+      "Utility | ranks | Outcomes",
+      "Expected utility | guides | Choices",
+      "Risk aversion | bends | Utility of money",
+      "MDP | models | Sequential decisions",
+      "Policy | maps | States to actions",
+      "Bellman equation | defines | Utility",
+      "Value iteration | solves | MDPs"
+     ]
+    }
+   ],
+   "summary": [
+    "A rational agent chooses the action with the highest expected utility: the sum over outcomes of probability times utility. Utility of money is usually concave, which explains risk aversion.",
+    "When decisions come in sequence, we use a Markov decision process: states, actions, a transition model and rewards. The solution is a policy that gives an action for each state. Value iteration computes it by repeatedly applying the Bellman update.",
+    "The labs write expected utility and value iteration."
+   ],
+   "glossary": [
+    {
+     "term": "Utility",
+     "def": "A number that says how much an outcome is preferred."
+    },
+    {
+     "term": "Expected utility",
+     "def": "Probability-weighted average of utilities."
+    },
+    {
+     "term": "MDP",
+     "def": "Markov decision process."
+    },
+    {
+     "term": "Policy",
+     "def": "A rule that gives an action for each state."
+    },
+    {
+     "term": "Discount factor",
+     "def": "Gamma below one: how much future rewards count."
+    },
+    {
+     "term": "Bellman equation",
+     "def": "U(s) = R(s) + gamma max over a of sum P(s' | s, a) U(s')."
+    }
+   ],
+   "keyPoints": [
+    "Maximise expected utility.",
+    "A concave utility of money means risk aversion.",
+    "A policy, not a plan, is the solution when outcomes are uncertain.",
+    "Value iteration repeats the Bellman update until values settle.",
+    "Policy iteration alternates evaluating and improving a policy.",
+    "A POMDP is an MDP with hidden state: plan over belief states."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A decision under uncertainty weighs each outcome by how likely and how good it is. A series of decisions needs a rule for every situation: a policy, not a single plan.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why is a policy needed instead of a plan?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Suppose you can take a sure 40 dollars or a coin flip that pays 100 or nothing. The coin flip has an expected value of 50, yet many people take the sure 40. That is not irrational: the tenth extra dollar is worth less than the first. Utility captures this: it is a curve, not a straight line."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "EU(a) \\;=\\; \\sum_{s'} P(s' \\mid a)\\,U(s')"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The principle of maximum expected utility says to pick the action with the largest value of this sum. It follows from a few reasonable axioms about preferences, such as transitivity.",
+      "People do violate the axioms in practice, as the Allais paradox shows, but the principle remains the design standard for machines."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Many problems need a sequence of decisions in an uncertain world. A Markov decision process has states, actions, a transition model P(s' | s, a), and a reward per state. Because outcomes are uncertain, the answer is a policy: what to do in every state we might reach."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "U(s) \\;=\\; R(s) + \\gamma \\max_a \\sum_{s'} P(s' \\mid s,a)\\,U(s')"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is the Bellman equation. The utility of a state is its reward plus the discounted expected utility of the best action. Value iteration starts with all utilities at zero and applies the equation to every state again and again.",
+      "It converges because the update shrinks differences by the factor gamma. The best policy then picks the action that achieves the maximum."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What should a rational agent maximise?",
+     "options": [
+      "Expected utility",
+      "The best outcome",
+      "Expected money",
+      "Probability only"
+     ],
+     "answer": 0,
+     "explain": "Probability-weighted utility."
+    },
+    {
+     "q": "What is the solution of an MDP?",
+     "options": [
+      "A policy",
+      "A single plan",
+      "A heuristic",
+      "A proof"
+     ],
+     "answer": 0,
+     "explain": "An action for every state."
+    },
+    {
+     "q": "What does the discount factor do?",
+     "options": [
+      "Weights future rewards less",
+      "Increases rewards",
+      "Removes uncertainty",
+      "Fixes the policy"
+     ],
+     "answer": 0,
+     "explain": "Gamma below one."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is risk aversion?",
+     "a": "Preferring a sure payoff over a gamble."
+    },
+    {
+     "q": "What is policy iteration?",
+     "a": "Alternate evaluating and improving."
+    },
+    {
+     "q": "What is a POMDP?",
+     "a": "An MDP with hidden state."
+    },
+    {
+     "q": "Why does value iteration converge?",
+     "a": "The update is a contraction."
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Utility",
+     "text": "A rational agent chooses the action with the highest {{expected}} {{utility}}."
+    },
+    {
+     "type": "python",
+     "title": "Expected utility",
+     "intro": "Write expected_utility(outcomes): outcomes is a list of [probability, utility]. Return the expected utility rounded to 9 decimals.",
+     "fn": "expected_utility",
+     "starter": "def expected_utility(outcomes):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0.5,
+          100
+         ],
+         [
+          0.5,
+          0
+         ]
+        ]
+       ],
+       "expect": 50.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          1.0,
+          40
+         ]
+        ]
+       ],
+       "expect": 40.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          0.2,
+          10
+         ],
+         [
+          0.3,
+          -5
+         ],
+         [
+          0.5,
+          2
+         ]
+        ]
+       ],
+       "expect": 1.5,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Sum of p times u.",
+     "solution": "def expected_utility(outcomes):\n    s = 0.0\n    for p, u in outcomes:\n        s += p * u\n    return round(s, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Value iteration",
+     "intro": "Write value_iteration(P, R, gamma, iters): P[s][a] is a list of [probability, next_state]; R[s] the reward; run iters rounds of the Bellman update from zero values (use the values from the previous round for all states). Return the final values rounded to 6 decimals.",
+     "fn": "value_iteration",
+     "starter": "def value_iteration(P, R, gamma, iters):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           [
+            1.0,
+            1
+           ]
+          ],
+          [
+           [
+            1.0,
+            0
+           ]
+          ]
+         ],
+         [
+          [
+           [
+            1.0,
+            1
+           ]
+          ]
+         ]
+        ],
+        [
+         0.0,
+         1.0
+        ],
+        0.9,
+        50
+       ],
+       "expect": [
+        8.948462,
+        9.948462
+       ],
+       "approx": 1e-05
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           [
+            1.0,
+            0
+           ]
+          ]
+         ]
+        ],
+        [
+         2.0
+        ],
+        0.5,
+        30
+       ],
+       "expect": [
+        4.0
+       ],
+       "approx": 1e-05
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           [
+            0.8,
+            1
+           ],
+           [
+            0.2,
+            0
+           ]
+          ]
+         ],
+         [
+          [
+           [
+            1.0,
+            1
+           ]
+          ]
+         ]
+        ],
+        [
+         0.0,
+         1.0
+        ],
+        0.9,
+        100
+       ],
+       "expect": [
+        8.780222,
+        9.999734
+       ],
+       "approx": 1e-05
+      }
+     ],
+     "hint": "Update from the previous round's values.",
+     "solution": "def value_iteration(P, R, gamma, iters):\n    n = len(R)\n    U = [0.0] * n\n    for _ in range(iters):\n        new = []\n        for s in range(n):\n            best = None\n            for a in P[s]:\n                q = 0.0\n                for p, s2 in a:\n                    q += p * U[s2]\n                if best is None or q > best:\n                    best = q\n            if best is None:\n                best = 0.0\n            new.append(R[s] + gamma * best)\n        U = new\n    return [round(x, 6) for x in U]\n"
+    }
+   ]
+  },
+  {
+   "title": "Multiple agents and game theory",
+   "maps": [
+    {
+     "title": "Game theory",
+     "links": [
+      "Game | has | Players, actions, payoffs",
+      "Dominant strategy | beats | All alternatives",
+      "Nash equilibrium | is | No profitable deviation",
+      "Prisoner's dilemma | shows | Cooperation problem",
+      "Auction | allocates | Goods by bids",
+      "Vickrey auction | rewards | Truthful bids",
+      "Mechanism design | shapes | Rules"
+     ]
+    }
+   ],
+   "summary": [
+    "When several agents act, each one's best choice depends on the others. Game theory studies this. A Nash equilibrium is a set of strategies where no player gains by changing alone.",
+    "The prisoner's dilemma shows that individually rational choices can leave everyone worse off. Mechanism design flips the question: choose the rules so that self-interested agents produce a good result. A Vickrey auction makes honest bidding the best strategy.",
+    "The labs find equilibria and run an auction."
+   ],
+   "glossary": [
+    {
+     "term": "Strategy",
+     "def": "A rule for choosing actions."
+    },
+    {
+     "term": "Payoff",
+     "def": "What a player receives from an outcome."
+    },
+    {
+     "term": "Dominant strategy",
+     "def": "Best whatever others do."
+    },
+    {
+     "term": "Nash equilibrium",
+     "def": "No player can gain by changing alone."
+    },
+    {
+     "term": "Mechanism",
+     "def": "The rules of an interaction."
+    },
+    {
+     "term": "Vickrey auction",
+     "def": "Highest bidder wins and pays the second-highest bid."
+    }
+   ],
+   "keyPoints": [
+    "Normal form: a table of payoffs.",
+    "Dominant strategies are the simplest solution.",
+    "Not every game has a pure Nash equilibrium; mixed strategies always exist.",
+    "In the prisoner's dilemma defection is dominant, yet cooperation pays more.",
+    "Vickrey: bidding your true value is dominant.",
+    "Social choice: Arrow's theorem limits fair voting."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A game is a situation where my best move depends on yours. In the prisoner's dilemma, each does best by betraying, yet both would be better off trusting. Rule design can fix this.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what is a Nash equilibrium in plain words?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In a game, a player's payoff depends on everyone's choices. Take two suspects held apart. If both stay silent they get a light sentence. If one confesses while the other stays silent, the confessor goes free. If both confess, both get a medium sentence."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Whatever the other does, confessing is better for you. It is a dominant strategy. So both confess, and both get the medium sentence, although mutual silence would have been better for both. Individual rationality leads to a collective loss."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A Nash equilibrium is a profile of strategies such that no player can do better by changing their own strategy while the others stay put. In the prisoner's dilemma, both confessing is the unique equilibrium.",
+      "Some games, like rock-paper-scissors, have no equilibrium in pure strategies, only in mixed ones where players randomise."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Repeating the game changes the picture. When players meet many times, strategies such as tit-for-tat, which cooperates first and then copies the other's last move, can sustain cooperation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Mechanism design is game theory in reverse: pick the rules to get the outcome you want. In a sealed-bid second-price auction, the winner pays the second-highest bid.",
+      "Then bidding anything other than your true value cannot help you: a lower bid risks losing a profitable win, a higher bid risks winning at a loss. Truth telling is a dominant strategy."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When people vote, the picture is hard. Arrow's theorem shows that no ranked voting rule satisfies a short list of fairness conditions at the same time. The best we can do is choose which compromises to accept."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a Nash equilibrium?",
+     "options": [
+      "No player gains by deviating alone",
+      "The best joint outcome",
+      "A random choice",
+      "A dominant strategy for all"
+     ],
+     "answer": 0,
+     "explain": "Each strategy is a best reply."
+    },
+    {
+     "q": "Why is the prisoner's dilemma a dilemma?",
+     "options": [
+      "Defection is dominant yet both lose",
+      "There is no payoff",
+      "It has no equilibrium",
+      "Players cannot choose"
+     ],
+     "answer": 0,
+     "explain": "Mutual cooperation is better for both."
+    },
+    {
+     "q": "What is the best bid in a Vickrey auction?",
+     "options": [
+      "Your true value",
+      "Half your value",
+      "Double your value",
+      "Zero"
+     ],
+     "answer": 0,
+     "explain": "It is a dominant strategy."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is tit-for-tat?",
+     "a": "Cooperate, then copy the last move."
+    },
+    {
+     "q": "What is a mixed strategy?",
+     "a": "Randomising over actions."
+    },
+    {
+     "q": "What is mechanism design?",
+     "a": "Designing rules for desired outcomes."
+    },
+    {
+     "q": "What does Arrow's theorem show?",
+     "a": "No perfect ranked voting rule."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Game terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Dominant strategy",
+       "Best whatever others do"
+      ],
+      [
+       "Nash equilibrium",
+       "No gain from changing alone"
+      ],
+      [
+       "Mixed strategy",
+       "Randomise over actions"
+      ],
+      [
+       "Vickrey auction",
+       "Winner pays second price"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Pure Nash equilibria",
+     "intro": "Write nash(A, B): A[i][j] is the row player's payoff and B[i][j] the column player's when row plays i and column plays j. Return the list of [i, j] pairs that are pure Nash equilibria, in row-major order.",
+     "fn": "nash",
+     "starter": "def nash(A, B):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          3,
+          0
+         ],
+         [
+          5,
+          1
+         ]
+        ],
+        [
+         [
+          3,
+          5
+         ],
+         [
+          0,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          2
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          -1
+         ],
+         [
+          -1,
+          1
+         ]
+        ],
+        [
+         [
+          -1,
+          1
+         ],
+         [
+          1,
+          -1
+         ]
+        ]
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Check both players' best replies.",
+     "solution": "def nash(A, B):\n    out = []\n    for i in range(len(A)):\n        for j in range(len(A[0])):\n            best_row = True\n            for k in range(len(A)):\n                if A[k][j] > A[i][j]:\n                    best_row = False\n            best_col = True\n            for k in range(len(A[0])):\n                if B[i][k] > B[i][j]:\n                    best_col = False\n            if best_row and best_col:\n                out.append([i, j])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Vickrey auction",
+     "intro": "Write vickrey(bids): bids is a list of at least two numbers. Return [index of the winner (lowest index if tied), price paid], where the price is the second-highest bid.",
+     "fn": "vickrey",
+     "starter": "def vickrey(bids):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         10,
+         20,
+         15
+        ]
+       ],
+       "expect": [
+        1,
+        15
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         5
+        ]
+       ],
+       "expect": [
+        0,
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         7,
+         3,
+         9,
+         8
+        ]
+       ],
+       "expect": [
+        2,
+        8
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ]
+       ],
+       "expect": [
+        1,
+        1
+       ]
+      }
+     ],
+     "hint": "Find the max, then the best of the rest.",
+     "solution": "def vickrey(bids):\n    w = 0\n    for i in range(len(bids)):\n        if bids[i] > bids[w]:\n            w = i\n    second = None\n    for i in range(len(bids)):\n        if i != w and (second is None or bids[i] > second):\n            second = bids[i]\n    return [w, second]\n"
+    }
+   ]
+  },
+  {
+   "title": "Learning from examples",
+   "maps": [
+    {
+     "title": "Learning",
+     "links": [
+      "Supervised learning | maps | Inputs to outputs",
+      "Overfitting | fits | Noise",
+      "Cross-validation | estimates | Generalisation",
+      "Decision tree | splits on | Information gain",
+      "Linear regression | minimises | Squared error",
+      "Regularisation | penalises | Complexity",
+      "Ensembles | combine | Many models"
+     ]
+    }
+   ],
+   "summary": [
+    "Learning lets an agent improve from data. In supervised learning the data are input-output pairs and the aim is a function that predicts well on new inputs. The main danger is overfitting: a model that fits noise in the training data.",
+    "Decision trees split on the attribute with the highest information gain. Linear models fit a line or plane by minimising squared error, using a formula or gradient descent. Nearest neighbours predict from the closest examples. Ensembles such as random forests combine many models.",
+    "The labs compute entropy, nearest neighbours and a gradient step."
+   ],
+   "glossary": [
+    {
+     "term": "Training set",
+     "def": "Examples used to fit the model."
+    },
+    {
+     "term": "Test set",
+     "def": "Held-out examples used to estimate performance."
+    },
+    {
+     "term": "Overfitting",
+     "def": "Low training error but high error on new data."
+    },
+    {
+     "term": "Entropy",
+     "def": "A measure of uncertainty in a distribution."
+    },
+    {
+     "term": "Information gain",
+     "def": "Reduction in entropy from a split."
+    },
+    {
+     "term": "Regularisation",
+     "def": "A penalty that discourages complex models."
+    }
+   ],
+   "keyPoints": [
+    "Hold out data to measure generalisation.",
+    "Bias-variance trade-off: simple models underfit, complex ones overfit.",
+    "Entropy H = minus the sum of p log2 p.",
+    "Decision trees choose the split with the largest information gain.",
+    "Linear regression: minimise squared error; gradient descent updates w by minus alpha times the gradient.",
+    "Bagging averages models; boosting trains them in sequence."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Learning from examples is spotting the pattern in practice questions. Memorising every answer is overfitting: it fails on the new exam. We test on questions we kept hidden.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why keep some data aside to test?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Give a program thousands of examples of house sizes and prices, and ask it to predict the price of a new house. This is supervised learning. The hypothesis is a function; the learning algorithm searches for one that matches the examples."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A model that matches the training data perfectly is not necessarily good. A very flexible curve can wiggle through every point, including the noise, and predict poorly on a new house. This is overfitting.",
+      "To detect it, keep some data aside for testing, or use cross-validation, which rotates which part is held out."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A decision tree asks a series of questions. To choose the question, we measure how much it reduces uncertainty. Entropy measures uncertainty: zero when all examples agree, one bit for an even split between two classes. The best question is the one with the highest information gain."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "H(p) \\;=\\; -\\sum_i p_i \\log_2 p_i"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Linear regression fits a line. We pick the weights that minimise the sum of squared errors. For one input there are closed forms. In general we use gradient descent: move the weights a small step against the gradient of the error. The step size is the learning rate."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Other models include nearest neighbours, which predict from the closest training examples, and support vector machines, which find a wide margin and use kernels for curved boundaries. Regularisation adds a penalty on weights to resist overfitting.",
+      "Ensembles, such as random forests and boosted trees, combine many weak models and often win on tabular data."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is overfitting?",
+     "options": [
+      "Fitting noise so new data are predicted poorly",
+      "A low learning rate",
+      "Using too little data to test",
+      "A perfect model"
+     ],
+     "answer": 0,
+     "explain": "Training error is low, test error high."
+    },
+    {
+     "q": "What does entropy measure?",
+     "options": [
+      "Uncertainty",
+      "Accuracy",
+      "Speed",
+      "Size of the data"
+     ],
+     "answer": 0,
+     "explain": "Zero when the outcome is certain."
+    },
+    {
+     "q": "What does gradient descent do?",
+     "options": [
+      "Moves weights against the error gradient",
+      "Sorts data",
+      "Adds noise",
+      "Counts features"
+     ],
+     "answer": 0,
+     "explain": "Small steps downhill."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is cross-validation?",
+     "a": "Rotating the held-out part."
+    },
+    {
+     "q": "What does a kernel allow?",
+     "a": "Curved boundaries from linear methods."
+    },
+    {
+     "q": "What is bagging?",
+     "a": "Averaging models trained on resamples."
+    },
+    {
+     "q": "What is a learning rate?",
+     "a": "The size of each update step."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "Gradient descent",
+     "intro": "Put the steps in order.",
+     "items": [
+      "Start with initial weights",
+      "Compute the error gradient on the data",
+      "Move the weights a small step against the gradient",
+      "Repeat until the error stops improving"
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Entropy",
+     "intro": "Write entropy(counts): counts is a list of non-negative class counts. Return the entropy in bits, rounded to 9 decimals (skip zero counts; 0 for an empty total). Use import math.",
+     "fn": "entropy",
+     "starter": "def entropy(counts):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         4,
+         0
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         2
+        ]
+       ],
+       "expect": 1.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         9,
+         5
+        ]
+       ],
+       "expect": 0.940285959,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Sum -p log2 p.",
+     "solution": "import math\ndef entropy(counts):\n    t = sum(counts)\n    if t == 0:\n        return 0.0\n    h = 0.0\n    for c in counts:\n        if c > 0:\n            p = c / t\n            h -= p * math.log(p) / math.log(2)\n    return round(h, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Nearest neighbour",
+     "intro": "Write knn(train, labels, q, k): train is a list of numeric points (lists); labels the class of each; return the majority label among the k points closest (squared Euclidean distance) to q. Break ties in votes by choosing the label whose nearest member is closer.",
+     "fn": "knn",
+     "starter": "def knn(train, labels, q, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          5,
+          5
+         ],
+         [
+          6,
+          6
+         ]
+        ],
+        [
+         "a",
+         "a",
+         "b",
+         "b"
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        3
+       ],
+       "expect": "a"
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          5,
+          5
+         ],
+         [
+          6,
+          6
+         ]
+        ],
+        [
+         "a",
+         "a",
+         "b",
+         "b"
+        ],
+        [
+         5.5,
+         5.5
+        ],
+        1
+       ],
+       "expect": "b"
+      },
+      {
+       "args": [
+        [
+         [
+          0
+         ],
+         [
+          2
+         ],
+         [
+          3
+         ],
+         [
+          10
+         ]
+        ],
+        [
+         "x",
+         "y",
+         "y",
+         "x"
+        ],
+        [
+         2.4
+        ],
+        3
+       ],
+       "expect": "y"
+      }
+     ],
+     "hint": "Sort by distance and vote.",
+     "solution": "def knn(train, labels, q, k):\n    d = []\n    for i in range(len(train)):\n        s = 0.0\n        for a, b in zip(train[i], q):\n            s += (a - b) * (a - b)\n        d.append((s, i))\n    d.sort()\n    votes = {}\n    first = {}\n    for pos in range(k):\n        lab = labels[d[pos][1]]\n        votes[lab] = votes.get(lab, 0) + 1\n        if lab not in first:\n            first[lab] = pos\n    best = None\n    for lab in votes:\n        if best is None or votes[lab] > votes[best] or (votes[lab] == votes[best] and first[lab] < first[best]):\n            best = lab\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Gradient step",
+     "intro": "Write gd_line(xs, ys, w, b, lr, steps): fit y = w x + b by gradient descent on mean squared error, starting from w and b, for the given number of steps. Return [w, b] rounded to 6 decimals.",
+     "fn": "gd_line",
+     "starter": "def gd_line(xs, ys, w, b, lr, steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         1,
+         2,
+         3
+        ],
+        [
+         1,
+         3,
+         5,
+         7
+        ],
+        0.0,
+        0.0,
+        0.05,
+        2000
+       ],
+       "expect": [
+        2.0,
+        1.0
+       ],
+       "approx": 1e-05
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         2,
+         4,
+         6
+        ],
+        0.0,
+        0.0,
+        0.05,
+        1
+       ],
+       "expect": [
+        0.933333,
+        0.4
+       ],
+       "approx": 1e-05
+      },
+      {
+       "args": [
+        [
+         0,
+         1
+        ],
+        [
+         0,
+         0
+        ],
+        1.0,
+        1.0,
+        0.1,
+        10
+       ],
+       "expect": [
+        0.222008,
+        -0.059457
+       ],
+       "approx": 1e-05
+      }
+     ],
+     "hint": "Average the gradients.",
+     "solution": "def gd_line(xs, ys, w, b, lr, steps):\n    n = len(xs)\n    for _ in range(steps):\n        gw = 0.0\n        gb = 0.0\n        for x, y in zip(xs, ys):\n            e = w * x + b - y\n            gw += 2 * e * x / n\n            gb += 2 * e / n\n        w -= lr * gw\n        b -= lr * gb\n    return [round(w, 6), round(b, 6)]\n"
+    }
+   ]
+  },
+  {
+   "title": "Neural networks and reinforcement learning",
+   "maps": [
+    {
+     "title": "Deep learning",
+     "links": [
+      "Neuron | computes | Weighted sum plus activation",
+      "Backpropagation | computes | Gradients",
+      "Convolution | shares | Weights across positions",
+      "Transformer | uses | Attention",
+      "Reward | guides | Reinforcement learning",
+      "Q-learning | learns | Action values",
+      "Exploration | trades with | Exploitation"
+     ]
+    }
+   ],
+   "summary": [
+    "Neural networks stack layers of simple units. Each unit takes a weighted sum of its inputs and applies a nonlinearity such as ReLU. Back-propagation applies the chain rule backward to get the gradient of the loss for every weight.",
+    "Convolutional networks suit images, sharing small filters across positions. Transformers use attention and power modern language models. Reinforcement learning learns from rewards, not labelled answers: Q-learning estimates the value of each action in each state by temporal-difference updates.",
+    "The labs write a small forward pass, a softmax and a Q-learning update."
+   ],
+   "glossary": [
+    {
+     "term": "Activation function",
+     "def": "A nonlinearity such as ReLU or sigmoid."
+    },
+    {
+     "term": "Back-propagation",
+     "def": "Chain-rule gradient computation, output to input."
+    },
+    {
+     "term": "Convolution",
+     "def": "A small filter slid over an image."
+    },
+    {
+     "term": "Attention",
+     "def": "A weighted focus on relevant inputs."
+    },
+    {
+     "term": "Reward",
+     "def": "A scalar signal of how well the agent is doing."
+    },
+    {
+     "term": "Q-value",
+     "def": "The expected return of taking an action in a state."
+    }
+   ],
+   "keyPoints": [
+    "A unit: output = activation(w . x + b).",
+    "Without nonlinear activations, many layers collapse into one linear map.",
+    "Training: forward pass, loss, back-propagation, weight update.",
+    "Regularisers: dropout, weight decay, data augmentation.",
+    "Q-learning: Q(s,a) += alpha (r + gamma max Q(s',a') - Q(s,a)).",
+    "Explore with epsilon-greedy; exploit by taking the best known action."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A neural network is a stack of tiny adjustable dials. Training turns the dials a little each time to reduce mistakes. Reinforcement learning is the same idea driven by rewards, like training a dog.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what does one training step do to the dials?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A neuron takes numbers in, multiplies each by a weight, adds them and a bias, and passes the sum through a nonlinear function. One neuron can draw a line between two classes. Many layers can draw complex shapes, because the nonlinearity prevents the layers from collapsing into a single linear map."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Training adjusts the weights to reduce a loss. The forward pass computes the output and the loss. Back-propagation uses the chain rule to find how the loss changes with each weight, working from the output back to the input. A gradient step then nudges all weights.",
+      "Doing this on mini-batches is stochastic gradient descent."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Special architectures use structure. A convolutional network slides small filters over an image, so it detects an edge anywhere with the same weights. Recurrent networks and especially transformers handle sequences.",
+      "A transformer lets every position attend to every other, weighing how relevant each is."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Reinforcement learning has no teacher with correct answers. The agent acts, receives rewards and learns what works. Its objective is the total discounted reward. It must balance exploring new actions with exploiting what it knows.",
+      "A simple rule, epsilon-greedy, takes a random action with small probability."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "Q(s,a) \\;\\leftarrow\\; Q(s,a) + \\alpha\\bigl[\\,r + \\gamma \\max_{a'} Q(s',a') - Q(s,a)\\,\\bigr]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Q-learning applies this update after each step. The bracket is the temporal-difference error: the gap between what we just observed plus the best estimate afterwards, and what we predicted. Deep Q-networks use a neural network in place of a table.",
+      "Policy-gradient methods adjust a policy directly, and human feedback can train the reward itself."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Why do networks need nonlinear activations?",
+     "options": [
+      "Otherwise layers collapse to one linear map",
+      "To save memory",
+      "To avoid bias terms",
+      "To speed up data loading"
+     ],
+     "answer": 0,
+     "explain": "Linear layers compose to a linear layer."
+    },
+    {
+     "q": "What does back-propagation compute?",
+     "options": [
+      "Gradients of the loss for each weight",
+      "The data labels",
+      "The learning rate",
+      "The architecture"
+     ],
+     "answer": 0,
+     "explain": "Via the chain rule."
+    },
+    {
+     "q": "What does the TD error compare?",
+     "options": [
+      "Observed return estimate with the current prediction",
+      "Two policies",
+      "Two networks",
+      "Train and test data"
+     ],
+     "answer": 0,
+     "explain": "It drives the update."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does a convolution share?",
+     "a": "Weights across positions."
+    },
+    {
+     "q": "What is epsilon-greedy?",
+     "a": "Random action with small probability."
+    },
+    {
+     "q": "What is dropout?",
+     "a": "Randomly zeroing units while training."
+    },
+    {
+     "q": "What does attention do?",
+     "a": "Weights inputs by relevance."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "Training step",
+     "intro": "Put one training step in order.",
+     "items": [
+      "Run the forward pass",
+      "Compute the loss",
+      "Back-propagate gradients",
+      "Update the weights"
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Neuron",
+     "intro": "Write neuron(w, x, b): return ReLU of the weighted sum w . x plus b, as a number rounded to 9 decimals.",
+     "fn": "neuron",
+     "starter": "def neuron(w, x, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         3,
+         4
+        ],
+        0.5
+       ],
+       "expect": 11.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1,
+         -1
+        ],
+        [
+         1,
+         5
+        ],
+        0
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.5
+        ],
+        [
+         2
+        ],
+        -3
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [],
+        [],
+        1.25
+       ],
+       "expect": 1.25,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Weighted sum, then max with zero.",
+     "solution": "def neuron(w, x, b):\n    s = b\n    for a, c in zip(w, x):\n        s += a * c\n    if s < 0:\n        s = 0.0\n    return round(s, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Softmax",
+     "intro": "Write softmax(z): return the list of exp(z_i) divided by the sum, each rounded to 9 decimals. Subtract the maximum first for stability. Use import math.",
+     "fn": "softmax",
+     "starter": "def softmax(z):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.0,
+         0.0
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0,
+         2.0,
+         3.0
+        ]
+       ],
+       "expect": [
+        0.090030573,
+        0.244728471,
+        0.665240956
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1000.0,
+         1000.0
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         -1.0,
+         0.0,
+         1.0,
+         2.0
+        ]
+       ],
+       "expect": [
+        0.032058603,
+        0.087144319,
+        0.236882818,
+        0.64391426
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Shift by the max.",
+     "solution": "import math\ndef softmax(z):\n    m = max(z)\n    e = [math.exp(v - m) for v in z]\n    t = sum(e)\n    return [round(v / t, 9) for v in e]\n"
+    },
+    {
+     "type": "python",
+     "title": "Q-learning update",
+     "intro": "Write q_update(Q, s, a, r, s2, alpha, gamma): Q is a dict from state to a dict from action to value. Update Q[s][a] in place by the Q-learning rule and return the new value rounded to 9 decimals.",
+     "fn": "q_update",
+     "starter": "def q_update(Q, s, a, r, s2, alpha, gamma):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "x": {
+          "l": 0.0,
+          "r": 0.0
+         },
+         "y": {
+          "l": 1.0,
+          "r": 2.0
+         }
+        },
+        "x",
+        "r",
+        1.0,
+        "y",
+        0.5,
+        0.9
+       ],
+       "expect": 1.4,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        {
+         "x": {
+          "l": 1.0
+         },
+         "y": {
+          "l": 0.0
+         }
+        },
+        "x",
+        "l",
+        0.0,
+        "y",
+        0.1,
+        0.9
+       ],
+       "expect": 0.9,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        {
+         "s": {
+          "a": 2.0,
+          "b": 3.0
+         }
+        },
+        "s",
+        "a",
+        1.0,
+        "s",
+        0.5,
+        0.5
+       ],
+       "expect": 2.25,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Move toward target by alpha.",
+     "solution": "def q_update(Q, s, a, r, s2, alpha, gamma):\n    best = max(Q[s2].values())\n    Q[s][a] += alpha * (r + gamma * best - Q[s][a])\n    return round(Q[s][a], 9)\n"
+    }
+   ]
+  },
+  {
+   "title": "Language, perception, robots and the future of AI",
+   "maps": [
+    {
+     "title": "Applied AI",
+     "links": [
+      "Language model | predicts | The next word",
+      "n-gram | counts | Word sequences",
+      "Parsing | builds | Syntax trees",
+      "Image edges | are | Intensity changes",
+      "Stereo | gives | Depth",
+      "Robot planning | works in | Configuration space",
+      "Ethics | asks | Who is affected"
+     ]
+    }
+   ],
+   "summary": [
+    "Natural language processing starts with language models: probability distributions over word sequences. Simple n-gram models count short sequences. Neural models trained on huge text collections now generate fluent text, though they can still state falsehoods confidently.",
+    "Computer vision recovers scene properties from images, using edges, motion, stereo and, above all, deep networks for recognition. Robots perceive, plan in a space of joint configurations, and control motors with feedback.",
+    "AI also raises questions about fairness, privacy, safety and control. The textbook's closing view is that machines should be uncertain about human preferences, so they stay open to correction."
+   ],
+   "glossary": [
+    {
+     "term": "Language model",
+     "def": "A probability distribution over text."
+    },
+    {
+     "term": "n-gram",
+     "def": "A model that predicts a word from the previous n minus one words."
+    },
+    {
+     "term": "Perplexity",
+     "def": "How surprised a model is by test text; lower is better."
+    },
+    {
+     "term": "IoU",
+     "def": "Intersection over union of two boxes."
+    },
+    {
+     "term": "Configuration space",
+     "def": "One axis per joint of the robot."
+    },
+    {
+     "term": "Value alignment",
+     "def": "Making a machine's goals match human values."
+    }
+   ],
+   "keyPoints": [
+    "Smoothing stops unseen n-grams getting zero probability.",
+    "Parsing assigns a grammatical structure; ambiguity is the main difficulty.",
+    "Image classification, detection and segmentation use convolutional or transformer networks.",
+    "Depth from stereo = focal length times baseline divided by disparity.",
+    "Motion planning in configuration space; controllers such as PID close the loop.",
+    "Fairness definitions can conflict when base rates differ."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Language models guess the next word after reading a lot. Robots and cameras turn the physical world into numbers. All of it needs care: what we ask the machine to want matters a lot.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why should a machine be unsure about what people really want?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A language model assigns a probability to a sequence of words. The simplest kind, the bigram model, estimates the chance of each word given the previous one by counting in a large text. Unseen pairs would get probability zero, so we smooth the counts."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Modern models use embeddings, vectors that place similar words near each other, and a transformer with attention. They are pretrained on vast text to predict the next token, then adapted for tasks. They are fluent but can hallucinate: say things that sound right and are not supported."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Vision asks what is in an image. Edges are places where brightness changes sharply. Two cameras give depth: nearby points shift more between the images, so depth equals focal length times baseline over disparity.",
+      "Deep networks classify images, detect objects with boxes scored by intersection over union, and segment pixels."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A robot arm with many joints moves in a high-dimensional configuration space, where each point fixes all joint angles. Planners such as probabilistic roadmaps and rapidly exploring random trees sample this space and connect free points.",
+      "Controllers such as a PID loop use the error, its integral and its derivative to follow the plan. Robots also localise with particle filters and build maps at the same time, called SLAM."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Capable AI raises real concerns. Systems can be unfair if trained on biased data, and different fairness criteria cannot all hold when groups differ in base rates. Privacy, security and misuse matter. Safety means building systems that pursue what people truly want, not only what we wrote down."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The textbook closes with a proposal: build machines that are uncertain about human preferences and learn them from our behaviour. Such a machine has a reason to ask, to defer, and to allow itself to be switched off. The field's future depends on technical progress and on wise governance."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a language model estimate?",
+     "options": [
+      "Probability of word sequences",
+      "Image depth",
+      "Robot torque",
+      "Utility of money"
+     ],
+     "answer": 0,
+     "explain": "It predicts text."
+    },
+    {
+     "q": "How do two cameras give depth?",
+     "options": [
+      "Through disparity between the images",
+      "By counting edges",
+      "By colour",
+      "By motion blur"
+     ],
+     "answer": 0,
+     "explain": "Depth = f B / d."
+    },
+    {
+     "q": "Why might a safe AI be uncertain about its objective?",
+     "options": [
+      "So it stays open to human correction",
+      "To run faster",
+      "To avoid learning",
+      "To use less data"
+     ],
+     "answer": 0,
+     "explain": "That gives it reason to defer."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is hallucination?",
+     "a": "Fluent but unsupported output."
+    },
+    {
+     "q": "What is SLAM?",
+     "a": "Mapping while localising."
+    },
+    {
+     "q": "What is perplexity?",
+     "a": "Surprise on test text."
+    },
+    {
+     "q": "Why smooth n-gram counts?",
+     "a": "To avoid zero probabilities."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Areas",
+     "intro": "Match each tool with its job.",
+     "pairs": [
+      [
+       "n-gram model",
+       "Predict the next word from counts"
+      ],
+      [
+       "IoU",
+       "Score overlap of boxes"
+      ],
+      [
+       "PID controller",
+       "Follow a target with feedback"
+      ],
+      [
+       "Particle filter",
+       "Locate a robot on a map"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Bigram probability",
+     "intro": "Write bigram_prob(text, prev, word): text is a list of words. Return count(prev followed by word) divided by count(prev as the first of a pair); 0 if prev never starts a pair. Round to 9 decimals.",
+     "fn": "bigram_prob",
+     "starter": "def bigram_prob(text, prev, word):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "the",
+         "cat",
+         "sat",
+         "on",
+         "the",
+         "mat"
+        ],
+        "the",
+        "cat"
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         "the",
+         "cat",
+         "sat",
+         "on",
+         "the",
+         "mat"
+        ],
+        "the",
+        "dog"
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "a",
+         "b",
+         "a",
+         "c"
+        ],
+        "a",
+        "b"
+       ],
+       "expect": 0.666666667,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        "x",
+        "y"
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Count pairs.",
+     "solution": "def bigram_prob(text, prev, word):\n    c = 0\n    d = 0\n    for i in range(len(text) - 1):\n        if text[i] == prev:\n            d += 1\n            if text[i + 1] == word:\n                c += 1\n    if d == 0:\n        return 0.0\n    return round(c / d, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "IoU",
+     "intro": "Write iou(a, b): a and b are boxes [x1, y1, x2, y2] with x1 < x2 and y1 < y2. Return intersection area divided by union area, rounded to 9 decimals.",
+     "fn": "iou",
+     "starter": "def iou(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0,
+         2,
+         2
+        ],
+        [
+         1,
+         1,
+         3,
+         3
+        ]
+       ],
+       "expect": 0.142857143,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         1,
+         1
+        ],
+        [
+         2,
+         2,
+         3,
+         3
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         2,
+         2
+        ],
+        [
+         0,
+         0,
+         2,
+         2
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         4,
+         4
+        ],
+        [
+         1,
+         1,
+         2,
+         2
+        ]
+       ],
+       "expect": 0.0625,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Overlap width and height.",
+     "solution": "def iou(a, b):\n    w = min(a[2], b[2]) - max(a[0], b[0])\n    h = min(a[3], b[3]) - max(a[1], b[1])\n    inter = 0.0\n    if w > 0 and h > 0:\n        inter = w * h\n    ua = (a[2] - a[0]) * (a[3] - a[1])\n    ub = (b[2] - b[0]) * (b[3] - b[1])\n    return round(inter / (ua + ub - inter), 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Stereo depth",
+     "intro": "Write depth(f, baseline, disparity): return f times baseline divided by disparity, rounded to 6 decimals.",
+     "fn": "depth",
+     "starter": "def depth(f, baseline, disparity):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        700,
+        0.1,
+        10
+       ],
+       "expect": 7.0,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        500,
+        0.5,
+        25
+       ],
+       "expect": 10.0,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        1000,
+        0.2,
+        8
+       ],
+       "expect": 25.0,
+       "approx": 1e-06
+      }
+     ],
+     "hint": "One formula.",
+     "solution": "def depth(f, baseline, disparity):\n    return round(f * baseline / disparity, 6)\n"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Artificial Intelligence: A Modern Approach, Condensed",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What is a rational agent?",
+    "options": [
+     "One that maximises expected performance",
+     "One that is always right",
+     "One that copies humans",
+     "One that never learns"
+    ],
+    "answer": 0,
+    "explain": "Rationality is about expected outcomes."
+   },
+   {
+    "q": "What does PEAS describe?",
+    "options": [
+     "A task environment",
+     "A search tree",
+     "A neural net",
+     "A proof"
+    ],
+    "answer": 0,
+    "explain": "Performance, Environment, Actuators, Sensors."
+   },
+   {
+    "q": "Which agent compares outcomes by a numeric score?",
+    "options": [
+     "Utility-based",
+     "Simple reflex",
+     "Table lookup",
+     "Random"
+    ],
+    "answer": 0,
+    "explain": "Utility ranks outcomes."
+   },
+   {
+    "q": "Which uninformed search finds the fewest steps?",
+    "options": [
+     "Breadth-first",
+     "Depth-first",
+     "Hill climbing",
+     "Random"
+    ],
+    "answer": 0,
+    "explain": "It expands level by level."
+   },
+   {
+    "q": "What does A* use to order the frontier?",
+    "options": [
+     "g(n) + h(n)",
+     "h(n) only",
+     "Depth only",
+     "Random"
+    ],
+    "answer": 0,
+    "explain": "Cost so far plus estimate."
+   },
+   {
+    "q": "What makes a heuristic admissible?",
+    "options": [
+     "It never overestimates",
+     "It is exact",
+     "It is large",
+     "It is random"
+    ],
+    "answer": 0,
+    "explain": "Needed for optimality."
+   },
+   {
+    "q": "What can trap hill climbing?",
+    "options": [
+     "A local maximum",
+     "A global maximum",
+     "A heuristic",
+     "A queue"
+    ],
+    "answer": 0,
+    "explain": "No better neighbour."
+   },
+   {
+    "q": "What does minimax assume?",
+    "options": [
+     "An optimal opponent",
+     "A random opponent",
+     "No opponent",
+     "A weak opponent"
+    ],
+    "answer": 0,
+    "explain": "Worst-case planning."
+   },
+   {
+    "q": "What does alpha-beta pruning change?",
+    "options": [
+     "Speed, not the result",
+     "The result",
+     "The rules",
+     "The evaluation"
+    ],
+    "answer": 0,
+    "explain": "Same value, fewer nodes."
+   },
+   {
+    "q": "What does a CSP consist of?",
+    "options": [
+     "Variables, domains, constraints",
+     "States and actions",
+     "Rewards",
+     "Layers"
+    ],
+    "answer": 0,
+    "explain": "That is the definition."
+   },
+   {
+    "q": "What does MRV choose?",
+    "options": [
+     "The variable with fewest legal values",
+     "A random variable",
+     "The largest domain",
+     "The last variable"
+    ],
+    "answer": 0,
+    "explain": "Fail early."
+   },
+   {
+    "q": "What is a model in propositional logic?",
+    "options": [
+     "A truth assignment to all symbols",
+     "A neural net",
+     "A plan",
+     "A policy"
+    ],
+    "answer": 0,
+    "explain": "True or false for each symbol."
+   },
+   {
+    "q": "When does KB entail a?",
+    "options": [
+     "a holds in every model of KB",
+     "a is in KB",
+     "a is false",
+     "KB is empty"
+    ],
+    "answer": 0,
+    "explain": "The definition of entailment."
+   },
+   {
+    "q": "What does unification produce?",
+    "options": [
+     "A substitution making terms identical",
+     "A probability",
+     "A plan",
+     "A heuristic"
+    ],
+    "answer": 0,
+    "explain": "Variable bindings."
+   },
+   {
+    "q": "Which connective goes with for-all?",
+    "options": [
+     "Implies",
+     "And",
+     "Or",
+     "Not"
+    ],
+    "answer": 0,
+    "explain": "For all x, P implies Q."
+   },
+   {
+    "q": "What does an action's precondition state?",
+    "options": [
+     "Facts needed to apply it",
+     "Facts it adds",
+     "Its cost",
+     "Its name"
+    ],
+    "answer": 0,
+    "explain": "They must be in the state."
+   },
+   {
+    "q": "What does the delete relaxation ignore?",
+    "options": [
+     "Delete effects",
+     "Preconditions",
+     "The goal",
+     "The start"
+    ],
+    "answer": 0,
+    "explain": "Actions only add facts."
+   },
+   {
+    "q": "What does Bayes' rule compute?",
+    "options": [
+     "P(h | e) from P(e | h)",
+     "P(e) only",
+     "A search path",
+     "A reward"
+    ],
+    "answer": 0,
+    "explain": "It reverses conditioning."
+   },
+   {
+    "q": "Why can a positive test for a rare disease be misleading?",
+    "options": [
+     "The base rate is low",
+     "Tests never work",
+     "Probability fails",
+     "The disease is invisible"
+    ],
+    "answer": 0,
+    "explain": "Few ill, many healthy."
+   },
+   {
+    "q": "What does naive Bayes assume?",
+    "options": [
+     "Features independent given the class",
+     "All classes equal",
+     "No priors",
+     "No features"
+    ],
+    "answer": 0,
+    "explain": "Conditional independence."
+   },
+   {
+    "q": "How does a Bayes net define the joint?",
+    "options": [
+     "Product of each node given its parents",
+     "Sum of nodes",
+     "Max of nodes",
+     "Average"
+    ],
+    "answer": 0,
+    "explain": "Chain rule."
+   },
+   {
+    "q": "What is explaining away?",
+    "options": [
+     "Evidence for one cause lowers another",
+     "Removing a node",
+     "Ignoring evidence",
+     "Cancelling causes"
+    ],
+    "answer": 0,
+    "explain": "Competing explanations."
+   },
+   {
+    "q": "What does the Markov assumption say?",
+    "options": [
+     "The present depends on a bounded past",
+     "The future is random",
+     "All history matters",
+     "Nothing changes"
+    ],
+    "answer": 0,
+    "explain": "Keeps models small."
+   },
+   {
+    "q": "What are the filtering steps?",
+    "options": [
+     "Predict, weight by evidence, normalise",
+     "Sample, sort",
+     "Search, prune",
+     "Train, test"
+    ],
+    "answer": 0,
+    "explain": "Recursive update."
+   },
+   {
+    "q": "What should a rational agent maximise?",
+    "options": [
+     "Expected utility",
+     "Best outcome",
+     "Expected money",
+     "Probability"
+    ],
+    "answer": 0,
+    "explain": "Principle of maximum expected utility."
+   },
+   {
+    "q": "What is the solution of an MDP?",
+    "options": [
+     "A policy",
+     "A single plan",
+     "A heuristic",
+     "A proof"
+    ],
+    "answer": 0,
+    "explain": "An action for each state."
+   },
+   {
+    "q": "What is a Nash equilibrium?",
+    "options": [
+     "No player gains by deviating alone",
+     "The best joint outcome",
+     "A random play",
+     "A dominant strategy for all"
+    ],
+    "answer": 0,
+    "explain": "Mutual best replies."
+   },
+   {
+    "q": "What should you bid in a Vickrey auction?",
+    "options": [
+     "Your true value",
+     "Half",
+     "Double",
+     "Zero"
+    ],
+    "answer": 0,
+    "explain": "A dominant strategy."
+   },
+   {
+    "q": "What is overfitting?",
+    "options": [
+     "Fitting noise so new data are predicted poorly",
+     "Low learning rate",
+     "A perfect model",
+     "Too little training"
+    ],
+    "answer": 0,
+    "explain": "Training error low, test error high."
+   },
+   {
+    "q": "What does entropy measure?",
+    "options": [
+     "Uncertainty",
+     "Speed",
+     "Accuracy",
+     "Size"
+    ],
+    "answer": 0,
+    "explain": "Zero when certain."
+   },
+   {
+    "q": "What does gradient descent do?",
+    "options": [
+     "Moves weights against the gradient",
+     "Sorts data",
+     "Adds noise",
+     "Counts features"
+    ],
+    "answer": 0,
+    "explain": "Small steps downhill."
+   },
+   {
+    "q": "Why do networks need nonlinear activations?",
+    "options": [
+     "Layers would collapse to one linear map",
+     "To save memory",
+     "To remove bias",
+     "To load data"
+    ],
+    "answer": 0,
+    "explain": "Linear composes to linear."
+   },
+   {
+    "q": "What does the Q-learning update move Q toward?",
+    "options": [
+     "Reward plus discounted best next Q",
+     "Zero",
+     "The policy",
+     "The loss"
+    ],
+    "answer": 0,
+    "explain": "The TD target."
+   },
+   {
+    "q": "What is epsilon-greedy?",
+    "options": [
+     "Random action with small probability",
+     "Always greedy",
+     "Always random",
+     "A loss"
+    ],
+    "answer": 0,
+    "explain": "Explore and exploit."
+   },
+   {
+    "q": "What does a language model estimate?",
+    "options": [
+     "Probability of word sequences",
+     "Depth",
+     "Torque",
+     "Utility"
+    ],
+    "answer": 0,
+    "explain": "It predicts text."
+   },
+   {
+    "q": "How do two cameras give depth?",
+    "options": [
+     "Disparity between images",
+     "Counting edges",
+     "Colour",
+     "Blur"
+    ],
+    "answer": 0,
+    "explain": "Depth = f B / d."
+   },
+   {
+    "q": "Why would a safe AI be uncertain about its objective?",
+    "options": [
+     "To stay open to correction",
+     "To run faster",
+     "To avoid learning",
+     "To use less data"
+    ],
+    "answer": 0,
+    "explain": "It then defers to humans."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "AI cheat sheet",
+  "prompt": "ai>",
+  "intro": "A scripted lookup, not a real solver. Try: astar, bayes, bellman, nash, qlearn, help",
+  "chips": [
+   "astar",
+   "bayes",
+   "bellman",
+   "nash",
+   "qlearn",
+   "entropy",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "astar      f(n) = g(n) + h(n)",
+     "bayes      P(h | e) = P(e | h) P(h) / P(e)",
+     "bellman    U(s) = R(s) + gamma max_a sum P(s' | s, a) U(s')",
+     "nash       no player gains by changing strategy alone",
+     "qlearn     Q(s,a) += alpha (r + gamma max Q(s',a') - Q(s,a))",
+     "entropy    H = - sum p log2 p"
+    ]
+   },
+   {
+    "re": "^astar$",
+    "out": [
+     "f(n) = g(n) + h(n)",
+     "optimal if h never overestimates the true cost"
+    ]
+   },
+   {
+    "re": "^bayes$",
+    "out": [
+     "P(h | e) = P(e | h) P(h) / P(e)",
+     "mind the base rate"
+    ]
+   },
+   {
+    "re": "^bellman$",
+    "out": [
+     "U(s) = R(s) + gamma max_a sum P(s' | s, a) U(s')",
+     "value iteration applies it repeatedly"
+    ]
+   },
+   {
+    "re": "^nash$",
+    "out": [
+     "no player gains by changing strategy alone",
+     "prisoner's dilemma: both defect"
+    ]
+   },
+   {
+    "re": "^qlearn$",
+    "out": [
+     "Q(s,a) += alpha (r + gamma max Q(s',a') - Q(s,a))",
+     "epsilon-greedy explores"
+    ]
+   },
+   {
+    "re": "^entropy$",
+    "out": [
+     "H = - sum p log2 p",
+     "information gain = entropy before minus after a split"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Artificial Intelligence",
+ "level": "Intermediate",
+ "tags": [
+  "ai",
+  "search",
+  "logic",
+  "probability",
+  "bayesian-networks",
+  "mdp",
+  "game-theory",
+  "machine-learning",
+  "python",
+  "aima"
+ ]
+}
