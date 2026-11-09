@@ -1,0 +1,4613 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "ppo",
+ "title": "Proximal Policy Optimization (PPO)",
+ "subtitle": "Policy gradients, GAE, clipping and RLHF, with Python labs",
+ "author": "Lilith Learning Lab",
+ "description": "PPO (Schulman et al., 2017) built piece by piece: policy gradient recap, advantages and GAE, the probability ratio and trust regions, the clipped surrogate objective, the full loss, the training loop and its practical details, PPO for language models (background), and diagnostics. Theory plus Python labs.",
+ "pronounce": {
+  "PPO": "P P O",
+  "TRPO": "T R P O",
+  "GAE": "G A E",
+  "RLHF": "R L H F",
+  "KL": "K L",
+  "DPO": "D P O",
+  "GRPO": "G R P O",
+  "A2C": "A two C",
+  "SAC": "sack",
+  "REINFORCE": "re in force",
+  "Schulman": "shul man",
+  "Wolski": "wol ski",
+  "Dhariwal": "dah ree wal",
+  "Klimov": "klee mov",
+  "InstructGPT": "instruct G P T",
+  "OpenAI": "open A I",
+  "softmax": "soft max",
+  "Softmax": "Soft max",
+  "Engstrom": "eng strum",
+  "argmax": "arg max",
+  "logits": "low jits",
+  "Logits": "Low jits",
+  "gamma": "gamma",
+  "lambda": "lambda",
+  "epsilon": "epsilon",
+  "Adam": "adam",
+  "MuJoCo": "mu jo co",
+  "Atari": "ah tah ree",
+  "GPUs": "G P Us",
+  "pi": "pie"
+ },
+ "chapters": [
+  {
+   "title": "From policy gradients to PPO",
+   "maps": [
+    {
+     "title": "PPO",
+     "links": [
+      "PPO | is | A policy gradient method",
+      "PPO | introduced by | Schulman et al. 2017",
+      "PPO | simplifies | TRPO",
+      "Clipping | limits | Policy change",
+      "PPO | reuses | Data for several epochs",
+      "PPO | is | On-policy",
+      "PPO | trains | RLHF language models"
+     ]
+    }
+   ],
+   "summary": [
+    "Proximal Policy Optimization, PPO, is a reinforcement learning algorithm from John Schulman and colleagues at OpenAI, 2017. It improves a policy by gradient ascent, but with a trick that stops each update from changing the policy too much.",
+    "Plain policy gradient methods can ruin a policy with one oversized step. TRPO prevented this with a constraint but was complicated. PPO gets much of the benefit with a simple clipped objective that works with ordinary first-order optimizers.",
+    "This course builds PPO piece by piece in small Python labs: returns, advantages, the ratio, clipping, the loss, the update loop and its use for language models."
+   ],
+   "glossary": [
+    {
+     "term": "Policy",
+     "def": "A rule giving the probability of each action in a state."
+    },
+    {
+     "term": "Policy gradient",
+     "def": "Improving the policy by gradient ascent on expected return."
+    },
+    {
+     "term": "TRPO",
+     "def": "Trust Region Policy Optimization: a constrained policy update using a KL limit."
+    },
+    {
+     "term": "Surrogate objective",
+     "def": "A stand-in objective whose gradient guides the policy update."
+    },
+    {
+     "term": "On-policy",
+     "def": "Learning from data collected by the current policy."
+    },
+    {
+     "term": "Epoch",
+     "def": "One pass over the collected batch."
+    }
+   ],
+   "keyPoints": [
+    "PPO: Schulman, Wolski, Dhariwal, Radford and Klimov, 2017.",
+    "It keeps the new policy close to the old one by clipping the probability ratio.",
+    "It is simpler than TRPO: no second-order optimisation, no explicit constraint.",
+    "It reuses each batch for several epochs of minibatch updates.",
+    "It is on-policy: after updating, fresh data is collected.",
+    "It became a default choice for many RL problems and for RLHF fine-tuning of language models (background knowledge)."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Reinforcement learning teaches an agent by reward. In policy gradient methods, the agent's behaviour is a neural network that outputs action probabilities, and we adjust its weights to make rewarding actions more likely. The simple version is the algorithm called REINFORCE."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There is a catch. A policy gradient estimate is noisy, and the policy changes the data it will see next. A step that is too large can send the policy to a bad region from which it never recovers, because the next batch of data is collected by the broken policy. Small steps are safe but slow.",
+      "The art is to take the biggest safe step."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\theta_{k+1} \\;=\\; \\arg\\max_{\\theta}\\ \\ \\mathbb{E}\\left[\\, L^{\\mathrm{CLIP}}(\\theta) \\,\\right]\\ \\ \\text{subject to staying near } \\theta_k"
+    },
+    {
+     "type": "text",
+     "items": [
+      "TRPO, by Schulman and colleagues in 2015, made this idea precise. It maximised a surrogate objective subject to a limit on the KL divergence between old and new policies. It worked well but needed second-order optimisation and was awkward with shared networks and with noise sources such as dropout."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "PPO, in the 2017 paper, replaces the constraint by a clipped objective. It computes the ratio of new to old action probabilities and cuts off the incentive to move the ratio outside a small band around one. A first-order optimiser such as Adam can then take many gradient steps on the same batch.",
+      "The paper reports that the clipped version performed best among the variants tried, which included an adaptive KL penalty."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "PPO is on-policy. After a round of updates the old data is thrown away and new data is collected with the improved policy. It later became very widely used, including for fine-tuning language models from human feedback, which chapter 9 covers as background knowledge."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Who introduced PPO?",
+     "options": [
+      "Schulman and colleagues at OpenAI",
+      "Mnih et al.",
+      "Silver et al.",
+      "Vaswani et al."
+     ],
+     "answer": 0,
+     "explain": "2017."
+    },
+    {
+     "q": "What does PPO simplify?",
+     "options": [
+      "TRPO",
+      "DQN",
+      "A3C",
+      "AlphaGo"
+     ],
+     "answer": 0,
+     "explain": "No constraint or second-order step."
+    },
+    {
+     "q": "What does clipping do?",
+     "options": [
+      "Limits how far the policy moves",
+      "Adds noise",
+      "Speeds up rewards",
+      "Removes the critic"
+     ],
+     "answer": 0,
+     "explain": "Via the probability ratio."
+    },
+    {
+     "q": "Is PPO on-policy?",
+     "options": [
+      "Yes",
+      "No",
+      "Only for Atari",
+      "Only offline"
+     ],
+     "answer": 0,
+     "explain": "Fresh data after each round."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is the gradient step problem?",
+     "a": "Too large a step can wreck the policy."
+    },
+    {
+     "q": "Who proposed TRPO?",
+     "a": "Schulman and colleagues, 2015."
+    },
+    {
+     "q": "What optimiser does PPO use?",
+     "a": "A first-order one such as Adam."
+    },
+    {
+     "q": "What is the key idea?",
+     "a": "Clip the probability ratio."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "A PPO round",
+     "intro": "Put the steps in order.",
+     "items": [
+      "Collect experience with the current policy",
+      "Compute returns and advantages",
+      "Run several epochs of minibatch updates with the clipped objective",
+      "Discard the old data",
+      "Collect new experience"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Names",
+     "intro": "Match each name with its description.",
+     "pairs": [
+      [
+       "REINFORCE",
+       "Basic policy gradient"
+      ],
+      [
+       "TRPO",
+       "KL-constrained update"
+      ],
+      [
+       "PPO",
+       "Clipped surrogate update"
+      ],
+      [
+       "Surrogate objective",
+       "Objective used for the update"
+      ],
+      [
+       "On-policy",
+       "Fresh data from the current policy"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Idea",
+     "text": "PPO keeps the new policy {{close|near}} to the old one by {{clipping|clip}} the probability ratio."
+    }
+   ]
+  },
+  {
+   "title": "Policy gradient recap",
+   "maps": [
+    {
+     "title": "Policy gradient",
+     "links": [
+      "Return | sums | Discounted rewards",
+      "Log-probability | scores | An action",
+      "Gradient | raises | Good actions",
+      "Baseline | reduces | Variance",
+      "Softmax policy | maps | Logits to probabilities",
+      "Score function | is | Gradient of log pi",
+      "Batch | averages | Many samples"
+     ]
+    }
+   ],
+   "summary": [
+    "A policy gradient step increases the log-probability of actions in proportion to how good they turned out to be. The measure of goodness is the return, or better, the return minus a baseline.",
+    "For a softmax policy over discrete actions the gradient of the log-probability with respect to the logits has a simple form: the one-hot vector of the chosen action minus the probability vector.",
+    "The labs compute discounted returns, the softmax, the log-probability gradient and a policy gradient update on a small bandit."
+   ],
+   "glossary": [
+    {
+     "term": "Return",
+     "def": "The discounted sum of future rewards, G_t."
+    },
+    {
+     "term": "Discount factor gamma",
+     "def": "A number below one that makes later rewards count less."
+    },
+    {
+     "term": "Softmax policy",
+     "def": "pi(a) = exp(theta_a) / sum_b exp(theta_b)."
+    },
+    {
+     "term": "Score function",
+     "def": "The gradient of the log-probability of an action."
+    },
+    {
+     "term": "Baseline",
+     "def": "A number subtracted from the return to reduce variance without bias."
+    },
+    {
+     "term": "Logits",
+     "def": "The raw scores before the softmax."
+    }
+   ],
+   "keyPoints": [
+    "G_t = r_t + gamma r_{t+1} + gamma^2 r_{t+2} + ...",
+    "Policy gradient: grad J = E[ grad log pi(a|s) * (G - b) ].",
+    "For a softmax policy: d log pi(a) / d theta = onehot(a) - pi.",
+    "A baseline that depends only on the state leaves the gradient unbiased.",
+    "A learned value function V(s) is the usual baseline.",
+    "Common gamma in practice: 0.99."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The policy gradient theorem tells us how to improve a stochastic policy. For a sampled action in a state, nudge the parameters in the direction that makes that action more probable, and nudge more strongly the better the outcome was.",
+      "In symbols, the expected gradient of the return is the expectation of the score function times the return."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\nabla_{\\theta} J(\\theta) \\;=\\; \\mathbb{E}\\Bigl[\\, \\nabla_{\\theta} \\log \\pi_{\\theta}(a \\mid s)\\,\\bigl(G_t - b(s)\\bigr) \\Bigr]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The return G t is the sum of the rewards from time t on, each discounted by a factor gamma for each step into the future. A gamma of 0.99 is the usual default: rewards one hundred steps away count about a third as much."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The baseline b of s is subtracted to cut variance. Without it, if all returns are positive, every sampled action is pushed up, and only the relative sizes matter; the signal is buried in noise. A baseline that depends on the state only, never on the action, leaves the expected gradient unchanged.",
+      "The best-known choice is the value function, a second network trained to predict the return."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "For a discrete action space, a softmax policy has parameters theta, one logit per action. The gradient of the log-probability of the chosen action a with respect to the logits is neat: a one-hot vector for a, minus the vector of probabilities.",
+      "Raising the logit of a, lowering the others in proportion to how likely they were."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Everything in PPO builds on this. The next chapters improve the weight multiplying the score function (the advantage) and limit the step (the ratio and clipping)."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the score function equal for a softmax policy?",
+     "options": [
+      "onehot(a) minus pi",
+      "pi minus one",
+      "The return",
+      "Zero"
+     ],
+     "answer": 0,
+     "explain": "For the logits."
+    },
+    {
+     "q": "What does a baseline do?",
+     "options": [
+      "Reduces variance",
+      "Adds bias",
+      "Raises rewards",
+      "Removes the policy"
+     ],
+     "answer": 0,
+     "explain": "If it depends only on the state."
+    },
+    {
+     "q": "What is gamma?",
+     "options": [
+      "The discount factor",
+      "The learning rate",
+      "The clip range",
+      "The entropy weight"
+     ],
+     "answer": 0,
+     "explain": "Below one."
+    },
+    {
+     "q": "What is the return?",
+     "options": [
+      "Discounted sum of future rewards",
+      "The next reward",
+      "The policy",
+      "The loss"
+     ],
+     "answer": 0,
+     "explain": "G_t."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Typical gamma?",
+     "a": "0.99."
+    },
+    {
+     "q": "What multiplies the score function?",
+     "a": "Return minus baseline."
+    },
+    {
+     "q": "What is a good baseline?",
+     "a": "The value function."
+    },
+    {
+     "q": "What are logits?",
+     "a": "Raw scores before the softmax."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Discounted returns",
+     "intro": "Write returns(rewards, gamma): the list of discounted returns G_t = r_t + gamma * G_{t+1} for each step (G after the last step is 0). Round each to 6 decimals.",
+     "fn": "returns",
+     "starter": "def returns(rewards, gamma):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        0.9
+       ],
+       "expect": [
+        2.71,
+        1.9,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         1
+        ],
+        0.99
+       ],
+       "expect": [
+        0.9801,
+        0.99,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        0.5
+       ],
+       "expect": [
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         0,
+         3
+        ],
+        1.0
+       ],
+       "expect": [
+        5.0,
+        3.0,
+        3.0
+       ]
+      },
+      {
+       "args": [
+        [],
+        0.9
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Work backwards from the end.",
+     "solution": "def returns(rewards, gamma):\n    out = [0.0] * len(rewards)\n    g = 0.0\n    for t in range(len(rewards) - 1, -1, -1):\n        g = rewards[t] + gamma * g\n        out[t] = round(g, 6)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Softmax",
+     "intro": "Write softmax(theta): the softmax of a list of logits (subtract the maximum first), each rounded to 9 decimals. Use import math.",
+     "fn": "softmax",
+     "starter": "def softmax(theta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        0.090030573,
+        0.244728471,
+        0.665240956
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        0.25,
+        0.25,
+        0.25,
+        0.25
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         0
+        ]
+       ],
+       "expect": [
+        0.993307149,
+        0.006692851
+       ]
+      }
+     ],
+     "hint": "Stable softmax.",
+     "solution": "import math\ndef softmax(theta):\n    m = max(theta)\n    es = [math.exp(t - m) for t in theta]\n    s = sum(es)\n    return [round(e / s, 9) for e in es]\n"
+    },
+    {
+     "type": "python",
+     "title": "Score function",
+     "intro": "Write score(theta, a): the gradient of log softmax(theta)[a] with respect to theta, onehot(a) minus the probabilities, each rounded to 9 decimals. Use import math.",
+     "fn": "score",
+     "starter": "def score(theta, a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        0
+       ],
+       "expect": [
+        0.5,
+        -0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        1
+       ],
+       "expect": [
+        -0.5,
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        2
+       ],
+       "expect": [
+        -0.090030573,
+        -0.244728471,
+        0.334759044
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         0
+        ],
+        3
+       ],
+       "expect": [
+        -0.25,
+        -0.25,
+        -0.25,
+        0.75
+       ]
+      }
+     ],
+     "hint": "One-hot minus probabilities.",
+     "solution": "import math\ndef score(theta, a):\n    m = max(theta)\n    es = [math.exp(t - m) for t in theta]\n    s = sum(es)\n    p = [e / s for e in es]\n    return [round((1.0 if i == a else 0.0) - p[i], 9) for i in range(len(theta))]\n"
+    },
+    {
+     "type": "python",
+     "title": "Policy gradient step",
+     "intro": "A bandit has a softmax policy with logits theta. Write pg_step(theta, samples, lr): samples is a list of [action, reward]; use the mean reward as a baseline; for each sample accumulate (reward - baseline) * score and divide by the number of samples; return the new logits theta + lr * gradient, each rounded to 6 decimals. Use import math.",
+     "fn": "pg_step",
+     "starter": "def pg_step(theta, samples, lr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         [
+          0,
+          1.0
+         ],
+         [
+          1,
+          0.0
+         ],
+         [
+          0,
+          1.0
+         ],
+         [
+          1,
+          0.0
+         ]
+        ],
+        0.5
+       ],
+       "expect": [
+        0.125,
+        -0.125
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         [
+          2,
+          1.0
+         ],
+         [
+          0,
+          0.0
+         ],
+         [
+          1,
+          0.0
+         ]
+        ],
+        1.0
+       ],
+       "expect": [
+        -0.111111,
+        -0.111111,
+        0.222222
+       ]
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ],
+        [
+         [
+          0,
+          0.2
+         ],
+         [
+          1,
+          0.8
+         ]
+        ],
+        0.1
+       ],
+       "expect": [
+        0.985,
+        0.015
+       ]
+      }
+     ],
+     "hint": "Mean reward as baseline; average the weighted scores.",
+     "solution": "import math\ndef pg_step(theta, samples, lr):\n    m = max(theta)\n    es = [math.exp(t - m) for t in theta]\n    s = sum(es)\n    p = [e / s for e in es]\n    base = sum(r for a, r in samples) / len(samples)\n    g = [0.0] * len(theta)\n    for a, r in samples:\n        for i in range(len(theta)):\n            sc = (1.0 if i == a else 0.0) - p[i]\n            g[i] += (r - base) * sc\n    n = len(samples)\n    return [round(theta[i] + lr * g[i] / n, 6) for i in range(len(theta))]\n"
+    },
+    {
+     "type": "order",
+     "title": "A policy gradient step",
+     "intro": "Order the steps.",
+     "items": [
+      "Sample actions from the policy",
+      "Observe rewards",
+      "Compute returns and a baseline",
+      "Weight each score function by return minus baseline",
+      "Step the parameters upward"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Return",
+       "Discounted future reward"
+      ],
+      [
+       "Baseline",
+       "Variance reduction"
+      ],
+      [
+       "Score function",
+       "Gradient of log probability"
+      ],
+      [
+       "Logits",
+       "Raw policy scores"
+      ],
+      [
+       "gamma",
+       "Discount factor"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Gradient",
+     "text": "The gradient of the log-probability for a softmax policy is the one-hot vector minus the {{probabilities|probability vector}}. A {{baseline}} reduces variance."
+    }
+   ]
+  },
+  {
+   "title": "Advantages and generalized advantage estimation",
+   "maps": [
+    {
+     "title": "Advantage",
+     "links": [
+      "Advantage | is | Q minus V",
+      "TD residual | estimates | One-step advantage",
+      "GAE | blends | Multi-step estimates",
+      "Lambda | trades | Bias for variance",
+      "Value function | predicts | Return",
+      "Normalisation | rescales | Advantages",
+      "Bootstrapping | uses | Value of the next state"
+     ]
+    }
+   ],
+   "summary": [
+    "The advantage of an action is how much better it is than the policy's average action in that state: A(s, a) = Q(s, a) - V(s). Weighting the policy gradient by the advantage is the standard way to reduce variance.",
+    "Generalized advantage estimation, GAE, by Schulman and colleagues in 2015, builds advantage estimates from a learned value function. A parameter lambda interpolates between a low-variance, biased one-step estimate and a high-variance, unbiased Monte Carlo estimate.",
+    "PPO typically uses GAE, with gamma of 0.99 and lambda of 0.95 as common defaults."
+   ],
+   "glossary": [
+    {
+     "term": "Advantage",
+     "def": "A(s, a) = Q(s, a) - V(s): how much better than average an action is."
+    },
+    {
+     "term": "Value function",
+     "def": "V(s): the expected return from state s under the policy."
+    },
+    {
+     "term": "TD residual",
+     "def": "delta_t = r_t + gamma V(s_{t+1}) - V(s_t)."
+    },
+    {
+     "term": "GAE",
+     "def": "A_t = sum_l (gamma lambda)^l delta_{t+l}."
+    },
+    {
+     "term": "Bootstrapping",
+     "def": "Using a value estimate in place of the rest of the return."
+    },
+    {
+     "term": "Advantage normalisation",
+     "def": "Subtracting the batch mean and dividing by the standard deviation."
+    }
+   ],
+   "keyPoints": [
+    "delta_t = r_t + gamma V(s_{t+1}) - V(s_t).",
+    "GAE: A_t = delta_t + gamma lambda A_{t+1}.",
+    "lambda = 0 gives the one-step estimate (low variance, more bias).",
+    "lambda = 1 gives return minus value (higher variance, low bias).",
+    "Common defaults: gamma 0.99, lambda 0.95 (practice, not the only choice).",
+    "Normalising advantages per minibatch is common in implementations."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "A raw return tells you how much reward followed an action, but not whether that was good. If every state yields about 100 on average, a return of 101 is nothing special. The advantage subtracts what was expected: how much better than usual was this action? Positive advantage, make it likelier.",
+      "Negative, less likely."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "A^{\\pi}(s,a) \\;=\\; Q^{\\pi}(s,a) - V^{\\pi}(s)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "We do not know Q, but we can estimate the advantage from experience and a learned value function V. The simplest estimate uses one step: the reward received plus the discounted value of the next state, minus the value of this state. This is the temporal-difference residual delta.",
+      "It has low variance, because it uses only one random reward, but it is biased if V is wrong."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\delta_t = r_t + \\gamma V(s_{t+1}) - V(s_t), \\\\[0.6em] \\hat{A}_t = \\delta_t + \\gamma\\lambda\\,\\hat{A}_{t+1} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Using more steps trades bias for variance. Generalized advantage estimation takes an exponentially weighted sum of the residuals, controlled by lambda. With lambda equal to zero it is the one-step residual. With lambda equal to one it is the full return minus the value, which is unbiased but noisy.",
+      "Values around 0.95 are the common practical compromise."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The recursion runs backwards through the trajectory, just like the discounted return. At an episode end the future value is zero, so we multiply the next-state value and the running advantage by a mask that is zero after a terminal step. The labs implement this with a done flag."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Finally, many implementations normalise the advantages in each batch: subtract the mean, divide by the standard deviation. This keeps the scale of the gradient steady between batches. It is an implementation habit, not part of the theory."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the advantage?",
+     "options": [
+      "Q minus V",
+      "V minus Q",
+      "Reward",
+      "Return"
+     ],
+     "answer": 0,
+     "explain": "How much better than average."
+    },
+    {
+     "q": "What does lambda = 0 give in GAE?",
+     "options": [
+      "The one-step TD residual",
+      "The full return",
+      "Zero",
+      "The value"
+     ],
+     "answer": 0,
+     "explain": "Low variance, more bias."
+    },
+    {
+     "q": "What does lambda = 1 give?",
+     "options": [
+      "Return minus value",
+      "Only the next reward",
+      "Zero",
+      "The policy"
+     ],
+     "answer": 0,
+     "explain": "Unbiased but noisy."
+    },
+    {
+     "q": "Why mask at episode ends?",
+     "options": [
+      "There is no future value after a terminal step",
+      "To save time",
+      "To normalise",
+      "To clip"
+     ],
+     "answer": 0,
+     "explain": "Done flag."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Who proposed GAE?",
+     "a": "Schulman and colleagues, 2015."
+    },
+    {
+     "q": "What does delta use?",
+     "a": "One reward and two values."
+    },
+    {
+     "q": "Why normalise advantages?",
+     "a": "Steady gradient scale."
+    },
+    {
+     "q": "What does lambda trade?",
+     "a": "Bias for variance."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "TD residuals",
+     "intro": "Write td_residuals(rewards, values, gamma): values has one more entry than rewards (the bootstrap value after the last step); return delta_t = r_t + gamma * V[t+1] - V[t] for each t, rounded to 6 decimals.",
+     "fn": "td_residuals",
+     "starter": "def td_residuals(rewards, values, gamma):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         0.5,
+         0.5,
+         0.5
+        ],
+        0.9
+       ],
+       "expect": [
+        0.95,
+        0.95
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         1
+        ],
+        [
+         0,
+         0,
+         0,
+         0
+        ],
+        0.99
+       ],
+       "expect": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        [
+         2.0,
+         3.0
+        ],
+        0.5
+       ],
+       "expect": [
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         1.0
+        ],
+        0.9
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Use the next value.",
+     "solution": "def td_residuals(rewards, values, gamma):\n    out = []\n    for t in range(len(rewards)):\n        out.append(round(rewards[t] + gamma * values[t + 1] - values[t], 6))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "GAE",
+     "intro": "Write gae(rewards, values, dones, gamma, lam): values has one more entry than rewards; dones[t] is 1 if the episode ended after step t (then the next value and the running advantage are cut off, mask = 1 - dones[t]). Compute delta_t = r_t + gamma * V[t+1] * mask - V[t] and A_t = delta_t + gamma * lam * mask * A_{t+1} backwards. Round each advantage to 6 decimals.",
+     "fn": "gae",
+     "starter": "def gae(rewards, values, dones, gamma, lam):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         0.5,
+         0.5,
+         0.5,
+         0.5
+        ],
+        [
+         0,
+         0,
+         0
+        ],
+        0.9,
+        0.95
+       ],
+       "expect": [
+        2.456724,
+        1.76225,
+        0.95
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         1
+        ],
+        [
+         0.0,
+         1.0,
+         0.0,
+         2.0
+        ],
+        [
+         0,
+         1,
+         0
+        ],
+        0.99,
+        0.95
+       ],
+       "expect": [
+        1.0495,
+        -1.0,
+        2.98
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        0.9,
+        0.0
+       ],
+       "expect": [
+        1.0,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        0.9,
+        1.0
+       ],
+       "expect": [
+        1.9,
+        1.0
+       ]
+      }
+     ],
+     "hint": "Backwards recursion with a mask.",
+     "solution": "def gae(rewards, values, dones, gamma, lam):\n    T = len(rewards)\n    adv = [0.0] * T\n    last = 0.0\n    for t in range(T - 1, -1, -1):\n        mask = 1.0 - dones[t]\n        delta = rewards[t] + gamma * values[t + 1] * mask - values[t]\n        last = delta + gamma * lam * mask * last\n        adv[t] = round(last, 6)\n    return adv\n"
+    },
+    {
+     "type": "python",
+     "title": "Value targets",
+     "intro": "The value network is trained towards the return estimate R_t = A_t + V(s_t). Write value_targets(advantages, values): the list of A_t + V[t] for each t (values may be longer; use the first len(advantages) entries), rounded to 6 decimals.",
+     "fn": "value_targets",
+     "starter": "def value_targets(advantages, values):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         -0.5
+        ],
+        [
+         1.0,
+         2.0,
+         3.0
+        ]
+       ],
+       "expect": [
+        1.5,
+        1.5
+       ]
+      },
+      {
+       "args": [
+        [
+         0.0
+        ],
+        [
+         1.5,
+         0.0
+        ]
+       ],
+       "expect": [
+        1.5
+       ]
+      },
+      {
+       "args": [
+        [
+         1.0,
+         1.0,
+         1.0
+        ],
+        [
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ]
+       ],
+       "expect": [
+        1.0,
+        1.0,
+        1.0
+       ]
+      }
+     ],
+     "hint": "Advantage plus value.",
+     "solution": "def value_targets(advantages, values):\n    return [round(advantages[t] + values[t], 6) for t in range(len(advantages))]\n"
+    },
+    {
+     "type": "python",
+     "title": "Normalise advantages",
+     "intro": "Write normalise(adv): subtract the mean and divide by (std + 1e-8), where std is the population standard deviation; round to 6 decimals. Use import math.",
+     "fn": "normalise",
+     "starter": "def normalise(adv):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        -1.224745,
+        0.0,
+        1.224745
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         -5
+        ]
+       ],
+       "expect": [
+        1.0,
+        -1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         0.1,
+         0.2,
+         0.4,
+         0.8
+        ]
+       ],
+       "expect": [
+        -1.025755,
+        -0.652753,
+        0.09325,
+        1.585258
+       ]
+      }
+     ],
+     "hint": "Zero mean and unit spread.",
+     "solution": "import math\ndef normalise(adv):\n    n = len(adv)\n    mu = sum(adv) / n\n    var = sum((a - mu) ** 2 for a in adv) / n\n    s = math.sqrt(var)\n    return [round((a - mu) / (s + 1e-8), 6) for a in adv]\n"
+    },
+    {
+     "type": "order",
+     "title": "Computing advantages",
+     "intro": "Order the steps.",
+     "items": [
+      "Roll out the policy and record rewards and values",
+      "Compute TD residuals",
+      "Accumulate them backwards with gamma times lambda",
+      "Form value targets A plus V",
+      "Normalise the advantages"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "GAE",
+     "intro": "Match each item with its meaning.",
+     "pairs": [
+      [
+       "delta",
+       "One-step TD residual"
+      ],
+      [
+       "lambda = 0",
+       "One-step estimate"
+      ],
+      [
+       "lambda = 1",
+       "Return minus value"
+      ],
+      [
+       "done mask",
+       "Cut off after episode end"
+      ],
+      [
+       "Normalisation",
+       "Mean 0, standard deviation 1"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Advantages",
+     "text": "The advantage is Q minus {{V|the value}}; GAE blends estimates with the parameter {{lambda}}."
+    }
+   ]
+  },
+  {
+   "title": "Trust regions, KL divergence and the ratio",
+   "maps": [
+    {
+     "title": "Trust region",
+     "links": [
+      "Ratio | is | New over old probability",
+      "KL divergence | measures | Policy change",
+      "Trust region | limits | Update size",
+      "TRPO | constrains | KL",
+      "Surrogate | uses | Old-policy samples",
+      "Importance sampling | corrects | Distribution shift",
+      "Large ratio | signals | Big change"
+     ]
+    }
+   ],
+   "summary": [
+    "The data comes from the old policy, but we want to evaluate a new one. The probability ratio r = pi_new(a|s) / pi_old(a|s) corrects for this: it is importance sampling. The surrogate objective weights each advantage by r.",
+    "The surrogate is a good approximation only near the old policy. TRPO keeps the policy there by bounding the average KL divergence between old and new. PPO will keep the ratio near one instead.",
+    "The labs compute ratios from log-probabilities, KL divergence for categorical policies and a KL-penalised surrogate."
+   ],
+   "glossary": [
+    {
+     "term": "Probability ratio",
+     "def": "r(theta) = pi_theta(a|s) / pi_old(a|s)."
+    },
+    {
+     "term": "Importance sampling",
+     "def": "Reweighting samples from one distribution to estimate an average under another."
+    },
+    {
+     "term": "KL divergence",
+     "def": "A measure of how different one distribution is from another."
+    },
+    {
+     "term": "Trust region",
+     "def": "The neighbourhood of the current policy in which the surrogate can be trusted."
+    },
+    {
+     "term": "Surrogate objective",
+     "def": "L(theta) = E[ r(theta) * A ]."
+    },
+    {
+     "term": "Monotonic improvement",
+     "def": "TRPO's theory: a bounded KL step guarantees no (large) decrease."
+    }
+   ],
+   "keyPoints": [
+    "r = exp(log pi_new - log pi_old).",
+    "Surrogate: L(theta) = E[ r * A ]. At theta = theta_old, r = 1.",
+    "KL(p || q) = sum p log(p / q), zero only when p = q.",
+    "TRPO: maximise the surrogate subject to mean KL <= delta.",
+    "PPO-penalty variant: maximise L - beta * KL, adapting beta.",
+    "PPO-clip: remove the incentive to push r outside [1 - eps, 1 + eps]."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The samples in our batch were collected by the old policy. But the policy gradient involves expectations under the policy being improved. To correct, weight each sample by the ratio of its probability under the new policy to that under the old. This is importance sampling.",
+      "The weighted advantage is the surrogate objective."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} r_t(\\theta) \\;=\\; \\frac{\\pi_\\theta(a_t \\mid s_t)}{\\pi_{\\theta_{\\mathrm{old}}}(a_t \\mid s_t)}, \\\\[0.6em] L(\\theta) \\;=\\; \\mathbb{E}\\bigl[\\, r_t(\\theta)\\,\\hat{A}_t \\,\\bigr] \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "At the start of an update the new policy equals the old one, so every ratio is one, and the gradient of L is the ordinary policy gradient. As the parameters move, the ratios depart from one. The farther they go, the less reliable the surrogate, since the data no longer matches the policy."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "TRPO makes the limit explicit. It maximises L subject to the average KL divergence between old and new policies being below a small number. The KL divergence between two distributions is zero when they are equal and grows as they differ.",
+      "A constraint on KL is a limit on how far the policy can move in distribution, not in parameter space."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "D_{\\mathrm{KL}}(p \\,\\|\\, q) \\;=\\; \\sum_a p(a)\\,\\log\\frac{p(a)}{q(a)}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Enforcing the constraint needs the second-order machinery of TRPO. The PPO paper explores two cheaper alternatives. One adds the KL as a penalty with a coefficient that is adapted to hit a target KL. The other clips the ratio, which is the subject of the next chapter.",
+      "The paper found the clipped version performed best."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In practice we store the log-probabilities of the actions under the old policy at collection time. The ratio is then the exponential of the difference of log-probabilities, which is numerically stable."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the ratio correct for?",
+     "options": [
+      "Data collected by the old policy",
+      "Reward scale",
+      "Value error",
+      "Entropy"
+     ],
+     "answer": 0,
+     "explain": "Importance sampling."
+    },
+    {
+     "q": "What is the ratio at the start of an update?",
+     "options": [
+      "One",
+      "Zero",
+      "Two",
+      "Undefined"
+     ],
+     "answer": 0,
+     "explain": "New equals old."
+    },
+    {
+     "q": "What does TRPO constrain?",
+     "options": [
+      "Mean KL between policies",
+      "The learning rate",
+      "The batch size",
+      "The reward"
+     ],
+     "answer": 0,
+     "explain": "A trust region."
+    },
+    {
+     "q": "When is KL zero?",
+     "options": [
+      "When the distributions are equal",
+      "Always",
+      "Never",
+      "When p is uniform"
+     ],
+     "answer": 0,
+     "explain": "Otherwise positive."
+    }
+   ],
+   "cards": [
+    {
+     "q": "How is the ratio computed?",
+     "a": "exp(log new - log old)."
+    },
+    {
+     "q": "What is the surrogate?",
+     "a": "E[r times A]."
+    },
+    {
+     "q": "What are PPO's two variants?",
+     "a": "KL penalty and clipping."
+    },
+    {
+     "q": "Why store old log-probs?",
+     "a": "To get the ratio."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Probability ratio",
+     "intro": "Write ratio(logp_new, logp_old): exp(logp_new - logp_old). Use import math.",
+     "fn": "ratio",
+     "starter": "def ratio(logp_new, logp_old):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -1.0,
+        -1.0
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -0.5,
+        -1.0
+       ],
+       "expect": 1.6487212707001282,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -2.0,
+        -1.0
+       ],
+       "expect": 0.36787944117144233,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.0,
+        -0.1
+       ],
+       "expect": 1.1051709180756477,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -3.0,
+        -1.5
+       ],
+       "expect": 0.22313016014842982,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "One line.",
+     "solution": "import math\ndef ratio(logp_new, logp_old):\n    return math.exp(logp_new - logp_old)\n"
+    },
+    {
+     "type": "python",
+     "title": "KL divergence",
+     "intro": "Write kl(p, q): the KL divergence sum p_i * ln(p_i / q_i) of two probability lists (skip terms where p_i is 0). Use import math.",
+     "fn": "kl",
+     "starter": "def kl(p, q):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.1
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.3680642071684971,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.9,
+         0.1
+        ]
+       ],
+       "expect": 0.5108256237659907,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.6931471805599453,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.3,
+         0.5
+        ],
+        [
+         0.3,
+         0.3,
+         0.4
+        ]
+       ],
+       "expect": 0.030478754035472025,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Skip zero terms.",
+     "solution": "import math\ndef kl(p, q):\n    s = 0.0\n    for a, b in zip(p, q):\n        if a > 0:\n            s += a * math.log(a / b)\n    return s\n"
+    },
+    {
+     "type": "python",
+     "title": "Surrogate",
+     "intro": "Write surrogate(ratios, advantages): the mean of ratio_i * advantage_i. Round to 9 decimals.",
+     "fn": "surrogate",
+     "starter": "def surrogate(ratios, advantages):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         1,
+         -1,
+         2
+        ]
+       ],
+       "expect": 0.666666667,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.2,
+         0.8
+        ],
+        [
+         1.0,
+         1.0
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.5
+        ],
+        [
+         3.0
+        ]
+       ],
+       "expect": 1.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         2.0,
+         0.1
+        ],
+        [
+         -1.0,
+         5.0
+        ]
+       ],
+       "expect": -0.75,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Average of ratio times advantage.",
+     "solution": "def surrogate(ratios, advantages):\n    s = 0.0\n    for r, a in zip(ratios, advantages):\n        s += r * a\n    return round(s / len(ratios), 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "KL-penalised surrogate",
+     "intro": "Write penalised(ratios, advantages, kl_value, beta): the surrogate minus beta times kl_value, rounded to 9 decimals.",
+     "fn": "penalised",
+     "starter": "def penalised(ratios, advantages, kl_value, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         1,
+         1
+        ],
+        0.0,
+        1.0
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.2,
+         0.8
+        ],
+        [
+         1.0,
+         1.0
+        ],
+        0.05,
+        2.0
+       ],
+       "expect": 0.9,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.5
+        ],
+        [
+         2.0
+        ],
+        0.1,
+        10.0
+       ],
+       "expect": 2.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Penalty on the policy change.",
+     "solution": "def penalised(ratios, advantages, kl_value, beta):\n    s = 0.0\n    for r, a in zip(ratios, advantages):\n        s += r * a\n    return round(s / len(ratios) - beta * kl_value, 9)\n"
+    },
+    {
+     "type": "order",
+     "title": "Why a ratio",
+     "intro": "Order the argument.",
+     "items": [
+      "Data is collected under the old policy",
+      "We want to improve a new policy",
+      "Weight each sample by new over old probability",
+      "The weighting is accurate only near the old policy",
+      "So limit how far the new policy moves"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Trust region",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Ratio",
+       "New over old probability"
+      ],
+      [
+       "KL divergence",
+       "Distribution difference"
+      ],
+      [
+       "TRPO",
+       "KL constraint"
+      ],
+      [
+       "PPO-penalty",
+       "KL as a penalty"
+      ],
+      [
+       "PPO-clip",
+       "Clip the ratio"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Ratio",
+     "text": "The ratio is the {{new}} probability over the {{old}} probability."
+    }
+   ]
+  },
+  {
+   "title": "The clipped surrogate objective",
+   "maps": [
+    {
+     "title": "Clipping",
+     "links": [
+      "Clip | bounds | The ratio",
+      "Epsilon | is | 0.2 typically",
+      "Min | takes | The pessimistic term",
+      "Positive advantage | stops at | 1 plus epsilon",
+      "Negative advantage | stops at | 1 minus epsilon",
+      "Clipped region | has | Zero gradient",
+      "Objective | is | A lower bound"
+     ]
+    }
+   ],
+   "summary": [
+    "The PPO objective is L = E[ min( r A, clip(r, 1 - eps, 1 + eps) A ) ]. The clip cuts the ratio to the band from 1 - eps to 1 + eps, where eps is about 0.2. The min then picks the more pessimistic of the clipped and unclipped terms.",
+    "If an action had positive advantage, increasing its probability helps only until the ratio reaches 1 + eps; beyond that the gradient is zero. If the advantage is negative, decreasing helps only until 1 - eps. This removes the incentive for large policy changes without a hard constraint.",
+    "The labs compute the objective and its gradient in each region."
+   ],
+   "glossary": [
+    {
+     "term": "Clipping",
+     "def": "Limiting a value to a range: clip(x, lo, hi)."
+    },
+    {
+     "term": "Epsilon",
+     "def": "The clip range hyperparameter; 0.2 is a common value."
+    },
+    {
+     "term": "Pessimistic bound",
+     "def": "Taking the smaller of two estimates."
+    },
+    {
+     "term": "Clip fraction",
+     "def": "The share of samples whose ratio was outside the band."
+    },
+    {
+     "term": "Dead zone",
+     "def": "A region where the gradient is zero."
+    },
+    {
+     "term": "Per-sample loss",
+     "def": "The negative of the clipped term, averaged over a minibatch."
+    }
+   ],
+   "keyPoints": [
+    "L_clip = min(r A, clip(r, 1 - eps, 1 + eps) A).",
+    "A > 0: gradient is zero once r > 1 + eps.",
+    "A < 0: gradient is zero once r < 1 - eps.",
+    "Otherwise the gradient is that of r A: r * A with respect to log pi.",
+    "The min makes the objective a lower bound on the unclipped surrogate.",
+    "eps = 0.2 was a good value in the paper's experiments (the paper compared several)."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Here is the heart of PPO. Take the surrogate r times A, and cut off its improvement when the ratio strays too far. The clip function limits the ratio to the interval from one minus epsilon to one plus epsilon. The final objective takes the smaller of the clipped and unclipped values."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "L^{\\mathrm{CLIP}}(\\theta) \\;=\\; \\mathbb{E}_t\\Bigl[\\ \\min\\bigl(\\, r_t(\\theta)\\,\\hat{A}_t,\\ \\ \\mathrm{clip}\\bigl(r_t(\\theta),\\,1-\\epsilon,\\,1+\\epsilon\\bigr)\\,\\hat{A}_t \\bigr) \\Bigr]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Case one: the advantage is positive. The action was better than average, so we want to raise its probability, which raises r. The unclipped term r A grows without limit. The clipped term stops growing at one plus epsilon times A. The min picks the clipped term once r passes the band.",
+      "Its gradient is zero. The incentive to push this action further vanishes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Case two: the advantage is negative. We want to lower r. The unclipped term r A, being negative, rises as r falls. The clipped term stops improving below one minus epsilon. The min picks the smaller value, so now the clipped term applies when r is below the band. Again the gradient is zero."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There is a subtle point in the min. Suppose the advantage is positive and r has already dropped below one minus epsilon, an action that became less likely despite being good. The unclipped term r A is the smaller one, so the min keeps it, and its gradient pushes r back up.",
+      "The objective clips only the improvement, never the correction of a mistake. That makes it a pessimistic lower bound on the surrogate."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The value of epsilon sets how far a single update can go. The paper compared several values and found 0.2 worked well on its continuous control tasks. Many later implementations also use 0.1 to 0.3.",
+      "The fraction of samples falling outside the band, the clip fraction, is a useful diagnostic during training."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What happens to the gradient for A > 0 once r exceeds 1 + eps?",
+     "options": [
+      "It is zero",
+      "It doubles",
+      "It flips sign",
+      "It is infinite"
+     ],
+     "answer": 0,
+     "explain": "No incentive to go further."
+    },
+    {
+     "q": "What does the min do?",
+     "options": [
+      "Takes the pessimistic term",
+      "Takes the larger term",
+      "Averages",
+      "Clips"
+     ],
+     "answer": 0,
+     "explain": "A lower bound."
+    },
+    {
+     "q": "What is a typical epsilon?",
+     "options": [
+      "0.2",
+      "20",
+      "0",
+      "5"
+     ],
+     "answer": 0,
+     "explain": "Often between 0.1 and 0.3."
+    },
+    {
+     "q": "If A > 0 and r < 1 - eps, is the gradient zero?",
+     "options": [
+      "No, the unclipped term applies",
+      "Yes",
+      "Only at r = 0",
+      "Always"
+     ],
+     "answer": 0,
+     "explain": "Mistakes are not clipped."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is the clip fraction?",
+     "a": "Share of samples outside the band."
+    },
+    {
+     "q": "What does clipping remove?",
+     "a": "The incentive for large changes."
+    },
+    {
+     "q": "Is it a hard constraint?",
+     "a": "No, only a removed incentive."
+    },
+    {
+     "q": "What is the objective's shape for A > 0?",
+     "a": "Rises with r then flattens."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Clipped objective",
+     "intro": "Write clip_obj(r, adv, eps): min(r * adv, clip(r, 1 - eps, 1 + eps) * adv).",
+     "fn": "clip_obj",
+     "starter": "def clip_obj(r, adv, eps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1.0,
+        1.0,
+        0.2
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1.5,
+        1.0,
+        0.2
+       ],
+       "expect": 1.2,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.5,
+        1.0,
+        0.2
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1.5,
+        -1.0,
+        0.2
+       ],
+       "expect": -1.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.5,
+        -1.0,
+        0.2
+       ],
+       "expect": -0.8,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1.1,
+        2.0,
+        0.2
+       ],
+       "expect": 2.2,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.7,
+        1.0,
+        0.2
+       ],
+       "expect": 0.7,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Clip the ratio then take the minimum.",
+     "solution": "def clip_obj(r, adv, eps):\n    c = r\n    if c < 1 - eps:\n        c = 1 - eps\n    if c > 1 + eps:\n        c = 1 + eps\n    return min(r * adv, c * adv)\n"
+    },
+    {
+     "type": "python",
+     "title": "Gradient of the objective",
+     "intro": "Write clip_grad(r, adv, eps): the derivative of the per-sample clipped objective with respect to log pi_new (note d r / d log pi = r). It is r * adv unless the sample is clipped: adv > 0 and r > 1 + eps, or adv < 0 and r < 1 - eps, in which case it is 0.",
+     "fn": "clip_grad",
+     "starter": "def clip_grad(r, adv, eps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1.0,
+        1.0,
+        0.2
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1.5,
+        1.0,
+        0.2
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.5,
+        1.0,
+        0.2
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1.5,
+        -1.0,
+        0.2
+       ],
+       "expect": -1.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.5,
+        -1.0,
+        0.2
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1.2,
+        1.0,
+        0.2
+       ],
+       "expect": 1.2,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Zero only in the clipped regions.",
+     "solution": "def clip_grad(r, adv, eps):\n    if adv > 0 and r > 1 + eps:\n        return 0.0\n    if adv < 0 and r < 1 - eps:\n        return 0.0\n    return r * adv\n"
+    },
+    {
+     "type": "python",
+     "title": "Mean clipped loss",
+     "intro": "Write ppo_clip_loss(ratios, advs, eps): the NEGATIVE mean of the clipped objective over the samples (the loss to minimise), rounded to 9 decimals.",
+     "fn": "ppo_clip_loss",
+     "starter": "def ppo_clip_loss(ratios, advs, eps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1.0,
+         1.0
+        ],
+        [
+         1.0,
+         -1.0
+        ],
+        0.2
+       ],
+       "expect": -0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.5,
+         0.5
+        ],
+        [
+         1.0,
+         1.0
+        ],
+        0.2
+       ],
+       "expect": -0.85,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.5,
+         0.5
+        ],
+        [
+         -1.0,
+         -1.0
+        ],
+        0.2
+       ],
+       "expect": 1.15,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.1
+        ],
+        [
+         2.0
+        ],
+        0.2
+       ],
+       "expect": -2.2,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Average then negate.",
+     "solution": "def ppo_clip_loss(ratios, advs, eps):\n    tot = 0.0\n    for r, a in zip(ratios, advs):\n        c = r\n        if c < 1 - eps:\n            c = 1 - eps\n        if c > 1 + eps:\n            c = 1 + eps\n        tot += min(r * a, c * a)\n    return round(-tot / len(ratios), 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Clip fraction",
+     "intro": "Write clip_fraction(ratios, eps): the fraction of ratios outside [1 - eps, 1 + eps].",
+     "fn": "clip_fraction",
+     "starter": "def clip_fraction(ratios, eps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1.0,
+         1.3,
+         0.7,
+         1.1
+        ],
+        0.2
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        0.2
+       ],
+       "expect": 0.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         1.5,
+         1.6
+        ],
+        0.2
+       ],
+       "expect": 1.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0.9,
+         1.1
+        ],
+        0.05
+       ],
+       "expect": 1.0,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Count the samples outside the band.",
+     "solution": "def clip_fraction(ratios, eps):\n    n = 0\n    for r in ratios:\n        if r < 1 - eps or r > 1 + eps:\n            n += 1\n    return n / len(ratios)\n"
+    },
+    {
+     "type": "order",
+     "title": "Reading the objective",
+     "intro": "Order the checks for one sample.",
+     "items": [
+      "Compute the ratio",
+      "Clip it to the band",
+      "Multiply both ratios by the advantage",
+      "Take the smaller product",
+      "Average over the minibatch"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Cases",
+     "intro": "Match each case with the gradient.",
+     "pairs": [
+      [
+       "A > 0, r in band",
+       "r times A"
+      ],
+      [
+       "A > 0, r > 1 + eps",
+       "Zero"
+      ],
+      [
+       "A < 0, r < 1 - eps",
+       "Zero"
+      ],
+      [
+       "A > 0, r < 1 - eps",
+       "r times A (corrects)"
+      ],
+      [
+       "A < 0, r > 1 + eps",
+       "r times A (corrects)"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Clip",
+     "text": "The objective takes the {{min|minimum|smaller}} of the clipped and unclipped terms, with epsilon about {{0.2}}."
+    }
+   ]
+  },
+  {
+   "title": "The full loss: value, entropy and the update",
+   "maps": [
+    {
+     "title": "Total loss",
+     "links": [
+      "Total loss | sums | Three terms",
+      "Policy loss | is | Negative clipped objective",
+      "Value loss | trains | The critic",
+      "Entropy bonus | keeps | Exploration alive",
+      "Coefficients | weight | The terms",
+      "Shared network | needs | A combined loss",
+      "Minibatch | gives | One gradient step"
+     ]
+    }
+   ],
+   "summary": [
+    "When the policy and value function share a network, PPO combines three terms: the clipped policy objective, a value function loss and an entropy bonus. L = L_clip - c1 L_value + c2 Entropy, maximised (or its negative minimised).",
+    "The value loss is the squared error between the predicted value and the target return. The entropy bonus rewards a spread-out policy, which prevents it from becoming deterministic too early.",
+    "Common defaults for the coefficients are c1 = 0.5 and c2 = 0.01; these are conventions in popular implementations, not requirements."
+   ],
+   "glossary": [
+    {
+     "term": "Value loss",
+     "def": "Squared error between V(s) and the target return."
+    },
+    {
+     "term": "Entropy",
+     "def": "H(pi) = -sum pi log pi: how spread out the policy is."
+    },
+    {
+     "term": "Entropy bonus",
+     "def": "A term added to the objective to encourage exploration."
+    },
+    {
+     "term": "Shared parameters",
+     "def": "Policy and value heads using the same body network."
+    },
+    {
+     "term": "Combined loss",
+     "def": "The weighted sum used for one optimiser step."
+    },
+    {
+     "term": "Minibatch",
+     "def": "A random subset of the collected batch."
+    }
+   ],
+   "keyPoints": [
+    "L = L_clip - c1 * L_value + c2 * H, maximised; minimise the negative.",
+    "L_value = (V(s) - R)^2 (sometimes clipped).",
+    "Entropy of a discrete policy: -sum p log p.",
+    "Typical coefficients: c1 about 0.5 and c2 about 0.01 (implementation defaults).",
+    "Without the entropy term the policy may collapse to a single action early.",
+    "The PPO paper presents this combined objective for shared architectures."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "So far we have the policy part. The advantages come from a value function, which must be learned too. Often one network has two outputs, a policy head and a value head, sharing the early layers. Then a single loss must train both."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The value loss is simple: the squared difference between the value the network predicts and the target return, which we computed in chapter 3 as the advantage plus the old value. The entropy bonus is a third term. Entropy measures how spread out the policy is.",
+      "A uniform policy has the highest entropy, a deterministic one has zero. Adding entropy to the objective gently pushes the policy to keep some randomness, which keeps exploration alive."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} L(\\theta) \\;=\\; \\mathbb{E}_t\\Bigl[\\, L^{\\mathrm{CLIP}}_t(\\theta) \\;-\\; c_1\\, L^{\\mathrm{VF}}_t(\\theta) \\;+\\; c_2\\, S[\\pi_\\theta](s_t) \\Bigr], \\\\[0.6em] L^{\\mathrm{VF}} = \\bigl(V_\\theta(s_t) - V^{\\mathrm{targ}}_t\\bigr)^2 \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper gives this combined objective for architectures that share parameters between the policy and the value function. The coefficients c one and c two weight the terms. In many popular implementations, c one is 0.5 and c two is 0.01.",
+      "Those are common defaults rather than values the theory demands, and the best values depend on the problem."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In code we minimise rather than maximise, so the total loss is the negative of the above: the clip loss plus c1 times the value loss minus c2 times the entropy. Gradients flow through all three terms into the shared network.",
+      "Some implementations also clip the value loss in a way parallel to the policy clip."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The labs compute the entropy, the value loss, the combined loss and one full gradient step for a tiny softmax policy with a clipped objective."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the entropy bonus encourage?",
+     "options": [
+      "Exploration",
+      "Faster rewards",
+      "Bigger batches",
+      "Lower loss"
+     ],
+     "answer": 0,
+     "explain": "A spread-out policy."
+    },
+    {
+     "q": "What is the value loss?",
+     "options": [
+      "Squared error to the target return",
+      "KL divergence",
+      "The advantage",
+      "The ratio"
+     ],
+     "answer": 0,
+     "explain": "Trains the critic."
+    },
+    {
+     "q": "What are typical c1 and c2?",
+     "options": [
+      "0.5 and 0.01",
+      "10 and 10",
+      "0 and 0",
+      "1 and 1"
+     ],
+     "answer": 0,
+     "explain": "Implementation defaults."
+    },
+    {
+     "q": "Why a combined loss?",
+     "options": [
+      "A shared network trains both heads",
+      "To save RAM",
+      "To clip",
+      "To normalise"
+     ],
+     "answer": 0,
+     "explain": "One optimiser step."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is entropy of a deterministic policy?",
+     "a": "Zero."
+    },
+    {
+     "q": "What is the value target?",
+     "a": "A plus V from GAE."
+    },
+    {
+     "q": "Is c2 theory-determined?",
+     "a": "No, a tuned default."
+    },
+    {
+     "q": "What happens without entropy?",
+     "a": "Early collapse to one action."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Entropy",
+     "intro": "Write entropy(p): -sum p_i ln p_i for a probability list (skip zeros), rounded to 9 decimals. Use import math.",
+     "fn": "entropy",
+     "starter": "def entropy(p):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.693147181,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.25,
+         0.25,
+         0.25,
+         0.25
+        ]
+       ],
+       "expect": 1.386294361,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.1
+        ]
+       ],
+       "expect": 0.325082973,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Skip zero entries.",
+     "solution": "import math\ndef entropy(p):\n    s = 0.0\n    for x in p:\n        if x > 0:\n            s -= x * math.log(x)\n    return round(s, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Value loss",
+     "intro": "Write value_loss(values, targets): the mean of (value - target)^2, rounded to 9 decimals.",
+     "fn": "value_loss",
+     "starter": "def value_loss(values, targets):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1.0,
+         2.0
+        ],
+        [
+         1.0,
+         2.0
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.0,
+         0.0
+        ],
+        [
+         1.0,
+         -1.0
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.5
+        ],
+        [
+         1.5
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         2,
+         2,
+         2
+        ]
+       ],
+       "expect": 0.666666667,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Mean squared error.",
+     "solution": "def value_loss(values, targets):\n    s = 0.0\n    for v, t in zip(values, targets):\n        s += (v - t) ** 2\n    return round(s / len(values), 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Total loss",
+     "intro": "Write total_loss(clip_loss, v_loss, ent, c1, c2): clip_loss + c1 * v_loss - c2 * ent, rounded to 9 decimals.",
+     "fn": "total_loss",
+     "starter": "def total_loss(clip_loss, v_loss, ent, c1, c2):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -0.5,
+        1.0,
+        0.6,
+        0.5,
+        0.01
+       ],
+       "expect": -0.006,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.0,
+        0.0,
+        0.0,
+        0.5,
+        0.01
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1.0,
+        2.0,
+        0.7,
+        1.0,
+        0.1
+       ],
+       "expect": 2.93,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -0.1,
+        0.4,
+        1.0,
+        0.25,
+        0.0
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Minimise: clip + c1 value - c2 entropy.",
+     "solution": "def total_loss(clip_loss, v_loss, ent, c1, c2):\n    return round(clip_loss + c1 * v_loss - c2 * ent, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "One clipped step on a softmax policy",
+     "intro": "A softmax policy has logits theta. Write ppo_step(theta, samples, eps, lr): samples is a list of [action, advantage, old_prob]. Compute the current probabilities p; for each sample the ratio r = p[a]/old_prob; the gradient with respect to the logits of the clipped objective is g_a_term = (r * adv unless clipped, as before) times (onehot(a) - p); average over the samples; return the new logits theta + lr * mean gradient, each rounded to 6 decimals. Use import math.",
+     "fn": "ppo_step",
+     "starter": "def ppo_step(theta, samples, eps, lr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.0,
+         0.0
+        ],
+        [
+         [
+          0,
+          1.0,
+          0.5
+         ],
+         [
+          1,
+          -1.0,
+          0.5
+         ]
+        ],
+        0.2,
+        0.5
+       ],
+       "expect": [
+        0.25,
+        -0.25
+       ]
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0,
+         0.0
+        ],
+        [
+         [
+          0,
+          1.0,
+          0.3
+         ],
+         [
+          1,
+          -0.5,
+          0.35
+         ],
+         [
+          2,
+          0.2,
+          0.35
+         ]
+        ],
+        0.2,
+        0.3
+       ],
+       "expect": [
+        0.993023,
+        -0.002567,
+        0.009544
+       ]
+      },
+      {
+       "args": [
+        [
+         0.0,
+         0.0
+        ],
+        [
+         [
+          0,
+          1.0,
+          0.3
+         ]
+        ],
+        0.2,
+        1.0
+       ],
+       "expect": [
+        0.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         2.0,
+         0.0
+        ],
+        [
+         [
+          1,
+          -1.0,
+          0.5
+         ]
+        ],
+        0.2,
+        0.5
+       ],
+       "expect": [
+        2.0,
+        0.0
+       ]
+      }
+     ],
+     "hint": "Zero weight in the clipped regions.",
+     "solution": "import math\ndef ppo_step(theta, samples, eps, lr):\n    m = max(theta)\n    es = [math.exp(t - m) for t in theta]\n    s = sum(es)\n    p = [e / s for e in es]\n    g = [0.0] * len(theta)\n    for a, adv, old in samples:\n        r = p[a] / old\n        if adv > 0 and r > 1 + eps:\n            w = 0.0\n        elif adv < 0 and r < 1 - eps:\n            w = 0.0\n        else:\n            w = r * adv\n        for i in range(len(theta)):\n            g[i] += w * ((1.0 if i == a else 0.0) - p[i])\n    n = len(samples)\n    return [round(theta[i] + lr * g[i] / n, 6) for i in range(len(theta))]\n"
+    },
+    {
+     "type": "order",
+     "title": "Building the loss",
+     "intro": "Order the steps.",
+     "items": [
+      "Compute the ratio and clipped policy loss",
+      "Compute the value loss against the targets",
+      "Compute the entropy of the policy",
+      "Combine them with the coefficients",
+      "Backpropagate and take an optimiser step"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Loss terms",
+     "intro": "Match each term with its role.",
+     "pairs": [
+      [
+       "Clip loss",
+       "Improves the policy safely"
+      ],
+      [
+       "Value loss",
+       "Trains the critic"
+      ],
+      [
+       "Entropy",
+       "Keeps exploration"
+      ],
+      [
+       "c1",
+       "Value weight"
+      ],
+      [
+       "c2",
+       "Entropy weight"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Loss",
+     "text": "The total loss adds the clip loss and the {{value}} loss and subtracts an {{entropy}} bonus."
+    }
+   ]
+  },
+  {
+   "title": "The PPO algorithm and its practical details",
+   "maps": [
+    {
+     "title": "The loop",
+     "links": [
+      "Rollout | collects | T steps from N actors",
+      "Batch | splits into | Minibatches",
+      "Epochs | reuse | The same batch",
+      "KL early stop | halts | Large updates",
+      "Gradient clipping | bounds | Update norm",
+      "Learning rate | anneals | Over training",
+      "Seeds | affect | Results strongly"
+     ]
+    }
+   ],
+   "summary": [
+    "The algorithm runs in rounds. Actors run the current policy for T steps and record states, actions, rewards, values and old log-probabilities. Advantages are computed.",
+    "Then the batch is shuffled and split into minibatches, and for K epochs we take a gradient step on the combined loss for each minibatch.",
+    "Implementations add practical touches: gradient norm clipping, learning rate annealing, advantage normalisation, observation normalisation and sometimes an early stop when the measured KL grows too large.",
+    "Many of these are conventions found in popular code, which studies have shown can matter as much as the clip itself.",
+    "The labs implement minibatch splitting, gradient clipping, learning rate annealing and the early-stop test."
+   ],
+   "glossary": [
+    {
+     "term": "Rollout",
+     "def": "A fixed number of environment steps collected with the current policy."
+    },
+    {
+     "term": "Actor",
+     "def": "A copy of the environment (or process) generating experience."
+    },
+    {
+     "term": "Minibatch",
+     "def": "A subset of the batch used for one gradient step."
+    },
+    {
+     "term": "Gradient clipping",
+     "def": "Rescaling the gradient if its norm exceeds a limit."
+    },
+    {
+     "term": "Annealing",
+     "def": "Gradually reducing a hyperparameter such as the learning rate."
+    },
+    {
+     "term": "Early stopping on KL",
+     "def": "Ending the epochs early if the policy has moved too far."
+    }
+   ],
+   "keyPoints": [
+    "Collect T steps from N parallel actors; batch size = N * T.",
+    "Run K epochs of minibatch gradient steps on that batch.",
+    "Compute advantages once, with the old value estimates.",
+    "Clip the global gradient norm (0.5 is a common value).",
+    "Anneal the learning rate linearly to zero (a common choice).",
+    "Results vary a lot between random seeds; report several."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Now the whole algorithm. A round has two phases. In the collection phase, N actors each run the current policy for T steps. Record for each step the observation, the action, the reward, whether the episode ended, the value estimate and the log-probability of the action.",
+      "This gives a batch of N times T samples."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Then compute advantages with GAE and the value targets. These are fixed for the round: they use the value estimates from collection time. In the update phase, shuffle the batch, split it into minibatches and loop for K epochs.",
+      "For each minibatch, compute the new log-probabilities, the ratios, the clipped loss, the value loss and the entropy, and take a gradient step."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\text{round:} \\\\[0.6em] \\text{collect } N\\!\\times\\!T \\text{ samples} \\;\\to\\; \\hat A_t \\;\\to\\; \\text{for } k=1..K:\\ \\text{for each minibatch: } \\theta \\leftarrow \\theta - \\alpha\\,\\nabla_\\theta(-L) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Reusing the batch for several epochs is the point of the clip. Plain policy gradient could use a batch once, since a second pass would overshoot. With clipping the gradient vanishes for samples whose ratio has moved far enough, so repeated passes are safe."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A body of practice grew around the algorithm. Gradient norm clipping rescales an oversized gradient. The learning rate is often annealed. Observations may be normalised by running statistics.",
+      "Some implementations stop the epochs early if the measured approximate KL divergence between old and new policies exceeds a threshold. Engstrom and colleagues and others have noted that some of these details have large effects on performance, so that the clip alone does not explain PPO's results.",
+      "Treat that as a caution when comparing papers."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Finally, RL results vary a lot between random seeds. A single good run says little. Report the mean and spread over several seeds."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the batch size?",
+     "options": [
+      "Actors times steps",
+      "Epochs",
+      "Minibatch count",
+      "Gamma"
+     ],
+     "answer": 0,
+     "explain": "N times T."
+    },
+    {
+     "q": "Why can PPO reuse a batch?",
+     "options": [
+      "Clipping makes extra epochs safe",
+      "Data is free",
+      "The ratio is always one",
+      "The critic is fixed"
+     ],
+     "answer": 0,
+     "explain": "Gradients vanish for moved samples."
+    },
+    {
+     "q": "What does gradient clipping do?",
+     "options": [
+      "Rescales large gradients",
+      "Clips the ratio",
+      "Removes entropy",
+      "Stops training"
+     ],
+     "answer": 0,
+     "explain": "By global norm."
+    },
+    {
+     "q": "Why report several seeds?",
+     "options": [
+      "Results vary a lot",
+      "Seeds are free",
+      "The paper says so",
+      "To use more GPUs"
+     ],
+     "answer": 0,
+     "explain": "One run proves little."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is K?",
+     "a": "The number of epochs per round."
+    },
+    {
+     "q": "When are advantages computed?",
+     "a": "Once per round."
+    },
+    {
+     "q": "What is early stopping on KL?",
+     "a": "Ending epochs if KL gets large."
+    },
+    {
+     "q": "Which details matter?",
+     "a": "Normalisation, annealing, clipping."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Minibatch indices",
+     "intro": "Write minibatches(n, size): split the indices 0..n-1 in order into consecutive minibatches of the given size (the last may be shorter). Return the list of lists.",
+     "fn": "minibatches",
+     "starter": "def minibatches(n, size):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        4
+       ],
+       "expect": [
+        [
+         0,
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5,
+         6,
+         7
+        ],
+        [
+         8,
+         9
+        ]
+       ]
+      },
+      {
+       "args": [
+        8,
+        4
+       ],
+       "expect": [
+        [
+         0,
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5,
+         6,
+         7
+        ]
+       ]
+      },
+      {
+       "args": [
+        3,
+        5
+       ],
+       "expect": [
+        [
+         0,
+         1,
+         2
+        ]
+       ]
+      },
+      {
+       "args": [
+        0,
+        4
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Consecutive slices.",
+     "solution": "def minibatches(n, size):\n    out = []\n    i = 0\n    while i < n:\n        out.append(list(range(i, min(i + size, n))))\n        i += size\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Clip the gradient norm",
+     "intro": "Write clip_grad_norm(grad, max_norm): if the Euclidean norm of the list grad exceeds max_norm, rescale it to have norm max_norm; otherwise return it unchanged. Round each entry to 6 decimals. Use import math.",
+     "fn": "clip_grad_norm",
+     "starter": "def clip_grad_norm(grad, max_norm):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         3,
+         4
+        ],
+        1.0
+       ],
+       "expect": [
+        0.6,
+        0.8
+       ]
+      },
+      {
+       "args": [
+        [
+         0.3,
+         0.4
+        ],
+        1.0
+       ],
+       "expect": [
+        0.3,
+        0.4
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        0.5
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         6,
+         8
+        ],
+        5.0
+       ],
+       "expect": [
+        3.0,
+        4.0
+       ]
+      }
+     ],
+     "hint": "Scale by max over norm.",
+     "solution": "import math\ndef clip_grad_norm(grad, max_norm):\n    n = math.sqrt(sum(g * g for g in grad))\n    if n > max_norm:\n        k = max_norm / n\n        return [round(g * k, 6) for g in grad]\n    return [round(g, 6) for g in grad]\n"
+    },
+    {
+     "type": "python",
+     "title": "Learning rate annealing",
+     "intro": "Write lr_at(step, total, lr0): linear annealing from lr0 at step 0 to 0 at step total, lr0 * (1 - step / total).",
+     "fn": "lr_at",
+     "starter": "def lr_at(step, total, lr0):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        100,
+        0.001
+       ],
+       "expect": 0.001,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        50,
+        100,
+        0.001
+       ],
+       "expect": 0.0005,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        100,
+        100,
+        0.001
+       ],
+       "expect": 0.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        25,
+        200,
+        0.0003
+       ],
+       "expect": 0.0002625,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Straight line down.",
+     "solution": "def lr_at(step, total, lr0):\n    return lr0 * (1 - step / total)\n"
+    },
+    {
+     "type": "python",
+     "title": "Approximate KL and early stop",
+     "intro": "Write approx_kl(old_logp, new_logp): the mean of (old_logp - new_logp) over the samples, a common estimate of KL(old || new), and write it so the function returns [that estimate rounded to 9 decimals, 1 if it exceeds 0.015 else 0].",
+     "fn": "approx_kl",
+     "starter": "def approx_kl(old_logp, new_logp):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         -1.0,
+         -2.0
+        ],
+        [
+         -1.0,
+         -2.0
+        ]
+       ],
+       "expect": [
+        0.0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         -1.0,
+         -2.0
+        ],
+        [
+         -1.1,
+         -2.1
+        ]
+       ],
+       "expect": [
+        0.1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         -1.0
+        ],
+        [
+         -1.5
+        ]
+       ],
+       "expect": [
+        0.5,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         -0.5,
+         -0.5
+        ],
+        [
+         -0.49,
+         -0.5
+        ]
+       ],
+       "expect": [
+        -0.005,
+        0
+       ]
+      }
+     ],
+     "hint": "Mean log-probability difference.",
+     "solution": "def approx_kl(old_logp, new_logp):\n    s = 0.0\n    for a, b in zip(old_logp, new_logp):\n        s += a - b\n    k = s / len(old_logp)\n    return [round(k, 9), 1 if k > 0.015 else 0]\n"
+    },
+    {
+     "type": "order",
+     "title": "PPO round",
+     "intro": "Order the algorithm.",
+     "items": [
+      "Collect N by T steps with the current policy",
+      "Compute GAE advantages and value targets",
+      "Shuffle and split into minibatches",
+      "For K epochs, take clipped-loss gradient steps",
+      "Repeat with fresh data"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Practice",
+     "intro": "Match each practice with its purpose.",
+     "pairs": [
+      [
+       "Gradient clipping",
+       "Bound the update"
+      ],
+      [
+       "Learning rate annealing",
+       "Smaller steps late"
+      ],
+      [
+       "Advantage normalisation",
+       "Steady gradient scale"
+      ],
+      [
+       "KL early stop",
+       "Avoid big updates"
+      ],
+      [
+       "Several seeds",
+       "Honest comparison"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Loop",
+     "text": "PPO reuses each {{batch}} for K {{epochs|epoch}} of minibatch updates."
+    }
+   ]
+  },
+  {
+   "title": "PPO for language models (RLHF)",
+   "maps": [
+    {
+     "title": "RLHF",
+     "links": [
+      "RLHF | tunes | A language model",
+      "Reward model | scores | Responses",
+      "Policy | is | The language model",
+      "Action | is | A token",
+      "KL penalty | anchors | To a reference model",
+      "PPO | updates | The policy",
+      "DPO | avoids | The RL loop"
+     ]
+    }
+   ],
+   "summary": [
+    "Reinforcement learning from human feedback, RLHF, fine-tunes a language model with PPO. A reward model trained on human preferences scores whole responses. The language model is the policy, each token is an action, and the response is the episode.",
+    "This chapter is background knowledge: it goes beyond the 2017 PPO paper.",
+    "To stop the model drifting into gibberish that fools the reward model, the reward includes a penalty on the KL divergence between the tuned model and a frozen reference model. Often a value head is added to the language model to supply advantages.",
+    "The labs compute a KL-penalised token reward and the per-token advantages."
+   ],
+   "glossary": [
+    {
+     "term": "RLHF",
+     "def": "Reinforcement learning from human feedback."
+    },
+    {
+     "term": "Reward model",
+     "def": "A network trained on human preference data to score responses."
+    },
+    {
+     "term": "Reference model",
+     "def": "The frozen starting model that the policy is kept close to."
+    },
+    {
+     "term": "KL penalty",
+     "def": "A cost on the per-token log-probability gap to the reference."
+    },
+    {
+     "term": "Reward hacking",
+     "def": "Exploiting flaws in the reward model to get a high score without real quality."
+    },
+    {
+     "term": "Response",
+     "def": "The sequence of tokens generated for a prompt."
+    }
+   ],
+   "keyPoints": [
+    "Policy = language model; state = prompt plus tokens so far; action = next token.",
+    "Reward model gives a score at the end of the response.",
+    "Per-token KL penalty: -beta * (log pi(token) - log pi_ref(token)).",
+    "A value head predicts expected final reward for advantages (GAE).",
+    "PPO-clip stabilises the updates.",
+    "Alternatives skip the RL step: DPO trains directly on preferences (see the DPO course)."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "A language model trained to predict text imitates the internet. To make it helpful, one wants to push it toward answers people prefer. RLHF does this in three steps. First, fine-tune on examples of good responses.",
+      "Second, train a reward model on human comparisons of pairs of responses: it learns to give the preferred one a higher score. Third, use reinforcement learning, in practice often PPO, to adjust the language model to get high reward-model scores.",
+      "This three-step recipe was used in OpenAI's InstructGPT work."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the RL step the language model is the policy. The state is the prompt plus the tokens generated so far, and the action is the next token. The response is one episode.",
+      "The reward model scores the finished response, so almost all reward arrives at the final token, a sparse-reward setting that makes the value function and GAE valuable."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "r_t \\;=\\; \\begin{cases} -\\beta\\,\\bigl(\\log \\pi_\\theta(a_t \\mid s_t) - \\log \\pi_{\\mathrm{ref}}(a_t \\mid s_t)\\bigr) & t < T \\\\ r_{\\mathrm{RM}}(x, y) \\;-\\; \\beta\\,\\bigl(\\log \\pi_\\theta - \\log \\pi_{\\mathrm{ref}}\\bigr) & t = T \\end{cases}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A pure reward-model objective would let the policy drift to strange outputs that exploit the reward model, which is only an imperfect proxy. So each token gets a penalty proportional to how much the tuned model's log-probability exceeds the reference model's.",
+      "Summed over the response, this is a sample estimate of the KL divergence from the reference. The coefficient beta sets how tightly the model is held."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "PPO's clipping fits this setting well. Generating responses is expensive, so reusing a batch for several epochs saves cost, and clipping keeps the policy from lurching. But the machinery is heavy: the policy, the reference, the reward model and a value model must all be held in memory.",
+      "That cost motivated simpler alternatives. Direct Preference Optimization, covered in its own course, optimises preferences without a reward model or RL loop. Group-relative methods such as GRPO drop the value model. These are later developments, background knowledge here."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the labs, the penalty and the shaped reward are computed per token on small lists, and then fed to the GAE routine of chapter 3."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the policy in RLHF?",
+     "options": [
+      "The language model",
+      "The reward model",
+      "The reference model",
+      "The dataset"
+     ],
+     "answer": 0,
+     "explain": "Tokens are the actions."
+    },
+    {
+     "q": "Why a KL penalty to a reference model?",
+     "options": [
+      "To stop drifting and reward hacking",
+      "To speed up",
+      "To add data",
+      "To shrink the model"
+     ],
+     "answer": 0,
+     "explain": "The reward model is an imperfect proxy."
+    },
+    {
+     "q": "When does the reward model give its score?",
+     "options": [
+      "At the end of the response",
+      "At each token",
+      "Before the prompt",
+      "Never"
+     ],
+     "answer": 0,
+     "explain": "Sparse reward."
+    },
+    {
+     "q": "Which method removes the RL loop?",
+     "options": [
+      "DPO",
+      "TRPO",
+      "A3C",
+      "DQN"
+     ],
+     "answer": 0,
+     "explain": "Direct Preference Optimization."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What are the three RLHF steps?",
+     "a": "Supervised fine-tuning, reward model, RL."
+    },
+    {
+     "q": "Which models must be in memory?",
+     "a": "Policy, reference, reward, value."
+    },
+    {
+     "q": "What does beta control?",
+     "a": "How tightly we hold to the reference."
+    },
+    {
+     "q": "Is this in the 2017 PPO paper?",
+     "a": "No, it is later work."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Per-token KL penalty",
+     "intro": "Write kl_penalty(logp, logp_ref, beta): the list of per-token penalties -beta * (logp_i - logp_ref_i), each rounded to 9 decimals.",
+     "fn": "kl_penalty",
+     "starter": "def kl_penalty(logp, logp_ref, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         -1.0,
+         -2.0
+        ],
+        [
+         -1.0,
+         -2.0
+        ],
+        0.1
+       ],
+       "expect": [
+        -0.0,
+        -0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         -0.5,
+         -1.0
+        ],
+        [
+         -1.0,
+         -1.5
+        ],
+        0.2
+       ],
+       "expect": [
+        -0.1,
+        -0.1
+       ]
+      },
+      {
+       "args": [
+        [
+         -2.0
+        ],
+        [
+         -1.0
+        ],
+        0.5
+       ],
+       "expect": [
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         -1.0,
+         -1.0,
+         -1.0
+        ],
+        [
+         -1.2,
+         -0.8,
+         -1.0
+        ],
+        1.0
+       ],
+       "expect": [
+        -0.2,
+        0.2,
+        -0.0
+       ]
+      }
+     ],
+     "hint": "Penalise tokens more likely than under the reference.",
+     "solution": "def kl_penalty(logp, logp_ref, beta):\n    return [round(-beta * (a - b), 9) for a, b in zip(logp, logp_ref)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Shaped rewards",
+     "intro": "Write shaped_rewards(logp, logp_ref, beta, rm_score): the per-token rewards: the KL penalty for every token, plus rm_score added to the last token. Round each to 9 decimals.",
+     "fn": "shaped_rewards",
+     "starter": "def shaped_rewards(logp, logp_ref, beta, rm_score):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         -1.0,
+         -2.0
+        ],
+        [
+         -1.0,
+         -2.0
+        ],
+        0.1,
+        1.5
+       ],
+       "expect": [
+        -0.0,
+        1.5
+       ]
+      },
+      {
+       "args": [
+        [
+         -0.5,
+         -1.0,
+         -1.5
+        ],
+        [
+         -1.0,
+         -1.5,
+         -1.5
+        ],
+        0.2,
+        -0.5
+       ],
+       "expect": [
+        -0.1,
+        -0.1,
+        -0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         -1.0
+        ],
+        [
+         -2.0
+        ],
+        0.5,
+        2.0
+       ],
+       "expect": [
+        1.5
+       ]
+      }
+     ],
+     "hint": "The score arrives at the last token.",
+     "solution": "def shaped_rewards(logp, logp_ref, beta, rm_score):\n    out = [-beta * (a - b) for a, b in zip(logp, logp_ref)]\n    out[-1] += rm_score\n    return [round(x, 9) for x in out]\n"
+    },
+    {
+     "type": "python",
+     "title": "Sequence KL estimate",
+     "intro": "Write seq_kl(logp, logp_ref): the sum over tokens of (logp_i - logp_ref_i), a sample estimate of the KL divergence from the reference, rounded to 9 decimals.",
+     "fn": "seq_kl",
+     "starter": "def seq_kl(logp, logp_ref):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         -1.0,
+         -2.0
+        ],
+        [
+         -1.0,
+         -2.0
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         -0.5,
+         -1.0
+        ],
+        [
+         -1.0,
+         -1.5
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         -2.0
+        ],
+        [
+         -1.0
+        ]
+       ],
+       "expect": -1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [],
+        []
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Sum of log-ratios.",
+     "solution": "def seq_kl(logp, logp_ref):\n    s = 0.0\n    for a, b in zip(logp, logp_ref):\n        s += a - b\n    return round(s, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Advantages for a response",
+     "intro": "Write response_advantages(rewards, values, gamma, lam): GAE for one response (episode ends after the last token): values has one more entry than rewards but the final bootstrap value counts as 0. Return the advantages rounded to 6 decimals.",
+     "fn": "response_advantages",
+     "starter": "def response_advantages(rewards, values, gamma, lam):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.0,
+         0.0,
+         1.0
+        ],
+        [
+         0.2,
+         0.4,
+         0.8,
+         0.0
+        ],
+        1.0,
+        0.95
+       ],
+       "expect": [
+        0.7605,
+        0.59,
+        0.2
+       ]
+      },
+      {
+       "args": [
+        [
+         0.1,
+         0.1
+        ],
+        [
+         0.0,
+         0.0,
+         0.0
+        ],
+        0.99,
+        0.95
+       ],
+       "expect": [
+        0.19405,
+        0.1
+       ]
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        [
+         0.5,
+         0.0
+        ],
+        1.0,
+        1.0
+       ],
+       "expect": [
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         0.0,
+         0.0,
+         0.0,
+         2.0
+        ],
+        [
+         1.0,
+         1.0,
+         1.0,
+         1.0,
+         0.0
+        ],
+        1.0,
+        1.0
+       ],
+       "expect": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      }
+     ],
+     "hint": "Last-token bootstrap is zero.",
+     "solution": "def response_advantages(rewards, values, gamma, lam):\n    T = len(rewards)\n    adv = [0.0] * T\n    last = 0.0\n    for t in range(T - 1, -1, -1):\n        nxt = values[t + 1] if t + 1 < T else 0.0\n        delta = rewards[t] + gamma * nxt - values[t]\n        last = delta + gamma * lam * last\n        adv[t] = round(last, 6)\n    return adv\n"
+    },
+    {
+     "type": "order",
+     "title": "RLHF with PPO",
+     "intro": "Order the pipeline.",
+     "items": [
+      "Fine-tune the model on good examples",
+      "Collect human preference comparisons",
+      "Train a reward model",
+      "Sample responses from the policy",
+      "Update with PPO using reward minus a KL penalty"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "RLHF",
+     "intro": "Match each component with its role.",
+     "pairs": [
+      [
+       "Policy",
+       "The language model being tuned"
+      ],
+      [
+       "Reference model",
+       "Frozen anchor"
+      ],
+      [
+       "Reward model",
+       "Scores responses"
+      ],
+      [
+       "KL penalty",
+       "Limits drift"
+      ],
+      [
+       "Value head",
+       "Provides advantages"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "RLHF",
+     "text": "The reward model scores the whole {{response}}, and a {{KL|kl}} penalty to a reference model limits drift."
+    }
+   ]
+  },
+  {
+   "title": "Diagnostics, pitfalls and relatives",
+   "maps": [
+    {
+     "title": "Beyond PPO",
+     "links": [
+      "Clip fraction | shows | How often clipping acts",
+      "Explained variance | rates | The critic",
+      "Entropy collapse | signals | Lost exploration",
+      "Reward hacking | exploits | Proxy rewards",
+      "A2C | is | Simpler on-policy relative",
+      "SAC | is | Off-policy relative",
+      "GRPO and DPO | are | Language-model relatives"
+     ]
+    }
+   ],
+   "summary": [
+    "Training curves lie. To understand a PPO run, watch several diagnostics: the approximate KL, the clip fraction, the entropy, the explained variance of the value function and the return itself.",
+    "A healthy run shows small KL and moderate clip fraction, entropy that falls slowly and a value function that explains much of the return.",
+    "Common failure modes: entropy collapse, value function that lags, learning rate too high, advantage scale wrong, reward hacking. Many fixes are simple once the right plot is on screen.",
+    "PPO has relatives: A2C, TRPO, off-policy methods such as SAC, and for language models GRPO and DPO. The labs compute the diagnostics."
+   ],
+   "glossary": [
+    {
+     "term": "Explained variance",
+     "def": "1 - Var(return - value) / Var(return): how much of the return the critic explains."
+    },
+    {
+     "term": "Entropy collapse",
+     "def": "Policy entropy falling to near zero too early."
+    },
+    {
+     "term": "Reward hacking",
+     "def": "Exploiting the reward function rather than solving the task."
+    },
+    {
+     "term": "A2C",
+     "def": "Advantage actor-critic: a synchronous, simpler on-policy actor-critic."
+    },
+    {
+     "term": "SAC",
+     "def": "Soft actor-critic: an off-policy method with an entropy objective."
+    },
+    {
+     "term": "GRPO",
+     "def": "Group relative policy optimization: PPO-like, with advantages from groups of samples (background)."
+    }
+   ],
+   "keyPoints": [
+    "Watch: approximate KL, clip fraction, entropy, explained variance, episode return.",
+    "Explained variance near 1 is good; near 0 or negative means a poor critic.",
+    "A clip fraction near 0 suggests tiny updates; near 1 suggests too large.",
+    "Entropy collapse: raise c2, check advantage scale, lower the learning rate.",
+    "Reward hacking: inspect behaviour, not just the reward number.",
+    "PPO is on-policy and sample-hungry; off-policy methods can be more data-efficient."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "A PPO run produces numbers on every step. Which ones to trust? None alone. Look at a handful together. The return, or the reward model score, is what you want to rise. The approximate KL between old and new policies tells you how far each round moves; if it is huge, the updates are too large.",
+      "The clip fraction tells you how often clipping acts. The entropy tells you whether exploration survives. The explained variance tells you whether the critic is any good."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\mathrm{EV} \\;=\\; 1 - \\frac{\\mathrm{Var}(R_t - V(s_t))}{\\mathrm{Var}(R_t)}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Explained variance near one means the value function predicts returns well. Near zero means it is no better than a constant, and negative means worse. A poor critic produces noisy advantages and slow learning, so fix it first, for instance with a higher value coefficient or more epochs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Typical pathologies each have a signature. Entropy collapse: entropy drops quickly toward zero, the policy becomes deterministic and learning stalls. Policy collapse after a good start: the learning rate or epochs are too large, and the KL and clip fraction spike.",
+      "Reward hacking: the reward climbs while real behaviour gets worse; the cure is to look at samples, not only at the curve."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "PPO sits in a family. A2C is the simpler, single-update on-policy actor-critic. TRPO is the constrained ancestor. Off-policy actor-critic methods such as SAC reuse old data and can need far fewer environment steps, at the price of more delicate tuning.",
+      "For language models, GRPO computes advantages from a group of sampled responses to the same prompt instead of a learned value function, and DPO skips reinforcement learning entirely. I name GRPO and DPO as later developments."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where to go next: read the PPO paper itself, then the generalized advantage estimation paper, then implement PPO on a small environment with your favourite library and plot the five diagnostics. The final labs here compute them from small arrays."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does an explained variance near 0 mean?",
+     "options": [
+      "The critic is poor",
+      "A perfect critic",
+      "A tiny KL",
+      "High entropy"
+     ],
+     "answer": 0,
+     "explain": "Fix the critic first."
+    },
+    {
+     "q": "What is entropy collapse?",
+     "options": [
+      "Entropy dropping to near zero too early",
+      "Entropy rising",
+      "KL dropping",
+      "Return falling"
+     ],
+     "answer": 0,
+     "explain": "Exploration is lost."
+    },
+    {
+     "q": "Which family member skips the RL loop for language models?",
+     "options": [
+      "DPO",
+      "A2C",
+      "SAC",
+      "TRPO"
+     ],
+     "answer": 0,
+     "explain": "Direct Preference Optimization."
+    },
+    {
+     "q": "Why look at samples, not only rewards?",
+     "options": [
+      "To catch reward hacking",
+      "To save time",
+      "To clip",
+      "To anneal"
+     ],
+     "answer": 0,
+     "explain": "The reward is a proxy."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Name two diagnostics.",
+     "a": "Clip fraction and explained variance."
+    },
+    {
+     "q": "What is SAC?",
+     "a": "An off-policy actor-critic."
+    },
+    {
+     "q": "What does GRPO replace?",
+     "a": "The learned value function."
+    },
+    {
+     "q": "What is A2C?",
+     "a": "A simple on-policy actor-critic."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Explained variance",
+     "intro": "Write explained_variance(returns, values): 1 - Var(returns - values) / Var(returns) with population variances (return 0 if Var(returns) is 0), rounded to 6 decimals.",
+     "fn": "explained_variance",
+     "starter": "def explained_variance(returns, values):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": 1.0
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         2,
+         2,
+         2
+        ]
+       ],
+       "expect": 0.0
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         1.1,
+         1.9,
+         3.2,
+         3.8
+        ]
+       ],
+       "expect": 0.98
+      },
+      {
+       "args": [
+        [
+         5,
+         5,
+         5
+        ],
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "One minus the unexplained share.",
+     "solution": "def explained_variance(returns, values):\n    n = len(returns)\n    mu = sum(returns) / n\n    var_r = sum((r - mu) ** 2 for r in returns) / n\n    if var_r == 0:\n        return 0\n    diff = [r - v for r, v in zip(returns, values)]\n    md = sum(diff) / n\n    var_d = sum((d - md) ** 2 for d in diff) / n\n    return round(1 - var_d / var_r, 6)\n"
+    },
+    {
+     "type": "python",
+     "title": "Entropy trend",
+     "intro": "Write entropy_collapsed(entropies, floor): True if the last value of the list is below floor and below half of the first value.",
+     "fn": "entropy_collapsed",
+     "starter": "def entropy_collapsed(entropies, floor):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1.0,
+         0.8,
+         0.05
+        ],
+        0.1
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.9,
+         0.8
+        ],
+        0.1
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.15,
+         0.09
+        ],
+        0.1
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.04
+        ],
+        0.1
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Both conditions must hold.",
+     "solution": "def entropy_collapsed(entropies, floor):\n    last = entropies[-1]\n    first = entropies[0]\n    return last < floor and last < first / 2\n"
+    },
+    {
+     "type": "python",
+     "title": "Health check",
+     "intro": "Write health(kl, clip_frac, ev): return a list of warnings (strings in this order, only those that apply): 'kl high' if kl > 0.05; 'clipping heavy' if clip_frac > 0.5; 'critic poor' if ev < 0.1. Return [] if all is fine.",
+     "fn": "health",
+     "starter": "def health(kl, clip_frac, ev):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.01,
+        0.1,
+        0.8
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        0.1,
+        0.6,
+        0.05
+       ],
+       "expect": [
+        "kl high",
+        "clipping heavy",
+        "critic poor"
+       ]
+      },
+      {
+       "args": [
+        0.02,
+        0.7,
+        0.9
+       ],
+       "expect": [
+        "clipping heavy"
+       ]
+      },
+      {
+       "args": [
+        0.0,
+        0.0,
+        -0.2
+       ],
+       "expect": [
+        "critic poor"
+       ]
+      }
+     ],
+     "hint": "Test each threshold.",
+     "solution": "def health(kl, clip_frac, ev):\n    out = []\n    if kl > 0.05:\n        out.append('kl high')\n    if clip_frac > 0.5:\n        out.append('clipping heavy')\n    if ev < 0.1:\n        out.append('critic poor')\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Compare two runs",
+     "intro": "Write better_run(returns_a, returns_b): 'a' if the mean of the LAST three returns of a is larger than of b, 'b' if smaller, 'tie' if equal.",
+     "fn": "better_run",
+     "starter": "def better_run(returns_a, returns_b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         1,
+         2,
+         3,
+         5
+        ]
+       ],
+       "expect": "b"
+      },
+      {
+       "args": [
+        [
+         5,
+         5,
+         5,
+         5
+        ],
+        [
+         1,
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": "a"
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": "tie"
+      },
+      {
+       "args": [
+        [
+         10
+        ],
+        [
+         2,
+         3
+        ]
+       ],
+       "expect": "a"
+      }
+     ],
+     "hint": "Compare the recent averages.",
+     "solution": "def better_run(returns_a, returns_b):\n    ma = sum(returns_a[-3:]) / len(returns_a[-3:])\n    mb = sum(returns_b[-3:]) / len(returns_b[-3:])\n    if ma > mb:\n        return 'a'\n    if ma < mb:\n        return 'b'\n    return 'tie'\n"
+    },
+    {
+     "type": "order",
+     "title": "Debugging a run",
+     "intro": "Order a sensible routine.",
+     "items": [
+      "Plot return and entropy",
+      "Check approximate KL and clip fraction",
+      "Check explained variance of the critic",
+      "Inspect sampled behaviour",
+      "Change one hyperparameter and re-run with several seeds"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Relatives",
+     "intro": "Match each method with its feature.",
+     "pairs": [
+      [
+       "TRPO",
+       "KL-constrained, second-order"
+      ],
+      [
+       "A2C",
+       "Simple on-policy actor-critic"
+      ],
+      [
+       "SAC",
+       "Off-policy with entropy objective"
+      ],
+      [
+       "GRPO",
+       "Group-based advantages (background)"
+      ],
+      [
+       "DPO",
+       "Preference learning without RL loop"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Diagnostics",
+     "text": "Low explained {{variance}} means a poor critic, and falling {{entropy}} may signal collapse."
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Proximal Policy Optimization (PPO)",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "Who introduced PPO?",
+    "options": [
+     "Schulman and colleagues at OpenAI",
+     "Mnih et al.",
+     "Silver et al.",
+     "Vaswani et al."
+    ],
+    "answer": 0,
+    "explain": "2017."
+   },
+   {
+    "q": "What does PPO simplify?",
+    "options": [
+     "TRPO",
+     "DQN",
+     "AlphaGo",
+     "A3C"
+    ],
+    "answer": 0,
+    "explain": "No constraint or second-order step."
+   },
+   {
+    "q": "Is PPO on-policy?",
+    "options": [
+     "Yes",
+     "No",
+     "Only offline",
+     "Only for Atari"
+    ],
+    "answer": 0,
+    "explain": "Fresh data after each round."
+   },
+   {
+    "q": "What is the return?",
+    "options": [
+     "Discounted sum of future rewards",
+     "The next reward",
+     "The policy",
+     "The loss"
+    ],
+    "answer": 0,
+    "explain": "G_t."
+   },
+   {
+    "q": "What is the score function of a softmax policy w.r.t. the logits?",
+    "options": [
+     "onehot(a) minus pi",
+     "pi minus one",
+     "The return",
+     "Zero"
+    ],
+    "answer": 0,
+    "explain": "Raises the chosen logit."
+   },
+   {
+    "q": "What does a baseline do?",
+    "options": [
+     "Reduces variance",
+     "Adds bias",
+     "Raises reward",
+     "Removes the policy"
+    ],
+    "answer": 0,
+    "explain": "Depends on the state only."
+   },
+   {
+    "q": "What is the advantage?",
+    "options": [
+     "Q minus V",
+     "V minus Q",
+     "The reward",
+     "The ratio"
+    ],
+    "answer": 0,
+    "explain": "Better than average by how much."
+   },
+   {
+    "q": "What does GAE with lambda = 0 give?",
+    "options": [
+     "The one-step TD residual",
+     "Full return minus value",
+     "Zero",
+     "The ratio"
+    ],
+    "answer": 0,
+    "explain": "Low variance, more bias."
+   },
+   {
+    "q": "What does GAE with lambda = 1 give?",
+    "options": [
+     "Return minus value",
+     "One-step residual",
+     "Zero",
+     "Entropy"
+    ],
+    "answer": 0,
+    "explain": "Unbiased but noisy."
+   },
+   {
+    "q": "Why mask at episode ends in GAE?",
+    "options": [
+     "No future value after a terminal step",
+     "To normalise",
+     "To clip",
+     "To save time"
+    ],
+    "answer": 0,
+    "explain": "Done flag."
+   },
+   {
+    "q": "What is the probability ratio?",
+    "options": [
+     "New over old action probability",
+     "Old over new",
+     "Reward over value",
+     "KL over entropy"
+    ],
+    "answer": 0,
+    "explain": "Importance sampling."
+   },
+   {
+    "q": "What is the ratio at the start of an update?",
+    "options": [
+     "One",
+     "Zero",
+     "Two",
+     "Undefined"
+    ],
+    "answer": 0,
+    "explain": "New equals old."
+   },
+   {
+    "q": "What does TRPO constrain?",
+    "options": [
+     "Mean KL between old and new policy",
+     "Learning rate",
+     "Batch size",
+     "Reward"
+    ],
+    "answer": 0,
+    "explain": "A trust region."
+   },
+   {
+    "q": "When is KL divergence zero?",
+    "options": [
+     "When the distributions are equal",
+     "Always",
+     "Never",
+     "When one is uniform"
+    ],
+    "answer": 0,
+    "explain": "Otherwise positive."
+   },
+   {
+    "q": "What is the PPO clipped objective?",
+    "options": [
+     "min(rA, clip(r, 1-eps, 1+eps)A)",
+     "r times A only",
+     "A minus V",
+     "log pi times A"
+    ],
+    "answer": 0,
+    "explain": "Pessimistic bound."
+   },
+   {
+    "q": "A > 0 and r > 1 + eps: what is the gradient?",
+    "options": [
+     "Zero",
+     "r times A",
+     "Negative",
+     "Infinite"
+    ],
+    "answer": 0,
+    "explain": "No incentive to go further."
+   },
+   {
+    "q": "A > 0 and r < 1 - eps: what is the gradient?",
+    "options": [
+     "r times A, correcting the mistake",
+     "Zero",
+     "Negative",
+     "Undefined"
+    ],
+    "answer": 0,
+    "explain": "Mistakes are not clipped."
+   },
+   {
+    "q": "What is a common epsilon?",
+    "options": [
+     "0.2",
+     "20",
+     "0",
+     "5"
+    ],
+    "answer": 0,
+    "explain": "Between 0.1 and 0.3."
+   },
+   {
+    "q": "What is the clip fraction?",
+    "options": [
+     "Share of samples outside the band",
+     "Size of epsilon",
+     "Average ratio",
+     "Value loss"
+    ],
+    "answer": 0,
+    "explain": "A diagnostic."
+   },
+   {
+    "q": "What does the entropy bonus encourage?",
+    "options": [
+     "Exploration",
+     "Lower variance",
+     "Larger batches",
+     "Faster reward"
+    ],
+    "answer": 0,
+    "explain": "A spread-out policy."
+   },
+   {
+    "q": "What is the value loss?",
+    "options": [
+     "Squared error to the target return",
+     "KL",
+     "The ratio",
+     "The advantage"
+    ],
+    "answer": 0,
+    "explain": "Trains the critic."
+   },
+   {
+    "q": "Common default c1 and c2?",
+    "options": [
+     "0.5 and 0.01",
+     "10 and 10",
+     "0 and 0",
+     "1 and 1"
+    ],
+    "answer": 0,
+    "explain": "Implementation defaults, not requirements."
+   },
+   {
+    "q": "Why can PPO reuse a batch for several epochs?",
+    "options": [
+     "Clipping makes extra epochs safe",
+     "Data is free",
+     "The ratio is always one",
+     "The critic is frozen"
+    ],
+    "answer": 0,
+    "explain": "Gradients vanish for moved samples."
+   },
+   {
+    "q": "What is the batch size?",
+    "options": [
+     "Actors times steps",
+     "Epochs",
+     "Gamma",
+     "Clip range"
+    ],
+    "answer": 0,
+    "explain": "N times T."
+   },
+   {
+    "q": "What does gradient norm clipping do?",
+    "options": [
+     "Rescales large gradients",
+     "Clips the ratio",
+     "Removes entropy",
+     "Stops training"
+    ],
+    "answer": 0,
+    "explain": "By global norm."
+   },
+   {
+    "q": "Why report several seeds?",
+    "options": [
+     "RL results vary a lot",
+     "Seeds are free",
+     "The paper requires it",
+     "More GPUs"
+    ],
+    "answer": 0,
+    "explain": "One run proves little."
+   },
+   {
+    "q": "In RLHF, what is the policy?",
+    "options": [
+     "The language model",
+     "The reward model",
+     "The reference model",
+     "The dataset"
+    ],
+    "answer": 0,
+    "explain": "Tokens are actions."
+   },
+   {
+    "q": "Why a KL penalty to a reference model?",
+    "options": [
+     "To limit drift and reward hacking",
+     "To speed up",
+     "To add data",
+     "To shrink the model"
+    ],
+    "answer": 0,
+    "explain": "The reward model is a proxy."
+   },
+   {
+    "q": "When does the reward model score a response?",
+    "options": [
+     "At the end of the response",
+     "At every token",
+     "Before the prompt",
+     "Never"
+    ],
+    "answer": 0,
+    "explain": "Sparse reward."
+   },
+   {
+    "q": "Which method skips the RL loop for language models?",
+    "options": [
+     "DPO",
+     "TRPO",
+     "A2C",
+     "DQN"
+    ],
+    "answer": 0,
+    "explain": "Direct Preference Optimization."
+   },
+   {
+    "q": "What does explained variance near 0 mean?",
+    "options": [
+     "The critic is poor",
+     "A perfect critic",
+     "Tiny KL",
+     "High entropy"
+    ],
+    "answer": 0,
+    "explain": "Fix the critic first."
+   },
+   {
+    "q": "What is entropy collapse?",
+    "options": [
+     "Entropy falling near zero too early",
+     "Entropy rising",
+     "KL falling",
+     "Return falling"
+    ],
+    "answer": 0,
+    "explain": "Exploration is lost."
+   },
+   {
+    "q": "Why inspect samples and not only rewards?",
+    "options": [
+     "To catch reward hacking",
+     "To save time",
+     "To clip",
+     "To anneal"
+    ],
+    "answer": 0,
+    "explain": "The reward is a proxy."
+   },
+   {
+    "q": "Which is off-policy?",
+    "options": [
+     "SAC",
+     "PPO",
+     "A2C",
+     "TRPO"
+    ],
+    "answer": 0,
+    "explain": "It reuses old data."
+   },
+   {
+    "q": "What is GRPO (background)?",
+    "options": [
+     "PPO-like with group-based advantages",
+     "A reward model",
+     "A tokenizer",
+     "A critic"
+    ],
+    "answer": 0,
+    "explain": "No learned value function."
+   },
+   {
+    "q": "What is the surrogate objective?",
+    "options": [
+     "E[r times A]",
+     "E[A]",
+     "Value minus return",
+     "KL"
+    ],
+    "answer": 0,
+    "explain": "Importance-weighted advantage."
+   },
+   {
+    "q": "Why normalise advantages per batch?",
+    "options": [
+     "Steady gradient scale",
+     "To raise reward",
+     "To clip",
+     "To get entropy"
+    ],
+    "answer": 0,
+    "explain": "An implementation habit."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "PPO lookup",
+  "prompt": "pp>",
+  "intro": "A scripted lookup, not a real trainer. Try: clip, gae, loss, defaults, help",
+  "chips": [
+   "clip",
+   "gae",
+   "loss",
+   "defaults",
+   "rlhf",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "clip       L_clip = min(r A, clip(r, 1-eps, 1+eps) A), r = pi_new / pi_",
+     "gae        delta_t = r_t + gamma V(s_t+1) - V(s_t)",
+     "loss       L = L_clip - c1 L_value + c2 Entropy",
+     "defaults   common practice, not requirements: gamma 0.99, lambda 0.95, ",
+     "rlhf       reward = reward-model score - beta * (log pi - log pi_ref) p"
+    ]
+   },
+   {
+    "re": "^clip$",
+    "out": [
+     "L_clip = min(r A, clip(r, 1-eps, 1+eps) A), r = pi_new / pi_old",
+     "eps about 0.2; gradient is zero when A>0 and r>1+eps, or A<0 and r<1-eps"
+    ]
+   },
+   {
+    "re": "^gae$",
+    "out": [
+     "delta_t = r_t + gamma V(s_t+1) - V(s_t)",
+     "A_t = delta_t + gamma lambda A_t+1   (gamma 0.99, lambda 0.95 common)"
+    ]
+   },
+   {
+    "re": "^loss$",
+    "out": [
+     "L = L_clip - c1 L_value + c2 Entropy",
+     "common defaults c1 = 0.5, c2 = 0.01"
+    ]
+   },
+   {
+    "re": "^defaults$",
+    "out": [
+     "common practice, not requirements: gamma 0.99, lambda 0.95, eps 0.2, grad clip 0.5, linear lr annealing"
+    ]
+   },
+   {
+    "re": "^rlhf$",
+    "out": [
+     "reward = reward-model score - beta * (log pi - log pi_ref) per token"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ }
+}
