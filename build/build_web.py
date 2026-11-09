@@ -2,7 +2,7 @@
 """Build the web assets for the Lilith Learning Lab Android app: index.html plus the avatar frames.
 The app ships EMPTY: courses are imported at run time as JSON files (see courses/ and course.js).
 
-Usage: python3 build_web.py --web <dir>
+Usage: python3 build_web.py --web <dir> | --pages <dir> (GitHub Pages web app) | --editor <dir> (course editor)
 """
 import base64, json, os, shutil, sys
 
@@ -12,7 +12,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 def make_html():
     tpl = open(os.path.join(HERE, "src", "app.html"), encoding="utf-8").read()
     js = lambda n: open(os.path.join(HERE, "src", n), encoding="utf-8").read().replace("</", "<\\/")
-    for tag, f in (("ICONS", "icons.js"), ("XDC", "xdc.js"), ("COURSE", "course.js"), ("MAPS", "maps.js"), ("MATH", "math.js"), ("NARRATE", "narrate.js"), ("SLIDES", "slides.js"), ("AI", "ai.js")):
+    for tag, f in (("ICONS", "icons.js"), ("XDC", "xdc.js"), ("COURSE", "course.js"), ("MAPS", "maps.js"), ("MATH", "math.js"), ("NARRATE", "narrate.js"), ("SLIDES", "slides.js"), ("NET", "net.js"), ("AI", "ai.js")):
         tpl = tpl.replace("/*__%s__*/" % tag, js(f))
     return tpl
 
@@ -26,6 +26,25 @@ def make_mp(out):
     assert "import.meta" not in mjs and "export async" not in mjs and "export default" not in mjs
     wasm = base64.b64encode(open(os.path.join(d, "micropython.wasm"), "rb").read()).decode()
     open(os.path.join(out, "mp.js"), "w", encoding="utf-8").write("window.LilithMP={mjs:" + json.dumps(mjs) + ",wasm:\"" + wasm + "\"};\n")
+
+
+def make_kit(out):
+    """kit.js: the Jade Agent Kit (the AI's hidden workspace) plus its BusyBox files, loaded only when the AI needs it."""
+    d = os.path.join(HERE, "vendor", "jade-agent-kit")
+    kit = open(os.path.join(d, "jade-agent-kit.iife.js"), encoding="utf-8").read()
+    glue = open(os.path.join(d, "busybox.glue.js"), encoding="utf-8").read()
+    wasm = base64.b64encode(open(os.path.join(d, "busybox.wasm"), "rb").read()).decode()
+    assets = "window.LilithNet=window.LilithNet||{};LilithNet.assets=LilithNet.assets||{};LilithNet.assets['busybox.glue.js']=" + json.dumps(glue) + ";LilithNet.assets['busybox.wasm']={b64:\"" + wasm + "\"};\n"
+    open(os.path.join(out, "kit.js"), "w", encoding="utf-8").write("/*! Jade Agent Kit 0.1.0 | MIT | https://github.com/lucky-edgelord/Jade-agent-kit | BusyBox is GPL-2.0 */\n" + assets + kit + "\n")
+
+
+def make_editor(out):
+    """The course editor (a standalone page for GitHub Pages), with the app's course validator built in."""
+    os.makedirs(out, exist_ok=True)
+    tpl = open(os.path.join(HERE, "src", "editor.html"), encoding="utf-8").read()
+    js = open(os.path.join(HERE, "src", "course.js"), encoding="utf-8").read().replace("</", "<\\/")
+    open(os.path.join(out, "index.html"), "w", encoding="utf-8").write(tpl.replace("/*__COURSE__*/", js))
+    print("wrote the course editor to", out)
 
 
 def make_pages(out):
@@ -55,7 +74,7 @@ def make_pages(out):
             if f != "sw.js":
                 files.append(os.path.relpath(os.path.join(root, f), out).replace(os.sep, "/"))
     import hashlib
-    ver = hashlib.sha1(open(os.path.join(out, "index.html"), "rb").read() + open(os.path.join(out, "mp.js"), "rb").read()).hexdigest()[:10]
+    ver = hashlib.sha1(open(os.path.join(out, "index.html"), "rb").read() + open(os.path.join(out, "mp.js"), "rb").read() + open(os.path.join(out, "kit.js"), "rb").read()).hexdigest()[:10]
     sw = ("var V='lilith-" + ver + "';var A=" + json.dumps(["./"] + sorted(files)) + ";\n"
           "self.addEventListener('install',function(e){e.waitUntil(caches.open(V).then(function(c){return c.addAll(A)}).then(function(){return self.skipWaiting()}))});\n"
           "self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==V}).map(function(x){return caches.delete(x)}))}).then(function(){return self.clients.claim()}))});\n"
@@ -72,6 +91,7 @@ def main():
         os.makedirs(os.path.join(out, "avatar"), exist_ok=True)
         open(os.path.join(out, "index.html"), "w", encoding="utf-8").write(make_html())
         make_mp(out)
+        make_kit(out)
         for f in ("katex.min.js", "katex.css"):
             shutil.copy(os.path.join(HERE, "vendor", "katex", f), os.path.join(out, f))
         d = os.path.join(HERE, "assets", "avatar")
@@ -79,6 +99,9 @@ def main():
             if f.endswith(".webp"):
                 shutil.copy(os.path.join(d, f), os.path.join(out, "avatar", f))
         print("wrote web assets to", out)
+        return
+    if args[:1] == ["--editor"]:
+        make_editor(args[1])
         return
     if args[:1] == ["--pages"]:
         make_pages(args[1])

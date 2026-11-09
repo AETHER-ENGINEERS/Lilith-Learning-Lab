@@ -58,7 +58,35 @@ const server = http.createServer((req, res) => {
   };
   const logs = []; const course = await AI.buildCourse({ topic: 'Bees', chapters: 2, onLog: m => logs.push(m) });
   assert.strictEqual(course.chapters.length, 3); assert.strictEqual(course.chapters[2].title, 'Sources');
-  assert(course.chapters[0].lesson[0].items[0].startsWith('Explain it simply.')); assert(logs.some(l => /Repairing/.test(l)));
+  assert(course.chapters[0].lesson[0].items[0].startsWith('Explain it simply.')); assert(/chapter 2 invalid/.test(AI.logText())); assert(logs.includes('Writing chapter 2 of 2') && !logs.some(l => /Searching|Reading|http/.test(l)), 'progress is plain: ' + logs);
   const K = require('../src/course.js'); const v = K.validate(JSON.stringify(course)); assert(v.ok, JSON.stringify(v.errors));
-  AI.complete = realChat; server.close(); console.log('AI TESTS PASSED');
+  AI.complete = realChat;
+  // chapter checks give actionable problems
+  const probs = AI.chapterProblems({ title: 'x', summary: [], lesson: [{ type: 'text' }], quiz: [{ q: 'q', options: ['a', 'b'], answer: 2 }], maps: [{ links: ['A - B'] }], practice: [{ type: 'fill', text: 'no braces' }, { type: 'match', pairs: [['a']] }] });
+  ['summary', 'items', 'index (0 to 1)', 'A | relation | B', '{{double braces}}', 'pairs'].forEach(w => assert(probs.some(p => p.includes(w)), 'problem mentions ' + w + ': ' + probs));
+  assert.deepStrictEqual(AI.chapterProblems(null), ['the chapter must be a JSON object']);
+  // settings export/import: keys only on request, types and values checked, unknown keys ignored
+  AI.setCfg({ provider: 'cloud', cloudKey: 'sk-secret', cloudModel: 'gpt-oss:120b' });
+  assert(!('cloudKey' in AI.exportCfg(false)) && AI.exportCfg(true).cloudKey === 'sk-secret');
+  assert.throws(() => AI.importCfg({ provider: 'x' }), /unknown provider/);
+  assert.throws(() => AI.importCfg({ search: 'yes' }), /should be a boolean/);
+  assert.throws(() => AI.importCfg({ ollamaUrl: 'javascript:alert(1)' }), /http/);
+  assert.throws(() => AI.importCfg([1]), /object/);
+  assert.deepStrictEqual(AI.importCfg({ provider: 'openai', openaiModel: 'm', junk: 1 }), ['provider', 'openaiModel']);
+  assert.strictEqual(AI.cfg().cloudKey, 'sk-secret');
+  // the log hides keys and keeps debug lines only when verbose
+  AI.clearLogs(); AI.log('debug', 'hidden'); AI.log('info', 'Authorization: Bearer sk-abc.def', { cloudKey: 'sk-secret' });
+  const lt = AI.logText(); assert(!/hidden/.test(lt) && !/sk-abc|sk-secret/.test(lt) && /\*\*\*/.test(lt), lt);
+  AI.setCfg({ verbose: true }); AI.log('debug', 'shown'); assert(/shown/.test(AI.logText())); AI.setCfg({ verbose: false });
+  // errors: friendly messages for HTTP failures
+  global.__aiFetch = async () => new Response(JSON.stringify({ error: 'model "nope" not found' }), { status: 404 });
+  AI.setCfg({ provider: 'ollama', ollamaUrl: 'http://x', ollamaModel: 'nope' });
+  await assert.rejects(() => AI.chat([{ role: 'user', content: 'hi' }]), /pull it first/);
+  global.__aiFetch = async () => { throw new TypeError('Failed to fetch'); };
+  await assert.rejects(() => AI.listModels(), /Failed to fetch/);
+  delete global.__aiFetch;
+  // tools never crash the loop
+  assert(/^Error: unknown tool/.test(await AI.runTool('nope', {})));
+  assert(/^Error: the workspace runs inside the app/.test(await AI.runTool('check_chapter', { path: '/x.json' })));
+  server.close(); console.log('AI TESTS PASSED');
 })().catch(e => { console.error(e); process.exit(1); });

@@ -3,7 +3,7 @@ package com.lilith.learninglab;
 import android.speech.tts.TextToSpeech;
 import android.webkit.JavascriptInterface;
 
-/** JavaScript bridge: window.AndroidTTS.speak(text, rate, id) / stop() / isReady() / copy(text) / share(title, text) / fetchUrl(url, id). Runs on a WebView background thread. */
+/** JavaScript bridge: window.AndroidTTS.speak(text, rate, id) / stop() / isReady() / copy(text) / share(title, text) / fetchUrl(url, id) / httpStart(...) / httpAbort(id). Runs on a WebView background thread. */
 class Bridge {
     private final MainActivity a;
     Bridge(MainActivity a) { this.a = a; }
@@ -67,5 +67,68 @@ class Bridge {
             final String q = org.json.JSONObject.quote(text); final boolean fok = ok;
             a.runOnUiThread(() -> a.web.evaluateJavascript("window.__netDone&&window.__netDone(" + id + "," + fok + "," + q + ")", null));
         }).start();
+    }
+
+    private static final java.util.Map<Integer, java.net.HttpURLConnection> CONNS = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** General HTTP for the AI features (ollama.com and other servers send no CORS headers, so the page cannot call them itself).
+     *  Only http/https. Events go to window.__httpEv(id, kind, a, b): 'h' (status, headers JSON), 'd' (base64 chunk), 'e' (end), 'x' (error message). */
+    @JavascriptInterface
+    public void httpStart(final int id, final String method, final String url, final String headersJson, final String body) {
+        new Thread(() -> {
+            java.net.HttpURLConnection c = null;
+            try {
+                java.net.URL u = new java.net.URL(url);
+                String pr = u.getProtocol();
+                if (!"https".equals(pr) && !"http".equals(pr)) throw new java.io.IOException("Only http and https are allowed");
+                c = (java.net.HttpURLConnection) u.openConnection();
+                CONNS.put(id, c);
+                c.setConnectTimeout(20000); c.setReadTimeout(300000); c.setInstanceFollowRedirects(true);
+                c.setRequestMethod(method == null || method.isEmpty() ? "GET" : method);
+                c.setRequestProperty("User-Agent", "LilithLearningLab");
+                if (headersJson != null && !headersJson.isEmpty()) {
+                    org.json.JSONObject h = new org.json.JSONObject(headersJson);
+                    java.util.Iterator<String> it = h.keys();
+                    while (it.hasNext()) { String k = it.next(); c.setRequestProperty(k, h.optString(k)); }
+                }
+                if (body != null && !body.isEmpty()) {
+                    c.setDoOutput(true);
+                    byte[] b = body.getBytes("UTF-8");
+                    c.setFixedLengthStreamingMode(b.length);
+                    java.io.OutputStream os = c.getOutputStream(); os.write(b); os.close();
+                }
+                int code = c.getResponseCode();
+                org.json.JSONObject hs = new org.json.JSONObject();
+                for (java.util.Map.Entry<String, java.util.List<String>> e : c.getHeaderFields().entrySet())
+                    if (e.getKey() != null && e.getValue() != null && !e.getValue().isEmpty()) hs.put(e.getKey().toLowerCase(java.util.Locale.ROOT), e.getValue().get(0));
+                ev(id, "h", String.valueOf(code), hs.toString());
+                java.io.InputStream in = code >= 400 ? c.getErrorStream() : c.getInputStream();
+                if (in != null) {
+                    byte[] buf = new byte[16384]; int n; long total = 0;
+                    while ((n = in.read(buf)) > 0) {
+                        total += n; if (total > 64L * 1024 * 1024) throw new java.io.IOException("Response too large");
+                        ev(id, "d", android.util.Base64.encodeToString(buf, 0, n, android.util.Base64.NO_WRAP), "");
+                    }
+                    in.close();
+                }
+                ev(id, "e", "", "");
+            } catch (Exception e) {
+                ev(id, "x", String.valueOf(e.getMessage() == null ? e.toString() : e.getMessage()), "");
+            } finally {
+                CONNS.remove(id);
+                if (c != null) c.disconnect();
+            }
+        }).start();
+    }
+
+    @JavascriptInterface
+    public void httpAbort(final int id) {
+        final java.net.HttpURLConnection c = CONNS.remove(id);
+        if (c != null) new Thread(c::disconnect).start();
+    }
+
+    private void ev(int id, String kind, String x, String y) {
+        final String js = "window.__httpEv&&window.__httpEv(" + id + ",'" + kind + "'," + org.json.JSONObject.quote(x) + "," + org.json.JSONObject.quote(y) + ")";
+        a.runOnUiThread(() -> a.web.evaluateJavascript(js, null));
     }
 }
