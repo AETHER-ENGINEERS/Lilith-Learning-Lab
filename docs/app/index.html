@@ -2020,7 +2020,7 @@ function updateHeader() {
 function render() {
   $$('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === tab && view !== 'lib' && view !== 'store' && view !== 'exam'));
   $('#libbtn').classList.toggle('on', view === 'lib' || view === 'store');
-  main.classList.toggle('fill', tab === 'lecture' && !!LEC && view !== 'lib');
+  main.classList.toggle('fill', tab === 'lecture' && !!LEC && view !== 'lib' && view !== 'store' && view !== 'exam');
   main.scrollTop = 0;
   if (view === 'store') renderStore();
   else if (view === 'lib' || !CUR) renderLibrary();
