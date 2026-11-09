@@ -1,0 +1,4925 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "mcts",
+ "title": "Monte Carlo Tree Search",
+ "subtitle": "Playouts, bandits, UCT and enhancements, with Python labs on Nim",
+ "author": "Lilith Learning Lab",
+ "description": "Monte Carlo tree search from first principles (Coulom 2006; Kocsis and Szepesvari 2006; Browne et al. 2012): game trees and minimax, random playouts, multi-armed bandits and UCB1, the four steps, a complete UCT search on Nim, choosing the final move, RAVE and other enhancements, two-player perspective, and the road to AlphaGo's PUCT. Theory plus Python labs.",
+ "pronounce": {
+  "MCTS": "M C T S",
+  "UCT": "U C T",
+  "UCB1": "U C B one",
+  "UCB": "U C B",
+  "PUCT": "P U C T",
+  "RAVE": "rave",
+  "AMAF": "A M A F",
+  "Coulom": "koo lom",
+  "Remi": "ray mee",
+  "Kocsis": "ko chish",
+  "Szepesvari": "seh peh shvar ee",
+  "Cesa-Bianchi": "chay zah bee ang kee",
+  "Abramson": "ab ram son",
+  "Gelly": "zhay lee",
+  "MuZero": "mew zero",
+  "AlphaGo": "alpha go",
+  "AlphaZero": "alpha zero",
+  "LCG": "L C G",
+  "SE": "S E",
+  "Nim": "nim",
+  "ply": "ply",
+  "plies": "plies",
+  "negamax": "nega max",
+  "Negamax": "Nega max",
+  "minimax": "mini max",
+  "Minimax": "Mini max",
+  "alpha-beta": "alpha beta",
+  "Alpha-beta": "Alpha beta",
+  "argmax": "arg max",
+  "lcg": "L C G",
+  "playout": "play out",
+  "playouts": "play outs",
+  "Playout": "Play out",
+  "Playouts": "Play outs"
+ },
+ "chapters": [
+  {
+   "title": "What is Monte Carlo tree search?",
+   "maps": [
+    {
+     "title": "MCTS",
+     "links": [
+      "MCTS | builds | A search tree",
+      "MCTS | uses | Random simulations",
+      "Tree | grows | Asymmetrically",
+      "UCT | balances | Exploration and exploitation",
+      "MCTS | is | Anytime",
+      "Coulom | named | MCTS in 2006",
+      "Kocsis and Szepesvari | proposed | UCT"
+     ]
+    }
+   ],
+   "summary": [
+    "Monte Carlo tree search, MCTS, is a way to choose good actions in a decision problem by growing a search tree guided by random simulations. It needs little domain knowledge beyond the rules.",
+    "It was developed around 2006. Remi Coulom described the idea and gave it the name. Levente Kocsis and Csaba Szepesvari proposed UCT, which uses a bandit rule to decide which branch to explore. It then transformed computer Go.",
+    "MCTS repeats four steps: selection, expansion, simulation and backpropagation. This course builds each step in small Python labs on the game of Nim."
+   ],
+   "glossary": [
+    {
+     "term": "Monte Carlo method",
+     "def": "Estimating a quantity by averaging random samples."
+    },
+    {
+     "term": "Search tree",
+     "def": "A tree whose nodes are game states and whose edges are moves."
+    },
+    {
+     "term": "Simulation (rollout)",
+     "def": "Playing a game to the end with random or simple moves."
+    },
+    {
+     "term": "UCT",
+     "def": "Upper Confidence bounds applied to Trees: MCTS with the UCB1 selection rule."
+    },
+    {
+     "term": "Anytime algorithm",
+     "def": "One that can be stopped at any moment and still return its best answer so far."
+    },
+    {
+     "term": "Iteration",
+     "def": "One pass of the four MCTS steps."
+    }
+   ],
+   "keyPoints": [
+    "MCTS needs only a model of the rules: legal moves, transitions and terminal results.",
+    "Four steps per iteration: selection, expansion, simulation, backpropagation.",
+    "The tree grows towards promising moves, so it is asymmetric.",
+    "UCT (Kocsis and Szepesvari, 2006) applies the UCB1 bandit rule at every node.",
+    "Coulom (2006) used the term Monte Carlo tree search.",
+    "Browne and colleagues (2012) surveyed the method and its many variants."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Suppose you must pick a move in a game with far too many positions to search fully. Chess programs use a hand-written evaluation function to judge positions. In Go, nobody could write a good one. MCTS found another way: judge a move by playing many quick games from it and counting how often you win."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The idea has two parts. The Monte Carlo part is random sampling. Play a game to the end with random moves and see who wins. One game tells little, but the average of many tells something. The tree part is bookkeeping. Remember the results in a tree, so that more effort goes to moves that look good."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} Q(s,a) \\;\\approx\\; \\frac{1}{N(s,a)}\\sum_{i=1}^{N(s,a)} z_i, \\\\[0.6em] z_i \\in \\{0, 1\\}\\ \\text{the result of the } i\\text{-th simulation} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Credit goes to several people. Bruce Abramson in 1990 suggested estimating position values by random playouts. Remi Coulom in 2006 built these ideas into a tree search for Go and called it Monte Carlo tree search.",
+      "In the same year Levente Kocsis and Csaba Szepesvari published UCT, which supplied the missing piece: a principled rule for choosing which branch to explore. The 2012 survey by Cameron Browne and colleagues is the standard overview, and this course follows it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "MCTS has attractive properties. It needs only the rules of the game, not an evaluation function. It is anytime: stop it after one second or one hour and it still has a best move. The tree grows unevenly, deeper where moves look strong.",
+      "And with enough time its choice converges to the best move, a property proved for UCT."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "It also has limits that later chapters discuss. Random playouts can be misleading, and MCTS can be fooled by traps, positions where one precise reply refutes an attractive move. AlphaGo, studied in a sister course, kept the tree but replaced random playouts by neural networks."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The labs use Nim as a test game. A pile of n stones; players alternate taking one, two or three; whoever takes the last stone wins. It is small enough to check every answer by hand, and rich enough to show every idea."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does MCTS estimate by simulation?",
+     "options": [
+      "Win rates of moves",
+      "Board size",
+      "Rules",
+      "Time"
+     ],
+     "answer": 0,
+     "explain": "Average results of random games."
+    },
+    {
+     "q": "Which rule did UCT add?",
+     "options": [
+      "A bandit rule for choosing branches",
+      "A random move",
+      "A neural network",
+      "A hash table"
+     ],
+     "answer": 0,
+     "explain": "UCB1 applied at each node."
+    },
+    {
+     "q": "What does anytime mean?",
+     "options": [
+      "Can be stopped any time with a best answer",
+      "Runs forever",
+      "Needs a clock",
+      "Uses no memory"
+     ],
+     "answer": 0,
+     "explain": "More time gives a better answer."
+    },
+    {
+     "q": "How many steps does an iteration have?",
+     "options": [
+      "Four",
+      "Two",
+      "Six",
+      "One"
+     ],
+     "answer": 0,
+     "explain": "Selection, expansion, simulation, backpropagation."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Who named MCTS?",
+     "a": "Remi Coulom, 2006."
+    },
+    {
+     "q": "Who proposed UCT?",
+     "a": "Kocsis and Szepesvari, 2006."
+    },
+    {
+     "q": "Which survey is standard?",
+     "a": "Browne et al., 2012."
+    },
+    {
+     "q": "What replaced playouts in AlphaGo?",
+     "a": "Neural network evaluation."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "One MCTS iteration",
+     "intro": "Put the four steps in order.",
+     "items": [
+      "Selection: walk down the tree",
+      "Expansion: add a new node",
+      "Simulation: play out to the end",
+      "Backpropagation: update the path"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Rollout",
+       "Quick game to the end"
+      ],
+      [
+       "UCT",
+       "MCTS with UCB1 selection"
+      ],
+      [
+       "Anytime",
+       "Can stop at any moment"
+      ],
+      [
+       "Search tree",
+       "States and moves"
+      ],
+      [
+       "Monte Carlo",
+       "Averaging random samples"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Basics",
+     "text": "MCTS repeats {{selection}}, expansion, simulation and {{backpropagation|back propagation}}."
+    }
+   ]
+  },
+  {
+   "title": "Games, trees and the need for search",
+   "maps": [
+    {
+     "title": "Game trees",
+     "links": [
+      "Game tree | has | States as nodes",
+      "Move | is | An edge",
+      "Branching factor | counts | Moves per state",
+      "Minimax | solves | Small games exactly",
+      "Terminal state | has | A result",
+      "Nim | is | Our test game",
+      "Tree size | grows | Exponentially"
+     ]
+    }
+   ],
+   "summary": [
+    "A game can be drawn as a tree. The root is the current position, each edge is a legal move, and the leaves are finished games. Solving a small game means labelling every node as a win or a loss for the player to move.",
+    "Minimax does this exactly, working up from the leaves. A position is a win if some move leads to a position that is a loss for the opponent. Minimax is perfect but needs the whole tree, which grows exponentially: with b moves per state and depth d there are about b to the d leaves.",
+    "Go has about 250 moves per position and games of 150 moves, so exact search is hopeless. That is the gap MCTS fills."
+   ],
+   "glossary": [
+    {
+     "term": "Game tree",
+     "def": "A tree of all positions reachable by legal play."
+    },
+    {
+     "term": "Branching factor",
+     "def": "The average number of legal moves in a position."
+    },
+    {
+     "term": "Minimax",
+     "def": "Exact evaluation: you pick the best move, the opponent picks the worst for you."
+    },
+    {
+     "term": "Terminal state",
+     "def": "A position where the game is over."
+    },
+    {
+     "term": "Win or loss for the player to move",
+     "def": "The exact value of a position under perfect play."
+    },
+    {
+     "term": "Nim",
+     "def": "A take-away game; here you remove 1 to 3 stones and taking the last wins."
+    }
+   ],
+   "keyPoints": [
+    "Nim: take 1 to 3 stones; the player who takes the last stone wins.",
+    "A position with 0 stones is lost for the player to move: the opponent just took the last.",
+    "Minimax: win if any move leads to a loss for the opponent.",
+    "The tree has about b^d leaves; Go's b is about 250.",
+    "In Nim with a take limit of 3, positions that are multiples of 4 are lost for the player to move.",
+    "MCTS estimates what minimax computes, using samples."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Take a pile of ten stones. You and I alternate; each turn removes one, two or three; whoever takes the last stone wins. What should you do first? You could picture all possibilities: three first moves, each followed by three replies, and so on. That picture is the game tree."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Leaves are finished games. A position with no stones left means the previous player took the last stone and won, so the player to move has lost. Work backwards. A position is winning for the player to move if at least one move leads to a position that is losing for the opponent.",
+      "It is losing if every move leads to a position that is winning for the opponent."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "W(n) = \\begin{cases} \\text{lost} & n = 0 \\\\ \\text{won} & \\exists\\, k \\in \\{1,2,3\\},\\ k \\le n,\\ W(n-k) = \\text{lost} \\\\ \\text{lost} & \\text{otherwise} \\end{cases}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is minimax in its simplest form. For Nim, the answer has a pattern: a pile that is a multiple of four is lost for the player to move, since whatever you take, the opponent can take enough to leave another multiple of four. Any other pile is won: take what leaves a multiple of four."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Minimax scales badly. The number of leaves is about b to the d for b moves and depth d. Chess has b around 35 and games of about 80 plies, far beyond any computer. Go has b around 250 and about 150 plies. Chess programs cut the tree with alpha-beta pruning and an evaluation function.",
+      "For Go, no good evaluation was known."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "MCTS takes a different route. It does not try to cover the tree. It samples it, and focuses the samples. In the labs below you write exact solvers for Nim first, because they give the ground truth against which the sampled estimates can be judged."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which pile sizes are lost for the player to move (take 1 to 3)?",
+     "options": [
+      "Multiples of 4",
+      "Odd numbers",
+      "Multiples of 3",
+      "Primes"
+     ],
+     "answer": 0,
+     "explain": "Including 0."
+    },
+    {
+     "q": "What is the value of 0 stones?",
+     "options": [
+      "Lost for the player to move",
+      "Won",
+      "Draw",
+      "Undefined"
+     ],
+     "answer": 0,
+     "explain": "The opponent took the last stone."
+    },
+    {
+     "q": "What is a winning position?",
+     "options": [
+      "Some move leads to a losing position for the opponent",
+      "Every move wins",
+      "No move exists",
+      "The pile is odd"
+     ],
+     "answer": 0,
+     "explain": "Minimax."
+    },
+    {
+     "q": "Why is exact search hopeless in Go?",
+     "options": [
+      "The tree is astronomically large",
+      "Rules are secret",
+      "Moves are random",
+      "Boards are small"
+     ],
+     "answer": 0,
+     "explain": "About 250 to the power 150."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is b?",
+     "a": "The branching factor."
+    },
+    {
+     "q": "What is d?",
+     "a": "The depth of the game."
+    },
+    {
+     "q": "How big is the tree?",
+     "a": "About b to the d."
+    },
+    {
+     "q": "What does minimax need?",
+     "a": "The whole tree."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Legal moves",
+     "intro": "Nim in these labs: a pile of n stones; players alternate taking 1, 2 or 3 stones; whoever takes the last stone wins. Write nim_moves(n): the list of legal takes from a pile of n stones, in increasing order: 1, 2, 3 limited by n.",
+     "fn": "nim_moves",
+     "starter": "def nim_moves(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": [
+        1
+       ]
+      },
+      {
+       "args": [
+        2
+       ],
+       "expect": [
+        1,
+        2
+       ]
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": [
+        1,
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        10
+       ],
+       "expect": [
+        1,
+        2,
+        3
+       ]
+      }
+     ],
+     "hint": "At most three moves, and never more than n.",
+     "solution": "def nim_moves(n):\n    out = []\n    for k in range(1, 4):\n        if k <= n:\n            out.append(k)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Exact value",
+     "intro": "Write nim_wins(n): 1 if the player to move wins Nim with n stones (exact minimax by recursion), otherwise 0.",
+     "fn": "nim_wins",
+     "starter": "def nim_wins(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        3
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        4
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        8
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        11
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        12
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Win if some move leaves a lost position.",
+     "solution": "def nim_wins(n):\n    if n == 0:\n        return 0\n    for k in range(1, 4):\n        if k <= n and nim_wins(n - k) == 0:\n            return 1\n    return 0\n"
+    },
+    {
+     "type": "python",
+     "title": "Size of the tree",
+     "intro": "Write tree_size(n): the number of nodes in the full game tree of Nim from a pile of n (the root counts, and each legal move leads to a child).",
+     "fn": "tree_size",
+     "starter": "def tree_size(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        3
+       ],
+       "expect": 8
+      },
+      {
+       "args": [
+        6
+       ],
+       "expect": 52
+      },
+      {
+       "args": [
+        10
+       ],
+       "expect": 600
+      }
+     ],
+     "hint": "One for this node plus the sizes of the children.",
+     "solution": "def tree_size(n):\n    total = 1\n    for k in range(1, 4):\n        if k <= n:\n            total += tree_size(n - k)\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "Best exact move",
+     "intro": "Write best_move(n): the smallest take that leaves a lost position for the opponent, or 1 if there is none (exact minimax).",
+     "fn": "best_move",
+     "starter": "def best_move(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        2
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        6
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        7
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        8
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        10
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "Try the takes in order.",
+     "solution": "def best_move(n):\n    def wins(m):\n        if m == 0:\n            return 0\n        for k in range(1, 4):\n            if k <= m and wins(m - k) == 0:\n                return 1\n        return 0\n    for k in range(1, 4):\n        if k <= n and wins(n - k) == 0:\n            return k\n    return 1\n"
+    },
+    {
+     "type": "order",
+     "title": "Solving a game",
+     "intro": "Order the minimax steps.",
+     "items": [
+      "Label terminal positions",
+      "Label positions whose moves all lead to wins for the opponent as losses",
+      "Label positions with a move to a loss as wins",
+      "Work backwards to the root",
+      "Read off the best move"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Nim",
+     "intro": "Match each pile with its value for the player to move.",
+     "pairs": [
+      [
+       "0",
+       "Lost"
+      ],
+      [
+       "4",
+       "Lost"
+      ],
+      [
+       "5",
+       "Won"
+      ],
+      [
+       "8",
+       "Lost"
+      ],
+      [
+       "11",
+       "Won"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Search",
+     "text": "Minimax is exact but the tree has about b to the {{d|depth}} leaves, where b is the {{branching}} factor."
+    }
+   ]
+  },
+  {
+   "title": "Random playouts and Monte Carlo estimation",
+   "maps": [
+    {
+     "title": "Playouts",
+     "links": [
+      "Playout | plays | Random moves to the end",
+      "Win rate | estimates | Position value",
+      "More playouts | reduce | Noise",
+      "Error | shrinks as | One over root n",
+      "Pseudo-random numbers | make | Runs repeatable",
+      "LCG | generates | Pseudo-random numbers",
+      "Random policy | is | Weak but unbiased"
+     ]
+    }
+   ],
+   "summary": [
+    "A playout (also called a rollout or simulation) plays a game to the end with random moves. Its result, win or loss, is a noisy estimate of the position's value. Averaging many playouts reduces the noise.",
+    "The standard error of an average of n samples shrinks like one over the square root of n. Ten times more playouts make the estimate about three times more accurate.",
+    "The labs use a tiny linear congruential generator for pseudo-random numbers, so that every result is exactly repeatable."
+   ],
+   "glossary": [
+    {
+     "term": "Playout",
+     "def": "A simulated game from a position to its end."
+    },
+    {
+     "term": "Win rate",
+     "def": "Wins divided by playouts."
+    },
+    {
+     "term": "Standard error",
+     "def": "The typical size of the estimate's error."
+    },
+    {
+     "term": "Pseudo-random generator",
+     "def": "A deterministic formula producing numbers that look random."
+    },
+    {
+     "term": "LCG",
+     "def": "Linear congruential generator: x becomes (a x + c) mod m."
+    },
+    {
+     "term": "Seed",
+     "def": "The starting value of a generator."
+    }
+   ],
+   "keyPoints": [
+    "The playout result for the player to move is 1 for a win and 0 for a loss.",
+    "Win rate = wins / playouts.",
+    "Standard error is about sqrt(p (1 - p) / n).",
+    "A random playout policy picks uniformly among legal moves.",
+    "Estimates from random play are noisy and may be biased as a measure of perfect-play value.",
+    "In the labs: x -> (75 x + 74) mod 65537, a small LCG, picks the move index as x mod number of moves."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Take the Nim position with five stones. We know the exact answer: it is won for the player to move, by taking one stone. Pretend we do not know. We could play random games from here and count how often the player to move wins. If the estimate is above one half, the position looks good."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Each playout is a short story. Starting at the position, the player to move picks a random legal move, then the other player, and so on until the pile is empty. The one who took the last stone wins. Record 1 if that was the player who started, otherwise 0."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\hat{p} = \\frac{1}{n}\\sum_{i=1}^{n} z_i, \\\\[0.6em] \\mathrm{SE}(\\hat{p}) \\approx \\sqrt{\\frac{\\hat{p}(1-\\hat{p})}{n}} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is the Monte Carlo estimate and its standard error. With 100 playouts and a true rate of one half, the error is around five percentage points. With 10,000 playouts it is around half a point.",
+      "The cost grows linearly with n while the error shrinks only with its square root, a good reason to spend playouts where they matter."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There is a subtlety. The win rate under random play is not the value under perfect play. A position can be lost against a perfect opponent, yet random opponents blunder so often that it wins most playouts.",
+      "MCTS reduces this problem by choosing moves inside the tree better than randomly, so playouts are used only below the tree's frontier."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "For repeatable labs we need random numbers that are reproducible. A linear congruential generator updates a number by x to (a times x plus c) modulo m. The labs use a tiny one with m of 65537, a of 75 and c of 74, so everything stays far below the integer limit.",
+      "Its quality is poor for serious work but fine for teaching."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a playout return?",
+     "options": [
+      "Win or loss of a simulated game",
+      "A move",
+      "A tree",
+      "The rules"
+     ],
+     "answer": 0,
+     "explain": "A noisy estimate."
+    },
+    {
+     "q": "How does error shrink with n playouts?",
+     "options": [
+      "Like one over the square root of n",
+      "Like one over n squared",
+      "It does not",
+      "Linearly"
+     ],
+     "answer": 0,
+     "explain": "Ten times more for three times accuracy."
+    },
+    {
+     "q": "Why a seeded generator?",
+     "options": [
+      "Repeatable results",
+      "Better randomness",
+      "Faster code",
+      "Smaller tree"
+     ],
+     "answer": 0,
+     "explain": "Same seed, same run."
+    },
+    {
+     "q": "Is random-play win rate equal to perfect-play value?",
+     "options": [
+      "No, it can differ",
+      "Always",
+      "Never",
+      "Only in Nim"
+     ],
+     "answer": 0,
+     "explain": "Random opponents blunder."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is the LCG here?",
+     "a": "x -> (75 x + 74) mod 65537."
+    },
+    {
+     "q": "What is SE?",
+     "a": "sqrt(p (1-p) / n)."
+    },
+    {
+     "q": "What do we average?",
+     "a": "Playout results."
+    },
+    {
+     "q": "Where are playouts used?",
+     "a": "Below the tree frontier."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Next random number",
+     "intro": "Write lcg(x): the next value of the generator, (75 * x + 74) % 65537.",
+     "fn": "lcg",
+     "starter": "def lcg(x):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1
+       ],
+       "expect": 149
+      },
+      {
+       "args": [
+        0
+       ],
+       "expect": 74
+      },
+      {
+       "args": [
+        12345
+       ],
+       "expect": 8431
+      },
+      {
+       "args": [
+        65536
+       ],
+       "expect": 65536
+      }
+     ],
+     "hint": "One line of arithmetic.",
+     "solution": "def lcg(x):\n    return (75 * x + 74) % 65537\n"
+    },
+    {
+     "type": "python",
+     "title": "One random playout",
+     "intro": "Nim in these labs: a pile of n stones; players alternate taking 1, 2 or 3 stones; whoever takes the last stone wins. Write playout(n, seed): play random legal moves from n stones until the pile is empty. At each step: x = lcg(x) (starting from seed), the legal takes are 1..min(3, n), and the take is moves[x % len(moves)]. Return 1 if the player who moved first at the start takes the last stone, else 0. Here lcg(x) = (75 * x + 74) % 65537.",
+     "fn": "playout",
+     "starter": "def playout(n, seed):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        1
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        5,
+        2
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        10,
+        7
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        4,
+        3
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        1,
+        5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        0,
+        1
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        12,
+        99
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Alternate players; the last mover wins.",
+     "solution": "def playout(n, seed):\n    x = seed\n    player = 0\n    last = 1\n    if n == 0:\n        return 0\n    while n > 0:\n        x = (75 * x + 74) % 65537\n        top = 3 if n >= 3 else n\n        k = 1 + x % top\n        n -= k\n        last = player\n        player = 1 - player\n    return 1 if last == 0 else 0\n"
+    },
+    {
+     "type": "python",
+     "title": "Win-rate estimate",
+     "intro": "Write estimate(n, k, seed): the fraction of k playouts from n stones won by the player to move. Playout j (from 0) uses the seed (seed + j) as its starting value. Same playout rule as before. Return wins / k.",
+     "fn": "estimate",
+     "starter": "def estimate(n, k, seed):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        20,
+        1
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        4,
+        20,
+        1
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        8,
+        30,
+        5
+       ],
+       "expect": 0.5333333333333333,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1,
+        10,
+        3
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        10,
+        50,
+        11
+       ],
+       "expect": 0.52,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Count playouts won by the first player.",
+     "solution": "def estimate(n, k, seed):\n    wins = 0\n    for j in range(k):\n        x = seed + j\n        m = n\n        player = 0\n        last = 1\n        if m == 0:\n            continue\n        while m > 0:\n            x = (75 * x + 74) % 65537\n            top = 3 if m >= 3 else m\n            t = 1 + x % top\n            m -= t\n            last = player\n            player = 1 - player\n        if last == 0:\n            wins += 1\n    return wins / k\n"
+    },
+    {
+     "type": "python",
+     "title": "Standard error",
+     "intro": "Write std_error(p, n): sqrt(p * (1 - p) / n). Use import math.",
+     "fn": "std_error",
+     "starter": "def std_error(p, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5,
+        100
+       ],
+       "expect": 0.05,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.5,
+        10000
+       ],
+       "expect": 0.005,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.9,
+        50
+       ],
+       "expect": 0.04242640687119285,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.0,
+        10
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Plain formula.",
+     "solution": "import math\ndef std_error(p, n):\n    return math.sqrt(p * (1 - p) / n)\n"
+    },
+    {
+     "type": "order",
+     "title": "Estimating a position",
+     "intro": "Order the steps.",
+     "items": [
+      "Seed the generator",
+      "Play a random game to the end",
+      "Record the result for the player to move",
+      "Repeat n times",
+      "Divide wins by n"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Statistics",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Win rate",
+       "Wins over playouts"
+      ],
+      [
+       "Standard error",
+       "Typical estimate error"
+      ],
+      [
+       "Seed",
+       "Generator start value"
+      ],
+      [
+       "LCG",
+       "Simple pseudo-random formula"
+      ],
+      [
+       "Playout",
+       "Random game to the end"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Sampling",
+     "text": "The error of a Monte Carlo average shrinks like one over the square {{root}} of the number of {{playouts|samples}}."
+    }
+   ]
+  },
+  {
+   "title": "Bandits and the UCB1 rule",
+   "maps": [
+    {
+     "title": "Bandits",
+     "links": [
+      "Bandit | has | Several arms",
+      "Pull | gives | A random reward",
+      "Exploitation | picks | The best known arm",
+      "Exploration | tries | Uncertain arms",
+      "UCB1 | adds | A confidence bonus",
+      "Regret | measures | Loss versus the best arm",
+      "UCB1 | by | Auer et al. 2002"
+     ]
+    }
+   ],
+   "summary": [
+    "A multi-armed bandit is the simplest setting where exploration and exploitation clash. There are several arms, each paying a random reward with an unknown mean. You pull one arm per round and want the highest total reward.",
+    "UCB1, by Auer, Cesa-Bianchi and Fischer in 2002, picks the arm with the highest upper confidence bound: its average reward plus a bonus that is large for rarely pulled arms. Its regret grows only logarithmically with the number of pulls.",
+    "In MCTS, each move at each node is an arm and each playout is a pull."
+   ],
+   "glossary": [
+    {
+     "term": "Multi-armed bandit",
+     "def": "A problem of repeatedly choosing among arms with unknown reward distributions."
+    },
+    {
+     "term": "Exploitation",
+     "def": "Choosing the arm that has looked best so far."
+    },
+    {
+     "term": "Exploration",
+     "def": "Choosing an arm to learn about it."
+    },
+    {
+     "term": "UCB1",
+     "def": "Choose the arm maximising mean + c sqrt(2 ln N / n_i)."
+    },
+    {
+     "term": "Regret",
+     "def": "The reward lost by not always playing the best arm."
+    },
+    {
+     "term": "Confidence bonus",
+     "def": "The term that grows when an arm has been tried few times."
+    }
+   ],
+   "keyPoints": [
+    "UCB1 value of arm i: mean_i + c * sqrt(2 ln N / n_i).",
+    "N is the total number of pulls and n_i the pulls of arm i; untried arms are pulled first.",
+    "The bonus shrinks as n_i grows and grows slowly as N grows, so every arm is revisited eventually.",
+    "UCB1 has logarithmic regret in the number of pulls (Auer et al., 2002).",
+    "In UCT the constant is written C_p; the survey notes 1/sqrt(2) for rewards in [0, 1].",
+    "In MCTS the arm is a child move; the reward is a playout result."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Imagine a row of slot machines. Each pays out on average a different amount, which you do not know. You have a thousand coins. If you pull each once and then stick with the best looking one, you may be fooled by luck. If you keep trying all of them, you waste coins on poor machines.",
+      "How do you balance?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "UCB1 gives a clean answer. Give each arm a score equal to its average reward so far plus a bonus. The bonus is big when the arm has been pulled rarely, because the average is then unreliable, and small when it has been pulled many times. Always pull the arm with the highest score.",
+      "This is optimism in the face of uncertainty."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\mathrm{UCB1}_i \\;=\\; \\bar{X}_i \\;+\\; c\\,\\sqrt{\\frac{2\\ln N}{n_i}}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Look at the bonus. As n i grows the bonus falls, so well-sampled arms must earn their place with their average. As the total N grows, ln N grows slowly, so a neglected arm's bonus rises until it is tried again. No arm is dropped forever.",
+      "Auer and colleagues proved that the total regret grows only logarithmically in the number of pulls, which is the best order possible."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The constant c sets the balance. In the original analysis for rewards between zero and one, c is one. The MCTS survey writes the constant for UCT as C p and notes the value one over the square root of two satisfies the theory for rewards in the unit interval. In practice it is tuned.",
+      "Larger values explore more."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The labs write the UCB1 score, choose the best arm, and measure regret in a small deterministic bandit."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the UCB1 bonus do?",
+     "options": [
+      "Favours rarely tried arms",
+      "Favours the best arm only",
+      "Ignores counts",
+      "Adds noise"
+     ],
+     "answer": 0,
+     "explain": "Shrinks as n grows."
+    },
+    {
+     "q": "What does regret measure?",
+     "options": [
+      "Reward lost against the best arm",
+      "Time",
+      "Memory",
+      "Arm count"
+     ],
+     "answer": 0,
+     "explain": "Logarithmic for UCB1."
+    },
+    {
+     "q": "What happens to the bonus as N grows with n_i fixed?",
+     "options": [
+      "It grows slowly",
+      "It shrinks",
+      "It is constant",
+      "It flips sign"
+     ],
+     "answer": 0,
+     "explain": "ln N increases."
+    },
+    {
+     "q": "What is exploitation?",
+     "options": [
+      "Choosing the best known arm",
+      "Choosing at random",
+      "Trying new arms only",
+      "Stopping"
+     ],
+     "answer": 0,
+     "explain": "Versus exploration."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Who proved the regret bound?",
+     "a": "Auer, Cesa-Bianchi and Fischer, 2002."
+    },
+    {
+     "q": "What are untried arms given?",
+     "a": "Priority; infinite value."
+    },
+    {
+     "q": "What is c?",
+     "a": "The exploration constant."
+    },
+    {
+     "q": "What is the arm in MCTS?",
+     "a": "A child move."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "UCB1 score",
+     "intro": "Write ucb1(mean, total, count, c): mean + c * sqrt(2 * ln(total) / count). Use import math.",
+     "fn": "ucb1",
+     "starter": "def ucb1(mean, total, count, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5,
+        10,
+        2,
+        1.0
+       ],
+       "expect": 2.0174271293851467,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.5,
+        100,
+        20,
+        1.0
+       ],
+       "expect": 1.1786140424415112,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.0,
+        2,
+        1,
+        0.5
+       ],
+       "expect": 0.5887050112577373,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.9,
+        50,
+        49,
+        1.0
+       ],
+       "expect": 1.2995928032195052,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.3,
+        20,
+        5,
+        0.7071
+       ],
+       "expect": 1.0740380889089354,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Mean plus the bonus.",
+     "solution": "import math\ndef ucb1(mean, total, count, c):\n    return mean + c * math.sqrt(2 * math.log(total) / count)\n"
+    },
+    {
+     "type": "python",
+     "title": "Choose an arm",
+     "intro": "Write choose_arm(means, counts, c): the index of the arm with the highest UCB1 score; an arm with count 0 is chosen immediately (the lowest such index). The total is the sum of counts. Ties go to the lowest index. Use import math.",
+     "fn": "choose_arm",
+     "starter": "def choose_arm(means, counts, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.6
+        ],
+        [
+         10,
+         10
+        ],
+        1.0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.6
+        ],
+        [
+         0,
+         5
+        ],
+        1.0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.1
+        ],
+        [
+         50,
+         2
+        ],
+        1.0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.1
+        ],
+        [
+         50,
+         2
+        ],
+        0.1
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.8,
+         0.5
+        ],
+        [
+         5,
+         5,
+         5
+        ],
+        1.0
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Untried arms first, then the highest score.",
+     "solution": "import math\ndef choose_arm(means, counts, c):\n    for i in range(len(counts)):\n        if counts[i] == 0:\n            return i\n    total = sum(counts)\n    best = -1e18\n    arg = 0\n    for i in range(len(counts)):\n        s = means[i] + c * math.sqrt(2 * math.log(total) / counts[i])\n        if s > best + 1e-12:\n            best = s\n            arg = i\n    return arg\n"
+    },
+    {
+     "type": "python",
+     "title": "Run a deterministic bandit",
+     "intro": "Arms have fixed rewards (a list of numbers; pulling arm i always gives rewards[i]). Write run_ucb(rewards, rounds, c): pull each arm once, then use UCB1 for the remaining rounds (means are the running averages). Return the list of pull counts per arm. Ties go to the lowest index. Use import math.",
+     "fn": "run_ucb",
+     "starter": "def run_ucb(rewards, rounds, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.2,
+         0.8
+        ],
+        50,
+        1.0
+       ],
+       "expect": [
+        8,
+        42
+       ]
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5,
+         0.5
+        ],
+        30,
+        1.0
+       ],
+       "expect": [
+        10,
+        10,
+        10
+       ]
+      },
+      {
+       "args": [
+        [
+         0.1,
+         0.9,
+         0.4
+        ],
+        100,
+        0.5
+       ],
+       "expect": [
+        3,
+        91,
+        6
+       ]
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ],
+        20,
+        1.0
+       ],
+       "expect": [
+        17,
+        3
+       ]
+      }
+     ],
+     "hint": "Keep counts and sums.",
+     "solution": "import math\ndef run_ucb(rewards, rounds, c):\n    k = len(rewards)\n    counts = [0] * k\n    sums = [0.0] * k\n    for t in range(rounds):\n        if t < k:\n            arg = t\n        else:\n            total = sum(counts)\n            best = -1e18\n            arg = 0\n            for i in range(k):\n                s = sums[i] / counts[i] + c * math.sqrt(2 * math.log(total) / counts[i])\n                if s > best + 1e-12:\n                    best = s\n                    arg = i\n        counts[arg] += 1\n        sums[arg] += rewards[arg]\n    return counts\n"
+    },
+    {
+     "type": "python",
+     "title": "Regret",
+     "intro": "Write regret(rewards, counts): the total regret = sum over arms of counts[i] * (best reward - rewards[i]).",
+     "fn": "regret",
+     "starter": "def regret(rewards, counts):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.2,
+         0.8
+        ],
+        [
+         10,
+         40
+        ]
+       ],
+       "expect": 6.000000000000001,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         5,
+         5
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.1,
+         0.9,
+         0.4
+        ],
+        [
+         3,
+         90,
+         7
+        ]
+       ],
+       "expect": 5.9,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Weight the gap by the pulls.",
+     "solution": "def regret(rewards, counts):\n    best = max(rewards)\n    total = 0.0\n    for r, n in zip(rewards, counts):\n        total += n * (best - r)\n    return total\n"
+    },
+    {
+     "type": "order",
+     "title": "Using UCB1",
+     "intro": "Order the steps.",
+     "items": [
+      "Pull every arm once",
+      "Compute each arm's mean",
+      "Add the confidence bonus",
+      "Pull the arm with the highest score",
+      "Update its count and mean"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Bandit terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Exploitation",
+       "Use what looks best"
+      ],
+      [
+       "Exploration",
+       "Learn about other arms"
+      ],
+      [
+       "Bonus",
+       "Large for rarely tried arms"
+      ],
+      [
+       "Regret",
+       "Reward lost"
+      ],
+      [
+       "UCB1",
+       "Mean plus confidence bonus"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "UCB1",
+     "text": "UCB1 adds a confidence {{bonus}} that is large for arms pulled {{rarely|few times|seldom}}."
+    }
+   ]
+  },
+  {
+   "title": "The four steps: selection, expansion, simulation, backpropagation",
+   "maps": [
+    {
+     "title": "One iteration",
+     "links": [
+      "Selection | descends | Using a tree policy",
+      "Expansion | adds | A new child",
+      "Simulation | plays | A default policy",
+      "Backpropagation | updates | Visits and wins",
+      "Node | stores | N and W",
+      "Root | is | The current position",
+      "Result | flips | Between players"
+     ]
+    }
+   ],
+   "summary": [
+    "Each iteration starts at the root. Selection walks down through nodes already in the tree, following a tree policy. When it reaches a node with an untried move, expansion adds a child for one. Simulation plays from the new node to the end with a default policy.",
+    "Backpropagation then updates every node on the path with the result.",
+    "Each node stores two numbers: its visit count N and its total reward W. The mean reward is W over N.",
+    "Because the players alternate, the result must be flipped as it travels up: a win for one player is a loss for the other."
+   ],
+   "glossary": [
+    {
+     "term": "Tree policy",
+     "def": "The rule used to pick children while inside the tree."
+    },
+    {
+     "term": "Default policy",
+     "def": "The rule used to play moves in the simulation, often random."
+    },
+    {
+     "term": "Visit count N",
+     "def": "How many iterations passed through a node."
+    },
+    {
+     "term": "Total reward W",
+     "def": "The sum of results backed up through a node."
+    },
+    {
+     "term": "Untried move",
+     "def": "A legal move with no child node yet."
+    },
+    {
+     "term": "Frontier",
+     "def": "The boundary between the tree and the unexplored part."
+    }
+   ],
+   "keyPoints": [
+    "Selection: from the root, follow the tree policy to a node that is not fully expanded or is terminal.",
+    "Expansion: add one child for an untried move.",
+    "Simulation: play the default policy from the new child to a terminal state.",
+    "Backpropagation: add 1 to N on every node of the path, and add the result to W from that node's perspective.",
+    "Rewards from a node's parent's perspective alternate with depth.",
+    "After the iterations, the move is chosen from the root's children."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "MCTS grows a tree one node per iteration. Each iteration is the same four-step cycle, and the cycle is the heart of the algorithm. Learn it well and the rest is variation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Selection. Start at the root, the current position. If the node is fully expanded, which means every legal move already has a child, pick a child with the tree policy and move down. Repeat until you reach a node that has an untried move, or a finished game."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Expansion. If the node has an untried move, create the child for it and add it to the tree. Only one node is added per iteration, which keeps the tree growing slowly and evenly."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Simulation. From the new node, play the game to the end with the default policy. In plain MCTS the default policy is uniformly random. The final result is recorded: win, loss or perhaps a score."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} N(v) \\leftarrow N(v) + 1, \\\\[0.6em] W(v) \\leftarrow W(v) + r_v \\\\[0.6em] \\text{for every node } v \\text{ on the path} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Backpropagation. Walk back up the path from the new node to the root. Add one to each node's visit count and add the result to its total. Take care of perspective. In a two-player game the result that is good for the player who made the move into a node is bad for the player moving out of it.",
+      "So the reward alternates between one and zero down the path. Many programs store at each node the result from the viewpoint of the player who moved into it, so the selection at the parent can simply maximise."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The loop then repeats, thousands or millions of times. The visit counts concentrate on strong moves, and the final choice reads them off. The labs implement each step on a small tree stored in lists."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How many nodes does expansion add?",
+     "options": [
+      "One",
+      "All children",
+      "None",
+      "The whole tree"
+     ],
+     "answer": 0,
+     "explain": "Per iteration."
+    },
+    {
+     "q": "What does simulation use?",
+     "options": [
+      "The default policy",
+      "The tree policy",
+      "A neural network only",
+      "Minimax"
+     ],
+     "answer": 0,
+     "explain": "Often random moves."
+    },
+    {
+     "q": "What is updated in backpropagation?",
+     "options": [
+      "N and W on the path",
+      "The rules",
+      "Only the root",
+      "Only the leaf"
+     ],
+     "answer": 0,
+     "explain": "From the new node up to the root."
+    },
+    {
+     "q": "Why flip the result?",
+     "options": [
+      "Players alternate",
+      "To save time",
+      "Rewards are negative",
+      "To avoid ties"
+     ],
+     "answer": 0,
+     "explain": "A win for one is a loss for the other."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Where does selection stop?",
+     "a": "At a node with an untried move or a terminal node."
+    },
+    {
+     "q": "What does a node store?",
+     "a": "N and W."
+    },
+    {
+     "q": "What starts an iteration?",
+     "a": "The root."
+    },
+    {
+     "q": "What is W/N?",
+     "a": "The mean reward."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Backpropagate",
+     "intro": "A path is a list of nodes from the root down to the new node, each node a [visits, total] pair. Write backprop(path, result): add 1 to the visits of each node and add the result to the total of the new (last) node, alternating the result between result and 1 - result going up the path (the last node gets result, its parent gets 1 - result, and so on). Return the updated path.",
+     "fn": "backprop",
+     "starter": "def backprop(path, result):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          0,
+          0
+         ],
+         [
+          0,
+          0
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        [
+         1,
+         1
+        ],
+        [
+         1,
+         0
+        ],
+        [
+         1,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          1
+         ],
+         [
+          1,
+          0
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        [
+         3,
+         2
+        ],
+        [
+         2,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5,
+          3
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        [
+         6,
+         4
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1
+         ],
+         [
+          1,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          0,
+          0
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        [
+         2,
+         1
+        ],
+        [
+         2,
+         1
+        ],
+        [
+         2,
+         1
+        ],
+        [
+         1,
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Count back from the last node to decide the sign.",
+     "solution": "def backprop(path, result):\n    out = []\n    n = len(path)\n    for i in range(n):\n        steps = n - 1 - i\n        r = result if steps % 2 == 0 else 1 - result\n        out.append([path[i][0] + 1, path[i][1] + r])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Untried moves",
+     "intro": "A node for a Nim pile of n stones has children for some takes. Write untried(n, tried): the list of legal takes (1..min(3, n)) that are not in the list tried, in increasing order.",
+     "fn": "untried",
+     "starter": "def untried(n, tried):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        []
+       ],
+       "expect": [
+        1,
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        5,
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        2,
+        [
+         1
+        ]
+       ],
+       "expect": [
+        2
+       ]
+      },
+      {
+       "args": [
+        0,
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        4,
+        [
+         2
+        ]
+       ],
+       "expect": [
+        1,
+        3
+       ]
+      }
+     ],
+     "hint": "Legal moves minus those with children.",
+     "solution": "def untried(n, tried):\n    out = []\n    for k in range(1, 4):\n        if k <= n and k not in tried:\n            out.append(k)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Mean reward",
+     "intro": "Write mean_reward(node): node is [visits, total]; return total / visits, or 0.5 if visits is 0.",
+     "fn": "mean_reward",
+     "starter": "def mean_reward(node):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         4,
+         3
+        ]
+       ],
+       "expect": 0.75,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         10,
+         2
+        ]
+       ],
+       "expect": 0.2,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Guard the empty case.",
+     "solution": "def mean_reward(node):\n    if node[0] == 0:\n        return 0.5\n    return node[1] / node[0]\n"
+    },
+    {
+     "type": "python",
+     "title": "Expand a node",
+     "intro": "A node's children are stored as a list of [take, visits, total]. Write expand(children, n): if there are untried takes for a pile of n (legal takes not yet in the list), add a child [take, 0, 0] for the smallest untried take and return the new list; otherwise return the list unchanged.",
+     "fn": "expand",
+     "starter": "def expand(children, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [],
+        5
+       ],
+       "expect": [
+        [
+         1,
+         0,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          3,
+          2
+         ]
+        ],
+        5
+       ],
+       "expect": [
+        [
+         1,
+         3,
+         2
+        ],
+        [
+         2,
+         0,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          3,
+          2
+         ],
+         [
+          2,
+          1,
+          1
+         ],
+         [
+          3,
+          1,
+          0
+         ]
+        ],
+        5
+       ],
+       "expect": [
+        [
+         1,
+         3,
+         2
+        ],
+        [
+         2,
+         1,
+         1
+        ],
+        [
+         3,
+         1,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [],
+        0
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1,
+          1
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        [
+         1,
+         1,
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Add the smallest missing legal take.",
+     "solution": "def expand(children, n):\n    tried = [c[0] for c in children]\n    for k in range(1, 4):\n        if k <= n and k not in tried:\n            return children + [[k, 0, 0]]\n    return children\n"
+    },
+    {
+     "type": "order",
+     "title": "An iteration",
+     "intro": "Order the steps.",
+     "items": [
+      "Start at the root",
+      "Descend by the tree policy",
+      "Add a child for an untried move",
+      "Play a simulation to the end",
+      "Update visits and rewards up the path"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Pieces",
+     "intro": "Match each piece with its job.",
+     "pairs": [
+      [
+       "Tree policy",
+       "Chooses inside the tree"
+      ],
+      [
+       "Default policy",
+       "Plays the simulation"
+      ],
+      [
+       "N",
+       "Visit count"
+      ],
+      [
+       "W",
+       "Total reward"
+      ],
+      [
+       "Expansion",
+       "Adds a child"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Cycle",
+     "text": "A node stores the visit count {{N}} and total reward {{W}}."
+    }
+   ]
+  },
+  {
+   "title": "UCT and a complete search",
+   "maps": [
+    {
+     "title": "UCT",
+     "links": [
+      "UCT | applies | UCB1 in the tree",
+      "Child score | is | Mean plus bonus",
+      "C | sets | Exploration weight",
+      "Iterations | are | The search budget",
+      "Best move | is | Most visited child",
+      "Tree | reuses | Past work",
+      "Search | is | Anytime"
+     ]
+    }
+   ],
+   "summary": [
+    "UCT is MCTS with UCB1 as the tree policy: at each node, descend to the child maximising its mean reward plus an exploration bonus. This treats every node as a bandit problem.",
+    "With the pieces from earlier chapters we can write a full search. Run a fixed number of iterations from the current position, then play the root move with the most visits.",
+    "The labs do exactly that on Nim, with a small deterministic random generator, so the whole search is repeatable."
+   ],
+   "glossary": [
+    {
+     "term": "UCT score",
+     "def": "mean + C sqrt(ln N_parent / n_child), in the survey's form with a constant."
+    },
+    {
+     "term": "Search budget",
+     "def": "The number of iterations or the time allowed."
+    },
+    {
+     "term": "Root move",
+     "def": "The move chosen from the root after the search."
+    },
+    {
+     "term": "Most visited child",
+     "def": "The child with the highest visit count."
+    },
+    {
+     "term": "Fully expanded",
+     "def": "A node with a child for every legal move."
+    },
+    {
+     "term": "Convergence",
+     "def": "With enough iterations UCT's choice approaches the optimal move."
+    }
+   ],
+   "keyPoints": [
+    "UCT picks the child maximising mean + C * sqrt(ln(N_parent) / n_child).",
+    "Browne et al. write the bonus as 2 C_p sqrt(2 ln n / n_j); the constants differ only by scaling C.",
+    "Kocsis and Szepesvari proved that UCT converges to the minimax value for finite games.",
+    "Choose the final move by visits.",
+    "More iterations give better play.",
+    "The labs fix C = 1 and a deterministic generator."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Now we assemble the full algorithm. At each node reached in selection that has all its moves tried, use the UCT rule to choose among its children. Where it has untried moves, expand one. Then simulate and back up."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "v^{*} \\;=\\; \\arg\\max_{v'\\,\\in\\,\\mathrm{children}(v)}\\ \\left( \\frac{W(v')}{N(v')} \\;+\\; C\\sqrt{\\frac{\\ln N(v)}{N(v')}} \\right)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The survey writes the rule with a factor of two and a constant C p, but the shape is the same: the first term favours moves that did well, the second favours moves tried little. The constant C is tuned for the game.",
+      "A larger C explores more and may waste simulations; a smaller C exploits more and may miss good moves."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Kocsis and Szepesvari proved a strong property: for finite games, with enough iterations the probability of choosing a suboptimal move goes to zero, so UCT converges to the minimax answer. The result is asymptotic.",
+      "In practice the number of iterations needed can be very large, particularly in games with traps."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How to pick the move at the end? The most robust choice is the child with the most visits, since a high visit count means UCT kept finding it worth exploring. The child with the highest mean can be a lucky sample with few visits. Chapter 7 compares the options."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Because the search tree carries over, a program can keep the subtree of the move actually played and reuse its statistics on the next turn. And because the search is anytime, the program can think for as long as the clock allows."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does UCT choose in the tree?",
+     "options": [
+      "The child with the highest mean plus bonus",
+      "A random child",
+      "The first child",
+      "The last child"
+     ],
+     "answer": 0,
+     "explain": "UCB1 at each node."
+    },
+    {
+     "q": "What does a larger C do?",
+     "options": [
+      "More exploration",
+      "Less exploration",
+      "Nothing",
+      "Smaller tree"
+     ],
+     "answer": 0,
+     "explain": "Bigger bonus."
+    },
+    {
+     "q": "Which move is played at the end?",
+     "options": [
+      "Usually the most visited",
+      "The least visited",
+      "A random one",
+      "The first"
+     ],
+     "answer": 0,
+     "explain": "Robust."
+    },
+    {
+     "q": "What is proved about UCT?",
+     "options": [
+      "Convergence to minimax for finite games",
+      "It is always fast",
+      "It needs no memory",
+      "It never loses"
+     ],
+     "answer": 0,
+     "explain": "Asymptotically."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What are the parts of the score?",
+     "a": "Mean reward and exploration bonus."
+    },
+    {
+     "q": "What does a high C do?",
+     "a": "Explores more."
+    },
+    {
+     "q": "What can be reused?",
+     "a": "The subtree of the played move."
+    },
+    {
+     "q": "Is convergence fast?",
+     "a": "Not necessarily."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "UCT score",
+     "intro": "Write uct_score(w, n, parent_n, c): w / n + c * sqrt(ln(parent_n) / n); an unvisited child (n = 0) has infinite score, return 1e18. Use import math.",
+     "fn": "uct_score",
+     "starter": "def uct_score(w, n, parent_n, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        5,
+        20,
+        1.0
+       ],
+       "expect": 1.3740455120409898,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0,
+        0,
+        20,
+        1.0
+       ],
+       "expect": 1e+18,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        10,
+        10,
+        100,
+        0.5
+       ],
+       "expect": 1.3393070212207556,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1,
+        2,
+        3,
+        1.4
+       ],
+       "expect": 1.5376126651572577,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Mean plus bonus.",
+     "solution": "import math\ndef uct_score(w, n, parent_n, c):\n    if n == 0:\n        return 1e18\n    return w / n + c * math.sqrt(math.log(parent_n) / n)\n"
+    },
+    {
+     "type": "python",
+     "title": "Select a child",
+     "intro": "Write select_child(children, parent_n, c): children is a list of [take, visits, total] where total is the reward for the player choosing that take; return the take of the child with the highest UCT score (an unvisited child first; ties to the lowest take). Use import math.",
+     "fn": "select_child",
+     "starter": "def select_child(children, parent_n, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          5,
+          3
+         ],
+         [
+          2,
+          5,
+          2
+         ],
+         [
+          3,
+          5,
+          4
+         ]
+        ],
+        15,
+        1.0
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          5,
+          3
+         ],
+         [
+          2,
+          0,
+          0
+         ]
+        ],
+        5,
+        1.0
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          50,
+          30
+         ],
+         [
+          2,
+          2,
+          2
+         ]
+        ],
+        52,
+        1.0
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          50,
+          30
+         ],
+         [
+          2,
+          2,
+          2
+         ]
+        ],
+        52,
+        0.1
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "Compute each score.",
+     "solution": "import math\ndef select_child(children, parent_n, c):\n    best = -1e18\n    arg = children[0][0]\n    for take, n, w in children:\n        if n == 0:\n            return take\n        s = w / n + c * math.sqrt(math.log(parent_n) / n)\n        if s > best + 1e-12:\n            best = s\n            arg = take\n    return arg\n"
+    },
+    {
+     "type": "python",
+     "title": "Full UCT search on Nim",
+     "intro": "Nim in these labs: a pile of n stones; players alternate taking 1, 2 or 3 stones; whoever takes the last stone wins. Write uct_nim(n, iterations, c, seed): run UCT from a pile of n stones. Each node stores visits N and total W from the viewpoint of the player who made the move INTO it (so at the parent we maximise W/N). Selection: at a node with an untried take, expand the smallest untried take; otherwise choose the child by w/n + c*sqrt(ln(parent N)/n) (ties to the lowest take). Simulation: random playout with x = (75*x + 74) % 65537, take = 1 + x % min(3, pile), x continuing across iterations (start at seed). Backpropagate alternating perspective. Return the take with the most visits at the root (ties to the lowest). For a terminal node (pile 0) the player who moved into it won (result 1 for that node).",
+     "fn": "uct_nim",
+     "starter": "def uct_nim(n, iterations, c, seed):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        300,
+        1.0,
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        6,
+        300,
+        1.0,
+        7
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        8,
+        400,
+        1.0,
+        3
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        10,
+        400,
+        1.0,
+        11
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        4,
+        200,
+        1.0,
+        5
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Follow the description exactly; the same generator makes it repeatable.",
+     "solution": "import math\ndef uct_nim(n, iterations, c, seed):\n    # node: [pile, visits, total, children dict take->node]\n    root = [n, 0, 0.0, {}]\n    x = seed\n    for it in range(iterations):\n        node = root\n        path = [node]\n        # selection and expansion\n        while node[0] > 0:\n            top = 3 if node[0] >= 3 else node[0]\n            untried = None\n            for k in range(1, top + 1):\n                if k not in node[3]:\n                    untried = k\n                    break\n            if untried is not None:\n                child = [node[0] - untried, 0, 0.0, {}]\n                node[3][untried] = child\n                node = child\n                path.append(node)\n                break\n            best = -1e18\n            arg = 1\n            for k in range(1, top + 1):\n                ch = node[3][k]\n                s = ch[2] / ch[1] + c * math.sqrt(math.log(max(node[1], 1)) / ch[1])\n                if s > best + 1e-12:\n                    best = s\n                    arg = k\n            node = node[3][arg]\n            path.append(node)\n        # simulation: result for the player who moved into the last node\n        pile = node[0]\n        if pile == 0:\n            r = 1\n        else:\n            mover = 1  # 1 = the player to move at the node (not the one who moved into it)\n            last = 0\n            while pile > 0:\n                x = (75 * x + 74) % 65537\n                top = 3 if pile >= 3 else pile\n                pile -= 1 + x % top\n                last = mover\n                mover = 1 - mover\n            # last == 1 means the player to move at the node took the last stone\n            r = 0 if last == 1 else 1\n        for i in range(len(path) - 1, -1, -1):\n            path[i][1] += 1\n            path[i][2] += r\n            r = 1 - r\n    best = -1\n    arg = 1\n    for k in sorted(root[3].keys()):\n        if root[3][k][1] > best:\n            best = root[3][k][1]\n            arg = k\n    return arg\n"
+    },
+    {
+     "type": "order",
+     "title": "A search",
+     "intro": "Order the steps.",
+     "items": [
+      "Create the root node",
+      "Run the four steps many times",
+      "Stop when the budget is used",
+      "Look at the root's children",
+      "Play the most visited move"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "UCT",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "C",
+       "Exploration weight"
+      ],
+      [
+       "Most visits",
+       "Robust final choice"
+      ],
+      [
+       "Budget",
+       "Number of iterations"
+      ],
+      [
+       "Subtree reuse",
+       "Keep the played branch"
+      ],
+      [
+       "Convergence",
+       "Approaches minimax"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Search",
+     "text": "UCT picks the child with the highest mean plus an exploration {{bonus}}; at the end we play the most {{visited}} child."
+    }
+   ]
+  },
+  {
+   "title": "Choosing the final move",
+   "maps": [
+    {
+     "title": "Final move",
+     "links": [
+      "Max child | has | Highest mean",
+      "Robust child | has | Most visits",
+      "Max-robust child | has | Both",
+      "Secure child | maximises | A lower bound",
+      "Ties | broken by | Rule",
+      "Few visits | mean | Unreliable",
+      "Most visits | is | The usual choice"
+     ]
+    }
+   ],
+   "summary": [
+    "After the iterations, the program must pick a move from the root's children. The survey lists several criteria. The max child has the highest mean reward. The robust child has the highest visit count. The max-robust child is the one with both, and if none exists the search continues.",
+    "The secure child maximises a lower confidence bound.",
+    "The mean of a barely visited child is unreliable: a single lucky playout can make it look perfect. Visit counts are steadier, so the robust child is the usual choice.",
+    "The labs implement each criterion and show where they disagree."
+   ],
+   "glossary": [
+    {
+     "term": "Max child",
+     "def": "The child with the highest mean reward."
+    },
+    {
+     "term": "Robust child",
+     "def": "The child with the most visits."
+    },
+    {
+     "term": "Max-robust child",
+     "def": "A child that is both max and robust."
+    },
+    {
+     "term": "Secure child",
+     "def": "The child maximising mean minus a multiple of its standard error."
+    },
+    {
+     "term": "Lower confidence bound",
+     "def": "A pessimistic estimate: mean minus a margin."
+    },
+    {
+     "term": "Tie-breaking",
+     "def": "A fixed rule for equal scores."
+    }
+   ],
+   "keyPoints": [
+    "Robust child: argmax visits.",
+    "Max child: argmax mean.",
+    "Secure child: argmax of mean - A / sqrt(n) for a constant A.",
+    "A child with 1 visit and mean 1.0 is not trustworthy.",
+    "UCT concentrates visits on good moves, so max and robust usually agree after many iterations.",
+    "Disagreement signals that more iterations are needed."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Suppose the search ends with three candidate moves. Move A: 900 visits, mean 0.62. Move B: 80 visits, mean 0.70. Move C: 3 visits, mean 1.00. Which to play?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The max child is C, with the highest mean. But three playouts prove little: the true win rate could be well below one half. The robust child is A, the most visited. UCT only keeps visiting a move while it looks competitive, so a large visit count is evidence that the move held up under pressure.",
+      "A is the usual choice."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\text{robust: } \\arg\\max_a N(a), \\\\[0.6em] \\text{max: } \\arg\\max_a \\frac{W(a)}{N(a)}, \\\\[0.6em] \\text{secure: } \\arg\\max_a \\left(\\frac{W(a)}{N(a)} - \\frac{A}{\\sqrt{N(a)}}\\right) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The secure child penalises uncertainty explicitly. Subtract from the mean a margin that shrinks with the number of visits. With a suitable A, move C is penalised heavily and move A scores best again. The survey mentions this among the options and describes the bound as a lower confidence bound."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When max and robust children differ, a common remedy is to keep searching until they agree, which is the idea behind the max-robust child. Some programs extend the thinking time when the best move is unclear, and cut it short when it is obvious."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A last practical point is ties. Several children can have the same visit count, particularly in short searches. Pick by a fixed rule such as the highest mean, then the lowest index, so that behaviour is repeatable."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which child is robust?",
+     "options": [
+      "The most visited",
+      "The highest mean",
+      "The first",
+      "The last"
+     ],
+     "answer": 0,
+     "explain": "Steadier evidence."
+    },
+    {
+     "q": "Why distrust a child with 3 visits?",
+     "options": [
+      "Its mean is unreliable",
+      "It is illegal",
+      "It is slow",
+      "It is deep"
+     ],
+     "answer": 0,
+     "explain": "Few samples."
+    },
+    {
+     "q": "What does a secure child do?",
+     "options": [
+      "Penalises uncertainty",
+      "Ignores counts",
+      "Maximises visits only",
+      "Picks at random"
+     ],
+     "answer": 0,
+     "explain": "Lower confidence bound."
+    },
+    {
+     "q": "What if max and robust disagree?",
+     "options": [
+      "Keep searching",
+      "Stop",
+      "Play at random",
+      "Resign"
+     ],
+     "answer": 0,
+     "explain": "The max-robust idea."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Which is the usual choice?",
+     "a": "The robust child."
+    },
+    {
+     "q": "What is a lower confidence bound?",
+     "a": "Mean minus a margin."
+    },
+    {
+     "q": "Can max and robust agree?",
+     "a": "Usually, after many iterations."
+    },
+    {
+     "q": "What breaks ties?",
+     "a": "A fixed rule."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Robust child",
+     "intro": "Write robust_child(stats): stats is a list of [move, visits, total]; return the move with the most visits (ties to the highest mean, then the lowest move).",
+     "fn": "robust_child",
+     "starter": "def robust_child(stats):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          900,
+          558
+         ],
+         [
+          2,
+          80,
+          56
+         ],
+         [
+          3,
+          3,
+          3
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          10,
+          5
+         ],
+         [
+          2,
+          10,
+          6
+         ]
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          10,
+          5
+         ],
+         [
+          2,
+          10,
+          5
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": 3
+      }
+     ],
+     "hint": "Compare visits, then the mean.",
+     "solution": "def robust_child(stats):\n    best = None\n    for move, n, w in stats:\n        m = w / n if n > 0 else 0.0\n        key = (n, m)\n        if best is None or n > best[0] or (n == best[0] and m > best[1] + 1e-12):\n            best = (n, m, move)\n    return best[2]\n"
+    },
+    {
+     "type": "python",
+     "title": "Max child",
+     "intro": "Write max_child(stats): the move with the highest mean total/visits (visits above 0), ties to the lowest move.",
+     "fn": "max_child",
+     "starter": "def max_child(stats):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          900,
+          558
+         ],
+         [
+          2,
+          80,
+          56
+         ],
+         [
+          3,
+          3,
+          3
+         ]
+        ]
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          10,
+          5
+         ],
+         [
+          2,
+          10,
+          6
+         ]
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          4,
+          2
+         ],
+         [
+          2,
+          4,
+          2
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          5,
+          0,
+          0
+         ],
+         [
+          6,
+          2,
+          1
+         ]
+        ]
+       ],
+       "expect": 6
+      }
+     ],
+     "hint": "Highest mean.",
+     "solution": "def max_child(stats):\n    best = -1.0\n    arg = stats[0][0]\n    for move, n, w in stats:\n        if n > 0:\n            m = w / n\n            if m > best + 1e-12:\n                best = m\n                arg = move\n    return arg\n"
+    },
+    {
+     "type": "python",
+     "title": "Secure child",
+     "intro": "Write secure_child(stats, a): the move maximising mean - a / sqrt(visits) (visits above 0), ties to the lowest move. Use import math.",
+     "fn": "secure_child",
+     "starter": "def secure_child(stats, a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          900,
+          558
+         ],
+         [
+          2,
+          80,
+          56
+         ],
+         [
+          3,
+          3,
+          3
+         ]
+        ],
+        1.0
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          900,
+          558
+         ],
+         [
+          2,
+          80,
+          56
+         ],
+         [
+          3,
+          3,
+          3
+         ]
+        ],
+        0.0
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          100,
+          60
+         ],
+         [
+          2,
+          100,
+          61
+         ]
+        ],
+        1.0
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          4,
+          4
+         ],
+         [
+          2,
+          400,
+          300
+         ]
+        ],
+        1.0
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "A pessimistic score.",
+     "solution": "import math\ndef secure_child(stats, a):\n    best = -1e18\n    arg = stats[0][0]\n    for move, n, w in stats:\n        if n > 0:\n            s = w / n - a / math.sqrt(n)\n            if s > best + 1e-12:\n                best = s\n                arg = move\n    return arg\n"
+    },
+    {
+     "type": "python",
+     "title": "Do they agree?",
+     "intro": "Write agree(stats): 1 if the robust child (most visits, ties to the highest mean then lowest move) and the max child (highest mean, ties to the lowest move) are the same move, otherwise 0.",
+     "fn": "agree",
+     "starter": "def agree(stats):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          900,
+          558
+         ],
+         [
+          2,
+          80,
+          56
+         ],
+         [
+          3,
+          3,
+          3
+         ]
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          10,
+          7
+         ],
+         [
+          2,
+          5,
+          2
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          10,
+          5
+         ],
+         [
+          2,
+          10,
+          6
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Compare the two choices.",
+     "solution": "def agree(stats):\n    best = None\n    for move, n, w in stats:\n        m = w / n if n > 0 else 0.0\n        if best is None or n > best[0] or (n == best[0] and m > best[1] + 1e-12):\n            best = (n, m, move)\n    rob = best[2]\n    bm = -1.0\n    mx = stats[0][0]\n    for move, n, w in stats:\n        if n > 0:\n            m = w / n\n            if m > bm + 1e-12:\n                bm = m\n                mx = move\n    return 1 if rob == mx else 0\n"
+    },
+    {
+     "type": "order",
+     "title": "Choosing a move",
+     "intro": "Order the steps.",
+     "items": [
+      "Finish the search iterations",
+      "Read visits and means of root children",
+      "Distrust means with few visits",
+      "Pick the most visited child",
+      "Play that move"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Criteria",
+     "intro": "Match each criterion with its rule.",
+     "pairs": [
+      [
+       "Max child",
+       "Highest mean"
+      ],
+      [
+       "Robust child",
+       "Most visits"
+      ],
+      [
+       "Secure child",
+       "Best lower bound"
+      ],
+      [
+       "Max-robust",
+       "Both agree"
+      ],
+      [
+       "Tie-break",
+       "Fixed rule"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Choice",
+     "text": "The {{robust}} child has the most visits; a child with few visits has an unreliable {{mean|average}}."
+    }
+   ]
+  },
+  {
+   "title": "Enhancements: RAVE, priors, widening and more",
+   "maps": [
+    {
+     "title": "Variants",
+     "links": [
+      "RAVE | shares | Move statistics across the tree",
+      "AMAF | counts | Moves played anywhere later",
+      "First-play urgency | values | Unvisited children",
+      "Progressive widening | limits | Children by visits",
+      "Heuristic playouts | replace | Uniform random",
+      "Transposition table | merges | Equal positions",
+      "Parallel MCTS | uses | Virtual loss"
+     ]
+    }
+   ],
+   "summary": [
+    "Plain UCT is slow to learn in big games. The survey describes many enhancements. All-moves-as-first, AMAF, and its tree version RAVE share information between positions: a move that did well when played later in a playout is probably good now.",
+    "Other ideas: give unvisited children a first-play urgency value; widen the set of considered moves gradually as the node gets more visits; use domain knowledge or a policy to bias playouts; merge identical positions in a transposition table; and run many threads using virtual loss.",
+    "These are from the survey and later work; the labs implement three of the simplest."
+   ],
+   "glossary": [
+    {
+     "term": "AMAF",
+     "def": "All moves as first: credit a move when it appears anywhere later in the playout."
+    },
+    {
+     "term": "RAVE",
+     "def": "Rapid Action Value Estimation: blends AMAF and ordinary statistics in the tree."
+    },
+    {
+     "term": "First-play urgency",
+     "def": "A value assigned to unvisited children in place of infinity."
+    },
+    {
+     "term": "Progressive widening",
+     "def": "Allow only a growing number of children as the parent's visits increase."
+    },
+    {
+     "term": "Transposition",
+     "def": "Different move orders reaching the same position."
+    },
+    {
+     "term": "Virtual loss",
+     "def": "A temporary penalty that steers parallel threads to different branches."
+    }
+   ],
+   "keyPoints": [
+    "AMAF/RAVE: from Gelly and Silver's work on Go, described in the survey.",
+    "RAVE blends: beta * AMAF mean + (1 - beta) * ordinary mean, with beta falling as visits grow.",
+    "First-play urgency: unvisited children get a fixed score instead of infinity.",
+    "Progressive widening: allowed children = ceil(k * visits^alpha).",
+    "Heuristic or learned playout policies play better than uniform random.",
+    "Parallelisation: tree parallelism with virtual loss, leaf or root parallelism."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Plain UCT treats every position separately. In Go, with hundreds of moves, a large number of playouts is needed before any move has enough statistics. The enhancements make better use of each playout."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "All-moves-as-first is the best known idea. In a playout, a move that appears later may have helped even though it was not played at the root. AMAF credits every move that either side played later in the playout, as though it had been played first.",
+      "This gives many more samples per move, though noisier ones. RAVE combines the AMAF estimate with the ordinary estimate, trusting AMAF early and the ordinary mean as visits accumulate."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} Q_{\\mathrm{RAVE}}(a) \\;=\\; \\beta\\, Q_{\\mathrm{AMAF}}(a) + (1-\\beta)\\, Q(a), \\\\[0.6em] \\beta \\text{ falls as } N(a) \\text{ grows} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The unvisited-children rule matters too. Plain UCT gives an unvisited child an infinite score, so every child is tried once before any is tried twice. With 250 moves that costs 250 playouts at every node.",
+      "First-play urgency instead gives an unvisited child a fixed value, so a good known move can be revisited before all the others are tried."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Progressive widening handles very large or continuous move sets. At first only a few children are allowed. As the parent's visit count rises, more are allowed, usually in proportion to a power of the visit count. The best-looking moves, by a heuristic, are added first."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Domain knowledge helps in playouts. Instead of uniformly random moves, a heuristic policy might prefer captures or local replies. A stronger default policy gives better estimates, though not always: the survey notes that a stronger playout policy does not guarantee a stronger search.",
+      "Later systems replaced playouts with learned value estimates. That is the step AlphaGo took."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Finally, parallelism. Several threads can share the tree. Virtual loss temporarily counts a visit as a loss on the path being explored, which discourages other threads from following it. The labs implement an AMAF update, first-play urgency and progressive widening."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does AMAF credit?",
+     "options": [
+      "Moves played later in the playout",
+      "Only the first move",
+      "The terminal state",
+      "Illegal moves"
+     ],
+     "answer": 0,
+     "explain": "As if they had been played first."
+    },
+    {
+     "q": "What does first-play urgency replace?",
+     "options": [
+      "Infinite score for unvisited children",
+      "The playout",
+      "The root",
+      "The rules"
+     ],
+     "answer": 0,
+     "explain": "A fixed value."
+    },
+    {
+     "q": "What does progressive widening do?",
+     "options": [
+      "Allows more children as visits grow",
+      "Prunes the tree",
+      "Adds noise",
+      "Doubles C"
+     ],
+     "answer": 0,
+     "explain": "ceil(k visits^alpha)."
+    },
+    {
+     "q": "What is virtual loss for?",
+     "options": [
+      "Steering parallel threads apart",
+      "Lowering the score of winners",
+      "Saving memory",
+      "Ending the search"
+     ],
+     "answer": 0,
+     "explain": "A temporary penalty."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does RAVE blend?",
+     "a": "AMAF and ordinary means."
+    },
+    {
+     "q": "Which sources describe these?",
+     "a": "The 2012 survey."
+    },
+    {
+     "q": "Why widen gradually?",
+     "a": "Huge move sets."
+    },
+    {
+     "q": "What replaced playouts in AlphaGo?",
+     "a": "A value network."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "AMAF update",
+     "intro": "A playout is a list of moves played in order (both sides). Write amaf_update(table, playout, result): table is a list of [move, count, total]; for every move appearing in the playout, add 1 to its count and add result to its total (once per move even if it appears twice). Return the updated table.",
+     "fn": "amaf_update",
+     "starter": "def amaf_update(table, playout, result):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          0,
+          0
+         ],
+         [
+          2,
+          0,
+          0
+         ],
+         [
+          3,
+          0,
+          0
+         ]
+        ],
+        [
+         1,
+         3,
+         1
+        ],
+        1
+       ],
+       "expect": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         2,
+         0,
+         0
+        ],
+        [
+         3,
+         1,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          1
+         ],
+         [
+          2,
+          2,
+          2
+         ]
+        ],
+        [
+         2
+        ],
+        0
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         1
+        ],
+        [
+         2,
+         3,
+         2
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0,
+          0
+         ]
+        ],
+        [],
+        1
+       ],
+       "expect": [
+        [
+         1,
+         0,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1,
+          1
+         ],
+         [
+          2,
+          1,
+          0
+         ]
+        ],
+        [
+         1,
+         2
+        ],
+        1
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         2
+        ],
+        [
+         2,
+         2,
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Credit each distinct move once.",
+     "solution": "def amaf_update(table, playout, result):\n    seen = []\n    for m in playout:\n        if m not in seen:\n            seen.append(m)\n    out = []\n    for move, n, w in table:\n        if move in seen:\n            out.append([move, n + 1, w + result])\n        else:\n            out.append([move, n, w])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "RAVE blend",
+     "intro": "Write rave_value(q_amaf, q_tree, n, k): beta = sqrt(k / (3 * n + k)); return beta * q_amaf + (1 - beta) * q_tree (n is the visit count, k an equivalence parameter). Use import math.",
+     "fn": "rave_value",
+     "starter": "def rave_value(q_amaf, q_tree, n, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.6,
+        0.4,
+        0,
+        100
+       ],
+       "expect": 0.6,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.6,
+        0.4,
+        100,
+        100
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.6,
+        0.4,
+        10000,
+        100
+       ],
+       "expect": 0.41152780835408476,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.2,
+        0.9,
+        5,
+        50
+       ],
+       "expect": 0.28605938648507956,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Beta falls as n grows.",
+     "solution": "import math\ndef rave_value(q_amaf, q_tree, n, k):\n    beta = math.sqrt(k / (3 * n + k))\n    return beta * q_amaf + (1 - beta) * q_tree\n"
+    },
+    {
+     "type": "python",
+     "title": "Progressive widening",
+     "intro": "Write allowed_children(visits, k, alpha): the number of children allowed, ceil(k * visits ** alpha) but at least 1. Use import math.",
+     "fn": "allowed_children",
+     "starter": "def allowed_children(visits, k, alpha):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        1,
+        0.5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        4,
+        1,
+        0.5
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        100,
+        1,
+        0.5
+       ],
+       "expect": 10
+      },
+      {
+       "args": [
+        0,
+        2,
+        0.5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        9,
+        2,
+        0.5
+       ],
+       "expect": 6
+      }
+     ],
+     "hint": "Round up, minimum 1.",
+     "solution": "import math\ndef allowed_children(visits, k, alpha):\n    v = int(math.ceil(k * (visits ** alpha) - 1e-9))\n    return max(1, v)\n"
+    },
+    {
+     "type": "python",
+     "title": "First-play urgency",
+     "intro": "Write fpu_select(children, parent_n, c, fpu): children is a list of [move, visits, total]; an unvisited child has score fpu, others w/n + c*sqrt(ln(parent_n)/n). Return the move with the highest score (ties to the lowest index). Use import math.",
+     "fn": "fpu_select",
+     "starter": "def fpu_select(children, parent_n, c, fpu):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          10,
+          8
+         ],
+         [
+          2,
+          0,
+          0
+         ],
+         [
+          3,
+          10,
+          5
+         ]
+        ],
+        20,
+        1.0,
+        0.5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          10,
+          8
+         ],
+         [
+          2,
+          0,
+          0
+         ]
+        ],
+        20,
+        1.0,
+        2.0
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          10,
+          8
+         ],
+         [
+          2,
+          0,
+          0
+         ]
+        ],
+        20,
+        0.5,
+        0.9
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0,
+          0
+         ],
+         [
+          2,
+          0,
+          0
+         ]
+        ],
+        5,
+        1.0,
+        1.0
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Use the fixed value for unvisited children.",
+     "solution": "import math\ndef fpu_select(children, parent_n, c, fpu):\n    best = -1e18\n    arg = children[0][0]\n    for move, n, w in children:\n        if n == 0:\n            s = fpu\n        else:\n            s = w / n + c * math.sqrt(math.log(parent_n) / n)\n        if s > best + 1e-12:\n            best = s\n            arg = move\n    return arg\n"
+    },
+    {
+     "type": "order",
+     "title": "Using RAVE",
+     "intro": "Order the steps.",
+     "items": [
+      "Play a random game to the end",
+      "List the moves played in it",
+      "Credit each distinct move with the result",
+      "Blend AMAF and tree means",
+      "Select with the blended value"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Enhancements",
+     "intro": "Match each enhancement with its idea.",
+     "pairs": [
+      [
+       "AMAF",
+       "Credit moves played later"
+      ],
+      [
+       "RAVE",
+       "Blend AMAF with tree means"
+      ],
+      [
+       "First-play urgency",
+       "Finite value for unvisited"
+      ],
+      [
+       "Progressive widening",
+       "More children as visits grow"
+      ],
+      [
+       "Virtual loss",
+       "Steer parallel threads"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Variants",
+     "text": "{{RAVE}} blends AMAF with tree statistics, and progressive {{widening}} grows the child set."
+    }
+   ]
+  },
+  {
+   "title": "Two players, perspective and heuristics",
+   "maps": [
+    {
+     "title": "Two-player search",
+     "links": [
+      "Perspective | flips | Each ply",
+      "Negamax | uses | One sign convention",
+      "Draws | count as | One half",
+      "Score games | need | Normalised rewards",
+      "MCTS | resembles | Selective minimax",
+      "Minimax | prunes | With alpha-beta",
+      "Playout bias | is | A risk"
+     ]
+    }
+   ],
+   "summary": [
+    "Two-player games need care with perspective. A node should store results from the viewpoint of the player who moved into it, and the reward flips at every level. Draws score one half.",
+    "MCTS is often seen as a selective, sampled version of minimax: the mean values in the tree approach minimax values, while the tree grows deeper along strong lines.",
+    "Compared with alpha-beta, MCTS shines when evaluation functions are hard to write and branching is large; alpha-beta shines when a good evaluation function exists and tactics are narrow."
+   ],
+   "glossary": [
+    {
+     "term": "Perspective",
+     "def": "The player from whose viewpoint a reward is measured."
+    },
+    {
+     "term": "Negamax",
+     "def": "A form of minimax where each level negates the value."
+    },
+    {
+     "term": "Alpha-beta",
+     "def": "A pruning method that skips branches that cannot affect the minimax result."
+    },
+    {
+     "term": "Evaluation function",
+     "def": "A hand-written estimate of a position's value."
+    },
+    {
+     "term": "Normalised reward",
+     "def": "A reward scaled into the range 0 to 1."
+    },
+    {
+     "term": "Trap",
+     "def": "A position where one precise move refutes an attractive line."
+    }
+   ],
+   "keyPoints": [
+    "Win = 1, draw = 0.5, loss = 0 from the perspective of the player who moved into the node.",
+    "Backup: r for the leaf's mover; 1 - r for the other player, alternating.",
+    "MCTS needs no evaluation function; alpha-beta usually does.",
+    "Alpha-beta prunes exactly; MCTS focuses statistically.",
+    "MCTS can be weak in narrow tactical lines with traps.",
+    "Hybrid systems exist; AlphaGo-style systems mix MCTS with learned networks."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "In a two-player game, one side's gain is the other's loss. That structure has to be respected in the tree. At a node where the opponent is to move, the opponent will pick the child that is best for them, which is worst for us.",
+      "If the node stores the result from the viewpoint of whoever moved into it, the choice at the parent is always a plain maximisation over children, one level at a time."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} r_{\\mathrm{opp}} \\;=\\; 1 - r_{\\mathrm{me}}, \\\\[0.6em] \\text{win} = 1,\\ \\ \\text{draw} = \\tfrac12,\\ \\ \\text{loss} = 0 \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is the zero-sum symmetry. With scores that are not wins and losses, such as points, the common approach is to scale them into the range zero to one so that the same bandit rule applies, and to treat a draw as one half."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How does MCTS relate to the classical alternative? Alpha-beta search explores the game tree to a fixed depth with pruning, then calls an evaluation function. Its results are exact for that depth. MCTS explores unevenly, with no fixed depth, and uses playouts in place of an evaluation function.",
+      "Its values are statistical. The tree-wide averages tend to minimax values as iterations grow."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Which is better depends on the game. Chess has good hand-made evaluation functions and many narrow tactical lines, a good fit for alpha-beta. Go has huge branching and no good evaluation function, a good fit for MCTS. Where lines are very narrow, a single refutation can be missed by sampling.",
+      "The survey describes such trap states as a weakness of plain MCTS."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Bias in the playouts is a further risk. If the default policy is biased, so are the estimates. Domain knowledge can help and can also hurt.",
+      "A broader point: since 2016, programs such as AlphaGo and AlphaZero keep the MCTS tree but evaluate leaves with neural networks and steer selection with a learned policy, as described in the sister courses."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How are draws scored?",
+     "options": [
+      "One half",
+      "Zero",
+      "One",
+      "Minus one"
+     ],
+     "answer": 0,
+     "explain": "Between win and loss."
+    },
+    {
+     "q": "What does a node's stored reward represent?",
+     "options": [
+      "The viewpoint of the player who moved into it",
+      "A fixed player",
+      "The loser",
+      "Time"
+     ],
+     "answer": 0,
+     "explain": "So parents maximise."
+    },
+    {
+     "q": "When is MCTS especially useful?",
+     "options": [
+      "Large branching with no good evaluation function",
+      "Tiny games",
+      "Fully solved games",
+      "Single-move games"
+     ],
+     "answer": 0,
+     "explain": "Like Go."
+    },
+    {
+     "q": "What is a trap?",
+     "options": [
+      "One precise reply refutes an attractive move",
+      "A random move",
+      "A draw",
+      "A repeated state"
+     ],
+     "answer": 0,
+     "explain": "Sampling can miss it."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is negamax?",
+     "a": "Minimax with a sign flip."
+    },
+    {
+     "q": "What does alpha-beta need?",
+     "a": "Usually an evaluation function."
+    },
+    {
+     "q": "Which is exact?",
+     "a": "Alpha-beta to its depth."
+    },
+    {
+     "q": "Which is statistical?",
+     "a": "MCTS."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Flip the result",
+     "intro": "Write backup_values(depth, result): the reward for each node on a path of depth nodes (root first), where the last node gets result and its parent 1 - result, alternately. Return the list from root to last.",
+     "fn": "backup_values",
+     "starter": "def backup_values(depth, result):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        1
+       ],
+       "expect": [
+        1,
+        0,
+        1
+       ],
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        4,
+        0
+       ],
+       "expect": [
+        1,
+        0,
+        1,
+        0
+       ],
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        1,
+        1
+       ],
+       "expect": [
+        1
+       ],
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        5,
+        0.5
+       ],
+       "expect": [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5
+       ],
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Count steps from the last node.",
+     "solution": "def backup_values(depth, result):\n    out = []\n    for i in range(depth):\n        steps = depth - 1 - i\n        out.append(result if steps % 2 == 0 else 1 - result)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Score a game",
+     "intro": "Write game_score(winner, me): 1 if winner == me, 0.5 if winner is 'draw', else 0.",
+     "fn": "game_score",
+     "starter": "def game_score(winner, me):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "a",
+        "a"
+       ],
+       "expect": 1,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        "b",
+        "a"
+       ],
+       "expect": 0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        "draw",
+        "a"
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        "draw",
+        "b"
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Three cases.",
+     "solution": "def game_score(winner, me):\n    if winner == 'draw':\n        return 0.5\n    return 1 if winner == me else 0\n"
+    },
+    {
+     "type": "python",
+     "title": "Negamax on Nim",
+     "intro": "Write negamax(n): the exact value for the player to move in Nim with n stones: +1 if the player to move wins and -1 if loses, computed by negamax: value(0) = -1; otherwise the maximum over takes k of -value(n - k).",
+     "fn": "negamax",
+     "starter": "def negamax(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        4
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        8
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        9
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        12
+       ],
+       "expect": -1
+      }
+     ],
+     "hint": "One recursion with a negation.",
+     "solution": "def negamax(n):\n    if n == 0:\n        return -1\n    best = -2\n    for k in range(1, 4):\n        if k <= n:\n            v = -negamax(n - k)\n            if v > best:\n                best = v\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Normalise a score",
+     "intro": "Write normalise(score, lo, hi): scale a score from [lo, hi] into [0, 1], that is (score - lo) / (hi - lo).",
+     "fn": "normalise",
+     "starter": "def normalise(score, lo, hi):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        0,
+        10
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        0,
+        -1,
+        1
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        50,
+        0,
+        100
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        3,
+        3,
+        7
+       ],
+       "expect": 0.0,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Linear scaling.",
+     "solution": "def normalise(score, lo, hi):\n    return (score - lo) / (hi - lo)\n"
+    },
+    {
+     "type": "order",
+     "title": "Backing up a result",
+     "intro": "Order the steps for a two-player game.",
+     "items": [
+      "Find the result for the last node's mover",
+      "Store it at the last node",
+      "Give the parent one minus the result",
+      "Alternate going up",
+      "Update the visit counts too"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Two players",
+     "intro": "Match each idea with its meaning.",
+     "pairs": [
+      [
+       "Perspective flip",
+       "Reward alternates by level"
+      ],
+      [
+       "Draw",
+       "0.5"
+      ],
+      [
+       "Alpha-beta",
+       "Exact pruned search"
+      ],
+      [
+       "Negamax",
+       "Sign-flipped minimax"
+      ],
+      [
+       "Trap",
+       "Sampling may miss it"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Two players",
+     "text": "At each level of the tree the reward flips to one {{minus|-}} the result, and a draw counts as {{one half|0.5|half}}."
+    }
+   ]
+  },
+  {
+   "title": "Applications, limits and where it leads",
+   "maps": [
+    {
+     "title": "Beyond games",
+     "links": [
+      "MCTS | conquered | Computer Go",
+      "MCTS | used in | General game playing",
+      "MCTS | used in | Planning and scheduling",
+      "Limits | include | Traps",
+      "Limits | include | Sparse rewards",
+      "AlphaGo | combined | MCTS and networks",
+      "Next | is | Learned search"
+     ]
+    }
+   ],
+   "summary": [
+    "MCTS was the breakthrough behind the strong Go programs of 2006 to 2015 and then became a general tool: in video games, general game playing, planning, scheduling and optimisation problems. The survey lists applications across games and non-game domains.",
+    "It has weak spots. Traps can fool it; very long games with sparse rewards give little signal; the cost per iteration limits depth. Remedies include better playouts, learned priors and learned values.",
+    "The modern line of work, AlphaGo, AlphaZero and MuZero, keeps the tree search and replaces random playouts by learned networks."
+   ],
+   "glossary": [
+    {
+     "term": "General game playing",
+     "def": "Playing any game given only its rules."
+    },
+    {
+     "term": "Sparse reward",
+     "def": "A signal that appears only at the very end."
+    },
+    {
+     "term": "PUCT",
+     "def": "A UCT variant that adds a prior probability from a neural network."
+    },
+    {
+     "term": "MuZero",
+     "def": "A system that also learns a model of the environment for the search."
+    },
+    {
+     "term": "Planning",
+     "def": "Choosing actions by looking ahead in a model."
+    },
+    {
+     "term": "Learned value",
+     "def": "A neural network estimate of a position's value, used instead of a playout."
+    }
+   ],
+   "keyPoints": [
+    "Go programs using MCTS reached strong amateur level before 2015.",
+    "The survey covers games and non-game domains such as planning and scheduling.",
+    "Weaknesses: traps, long sparse-reward horizons, memory growth.",
+    "PUCT adds a policy prior to the selection rule.",
+    "AlphaGo (2016) and AlphaZero (2017) combine MCTS with deep networks.",
+    "MCTS needs a model of the environment, or a learned one as in MuZero."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Before 2006, the best Go programs played at the level of a modest club player. With MCTS, programs climbed to strong amateur level within a few years, long before neural networks were available, which is why the method became famous. It was the first reliable way to handle the huge branching of Go."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The method spread. General game playing programs, which are given only the rules of a new game, adopted it because it needs no hand-made evaluation. Video games, planning problems, scheduling and optimisation tasks followed, as the survey documents.",
+      "Wherever you have a simulator and a decision tree, MCTS is a candidate."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "It has limits you should know. Traps, as in chapter 9, can be missed. When a game is long and the only reward comes at the end, random playouts have little signal. Each iteration costs a playout, so depth is limited. And memory grows with the tree.",
+      "Remedies include better default policies, domain heuristics and early cut-offs with an evaluation."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "a^{*} \\;=\\; \\arg\\max_a \\left( Q(s,a) + c\\, P(s,a)\\,\\frac{\\sqrt{\\sum_b N(s,b)}}{1 + N(s,a)} \\right)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The formula above is PUCT, the selection rule of AlphaGo and AlphaZero: the exploration bonus is scaled by a prior probability P from a policy network, so the search tries promising moves first. Leaves are scored by a value network instead of a random playout.",
+      "The tree, the four steps and the visit-count choice stay. That is why knowing MCTS makes those systems easy to read."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "MuZero goes one step further by learning the model of the environment as well, so that the tree can search where the rules are not given. You will find the details in the courses on AlphaGo and AlphaZero in this library."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where to go next: read the Browne survey for the long list of variants, implement MCTS for a game of your choice such as tic-tac-toe or Connect Four, and compare it with your own alpha-beta program.",
+      "In the labs, you will build the pieces of the PUCT rule, measure tree statistics and write a simple tournament."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Where was MCTS a breakthrough?",
+     "options": [
+      "Computer Go",
+      "Sorting",
+      "Compilers",
+      "Networking"
+     ],
+     "answer": 0,
+     "explain": "From 2006."
+    },
+    {
+     "q": "What does PUCT add?",
+     "options": [
+      "A prior from a policy network",
+      "A random move",
+      "A bigger tree",
+      "A timer"
+     ],
+     "answer": 0,
+     "explain": "Used by AlphaGo."
+    },
+    {
+     "q": "What is a weakness of MCTS?",
+     "options": [
+      "Traps and sparse rewards",
+      "It cannot be stopped",
+      "It needs an evaluation function",
+      "It is exact"
+     ],
+     "answer": 0,
+     "explain": "Also memory and playout cost."
+    },
+    {
+     "q": "What does MCTS need?",
+     "options": [
+      "A model of the environment",
+      "A labelled dataset",
+      "A GPU",
+      "A human opponent"
+     ],
+     "answer": 0,
+     "explain": "Rules or a learned model."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What replaced playouts in AlphaGo?",
+     "a": "A value network."
+    },
+    {
+     "q": "What does the prior do?",
+     "a": "Guides which moves to try first."
+    },
+    {
+     "q": "Is MCTS limited to games?",
+     "a": "No."
+    },
+    {
+     "q": "What is MuZero?",
+     "a": "MCTS with a learned model."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "PUCT score",
+     "intro": "Write puct(q, p, n_child, n_parent, c): q + c * p * sqrt(n_parent) / (1 + n_child). Use import math.",
+     "fn": "puct",
+     "starter": "def puct(q, p, n_child, n_parent, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5,
+        0.3,
+        0,
+        10,
+        1.0
+       ],
+       "expect": 1.4486832980505138,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.5,
+        0.3,
+        9,
+        10,
+        1.0
+       ],
+       "expect": 0.5948683298050513,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.0,
+        1.0,
+        0,
+        100,
+        2.0
+       ],
+       "expect": 20.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.7,
+        0.1,
+        5,
+        50,
+        1.5
+       ],
+       "expect": 0.8767766952966368,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Prior-scaled exploration.",
+     "solution": "import math\ndef puct(q, p, n_child, n_parent, c):\n    return q + c * p * math.sqrt(n_parent) / (1 + n_child)\n"
+    },
+    {
+     "type": "python",
+     "title": "Tree statistics",
+     "intro": "Write tree_stats(parents): parents is a list where parents[i] is the parent index of node i (the root has -1). Return [number of nodes, depth of the deepest node (root depth 0), number of leaves].",
+     "fn": "tree_stats",
+     "starter": "def tree_stats(parents):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         -1,
+         0,
+         0,
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        5,
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         -1
+        ]
+       ],
+       "expect": [
+        1,
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         -1,
+         0,
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        5,
+        4,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         -1,
+         0,
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        4,
+        1,
+        3
+       ]
+      }
+     ],
+     "hint": "Follow parents to the root.",
+     "solution": "def tree_stats(parents):\n    n = len(parents)\n    depth = [0] * n\n    for i in range(n):\n        d = 0\n        j = i\n        while parents[j] != -1:\n            j = parents[j]\n            d += 1\n        depth[i] = d\n    has_child = [0] * n\n    for i in range(n):\n        if parents[i] != -1:\n            has_child[parents[i]] = 1\n    leaves = n - sum(has_child)\n    return [n, max(depth), leaves]\n"
+    },
+    {
+     "type": "python",
+     "title": "Branching of the tree",
+     "intro": "Write avg_branching(parents): the average number of children of the nodes that have at least one child (0 if none).",
+     "fn": "avg_branching",
+     "starter": "def avg_branching(parents):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         -1,
+         0,
+         0,
+         1,
+         1
+        ]
+       ],
+       "expect": 2.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         -1
+        ]
+       ],
+       "expect": 0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         -1,
+         0,
+         1,
+         2
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         -1,
+         0,
+         0,
+         0,
+         1
+        ]
+       ],
+       "expect": 2.0,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Count children per parent.",
+     "solution": "def avg_branching(parents):\n    cnt = {}\n    for p in parents:\n        if p != -1:\n            cnt[p] = cnt.get(p, 0) + 1\n    if len(cnt) == 0:\n        return 0\n    return sum(cnt.values()) / len(cnt)\n"
+    },
+    {
+     "type": "python",
+     "title": "Win share",
+     "intro": "A tournament result is a list of 'a', 'b' or 'draw'. Write share_a(results): player a's score share, (wins + 0.5 draws) / games (0 for an empty list).",
+     "fn": "share_a",
+     "starter": "def share_a(results):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "a",
+         "b",
+         "draw"
+        ]
+       ],
+       "expect": 0.625,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": 0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         "b",
+         "b"
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         "draw",
+         "draw"
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Draws count half.",
+     "solution": "def share_a(results):\n    if len(results) == 0:\n        return 0\n    s = 0.0\n    for r in results:\n        if r == 'a':\n            s += 1\n        elif r == 'draw':\n            s += 0.5\n    return s / len(results)\n"
+    },
+    {
+     "type": "order",
+     "title": "From MCTS to AlphaGo",
+     "intro": "Order the idea's development.",
+     "items": [
+      "Random playouts for evaluation",
+      "A bandit rule for selection (UCT)",
+      "Strong Go programs from MCTS",
+      "Policy priors in selection (PUCT)",
+      "Value networks in place of playouts"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Landmarks",
+     "intro": "Match each name with its contribution.",
+     "pairs": [
+      [
+       "Coulom",
+       "Named MCTS"
+      ],
+      [
+       "Kocsis and Szepesvari",
+       "UCT"
+      ],
+      [
+       "Auer et al.",
+       "UCB1"
+      ],
+      [
+       "Browne et al.",
+       "The survey"
+      ],
+      [
+       "AlphaGo",
+       "MCTS plus deep networks"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Legacy",
+     "text": "AlphaGo kept the {{tree}} search and replaced random playouts with a {{value}} network."
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Monte Carlo Tree Search",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What does MCTS do?",
+    "options": [
+     "Grows a search tree guided by random simulations",
+     "Trains a classifier",
+     "Sorts moves",
+     "Compresses boards"
+    ],
+    "answer": 0,
+    "explain": "Selection, expansion, simulation, backpropagation."
+   },
+   {
+    "q": "Who gave Monte Carlo tree search its name?",
+    "options": [
+     "Remi Coulom",
+     "Auer",
+     "Silver",
+     "Browne"
+    ],
+    "answer": 0,
+    "explain": "2006."
+   },
+   {
+    "q": "Who proposed UCT?",
+    "options": [
+     "Kocsis and Szepesvari",
+     "Coulom",
+     "Auer et al.",
+     "Hassabis"
+    ],
+    "answer": 0,
+    "explain": "Also 2006."
+   },
+   {
+    "q": "Which survey is the standard overview?",
+    "options": [
+     "Browne et al., 2012",
+     "Silver et al., 2016",
+     "Vaswani et al., 2017",
+     "Schulman et al., 2017"
+    ],
+    "answer": 0,
+    "explain": "A Survey of Monte Carlo Tree Search Methods."
+   },
+   {
+    "q": "What does anytime mean?",
+    "options": [
+     "It can stop at any moment with a best answer",
+     "It runs forever",
+     "It uses no memory",
+     "It needs a clock"
+    ],
+    "answer": 0,
+    "explain": "More time gives better play."
+   },
+   {
+    "q": "What are the four MCTS steps?",
+    "options": [
+     "Selection, expansion, simulation, backpropagation",
+     "Train, test, deploy, monitor",
+     "Encode, decode, sample, score",
+     "Read, write, copy, delete"
+    ],
+    "answer": 0,
+    "explain": "In that order."
+   },
+   {
+    "q": "What does minimax compute?",
+    "options": [
+     "Exact values by working back from the leaves",
+     "Random averages",
+     "Visit counts",
+     "Move priors"
+    ],
+    "answer": 0,
+    "explain": "Needs the whole tree."
+   },
+   {
+    "q": "Why is exact search hopeless in Go?",
+    "options": [
+     "The tree is astronomically large",
+     "The rules are secret",
+     "Moves are random",
+     "Boards are tiny"
+    ],
+    "answer": 0,
+    "explain": "Branching about 250, depth about 150."
+   },
+   {
+    "q": "In Nim (take 1 to 3), which piles are lost for the player to move?",
+    "options": [
+     "Multiples of 4",
+     "Odd piles",
+     "Multiples of 3",
+     "Piles above 10"
+    ],
+    "answer": 0,
+    "explain": "Including zero."
+   },
+   {
+    "q": "What is a playout?",
+    "options": [
+     "A simulated game to the end",
+     "A tree node",
+     "A final move",
+     "A scoring rule"
+    ],
+    "answer": 0,
+    "explain": "Usually random moves."
+   },
+   {
+    "q": "How does the error of a Monte Carlo average shrink?",
+    "options": [
+     "Like one over the square root of n",
+     "Like one over n squared",
+     "Linearly",
+     "It does not"
+    ],
+    "answer": 0,
+    "explain": "Ten times more samples, about three times more accurate."
+   },
+   {
+    "q": "Why use a seeded generator in tests?",
+    "options": [
+     "Repeatable results",
+     "Better randomness",
+     "A smaller tree",
+     "Faster playouts"
+    ],
+    "answer": 0,
+    "explain": "Same seed, same run."
+   },
+   {
+    "q": "Can random-play win rate differ from perfect-play value?",
+    "options": [
+     "Yes",
+     "Never",
+     "Only in Nim",
+     "Only for draws"
+    ],
+    "answer": 0,
+    "explain": "Random opponents blunder."
+   },
+   {
+    "q": "What does UCB1 add to the mean?",
+    "options": [
+     "A confidence bonus larger for rarely tried arms",
+     "Random noise",
+     "The depth",
+     "The prior"
+    ],
+    "answer": 0,
+    "explain": "Optimism under uncertainty."
+   },
+   {
+    "q": "What does regret measure?",
+    "options": [
+     "Reward lost against always playing the best arm",
+     "Time used",
+     "Memory used",
+     "Arm count"
+    ],
+    "answer": 0,
+    "explain": "UCB1 has logarithmic regret."
+   },
+   {
+    "q": "What is exploration?",
+    "options": [
+     "Trying arms to learn about them",
+     "Using the best arm",
+     "Stopping",
+     "Counting"
+    ],
+    "answer": 0,
+    "explain": "Versus exploitation."
+   },
+   {
+    "q": "How many nodes does expansion add per iteration?",
+    "options": [
+     "One",
+     "All children",
+     "None",
+     "The whole tree"
+    ],
+    "answer": 0,
+    "explain": "In plain MCTS."
+   },
+   {
+    "q": "What does a node store?",
+    "options": [
+     "Visit count N and total reward W",
+     "The rules",
+     "The board image",
+     "The learning rate"
+    ],
+    "answer": 0,
+    "explain": "Mean = W/N."
+   },
+   {
+    "q": "Why does the reward flip during backpropagation?",
+    "options": [
+     "Players alternate",
+     "To save memory",
+     "Rewards are negative",
+     "To break ties"
+    ],
+    "answer": 0,
+    "explain": "A win for one is a loss for the other."
+   },
+   {
+    "q": "What does UCT choose inside the tree?",
+    "options": [
+     "The child with the highest mean plus bonus",
+     "A random child",
+     "The first child",
+     "The deepest child"
+    ],
+    "answer": 0,
+    "explain": "UCB1 at each node."
+   },
+   {
+    "q": "What does a larger exploration constant C do?",
+    "options": [
+     "Explores more",
+     "Explores less",
+     "Nothing",
+     "Shrinks the tree"
+    ],
+    "answer": 0,
+    "explain": "Larger bonus."
+   },
+   {
+    "q": "What did Kocsis and Szepesvari prove?",
+    "options": [
+     "UCT converges to the minimax value for finite games",
+     "UCT is always fast",
+     "UCT needs no memory",
+     "UCT never loses"
+    ],
+    "answer": 0,
+    "explain": "Asymptotically."
+   },
+   {
+    "q": "Which final move is the usual choice?",
+    "options": [
+     "The most visited child",
+     "The least visited",
+     "A random child",
+     "The shallowest"
+    ],
+    "answer": 0,
+    "explain": "The robust child."
+   },
+   {
+    "q": "Why distrust a high mean with very few visits?",
+    "options": [
+     "It may be a lucky sample",
+     "It is illegal",
+     "It is too deep",
+     "It is slow"
+    ],
+    "answer": 0,
+    "explain": "Few samples."
+   },
+   {
+    "q": "What is a secure child?",
+    "options": [
+     "One maximising a lower confidence bound",
+     "The most visited",
+     "The first",
+     "The highest prior"
+    ],
+    "answer": 0,
+    "explain": "Mean minus a margin."
+   },
+   {
+    "q": "What does AMAF credit?",
+    "options": [
+     "Moves played later in the playout",
+     "Only the first move",
+     "Illegal moves",
+     "The terminal state"
+    ],
+    "answer": 0,
+    "explain": "As if they had been played first."
+   },
+   {
+    "q": "What does RAVE blend?",
+    "options": [
+     "AMAF and ordinary tree statistics",
+     "Two trees",
+     "Two players",
+     "Two seeds"
+    ],
+    "answer": 0,
+    "explain": "Trusting AMAF early."
+   },
+   {
+    "q": "What does first-play urgency do?",
+    "options": [
+     "Gives unvisited children a finite score",
+     "Visits the root twice",
+     "Removes leaves",
+     "Doubles C"
+    ],
+    "answer": 0,
+    "explain": "Instead of infinity."
+   },
+   {
+    "q": "What does progressive widening do?",
+    "options": [
+     "Allows more children as visits grow",
+     "Prunes children",
+     "Adds noise",
+     "Halves C"
+    ],
+    "answer": 0,
+    "explain": "ceil(k visits^alpha)."
+   },
+   {
+    "q": "What is virtual loss for?",
+    "options": [
+     "Steering parallel threads to different branches",
+     "Lowering winners",
+     "Saving memory",
+     "Ending the search"
+    ],
+    "answer": 0,
+    "explain": "A temporary penalty."
+   },
+   {
+    "q": "How is a draw scored in the tree?",
+    "options": [
+     "One half",
+     "Zero",
+     "One",
+     "Minus one"
+    ],
+    "answer": 0,
+    "explain": "Between win and loss."
+   },
+   {
+    "q": "When does MCTS shine compared with alpha-beta?",
+    "options": [
+     "Large branching and no good evaluation function",
+     "Tiny trees",
+     "Solved games",
+     "One-move games"
+    ],
+    "answer": 0,
+    "explain": "Like Go."
+   },
+   {
+    "q": "What is a trap state?",
+    "options": [
+     "One precise reply refutes an attractive move",
+     "A repeated position",
+     "A draw",
+     "A pass"
+    ],
+    "answer": 0,
+    "explain": "Sampling can miss it."
+   },
+   {
+    "q": "What does PUCT add to UCT?",
+    "options": [
+     "A policy prior",
+     "A random move",
+     "A bigger tree",
+     "A timer"
+    ],
+    "answer": 0,
+    "explain": "Used by AlphaGo."
+   },
+   {
+    "q": "What replaced random playouts in AlphaGo?",
+    "options": [
+     "A value network",
+     "A bigger tree only",
+     "A lookup table",
+     "A human"
+    ],
+    "answer": 0,
+    "explain": "Alongside a policy network."
+   },
+   {
+    "q": "What does MCTS require?",
+    "options": [
+     "A model of the environment",
+     "A labelled dataset",
+     "A GPU",
+     "A human opponent"
+    ],
+    "answer": 0,
+    "explain": "Rules or a learned model as in MuZero."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "MCTS lookup",
+  "prompt": "mc>",
+  "intro": "A scripted lookup, not a real search. Try: steps, uct, final, nim, help",
+  "chips": [
+   "steps",
+   "uct",
+   "final",
+   "nim",
+   "puct",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "steps      1 selection: descend by the tree policy",
+     "uct        UCT child score = W/N + C sqrt(ln N_parent / N_child)",
+     "final      robust child = most visits (usual choice)",
+     "nim        take 1 to 3 stones, last stone wins",
+     "puct       Q + c P sqrt(sum N) / (1 + N): the AlphaGo selection rule"
+    ]
+   },
+   {
+    "re": "^steps$",
+    "out": [
+     "1 selection: descend by the tree policy",
+     "2 expansion: add a child",
+     "3 simulation: play to the end",
+     "4 backpropagation: update N and W up the path"
+    ]
+   },
+   {
+    "re": "^uct$",
+    "out": [
+     "UCT child score = W/N + C sqrt(ln N_parent / N_child)",
+     "UCB1 (Auer et al. 2002): mean + c sqrt(2 ln N / n_i)"
+    ]
+   },
+   {
+    "re": "^final$",
+    "out": [
+     "robust child = most visits (usual choice)",
+     "max child = highest mean",
+     "secure child = best lower confidence bound"
+    ]
+   },
+   {
+    "re": "^nim$",
+    "out": [
+     "take 1 to 3 stones, last stone wins",
+     "piles that are multiples of 4 are lost for the player to move"
+    ]
+   },
+   {
+    "re": "^puct$",
+    "out": [
+     "Q + c P sqrt(sum N) / (1 + N): the AlphaGo selection rule"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ }
+}
