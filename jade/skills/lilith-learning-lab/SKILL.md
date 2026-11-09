@@ -5,7 +5,7 @@ description: Make, check and teach from Lilith Learning Lab course files (JSON, 
 
 # Lilith Learning Lab courses
 
-Lilith Learning Lab is an offline Android app with a talking "Teacher". It starts empty; everything it teaches is a **course file**: one JSON file the user imports (Library > Import file, or Paste JSON). Nine courses ship with the project: `operating-systems.course.json`, `compiler-design.course.json`, `godel-machine.course.json`, `theory-of-computation.course.json` and `alphazero.course.json` (Python labs), `jetson-agx-xavier.course.json`, `rl-python-gymnasium-sb3.course.json`, `curry-howard-lambek.course.json` and `sample-percentages.course.json`.
+Lilith Learning Lab is an offline Android app with a talking "Teacher". It starts empty; everything it teaches is a **course file**: one JSON file the user imports (Library > Import file, or Paste JSON). Ten courses ship with the project: `operating-systems.course.json`, `compiler-design.course.json`, `godel-machine.course.json`, `theory-of-computation.course.json` and `alphazero.course.json` (Python labs), `jetson-agx-xavier.course.json`, `rl-python-gymnasium-sb3.course.json`, `curry-howard-lambek.course.json` and `sample-percentages.course.json`.
 
 **Math:** course text supports LaTeX (`$x^2$`, `$$...$$`, `\\(..\\)`, `\\[..\\]`, and a `{"type":"math","tex":"..."}` lesson block). Double the backslashes in JSON. Keep narration chunks under 450 characters.
 

@@ -1,0 +1,52 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}
+button{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px 3px 3px 0}
+button.t{background:#2d2046;color:#e7d9ff}label{display:block;margin:6px 0 2px;color:#c9b8e8}select{font:inherit;background:#1e1336;color:#f1ebff;border:1px solid #4a3770;border-radius:8px;padding:6px;width:100%}
+input[type=range]{width:100%}table{width:100%;border-collapse:collapse;margin:8px 0}td,th{padding:5px 4px;border-bottom:1px solid #3a2a5c;text-align:left;font-size:13px}
+th{color:#c9b8e8;font-weight:600}.bar{height:8px;border-radius:4px;background:#b26bff}.dead td{color:#7d6b9f;text-decoration:line-through}
+.m{color:#c9b8e8;margin:6px 0}.log{font:12px ui-monospace,monospace;color:#e7d9ff;word-break:break-all}.good{color:#8fe3a8}
+</style></head><body>
+<div class="m">Pick a hidden true world, then let AIXI act. Each step it weighs the worlds that still fit what it saw (weight 2 to the minus length) and plans by expectimax. Run at least 6 steps.</div>
+<label for="w">true world</label><select id="w"></select>
+<label for="h">horizon: <b id="hv">3</b></label><input id="h" type="range" min="1" max="5" value="3">
+<div><button id="step">AIXI acts</button><button id="run5" class="t">5 steps</button><button id="rst" class="t">Reset</button></div>
+<table><thead><tr><th>world</th><th>len</th><th>posterior</th></tr></thead><tbody id="tb"></tbody></table>
+<div class="m" id="msg"></div><div class="log" id="log"></div>
+<script>
+var ENVS=[["pays for action 0","const",0,3],["pays for action 1","const",1,3],["pays for switching action","alt",0,5],["pays for action = step mod 2","parity",0,6],["never pays","never",0,2]];
+var hist=[],steps=0,fin=false;
+function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+function rew(e,acts){var a=acts[acts.length-1],k=e[1];
+ if(k==="const")return a===e[2]?1:0;
+ if(k==="alt"){var p=acts.length>1?acts[acts.length-2]:0;return a!==p?1:0}
+ if(k==="parity")return a===(acts.length%2)?1:0;
+ return 0}
+function alive(){var out=[];for(var i=0;i<ENVS.length;i++){var acts=[],ok=true;
+ for(var j=0;j<hist.length;j++){acts.push(hist[j][0]);if(rew(ENVS[i],acts)!==hist[j][1]){ok=false;break}}
+ if(ok)out.push(i)}return out}
+function wt(i){return Math.pow(2,-ENVS[i][3])}
+function best(idx,acts,k){if(k===0||idx.length===0)return[0,0];var tot=0;idx.forEach(function(i){tot+=wt(i)});
+ var top=-1,arg=0;
+ for(var a=0;a<2;a++){var na=acts.concat([a]),g=[[],[]];idx.forEach(function(i){g[rew(ENVS[i],na)].push(i)});
+  var v=0;for(var r=0;r<2;r++){if(g[r].length){var w=0;g[r].forEach(function(i){w+=wt(i)});v+=w/tot*(r+best(g[r],na,k-1)[0])}}
+  if(v>top+1e-12){top=v;arg=a}}
+ return[top,arg]}
+function draw(){var al=alive(),tot=0;al.forEach(function(i){tot+=wt(i)});var h="";
+ for(var i=0;i<ENVS.length;i++){var on=al.indexOf(i)>=0,p=on?wt(i)/tot:0;
+  h+="<tr class='"+(on?"":"dead")+"'><td>"+ENVS[i][0]+"</td><td>"+ENVS[i][3]+"</td><td><div class='bar' style='width:"+Math.round(p*100)+"%'></div>"+(p*100).toFixed(1)+"%</td></tr>"}
+ document.getElementById("tb").innerHTML=h;
+ document.getElementById("log").textContent=hist.map(function(x,t){return (t+1)+": a="+x[0]+" r="+x[1]}).join("   ");
+ var el=ENVS.length-al.length;
+ document.getElementById("msg").innerHTML="Steps: "+steps+". Worlds ruled out: "+el+"."+(fin?" <span class='good'>Done: AIXI has narrowed the field.</span>":"");
+ if(!fin&&steps>=6&&(el>=2||steps>=10)){fin=true;document.getElementById("msg").innerHTML+=" <span class='good'>Done.</span>";done()}}
+function act(){var al=alive(),acts=hist.map(function(x){return x[0]});var h=+document.getElementById("h").value;
+ var a=best(al,acts,h)[1];var tw=+document.getElementById("w").value;var r=rew(ENVS[tw],acts.concat([a]));
+ hist.push([a,r]);steps++;draw()}
+function reset(){hist=[];steps=0;draw()}
+var sel=document.getElementById("w");ENVS.forEach(function(e,i){var o=document.createElement("option");o.value=i;o.textContent=e[0];sel.appendChild(o)});
+sel.onchange=reset;
+document.getElementById("h").oninput=function(){document.getElementById("hv").textContent=this.value};
+document.getElementById("step").onclick=act;
+document.getElementById("run5").onclick=function(){for(var i=0;i<5;i++)act()};
+document.getElementById("rst").onclick=reset;draw();
+</script></body></html>

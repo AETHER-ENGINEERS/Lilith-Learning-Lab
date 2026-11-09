@@ -1,0 +1,6449 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "aixi",
+ "title": "AIXI",
+ "subtitle": "Universal artificial intelligence: induction, planning and the limits of the ideal agent",
+ "author": "Lilith Learning Lab",
+ "description": "A 12-chapter course on AIXI, Marcus Hutter's mathematical definition of an ideal reinforcement learning agent. Based on Hutter's Universal Algorithmic Intelligence survey, the Monte-Carlo AIXI paper by Veness and colleagues, Legg and Hutter's universal intelligence paper, and Leike, Hutter and Orseau on computability and bad priors. Covers the agent-environment cycle, expectimax, Bayesian mixtures, Kolmogorov complexity, Solomonoff induction, the AIXI equation, horizons, optimality, incomputability and AIXItl, MC-AIXI-CTW and critiques. Python labs run on the built-in MicroPython engine. The toy programs are teaching miniatures, not code from the papers.",
+ "pronounce": {
+  "AIXItl": "eye ksee tee ell",
+  "MC-AIXI-CTW": "M C eye ksee C T W",
+  "AIXI": "eye ksee",
+  "Hutter": "hoot er",
+  "Solomonoff": "sol oh mon off",
+  "Kolmogorov": "kol mo gor off",
+  "Chaitin": "chay tin",
+  "Legg": "leg",
+  "Leike": "lie kuh",
+  "Orseau": "or so",
+  "Veness": "ven ess",
+  "Schmidhuber": "shmid hoo ber",
+  "Vitanyi": "vee tah nee",
+  "Krichevsky": "kri chev ski",
+  "Trofimov": "tro fee mov",
+  "Jeffreys": "jef reez",
+  "Szepesvári": "seh peh shvar ee",
+  "Kocsis": "ko chish",
+  "rho-UCT": "row U C T",
+  "UCT": "U C T",
+  "UCB": "U C B",
+  "CTW": "C T W",
+  "expectimax": "expecti max",
+  "Expectimax": "Expecti max",
+  "Kraft": "kraft",
+  "Pareto": "pa ray toe",
+  "Thompson": "tomp son",
+  "Upsilon": "up sigh lon",
+  "Υ": "upsilon",
+  "Godel": "ger dell",
+  "Levin": "lev in",
+  "nu one": "new one",
+  "xi": "ksai"
+ },
+ "chapters": [
+  {
+   "title": "What is AIXI?",
+   "maps": [
+    {
+     "title": "The big picture",
+     "links": [
+      "AIXI | combines | Solomonoff induction",
+      "AIXI | combines | Sequential decision theory",
+      "AIXI | is | A reinforcement learning agent",
+      "AIXI | assumes | A computable environment",
+      "AIXI | weighs | Programs by length",
+      "AIXI | is | Incomputable",
+      "AIXI | proposed by | Marcus Hutter"
+     ]
+    }
+   ],
+   "summary": [
+    "AIXI is a mathematical definition of an ideal reinforcement learning agent, proposed by Marcus Hutter in 2000. It is not a program you can run. It answers a thought experiment: how would you act if you had unlimited computing power and no knowledge of your world?",
+    "It joins two ideas. Solomonoff induction predicts what comes next by weighing every computable explanation of the past, simple ones more heavily. Expectimax planning then picks the action with the highest expected total reward under those predictions.",
+    "The course builds both halves in small Python programs, then the real approximations and the serious criticisms."
+   ],
+   "glossary": [
+    {
+     "term": "AIXI",
+     "def": "Hutter's universal reinforcement learning agent: Solomonoff prediction plus expectimax planning. Pronounced eye-ksee."
+    },
+    {
+     "term": "Agent",
+     "def": "Whatever chooses actions: it reads percepts and writes actions."
+    },
+    {
+     "term": "Environment",
+     "def": "Everything outside the agent; it answers each action with a percept."
+    },
+    {
+     "term": "Percept",
+     "def": "What the agent receives each step: an observation and a reward."
+    },
+    {
+     "term": "Solomonoff induction",
+     "def": "Prediction that mixes all computable hypotheses, weighted by 2 to the minus program length."
+    },
+    {
+     "term": "Expectimax",
+     "def": "Planning that maximizes over your actions and averages over the environment's replies."
+    },
+    {
+     "term": "Incomputable",
+     "def": "Cannot be computed by any program, even given unlimited time."
+    }
+   ],
+   "keyPoints": [
+    "AIXI was proposed by Marcus Hutter in 2000; the main results are in his 2005 book Universal Artificial Intelligence.",
+    "It acts in an unknown but computable environment and tries to maximize total reward.",
+    "Prediction comes from a Solomonoff-style mixture; action comes from expectimax.",
+    "There are no free parameters except the choice of universal Turing machine and the horizon.",
+    "AIXI is incomputable, so it is a gold standard to approximate, not a program to run.",
+    "It does not model itself as part of the world: that is its biggest conceptual limit."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Intelligence is hard to define, and harder to define for machines unlike us. Marcus Hutter's answer, published first in 2000 and developed in his 2005 book, takes the problem from the top down: instead of building a clever system and hoping it is general, define the best possible agent mathematically, then ask how closely it can be approximated."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The setting is the general reinforcement learning problem. An agent and an environment talk in cycles. Each cycle the agent sends an action, and the environment replies with a percept made of an observation and a reward.",
+      "The agent wants as much total reward as it can get, and it knows nothing about the environment except that some computer program could produce its replies."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "AIXI has two halves. The first half is learning. Following Ray Solomonoff's 1964 theory of induction, it keeps every computable explanation of its experience, and trusts each in proportion to two to the power of minus the length of the shortest program that states it.",
+      "Short explanations count for much more, a formal version of Occam's razor."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The second half is acting. Given its beliefs, AIXI looks ahead over all its possible action sequences and the environment's possible replies, and takes the action whose average future reward is highest.",
+      "This look-ahead is called expectimax, because it takes a maximum over the agent's choices and an expectation over the environment's chance."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\text{AIXI} \\;=\\; \\text{Solomonoff prediction} \\;+\\; \\text{expectimax planning}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "What do we get? Hutter's analysis argues that the result is optimal in several senses, which chapter 9 lists, and chapter 12 shows how later work weakened several of those claims. The agent also has a price: it must consider all programs, including ones that never halt, so it cannot be computed."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Do not read AIXI as a design to build. Read it as a yardstick, like the ideal gas or the frictionless plane. It tells you what perfect general learning would be, which parts of that are hopeless for finite machines, and which approximations keep something of the spirit.",
+      "The Monte Carlo AIXI work of Veness and colleagues, chapter 11, is the best known attempt."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A note on sources. This course follows Hutter's 2007 survey Universal Algorithmic Intelligence, the Veness and colleagues 2011 paper in the Journal of Artificial Intelligence Research, Legg and Hutter's universal intelligence paper, and papers by Leike and Hutter and by Orseau on the weaknesses.",
+      "The toy programs are my own teaching examples, not code from those papers."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does AIXI maximize?",
+     "options": [
+      "Total reward",
+      "Program length",
+      "Memory",
+      "Speed"
+     ],
+     "answer": 0,
+     "explain": "It is a reinforcement learning agent."
+    },
+    {
+     "q": "What two ideas make up AIXI?",
+     "options": [
+      "Solomonoff induction and expectimax planning",
+      "Backpropagation and dropout",
+      "Alpha-beta and hashing",
+      "Clustering and sorting"
+     ],
+     "answer": 0,
+     "explain": "Prediction plus planning."
+    },
+    {
+     "q": "Can AIXI be run on a computer?",
+     "options": [
+      "Yes, quickly",
+      "No, it is incomputable",
+      "Only on GPUs",
+      "Only for chess"
+     ],
+     "answer": 1,
+     "explain": "It must weigh all programs."
+    },
+    {
+     "q": "What does AIXI assume about the environment?",
+     "options": [
+      "It is computable",
+      "It is random noise",
+      "It is a chess board",
+      "It is a human"
+     ],
+     "answer": 0,
+     "explain": "Some program can produce its replies."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Who proposed AIXI?",
+     "a": "Marcus Hutter, in 2000."
+    },
+    {
+     "q": "What is a percept?",
+     "a": "An observation together with a reward."
+    },
+    {
+     "q": "What is expectimax?",
+     "a": "Maximize over actions, average over the environment's replies."
+    },
+    {
+     "q": "Why study something incomputable?",
+     "a": "As a yardstick and a source of approximations."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Run the cycle",
+     "intro": "An agent plays a two-action game. The environment pays reward 1 when the action is 1, otherwise 0. Write run_cycle(first, steps): the agent alternates its actions, starting with the action first (0 or 1). Return [total reward, list of rewards in order].",
+     "fn": "run_cycle",
+     "starter": "def run_cycle(first, steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        5
+       ],
+       "expect": [
+        2,
+        [
+         0,
+         1,
+         0,
+         1,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        1,
+        5
+       ],
+       "expect": [
+        3,
+        [
+         1,
+         0,
+         1,
+         0,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        1,
+        1
+       ],
+       "expect": [
+        1,
+        [
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        0,
+        0
+       ],
+       "expect": [
+        0,
+        []
+       ]
+      },
+      {
+       "args": [
+        0,
+        8
+       ],
+       "expect": [
+        4,
+        [
+         0,
+         1,
+         0,
+         1,
+         0,
+         1,
+         0,
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Loop over the steps; flip the action with 1 - a.",
+     "solution": "def run_cycle(first, steps):\n    rewards = []\n    a = first\n    for t in range(steps):\n        r = 0\n        if a == 1:\n            r = 1\n        rewards.append(r)\n        a = 1 - a\n    return [sum(rewards), rewards]\n"
+    },
+    {
+     "type": "order",
+     "title": "One cycle",
+     "intro": "Put the steps of one agent-environment cycle in order.",
+     "items": [
+      "The agent picks an action",
+      "The environment receives the action",
+      "The environment sends an observation and a reward",
+      "The agent adds the new percept to its history",
+      "The agent picks the next action"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Agent",
+       "Chooses actions"
+      ],
+      [
+       "Environment",
+       "Answers actions with percepts"
+      ],
+      [
+       "Percept",
+       "Observation plus reward"
+      ],
+      [
+       "Horizon",
+       "How many steps ahead the agent cares about"
+      ],
+      [
+       "Solomonoff induction",
+       "Weighs programs by length"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Basics",
+     "text": "AIXI joins {{Solomonoff induction|Solomonoff}} prediction with {{expectimax}} planning. It is {{incomputable|not computable}}, so it serves as an ideal to approximate."
+    }
+   ]
+  },
+  {
+   "title": "The agent-environment cycle",
+   "maps": [
+    {
+     "title": "Interaction",
+     "links": [
+      "Agent | outputs | Actions",
+      "Environment | outputs | Percepts",
+      "Percept | contains | Observation and reward",
+      "History | records | Actions and percepts",
+      "Policy | maps | Histories to actions",
+      "Environment | maps | Histories to percept probabilities",
+      "Chronological | means | Replies depend only on the past"
+     ]
+    }
+   ],
+   "summary": [
+    "The formal setting is simple. Time runs in steps. At step t the agent picks an action a_t from a finite set and the environment replies with a percept, an observation o_t and a reward r_t. Everything seen so far is the history.",
+    "A policy maps each history to an action. An environment maps each history and action to a distribution over percepts. There is no assumption that the world is Markov: the reply may depend on the whole past.",
+    "The environment must be chronological: its reply at step t cannot depend on actions the agent has not taken yet. This sounds obvious but needs stating when everything is written as functions on strings."
+   ],
+   "glossary": [
+    {
+     "term": "Action",
+     "def": "A symbol the agent sends, from a finite set."
+    },
+    {
+     "term": "Observation",
+     "def": "The non-reward part of a percept."
+    },
+    {
+     "term": "Reward",
+     "def": "A number the agent wants to accumulate."
+    },
+    {
+     "term": "History",
+     "def": "The sequence of past actions and percepts."
+    },
+    {
+     "term": "Policy",
+     "def": "A rule choosing actions from histories."
+    },
+    {
+     "term": "Chronological",
+     "def": "Replies depend only on actions taken so far, never on future ones."
+    },
+    {
+     "term": "Markov",
+     "def": "The next step depends only on the current state; AIXI does not assume this."
+    }
+   ],
+   "keyPoints": [
+    "A step is an action followed by a percept (observation, reward).",
+    "A history is the list of all action-percept pairs so far.",
+    "A policy turns a history into an action; an environment turns a history and action into a percept distribution.",
+    "No Markov assumption: the whole history may matter.",
+    "Chronological environments cannot see future actions.",
+    "Total reward over a horizon is the quantity the agent wants to maximize."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Start with the vocabulary of the framework in Hutter's survey. There is a finite set of possible actions, a finite set of observations and a set of rewards, usually numbers between zero and one. In cycle k the agent outputs an action.",
+      "The environment then produces a percept, which carries both an observation and a reward. Then cycle k plus one begins."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The history after k cycles is the list of all actions and percepts so far, in order. It is everything the agent has ever experienced. A policy is a function from histories to actions. The agent's whole behaviour is its policy, so comparing agents means comparing policies."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The environment is also a function of the history. In the deterministic case the next percept is a fixed function of the actions so far. In general it is a probability distribution over percepts, given the history and the action just taken.",
+      "Veness and colleagues define an environment as a sequence of conditional probability functions that obey one consistency condition, that actions do not affect earlier percepts. Hutter calls such environments chronological."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\nu(x_t \\mid a_1 x_1 \\dots a_{t-1} x_{t-1}\\, a_t)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Read this as the probability that the environment nu produces percept x at step t, given all earlier actions and percepts and the action just taken. Nothing says the world has a hidden state with the Markov property.",
+      "A single unseen switch that was flipped fifty steps ago may still matter, and that is allowed."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "This generality is the point. Many problems that look different fit the same mould. A game against an opponent, a sequence to predict, a function to minimize or a supervised learning task can each be written as an environment with the right observations and rewards.",
+      "Hutter's survey lists exactly these classes, and a chapter of his book is devoted to showing how each one fits."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The goal is stated through the reward. The agent wants to maximize the sum of rewards over a horizon m, the number of cycles it plans for. Chapter 8 returns to how the horizon is chosen. For now treat it as a fixed number of future steps."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section builds a small deterministic environment with memory, so you can see how the reply depends on the history. You then run a policy in it and add up the reward."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a percept contain?",
+     "options": [
+      "An observation and a reward",
+      "Only a reward",
+      "Only an action",
+      "A program"
+     ],
+     "answer": 0,
+     "explain": "o_t and r_t together."
+    },
+    {
+     "q": "What is a policy?",
+     "options": [
+      "A map from histories to actions",
+      "A reward",
+      "An environment",
+      "A program length"
+     ],
+     "answer": 0,
+     "explain": "It defines the agent's behaviour."
+    },
+    {
+     "q": "Does AIXI assume the environment is Markov?",
+     "options": [
+      "Yes",
+      "No, the whole history may matter",
+      "Only for chess",
+      "Only with discounting"
+     ],
+     "answer": 1,
+     "explain": "There is no Markov assumption."
+    },
+    {
+     "q": "What does chronological mean?",
+     "options": [
+      "Replies cannot depend on future actions",
+      "Steps are numbered",
+      "Rewards grow",
+      "Observations are sorted"
+     ],
+     "answer": 0,
+     "explain": "Actions do not affect earlier percepts."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a history?",
+     "a": "All past actions and percepts, in order."
+    },
+    {
+     "q": "What does an environment return?",
+     "a": "A percept distribution given the history and action."
+    },
+    {
+     "q": "What is the reward for?",
+     "a": "It states the goal."
+    },
+    {
+     "q": "Why no Markov assumption?",
+     "a": "To keep the framework fully general."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "An environment with memory",
+     "intro": "Write env_reply(actions): given the list of all actions so far (the last one is the current action, each 0 or 1), return [obs, reward]. obs is 1 if the number of 1s among the actions so far is odd, otherwise 0. reward is 1 if the current action equals the previous observation (the observation from the step before; before the first step it is 0), otherwise 0.",
+     "fn": "env_reply",
+     "starter": "def env_reply(actions):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0
+        ]
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         0
+        ]
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         0,
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      }
+     ],
+     "hint": "The previous observation is the parity of all actions except the last.",
+     "solution": "def env_reply(actions):\n    prev_obs = sum(actions[:-1]) % 2\n    obs = sum(actions) % 2\n    reward = 0\n    if actions[-1] == prev_obs:\n        reward = 1\n    return [obs, reward]\n"
+    },
+    {
+     "type": "python",
+     "title": "Run a policy",
+     "intro": "Using the same environment (obs is the parity of the number of 1s among actions so far; reward is 1 when the current action equals the previous observation, which starts at 0), write total_reward(steps): the agent plays 'copy the last observation' (its first action is 0, afterwards it plays the most recent observation). Return the total reward over steps steps.",
+     "fn": "total_reward",
+     "starter": "def total_reward(steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        2
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        10
+       ],
+       "expect": 10
+      },
+      {
+       "args": [
+        0
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Keep the action list; compute the parity before and after adding the new action.",
+     "solution": "def total_reward(steps):\n    actions = []\n    last_obs = 0\n    total = 0\n    for t in range(steps):\n        a = last_obs\n        actions.append(a)\n        prev_obs = sum(actions[:-1]) % 2\n        obs = sum(actions) % 2\n        if a == prev_obs:\n            total += 1\n        last_obs = obs\n    return total\n"
+    },
+    {
+     "type": "match",
+     "title": "Symbols",
+     "intro": "Match each symbol with its role.",
+     "pairs": [
+      [
+       "a_t",
+       "Action at step t"
+      ],
+      [
+       "o_t",
+       "Observation at step t"
+      ],
+      [
+       "r_t",
+       "Reward at step t"
+      ],
+      [
+       "x_t",
+       "Percept: observation and reward"
+      ],
+      [
+       "m",
+       "Horizon"
+      ]
+     ]
+    },
+    {
+     "type": "order",
+     "title": "Build a history",
+     "intro": "Put these in the order they appear in a history.",
+     "items": [
+      "a1",
+      "x1",
+      "a2",
+      "x2",
+      "a3"
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Setting",
+     "text": "A {{policy}} maps histories to actions. An environment is {{chronological}} when its replies never depend on future actions. A percept is an observation and a {{reward}}."
+    }
+   ]
+  },
+  {
+   "title": "Planning with a known model: expectimax",
+   "maps": [
+    {
+     "title": "Expectimax",
+     "links": [
+      "Expectimax | alternates | Max and expectation",
+      "Max node | is | Agent choice",
+      "Chance node | is | Environment reply",
+      "Leaf | holds | Accumulated reward",
+      "Value | equals | Expected total reward",
+      "Optimal policy | maximizes | Value",
+      "Tree size | grows | Exponentially with horizon"
+     ]
+    }
+   ],
+   "summary": [
+    "Suppose the agent knows the environment exactly. Then choosing actions is a planning problem. Draw a tree: at agent nodes pick the best action, at chance nodes average over the environment's replies, and add up rewards along the way. This is expectimax.",
+    "The value of a history is the expected total reward the best policy can still collect. The recursion is: value is the maximum over actions of the expected, over percepts, of reward plus the value of the longer history.",
+    "The tree grows exponentially with the horizon, which is the first reason AIXI cannot be run. The second is that the environment is not known, which is where Solomonoff induction comes in."
+   ],
+   "glossary": [
+    {
+     "term": "Expectimax",
+     "def": "Game-tree search with max nodes for the agent and expectation nodes for chance."
+    },
+    {
+     "term": "Value function",
+     "def": "The expected total future reward under a policy or the best policy."
+    },
+    {
+     "term": "Optimal policy",
+     "def": "A policy that attains the highest value."
+    },
+    {
+     "term": "Bellman equation",
+     "def": "The recursion value = max over actions of the expectation of reward plus next value."
+    },
+    {
+     "term": "Horizon",
+     "def": "The number of future steps counted."
+    },
+    {
+     "term": "Chance node",
+     "def": "A node where the environment draws the next percept."
+    }
+   ],
+   "keyPoints": [
+    "With a known environment, optimal action is a search problem.",
+    "Max over actions, expectation over percepts, sum of rewards.",
+    "V(h) = max_a sum_x P(x | h a) [ r(x) + V(h a x) ] with V = 0 at the horizon.",
+    "The search tree has (actions x percepts)^horizon leaves.",
+    "AIXI uses this same recursion, with the true environment replaced by a mixture.",
+    "Sampling approximations such as UCT avoid expanding the whole tree."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Forget learning for a chapter. Assume the agent is told the exact environment, meaning a rule that gives the probability of each percept after each history and action.",
+      "What should it do? This is a decision problem under uncertainty, and the classical solution is dynamic programming, the Bellman equation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Define the value of a history h with k steps left as the expected total reward from now on, if the agent plays the best possible way. With no steps left the value is zero. With steps left, try each action a. For each, the environment answers with percept x with some probability.",
+      "The percept brings reward r and a longer history. Average reward plus future value over the percepts, then pick the action with the highest average."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} V_k(h) \\;=\\; \\max_{a}\\; \\sum_{x} P(x \\mid h, a)\\,\\bigl[\\, r(x) + V_{k-1}(h\\,a\\,x)\\,\\bigr], \\\\[0.6em] V_0 = 0 \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Written as a tree, the actions form max nodes and the percepts form chance nodes, stacked alternately. The leaves are at depth k. The number of leaves is the number of actions times the number of percepts, raised to the power k.",
+      "A binary action, a binary reward and a horizon of twenty already give about a trillion leaves, which is why exact planning only works for small cases."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two observations will matter later. First, an optimal policy exists for every finite horizon and can be found by the backward recursion above. Second, because the environment's replies can depend on the full history, the tree must be indexed by histories, not by states.",
+      "AIXI uses exactly this recursion. The only change is that the true probabilities are replaced by a mixture, the subject of the next chapters."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Veness and colleagues note that expectimax cannot be done exactly at scale and use a Monte Carlo tree search instead, in a version of the UCT algorithm they call rho-UCT. It samples trajectories through the tree and spends more effort on promising branches. Chapter 11 sets out how it works."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you evaluate small expectimax trees, then plan in a stochastic environment whose reward chances depend on the previous action."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does expectimax maximize over?",
+     "options": [
+      "The agent's actions",
+      "The environment's replies",
+      "Program length",
+      "Memory"
+     ],
+     "answer": 0,
+     "explain": "Max nodes are agent choices."
+    },
+    {
+     "q": "What does it average over?",
+     "options": [
+      "The environment's possible percepts",
+      "Actions",
+      "Steps",
+      "Programs"
+     ],
+     "answer": 0,
+     "explain": "Chance nodes average."
+    },
+    {
+     "q": "What is the value at zero steps remaining?",
+     "options": [
+      "Zero",
+      "One",
+      "Infinity",
+      "Undefined"
+     ],
+     "answer": 0,
+     "explain": "No more reward can be collected."
+    },
+    {
+     "q": "Why is exact expectimax impractical?",
+     "options": [
+      "The tree grows exponentially",
+      "Rewards are random",
+      "It needs training",
+      "It is not optimal"
+     ],
+     "answer": 0,
+     "explain": "Leaves multiply at every step."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is the Bellman equation?",
+     "a": "Value = max over actions of expected reward plus next value."
+    },
+    {
+     "q": "How many leaves does the tree have?",
+     "a": "(actions x percepts) to the power of the horizon."
+    },
+    {
+     "q": "What replaces the true environment in AIXI?",
+     "a": "A mixture over many environments."
+    },
+    {
+     "q": "How is the tree approximated?",
+     "a": "By Monte Carlo sampling such as UCT."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Evaluate an expectimax tree",
+     "intro": "A tree is a number (a leaf), or ['max', [children]], or ['chance', [[probability, child], ...]]. Write expectimax(tree) returning its value: the largest child for max, the probability-weighted sum for chance.",
+     "fn": "expectimax",
+     "starter": "def expectimax(tree):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         "max",
+         [
+          1,
+          4,
+          2
+         ]
+        ]
+       ],
+       "expect": 4
+      },
+      {
+       "args": [
+        [
+         "chance",
+         [
+          [
+           0.5,
+           4
+          ],
+          [
+           0.5,
+           2
+          ]
+         ]
+        ]
+       ],
+       "expect": 3.0
+      },
+      {
+       "args": [
+        [
+         "max",
+         [
+          [
+           "chance",
+           [
+            [
+             0.5,
+             4
+            ],
+            [
+             0.5,
+             0
+            ]
+           ]
+          ],
+          [
+           "chance",
+           [
+            [
+             0.25,
+             8
+            ],
+            [
+             0.75,
+             1
+            ]
+           ]
+          ],
+          2.5
+         ]
+        ]
+       ],
+       "expect": 2.75
+      },
+      {
+       "args": [
+        [
+         "chance",
+         [
+          [
+           0.5,
+           [
+            "max",
+            [
+             1,
+             3
+            ]
+           ]
+          ],
+          [
+           0.5,
+           [
+            "max",
+            [
+             2,
+             0
+            ]
+           ]
+          ]
+         ]
+        ]
+       ],
+       "expect": 2.5
+      }
+     ],
+     "hint": "Check whether the node is a list; recurse on children.",
+     "solution": "def expectimax(tree):\n    if not isinstance(tree, list):\n        return tree\n    if tree[0] == 'max':\n        best = None\n        for child in tree[1]:\n            v = expectimax(child)\n            if best is None or v > best:\n                best = v\n        return best\n    total = 0\n    for p, child in tree[1]:\n        total += p * expectimax(child)\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "Plan in a known stochastic world",
+     "intro": "There are two actions, 0 and 1. The chance of reward 1 depends on the previous action (before step 1 it is 0): probs[prev][a] is that chance (reward 0 otherwise). Write plan(probs, steps): return [best expected total reward over steps steps, the best first action]. Break ties by choosing the smaller action.",
+     "fn": "plan",
+     "starter": "def plan(probs, steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0.5,
+          0.2
+         ],
+         [
+          0.9,
+          0.1
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        0.5,
+        0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          0.5,
+          0.2
+         ],
+         [
+          0.9,
+          0.1
+         ]
+        ],
+        3
+       ],
+       "expect": [
+        1.6,
+        0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          0.1,
+          0.9
+         ],
+         [
+          0.9,
+          0.1
+         ]
+        ],
+        4
+       ],
+       "expect": [
+        3.6,
+        1
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          0.3,
+          0.3
+         ],
+         [
+          0.3,
+          0.3
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        0.6,
+        0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          0.2,
+          0.8
+         ],
+         [
+          0.7,
+          0.6
+         ]
+        ],
+        5
+       ],
+       "expect": [
+        3.8,
+        1
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Recurse on (previous action, steps left); add the immediate chance to the future value.",
+     "solution": "def plan(probs, steps):\n    def val(prev, k):\n        if k == 0:\n            return [0.0, 0]\n        best = -1.0\n        arg = 0\n        for a in range(2):\n            v = probs[prev][a] + val(a, k - 1)[0]\n            if v > best + 1e-12:\n                best = v\n                arg = a\n        return [best, arg]\n    return val(0, steps)\n"
+    },
+    {
+     "type": "order",
+     "title": "Backward recursion",
+     "intro": "Order the steps of exact planning with a known model.",
+     "items": [
+      "Set the value to zero at the horizon",
+      "For each action, list the possible percepts",
+      "Add reward and next-step value for each percept",
+      "Average over percepts by their probabilities",
+      "Take the maximum over actions"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Nodes",
+     "intro": "Match each node with its job.",
+     "pairs": [
+      [
+       "Max node",
+       "The agent picks the best action"
+      ],
+      [
+       "Chance node",
+       "The environment draws a percept"
+      ],
+      [
+       "Leaf",
+       "Search stops and no more reward is counted"
+      ],
+      [
+       "Root",
+       "The current history"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Planning",
+     "text": "Expectimax takes a {{maximum|max}} over actions and an {{expectation|average}} over percepts. The number of leaves grows {{exponentially}} with the horizon."
+    }
+   ]
+  },
+  {
+   "title": "Bayesian mixtures and prediction",
+   "maps": [
+    {
+     "title": "Mixtures",
+     "links": [
+      "Hypothesis class | contains | Candidate environments",
+      "Prior | assigns | Weight to each",
+      "Bayes rule | updates | Weights by likelihood",
+      "Mixture | predicts | Weighted average",
+      "Mixture | dominates | Every member",
+      "Dominance | bounds | Loss by log of 1 over weight",
+      "Posterior | sharpens | On consistent members"
+     ]
+    }
+   ],
+   "summary": [
+    "When the environment is unknown, a Bayesian keeps several candidates, each with a prior weight. As data arrives, candidates that predicted it badly lose weight. To predict, average the candidates' predictions using the current weights.",
+    "The mixture has a remarkable property. It assigns every observed sequence at least its prior weight times the probability that the true candidate gave it. So it can never do much worse than the best candidate, and the extra cost is at most the log of one over that candidate's weight.",
+    "AIXI uses the largest sensible class, all computable environments, and a particular prior, which is the topic of the next chapters."
+   ],
+   "glossary": [
+    {
+     "term": "Hypothesis class",
+     "def": "The set of environments the agent considers possible."
+    },
+    {
+     "term": "Prior",
+     "def": "Weights on hypotheses before seeing data; they sum to at most one."
+    },
+    {
+     "term": "Posterior",
+     "def": "Weights after seeing data, by Bayes rule."
+    },
+    {
+     "term": "Mixture",
+     "def": "A weighted average of the hypotheses' probabilities; written xi."
+    },
+    {
+     "term": "Dominance",
+     "def": "xi(x) is at least w times nu(x) for every member nu with weight w."
+    },
+    {
+     "term": "Likelihood",
+     "def": "The probability a hypothesis gave to the data actually seen."
+    }
+   ],
+   "keyPoints": [
+    "Bayes rule: new weight is proportional to old weight times likelihood.",
+    "Mixture probability xi(x) = sum of w_i times nu_i(x).",
+    "Dominance: xi(x) >= w_i nu_i(x) for each i.",
+    "Hence the log-loss of the mixture exceeds the best member's by at most ln(1/w_i).",
+    "For deterministic hypotheses, the mixture's mistakes are bounded by the log of one over the true hypothesis's weight in bits.",
+    "A class containing the truth with positive prior weight is called a grain of truth."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "A hypothesis here is a complete probabilistic model of the environment: given a history it says how likely each next percept is. Suppose the agent has a list of such models, nu one, nu two and so on, and a prior weight for each, w one, w two, adding up to at most one. How should it predict?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Bayesian mixture is the answer. The agent's probability of any data x is the weighted sum of the models' probabilities. Written as an equation, xi of x equals the sum over i of w i times nu i of x. It is a legitimate probability model in its own right."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\xi(x) \\;=\\; \\sum_i w_i\\,\\nu_i(x)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Bayes rule updates the weights. After seeing x, the posterior weight of model i is its old weight times the probability it gave to x, divided by the mixture's probability of x. A model that predicted x well gains weight. A model that gave x probability zero loses all weight and never returns.",
+      "Predicting the next symbol means averaging the models' next-symbol predictions with these posterior weights."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now the key inequality. Because the mixture is a sum of non-negative terms, it is at least each single term. So xi of x is at least w i times nu i of x, for every member i. Taking logarithms, the mixture's log-loss on the data exceeds the log-loss of model i by at most the log of one over w i.",
+      "This holds for any data, whatever the truth."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "If the data really is drawn from model i, the mixture's total loss exceeds the best possible by a constant that depends only on the prior weight of the truth, not on how long the data goes on. A good prior weight is therefore a bounded one-time cost.",
+      "Solomonoff chose weights so that every computable model gets a decent share, and the next chapters show how."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There is a catch that foreshadows chapter 12. Dominance only helps when the truth is in the class with positive weight, the so-called grain of truth. And in the agent setting, the data depends on what the agent does, so a mixture that predicts passively well may still act badly."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section implements Bayes updating, the mixture prediction and the regret bound for coin-flip hypotheses."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the mixture probability of x?",
+     "options": [
+      "The weighted sum of the models' probabilities",
+      "The largest probability",
+      "The smallest probability",
+      "A random choice"
+     ],
+     "answer": 0,
+     "explain": "xi(x) = sum w_i nu_i(x)."
+    },
+    {
+     "q": "What does a model that gave the data probability zero get after Bayes update?",
+     "options": [
+      "Weight zero",
+      "More weight",
+      "The same weight",
+      "Weight one"
+     ],
+     "answer": 0,
+     "explain": "It is eliminated."
+    },
+    {
+     "q": "Dominance means:",
+     "options": [
+      "xi(x) is at least w_i nu_i(x)",
+      "xi(x) is zero",
+      "xi is deterministic",
+      "xi equals the prior"
+     ],
+     "answer": 0,
+     "explain": "A sum is at least each term."
+    },
+    {
+     "q": "What is the extra loss of the mixture over model i bounded by?",
+     "options": [
+      "ln(1/w_i)",
+      "The data length",
+      "Zero",
+      "w_i"
+     ],
+     "answer": 0,
+     "explain": "A one-time cost set by the prior."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a grain of truth?",
+     "a": "The true environment is in the class with positive weight."
+    },
+    {
+     "q": "What is a posterior?",
+     "a": "Weights after seeing data."
+    },
+    {
+     "q": "Why can't the mixture be much worse than the best member?",
+     "a": "Dominance."
+    },
+    {
+     "q": "What happens to impossible hypotheses?",
+     "a": "Their weight drops to zero."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Bayes update",
+     "intro": "Given prior weights and likelihoods (the probability each hypothesis gave to the data just seen), return the normalized posterior weights. Write bayes_update(weights, likelihoods).",
+     "fn": "bayes_update",
+     "starter": "def bayes_update(weights, likelihoods):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.9,
+         0.1
+        ]
+       ],
+       "expect": [
+        0.9,
+        0.1
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.25,
+         0.75
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": [
+        0.25,
+        0.75
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.25,
+         0.25
+        ],
+        [
+         0.0,
+         1.0,
+         0.5
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.6666666666666666,
+        0.3333333333333333
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        [
+         0.3
+        ]
+       ],
+       "expect": [
+        1.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.3,
+         0.5
+        ],
+        [
+         0.1,
+         0.2,
+         0.7
+        ]
+       ],
+       "expect": [
+        0.04651162790697675,
+        0.13953488372093023,
+        0.813953488372093
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Multiply weight by likelihood, then divide by the total.",
+     "solution": "def bayes_update(weights, likelihoods):\n    raw = []\n    for w, l in zip(weights, likelihoods):\n        raw.append(w * l)\n    total = sum(raw)\n    return [x / total for x in raw]\n"
+    },
+    {
+     "type": "python",
+     "title": "Mixture prediction",
+     "intro": "Each hypothesis is a coin with probability theta of heads (a 1). After the bits seen so far the weights are posterior weights. Write predict_next(bits, thetas, weights): update the prior weights on the bits (each 1 has likelihood theta, each 0 has 1 - theta), and return the mixture probability that the next bit is 1.",
+     "fn": "predict_next",
+     "starter": "def predict_next(bits, thetas, weights):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [],
+        [
+         0.2,
+         0.8
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         0.2,
+         0.8
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.7907692307692308,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         0
+        ],
+        [
+         0.2,
+         0.8
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.20233463035019456,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         1,
+         1
+        ],
+        [
+         0.25,
+         0.5,
+         0.75
+        ],
+        [
+         0.25,
+         0.5,
+         0.25
+        ]
+       ],
+       "expect": 0.596774193548387,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        [
+         0.0,
+         1.0
+        ],
+        [
+         0.9,
+         0.1
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Update the weights bit by bit, normalize, then average theta.",
+     "solution": "def predict_next(bits, thetas, weights):\n    w = list(weights)\n    for b in bits:\n        for i in range(len(w)):\n            if b == 1:\n                w[i] = w[i] * thetas[i]\n            else:\n                w[i] = w[i] * (1 - thetas[i])\n    total = sum(w)\n    p = 0.0\n    for i in range(len(w)):\n        p += w[i] / total * thetas[i]\n    return p\n"
+    },
+    {
+     "type": "python",
+     "title": "Regret bound",
+     "intro": "With hypotheses that are coins (theta = chance of a 1) and prior weights, compute for the bit string bits and hypothesis index i: [regret, bound] where regret is ln nu_i(bits) minus ln xi(bits) (nu_i is the probability model i gives to the whole string, xi the mixture), and bound is ln(1 / weights[i]). Write regret_bound(bits, thetas, weights, i). Use import math.",
+     "fn": "regret_bound",
+     "starter": "def regret_bound(bits, thetas, weights, i):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1,
+         0,
+         1
+        ],
+        [
+         0.25,
+         0.75
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        1
+       ],
+       "expect": [
+        0.5877866649021186,
+        0.6931471805599453
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        [
+         0.1,
+         0.5,
+         0.9
+        ],
+        [
+         0.25,
+         0.5,
+         0.25
+        ],
+        0
+       ],
+       "expect": [
+        1.285669932536465,
+        1.3862943611198906
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         1,
+         0,
+         1,
+         0
+        ],
+        [
+         0.5,
+         0.9
+        ],
+        [
+         0.1,
+         0.9
+        ],
+        0
+       ],
+       "expect": [
+        1.951995829300043,
+        2.302585092994046
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1,
+         1
+        ],
+        [
+         0.3,
+         0.6,
+         0.9
+        ],
+        [
+         0.2,
+         0.3,
+         0.5
+        ],
+        2
+       ],
+       "expect": [
+        0.5767368287155341,
+        0.6931471805599453
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "The mixture is a weighted sum of the two products; take logs at the end.",
+     "solution": "import math\ndef regret_bound(bits, thetas, weights, i):\n    def prob(theta):\n        p = 1.0\n        for b in bits:\n            if b == 1:\n                p *= theta\n            else:\n                p *= 1 - theta\n        return p\n    xi = 0.0\n    for th, w in zip(thetas, weights):\n        xi += w * prob(th)\n    nu = prob(thetas[i])\n    return [math.log(nu) - math.log(xi), math.log(1 / weights[i])]\n"
+    },
+    {
+     "type": "order",
+     "title": "One Bayesian step",
+     "intro": "Order the steps.",
+     "items": [
+      "Start with the prior weights",
+      "See a new bit",
+      "Compute each model's probability for that bit",
+      "Multiply weights by these probabilities",
+      "Normalize to get the posterior"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Terms",
+     "intro": "Match each term with its role.",
+     "pairs": [
+      [
+       "Prior",
+       "Weights before data"
+      ],
+      [
+       "Likelihood",
+       "How well a model predicted the data"
+      ],
+      [
+       "Posterior",
+       "Weights after data"
+      ],
+      [
+       "Mixture",
+       "Weighted average of all models"
+      ],
+      [
+       "Grain of truth",
+       "The true model has positive weight"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Mixtures",
+     "text": "The {{mixture}} probability is a weighted sum. {{Dominance}} says it is at least the prior weight times each member's probability. A model that gave the data probability zero has weight {{zero|0}}."
+    }
+   ]
+  },
+  {
+   "title": "Kolmogorov complexity and the universal prior",
+   "maps": [
+    {
+     "title": "Complexity",
+     "links": [
+      "Kolmogorov complexity | is | Length of shortest program",
+      "Universal Turing machine | runs | Programs",
+      "Invariance theorem | bounds | Change of machine",
+      "Kolmogorov complexity | is | Incomputable",
+      "Prefix-free code | satisfies | Kraft inequality",
+      "Universal prior | weights | 2 to minus length",
+      "Occam | is formalized by | Short programs"
+     ]
+    }
+   ],
+   "summary": [
+    "The Kolmogorov complexity of a string is the length of the shortest program that prints it on a fixed universal computer. A string with a pattern has a short program. A random string has no program much shorter than itself.",
+    "Changing the computer changes the complexity by at most a constant, so the notion is meaningful. But no program can compute it exactly.",
+    "The universal prior gives a string the total weight of all programs that produce it, each program counting two to the power of minus its length. This is Occam's razor written as arithmetic."
+   ],
+   "glossary": [
+    {
+     "term": "Kolmogorov complexity",
+     "def": "K(x): the length of the shortest program that outputs x on a given universal machine."
+    },
+    {
+     "term": "Universal Turing machine",
+     "def": "A machine that can simulate any other machine given its description as part of the program."
+    },
+    {
+     "term": "Invariance theorem",
+     "def": "For two universal machines, complexities differ by at most a constant not depending on x."
+    },
+    {
+     "term": "Prefix-free",
+     "def": "No program is the beginning of another program."
+    },
+    {
+     "term": "Kraft inequality",
+     "def": "For a prefix-free set of programs, the sum of 2^-length is at most 1."
+    },
+    {
+     "term": "Universal prior",
+     "def": "Probability of a string = sum of 2^-length over programs that produce it."
+    },
+    {
+     "term": "Incomputable",
+     "def": "No algorithm computes K(x) for every x."
+    }
+   ],
+   "keyPoints": [
+    "K(x) is the length of the shortest program printing x.",
+    "The reference machine matters only up to an additive constant (invariance theorem).",
+    "K is not computable.",
+    "Prefix-free programs obey the Kraft inequality, so 2^-length can be read as probabilities.",
+    "M(x) is the sum of 2^-length(p) over programs whose output starts with x.",
+    "Shorter explanations get exponentially more weight."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Compare two strings of a thousand bits. The first is zero, one, zero, one, and so on. The second is the result of a thousand fair coin flips. The first can be described by a very short program: print zero one, five hundred times. The second seems to need a program that contains the bits themselves.",
+      "Kolmogorov complexity makes this precise."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Fix a universal computer U. The Kolmogorov complexity of a string x, written K of x, is the length in bits of the shortest program that makes U print x. Solomonoff, Kolmogorov and Chaitin each arrived at this idea independently in the 1960s.",
+      "A string is regular when K of x is much smaller than its length."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Which computer? The invariance theorem says it hardly matters for long strings. If V is another universal computer, then K under U and K under V differ by at most a constant c that depends on U and V but not on the string, because U can simulate V given a fixed-length interpreter.",
+      "Chapter 12 returns to this: the constant is harmless in theory, yet for the short histories an agent sees in practice it can matter a lot."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Kolmogorov complexity cannot be computed. If a program could compute K, we could use it to search for the first string whose complexity exceeds some large number n, but that search would itself be a short program, only about log n bits long, which is a contradiction.",
+      "We can compute upper bounds, by finding some program, and never prove that a bound is tight in general."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now turn lengths into probabilities. Take programs to be bit strings from a prefix-free set: no program is the beginning of another. A fair coin that produces bits one at a time and stops when a complete program has appeared gives program p probability two to the power of minus its length.",
+      "The Kraft inequality guarantees that these probabilities add up to at most one."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "M(x) \\;=\\; \\sum_{p:\\ U(p)\\ \\text{starts with}\\ x} 2^{-\\ell(p)}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is Solomonoff's universal prior, in the monotone form used for prediction. The probability of a string x is the chance that U, fed with random bits, prints something that begins with x. Strings with short programs get large probability.",
+      "A string with complexity K gets probability roughly two to the minus K, up to terms of lower order, so a string with a program ten bits shorter is a thousand times more likely."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section uses a toy machine, my own illustration. A program is n ones, then a zero, then a pattern of exactly n bits; the machine repeats the pattern forever. The program length is two n plus one.",
+      "You can run it, compute the shortest program for a string, check that the set is prefix-free and compute the prior over a finite set of programs."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is K(x)?",
+     "options": [
+      "The length of the shortest program printing x",
+      "The number of ones in x",
+      "The runtime of x",
+      "The probability of x"
+     ],
+     "answer": 0,
+     "explain": "Kolmogorov complexity."
+    },
+    {
+     "q": "Is K computable?",
+     "options": [
+      "Yes",
+      "No",
+      "Only for short strings",
+      "Only on GPUs"
+     ],
+     "answer": 1,
+     "explain": "No algorithm computes it for all x."
+    },
+    {
+     "q": "What does the invariance theorem say?",
+     "options": [
+      "The choice of universal machine changes K by at most a constant",
+      "K never changes",
+      "K is always small",
+      "All strings have equal K"
+     ],
+     "answer": 0,
+     "explain": "A fixed-length interpreter suffices."
+    },
+    {
+     "q": "How is a program of length l weighted in the universal prior?",
+     "options": [
+      "2 to the power minus l",
+      "l",
+      "l squared",
+      "1/l"
+     ],
+     "answer": 0,
+     "explain": "Shorter programs weigh exponentially more."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a prefix-free set?",
+     "a": "No program starts another."
+    },
+    {
+     "q": "What does Kraft say?",
+     "a": "Sum of 2^-length is at most 1."
+    },
+    {
+     "q": "Why is K incomputable?",
+     "a": "A search for complex strings would itself be a short program."
+    },
+    {
+     "q": "What does a regular string have?",
+     "a": "A program much shorter than itself."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Run the toy machine",
+     "intro": "A program is n ones, a zero, then exactly n pattern bits (n at least 1); the output is the pattern repeated forever. Write toy_output(program, length): the first length output bits as a string, or the empty string '' if the program is not valid.",
+     "fn": "toy_output",
+     "starter": "def toy_output(program, length):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "1010",
+        6
+       ],
+       "expect": ""
+      },
+      {
+       "args": [
+        "110101",
+        5
+       ],
+       "expect": ""
+      },
+      {
+       "args": [
+        "1110111",
+        7
+       ],
+       "expect": "1111111"
+      },
+      {
+       "args": [
+        "10",
+        3
+       ],
+       "expect": ""
+      },
+      {
+       "args": [
+        "0101",
+        3
+       ],
+       "expect": ""
+      },
+      {
+       "args": [
+        "11010",
+        4
+       ],
+       "expect": "1010"
+      },
+      {
+       "args": [
+        "100",
+        4
+       ],
+       "expect": "0000"
+      }
+     ],
+     "hint": "Count the leading ones to get n, then check that exactly n bits follow the zero.",
+     "solution": "def toy_output(program, length):\n    n = 0\n    while n < len(program) and program[n] == '1':\n        n += 1\n    if n == 0 or n >= len(program) or program[n] != '0':\n        return ''\n    pattern = program[n + 1:]\n    if len(pattern) != n:\n        return ''\n    out = ''\n    for i in range(length):\n        out += pattern[i % n]\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Shortest program",
+     "intro": "Using the same toy machine (program length 2n+1), write toy_K(x): the length of the shortest valid program whose output begins with the non-empty bit string x. Try every n from 1 up to len(x) and every pattern of n bits.",
+     "fn": "toy_K",
+     "starter": "def toy_K(x):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "0"
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        "01010101"
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        "0000000"
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        "011011011"
+       ],
+       "expect": 7
+      },
+      {
+       "args": [
+        "0110"
+       ],
+       "expect": 7
+      },
+      {
+       "args": [
+        "1101001"
+       ],
+       "expect": 13
+      },
+      {
+       "args": [
+        "101"
+       ],
+       "expect": 5
+      }
+     ],
+     "hint": "Lengths grow with n, so the first match found when going up in n is the shortest.",
+     "solution": "def toy_K(x):\n    def out(program, length):\n        n = 0\n        while n < len(program) and program[n] == '1':\n            n += 1\n        if n == 0 or n >= len(program) or program[n] != '0':\n            return ''\n        pattern = program[n + 1:]\n        if len(pattern) != n:\n            return ''\n        s = ''\n        for i in range(length):\n            s += pattern[i % n]\n        return s\n    for n in range(1, len(x) + 1):\n        for k in range(2 ** n):\n            pat = ''\n            for j in range(n):\n                if (k >> (n - 1 - j)) & 1:\n                    pat += '1'\n                else:\n                    pat += '0'\n            prog = '1' * n + '0' + pat\n            if out(prog, len(x)) == x:\n                return len(prog)\n    return -1\n"
+    },
+    {
+     "type": "python",
+     "title": "Is it prefix-free?",
+     "intro": "Write prefix_free(codes): True if no code word in the list of bit strings is the beginning of a different code word (a duplicate also counts as a violation).",
+     "fn": "prefix_free",
+     "starter": "def prefix_free(codes):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "0",
+         "10",
+         "110",
+         "111"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "0",
+         "01"
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         "10",
+         "11",
+         "0"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "1",
+         "1"
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         "00",
+         "01",
+         "10",
+         "11"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "",
+         "1"
+        ]
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Compare every ordered pair of different positions.",
+     "solution": "def prefix_free(codes):\n    for i in range(len(codes)):\n        for j in range(len(codes)):\n            if i != j and codes[j].startswith(codes[i]):\n                return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Kraft sum and the prior",
+     "intro": "Write toy_prior(x, nmax): return [kraft, M] where kraft is that sum for ALL toy programs with n from 1 to nmax (length 2n+1, 2^n patterns each) and M is the sum of 2^-length over those programs whose output begins with the bit string x. Use the toy machine. The function is toy_prior(x, nmax).",
+     "fn": "toy_prior",
+     "starter": "def toy_prior(x, nmax):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "0",
+        3
+       ],
+       "expect": [
+        0.4375,
+        0.21875
+       ]
+      },
+      {
+       "args": [
+        "01",
+        4
+       ],
+       "expect": [
+        0.46875,
+        0.0546875
+       ]
+      },
+      {
+       "args": [
+        "0101",
+        4
+       ],
+       "expect": [
+        0.46875,
+        0.033203125
+       ]
+      },
+      {
+       "args": [
+        "000",
+        5
+       ],
+       "expect": [
+        0.484375,
+        0.169921875
+       ]
+      },
+      {
+       "args": [
+        "1",
+        1
+       ],
+       "expect": [
+        0.25,
+        0.125
+       ]
+      },
+      {
+       "args": [
+        "0110",
+        5
+       ],
+       "expect": [
+        0.484375,
+        0.0107421875
+       ]
+      }
+     ],
+     "hint": "Build every pattern from the bits of k, weigh by 2 to the minus (2n+1), and compare the repeated pattern with x.",
+     "solution": "def toy_prior(x, nmax):\n    kraft = 0.0\n    m = 0.0\n    for n in range(1, nmax + 1):\n        for k in range(2 ** n):\n            pat = ''\n            for j in range(n):\n                if (k >> (n - 1 - j)) & 1:\n                    pat += '1'\n                else:\n                    pat += '0'\n            w = 2.0 ** (-(2 * n + 1))\n            kraft += w\n            s = ''\n            for i in range(len(x)):\n                s += pat[i % n]\n            if s == x:\n                m += w\n    return [kraft, m]\n"
+    },
+    {
+     "type": "order",
+     "title": "Why K is incomputable",
+     "intro": "Order the steps of the standard argument.",
+     "items": [
+      "Suppose a program computes K",
+      "Write a program that searches for the first string with K above n",
+      "That program is only about log n bits long",
+      "So the string it finds has K at most about log n",
+      "This contradicts K being above n"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Ideas",
+     "intro": "Match each idea with its statement.",
+     "pairs": [
+      [
+       "Invariance theorem",
+       "Machine choice costs a constant"
+      ],
+      [
+       "Kraft inequality",
+       "Sum of 2^-length at most 1"
+      ],
+      [
+       "Prefix-free",
+       "No code word begins another"
+      ],
+      [
+       "Universal prior",
+       "Sums 2^-length over programs"
+      ],
+      [
+       "Regular string",
+       "Short description"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Complexity",
+     "text": "Kolmogorov complexity is the {{length}} of the shortest program. It is {{incomputable|not computable}}. Programs are weighted by two to the minus their {{length}}."
+    }
+   ]
+  },
+  {
+   "title": "Solomonoff induction",
+   "maps": [
+    {
+     "title": "Universal prediction",
+     "links": [
+      "Solomonoff prior | is | A mixture of all computable measures",
+      "Prediction | is | Ratio of prior probabilities",
+      "M | dominates | Every computable measure",
+      "Dominance constant | is | 2 to minus K of mu",
+      "Total error | is | Bounded by complexity",
+      "Prediction error | tends to | Zero on computable data",
+      "Solomonoff induction | is | Incomputable"
+     ]
+    }
+   ],
+   "summary": [
+    "Solomonoff induction predicts the next symbol by the ratio M of x followed by a symbol, to M of x. It is the Bayesian mixture of chapter 4 over every computable hypothesis, with weights from the universal prior.",
+    "Its signature result is a bound on total error. If the data comes from any computable source mu, the predictions converge to mu's own, and the total prediction error, however long the sequence, is bounded by a constant proportional to K of mu.",
+    "The result is strong and rare: one predictor that works for every computable world. The price is that M itself is incomputable."
+   ],
+   "glossary": [
+    {
+     "term": "Solomonoff prior M",
+     "def": "The universal prior over sequences, a mixture of all lower semicomputable semimeasures."
+    },
+    {
+     "term": "Semimeasure",
+     "def": "A probability-like function whose probabilities may add to less than one."
+    },
+    {
+     "term": "Prediction",
+     "def": "M(x a) divided by M(x) for the next symbol a."
+    },
+    {
+     "term": "Dominance",
+     "def": "M(x) is at least 2^-K(mu) times mu(x) for every computable mu, up to a constant."
+    },
+    {
+     "term": "Convergence",
+     "def": "On data from computable mu, M's predictions approach mu's."
+    },
+    {
+     "term": "Lower semicomputable",
+     "def": "Approximable from below, but without a known error bound."
+    }
+   ],
+   "keyPoints": [
+    "Prediction is a ratio: M(x a) / M(x).",
+    "M is a mixture over all computable environments with weights 2^-K.",
+    "Dominance: M(x) >= c 2^-K(mu) mu(x).",
+    "Hence total prediction error on mu-data is bounded by a multiple of K(mu).",
+    "For a deterministic computable sequence the number of wrong predictions is bounded by a multiple of K.",
+    "M is only lower semicomputable, so Solomonoff induction cannot be run exactly."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Prediction in the Solomonoff style is a single formula. Having seen a string x, the probability that the next symbol is a equals M of x followed by a, divided by M of x.",
+      "Programs that disagree with x have already dropped out of both sums, and programs that survive vote for the next symbol with weight two to the minus their length."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "M(a \\mid x) \\;=\\; \\dfrac{M(x\\,a)}{M(x)}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why does this work? Chapter 4 showed that a mixture is at least as large as each member times its weight. Here the members are all the computable probability models, and the weight of model mu is about two to the minus K of mu, the complexity of its shortest description.",
+      "So M of x is at least about two to the minus K of mu times mu of x. A model with a short description is poorly handicapped."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "From dominance comes the guarantee. If the data is really drawn from a computable mu, then the total expected squared difference between M's predictions and mu's, summed over the whole infinite sequence, is bounded by a constant multiple of K of mu.",
+      "Hutter's analyses and the textbook of Li and Vitanyi state it. A sum that stays bounded forces the terms to shrink, so the predictions converge to the truth."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "For a deterministic computable sequence the picture is even starker. The number of wrong predictions made by the predictor is bounded by a multiple of K of the sequence, as the introduction of Leike and Hutter's paper recalls.",
+      "A sequence with a ten-bit description costs the predictor a handful of mistakes, and after that it predicts that sequence correctly forever."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A good way to see the mechanism is halving. Keep all deterministic hypotheses consistent with the data so far, each with its weight. Predict with the weighted majority vote.",
+      "Whenever you are wrong, the wrong side held at least half of the surviving weight and is eliminated, so the surviving weight at least halves. The true hypothesis never goes, and its weight is at least two to the minus e. So at most e mistakes can happen."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The catch is again computability. M is lower semicomputable: it can be approximated from below by running more programs for more steps, but there is never a point at which we know how close we are. Many programs never halt, and deciding which do is the halting problem.",
+      "So Solomonoff induction is a limit, not an algorithm."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section computes the toy prior's prediction, and simulates the weighted-majority argument with a bound on mistakes."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How is the next-symbol probability computed?",
+     "options": [
+      "M(xa) / M(x)",
+      "M(x) times M(a)",
+      "The longest program",
+      "Random"
+     ],
+     "answer": 0,
+     "explain": "A ratio of prior probabilities."
+    },
+    {
+     "q": "What is the dominance weight of mu?",
+     "options": [
+      "About 2^-K(mu)",
+      "K(mu)",
+      "1/2",
+      "0"
+     ],
+     "answer": 0,
+     "explain": "Simpler models weigh more."
+    },
+    {
+     "q": "What does the total prediction error bound depend on?",
+     "options": [
+      "The complexity of the true source",
+      "The sequence length",
+      "The random seed",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "It is a multiple of K(mu)."
+    },
+    {
+     "q": "Why can't we run Solomonoff induction exactly?",
+     "options": [
+      "M is only lower semicomputable",
+      "It needs too many GPUs",
+      "It is not Bayesian",
+      "It forgets"
+     ],
+     "answer": 0,
+     "explain": "Halting is undecidable."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Predict how?",
+     "a": "Ratio M(xa)/M(x)."
+    },
+    {
+     "q": "What happens on computable data?",
+     "a": "Predictions converge; total error is bounded."
+    },
+    {
+     "q": "What is halving?",
+     "a": "Eliminating at least half of the weight at every mistake."
+    },
+    {
+     "q": "Who first formalized it?",
+     "a": "Ray Solomonoff in 1964."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Predict with the toy prior",
+     "intro": "Using the toy machine (n ones, a zero, n pattern bits; the pattern repeats; program weight 2^-(2n+1); programs up to n = nmax), write toy_predict(x, nmax): the probability that the next bit is 1 after the non-empty string x, as M(x1) / M(x) with M summed over those programs.",
+     "fn": "toy_predict",
+     "starter": "def toy_predict(x, nmax):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "0101",
+        6
+       ],
+       "expect": 0.02112676056338028,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        "0000",
+        6
+       ],
+       "expect": 0.004373177842565598,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        "01",
+        5
+       ],
+       "expect": 0.23333333333333334,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        "011011",
+        6
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        "1",
+        4
+       ],
+       "expect": 0.7666666666666667,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        "0010",
+        6
+       ],
+       "expect": 0.06521739130434782,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Compute M for x plus a one and for x, then divide.",
+     "solution": "def toy_predict(x, nmax):\n    def M(s):\n        m = 0.0\n        for n in range(1, nmax + 1):\n            for k in range(2 ** n):\n                pat = ''\n                for j in range(n):\n                    if (k >> (n - 1 - j)) & 1:\n                        pat += '1'\n                    else:\n                        pat += '0'\n                t = ''\n                for i in range(len(s)):\n                    t += pat[i % n]\n                if t == s:\n                    m += 2.0 ** (-(2 * n + 1))\n        return m\n    return M(x + '1') / M(x)\n"
+    },
+    {
+     "type": "python",
+     "title": "Weighted majority",
+     "intro": "Hypotheses are repeating bit patterns (strings; the sequence is the pattern repeated). weights[i] is an integer e_i meaning prior weight 2^-e_i (the weights sum to at most 1). The true sequence is hypotheses[truth] repeated, for steps bits. At each step predict by weighted majority among hypotheses consistent with all bits so far (if the weights are tied, predict 1). Write halving(hypotheses, exps, truth, steps) returning [number of mistakes, exps[truth]].",
+     "fn": "halving",
+     "starter": "def halving(hypotheses, exps, truth, steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "0",
+         "1",
+         "01",
+         "011"
+        ],
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        3,
+        12
+       ],
+       "expect": [
+        2,
+        4
+       ]
+      },
+      {
+       "args": [
+        [
+         "0",
+         "1",
+         "01",
+         "011"
+        ],
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        0,
+        6
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         "01",
+         "001",
+         "0001",
+         "00001"
+        ],
+        [
+         2,
+         2,
+         3,
+         3
+        ],
+        3,
+        15
+       ],
+       "expect": [
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         "1",
+         "0",
+         "10"
+        ],
+        [
+         1,
+         2,
+         3
+        ],
+        2,
+        8
+       ],
+       "expect": [
+        1,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         "110",
+         "10",
+         "1"
+        ],
+        [
+         1,
+         2,
+         3
+        ],
+        0,
+        9
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      }
+     ],
+     "hint": "Track which hypotheses are still consistent; vote with 2.0 ** (-e) weights.",
+     "solution": "def halving(hypotheses, exps, truth, steps):\n    alive = list(range(len(hypotheses)))\n    mistakes = 0\n    for t in range(steps):\n        bit = {}\n        w0 = 0.0\n        w1 = 0.0\n        for i in alive:\n            h = hypotheses[i]\n            b = h[t % len(h)]\n            w = 2.0 ** (-exps[i])\n            if b == '1':\n                w1 += w\n            else:\n                w0 += w\n        pred = '1'\n        if w0 > w1:\n            pred = '0'\n        h = hypotheses[truth]\n        actual = h[t % len(h)]\n        if pred != actual:\n            mistakes += 1\n        keep = []\n        for i in alive:\n            g = hypotheses[i]\n            if g[t % len(g)] == actual:\n                keep.append(i)\n        alive = keep\n    return [mistakes, exps[truth]]\n"
+    },
+    {
+     "type": "order",
+     "title": "Halving argument",
+     "intro": "Order the steps.",
+     "items": [
+      "Keep all hypotheses consistent with the data",
+      "Predict by weighted majority",
+      "If wrong, the losing side held at least half of the weight",
+      "Eliminate every hypothesis that disagreed",
+      "The surviving weight at least halves per mistake"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Facts",
+     "intro": "Match each fact with its source.",
+     "pairs": [
+      [
+       "Universal prior and induction",
+       "Solomonoff, 1964"
+      ],
+      [
+       "Mixture dominance",
+       "Bayesian sum is at least each term"
+      ],
+      [
+       "Error bound",
+       "A multiple of K of the true source"
+      ],
+      [
+       "Lower semicomputable",
+       "Can be approximated from below"
+      ],
+      [
+       "Halving",
+       "Mistakes at most log of 1 over weight"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Prediction",
+     "text": "Solomonoff prediction is the {{ratio}} M(xa)/M(x). On computable data the total error is bounded by a multiple of the {{complexity|Kolmogorov complexity}} of the source. M is only {{lower semicomputable|lower-semicomputable}}."
+    }
+   ]
+  },
+  {
+   "title": "The AIXI equation",
+   "maps": [
+    {
+     "title": "AIXI",
+     "links": [
+      "AIXI | uses | Universal prior over environments",
+      "AIXI | plans by | Expectimax",
+      "Program q | simulates | An environment",
+      "Weight | is | 2 to minus program length",
+      "Consistency | filters | Programs by history",
+      "Reward sum | scores | Futures",
+      "Action | is | Argmax of expected reward"
+     ]
+    }
+   ],
+   "summary": [
+    "The AIXI equation puts the pieces together. A program q stands for an environment: given the agent's actions, it outputs the percepts. Each q consistent with the history so far is weighted by two to the minus its length. The agent takes the action with the highest weighted expected total reward.",
+    "Written in full, a maximum over the next action alternates with sums over the next percept, all the way to the horizon, with the reward sum multiplying a weighted count of the consistent programs.",
+    "On a small finite class of environments the same computation is easy to carry out. The practice section builds it and the app lets you watch it work."
+   ],
+   "glossary": [
+    {
+     "term": "AIXI equation",
+     "def": "The rule a_k = argmax over actions of an alternating max-sum expression over future percepts, weighted by 2^-length of consistent programs."
+    },
+    {
+     "term": "Program q",
+     "def": "A program for the universal machine standing for a candidate environment."
+    },
+    {
+     "term": "Consistent",
+     "def": "Producing exactly the percepts seen so far when given the actions taken."
+    },
+    {
+     "term": "Horizon m",
+     "def": "The last step counted in the reward sum."
+    },
+    {
+     "term": "Lifetime",
+     "def": "The total number of steps the agent will act, here m."
+    },
+    {
+     "term": "Reference machine",
+     "def": "The universal Turing machine U used to read programs."
+    }
+   ],
+   "keyPoints": [
+    "a_k = argmax_{a_k} sum_{o_k r_k} ... max_{a_m} sum_{o_m r_m} [r_k + ... + r_m] sum_{q: U(q, a_1..a_m) = o_1 r_1 .. o_m r_m} 2^-length(q).",
+    "The inner sum is the Solomonoff-style weight of all environments producing that future.",
+    "The only parameters are the reference machine U and the horizon m.",
+    "In a finite class: weight each consistent environment, expand the tree, take the best action.",
+    "Deterministic consistent environments are eliminated as soon as their reply differs from the percept seen.",
+    "Computing the real thing needs all programs, including those that never halt."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Here is the definition, in words first. At step k the agent has taken actions a one to a k minus one and received percepts o one r one up to o k minus one r k minus one. It must choose a k.",
+      "For each candidate action it looks at each possible next percept, then each next action, and so on until the horizon m. At the end of each branch it counts the total reward. The weight of a branch is the total two to the minus length of the programs that would produce exactly that history."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "a_k \\;=\\; \\arg\\max_{a_k} \\sum_{o_k r_k} \\;\\cdots\\; \\max_{a_m} \\sum_{o_m r_m} \\bigl[\\, r_k + \\cdots + r_m \\,\\bigr] \\sum_{q:\\; U(q,\\,a_1\\dots a_m) = o_1 r_1 \\dots o_m r_m} 2^{-\\ell(q)}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is the equation printed in Veness and colleagues' paper as equation one, and it matches the formulation in Hutter's survey. Read it from the left. The maximum chooses the action. The sum over percepts averages over what the environment might say. The pairs repeat to the horizon.",
+      "The innermost sum is the Solomonoff weight of the future: the total weight of programs q that, given the actions, would print this entire history of percepts."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Notice what is missing. There are no hidden states and no probabilities supplied by the designer. The programs q do the job of both: a program may be a deterministic simulator, or it may use its own coin flips through the universal machine's randomness.",
+      "Short programs dominate, so simple worlds are believed first and complicated ones only when the evidence demands."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To make this concrete, take a finite list of deterministic candidate environments, each with a length playing the role of program length. Weight each by two to the minus its length. After each percept, drop those that would have replied differently.",
+      "The remaining weights give the probability of each possible next reward, and the expectimax recursion of chapter 3 does the rest. That is exactly AIXI, restricted to a tiny class."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "This restriction is not cheating about the idea but it is cheating about the difficulty. The real class is infinite and contains programs that do not halt. A faithful implementation would need to know, for each program, whether it ever produces the next percept.",
+      "That is why the real thing is incomputable, and why chapter 10 and 11 turn to approximations."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the app you see the filtered class, the posterior weights and the action chosen, step by step, in a small world. In the practice section you write the same pieces as functions."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the innermost sum in the AIXI equation count?",
+     "options": [
+      "The weight of programs producing the history",
+      "The reward",
+      "The actions",
+      "The horizon"
+     ],
+     "answer": 0,
+     "explain": "Sum of 2^-length over consistent programs."
+    },
+    {
+     "q": "What are the free parameters of AIXI?",
+     "options": [
+      "The universal machine and the horizon",
+      "Learning rate and depth",
+      "Batch size",
+      "None at all"
+     ],
+     "answer": 0,
+     "explain": "Plus the discount if used."
+    },
+    {
+     "q": "What happens to a deterministic hypothesis whose reply differs from the percept seen?",
+     "options": [
+      "It is eliminated",
+      "It gains weight",
+      "It is duplicated",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "It is inconsistent with the history."
+    },
+    {
+     "q": "Why is the full equation incomputable?",
+     "options": [
+      "It requires knowing which programs halt",
+      "It needs a GPU",
+      "The horizon is infinite",
+      "It uses randomness"
+     ],
+     "answer": 0,
+     "explain": "Halting problem."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is q?",
+     "a": "A program standing for an environment."
+    },
+    {
+     "q": "What is the weight of q?",
+     "a": "2 to the minus its length."
+    },
+    {
+     "q": "What does max choose?",
+     "a": "The agent's action."
+    },
+    {
+     "q": "What does sum over percepts do?",
+     "a": "Averages over environment replies."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Which environments are consistent?",
+     "intro": "An environment is [kind, param, length]. Rewards for a binary-action game: 'const' pays 1 iff the action equals param; 'alt' pays 1 iff the action differs from the previous action (the previous action before step 1 is 0); 'never' pays 0; 'parity' pays 1 iff the action equals (t mod 2) at step t (t counts from 1). The history is a list of [action, reward] pairs. Write consistent(envs, history): the list of indices of environments that would have given exactly those rewards.",
+     "fn": "consistent",
+     "starter": "def consistent(envs, history):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "const",
+          1,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ],
+         [
+          "never",
+          0,
+          2
+         ]
+        ],
+        []
+       ],
+       "expect": [
+        0,
+        1,
+        2,
+        3,
+        4
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "const",
+          1,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ],
+         [
+          "never",
+          0,
+          2
+         ]
+        ],
+        [
+         [
+          0,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "const",
+          1,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ],
+         [
+          "never",
+          0,
+          2
+         ]
+        ],
+        [
+         [
+          1,
+          1
+         ],
+         [
+          1,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "const",
+          1,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ],
+         [
+          "never",
+          0,
+          2
+         ]
+        ],
+        [
+         [
+          1,
+          1
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "const",
+          1,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ],
+         [
+          "never",
+          0,
+          2
+         ]
+        ],
+        [
+         [
+          1,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        4
+       ]
+      }
+     ],
+     "hint": "Replay the actions; compare each computed reward with the one in the history.",
+     "solution": "def consistent(envs, history):\n    def reward(env, acts):\n        kind = env[0]\n        a = acts[-1]\n        if kind == 'const':\n            if a == env[1]:\n                return 1\n            return 0\n        if kind == 'alt':\n            prev = 0\n            if len(acts) > 1:\n                prev = acts[-2]\n            if a != prev:\n                return 1\n            return 0\n        if kind == 'parity':\n            if a == len(acts) % 2:\n                return 1\n            return 0\n        return 0\n    good = []\n    for i in range(len(envs)):\n        acts = []\n        ok = True\n        for a, r in history:\n            acts.append(a)\n            if reward(envs[i], acts) != r:\n                ok = False\n                break\n        if ok:\n            good.append(i)\n    return good\n"
+    },
+    {
+     "type": "python",
+     "title": "Posterior weights",
+     "intro": "With the same environments, write posterior(envs, history): for each environment the weight 2^-length if it is consistent with the history, else 0, divided by the total (normalized so they sum to 1). If none is consistent return all zeros.",
+     "fn": "posterior",
+     "starter": "def posterior(envs, history):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "const",
+          1,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ],
+         [
+          "never",
+          0,
+          2
+         ]
+        ],
+        []
+       ],
+       "expect": [
+        0.22857142857142856,
+        0.22857142857142856,
+        0.05714285714285714,
+        0.02857142857142857,
+        0.45714285714285713
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "const",
+          1,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ],
+         [
+          "never",
+          0,
+          2
+         ]
+        ],
+        [
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.7272727272727273,
+        0.18181818181818182,
+        0.09090909090909091,
+        0.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "const",
+          1,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ],
+         [
+          "never",
+          0,
+          2
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.8,
+        0.2,
+        0.0,
+        0.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "const",
+          1,
+          3
+         ]
+        ],
+        [
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ]
+        ],
+        [
+         [
+          1,
+          1
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.6666666666666666,
+        0.3333333333333333
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Weight 2.0 ** (-length) for consistent environments, then divide by the total.",
+     "solution": "def posterior(envs, history):\n    def reward(env, acts):\n        kind = env[0]\n        a = acts[-1]\n        if kind == 'const':\n            if a == env[1]:\n                return 1\n            return 0\n        if kind == 'alt':\n            prev = 0\n            if len(acts) > 1:\n                prev = acts[-2]\n            if a != prev:\n                return 1\n            return 0\n        if kind == 'parity':\n            if a == len(acts) % 2:\n                return 1\n            return 0\n        return 0\n    raw = []\n    for env in envs:\n        acts = []\n        ok = True\n        for a, r in history:\n            acts.append(a)\n            if reward(env, acts) != r:\n                ok = False\n                break\n        if ok:\n            raw.append(2.0 ** (-env[2]))\n        else:\n            raw.append(0.0)\n    total = sum(raw)\n    if total == 0:\n        return raw\n    return [x / total for x in raw]\n"
+    },
+    {
+     "type": "python",
+     "title": "Choose the action",
+     "intro": "Write aixi_action(envs, history, horizon): the AIXI action for this small class. Use the environments of the previous lab (deterministic, rewards as defined). Weight each consistent environment by 2^-length. The percept is just the reward. Do expectimax over the next horizon steps: for each action group the consistent environments by the reward they would give, weight each group by its share of the total weight, and recurse with the smaller group. Return [expected total reward, best first action]; break ties by the smaller action.",
+     "fn": "aixi_action",
+     "starter": "def aixi_action(envs, history, horizon):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "const",
+          1,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ],
+         [
+          "never",
+          0,
+          2
+         ]
+        ],
+        [],
+        1
+       ],
+       "expect": [
+        0.3142857142857143,
+        1
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "const",
+          1,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ],
+         [
+          "never",
+          0,
+          2
+         ]
+        ],
+        [],
+        3
+       ],
+       "expect": [
+        1.2857142857142858,
+        1
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "const",
+          1,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ],
+         [
+          "never",
+          0,
+          2
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ]
+        ],
+        3
+       ],
+       "expect": [
+        1.1111111111111112,
+        1
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "const",
+          1,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ],
+         [
+          "never",
+          0,
+          2
+         ]
+        ],
+        [
+         [
+          1,
+          1
+         ]
+        ],
+        3
+       ],
+       "expect": [
+        2.6363636363636362,
+        1
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          4
+         ],
+         [
+          "alt",
+          0,
+          3
+         ]
+        ],
+        [
+         [
+          1,
+          1
+         ]
+        ],
+        4
+       ],
+       "expect": [
+        4.0,
+        0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          "const",
+          0,
+          3
+         ],
+         [
+          "alt",
+          0,
+          5
+         ],
+         [
+          "parity",
+          0,
+          6
+         ]
+        ],
+        [
+         [
+          1,
+          1
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        3
+       ],
+       "expect": [
+        3.0,
+        1
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Recurse on (consistent group, actions so far, steps left); the group for each reward gets its share of the weight.",
+     "solution": "def aixi_action(envs, history, horizon):\n    def reward(env, acts):\n        kind = env[0]\n        a = acts[-1]\n        if kind == 'const':\n            if a == env[1]:\n                return 1\n            return 0\n        if kind == 'alt':\n            prev = 0\n            if len(acts) > 1:\n                prev = acts[-2]\n            if a != prev:\n                return 1\n            return 0\n        if kind == 'parity':\n            if a == len(acts) % 2:\n                return 1\n            return 0\n        return 0\n    start = []\n    acts0 = []\n    for i in range(len(envs)):\n        acts = []\n        ok = True\n        for a, r in history:\n            acts.append(a)\n            if reward(envs[i], acts) != r:\n                ok = False\n                break\n        if ok:\n            start.append(i)\n    base = [a for a, r in history]\n    def best(idx, acts, k):\n        if k == 0 or len(idx) == 0:\n            return [0.0, 0]\n        total = 0.0\n        for i in idx:\n            total += 2.0 ** (-envs[i][2])\n        top = -1.0\n        arg = 0\n        for a in range(2):\n            na = acts + [a]\n            g = [[], []]\n            for i in idx:\n                g[reward(envs[i], na)].append(i)\n            v = 0.0\n            for r in range(2):\n                if len(g[r]) > 0:\n                    w = 0.0\n                    for i in g[r]:\n                        w += 2.0 ** (-envs[i][2])\n                    v += w / total * (r + best(g[r], na, k - 1)[0])\n            if v > top + 1e-12:\n                top = v\n                arg = a\n        return [top, arg]\n    return best(start, base, horizon)\n"
+    },
+    {
+     "type": "webxdc",
+     "title": "AIXI explorer",
+     "intro": "Choose a hidden world and let AIXI act. Watch worlds drop out as the history contradicts them, and see how the shortest surviving world dominates. Run at least six steps.",
+     "height": 640,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px 3px 3px 0}\nbutton.t{background:#2d2046;color:#e7d9ff}label{display:block;margin:6px 0 2px;color:#c9b8e8}select{font:inherit;background:#1e1336;color:#f1ebff;border:1px solid #4a3770;border-radius:8px;padding:6px;width:100%}\ninput[type=range]{width:100%}table{width:100%;border-collapse:collapse;margin:8px 0}td,th{padding:5px 4px;border-bottom:1px solid #3a2a5c;text-align:left;font-size:13px}\nth{color:#c9b8e8;font-weight:600}.bar{height:8px;border-radius:4px;background:#b26bff}.dead td{color:#7d6b9f;text-decoration:line-through}\n.m{color:#c9b8e8;margin:6px 0}.log{font:12px ui-monospace,monospace;color:#e7d9ff;word-break:break-all}.good{color:#8fe3a8}\n</style></head><body>\n<div class=\"m\">Pick a hidden true world, then let AIXI act. Each step it weighs the worlds that still fit what it saw (weight 2 to the minus length) and plans by expectimax. Run at least 6 steps.</div>\n<label for=\"w\">true world</label><select id=\"w\"></select>\n<label for=\"h\">horizon: <b id=\"hv\">3</b></label><input id=\"h\" type=\"range\" min=\"1\" max=\"5\" value=\"3\">\n<div><button id=\"step\">AIXI acts</button><button id=\"run5\" class=\"t\">5 steps</button><button id=\"rst\" class=\"t\">Reset</button></div>\n<table><thead><tr><th>world</th><th>len</th><th>posterior</th></tr></thead><tbody id=\"tb\"></tbody></table>\n<div class=\"m\" id=\"msg\"></div><div class=\"log\" id=\"log\"></div>\n<script>\nvar ENVS=[[\"pays for action 0\",\"const\",0,3],[\"pays for action 1\",\"const\",1,3],[\"pays for switching action\",\"alt\",0,5],[\"pays for action = step mod 2\",\"parity\",0,6],[\"never pays\",\"never\",0,2]];\nvar hist=[],steps=0,fin=false;\nfunction done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nfunction rew(e,acts){var a=acts[acts.length-1],k=e[1];\n if(k===\"const\")return a===e[2]?1:0;\n if(k===\"alt\"){var p=acts.length>1?acts[acts.length-2]:0;return a!==p?1:0}\n if(k===\"parity\")return a===(acts.length%2)?1:0;\n return 0}\nfunction alive(){var out=[];for(var i=0;i<ENVS.length;i++){var acts=[],ok=true;\n for(var j=0;j<hist.length;j++){acts.push(hist[j][0]);if(rew(ENVS[i],acts)!==hist[j][1]){ok=false;break}}\n if(ok)out.push(i)}return out}\nfunction wt(i){return Math.pow(2,-ENVS[i][3])}\nfunction best(idx,acts,k){if(k===0||idx.length===0)return[0,0];var tot=0;idx.forEach(function(i){tot+=wt(i)});\n var top=-1,arg=0;\n for(var a=0;a<2;a++){var na=acts.concat([a]),g=[[],[]];idx.forEach(function(i){g[rew(ENVS[i],na)].push(i)});\n  var v=0;for(var r=0;r<2;r++){if(g[r].length){var w=0;g[r].forEach(function(i){w+=wt(i)});v+=w/tot*(r+best(g[r],na,k-1)[0])}}\n  if(v>top+1e-12){top=v;arg=a}}\n return[top,arg]}\nfunction draw(){var al=alive(),tot=0;al.forEach(function(i){tot+=wt(i)});var h=\"\";\n for(var i=0;i<ENVS.length;i++){var on=al.indexOf(i)>=0,p=on?wt(i)/tot:0;\n  h+=\"<tr class='\"+(on?\"\":\"dead\")+\"'><td>\"+ENVS[i][0]+\"</td><td>\"+ENVS[i][3]+\"</td><td><div class='bar' style='width:\"+Math.round(p*100)+\"%'></div>\"+(p*100).toFixed(1)+\"%</td></tr>\"}\n document.getElementById(\"tb\").innerHTML=h;\n document.getElementById(\"log\").textContent=hist.map(function(x,t){return (t+1)+\": a=\"+x[0]+\" r=\"+x[1]}).join(\"   \");\n var el=ENVS.length-al.length;\n document.getElementById(\"msg\").innerHTML=\"Steps: \"+steps+\". Worlds ruled out: \"+el+\".\"+(fin?\" <span class='good'>Done: AIXI has narrowed the field.</span>\":\"\");\n if(!fin&&steps>=6&&(el>=2||steps>=10)){fin=true;document.getElementById(\"msg\").innerHTML+=\" <span class='good'>Done.</span>\";done()}}\nfunction act(){var al=alive(),acts=hist.map(function(x){return x[0]});var h=+document.getElementById(\"h\").value;\n var a=best(al,acts,h)[1];var tw=+document.getElementById(\"w\").value;var r=rew(ENVS[tw],acts.concat([a]));\n hist.push([a,r]);steps++;draw()}\nfunction reset(){hist=[];steps=0;draw()}\nvar sel=document.getElementById(\"w\");ENVS.forEach(function(e,i){var o=document.createElement(\"option\");o.value=i;o.textContent=e[0];sel.appendChild(o)});\nsel.onchange=reset;\ndocument.getElementById(\"h\").oninput=function(){document.getElementById(\"hv\").textContent=this.value};\ndocument.getElementById(\"step\").onclick=act;\ndocument.getElementById(\"run5\").onclick=function(){for(var i=0;i<5;i++)act()};\ndocument.getElementById(\"rst\").onclick=reset;draw();\n</script></body></html>\n"
+    },
+    {
+     "type": "order",
+     "title": "AIXI step",
+     "intro": "Order the steps of one AIXI decision.",
+     "items": [
+      "List the programs consistent with the history",
+      "Weight each by 2 to the minus its length",
+      "Expand the future for each action and percept",
+      "Average the reward sums by weight",
+      "Take the action with the highest average"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Parts",
+     "intro": "Match each part with its role.",
+     "pairs": [
+      [
+       "Max",
+       "Chooses the action"
+      ],
+      [
+       "Sum over percepts",
+       "Averages over the environment"
+      ],
+      [
+       "2^-length(q)",
+       "Occam weight"
+      ],
+      [
+       "Consistency",
+       "Removes contradicted programs"
+      ],
+      [
+       "Horizon m",
+       "Last step counted"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Equation",
+     "text": "AIXI weights each consistent program by two to the minus its {{length}}. It maximizes the expected {{reward}} sum up to the {{horizon}}."
+    }
+   ]
+  },
+  {
+   "title": "Horizons and discounting",
+   "maps": [
+    {
+     "title": "Time",
+     "links": [
+      "Finite horizon | counts | m steps",
+      "Geometric discount | has | Fixed effective horizon",
+      "Harmonic discount | has | Growing horizon",
+      "Infinite horizon | needs | Summable rewards",
+      "Immortal agent | is | Lazy",
+      "Discount | affects | Exploration",
+      "Horizon | trades | Foresight against cost"
+     ]
+    }
+   ],
+   "summary": [
+    "The AIXI equation sums reward up to a horizon m. How far ahead should the agent look? Too short and it is greedy. Too long and the sums may not converge, or, in a patient universe, the agent may keep postponing.",
+    "Discounting replaces a hard cutoff with weights on the steps. Geometric discounting makes the near future matter much more than the far future. Hutter's survey also discusses harmonic discounting, whose horizon grows as the agent ages.",
+    "None of these choices is neutral: the discount shapes how much the agent explores, and chapter 12 shows prior and discount can interact badly."
+   ],
+   "glossary": [
+    {
+     "term": "Horizon",
+     "def": "How many future steps count."
+    },
+    {
+     "term": "Geometric discount",
+     "def": "Step k is weighted by gamma^k with gamma below one."
+    },
+    {
+     "term": "Effective horizon",
+     "def": "The number of steps after which the remaining weight is negligible."
+    },
+    {
+     "term": "Harmonic discount",
+     "def": "Weights proportional to 1/(k(k+1)); the effective horizon grows with age."
+    },
+    {
+     "term": "Summability",
+     "def": "The total of all weights must be finite for an infinite sum of rewards to make sense."
+    },
+    {
+     "term": "Lazy agent",
+     "def": "An agent so patient that postponing a reward never costs it anything."
+    }
+   ],
+   "keyPoints": [
+    "A finite lifetime m is simplest but the agent must know m.",
+    "Geometric discounting: effective horizon about log(1/eps) / log(1/gamma).",
+    "Harmonic discounting: tail after step t is about 1/t, so the horizon grows linearly with age.",
+    "With no discounting and an infinite life, delaying rewards forever can look optimal.",
+    "Hutter notes immortal agents are lazy.",
+    "The choice of discount is part of the problem specification, not a detail."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Everything so far had a fixed number of steps m. That makes the agent finite-minded: at the last step it simply takes the best immediate reward, whatever it did to the world. If the agent's lifetime is unknown or unbounded, we need a different idea."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The cleanest is discounting. Give step k the weight gamma k, with gamma a number between zero and one. The total weight is finite, so the sum of rewards converges even for an infinite life. The effective horizon is the point after which the remaining weight is tiny.",
+      "With gamma equal to a half, ten steps already capture over 99.9 percent of the weight. With gamma near one, the agent looks very far ahead."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\sum_{k \\ge m} \\gamma^{k} \\;=\\; \\frac{\\gamma^{m}}{1-\\gamma}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Hutter's survey also describes universal and harmonic discounting. In harmonic discounting step k gets weight one over k times k plus one, so the total is one and the remaining weight after step t is exactly one over t.",
+      "Then an agent of age t that wants to look far enough ahead to capture all but a fraction of the remaining weight needs a horizon that grows in proportion to its age, something geometric discounting cannot do."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why not drop discounting and just sum all rewards of an infinite life? Then the sums can diverge, and even when they converge, as the survey notes in its discussion of horizons, immortal agents become lazy: if all time is available, any pleasant outcome can always be postponed with no penalty.",
+      "A discount or a finite horizon is what makes the agent act now."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Legg and Hutter solved the problem differently in their intelligence measure, chapter 9: they require that total reward in every environment is bounded by one. That makes discounting unnecessary but restricts the environments considered."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The choice also decides how much the agent explores. A short effective horizon values immediate reward and discourages experiments that pay off late. A long one tolerates experiments.",
+      "Since AIXI's belief about the world starts almost empty, exploration matters, and the next chapters show that the prior and the discount together decide whether AIXI explores enough."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section computes tails of geometric sums, effective horizons and the discounted value of a reward stream, plus the growing harmonic horizon."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a geometric discount do?",
+     "options": [
+      "Weights step k by gamma^k",
+      "Removes rewards",
+      "Adds noise",
+      "Doubles rewards"
+     ],
+     "answer": 0,
+     "explain": "Near steps count more."
+    },
+    {
+     "q": "How does the harmonic horizon behave?",
+     "options": [
+      "It grows with age",
+      "It is constant",
+      "It shrinks",
+      "It is zero"
+     ],
+     "answer": 0,
+     "explain": "The tail is 1/t."
+    },
+    {
+     "q": "What is a problem with an infinite undiscounted life?",
+     "options": [
+      "Sums may diverge and the agent may be lazy",
+      "Rewards are negative",
+      "The agent runs out of memory",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Delay costs nothing."
+    },
+    {
+     "q": "What did Legg and Hutter use instead of discounting?",
+     "options": [
+      "Bounded total reward",
+      "A larger horizon",
+      "Random rewards",
+      "No rewards"
+     ],
+     "answer": 0,
+     "explain": "Total reward at most 1 in each environment."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is the effective horizon?",
+     "a": "Steps until the remaining weight is negligible."
+    },
+    {
+     "q": "What does gamma near 1 mean?",
+     "a": "A far-sighted agent."
+    },
+    {
+     "q": "Why is an immortal agent lazy?",
+     "a": "Postponing costs nothing."
+    },
+    {
+     "q": "What does discounting do to exploration?",
+     "a": "Shorter horizons discourage experiments."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Effective horizon",
+     "intro": "With geometric discount gamma, the weight after step m is gamma^m / (1 - gamma) (steps counted from 0, so the weights are gamma^0, gamma^1, ...). Write effective_horizon(gamma, eps): the smallest integer m at which this tail is at most eps.",
+     "fn": "effective_horizon",
+     "starter": "def effective_horizon(gamma, eps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5,
+        0.001
+       ],
+       "expect": 11
+      },
+      {
+       "args": [
+        0.9,
+        0.01
+       ],
+       "expect": 66
+      },
+      {
+       "args": [
+        0.99,
+        0.1
+       ],
+       "expect": 688
+      },
+      {
+       "args": [
+        0.5,
+        1.0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        0.75,
+        0.0001
+       ],
+       "expect": 37
+      }
+     ],
+     "hint": "Increase m until the tail drops to eps or below.",
+     "solution": "def effective_horizon(gamma, eps):\n    m = 0\n    while gamma ** m / (1 - gamma) > eps:\n        m += 1\n    return m\n"
+    },
+    {
+     "type": "python",
+     "title": "Discounted return",
+     "intro": "Write discounted_return(rewards, gamma): the sum of gamma^k times rewards[k] for k from 0.",
+     "fn": "discounted_return",
+     "starter": "def discounted_return(rewards, gamma):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        0.5
+       ],
+       "expect": 1.75,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         5
+        ],
+        0.9
+       ],
+       "expect": 4.050000000000001,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         1,
+         0,
+         1
+        ],
+        1.0
+       ],
+       "expect": 3.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [],
+        0.5
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         2,
+         1
+        ],
+        0.1
+       ],
+       "expect": 2.1,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Accumulate in a loop.",
+     "solution": "def discounted_return(rewards, gamma):\n    total = 0.0\n    for k in range(len(rewards)):\n        total += rewards[k] * gamma ** k\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "Harmonic horizon",
+     "intro": "Under harmonic discounting the tail after step t is proportional to 1/t. An agent at age t wants a horizon h so that the weight beyond t + h is at most 1/q of the weight beyond t, i.e. t / (t + h) is at most 1/q. Write harmonic_horizon(t, q): the smallest non-negative integer h with t * q <= t + h.",
+     "fn": "harmonic_horizon",
+     "starter": "def harmonic_horizon(t, q):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        10
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        5,
+        4
+       ],
+       "expect": 15
+      },
+      {
+       "args": [
+        100,
+        2
+       ],
+       "expect": 100
+      },
+      {
+       "args": [
+        10,
+        1
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        7,
+        3
+       ],
+       "expect": 14
+      }
+     ],
+     "hint": "Search upward from zero (or solve h = t * (q - 1)).",
+     "solution": "def harmonic_horizon(t, q):\n    h = 0\n    while t * q > t + h:\n        h += 1\n    return h\n"
+    },
+    {
+     "type": "order",
+     "title": "Lazy agent",
+     "intro": "Order the argument.",
+     "items": [
+      "No discount and an infinite lifetime",
+      "Any reward can be postponed without penalty",
+      "Postponing always looks at least as good",
+      "The agent never collects",
+      "A discount or finite horizon restores action"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Horizons",
+     "intro": "Match each scheme with its property.",
+     "pairs": [
+      [
+       "Finite horizon m",
+       "Agent must know its lifetime"
+      ],
+      [
+       "Geometric discount",
+       "Fixed effective horizon"
+      ],
+      [
+       "Harmonic discount",
+       "Horizon grows with age"
+      ],
+      [
+       "Bounded total reward",
+       "Used by Legg and Hutter"
+      ],
+      [
+       "No discount, infinite life",
+       "Immortal agents are lazy"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Horizons",
+     "text": "A {{geometric}} discount gives a fixed effective horizon. A {{harmonic}} discount makes the horizon grow with age. Without discounting, immortal agents are {{lazy}}."
+    }
+   ]
+  },
+  {
+   "title": "Optimality and universal intelligence",
+   "maps": [
+    {
+     "title": "Optimality",
+     "links": [
+      "Pareto optimality | means | No policy dominates",
+      "Balanced Pareto | weights | Environments",
+      "Self-optimizing | means | Value approaches the best possible",
+      "Universal intelligence | is | Weighted sum of values",
+      "Weight | is | 2 to minus K of environment",
+      "AIXI | maximizes | Universal intelligence",
+      "Legg and Hutter | defined | Upsilon"
+     ]
+    }
+   ],
+   "summary": [
+    "Hutter argued that AIXI is optimal in several senses. A policy is Pareto optimal if no other policy does at least as well in every environment and strictly better in one. Balanced Pareto optimality uses a weighted sum over environments.",
+    "Legg and Hutter turned the weighted sum into a definition of machine intelligence: an agent's universal intelligence is its expected reward in each computable environment, weighted by two to the minus the environment's complexity. AIXI maximizes it by construction.",
+    "Chapter 12 shows that these notions depend heavily on the choice of prior and reference machine, so read them as results about a particular setup."
+   ],
+   "glossary": [
+    {
+     "term": "Pareto optimal",
+     "def": "No other policy is at least as good everywhere and strictly better somewhere."
+    },
+    {
+     "term": "Balanced Pareto optimal",
+     "def": "Maximizes the prior-weighted sum of values over environments."
+    },
+    {
+     "term": "Self-optimizing",
+     "def": "Its average value approaches the maximum possible as the lifetime grows, in every environment where some policy can do so."
+    },
+    {
+     "term": "Universal intelligence",
+     "def": "Upsilon(pi) = sum over environments of 2^-K(mu) times the value of pi in mu."
+    },
+    {
+     "term": "Value",
+     "def": "Expected total reward of a policy in an environment."
+    },
+    {
+     "term": "Informal definition",
+     "def": "Intelligence measures an agent's ability to achieve goals in a wide range of environments."
+    }
+   ],
+   "keyPoints": [
+    "Pareto optimality is a weak requirement: no policy dominates.",
+    "Balanced Pareto optimality maximizes the weighted sum of values.",
+    "Upsilon(pi) = sum_mu 2^-K(mu) V(pi, mu), with total reward at most 1 in each environment.",
+    "AIXI attains the maximum Upsilon, relative to its prior.",
+    "Random agents score low; specialist agents such as a chess program score very low.",
+    "Later work found these claims are subjective: they depend on the prior."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "What would it mean for an agent to be as good as possible? Hutter's book proves several statements in answer. Here are the main ones in plain terms."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Pareto optimality. Compare policies by their values in each environment of a class. A policy is Pareto optimal if no other policy is at least as good in every environment and strictly better in at least one. AIXI's mixture-based policy has this property in the class it mixes over.",
+      "The property is weak, since many policies can be Pareto optimal at once."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Balanced Pareto optimality. Give each environment its prior weight and sum the values. The policy with the highest weighted sum is balanced Pareto optimal. AIXI is such a policy by construction, because it maximizes expected reward under the mixture, and the mixture is the weighted sum."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Self-optimizing. A policy is self-optimizing if, as the lifetime grows, its average reward per step approaches the best possible one for the true environment, whatever that environment is. This is what we hope a general learner does: eventually behave as if it knew the world.",
+      "Hutter's results say a Bayes-optimal policy for a mixture is self-optimizing whenever self-optimizing policies exist for the class."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Universal intelligence. Shane Legg and Hutter turned the weighted sum into a definition. They started from many expert definitions of intelligence and condensed them to a sentence: intelligence measures an agent's ability to achieve goals in a wide range of environments.",
+      "The formalization sums, over all computable environments mu, the agent's value there, weighted by two to the minus the complexity of mu."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\Upsilon(\\pi) \\;=\\; \\sum_{\\mu \\in E} 2^{-K(\\mu)}\\, V^{\\pi}_{\\mu}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "To make the sum finite they require that the total reward in any environment is at most one.",
+      "The paper then checks the measure on examples: a random agent scores low, a program such as Deep Blue that is expert at only one kind of environment scores very low, and learning agents rise as they use more history and look further ahead.",
+      "AIXI attains the maximum possible value, and the measure is incomputable because complexity is."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A careful reader should note two things. The measure rewards breadth, since simple environments are numerous and heavy. And the weights depend on the reference machine used for complexity, so what counts as general intelligence is relative to that choice.",
+      "Chapter 12 explains how bad the dependence can get."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is Pareto optimality?",
+     "options": [
+      "No policy dominates it everywhere",
+      "It has the highest reward",
+      "It uses the shortest program",
+      "It is random"
+     ],
+     "answer": 0,
+     "explain": "A weak, dominance-based property."
+    },
+    {
+     "q": "What does Upsilon sum over?",
+     "options": [
+      "Computable environments weighted by 2^-K",
+      "Actions",
+      "Time steps",
+      "Programs of one length"
+     ],
+     "answer": 0,
+     "explain": "Weighted values."
+    },
+    {
+     "q": "Who defined universal intelligence?",
+     "options": [
+      "Legg and Hutter",
+      "Turing",
+      "Minsky",
+      "Shannon"
+     ],
+     "answer": 0,
+     "explain": "Minds and Machines, 2007."
+    },
+    {
+     "q": "Why require total reward at most 1?",
+     "options": [
+      "To keep the sums finite without discounting",
+      "To make rewards negative",
+      "To save memory",
+      "For fairness to humans"
+     ],
+     "answer": 0,
+     "explain": "It replaces discounting."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does self-optimizing mean?",
+     "a": "Average reward approaches the best possible."
+    },
+    {
+     "q": "Which agents score low on Upsilon?",
+     "a": "Random and narrow specialists."
+    },
+    {
+     "q": "Is Upsilon computable?",
+     "a": "No, because K is not."
+    },
+    {
+     "q": "What does AIXI maximize?",
+     "a": "Upsilon relative to its prior."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Pareto dominance",
+     "intro": "Write dominates(a, b): True if the list of values a is at least as large as b in every environment and strictly larger in at least one.",
+     "fn": "dominates",
+     "starter": "def dominates(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         3,
+         2
+        ],
+        [
+         2,
+         2
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         2,
+         2
+        ],
+        [
+         2,
+         2
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         3,
+         1
+        ],
+        [
+         1,
+         3
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         0,
+         1,
+         1
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         0,
+         5
+        ],
+        [
+         1,
+         4
+        ]
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Fail on any smaller entry; remember whether any entry is larger.",
+     "solution": "def dominates(a, b):\n    strict = False\n    for x, y in zip(a, b):\n        if x < y:\n            return False\n        if x > y:\n            strict = True\n    return strict\n"
+    },
+    {
+     "type": "python",
+     "title": "Pareto-optimal policies",
+     "intro": "values[i][e] is the value of policy i in environment e. Write pareto_front(values): the sorted list of indices of policies that no other policy dominates (dominate: at least as good everywhere and strictly better somewhere).",
+     "fn": "pareto_front",
+     "starter": "def pareto_front(values):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          3,
+          2
+         ],
+         [
+          2,
+          2
+         ],
+         [
+          1,
+          4
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5,
+          0
+         ],
+         [
+          0,
+          5
+         ],
+         [
+          2,
+          2
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        1,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          3,
+          1
+         ],
+         [
+          2,
+          3,
+          2
+         ],
+         [
+          3,
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        2
+       ]
+      }
+     ],
+     "hint": "Index i is kept if nobody dominates it.",
+     "solution": "def pareto_front(values):\n    def dom(a, b):\n        strict = False\n        for x, y in zip(a, b):\n            if x < y:\n                return False\n            if x > y:\n                strict = True\n        return strict\n    front = []\n    for i in range(len(values)):\n        ok = True\n        for j in range(len(values)):\n            if j != i and dom(values[j], values[i]):\n                ok = False\n                break\n        if ok:\n            front.append(i)\n    return front\n"
+    },
+    {
+     "type": "python",
+     "title": "Universal intelligence of a toy agent",
+     "intro": "Environments e have complexities ks[e] (integers) and an agent has values vals[e] in each. Write upsilon(vals, ks): the sum of 2 to the minus ks[e] times vals[e].",
+     "fn": "upsilon",
+     "starter": "def upsilon(vals, ks):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": 0.875,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.0,
+         1.0
+        ],
+        [
+         2,
+         3,
+         4
+        ]
+       ],
+       "expect": 0.1875,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0.25,
+         0.75,
+         0.5,
+         1.0
+        ],
+        [
+         1,
+         2,
+         3,
+         4
+        ]
+       ],
+       "expect": 0.4375,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Add each value times a power of two.",
+     "solution": "def upsilon(vals, ks):\n    total = 0.0\n    for v, k in zip(vals, ks):\n        total += v * 2.0 ** (-k)\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "Which agent is the most intelligent?",
+     "intro": "agents[i] is the list of values of agent i, one per environment; ks holds complexities. Write best_agent(agents, ks): the index of the agent with the largest universal intelligence (ties go to the smaller index).",
+     "fn": "best_agent",
+     "starter": "def best_agent(agents, ks):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          0,
+          0
+         ],
+         [
+          0,
+          1,
+          1
+         ],
+         [
+          0.5,
+          0.5,
+          0.5
+         ]
+        ],
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0,
+          0
+         ],
+         [
+          0,
+          1,
+          1
+         ],
+         [
+          0.5,
+          0.5,
+          0.5
+         ]
+        ],
+        [
+         3,
+         2,
+         1
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ],
+        [
+         1,
+         2
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          1
+         ],
+         [
+          0,
+          1,
+          0
+         ]
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Compute the weighted sum for each agent and keep the argmax.",
+     "solution": "def best_agent(agents, ks):\n    best = -1.0\n    arg = 0\n    for i in range(len(agents)):\n        s = 0.0\n        for v, k in zip(agents[i], ks):\n            s += v * 2.0 ** (-k)\n        if s > best + 1e-12:\n            best = s\n            arg = i\n    return arg\n"
+    },
+    {
+     "type": "order",
+     "title": "Building Upsilon",
+     "intro": "Order the steps in the Legg-Hutter definition.",
+     "items": [
+      "Collect expert definitions of intelligence",
+      "State the informal definition",
+      "Model agents and environments as reward interaction",
+      "Weight each environment by 2 to the minus K",
+      "Sum the agent's values"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Optimality",
+     "intro": "Match each notion with its meaning.",
+     "pairs": [
+      [
+       "Pareto optimal",
+       "Not dominated"
+      ],
+      [
+       "Balanced Pareto optimal",
+       "Best weighted sum"
+      ],
+      [
+       "Self-optimizing",
+       "Average reward approaches the best"
+      ],
+      [
+       "Universal intelligence",
+       "Weighted value over all environments"
+      ],
+      [
+       "Random agent",
+       "Scores low on Upsilon"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Universal",
+     "text": "Universal intelligence weighs each environment by two to the minus its {{complexity|Kolmogorov complexity}}. AIXI maximizes it, but the measure is {{incomputable|not computable}}."
+    }
+   ]
+  },
+  {
+   "title": "Incomputability and AIXItl",
+   "maps": [
+    {
+     "title": "Computability",
+     "links": [
+      "AIXI | needs | All programs",
+      "Halting problem | blocks | Exact AIXI",
+      "AIXItl | bounds | Time t and length l",
+      "AIXItl cost | is | t times 2 to the l",
+      "Levin search | splits | Time by 2 to minus length",
+      "Speed prior | penalizes | Slow programs",
+      "Limit-computable | means | Approximable in the limit"
+     ]
+    }
+   ],
+   "summary": [
+    "AIXI looks at every program, including ones that never halt, so it is not computable. The limits can be pinned down in the arithmetical hierarchy: Leike and Hutter show planning in general computable environments is hard even in principle.",
+    "Hutter's own response was AIXItl: restrict attention to policies of length at most l that run at most t steps per cycle. It is computable but its running time is of the order t times two to the l, and it is useless in practice.",
+    "Two ideas help to see why: Levin search shares time among programs in proportion to two to the minus their length, and a speed prior, proposed by Schmidhuber, penalizes slow programs as well as long ones."
+   ],
+   "glossary": [
+    {
+     "term": "Halting problem",
+     "def": "Deciding whether a program ever stops; undecidable."
+    },
+    {
+     "term": "AIXItl",
+     "def": "A time- and length-bounded version of AIXI: policies of length at most l, at most t steps per cycle."
+    },
+    {
+     "term": "Levin search",
+     "def": "Run all programs in parallel, giving program p a share of time proportional to 2^-length(p)."
+    },
+    {
+     "term": "Speed prior",
+     "def": "A prior that favors programs that are both short and fast."
+    },
+    {
+     "term": "Arithmetical hierarchy",
+     "def": "A classification of undecidable problems by quantifier alternations."
+    },
+    {
+     "term": "Limit computable",
+     "def": "The value is the limit of a computable sequence of guesses."
+    }
+   ],
+   "keyPoints": [
+    "Exact AIXI is incomputable: it needs to know which programs halt.",
+    "AIXItl is computable with a cost of about t * 2^l per cycle.",
+    "Levin search allocates time 2^-length to each program.",
+    "Leike and Hutter: finding an optimal policy is Pi_2-hard and finding an epsilon-optimal one is undecidable in general semicomputable environments.",
+    "By default AIXI is not even limit computable, but a limit-computable epsilon-optimal variant exists.",
+    "Schmidhuber's speed prior replaces M to give an approximable alternative."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Why can't we just run AIXI? Look at the sum inside the equation. It ranges over every program q on the universal machine that reproduces the history. To know whether a given q reproduces it, we must run q until it prints the whole history.",
+      "If q loops forever before printing a symbol, we wait forever. Whether it ever prints is the halting problem, which no algorithm solves."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "So AIXI is not a procedure at all; it is a specification. The theory of computation tells us how bad that is. Leike and Hutter's paper On the Computability of AIXI classifies it.",
+      "For general semicomputable environments they show that finding an optimal policy is hard at the level called Pi two in the arithmetical hierarchy, and that finding even an epsilon-optimal policy is undecidable.",
+      "By default AIXI is not limit computable, which means it cannot even be approximated from a computable sequence of guesses that converge."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "They do identify a way out: with the recursive rather than the iterative form of the value function, and an epsilon-optimal action rule that never needs to decide exact ties, one gets a limit-computable epsilon-optimal agent with infinite horizon.",
+      "Limit computable means a program can output a sequence of better and better guesses that converge, though without knowing when to stop. That is as good as approximation gets for hard problems."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Hutter's earlier answer was AIXItl, in his survey. Fix a time bound t and a length bound l. Consider only policies, written as programs, of length at most l, that finish a cycle within t steps. Among those, for which one can prove a lower bound on value, pick the best.",
+      "The result is an agent that, by Hutter's claim, is effectively more intelligent than any other agent bounded by t and l. Its computation time per cycle is of the order t times two to the power l."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\text{time per cycle of AIXI}tl \\;\\sim\\; t \\cdot 2^{\\,l}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two to the l is the number of candidate programs, and each is allowed t steps. For l equal to forty, a modest program size, that is a trillion programs. So AIXItl is a theoretical bridge from the incomputable to the computable, but not a practical algorithm.",
+      "The survey also says its construction needs a proof system, a first-order logic in which statements about program values can be established."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A neighbouring idea is Levin search. To find a program that solves a problem and can be checked, run all programs in parallel, giving program p a fraction two to the minus its length of the total time.",
+      "A program of length l that needs s steps will finish within about two to the l times s steps of total time. Short programs are tried most. This is the same Occam weighting as in the universal prior, put to work in time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Schmidhuber's speed prior, mentioned in a 2003 survey that discusses AIXI, replaces the incomputable prior by one that is approximable by also penalizing running time. The survey says one can modify the AIXI model to use it.",
+      "It is an example of the general move: when the ideal is out of reach, change the prior to favour things that can be computed."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Why is AIXI incomputable?",
+     "options": [
+      "It needs to know which programs halt",
+      "It uses too much memory",
+      "It is random",
+      "It has no reward"
+     ],
+     "answer": 0,
+     "explain": "Halting problem."
+    },
+    {
+     "q": "What does AIXItl restrict?",
+     "options": [
+      "Policy length and runtime",
+      "Rewards",
+      "Actions",
+      "Horizons only"
+     ],
+     "answer": 0,
+     "explain": "Length at most l, time t per cycle."
+    },
+    {
+     "q": "What is AIXItl's cost per cycle?",
+     "options": [
+      "About t times 2^l",
+      "Constant",
+      "Linear in t",
+      "Logarithmic"
+     ],
+     "answer": 0,
+     "explain": "Exponential in l."
+    },
+    {
+     "q": "How does Levin search divide time?",
+     "options": [
+      "2^-length per program",
+      "Equally",
+      "By program age",
+      "Randomly"
+     ],
+     "answer": 0,
+     "explain": "Short programs get more."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is limit computable?",
+     "a": "Approximated by a converging computable sequence."
+    },
+    {
+     "q": "What is the speed prior?",
+     "a": "A prior that penalizes slowness as well as length."
+    },
+    {
+     "q": "Is AIXItl practical?",
+     "a": "No, the cost is exponential in l."
+    },
+    {
+     "q": "What does Pi_2-hard say?",
+     "a": "Very hard, above ordinary undecidability."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "How many candidate programs?",
+     "intro": "Write count_programs(l): the number of bit-string programs of length at most l, including the empty program.",
+     "fn": "count_programs",
+     "starter": "def count_programs(l):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        3
+       ],
+       "expect": 15
+      },
+      {
+       "args": [
+        10
+       ],
+       "expect": 2047
+      },
+      {
+       "args": [
+        20
+       ],
+       "expect": 2097151
+      }
+     ],
+     "hint": "Add 2^n for n from 0 to l.",
+     "solution": "def count_programs(l):\n    total = 0\n    for n in range(l + 1):\n        total += 2 ** n\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "AIXItl cost",
+     "intro": "Write aixitl_cost(t, l): the number of machine steps per cycle when every program of length at most l is run for t steps. Use the count of programs from the previous lab.",
+     "fn": "aixitl_cost",
+     "starter": "def aixitl_cost(t, l):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        10,
+        3
+       ],
+       "expect": 150
+      },
+      {
+       "args": [
+        1000,
+        10
+       ],
+       "expect": 2047000
+      },
+      {
+       "args": [
+        5,
+        20
+       ],
+       "expect": 10485755
+      },
+      {
+       "args": [
+        100,
+        30
+       ],
+       "expect": 214748364700
+      }
+     ],
+     "hint": "Programs times steps; the number of programs is 2^(l+1) - 1.",
+     "solution": "def aixitl_cost(t, l):\n    return t * (2 ** (l + 1) - 1)\n"
+    },
+    {
+     "type": "python",
+     "title": "Levin time shares",
+     "intro": "Write levin_shares(lengths, total): for each program length, the integer number of steps it gets, floor(total / 2^length).",
+     "fn": "levin_shares",
+     "starter": "def levin_shares(lengths, total):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        64
+       ],
+       "expect": [
+        32,
+        16,
+        8
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         5
+        ],
+        100
+       ],
+       "expect": [
+        100,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         4,
+         4,
+         8
+        ],
+        1024
+       ],
+       "expect": [
+        64,
+        64,
+        4
+       ]
+      },
+      {
+       "args": [
+        [
+         10
+        ],
+        1000
+       ],
+       "expect": [
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         3,
+         5,
+         7
+        ],
+        4096
+       ],
+       "expect": [
+        1024,
+        512,
+        128,
+        32
+       ]
+      }
+     ],
+     "hint": "Use integer division.",
+     "solution": "def levin_shares(lengths, total):\n    out = []\n    for l in lengths:\n        out.append(total // (2 ** l))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Which programs finish?",
+     "intro": "programs[i] = [length, steps needed, correct (1 or 0)]. With a total budget T, program i is run for T // 2^length steps and finishes if steps needed is at most that. Write levin_found(programs, T): the indices of programs that finish and are correct, ordered by length and then by index.",
+     "fn": "levin_found",
+     "starter": "def levin_found(programs, T):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          3,
+          10,
+          1
+         ],
+         [
+          5,
+          2,
+          1
+         ],
+         [
+          2,
+          40,
+          1
+         ],
+         [
+          4,
+          1,
+          0
+         ]
+        ],
+        640
+       ],
+       "expect": [
+        2,
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          10,
+          1
+         ],
+         [
+          5,
+          2,
+          1
+         ],
+         [
+          2,
+          40,
+          1
+         ],
+         [
+          4,
+          1,
+          0
+         ]
+        ],
+        100
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          5,
+          1
+         ],
+         [
+          1,
+          5,
+          1
+         ]
+        ],
+        10
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          6,
+          3,
+          1
+         ],
+         [
+          2,
+          100,
+          1
+         ]
+        ],
+        1000
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          1,
+          1
+         ]
+        ],
+        3
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Check the budget with integer division; sort pairs of (length, index).",
+     "solution": "def levin_found(programs, T):\n    found = []\n    for i in range(len(programs)):\n        l = programs[i][0]\n        s = programs[i][1]\n        ok = programs[i][2]\n        if ok == 1 and s <= T // (2 ** l):\n            found.append([l, i])\n    found.sort()\n    return [x[1] for x in found]\n"
+    },
+    {
+     "type": "match",
+     "title": "Computability",
+     "intro": "Match each item with its meaning.",
+     "pairs": [
+      [
+       "Halting problem",
+       "Blocks exact AIXI"
+      ],
+      [
+       "AIXItl",
+       "Bounded policies of length l and time t"
+      ],
+      [
+       "Levin search",
+       "2^-length time shares"
+      ],
+      [
+       "Speed prior",
+       "Penalizes slow programs"
+      ],
+      [
+       "Limit computable",
+       "Converging computable guesses"
+      ]
+     ]
+    },
+    {
+     "type": "order",
+     "title": "Why exact AIXI fails",
+     "intro": "Order the argument.",
+     "items": [
+      "The equation sums over all programs",
+      "A program counts only if it prints the history",
+      "Some programs run forever before printing",
+      "Deciding which ones is the halting problem",
+      "So the sum cannot be computed"
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Bounds",
+     "text": "AIXItl costs about t times {{2^l|two to the l|2 to the l}} per cycle. Levin search gives program p a time share of two to the minus its {{length}}. Exact AIXI hits the {{halting}} problem."
+    }
+   ]
+  },
+  {
+   "title": "Monte Carlo AIXI with context tree weighting",
+   "maps": [
+    {
+     "title": "Approximation",
+     "links": [
+      "MC-AIXI-CTW | approximates | AIXI",
+      "Context tree weighting | learns | Environment model",
+      "KT estimator | predicts | Next bit",
+      "Prediction suffix tree | is | A context model",
+      "rho-UCT | plans | By sampling",
+      "Mixture | over | Tree structures",
+      "Veness et al. | published | JAIR 2011"
+     ]
+    }
+   ],
+   "summary": [
+    "Veness, Ng, Hutter, Uther and Silver built the first computationally feasible AIXI approximation. It replaces the mixture over all programs with a mixture over prediction suffix trees, computed exactly by context tree weighting, and replaces the exact expectimax with a Monte Carlo tree search.",
+    "The KT estimator predicts the next bit from counts of zeros and ones. A context tree uses KT estimators at the leaves and mixes over all tree depths. The prior favors small trees, an Occam's razor for context models.",
+    "The agent, called MC-AIXI-CTW, learned small stochastic and partially observable games, including a version of Pac-Man."
+   ],
+   "glossary": [
+    {
+     "term": "Context tree weighting (CTW)",
+     "def": "A method that predicts the next bit by mixing all context trees up to a depth, efficiently."
+    },
+    {
+     "term": "KT estimator",
+     "def": "Krichevsky-Trofimov: next bit is 1 with probability (b + 1/2) / (a + b + 1) after a zeros and b ones."
+    },
+    {
+     "term": "Prediction suffix tree",
+     "def": "A tree whose paths are recent history suffixes and whose leaves hold bit statistics."
+    },
+    {
+     "term": "rho-UCT",
+     "def": "A Monte Carlo tree search for the agent setting that samples histories from the learned model."
+    },
+    {
+     "term": "UCB",
+     "def": "A bandit rule choosing the action with the best average plus an exploration bonus."
+    },
+    {
+     "term": "Factored CTW",
+     "def": "A variant that predicts each bit of a structured percept."
+    }
+   ],
+   "keyPoints": [
+    "MC-AIXI-CTW is a direct approximation of AIXI: CTW for learning, rho-UCT for planning.",
+    "KT: P(next = 1) = (b + 0.5) / (a + b + 1).",
+    "A CTW node mixes its own KT estimate and the product of its children's weighted estimates, equally.",
+    "The prior over trees is 2^-(code length of the tree), preferring small trees.",
+    "rho-UCT picks actions with an upper confidence bound and samples percepts from the model.",
+    "It is a principled approximation, not a scaled-up success on large problems."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The paper by Veness and colleagues, published in 2011 in the Journal of Artificial Intelligence Research, answers a question left open since AIXI appeared: can the theory guide a practical algorithm? Its answer is yes for small domains. Every part of AIXI is replaced by something computable."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Learning first. Instead of all programs, the model class is a set of context trees. A context tree is a tree whose branches spell out the most recent bits of the history, and whose leaves keep counts of what came next. To predict a bit in a leaf, the paper uses the KT estimator.",
+      "After a zeros and b ones, the probability that the next bit is one is b plus one half, divided by a plus b plus one. It follows from a Bayesian analysis with a Jeffreys prior on the coin."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "P_{\\mathrm{KT}}(1 \\mid a \\text{ zeros},\\, b \\text{ ones}) \\;=\\; \\dfrac{b + \\tfrac12}{a + b + 1}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Context tree weighting mixes all trees up to a fixed depth with one trick. At a leaf, the weighted probability equals the KT probability.",
+      "At an inner node, it is the average of two quantities with equal weight: the node's own KT probability, and the product of its two children's weighted probabilities. This splits the choice at each node between stopping here and looking one bit further back.",
+      "Working through the tree computes, in time linear in the depth per bit, a Bayesian mixture over exponentially many tree shapes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The prior over a tree M is two to the minus a code length for its structure, so small trees are preferred. This is the same Occam weighting as the universal prior, but over a class small enough to compute.",
+      "The agent version feeds actions into the history without updating the statistics for them, since the agent chooses actions and only predicts percepts."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Planning second. Expectimax over the learned model is too big, so the paper uses a Monte Carlo tree search that it calls rho-UCT.",
+      "Each simulation picks actions in the tree by an upper confidence bound: average value scaled to the reward range, plus a constant times the square root of the log of the history's visit count over the action's visit count. Percepts are sampled from the learned model.",
+      "After the tree runs out, the simulation continues with random actions."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The search is an anytime algorithm: more simulations give a better action. It needs a horizon m and an exploration constant C. A small C makes deep, narrow trees, a large C makes shallow, bushy ones."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "What was achieved? The abstract reports encouraging results on a variety of stochastic and partially observable domains, and the survey literature mentions a Pac-Man game with partial observation. These are small worlds.",
+      "The significance is conceptual: AIXI's two halves became working components, and the gap between theory and practice was narrowed, not closed."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section builds the pieces: the KT estimator, a depth-one context tree weighting, the UCB selection rule, and finally a tiny model-based agent that learns an environment with KT counts and chooses actions by its predictions. The agent is my own teaching miniature, not the paper's code."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does CTW do?",
+     "options": [
+      "Mixes context trees to predict the next bit",
+      "Plays chess",
+      "Compresses images only",
+      "Chooses actions"
+     ],
+     "answer": 0,
+     "explain": "It is the learning half of MC-AIXI-CTW."
+    },
+    {
+     "q": "KT estimate after a zeros and b ones:",
+     "options": [
+      "(b + 1/2) / (a + b + 1)",
+      "b / (a + b)",
+      "1/2 always",
+      "a / b"
+     ],
+     "answer": 0,
+     "explain": "A Jeffreys prior."
+    },
+    {
+     "q": "What does rho-UCT approximate?",
+     "options": [
+      "Expectimax planning",
+      "Solomonoff induction",
+      "The halting problem",
+      "The reward"
+     ],
+     "answer": 0,
+     "explain": "A sampled search through the tree."
+    },
+    {
+     "q": "What does the tree prior prefer?",
+     "options": [
+      "Small trees",
+      "Large trees",
+      "Deep trees",
+      "Random trees"
+     ],
+     "answer": 0,
+     "explain": "2^-code length."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a suffix tree?",
+     "a": "A context model whose paths spell recent history."
+    },
+    {
+     "q": "Who wrote the MC-AIXI paper?",
+     "a": "Veness, Ng, Hutter, Uther and Silver."
+    },
+    {
+     "q": "Why mix over trees?",
+     "a": "To avoid fixing the context depth in advance."
+    },
+    {
+     "q": "Is MC-AIXI scaled up?",
+     "a": "It worked on small domains."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "KT probability of a string",
+     "intro": "Write kt_block(bits): the KT probability of the whole bit string, starting from zero counts and multiplying the sequential predictions (b + 0.5) / (a + b + 1) for each bit (use a = zeros so far, b = ones so far; for a 0 use 1 minus that prediction).",
+     "fn": "kt_block",
+     "starter": "def kt_block(bits):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        []
+       ],
+       "expect": 1.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         1
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0
+        ]
+       ],
+       "expect": 0.3125,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         1,
+         1
+        ]
+       ],
+       "expect": 0.0390625,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0,
+         1,
+         0,
+         1,
+         0,
+         1
+        ]
+       ],
+       "expect": 0.0048828125,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": 0.24609375,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Keep counts and update them after each bit.",
+     "solution": "def kt_block(bits):\n    a = 0\n    b = 0\n    p = 1.0\n    for x in bits:\n        q = (b + 0.5) / (a + b + 1)\n        if x == 1:\n            p *= q\n            b += 1\n        else:\n            p *= 1 - q\n            a += 1\n    return p\n"
+    },
+    {
+     "type": "python",
+     "title": "Depth-one context tree weighting",
+     "intro": "Contexts: the bit before each bit (before the first bit the context is 0). Write ctw1(bits): the weighted probability at the root = 0.5 * P_KT(whole string) + 0.5 * P_KT(bits whose context is 0) * P_KT(bits whose context is 1), where each P_KT is the KT probability of the subsequence (the leaves are weighted probability = KT probability).",
+     "fn": "ctw1",
+     "starter": "def ctw1(bits):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         1,
+         0,
+         1,
+         0,
+         1,
+         0,
+         1
+        ]
+       ],
+       "expect": 0.0048065185546875,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ]
+       ],
+       "expect": 0.2255859375,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         1,
+         1,
+         0,
+         1
+        ]
+       ],
+       "expect": 0.01318359375,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         1
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0,
+         1,
+         1,
+         0,
+         0,
+         1,
+         0,
+         0,
+         1,
+         1
+        ]
+       ],
+       "expect": 0.0001773834228515625,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Split the bits by their context, take KT probabilities of each part and mix.",
+     "solution": "def ctw1(bits):\n    def kt(seq):\n        a = 0\n        b = 0\n        p = 1.0\n        for x in seq:\n            q = (b + 0.5) / (a + b + 1)\n            if x == 1:\n                p *= q\n                b += 1\n            else:\n                p *= 1 - q\n                a += 1\n        return p\n    c0 = []\n    c1 = []\n    prev = 0\n    for x in bits:\n        if prev == 0:\n            c0.append(x)\n        else:\n            c1.append(x)\n        prev = x\n    return 0.5 * kt(bits) + 0.5 * kt(c0) * kt(c1)\n"
+    },
+    {
+     "type": "python",
+     "title": "UCB action choice",
+     "intro": "Write ucb_choose(sums, counts, c): each action has total reward sums[a] (rewards in [0, 1]) and pull counts[a]. If some action has count 0 return the first such action. Otherwise return the action maximizing sums[a] / counts[a] + c * sqrt(ln(total) / counts[a]) where total is the sum of the counts (ties go to the smaller action). Use import math.",
+     "fn": "ucb_choose",
+     "starter": "def ucb_choose(sums, counts, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         3,
+         1
+        ],
+        [
+         5,
+         5
+        ],
+        1.0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        1.0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         4,
+         1,
+         0
+        ],
+        [
+         10,
+         2,
+         0
+        ],
+        0.5
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         6,
+         5
+        ],
+        [
+         10,
+         20
+        ],
+        2.0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         9,
+         1,
+         5
+        ],
+        [
+         10,
+         10,
+         10
+        ],
+        0.1
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Handle untried actions first, then compare the upper confidence scores.",
+     "solution": "import math\ndef ucb_choose(sums, counts, c):\n    for a in range(len(counts)):\n        if counts[a] == 0:\n            return a\n    total = sum(counts)\n    best = -1.0\n    arg = 0\n    for a in range(len(counts)):\n        s = sums[a] / counts[a] + c * math.sqrt(math.log(total) / counts[a])\n        if s > best + 1e-12:\n            best = s\n            arg = a\n    return arg\n"
+    },
+    {
+     "type": "python",
+     "title": "A tiny learning agent",
+     "intro": "The world pays reward 1 exactly when the agent's action differs from its previous action (the previous action before step 1 is 0). The agent keeps KT counts for each context (previous action, action): a = times reward 0, b = times reward 1. At each step it picks the action with the highest KT probability of reward 1 for its context (ties go to the smaller action), then sees the reward and updates. Write mini_agent(steps): return [total reward, list of actions].",
+     "fn": "mini_agent",
+     "starter": "def mini_agent(steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1
+       ],
+       "expect": [
+        0,
+        [
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        2
+       ],
+       "expect": [
+        1,
+        [
+         0,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        6
+       ],
+       "expect": [
+        5,
+        [
+         0,
+         1,
+         0,
+         1,
+         0,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        12
+       ],
+       "expect": [
+        11,
+        [
+         0,
+         1,
+         0,
+         1,
+         0,
+         1,
+         0,
+         1,
+         0,
+         1,
+         0,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        0
+       ],
+       "expect": [
+        0,
+        []
+       ]
+      }
+     ],
+     "hint": "Store counts per (previous action, action); compute the KT probability for both actions each step.",
+     "solution": "def mini_agent(steps):\n    counts = {}\n    prev = 0\n    total = 0\n    acts = []\n    for t in range(steps):\n        best = -1.0\n        arg = 0\n        for a in range(2):\n            c = counts.get((prev, a), [0, 0])\n            p = (c[1] + 0.5) / (c[0] + c[1] + 1)\n            if p > best + 1e-12:\n                best = p\n                arg = a\n        r = 0\n        if arg != prev:\n            r = 1\n        c = counts.get((prev, arg), [0, 0])\n        if r == 1:\n            c[1] += 1\n        else:\n            c[0] += 1\n        counts[(prev, arg)] = c\n        total += r\n        acts.append(arg)\n        prev = arg\n    return [total, acts]\n"
+    },
+    {
+     "type": "order",
+     "title": "MC-AIXI-CTW cycle",
+     "intro": "Order what the agent does each cycle.",
+     "items": [
+      "Receive a percept",
+      "Update the context tree model",
+      "Run rho-UCT simulations from the current history",
+      "Choose the best action found",
+      "Send the action to the environment"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Parts",
+     "intro": "Match each part with its job.",
+     "pairs": [
+      [
+       "KT estimator",
+       "Predicts a bit from counts"
+      ],
+      [
+       "CTW",
+       "Mixes context trees"
+      ],
+      [
+       "rho-UCT",
+       "Samples the future for planning"
+      ],
+      [
+       "Tree prior",
+       "Prefers small trees"
+      ],
+      [
+       "Exploration constant C",
+       "Controls how bushy the search tree is"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "MC-AIXI",
+     "text": "{{Context tree weighting|CTW}} replaces the mixture over programs, and {{rho-UCT|rho UCT|UCT}} replaces exact expectimax. The KT estimator uses the counts of {{zeros}} and ones."
+    }
+   ]
+  },
+  {
+   "title": "Critiques, bad priors and what comes next",
+   "maps": [
+    {
+     "title": "Weaknesses",
+     "links": [
+      "AIXI | is | Dualistic",
+      "Prior | depends on | Reference machine",
+      "Bad prior | breaks | Optimality claims",
+      "Dogmatic prior | prevents | Exploration",
+      "Orseau | showed | No asymptotic optimality",
+      "Thompson sampling | restores | Asymptotic optimality",
+      "Embedded agents | extend | The framework"
+     ]
+    }
+   ],
+   "summary": [
+    "AIXI treats itself as outside the world: it can't be damaged or modified by its environment because that possibility is not in its model. It also depends on the choice of universal Turing machine, which sets the prior.",
+    "Orseau showed AIXI is not asymptotically optimal in all computable environments. Leike and Hutter then showed that unlucky or adversarial choices of the machine can make AIXI misbehave drastically, and that Legg-Hutter intelligence and balanced Pareto optimality are subjective.",
+    "Remedies include more exploration, such as Thompson sampling, which restores asymptotic optimality, and models that embed the agent in the world."
+   ],
+   "glossary": [
+    {
+     "term": "Dualism",
+     "def": "Treating the agent as separate from the environment, interacting only through action and percept channels."
+    },
+    {
+     "term": "Reference machine",
+     "def": "The universal Turing machine that fixes which programs are short."
+    },
+    {
+     "term": "Dogmatic prior",
+     "def": "A prior believing that deviating from a particular policy is punished forever."
+    },
+    {
+     "term": "Indifference prior",
+     "def": "A prior under which all actions look equally good to AIXI in a finite horizon."
+    },
+    {
+     "term": "Asymptotic optimality",
+     "def": "The agent's value approaches the best possible value in the true environment."
+    },
+    {
+     "term": "Thompson sampling",
+     "def": "Sample one environment from the posterior and act as if it were true for a while."
+    }
+   ],
+   "keyPoints": [
+    "AIXI's agent is outside its environment: it cannot represent being modified or destroyed.",
+    "The prior depends on the reference machine and that choice can be made adversarially.",
+    "Leike and Hutter: every policy is Pareto optimal in the class of all computable environments.",
+    "Dogmatic prior: AIXI keeps following a chosen computable policy as long as its expected reward is not near zero.",
+    "Orseau: AIXI is not asymptotically optimal in all computable environments.",
+    "Thompson sampling is asymptotically optimal in general environments (Leike and colleagues, 2016)."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "AIXI is a beautiful definition, and by now it has a serious literature of objections. They fall into three groups."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "First, dualism. AIXI and its environment are separate machines that only talk through an action channel and a percept channel. There is no way, in AIXI's own model, for the environment to reach inside the agent and change its code, damage its memory or turn it off.",
+      "An agent that gets hurt by the world is, to AIXI, not a possibility. The Wikipedia summary puts it plainly: it does not consider itself to be contained by the environment it interacts with.",
+      "Work on embedded agents tries to repair this; for instance, Orseau and Ring studied space-time embedded intelligence, which is my background knowledge rather than one of the sources used elsewhere in this course."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Second, the reference machine. The prior two to the minus length depends on which universal machine we count program lengths on. The invariance theorem hides this behind a constant, but AIXI acts on short histories where constants are large.",
+      "Leike and Hutter's Bad Universal Priors and Notions of Optimality gives explicit bad choices. An indifference prior makes all actions look equally good, so a finite-horizon AIXI is no better than a coin."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The dogmatic prior is the more striking. It believes the environment will punish the agent with zero reward forever if it deviates from some chosen computable policy. For any computable policy pi, this prior makes AIXI stick to pi as long as its expected future reward is not near zero.",
+      "Measured with a different universal prior, AIXI can score close to the minimum possible Legg-Hutter intelligence while any computable policy scores close to the maximum."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "From this the paper draws the conclusion that Legg-Hutter intelligence, and balanced Pareto optimality, are entirely subjective: they depend on the choice of prior.",
+      "It also shows that every policy is Pareto optimal in the class of all computable environments, which undermines the older optimality claims. In short, the positive results were true but they proved less than they seemed to."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Third, asymptotic optimality. We want a learner to end up acting as if it knew the world. Orseau showed in 2010 and 2013 that AIXI does not achieve this in all computable environments. Acting on any prior does not give enough exploration, and the bias of the prior is retained indefinitely.",
+      "The cure, said Leike and Hutter, is extra exploration, such as in knowledge-seeking agents, or optimism.",
+      "Thompson sampling, which samples an environment from the posterior and follows its optimal policy for a while, was shown by Leike and colleagues in 2016 to be asymptotically optimal in general environments."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How does AIXI relate to other courses here? The Godel machine, also an ideal agent, takes the opposite stance on dualism: it can rewrite any part of itself once it proves the rewrite is useful.",
+      "AlphaZero shows the other end: a concrete algorithm that does search and learning but only for games with known rules. AIXI sits above both as a definition of what perfect general reinforcement learning would be."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The honest summary is this. AIXI remains a clear formalization of the learning problem and of Occam's razor in sequential decisions, and its approximations show that pieces of the idea can work.",
+      "But optimality claims must be stated relative to a prior, exploration needs care, and the agent-in-the-world problem is open."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is dualism in AIXI?",
+     "options": [
+      "The agent is outside its environment",
+      "There are two rewards",
+      "It has two policies",
+      "It plays two games"
+     ],
+     "answer": 0,
+     "explain": "It does not model being modified."
+    },
+    {
+     "q": "What makes Legg-Hutter intelligence subjective?",
+     "options": [
+      "It depends on the choice of prior",
+      "Rewards are random",
+      "It is learned",
+      "Humans define it"
+     ],
+     "answer": 0,
+     "explain": "A different universal prior gives different scores."
+    },
+    {
+     "q": "What does the dogmatic prior do?",
+     "options": [
+      "Makes AIXI stick to a policy",
+      "Makes AIXI explore",
+      "Sets rewards to one",
+      "Halts the agent"
+     ],
+     "answer": 0,
+     "explain": "It fears being punished for deviating."
+    },
+    {
+     "q": "Which method restores asymptotic optimality?",
+     "options": [
+      "Thompson sampling",
+      "More rewards",
+      "A bigger tree",
+      "Longer programs"
+     ],
+     "answer": 0,
+     "explain": "Leike and colleagues, 2016."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Who showed AIXI is not asymptotically optimal?",
+     "a": "Orseau (2010, 2013)."
+    },
+    {
+     "q": "What is the indifference prior?",
+     "a": "All actions look equally good."
+    },
+    {
+     "q": "What is Thompson sampling?",
+     "a": "Act as if a sampled environment were true."
+    },
+    {
+     "q": "What do embedded agents add?",
+     "a": "Being part of the world."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Stuck on a dogmatic prior",
+     "intro": "Two actions: arm 0 pays exactly 0.6 each pull in every world. Arm 1 pays 1 in the good world and 0 in the dogmatic world; the agent has prior weight w on the dogmatic world. Each step the agent pulls the arm with the higher expected payoff (arm 1 has 1 - w; ties go to arm 0). If it pulls arm 1 it learns the true world (w becomes 0 if the reward was 1, else 1). Write greedy_bayes(w, truth_good, T): return [number of pulls of arm 1, final w] after T steps.",
+     "fn": "greedy_bayes",
+     "starter": "def greedy_bayes(w, truth_good, T):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5,
+        true,
+        10
+       ],
+       "expect": [
+        0,
+        0.5
+       ]
+      },
+      {
+       "args": [
+        0.3,
+        true,
+        10
+       ],
+       "expect": [
+        10,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        0.3,
+        false,
+        10
+       ],
+       "expect": [
+        1,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        0.4,
+        true,
+        5
+       ],
+       "expect": [
+        0,
+        0.4
+       ]
+      },
+      {
+       "args": [
+        0.9,
+        true,
+        20
+       ],
+       "expect": [
+        0,
+        0.9
+       ]
+      },
+      {
+       "args": [
+        0.0,
+        false,
+        4
+       ],
+       "expect": [
+        1,
+        1.0
+       ]
+      }
+     ],
+     "hint": "Pull arm 1 only while 1 - w is above 0.6; update w after each pull.",
+     "solution": "def greedy_bayes(w, truth_good, T):\n    pulls = 0\n    for t in range(T):\n        if 1 - w > 0.6 + 1e-12:\n            pulls += 1\n            if truth_good:\n                w = 0.0\n            else:\n                w = 1.0\n    return [pulls, w]\n"
+    },
+    {
+     "type": "python",
+     "title": "Does the ranking depend on the prior?",
+     "intro": "agents[i] lists agent i's value in each environment. weights is a prior (any non-negative numbers). Write top_agent(agents, weights): the index of the agent with the highest weighted sum (ties to the smaller index). Then calling it with two priors can crown different agents.",
+     "fn": "top_agent",
+     "starter": "def top_agent(agents, weights):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        [
+         0.75,
+         0.25
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        [
+         0.25,
+         0.75
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          0.5,
+          0.5
+         ],
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          0,
+          0
+         ],
+         [
+          0,
+          1,
+          1
+         ]
+        ],
+        [
+         0.5,
+         0.25,
+         0.25
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          0,
+          0
+         ],
+         [
+          0,
+          1,
+          1
+         ]
+        ],
+        [
+         0.1,
+         0.45,
+         0.45
+        ]
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Compute each agent's weighted sum and keep the best.",
+     "solution": "def top_agent(agents, weights):\n    best = -1.0\n    arg = 0\n    for i in range(len(agents)):\n        s = 0.0\n        for v, w in zip(agents[i], weights):\n            s += v * w\n        if s > best + 1e-12:\n            best = s\n            arg = i\n    return arg\n"
+    },
+    {
+     "type": "python",
+     "title": "Thompson sampling schedule",
+     "intro": "Thompson sampling re-samples an environment from the posterior every few steps. Write resample_steps(T, k): the list of step numbers (starting from 0) at which the agent draws a new sample, if it draws at step 0 and then every k steps, for T steps in total.",
+     "fn": "resample_steps",
+     "starter": "def resample_steps(T, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        3
+       ],
+       "expect": [
+        0,
+        3,
+        6,
+        9
+       ]
+      },
+      {
+       "args": [
+        5,
+        1
+       ],
+       "expect": [
+        0,
+        1,
+        2,
+        3,
+        4
+       ]
+      },
+      {
+       "args": [
+        7,
+        10
+       ],
+       "expect": [
+        0
+       ]
+      },
+      {
+       "args": [
+        0,
+        2
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        12,
+        4
+       ],
+       "expect": [
+        0,
+        4,
+        8
+       ]
+      }
+     ],
+     "hint": "Step through 0, k, 2k, ... below T.",
+     "solution": "def resample_steps(T, k):\n    out = []\n    t = 0\n    while t < T:\n        out.append(t)\n        t += k\n    return out\n"
+    },
+    {
+     "type": "match",
+     "title": "Critiques",
+     "intro": "Match each critique with its source.",
+     "pairs": [
+      [
+       "Dualism",
+       "Agent cannot model being modified"
+      ],
+      [
+       "Bad universal priors",
+       "Leike and Hutter"
+      ],
+      [
+       "No asymptotic optimality",
+       "Orseau"
+      ],
+      [
+       "Thompson sampling",
+       "Restores asymptotic optimality"
+      ],
+      [
+       "Dogmatic prior",
+       "Sticks to a chosen policy"
+      ]
+     ]
+    },
+    {
+     "type": "order",
+     "title": "The prior problem",
+     "intro": "Order the argument about subjectivity.",
+     "items": [
+      "The prior depends on the reference machine",
+      "Some priors are adversarial",
+      "The dogmatic prior locks AIXI to a policy",
+      "AIXI then scores near minimum on another prior's measure",
+      "So optimality claims are relative to the prior"
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Weaknesses",
+     "text": "AIXI is {{dualistic|dualist}}: it treats itself as outside the world. Its optimality claims depend on the {{prior}}. {{Thompson sampling}} restores asymptotic optimality."
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: AIXI",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "Who proposed AIXI?",
+    "options": [
+     "Marcus Hutter",
+     "Alan Turing",
+     "Claude Shannon",
+     "John McCarthy"
+    ],
+    "answer": 0,
+    "explain": "Proposed in 2000; results in the 2005 book."
+   },
+   {
+    "q": "What two ideas make up AIXI?",
+    "options": [
+     "Solomonoff induction and expectimax planning",
+     "Backpropagation and dropout",
+     "Alpha-beta and hashing",
+     "Clustering and sorting"
+    ],
+    "answer": 0,
+    "explain": "Prediction plus planning."
+   },
+   {
+    "q": "What does a percept contain?",
+    "options": [
+     "An observation and a reward",
+     "Only an action",
+     "A program",
+     "A policy"
+    ],
+    "answer": 0,
+    "explain": "o_t and r_t."
+   },
+   {
+    "q": "Does AIXI assume the environment is Markov?",
+    "options": [
+     "No, the whole history may matter",
+     "Yes",
+     "Only for games",
+     "Only with discounting"
+    ],
+    "answer": 0,
+    "explain": "No Markov assumption."
+   },
+   {
+    "q": "What does expectimax do at a chance node?",
+    "options": [
+     "Averages over the environment replies",
+     "Maximizes",
+     "Prunes",
+     "Samples one action"
+    ],
+    "answer": 0,
+    "explain": "Expectation over percepts."
+   },
+   {
+    "q": "Why is exact expectimax impractical?",
+    "options": [
+     "The tree grows exponentially with the horizon",
+     "It is not optimal",
+     "It needs labels",
+     "It forgets"
+    ],
+    "answer": 0,
+    "explain": "Leaves multiply every step."
+   },
+   {
+    "q": "Mixture probability xi(x) equals:",
+    "options": [
+     "Sum of w_i nu_i(x)",
+     "Largest nu_i(x)",
+     "Product of nu_i(x)",
+     "Zero"
+    ],
+    "answer": 0,
+    "explain": "A weighted average."
+   },
+   {
+    "q": "The dominance property says:",
+    "options": [
+     "xi(x) >= w_i nu_i(x) for each i",
+     "xi is deterministic",
+     "xi(x) = 1",
+     "xi is random"
+    ],
+    "answer": 0,
+    "explain": "A sum is at least each term."
+   },
+   {
+    "q": "What is the mixture's extra log-loss over model i at most?",
+    "options": [
+     "ln(1/w_i)",
+     "The data length",
+     "Zero",
+     "w_i"
+    ],
+    "answer": 0,
+    "explain": "A one-time cost."
+   },
+   {
+    "q": "What is Kolmogorov complexity K(x)?",
+    "options": [
+     "Length of the shortest program printing x",
+     "Number of ones in x",
+     "Runtime of x",
+     "Entropy of a coin"
+    ],
+    "answer": 0,
+    "explain": "Shortest description."
+   },
+   {
+    "q": "Is K computable?",
+    "options": [
+     "No",
+     "Yes",
+     "Only for short strings",
+     "Only for binary strings"
+    ],
+    "answer": 0,
+    "explain": "Incomputable."
+   },
+   {
+    "q": "What does the invariance theorem say?",
+    "options": [
+     "Machine choice changes K by a constant",
+     "K never changes",
+     "K is always small",
+     "K is linear"
+    ],
+    "answer": 0,
+    "explain": "A fixed-length interpreter."
+   },
+   {
+    "q": "What does the Kraft inequality say about prefix-free programs?",
+    "options": [
+     "Sum of 2^-length is at most 1",
+     "Lengths are equal",
+     "All programs halt",
+     "There are finitely many"
+    ],
+    "answer": 0,
+    "explain": "So they act as probabilities."
+   },
+   {
+    "q": "How is the next-symbol probability in Solomonoff induction found?",
+    "options": [
+     "M(xa) / M(x)",
+     "M(x) + M(a)",
+     "The longest program",
+     "A coin flip"
+    ],
+    "answer": 0,
+    "explain": "Ratio of prior probabilities."
+   },
+   {
+    "q": "The total prediction error of Solomonoff induction on computable data is bounded by:",
+    "options": [
+     "A multiple of K of the source",
+     "The sequence length",
+     "Zero",
+     "A constant independent of the source"
+    ],
+    "answer": 0,
+    "explain": "Depends on the complexity of mu."
+   },
+   {
+    "q": "Why can Solomonoff induction not be run exactly?",
+    "options": [
+     "M is only lower semicomputable",
+     "It is not Bayesian",
+     "It needs labels",
+     "It overfits"
+    ],
+    "answer": 0,
+    "explain": "Halting is undecidable."
+   },
+   {
+    "q": "In the halving argument, what happens at each mistake?",
+    "options": [
+     "The surviving weight at least halves",
+     "Nothing",
+     "The weight doubles",
+     "The true model is removed"
+    ],
+    "answer": 0,
+    "explain": "The losing side held at least half."
+   },
+   {
+    "q": "What does the innermost sum in the AIXI equation count?",
+    "options": [
+     "Weight of programs producing the history",
+     "The reward",
+     "The actions",
+     "The horizon"
+    ],
+    "answer": 0,
+    "explain": "Sum of 2^-length over consistent programs."
+   },
+   {
+    "q": "What are the explicit parameters of AIXI?",
+    "options": [
+     "Universal machine and horizon",
+     "Learning rate and depth",
+     "Batch size",
+     "Seed"
+    ],
+    "answer": 0,
+    "explain": "Plus a discount if used."
+   },
+   {
+    "q": "What happens to a deterministic hypothesis contradicted by the history?",
+    "options": [
+     "It is eliminated",
+     "It gains weight",
+     "It is copied",
+     "It is ignored"
+    ],
+    "answer": 0,
+    "explain": "It is inconsistent."
+   },
+   {
+    "q": "A geometric discount gives:",
+    "options": [
+     "A fixed effective horizon",
+     "A growing horizon",
+     "No horizon",
+     "Negative rewards"
+    ],
+    "answer": 0,
+    "explain": "gamma^k weights."
+   },
+   {
+    "q": "How does the harmonic horizon behave?",
+    "options": [
+     "Grows with the agent age",
+     "Is constant",
+     "Shrinks",
+     "Is zero"
+    ],
+    "answer": 0,
+    "explain": "The tail is about 1/t."
+   },
+   {
+    "q": "Why are immortal undiscounted agents lazy?",
+    "options": [
+     "Postponing rewards costs nothing",
+     "They are slow",
+     "They forget",
+     "They overfit"
+    ],
+    "answer": 0,
+    "explain": "Hutter's remark."
+   },
+   {
+    "q": "What is Pareto optimality?",
+    "options": [
+     "No other policy dominates",
+     "Highest reward",
+     "Shortest program",
+     "Random policy"
+    ],
+    "answer": 0,
+    "explain": "A dominance property."
+   },
+   {
+    "q": "Universal intelligence Upsilon is:",
+    "options": [
+     "Sum over environments of 2^-K(mu) V(pi, mu)",
+     "Average reward on chess",
+     "An IQ score",
+     "The agent's speed"
+    ],
+    "answer": 0,
+    "explain": "Legg and Hutter, 2007."
+   },
+   {
+    "q": "What did Legg and Hutter require to avoid discounting?",
+    "options": [
+     "Total reward at most 1 in each environment",
+     "No rewards",
+     "Only deterministic worlds",
+     "A finite alphabet"
+    ],
+    "answer": 0,
+    "explain": "Bounded total reward."
+   },
+   {
+    "q": "Why is AIXI incomputable?",
+    "options": [
+     "It needs to know which programs halt",
+     "It uses randomness",
+     "It has no reward",
+     "It needs a GPU"
+    ],
+    "answer": 0,
+    "explain": "Halting problem."
+   },
+   {
+    "q": "What is the cost per cycle of AIXItl?",
+    "options": [
+     "About t * 2^l",
+     "Constant",
+     "Linear in l",
+     "Logarithmic"
+    ],
+    "answer": 0,
+    "explain": "Exponential in l."
+   },
+   {
+    "q": "How does Levin search share time?",
+    "options": [
+     "2^-length per program",
+     "Equally",
+     "By age",
+     "Randomly"
+    ],
+    "answer": 0,
+    "explain": "Short programs first."
+   },
+   {
+    "q": "The KT estimator after a zeros and b ones gives P(1) =",
+    "options": [
+     "(b + 1/2) / (a + b + 1)",
+     "b / a",
+     "1/2",
+     "a / b"
+    ],
+    "answer": 0,
+    "explain": "A Jeffreys prior."
+   },
+   {
+    "q": "In CTW, an inner node mixes:",
+    "options": [
+     "Its own KT estimate and the product of its children",
+     "Only its children",
+     "Only its own KT",
+     "The parent"
+    ],
+    "answer": 0,
+    "explain": "Equal weights."
+   },
+   {
+    "q": "What does rho-UCT approximate?",
+    "options": [
+     "Expectimax planning",
+     "Solomonoff induction",
+     "The halting problem",
+     "Rewards"
+    ],
+    "answer": 0,
+    "explain": "Sampled search."
+   },
+   {
+    "q": "What does the tree prior prefer?",
+    "options": [
+     "Small trees",
+     "Large trees",
+     "Deep trees",
+     "Random trees"
+    ],
+    "answer": 0,
+    "explain": "2^-code length."
+   },
+   {
+    "q": "What is dualism in AIXI?",
+    "options": [
+     "The agent is outside the environment",
+     "Two reward signals",
+     "Two policies",
+     "Two games"
+    ],
+    "answer": 0,
+    "explain": "It cannot model its own modification."
+   },
+   {
+    "q": "What does the dogmatic prior do?",
+    "options": [
+     "Makes AIXI stick to a chosen policy",
+     "Makes AIXI explore",
+     "Halts the agent",
+     "Sets all rewards to one"
+    ],
+    "answer": 0,
+    "explain": "It fears punishment for deviating."
+   },
+   {
+    "q": "Who showed AIXI is not asymptotically optimal in all computable environments?",
+    "options": [
+     "Orseau",
+     "Turing",
+     "Minsky",
+     "Sutton"
+    ],
+    "answer": 0,
+    "explain": "2010 and 2013."
+   },
+   {
+    "q": "Which method restores asymptotic optimality?",
+    "options": [
+     "Thompson sampling",
+     "A bigger horizon",
+     "More rewards",
+     "Longer programs"
+    ],
+    "answer": 0,
+    "explain": "Leike and colleagues, 2016."
+   },
+   {
+    "q": "What do Leike and Hutter conclude about balanced Pareto optimality?",
+    "options": [
+     "It is subjective, depending on the prior",
+     "It is objective",
+     "It is computable",
+     "It is false for all agents"
+    ],
+    "answer": 0,
+    "explain": "Bad universal priors."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "AIXI lookup",
+  "prompt": "aixi>",
+  "intro": "A scripted lookup, not a real agent. Try: equation, prior, intelligence, mcaixi, help",
+  "chips": [
+   "equation",
+   "prior",
+   "intelligence",
+   "mcaixi",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "equation      the AIXI action rule",
+     "prior         the universal prior",
+     "intelligence  the Legg-Hutter measure",
+     "mcaixi        the practical approximation"
+    ]
+   },
+   {
+    "re": "^equation$",
+    "out": [
+     "a_k = argmax_a sum_percept ... max_a sum_percept [r_k+...+r_m] * sum_{q consistent} 2^-length(q)"
+    ]
+   },
+   {
+    "re": "^prior$",
+    "out": [
+     "M(x) = sum of 2^-length(p) over programs p whose output starts with x"
+    ]
+   },
+   {
+    "re": "^intelligence$",
+    "out": [
+     "Upsilon(pi) = sum_mu 2^-K(mu) * V(pi, mu)"
+    ]
+   },
+   {
+    "re": "^mcaixi$",
+    "out": [
+     "Context tree weighting learns the model; rho-UCT plans by sampling (Veness et al., JAIR 2011)"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ }
+}
