@@ -1,0 +1,15 @@
+FEY = [
+ ("Imagine four pictures hung in a row, like a comic. Each one has a secret word, a big shape, a bit of math and a spooky face, and together they tell one story.", None),
+ ("A circle is a line that bites its own tail. The name I am says that someone is just whatever they are, with nothing outside holding them up.", None),
+ ("Baphomet is a drawing whose parts come in pairs, like up and down, to say that opposites can live in one body. The snake biting its tail is the same idea.", None),
+ ("A matrix is a machine that moves arrows. The boring machine moves nothing, yet all the arrows it keeps at length one trace a perfect circle.", None),
+ ("Usually two things are equal or not. In this kind of math, equal means a road between them, and a road that loops back to the start can be walked once, twice, or backwards.", None),
+ ("Red, green and blue flashlights shone together make white. The eye in the middle is a symbol of being watched, which people have worried about for a very long time.", None),
+ ("A musician dreamed the devil played him a tune. A different story asks how smart any helper could ever be, and finds the perfect helper can be described but never built.", None),
+ ("Entropy is how many yes-or-no questions you need to guess what happens next. A chess opening is a first move that offers a small gift to win a bigger game.", None),
+ ("Coordinates are the street address of a place on the whole Earth. A made-up language is like a secret handshake that only makes sense inside one story.", None),
+ ("Some letters hide a word when you read the first ones in order, like a spelled-out secret. A little verse about a basket is one place where one tiny letter changes the meaning.", None),
+ ("A golem is a person-shaped heap of clay that old stories say could be woken up with letters and put to sleep by rubbing one letter out, turning truth into dead.", None),
+ ("A grammar is a recipe book for making sentences. A Turing machine is a tiny robot that follows a rule table on a long paper strip, and the two end up doing the same jobs.", None),
+ ("If you hunt for patterns you will find plenty, even in noise. A careful reader asks which links are really in the books and which ones were added by the reader.", None),
+]
