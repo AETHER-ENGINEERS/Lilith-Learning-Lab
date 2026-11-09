@@ -131,6 +131,18 @@ textarea{min-height:190px;font-size:14px;line-height:1.45;resize:vertical}
 .ctl .play{width:58px;height:58px;font-size:24px}
 .ctl .meta{font-size:11.5px;color:var(--dim);text-align:center;min-width:64px}
 .prog{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.06)}.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--g),var(--pink));width:0;transition:width .4s}
+/* wide screens (desktop browsers): centre the app and give the lecture room */
+@media (min-width:860px) and (min-height:561px){
+  body{align-items:center}
+  header,.bar,main,.dock,nav{width:100%;max-width:1040px}
+  header{padding-left:22px;padding-right:22px}
+  main{padding:8px 22px 22px}
+  nav{border-radius:16px 16px 0 0;border:1px solid var(--line);border-bottom:0}
+  nav button{flex-direction:row;justify-content:center;gap:8px;min-height:50px;font-size:13.5px}
+  .lec{grid-template-columns:minmax(260px,32%) 1fr;grid-template-rows:1fr auto auto;grid-template-areas:"t s" "c s" "k k";gap:14px}
+  .lec .teacherBox{height:100%;aspect-ratio:auto;min-height:0}
+  .caps{align-self:stretch;max-height:none}
+}
 @media (orientation:landscape) and (max-height:560px){
   .lec{grid-template-columns:30% 1fr;grid-template-rows:1fr auto auto;grid-template-areas:"t s" "c s" "k k"}
   .lec .teacherBox{height:100%;aspect-ratio:auto;min-height:0}

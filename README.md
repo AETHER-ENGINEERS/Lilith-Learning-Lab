@@ -9,6 +9,22 @@ A standalone, offline Android app with a talking, animated Teacher. It comes **e
 * Offline by design: the only network use is the optional **Browse online** screen, which downloads courses from this repository (`courses/catalog.json`) and talks to raw.githubusercontent.com only. Voice uses the phone's own text-to-speech.
 * Courses carry optional `category`, `level` and `tags`; the library groups and searches by them.
 
+## Screenshots
+
+| Library by category | Feynman block in every chapter | Concept map |
+|---|---|---|
+| ![Library](docs/screenshots/1-library.png) | ![Explain it simply](docs/screenshots/3-feynman.png) | ![Concept map](docs/screenshots/4-map.png) |
+
+| Python lab (runs on the device) | Progress | Browse online |
+|---|---|---|
+| ![Python lab](docs/screenshots/5-python-lab.png) | ![Progress](docs/screenshots/6-progress.png) | ![Browse online](docs/screenshots/7-browse.png) |
+
+Regenerate them with `python3 build/build_web.py --web /tmp/web` then `python3 build/tests/readme_shots.py /tmp/web courses docs/screenshots`.
+
+## Web version
+
+The same app runs in any modern browser, with no install and no server: **https://lucky-edgelord.github.io/Lilith-Learning-Lab/app/** (once GitHub Pages is on: Settings > Pages > Branch `main`, folder `/docs`). It is plain HTML, CSS and JavaScript, uses the browser's own speech synthesis, runs Python labs on the same MicroPython WebAssembly build, keeps courses and progress in the browser, and is an installable offline PWA (manifest plus service worker). On wide screens the layout centres and shows the teacher beside the slides. Rebuild with `python3 build/build_web.py --pages docs/app`. It can also be hosted on any static file server; the folder is self-contained (about 3 MB).
+
 ## Lilith University (website) and the course catalog
 
 * `courses/catalog.json` lists every course with its category, level, tags, counts and a chapter outline. Rebuild it with `python3 build/make_catalog.py` after adding a course (register new ids in `build/catalog_meta.json`: `{"id": ["Category", "Level", ["tag", ...]]}`).
