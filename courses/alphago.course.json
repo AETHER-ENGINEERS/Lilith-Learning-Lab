@@ -1,0 +1,6777 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "alphago",
+ "title": "AlphaGo",
+ "subtitle": "Deep neural networks and tree search for the game of Go",
+ "author": "Lilith Learning Lab",
+ "description": "A 12-chapter course on AlphaGo, the DeepMind program that beat a professional Go player and then Lee Sedol. Based on the 2016 Nature paper by Silver, Huang and colleagues and public accounts of the Fan Hui and Lee Sedol matches. Covers the rules of Go, Monte Carlo tree search before AlphaGo, the 48-plane input and the policy network, supervised learning from expert games, the fast rollout policy, policy-gradient self-play, the value network, the search with PUCT and mixed evaluation, hardware and Elo, a tic-tac-toe miniature, and the matches, successors and criticism. Python labs run on the built-in MicroPython engine. DeepMind did not release the code; the labs are teaching miniatures.",
+ "pronounce": {
+  "AlphaGo Zero": "alpha go zero",
+  "AlphaGo": "alpha go",
+  "AlphaZero": "alpha zero",
+  "MuZero": "mew zero",
+  "Pachi": "pah chee",
+  "Crazy Stone": "crazy stone",
+  "Fuego": "fway go",
+  "GnuGo": "new go",
+  "Fan Hui": "fan hway",
+  "Lee Sedol": "lee se dole",
+  "Ke Jie": "kuh jee eh",
+  "Aja Huang": "ah ja hwong",
+  "KGS": "K G S",
+  "Tygem": "tie gem",
+  "Hassabis": "ha sah bis",
+  "Schrittwieser": "shrit vee zer",
+  "Szepesvari": "seh peh shvar ee",
+  "Kocsis": "ko chish",
+  "komi": "ko mee",
+  "Komi": "Ko mee",
+  "atari": "ah tah ree",
+  "Baduk": "ba dook",
+  "baduk": "ba dook",
+  "Weiqi": "way chee",
+  "Elo": "ee low",
+  "UCB1": "U C B one",
+  "UCT": "U C T",
+  "UCB": "U C B",
+  "MCTS": "M C T S",
+  "PUCT": "P U C T",
+  "softmax": "soft max",
+  "Softmax": "Soft max",
+  "REINFORCE": "re in force",
+  "Kohs": "koze",
+  "Kasparov": "kas par off",
+  "Tromp": "tromp",
+  "Wuzhen": "woo jen",
+  "dan": "dahn",
+  "GPUs": "G P Us",
+  "GPU": "G P U",
+  "CPUs": "C P Us",
+  "CPU": "C P U"
+ },
+ "chapters": [
+  {
+   "title": "What is AlphaGo?",
+   "maps": [
+    {
+     "title": "The big picture",
+     "links": [
+      "AlphaGo | combines | Neural networks and tree search",
+      "Policy network | reduces | Search breadth",
+      "Value network | reduces | Search depth",
+      "Supervised learning | uses | Human expert games",
+      "Reinforcement learning | improves | The policy by self-play",
+      "AlphaGo | beat | Fan Hui 5-0",
+      "AlphaGo | beat | Lee Sedol 4-1"
+     ]
+    }
+   ],
+   "summary": [
+    "AlphaGo is the DeepMind program that became the first to beat a professional Go player on a full board without handicap. It did so in October 2015 against the European champion Fan Hui, and in March 2016 it beat Lee Sedol, one of the world's top players, four games to one.",
+    "Its idea is to combine Monte Carlo tree search with deep neural networks. A policy network suggests promising moves, which cuts the breadth of the search. A value network judges positions, which cuts its depth.",
+    "The networks were trained in stages: first to imitate human experts, then improved by self-play. This course builds each piece in small Python programs."
+   ],
+   "glossary": [
+    {
+     "term": "Go",
+     "def": "A two-player board game of surrounding territory, played on a 19 by 19 grid."
+    },
+    {
+     "term": "Policy network",
+     "def": "A neural network giving a probability for each move."
+    },
+    {
+     "term": "Value network",
+     "def": "A neural network estimating who is winning from a position."
+    },
+    {
+     "term": "Monte Carlo tree search",
+     "def": "A search that grows a tree from many simulated games."
+    },
+    {
+     "term": "Supervised learning",
+     "def": "Learning to copy labelled examples, here the moves of human experts."
+    },
+    {
+     "term": "Reinforcement learning",
+     "def": "Learning from outcomes, here from winning and losing self-play games."
+    }
+   ],
+   "keyPoints": [
+    "AlphaGo was published in Nature on 28 January 2016 by Silver, Huang and colleagues at DeepMind.",
+    "It beat the European champion Fan Hui 5-0 in October 2015, the first win over a professional on a full board without handicap.",
+    "It beat Lee Sedol 4-1 in March 2016.",
+    "Four learned components: a fast rollout policy, an SL policy network, an RL policy network and a value network.",
+    "Policy networks cut the breadth of the search; the value network cuts its depth.",
+    "Later versions (Master, Zero) and AlphaZero removed the human data."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "For decades Go was seen as the hardest classic game for computers. Chess programs conquered the human champion in 1997, when Deep Blue beat Garry Kasparov. In Go the strongest programs of the time had only reached about amateur five dan, and still could not beat a professional without a handicap."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Nature paper of 28 January 2016, by David Silver, Aja Huang and eighteen colleagues, changed that. Its abstract introduces value networks to evaluate board positions and policy networks to select moves.",
+      "These deep neural networks are trained by a novel combination of supervised learning from human expert games and reinforcement learning from games of self-play. It also introduces a new search algorithm that combines Monte Carlo simulation with the value and policy networks."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The headline results: the program won 99.8 percent of its games against other Go programs, and defeated the human European Go champion by five games to zero. The champion was Fan Hui, a professional of rank two dan.",
+      "The match took place in October 2015, and the news was held back until the paper appeared in January 2016."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The sequel was a five-game match in Seoul in March 2016 against Lee Sedol, a nine dan professional. AlphaGo won four games to one, and was later awarded an honorary nine dan by the Korea Baduk Association.",
+      "Lee won the fourth game, the only loss AlphaGo suffered in its official games, a story told in chapter 12."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Here is the plan of the machine. A search must handle two problems. Go has about two hundred and fifty legal moves in a typical position and games last about a hundred and fifty moves, so the tree is enormous. The paper uses two general principles.",
+      "A value function lets the search stop early by judging a position directly, reducing depth. A policy lets it look only at likely moves, reducing breadth."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "AlphaGo has four learned components. A fast rollout policy is a small linear model that plays quickly. A supervised learning policy network, called the SL policy network, is a deep convolutional network trained to predict the moves of human experts.",
+      "A reinforcement learning policy network starts from the SL network and is improved by self-play. A value network is trained to predict the winner of games played by that RL network against itself."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "p_\\sigma,\\; p_\\pi,\\; p_\\rho,\\; v_\\theta \\;\\longrightarrow\\; \\text{Monte Carlo tree search}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A note on sources. This course follows the 2016 Nature paper, whose numbers I quote, and public accounts of the matches such as the AlphaGo and AlphaGo versus Lee Sedol articles. The labs are my own teaching miniatures on small boards and small games.",
+      "DeepMind did not release AlphaGo's code, so nothing here is a copy of it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The course path. Chapter 2 explains Go and its rules. Chapter 3 covers the programs that came before. Chapters 4 to 8 build the four learned components.",
+      "Chapter 9 sets out the search, chapter 10 the engineering and ratings, chapter 11 a miniature version in code, and chapter 12 the matches, successors and criticisms."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Who did AlphaGo beat in October 2015?",
+     "options": [
+      "Fan Hui",
+      "Lee Sedol",
+      "Ke Jie",
+      "Kasparov"
+     ],
+     "answer": 0,
+     "explain": "The European champion, 5-0."
+    },
+    {
+     "q": "What does a value network estimate?",
+     "options": [
+      "Who is winning",
+      "The next move",
+      "The board size",
+      "The komi"
+     ],
+     "answer": 0,
+     "explain": "It judges a position."
+    },
+    {
+     "q": "How were the networks trained?",
+     "options": [
+      "Supervised learning from experts, then reinforcement learning from self-play",
+      "Only by hand-written rules",
+      "From chess games",
+      "By random search"
+     ],
+     "answer": 0,
+     "explain": "A novel combination of both."
+    },
+    {
+     "q": "What was the result against Lee Sedol?",
+     "options": [
+      "4-1 for AlphaGo",
+      "5-0 for AlphaGo",
+      "3-2 for Lee",
+      "1-4 for AlphaGo"
+     ],
+     "answer": 0,
+     "explain": "March 2016, Seoul."
+    }
+   ],
+   "cards": [
+    {
+     "q": "When was the Nature paper published?",
+     "a": "28 January 2016."
+    },
+    {
+     "q": "What does the policy network reduce?",
+     "a": "The breadth of the search."
+    },
+    {
+     "q": "What does the value network reduce?",
+     "a": "The depth of the search."
+    },
+    {
+     "q": "Was the code released?",
+     "a": "No."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "The training pipeline",
+     "intro": "Put the stages in order.",
+     "items": [
+      "Train a fast rollout policy and an SL policy network on expert moves",
+      "Initialize the RL policy network from the SL network",
+      "Improve the RL network by self-play",
+      "Generate self-play positions with outcomes",
+      "Train the value network to predict the winner"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Components",
+     "intro": "Match each component with its job.",
+     "pairs": [
+      [
+       "Rollout policy",
+       "Quickly plays out games"
+      ],
+      [
+       "SL policy network",
+       "Predicts expert moves"
+      ],
+      [
+       "RL policy network",
+       "Maximizes winning through self-play"
+      ],
+      [
+       "Value network",
+       "Predicts the winner from a position"
+      ],
+      [
+       "MCTS",
+       "Combines them in a search"
+      ]
+     ]
+    },
+    {
+     "type": "match",
+     "title": "People and matches",
+     "intro": "Match each name with its role.",
+     "pairs": [
+      [
+       "Fan Hui",
+       "European champion beaten 5-0"
+      ],
+      [
+       "Lee Sedol",
+       "Nine dan opponent in Seoul"
+      ],
+      [
+       "David Silver",
+       "First author of the Nature paper"
+      ],
+      [
+       "Deep Blue",
+       "Beat Kasparov at chess in 1997"
+      ],
+      [
+       "Pachi",
+       "Open-source Go program"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Basics",
+     "text": "AlphaGo combines {{neural networks|deep neural networks}} with Monte Carlo {{tree search|tree-search}}. The {{policy}} network reduces breadth and the {{value}} network reduces depth."
+    }
+   ]
+  },
+  {
+   "title": "The game of Go",
+   "maps": [
+    {
+     "title": "Rules",
+     "links": [
+      "Players | alternate | Placing stones",
+      "Group | has | Liberties",
+      "Zero liberties | means | Capture",
+      "Ko rule | forbids | Repeating positions",
+      "Area scoring | counts | Stones and territory",
+      "Komi | compensates | White for moving second",
+      "Go | has | About 250 moves per turn"
+     ]
+    }
+   ],
+   "summary": [
+    "Go is played on a 19 by 19 grid. Black and White alternate placing a stone on an empty point. Connected stones of one colour form a group, and the empty points next to a group are its liberties. A group with no liberties is captured and removed.",
+    "A move that repeats an earlier position is not allowed; this is the ko rule. At the end the players count area: a player's stones plus the empty points surrounded only by their stones. White receives komi, here 7.5 points, because Black moves first.",
+    "The rules fit on a page, but a typical position has about two hundred and fifty legal moves and a game lasts about a hundred and fifty moves."
+   ],
+   "glossary": [
+    {
+     "term": "Liberty",
+     "def": "An empty point next to a stone or group."
+    },
+    {
+     "term": "Group",
+     "def": "Stones of one colour connected along grid lines."
+    },
+    {
+     "term": "Capture",
+     "def": "Removing a group that has no liberties."
+    },
+    {
+     "term": "Ko",
+     "def": "A situation where players could repeat a position forever; repeating is forbidden."
+    },
+    {
+     "term": "Komi",
+     "def": "Points added to White's score to compensate for Black's first move."
+    },
+    {
+     "term": "Area scoring",
+     "def": "Score = stones plus surrounded empty points; used with Chinese rules."
+    }
+   ],
+   "keyPoints": [
+    "Players alternate; Black moves first.",
+    "A group is captured when it has no liberties.",
+    "Suicide moves are generally forbidden and positions may not repeat (ko).",
+    "Chinese area scoring counts stones and surrounded empty points; the Lee Sedol match used a 7.5 komi.",
+    "Go's branching factor is about 250 and its depth about 150, versus about 35 and 80 for chess.",
+    "Evaluating a Go position is hard because the board has no simple material count."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Go is about two thousand five hundred years old and is played on a grid of nineteen lines by nineteen. Two players, Black and White, take turns putting a stone of their colour on an empty intersection. Black plays first. Stones never move. Once placed they stay until captured."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Stones of the same colour that touch along a grid line form a group. The empty points that touch a group along grid lines are its liberties. When Black plays the last liberty of a White group, the group is captured and removed from the board.",
+      "A player may not make a move that leaves their own group with no liberties, unless that move captures something. This ban is called the suicide rule, and it varies slightly between rule sets."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Ko is the situation in which two players could capture one stone back and forth forever. Rules forbid a move that would recreate an earlier board position. Different rule sets phrase this differently, and the details matter in play.",
+      "The labs here implement the simplest version: you may not immediately recreate the position of one move ago."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The game ends when both players pass. Under Chinese rules, as used in the Lee Sedol match, each player scores their stones plus the empty regions that only they border. White adds komi because Black has the advantage of the first move.",
+      "The Lee match used seven and a half, and the half point guarantees there are no ties."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now compare Go with chess in numbers from the paper. Chess has a branching factor of about thirty-five and a depth of about eighty. Go has a branching factor of about two hundred and fifty and a depth of about a hundred and fifty. Exhaustive search is hopeless in both, and Go is far worse."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} b^{d}: \\\\[0.6em] \\text{chess } 35^{80}\\ \\approx\\ 10^{123}, \\\\[0.6em] \\text{Go } 250^{150}\\ \\approx\\ 10^{360} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The second difficulty is evaluation. In chess, counting material gives a useful first estimate of who is ahead. In Go every stone is worth the same, and the value of a position depends on the potential of groups, the ownership of regions and fine tactical fights.",
+      "Programmers had struggled for decades to write a good evaluation function by hand. That is what makes learning an evaluation function so attractive."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section builds the fundamental operations on a small board: neighbours, groups and liberties, playing a move with captures, and area scoring. A board is a list of strings, one per row, with X for Black, O for White and a dot for empty."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a liberty?",
+     "options": [
+      "An empty point next to a group",
+      "A captured stone",
+      "A pass",
+      "A scoring unit"
+     ],
+     "answer": 0,
+     "explain": "Groups live by their liberties."
+    },
+    {
+     "q": "When is a group captured?",
+     "options": [
+      "When it has no liberties",
+      "When it has one stone",
+      "When Black passes",
+      "At move 100"
+     ],
+     "answer": 0,
+     "explain": "Zero liberties."
+    },
+    {
+     "q": "Why does White get komi?",
+     "options": [
+      "Black moves first",
+      "White is weaker",
+      "To end ties in chess",
+      "It is a penalty"
+     ],
+     "answer": 0,
+     "explain": "Compensation for the first move."
+    },
+    {
+     "q": "Which has the larger branching factor?",
+     "options": [
+      "Go",
+      "Chess",
+      "They are equal",
+      "Checkers"
+     ],
+     "answer": 0,
+     "explain": "About 250 against about 35."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is ko?",
+     "a": "A repeating-capture situation that rules forbid."
+    },
+    {
+     "q": "What is area scoring?",
+     "a": "Stones plus surrounded empty points."
+    },
+    {
+     "q": "What was komi in the Lee match?",
+     "a": "7.5 points."
+    },
+    {
+     "q": "Why is evaluation hard?",
+     "a": "No simple material count."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Neighbours",
+     "intro": "Write neighbours(r, c, n): the list of [row, col] pairs of the on-board points next to (r, c) on an n by n board, in the order up, down, left, right (skipping those off the board).",
+     "fn": "neighbours",
+     "starter": "def neighbours(r, c, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        0,
+        5
+       ],
+       "expect": [
+        [
+         1,
+         0
+        ],
+        [
+         0,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        2,
+        2,
+        5
+       ],
+       "expect": [
+        [
+         1,
+         2
+        ],
+        [
+         3,
+         2
+        ],
+        [
+         2,
+         1
+        ],
+        [
+         2,
+         3
+        ]
+       ]
+      },
+      {
+       "args": [
+        4,
+        4,
+        5
+       ],
+       "expect": [
+        [
+         3,
+         4
+        ],
+        [
+         4,
+         3
+        ]
+       ]
+      },
+      {
+       "args": [
+        0,
+        3,
+        5
+       ],
+       "expect": [
+        [
+         1,
+         3
+        ],
+        [
+         0,
+         2
+        ],
+        [
+         0,
+         4
+        ]
+       ]
+      },
+      {
+       "args": [
+        1,
+        0,
+        3
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ],
+        [
+         2,
+         0
+        ],
+        [
+         1,
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Try the four offsets and keep the ones inside the board.",
+     "solution": "def neighbours(r, c, n):\n    out = []\n    for dr, dc in [[-1, 0], [1, 0], [0, -1], [0, 1]]:\n        y = r + dr\n        x = c + dc\n        if 0 <= y < n and 0 <= x < n:\n            out.append([y, x])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Group size and liberties",
+     "intro": "A board is a list of equal-length strings of 'X', 'O' and '.'. Write group_info(board, r, c): [number of stones, number of liberties] of the group containing the stone at (r, c). If the point is empty return [0, 0].",
+     "fn": "group_info",
+     "starter": "def group_info(board, r, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "X....",
+         ".....",
+         ".....",
+         ".....",
+         "....."
+        ],
+        0,
+        0
+       ],
+       "expect": [
+        1,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         "XX...",
+         "XO...",
+         ".....",
+         ".....",
+         "....."
+        ],
+        0,
+        0
+       ],
+       "expect": [
+        3,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         "XX...",
+         "XO...",
+         ".O...",
+         ".....",
+         "....."
+        ],
+        1,
+        1
+       ],
+       "expect": [
+        2,
+        4
+       ]
+      },
+      {
+       "args": [
+        [
+         "XXO..",
+         "XOO..",
+         ".....",
+         ".....",
+         "....."
+        ],
+        0,
+        2
+       ],
+       "expect": [
+        3,
+        4
+       ]
+      },
+      {
+       "args": [
+        [
+         ".....",
+         ".....",
+         ".....",
+         ".....",
+         "....."
+        ],
+        2,
+        2
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Flood fill from the stone, collecting same-colour neighbours and distinct empty neighbours.",
+     "solution": "def group_of(board, r, c):\n    n = len(board)\n    color = board[r][c]\n    seen = [[r, c]]\n    stack = [[r, c]]\n    libs = []\n    while stack:\n        p = stack.pop()\n        for dr, dc in [[-1, 0], [1, 0], [0, -1], [0, 1]]:\n            y = p[0] + dr\n            x = p[1] + dc\n            if 0 <= y < n and 0 <= x < n:\n                ch = board[y][x]\n                if ch == '.':\n                    if [y, x] not in libs:\n                        libs.append([y, x])\n                elif ch == color and [y, x] not in seen:\n                    seen.append([y, x])\n                    stack.append([y, x])\n    return [seen, libs]\n\ndef group_info(board, r, c):\n    if board[r][c] == '.':\n        return [0, 0]\n    g = group_of(board, r, c)\n    return [len(g[0]), len(g[1])]\n"
+    },
+    {
+     "type": "python",
+     "title": "Play a move",
+     "intro": "Write play(board, r, c, color): place a stone of color ('X' or 'O') at (r, c). First remove every opponent group that now has no liberties. If your own group then has no liberties, or the point is occupied, the move is illegal. Return [new board as list of strings, number of stones captured], or [[], 0] if illegal.",
+     "fn": "play",
+     "starter": "def play(board, r, c, color):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "XO...",
+         "O....",
+         ".....",
+         ".....",
+         "....."
+        ],
+        0,
+        2,
+        "O"
+       ],
+       "expect": [
+        [
+         "XOO..",
+         "O....",
+         ".....",
+         ".....",
+         "....."
+        ],
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         "XO...",
+         "O....",
+         ".....",
+         ".....",
+         "....."
+        ],
+        1,
+        1,
+        "X"
+       ],
+       "expect": [
+        [
+         "XO...",
+         "OX...",
+         ".....",
+         ".....",
+         "....."
+        ],
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         "XO...",
+         ".....",
+         ".....",
+         ".....",
+         "....."
+        ],
+        1,
+        0,
+        "O"
+       ],
+       "expect": [
+        [
+         ".O...",
+         "O....",
+         ".....",
+         ".....",
+         "....."
+        ],
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         ".O...",
+         "O.O..",
+         ".O...",
+         ".....",
+         "....."
+        ],
+        1,
+        1,
+        "X"
+       ],
+       "expect": [
+        [],
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         "XX...",
+         "XO...",
+         ".XO..",
+         "..X..",
+         "....."
+        ],
+        2,
+        1,
+        "O"
+       ],
+       "expect": [
+        [],
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         ".X...",
+         "X.X..",
+         ".X...",
+         ".....",
+         "....."
+        ],
+        1,
+        1,
+        "O"
+       ],
+       "expect": [
+        [],
+        0
+       ]
+      }
+     ],
+     "hint": "Place the stone, check the opponent's neighbouring groups first, then your own.",
+     "solution": "def group_of(board, r, c):\n    n = len(board)\n    color = board[r][c]\n    seen = [[r, c]]\n    stack = [[r, c]]\n    libs = []\n    while stack:\n        p = stack.pop()\n        for dr, dc in [[-1, 0], [1, 0], [0, -1], [0, 1]]:\n            y = p[0] + dr\n            x = p[1] + dc\n            if 0 <= y < n and 0 <= x < n:\n                ch = board[y][x]\n                if ch == '.':\n                    if [y, x] not in libs:\n                        libs.append([y, x])\n                elif ch == color and [y, x] not in seen:\n                    seen.append([y, x])\n                    stack.append([y, x])\n    return [seen, libs]\n\ndef play(board, r, c, color):\n    n = len(board)\n    if board[r][c] != '.':\n        return [[], 0]\n    b = [list(row) for row in board]\n    b[r][c] = color\n    other = 'O'\n    if color == 'O':\n        other = 'X'\n    captured = 0\n    for dr, dc in [[-1, 0], [1, 0], [0, -1], [0, 1]]:\n        y = r + dr\n        x = c + dc\n        if 0 <= y < n and 0 <= x < n and b[y][x] == other:\n            g = group_of(b, y, x)\n            if len(g[1]) == 0:\n                for s in g[0]:\n                    b[s[0]][s[1]] = '.'\n                    captured += 1\n    g = group_of(b, r, c)\n    if len(g[1]) == 0:\n        return [[], 0]\n    return [[''.join(row) for row in b], captured]\n"
+    },
+    {
+     "type": "python",
+     "title": "Area score",
+     "intro": "Under Chinese area scoring a player's score is the number of their stones plus the empty points in regions bordered only by their stones. Write area_score(board, komi): return [black, white, black - white - komi] where black and white are the areas. Empty regions bordered by both colours (or none) count for nobody.",
+     "fn": "area_score",
+     "starter": "def area_score(board, komi):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "XX.OO",
+         "XX.OO",
+         "XX.OO",
+         "XX.OO",
+         "XX.OO"
+        ],
+        0.5
+       ],
+       "expect": [
+        10,
+        10,
+        -0.5
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         "XXXXX",
+         "X...X",
+         "X.O.X",
+         "X...X",
+         "XXXXX"
+        ],
+        2.5
+       ],
+       "expect": [
+        16,
+        1,
+        12.5
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         "XX...",
+         "XX...",
+         ".....",
+         "...OO",
+         "...OO"
+        ],
+        7.5
+       ],
+       "expect": [
+        4,
+        4,
+        -7.5
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         ".....",
+         ".....",
+         ".....",
+         ".....",
+         "....."
+        ],
+        1.5
+       ],
+       "expect": [
+        0,
+        0,
+        -1.5
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         "XO",
+         ".."
+        ],
+        0.5
+       ],
+       "expect": [
+        1,
+        1,
+        -0.5
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Count stones directly; flood-fill each empty region and record which colours touch it.",
+     "solution": "def area_score(board, komi):\n    n = len(board)\n    black = 0\n    white = 0\n    seen = []\n    for r in range(n):\n        for c in range(n):\n            ch = board[r][c]\n            if ch == 'X':\n                black += 1\n            elif ch == 'O':\n                white += 1\n            elif [r, c] not in seen:\n                region = [[r, c]]\n                seen.append([r, c])\n                stack = [[r, c]]\n                touch = []\n                while stack:\n                    p = stack.pop()\n                    for dr, dc in [[-1, 0], [1, 0], [0, -1], [0, 1]]:\n                        y = p[0] + dr\n                        x = p[1] + dc\n                        if 0 <= y < n and 0 <= x < n:\n                            q = board[y][x]\n                            if q == '.':\n                                if [y, x] not in seen:\n                                    seen.append([y, x])\n                                    region.append([y, x])\n                                    stack.append([y, x])\n                            elif q not in touch:\n                                touch.append(q)\n                if touch == ['X']:\n                    black += len(region)\n                elif touch == ['O']:\n                    white += len(region)\n    return [black, white, black - white - komi]\n"
+    },
+    {
+     "type": "python",
+     "title": "How big is the tree?",
+     "intro": "Write log10_tree(b, d): d times the base-10 logarithm of b, rounded to 1 decimal place (the exponent of b to the power d). Use import math.",
+     "fn": "log10_tree",
+     "starter": "def log10_tree(b, d):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        35,
+        80
+       ],
+       "expect": 123.5
+      },
+      {
+       "args": [
+        250,
+        150
+       ],
+       "expect": 359.7
+      },
+      {
+       "args": [
+        2,
+        10
+       ],
+       "expect": 3.0
+      },
+      {
+       "args": [
+        10,
+        5
+       ],
+       "expect": 5.0
+      }
+     ],
+     "hint": "d * log10(b), then round to one decimal.",
+     "solution": "import math\ndef log10_tree(b, d):\n    return round(d * math.log10(b), 1)\n"
+    },
+    {
+     "type": "order",
+     "title": "Capturing",
+     "intro": "Put the steps of a capture in order.",
+     "items": [
+      "A player places a stone",
+      "Look at each adjacent enemy group",
+      "Count its liberties",
+      "Remove groups with zero liberties",
+      "Check that your own group still has a liberty"
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Rules",
+     "text": "A group with no {{liberties}} is captured. The {{ko}} rule forbids repeating a position. White receives {{komi}} because Black moves first."
+    }
+   ]
+  },
+  {
+   "title": "Before AlphaGo: search and Monte Carlo",
+   "maps": [
+    {
+     "title": "Computer Go",
+     "links": [
+      "Alpha-beta search | works for | Chess",
+      "Hand-written evaluation | fails for | Go",
+      "Monte Carlo rollouts | estimate | Position value",
+      "MCTS | grows | Search tree",
+      "UCT | balances | Exploration and exploitation",
+      "Crazy Stone and Zen | used | MCTS",
+      "Pachi | was | Open-source MCTS program"
+     ]
+    }
+   ],
+   "summary": [
+    "Chess programs search deeply with alpha-beta and a hand-written evaluation. In Go that approach stalled: the tree is too wide and no one could write a good evaluation. Programs stayed weak amateurs.",
+    "Progress came from Monte Carlo methods. To judge a position, play many random games from it and count the wins. Monte Carlo tree search builds a tree and spends more simulations on moves that look promising, with a bandit rule such as UCT choosing which to explore.",
+    "By 2015 the strongest programs, such as Crazy Stone and Zen, used MCTS and reached strong amateur level. AlphaGo's contribution was to guide that search with learned networks."
+   ],
+   "glossary": [
+    {
+     "term": "Alpha-beta search",
+     "def": "A pruned minimax search used by chess engines."
+    },
+    {
+     "term": "Rollout",
+     "def": "A game played to the end, usually with fast or random moves, to estimate a position's value."
+    },
+    {
+     "term": "Monte Carlo",
+     "def": "Estimating by random sampling."
+    },
+    {
+     "term": "UCB1 and UCT",
+     "def": "A bandit rule adding an exploration bonus, applied to tree search."
+    },
+    {
+     "term": "Win rate",
+     "def": "Wins divided by simulations."
+    },
+    {
+     "term": "Pachi",
+     "def": "An open-source Monte Carlo Go program ranked about two amateur dan in the paper."
+    }
+   ],
+   "keyPoints": [
+    "Hand-written evaluation functions for Go never reached strong play.",
+    "Monte Carlo rollouts estimate a position by the win rate of random games played from it.",
+    "MCTS repeats selection, expansion, simulation and backup.",
+    "UCT selects the child with the best average plus an exploration bonus that shrinks with visits.",
+    "The strongest programs before AlphaGo reached about five-dan amateur level.",
+    "Rollouts are noisy and need many simulations."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "For Go, the classical recipe failed. Alpha-beta search needs an evaluation to apply when it stops. In chess a short list of features gives a decent one.",
+      "In Go no one managed to hand-write an evaluation that worked, and the branching factor of two hundred and fifty means the search cannot go deep anyway. For many years the best programs played at weak amateur level."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The first breakthrough around 2006 was to give up on evaluation functions and estimate value by sampling. To judge a position, play many games from it using fast random or lightly guided moves until the end, and count how often each side wins. This is a Monte Carlo rollout.",
+      "With enough rollouts the win rate is a usable measure, even though each random game is a poor player."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The next step was to apply the sampling inside a tree. Monte Carlo tree search starts with just the current position as the root. Each simulation does four things. It selects a path down the existing tree. It expands a new node at the end of the path.",
+      "It plays a rollout from the new node to the end of the game. It backs up the result, updating win counts along the path. As simulations accumulate, the tree grows deeper along promising lines."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How to select? Treat each choice of move at a node as a slot machine arm. The UCB1 rule from the multi-armed bandit literature picks the arm with the best average reward plus a bonus that grows with the logarithm of the total plays and shrinks with the arm's own plays.",
+      "Applying this rule at every node of the tree is the UCT algorithm of Kocsis and Szepesvari. The dates and names here are my background knowledge, and the Nature paper cites this work."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "a = \\arg\\max_a \\left[\\, \\frac{W_a}{N_a} + c\\,\\sqrt{\\frac{\\ln N}{N_a}} \\,\\right]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "By the time of the paper, the strongest open-source program, Pachi, which uses 100,000 simulations per move, was ranked at two amateur dan. Programs such as Crazy Stone and Zen were stronger. Yet even the best ones could not beat a professional without a handicap, a gap of many levels."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Rollouts have a hidden weakness. A random game is not like a real game, so its result can mislead: a position that looks equal to random play may be lost against good play. The remedy used by strong programs was to make rollouts smarter with local patterns.",
+      "AlphaGo keeps rollouts, with a small linear policy, but mixes them with a learned value, as chapter 9 shows."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section builds the UCB score and a flat Monte Carlo evaluator on a simple stone-taking game, with a tiny deterministic random generator so that results are reproducible."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What do rollouts estimate?",
+     "options": [
+      "The value of a position",
+      "The board size",
+      "The komi",
+      "The rules"
+     ],
+     "answer": 0,
+     "explain": "By the win rate of sampled games."
+    },
+    {
+     "q": "What does the UCB bonus do as a move is tried more?",
+     "options": [
+      "It shrinks",
+      "It grows",
+      "It stays fixed",
+      "It flips sign"
+     ],
+     "answer": 0,
+     "explain": "The count is in the denominator."
+    },
+    {
+     "q": "Which was an MCTS Go program?",
+     "options": [
+      "Pachi",
+      "Deep Blue",
+      "Stockfish",
+      "Elmo"
+     ],
+     "answer": 0,
+     "explain": "An open-source MCTS program."
+    },
+    {
+     "q": "What are the four phases of MCTS?",
+     "options": [
+      "Selection, expansion, simulation, backup",
+      "Read, write, run, halt",
+      "Train, test, deploy, repeat",
+      "Shuffle, deal, bid, play"
+     ],
+     "answer": 0,
+     "explain": "Walk down, add, play out, update."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a rollout?",
+     "a": "A game played to the end to estimate value."
+    },
+    {
+     "q": "What is UCT?",
+     "a": "UCB applied at each node of the tree."
+    },
+    {
+     "q": "Why not alpha-beta for Go?",
+     "a": "Too wide and no good evaluation."
+    },
+    {
+     "q": "What was the pre-AlphaGo level?",
+     "a": "About amateur five dan."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "UCB score",
+     "intro": "Write ucb(wins, plays, total, c): wins / plays + c * sqrt(ln(total) / plays). Use import math. If plays is 0 return 1000000.0.",
+     "fn": "ucb",
+     "starter": "def ucb(wins, plays, total, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        10,
+        100,
+        1.0
+       ],
+       "expect": 0.9786140424415113,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0,
+        0,
+        50,
+        1.0
+       ],
+       "expect": 1000000.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        7,
+        8,
+        1000,
+        0.5
+       ],
+       "expect": 1.33961527360623,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1,
+        20,
+        21,
+        2.0
+       ],
+       "expect": 0.8303233224405667,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        5,
+        5,
+        5,
+        1.0
+       ],
+       "expect": 1.5673513747994448,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Return a huge value for untried moves so they are tried first.",
+     "solution": "import math\ndef ucb(wins, plays, total, c):\n    if plays == 0:\n        return 1000000.0\n    return wins / plays + c * math.sqrt(math.log(total) / plays)\n"
+    },
+    {
+     "type": "python",
+     "title": "Flat Monte Carlo on a stone game",
+     "intro": "Players alternately take 1, 2 or 3 stones from a pile; whoever takes the last stone wins. Random playouts use a generator x = (75 * x + 74) % 65537, starting from seed; to choose among k legal moves use x % k (moves in ascending order). Write flat_mc(stones, playouts, seed): for each first move m = 1..min(3, stones) in order, play playouts random games (the opponent moves next after m) and count the wins of the player who made move m; the generator state carries over between games. Return the list of win counts.",
+     "fn": "flat_mc",
+     "starter": "def flat_mc(stones, playouts, seed):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        20,
+        1
+       ],
+       "expect": [
+        12,
+        10,
+        8
+       ]
+      },
+      {
+       "args": [
+        4,
+        30,
+        7
+       ],
+       "expect": [
+        12,
+        19,
+        0
+       ]
+      },
+      {
+       "args": [
+        10,
+        25,
+        3
+       ],
+       "expect": [
+        15,
+        16,
+        14
+       ]
+      },
+      {
+       "args": [
+        2,
+        10,
+        5
+       ],
+       "expect": [
+        0,
+        10
+       ]
+      },
+      {
+       "args": [
+        7,
+        40,
+        11
+       ],
+       "expect": [
+        20,
+        11,
+        21
+       ]
+      }
+     ],
+     "hint": "Track whose turn it is; the player who takes the last stone wins.",
+     "solution": "def flat_mc(stones, playouts, seed):\n    x = seed\n    wins = []\n    for m in range(1, min(3, stones) + 1):\n        w = 0\n        for g in range(playouts):\n            left = stones - m\n            me_to_move = False\n            if left == 0:\n                w += 1\n                continue\n            while True:\n                k = min(3, left)\n                x = (75 * x + 74) % 65537\n                take = 1 + x % k\n                left -= take\n                if left == 0:\n                    if me_to_move:\n                        w += 1\n                    break\n                me_to_move = not me_to_move\n        wins.append(w)\n    return wins\n"
+    },
+    {
+     "type": "python",
+     "title": "Pick the best move",
+     "intro": "Write best_move(wins): the 1-based index (the number of stones to take) of the largest win count; ties go to the smaller move.",
+     "fn": "best_move",
+     "starter": "def best_move(wins):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         3,
+         9,
+         4
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         5,
+         5,
+         5
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         0
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         8,
+         8
+        ]
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         7,
+         6
+        ]
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Scan the list, remembering the first maximum.",
+     "solution": "def best_move(wins):\n    best = -1\n    arg = 1\n    for i in range(len(wins)):\n        if wins[i] > best:\n            best = wins[i]\n            arg = i + 1\n    return arg\n"
+    },
+    {
+     "type": "order",
+     "title": "One MCTS simulation",
+     "intro": "Order the phases.",
+     "items": [
+      "Select a path through the tree",
+      "Expand a new node",
+      "Play a rollout to the end of the game",
+      "Score the result",
+      "Back the result up the path"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Rollout",
+       "A sampled game to the end"
+      ],
+      [
+       "UCB",
+       "Mean plus exploration bonus"
+      ],
+      [
+       "UCT",
+       "UCB inside tree search"
+      ],
+      [
+       "Alpha-beta",
+       "Pruned minimax"
+      ],
+      [
+       "Win rate",
+       "Wins over simulations"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Monte Carlo",
+     "text": "A {{rollout}} plays a game to the end. {{UCT|UCB}} adds an exploration bonus that shrinks as a move is tried more. Even the best Monte Carlo programs could not beat a {{professional}} without a handicap."
+    }
+   ]
+  },
+  {
+   "title": "Looking at the board: features and policy networks",
+   "maps": [
+    {
+     "title": "Inputs and outputs",
+     "links": [
+      "Board | becomes | Feature planes",
+      "Policy network | takes | 48 planes of 19 by 19",
+      "Convolutional layers | build | Position representation",
+      "Softmax | outputs | Move probabilities",
+      "Legal mask | removes | Illegal moves",
+      "Value network | adds | Colour plane",
+      "Temperature | sharpens or flattens | Probabilities"
+     ]
+    }
+   ],
+   "summary": [
+    "A neural network cannot read a board directly. AlphaGo turns each position into a stack of 19 by 19 binary planes: where the black, white and empty stones are, how recently each move was played, how many liberties each group has, and so on. The paper lists 48 such planes.",
+    "A convolutional network turns the planes into a probability for every point of the board. A final softmax makes the numbers positive and sum to one. Illegal moves are given probability zero by a mask before the numbers are renormalized.",
+    "This chapter builds the encodings and the softmax in code. The training comes in the next chapters."
+   ],
+   "glossary": [
+    {
+     "term": "Feature plane",
+     "def": "A 19 by 19 grid of zeros and ones describing one property of the position."
+    },
+    {
+     "term": "Convolutional network",
+     "def": "A network whose layers apply the same small filters at every board position."
+    },
+    {
+     "term": "Softmax",
+     "def": "Turns scores into probabilities: exp(z_i) divided by the sum of exp(z_j)."
+    },
+    {
+     "term": "Legal mask",
+     "def": "Setting illegal moves to probability zero and renormalizing."
+    },
+    {
+     "term": "Liberties plane",
+     "def": "Binary planes marking groups with 1, 2, 3 and so on liberties."
+    },
+    {
+     "term": "Temperature",
+     "def": "An exponent applied to probabilities to sharpen or flatten the distribution."
+    }
+   ],
+   "keyPoints": [
+    "The policy network input is 48 binary 19 by 19 planes; the value network adds a plane for the player's colour.",
+    "Planes include stone colour (3), turns since a move was played (8), liberties (8), capture size (8), self-atari size (8), liberties after move (8), ladder capture and escape, and sensibleness.",
+    "The output is a probability for each of 361 points.",
+    "Softmax: p_i = exp(z_i) / sum_j exp(z_j).",
+    "Illegal moves are masked out and the rest renormalized.",
+    "In search, the paper uses a softmax temperature of 0.67 on the SL policy network for priors."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Think of a photograph. A photograph has three colour channels, each a grid of numbers. AlphaGo treats a Go position the same way. The board is a nineteen by nineteen image with many channels, and each channel is a yes-or-no map of one fact about the position."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper's list, in its Extended Data tables, has forty-eight planes for the policy network. Three planes give stone colour: points with the player's stones, the opponent's stones, and empty points. One plane is all ones. Eight planes record how many turns ago each stone was played.",
+      "Eight record how many liberties each group has. Others mark how many stones a move would capture, how many stones a move would put in atari, how many liberties a stone would have after it is played, and whether a ladder would capture or escape. One marks moves that are sensible.",
+      "The value network adds a plane for whose turn it is."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why features instead of the raw board alone? The paper reports that using only the raw board position and the move history, the network reached 55.7 percent accuracy at predicting expert moves, against 57.0 percent with all features.",
+      "The extra planes help a little, as hand-written knowledge about liberties and ladders saves the network from having to discover them."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The network is a stack of convolutional layers, thirteen for the SL policy network. Each layer applies small filters, with rectifier nonlinearities between them. The final layer produces one score for each of the 361 points. A softmax turns the scores into probabilities."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "p_i \\;=\\; \\frac{e^{z_i}}{\\sum_j e^{z_j}}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Not all of the 361 points are legal. Some are occupied and some break the ko or suicide rules. The search should never consider them. A legal mask sets the probability of illegal points to zero and divides the rest by their total, so the result still sums to one."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "One more knob: the temperature. If every probability is raised to a power below one and the result renormalized, the distribution flattens and makes rare moves more likely.",
+      "The paper applies a softmax temperature of 0.67 to the SL policy network when it produces priors for the tree search, to spread the search over more candidate moves. The exact transformation used in the practice section is my own simple version of the idea."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you write the softmax, the legal mask, three stone planes and the temperature operation."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How many input planes does the policy network use?",
+     "options": [
+      "48",
+      "3",
+      "361",
+      "8"
+     ],
+     "answer": 0,
+     "explain": "Each is a 19 by 19 binary map."
+    },
+    {
+     "q": "What does softmax guarantee?",
+     "options": [
+      "Positive numbers that sum to 1",
+      "A single winner",
+      "Integer outputs",
+      "Legal moves only"
+     ],
+     "answer": 0,
+     "explain": "Probabilities."
+    },
+    {
+     "q": "Why mask illegal moves?",
+     "options": [
+      "They must never be chosen",
+      "To save memory",
+      "To flip colours",
+      "To raise the temperature"
+     ],
+     "answer": 0,
+     "explain": "Then renormalize."
+    },
+    {
+     "q": "What accuracy did raw board plus history alone reach?",
+     "options": [
+      "55.7 percent",
+      "100 percent",
+      "10 percent",
+      "24.2 percent"
+     ],
+     "answer": 0,
+     "explain": "Against 57.0 percent with all features."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does a plane hold?",
+     "a": "Zeros and ones for one fact about the board."
+    },
+    {
+     "q": "What is the output size?",
+     "a": "361 move probabilities."
+    },
+    {
+     "q": "What does temperature below 1 do here?",
+     "a": "Flattens the distribution."
+    },
+    {
+     "q": "What does the value network add?",
+     "a": "A colour-to-move plane."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Softmax",
+     "intro": "Write softmax(z): the list of exp(z_i) / sum of exp(z_j). Subtract the maximum first for numerical safety. Use import math.",
+     "fn": "softmax",
+     "starter": "def softmax(z):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.0,
+         0.0
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0,
+         2.0,
+         3.0
+        ]
+       ],
+       "expect": [
+        0.09003057317038046,
+        0.24472847105479764,
+        0.6652409557748218
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         10.0,
+         0.0
+        ]
+       ],
+       "expect": [
+        0.9999546021312976,
+        4.5397868702434395e-05
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         -1.0,
+         -1.0,
+         -1.0,
+         -1.0
+        ]
+       ],
+       "expect": [
+        0.25,
+        0.25,
+        0.25,
+        0.25
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.5
+        ]
+       ],
+       "expect": [
+        1.0
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Exponentiate the shifted scores and divide by their sum.",
+     "solution": "import math\ndef softmax(z):\n    m = max(z)\n    e = [math.exp(x - m) for x in z]\n    s = sum(e)\n    return [x / s for x in e]\n"
+    },
+    {
+     "type": "python",
+     "title": "Mask illegal moves",
+     "intro": "Write masked(p, legal): legal is a list of 0/1 flags. Zero the probability of illegal moves and renormalize the rest so they sum to 1. If nothing is legal return the zeros.",
+     "fn": "masked",
+     "starter": "def masked(p, legal):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.3,
+         0.2
+        ],
+        [
+         1,
+         0,
+         1
+        ]
+       ],
+       "expect": [
+        0.7142857142857143,
+        0.0,
+        0.28571428571428575
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.25,
+         0.25,
+         0.25,
+         0.25
+        ],
+        [
+         0,
+         0,
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.0,
+        0.5,
+        0.5
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.6,
+         0.4
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.1,
+         0.9
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        0.1,
+        0.9
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": [
+        1.0
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Multiply by the flags, then divide by the new total.",
+     "solution": "def masked(p, legal):\n    q = [a * b for a, b in zip(p, legal)]\n    s = sum(q)\n    if s == 0:\n        return q\n    return [x / s for x in q]\n"
+    },
+    {
+     "type": "python",
+     "title": "Stone planes",
+     "intro": "A board is a list of strings of 'X', 'O' and '.'. Write stone_planes(board, me): return three flat lists (row by row): 1 where my stones are, 1 where the opponent's are, 1 where empty. me is 'X' or 'O'. Return [mine, theirs, empty].",
+     "fn": "stone_planes",
+     "starter": "def stone_planes(board, me):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "X.",
+         ".O"
+        ],
+        "X"
+       ],
+       "expect": [
+        [
+         1,
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         0,
+         0,
+         1
+        ],
+        [
+         0,
+         1,
+         1,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "X.",
+         ".O"
+        ],
+        "O"
+       ],
+       "expect": [
+        [
+         0,
+         0,
+         0,
+         1
+        ],
+        [
+         1,
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         1,
+         1,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "...",
+         "...",
+         "..."
+        ],
+        "X"
+       ],
+       "expect": [
+        [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        [
+         1,
+         1,
+         1,
+         1,
+         1,
+         1,
+         1,
+         1,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "XO",
+         "OX"
+        ],
+        "O"
+       ],
+       "expect": [
+        [
+         0,
+         1,
+         1,
+         0
+        ],
+        [
+         1,
+         0,
+         0,
+         1
+        ],
+        [
+         0,
+         0,
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "hint": "Loop over the characters row by row.",
+     "solution": "def stone_planes(board, me):\n    mine = []\n    theirs = []\n    empty = []\n    for row in board:\n        for ch in row:\n            mine.append(1 if ch == me else 0)\n            if ch == '.':\n                theirs.append(0)\n                empty.append(1)\n            else:\n                theirs.append(0 if ch == me else 1)\n                empty.append(0)\n    return [mine, theirs, empty]\n"
+    },
+    {
+     "type": "python",
+     "title": "Flatten the distribution",
+     "intro": "Write temper(p, beta): raise each probability to the power beta, renormalize and round each result to 9 decimals. (A beta below 1 flattens; above 1 sharpens.)",
+     "fn": "temper",
+     "starter": "def temper(p, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.7,
+         0.2,
+         0.1
+        ],
+        0.67
+       ],
+       "expect": [
+        0.587026791,
+        0.253590122,
+        0.159383087
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.7,
+         0.2,
+         0.1
+        ],
+        1.0
+       ],
+       "expect": [
+        0.7,
+        0.2,
+        0.1
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.7,
+         0.2,
+         0.1
+        ],
+        2.0
+       ],
+       "expect": [
+        0.907407407,
+        0.074074074,
+        0.018518519
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        0.3
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        0.5
+       ],
+       "expect": [
+        1.0
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Use the ** operator, then divide by the sum.",
+     "solution": "def temper(p, beta):\n    q = [x ** beta for x in p]\n    s = sum(q)\n    return [round(x / s, 9) for x in q]\n"
+    },
+    {
+     "type": "order",
+     "title": "From board to move",
+     "intro": "Order the steps of the policy network.",
+     "items": [
+      "Encode the board as feature planes",
+      "Apply the convolutional layers",
+      "Produce a score for each point",
+      "Apply the softmax",
+      "Mask illegal points and renormalize"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Planes",
+     "intro": "Match each plane group with its content.",
+     "pairs": [
+      [
+       "Stone colour",
+       "Mine, theirs, empty"
+      ],
+      [
+       "Liberties",
+       "Number of liberties of each group"
+      ],
+      [
+       "Turns since",
+       "How long ago a stone was played"
+      ],
+      [
+       "Ladder",
+       "Whether a ladder captures or escapes"
+      ],
+      [
+       "Colour to play",
+       "Added for the value network"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Policy",
+     "text": "The policy network takes {{48}} planes and ends with a {{softmax}}. Illegal moves are removed by a {{mask|legal mask}} and the rest renormalized."
+    }
+   ]
+  },
+  {
+   "title": "Learning from experts: the SL policy network",
+   "maps": [
+    {
+     "title": "Supervised learning",
+     "links": [
+      "Expert games | provide | Position and move pairs",
+      "SL policy network | predicts | The expert's move",
+      "Cross-entropy | measures | Prediction error",
+      "Gradient ascent | maximizes | Log likelihood",
+      "KGS Go Server | supplied | 30 million positions",
+      "Accuracy | reached | 57.0 percent",
+      "Fast and slow | trade | Accuracy for speed"
+     ]
+    }
+   ],
+   "summary": [
+    "The first training stage is plain supervised learning. Take positions from games played by strong humans on the KGS Go Server, and train the network to give high probability to the move the expert actually played.",
+    "The training signal is the log likelihood of the human move: the weights are nudged in the direction that makes that move more probable. In the paper, a 13-layer network trained on 30 million positions predicted the expert move 57.0 percent of the time, against 44.4 percent for the previous best.",
+    "The labs write the loss, its gradient and a full tiny training loop for a linear softmax model."
+   ],
+   "glossary": [
+    {
+     "term": "Supervised learning",
+     "def": "Learning to predict labels, here the expert's move for each position."
+    },
+    {
+     "term": "Cross-entropy",
+     "def": "The loss minus the log of the probability given to the correct label."
+    },
+    {
+     "term": "Log likelihood",
+     "def": "The log of the probability the model assigned to the data."
+    },
+    {
+     "term": "Gradient",
+     "def": "The direction in which a function increases fastest."
+    },
+    {
+     "term": "Top-1 accuracy",
+     "def": "How often the highest-probability move equals the expert's move."
+    },
+    {
+     "term": "Overfitting",
+     "def": "Fitting training data but failing on new data."
+    }
+   ],
+   "keyPoints": [
+    "The SL policy network is trained to maximize the log likelihood of the human move.",
+    "Update: delta sigma is proportional to the gradient of log p_sigma(a | s) with respect to sigma.",
+    "For softmax outputs, the gradient of -log p_a with respect to the logits is p - onehot(a).",
+    "The paper: 13 layers, 30 million positions, 57.0 percent accuracy (55.7 percent from raw board and history only).",
+    "The earlier state of the art was 44.4 percent.",
+    "A stronger accuracy gave much stronger play, though the network was slower to evaluate."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Stage one of AlphaGo is imitation. The training data are positions from the KGS Go Server, a site where strong amateurs play. The paper says the data set held 29.4 million positions from 160,000 games. For each position the label is the move the player actually chose, one of 361 points."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The network gives a probability for each point. The natural loss is the negative log of the probability given to the human move, called cross-entropy. If the network is sure about the right move the loss is near zero. If it gives the move a tiny probability the loss is large."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "L(\\sigma) \\;=\\; -\\log p_{\\sigma}(a \\mid s)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "To train, compute the gradient of the loss and take a small step the other way. For the final softmax layer there is a neat result.",
+      "The gradient of minus log p of the correct action with respect to the scores, the logits, is just the vector of predicted probabilities minus a one-hot vector for the correct action. A move that was too unlikely gets pushed up and every other move gets pushed down in proportion to its probability."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper trained with stochastic gradient ascent on the log likelihood, which is the same thing as descent on the loss. After training, the 13-layer network predicted the expert move correctly 57.0 percent of the time using all features, and 55.7 percent with only the board and move history.",
+      "The best earlier result the paper cites was 44.4 percent. That sounds modest, but there are 361 candidate points and humans disagree with themselves."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A key finding was that small gains in accuracy led to large gains in playing strength. Bigger networks were more accurate but slower to evaluate.",
+      "The network's evaluation took a few milliseconds, which is why the paper also trains a much faster, weaker policy for rollouts, the subject of the next chapter."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imitation has a ceiling. A network trained to copy humans plays like a blend of the humans in its data. To go beyond them, the paper adds a second stage in which the network improves through self-play, chapter 7. But the SL network remains useful in the final search.",
+      "The paper reports that the SL policy gives better priors to the tree search than the stronger RL policy, perhaps because humans pick a diverse set of promising moves while RL tunes onto a single best move."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section writes cross-entropy, the accuracy metrics, the softmax gradient, one training step for a linear softmax model and a small training loop."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the SL policy network learn to predict?",
+     "options": [
+      "The expert's move",
+      "The winner",
+      "The komi",
+      "The rules"
+     ],
+     "answer": 0,
+     "explain": "Imitation of human games."
+    },
+    {
+     "q": "What is the gradient of -log p_a with respect to the logits?",
+     "options": [
+      "p minus a one-hot vector",
+      "p times 2",
+      "Zero",
+      "The board"
+     ],
+     "answer": 0,
+     "explain": "Pushes the right move up."
+    },
+    {
+     "q": "What accuracy did the SL network reach?",
+     "options": [
+      "57.0 percent",
+      "99 percent",
+      "10 percent",
+      "24.2 percent"
+     ],
+     "answer": 0,
+     "explain": "With all input features."
+    },
+    {
+     "q": "Where did the training positions come from?",
+     "options": [
+      "The KGS Go Server",
+      "Chess databases",
+      "Random play",
+      "Self-play"
+     ],
+     "answer": 0,
+     "explain": "Strong human amateur games."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Why not stop at supervised learning?",
+     "a": "It only imitates the humans in its data."
+    },
+    {
+     "q": "What does top-1 accuracy measure?",
+     "a": "How often the best guess is the expert move."
+    },
+    {
+     "q": "What is overfitting?",
+     "a": "Memorizing the training data."
+    },
+    {
+     "q": "Which gave better search priors, SL or RL?",
+     "a": "The SL policy, according to the paper."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Cross-entropy",
+     "intro": "Write cross_entropy(p, a): minus the natural log of p[a]. Use import math.",
+     "fn": "cross_entropy",
+     "starter": "def cross_entropy(p, a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        0
+       ],
+       "expect": 0.6931471805599453,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.05,
+         0.05
+        ],
+        0
+       ],
+       "expect": 0.10536051565782628,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.05,
+         0.05
+        ],
+        2
+       ],
+       "expect": 2.995732273553991,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.25,
+         0.25,
+         0.25,
+         0.25
+        ],
+        3
+       ],
+       "expect": 1.3862943611198906,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        0
+       ],
+       "expect": -0.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Look up the probability of the correct move and take -log.",
+     "solution": "import math\ndef cross_entropy(p, a):\n    return -math.log(p[a])\n"
+    },
+    {
+     "type": "python",
+     "title": "Top-k accuracy",
+     "intro": "Write topk_accuracy(rows, labels, k): rows is a list of probability lists, labels the expert move for each. Return the fraction of rows where the label is among the k highest-probability moves (ties go to the lower index).",
+     "fn": "topk_accuracy",
+     "starter": "def topk_accuracy(rows, labels, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0.6,
+          0.3,
+          0.1
+         ],
+         [
+          0.2,
+          0.5,
+          0.3
+         ],
+         [
+          0.1,
+          0.1,
+          0.8
+         ]
+        ],
+        [
+         0,
+         2,
+         2
+        ],
+        1
+       ],
+       "expect": 0.6666666666666666,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          0.6,
+          0.3,
+          0.1
+         ],
+         [
+          0.2,
+          0.5,
+          0.3
+         ],
+         [
+          0.1,
+          0.1,
+          0.8
+         ]
+        ],
+        [
+         1,
+         0,
+         1
+        ],
+        2
+       ],
+       "expect": 0.3333333333333333,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          0.5,
+          0.5
+         ]
+        ],
+        [
+         1
+        ],
+        1
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          0.4,
+          0.4,
+          0.2
+         ]
+        ],
+        [
+         1
+        ],
+        2
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Sort move indices by probability and check the top k.",
+     "solution": "def topk_accuracy(rows, labels, k):\n    hit = 0\n    for p, a in zip(rows, labels):\n        order = sorted(range(len(p)), key=lambda i: (-p[i], i))\n        if a in order[:k]:\n            hit += 1\n    return hit / len(rows)\n"
+    },
+    {
+     "type": "python",
+     "title": "Softmax gradient",
+     "intro": "Write logit_grad(p, a): the gradient of -log p[a] with respect to the logits, that is p with 1 subtracted at position a.",
+     "fn": "logit_grad",
+     "starter": "def logit_grad(p, a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        0
+       ],
+       "expect": [
+        -0.5,
+        0.5
+       ],
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.3,
+         0.5
+        ],
+        2
+       ],
+       "expect": [
+        0.2,
+        0.3,
+        -0.5
+       ],
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        0
+       ],
+       "expect": [
+        0.0
+       ],
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0.1,
+         0.9
+        ],
+        0
+       ],
+       "expect": [
+        -0.9,
+        0.9
+       ],
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Copy p and subtract one at the label.",
+     "solution": "def logit_grad(p, a):\n    g = list(p)\n    g[a] = g[a] - 1.0\n    return g\n"
+    },
+    {
+     "type": "python",
+     "title": "One training step",
+     "intro": "A linear softmax model has weights W (a list of rows, one per move, each of the same length as the feature vector x). Write sgd_step(W, x, a, lr): compute logits z_i = sum_j W[i][j] * x[j], p = softmax(z), and return the new weights W[i][j] - lr * (p[i] - onehot[i]) * x[j]. Use import math.",
+     "fn": "sgd_step",
+     "starter": "def sgd_step(W, x, a, lr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0.0,
+          0.0
+         ],
+         [
+          0.0,
+          0.0
+         ]
+        ],
+        [
+         1.0,
+         2.0
+        ],
+        0,
+        0.5
+       ],
+       "expect": [
+        [
+         0.25,
+         0.5
+        ],
+        [
+         -0.25,
+         -0.5
+        ]
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          0.1,
+          0.2
+         ],
+         [
+          0.3,
+          0.4
+         ],
+         [
+          0.0,
+          0.0
+         ]
+        ],
+        [
+         1.0,
+         0.0
+        ],
+        2,
+        0.1
+       ],
+       "expect": [
+        [
+         0.06801269436640803,
+         0.2
+        ],
+        [
+         0.2609306166730184,
+         0.4
+        ],
+        [
+         0.07105668896057353,
+         0.0
+        ]
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          1.0
+         ]
+        ],
+        [
+         2.0
+        ],
+        0,
+        0.3
+       ],
+       "expect": [
+        [
+         1.0
+        ]
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          0.0,
+          0.0,
+          0.0
+         ],
+         [
+          0.5,
+          0.5,
+          0.5
+         ]
+        ],
+        [
+         1.0,
+         1.0,
+         1.0
+        ],
+        1,
+        1.0
+       ],
+       "expect": [
+        [
+         -0.18242552380635632,
+         -0.18242552380635632,
+         -0.18242552380635632
+        ],
+        [
+         0.6824255238063563,
+         0.6824255238063563,
+         0.6824255238063563
+        ]
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "The gradient of each weight is (p_i - target_i) times x_j.",
+     "solution": "import math\ndef sgd_step(W, x, a, lr):\n    z = []\n    for row in W:\n        z.append(sum(w * v for w, v in zip(row, x)))\n    m = max(z)\n    e = [math.exp(t - m) for t in z]\n    s = sum(e)\n    p = [t / s for t in e]\n    out = []\n    for i in range(len(W)):\n        target = 1.0 if i == a else 0.0\n        out.append([W[i][j] - lr * (p[i] - target) * x[j] for j in range(len(x))])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "A tiny training loop",
+     "intro": "Train a linear softmax model with zero initial weights on the examples (xs[i] features, ys[i] label) for the given number of epochs (one pass over the examples in order is one epoch, one step per example, learning rate lr). Return the accuracy on the same examples as a fraction. Write train_accuracy(xs, ys, n_moves, epochs, lr).",
+     "fn": "train_accuracy",
+     "starter": "def train_accuracy(xs, ys, n_moves, epochs, lr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ],
+        [
+         0,
+         1,
+         2
+        ],
+        3,
+        20,
+        0.5
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        [
+         0,
+         1
+        ],
+        2,
+        1,
+        0.1
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0,
+          0
+         ],
+         [
+          0,
+          1,
+          0
+         ],
+         [
+          0,
+          0,
+          1
+         ],
+         [
+          1,
+          1,
+          0
+         ]
+        ],
+        [
+         0,
+         1,
+         2,
+         1
+        ],
+        3,
+        50,
+        0.5
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          1.0
+         ],
+         [
+          2.0
+         ]
+        ],
+        [
+         0,
+         1
+        ],
+        2,
+        10,
+        0.2
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Reuse the one-step update inside two loops, then count correct predictions.",
+     "solution": "import math\ndef train_accuracy(xs, ys, n_moves, epochs, lr):\n    d = len(xs[0])\n    W = [[0.0] * d for i in range(n_moves)]\n    def probs(x):\n        z = [sum(w * v for w, v in zip(row, x)) for row in W]\n        m = max(z)\n        e = [math.exp(t - m) for t in z]\n        s = sum(e)\n        return [t / s for t in e]\n    for ep in range(epochs):\n        for x, y in zip(xs, ys):\n            p = probs(x)\n            for i in range(n_moves):\n                t = 1.0 if i == y else 0.0\n                for j in range(d):\n                    W[i][j] -= lr * (p[i] - t) * x[j]\n    ok = 0\n    for x, y in zip(xs, ys):\n        p = probs(x)\n        best = 0\n        for i in range(n_moves):\n            if p[i] > p[best] + 1e-12:\n                best = i\n        if best == y:\n            ok += 1\n    return ok / len(xs)\n"
+    },
+    {
+     "type": "order",
+     "title": "Supervised training",
+     "intro": "Order the steps of one update.",
+     "items": [
+      "Take a position and the expert's move",
+      "Compute the network's move probabilities",
+      "Compute the cross-entropy loss",
+      "Compute the gradient",
+      "Adjust the weights against the gradient"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Numbers from the paper",
+     "intro": "Match each item with its value.",
+     "pairs": [
+      [
+       "SL network layers",
+       "13"
+      ],
+      [
+       "Training positions",
+       "About 30 million"
+      ],
+      [
+       "Accuracy, all features",
+       "57.0 percent"
+      ],
+      [
+       "Accuracy, raw board and history",
+       "55.7 percent"
+      ],
+      [
+       "Previous best",
+       "44.4 percent"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Imitation",
+     "text": "The SL network is trained to maximize the {{log likelihood|likelihood}} of the human move. For a softmax the gradient is the probabilities minus a {{one-hot|onehot}} vector."
+    }
+   ]
+  },
+  {
+   "title": "Speed: the rollout and tree policies",
+   "maps": [
+    {
+     "title": "Fast policies",
+     "links": [
+      "Rollout policy | is | Linear softmax",
+      "Rollout policy | uses | Local pattern features",
+      "Rollout policy | takes | About 2 microseconds",
+      "Accuracy | is | 24.2 percent",
+      "Tree policy | gives | Placeholder priors",
+      "Speed | enables | Many rollouts",
+      "SL network | takes | A few milliseconds"
+     ]
+    }
+   ],
+   "summary": [
+    "The deep network is slow: several milliseconds per position. A Monte Carlo rollout needs a move at every step of a game that may last 150 moves. So AlphaGo trains a second, much smaller policy for rollouts: a linear softmax over small pattern features.",
+    "It picks a move in about 2 microseconds, about 1,500 times faster than the SL policy network, at the cost of accuracy: 24.2 percent against 57.0 percent.",
+    "A similar linear policy, the tree policy, supplies provisional priors for new tree nodes until the network has finished evaluating them."
+   ],
+   "glossary": [
+    {
+     "term": "Rollout policy",
+     "def": "A fast linear softmax policy used to play out games to the end."
+    },
+    {
+     "term": "Pattern feature",
+     "def": "A feature describing the local stones around a point, such as a 3 by 3 neighbourhood."
+    },
+    {
+     "term": "Linear softmax",
+     "def": "Score each move as a weighted sum of its features, then softmax."
+    },
+    {
+     "term": "Tree policy",
+     "def": "A slightly richer linear policy used for provisional priors."
+    },
+    {
+     "term": "Microsecond",
+     "def": "One millionth of a second."
+    },
+    {
+     "term": "Throughput",
+     "def": "How many games can be played per second."
+    }
+   ],
+   "keyPoints": [
+    "The rollout policy p_pi is a linear softmax of small pattern features.",
+    "It reached 24.2 percent accuracy and takes about 2 microseconds per action.",
+    "It ran about 1,000 simulations per second per CPU thread on an empty board.",
+    "The SL policy network takes about 3 ms, roughly 1,500 times slower.",
+    "The tree policy p_tau is similar to the rollout policy with more features.",
+    "Fast and weak is the right tool when you need millions of moves."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "A Monte Carlo rollout plays a game to the end from a position. With about a hundred and fifty moves in a game, one rollout needs about a hundred choices. If each choice cost three milliseconds, as for the deep network, a single rollout would take a third of a second. The search needs thousands.",
+      "So a different tool is needed for that job."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper trains a fast rollout policy p pi. It is a linear softmax of small pattern features. For each legal move it computes features of the nearby stones, takes a weighted sum, and applies a softmax across moves.",
+      "The paper says it achieved 24.2 percent accuracy, against 57.0 percent for the big network, but needs only about two microseconds to select an action. That is about fifteen hundred times faster."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "p_\\pi(a \\mid s) \\;=\\; \\frac{\\exp\\!\\bigl(\\mathbf{w}\\cdot\\boldsymbol{\\phi}(s,a)\\bigr)}{\\sum_{b}\\exp\\!\\bigl(\\mathbf{w}\\cdot\\boldsymbol{\\phi}(s,b)\\bigr)}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "What are the features? The paper lists a set of small pattern features, including patterns of stones in a three by three neighbourhood around a move and some features about the last move and responses to it.",
+      "A three by three neighbourhood has eight surrounding points, each empty, black or white, so each local pattern can be given a single number by reading the eight points as digits in base three. The practice section builds that."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The linear model has so few computations that the paper reports about one thousand simulations per second per CPU thread on an empty board. This is the throughput a Monte Carlo search needs.",
+      "It was trained on 8 million positions from the Tygem server, with the same supervised method as the big network."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There is also the tree policy p tau. It has a similar structure but richer features. The paper uses it for a specific job: when the tree grows a new node, the network that supplies priors takes time to compute.",
+      "In the meantime, the tree policy gives provisional values, so the search is never blocked waiting for the network."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The trade is a general one in engineering search programs. A slow and accurate component is used sparingly, at the important decision points. A fast and crude component fills the bulk of the work.",
+      "AlphaGo uses the deep networks in the tree and the linear policy in the rollouts, then blends their opinions, chapter 9."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you score moves with a linear softmax, encode a three by three pattern as a number, compute throughput and the speed ratio, and sample a rollout move deterministically."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Why does AlphaGo use a separate rollout policy?",
+     "options": [
+      "The big network is too slow for millions of moves",
+      "The rules differ",
+      "It is more accurate",
+      "It is simpler to code"
+     ],
+     "answer": 0,
+     "explain": "Speed."
+    },
+    {
+     "q": "What accuracy does the rollout policy reach?",
+     "options": [
+      "24.2 percent",
+      "57.0 percent",
+      "99 percent",
+      "5 percent"
+     ],
+     "answer": 0,
+     "explain": "Weaker but about 1,500 times faster."
+    },
+    {
+     "q": "What is a 3 by 3 pattern?",
+     "options": [
+      "The stones around a point",
+      "The komi",
+      "A move list",
+      "A score"
+     ],
+     "answer": 0,
+     "explain": "Eight neighbours, each empty, black or white."
+    },
+    {
+     "q": "What is the tree policy for?",
+     "options": [
+      "Provisional priors for new nodes",
+      "Resigning",
+      "Scoring",
+      "Choosing komi"
+     ],
+     "answer": 0,
+     "explain": "Used until the network has evaluated."
+    }
+   ],
+   "cards": [
+    {
+     "q": "How fast is the rollout policy?",
+     "a": "About 2 microseconds per move."
+    },
+    {
+     "q": "Is it a deep network?",
+     "a": "No, it is a linear softmax."
+    },
+    {
+     "q": "What data trained it?",
+     "a": "8 million positions from Tygem."
+    },
+    {
+     "q": "What does it trade?",
+     "a": "Accuracy for speed."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Score moves with a linear policy",
+     "intro": "features[i] is the feature vector of legal move i; weights is the shared weight vector. Write linear_policy(features, weights): the softmax over moves of the dot product of weights with each feature vector. Use import math.",
+     "fn": "linear_policy",
+     "starter": "def linear_policy(features, weights):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        [
+         1.0,
+         2.0
+        ]
+       ],
+       "expect": [
+        0.2689414213699951,
+        0.7310585786300049
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1,
+          0
+         ],
+         [
+          0,
+          0,
+          1
+         ],
+         [
+          1,
+          0,
+          1
+         ]
+        ],
+        [
+         0.5,
+         0.5,
+         1.0
+        ]
+       ],
+       "expect": [
+        0.274068619061197,
+        0.274068619061197,
+        0.45186276187760605
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          1.0
+         ]
+        ],
+        [
+         3.0
+        ]
+       ],
+       "expect": [
+        1.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          0,
+          0
+         ]
+        ],
+        [
+         1.0,
+         1.0
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Compute one dot product per move, then softmax.",
+     "solution": "import math\ndef linear_policy(features, weights):\n    z = []\n    for f in features:\n        z.append(sum(w * x for w, x in zip(weights, f)))\n    m = max(z)\n    e = [math.exp(t - m) for t in z]\n    s = sum(e)\n    return [t / s for t in e]\n"
+    },
+    {
+     "type": "python",
+     "title": "Encode a 3 by 3 pattern",
+     "intro": "The eight points around a move are given as a list of eight characters from '.', 'X', 'O'. Write pattern_id(cells): read them as base-3 digits (. = 0, X = 1, O = 2), first cell most significant, and return the integer.",
+     "fn": "pattern_id",
+     "starter": "def pattern_id(cells):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         "X",
+         "X",
+         "X",
+         "X",
+         "X",
+         "X",
+         "X",
+         "X"
+        ]
+       ],
+       "expect": 3280
+      },
+      {
+       "args": [
+        [
+         "O",
+         "O",
+         "O",
+         "O",
+         "O",
+         "O",
+         "O",
+         "O"
+        ]
+       ],
+       "expect": 6560
+      },
+      {
+       "args": [
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "X"
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         "X",
+         "O",
+         ".",
+         "X",
+         "O",
+         ".",
+         "X",
+         "O"
+        ]
+       ],
+       "expect": 3785
+      }
+     ],
+     "hint": "Multiply the running value by 3 and add the digit.",
+     "solution": "def pattern_id(cells):\n    v = 0\n    for ch in cells:\n        d = 0\n        if ch == 'X':\n            d = 1\n        elif ch == 'O':\n            d = 2\n        v = v * 3 + d\n    return v\n"
+    },
+    {
+     "type": "python",
+     "title": "Throughput and speed ratio",
+     "intro": "Write rollout_stats(us_per_move, game_length, slow_ms): return [games per second, how many times faster than a slow policy needing slow_ms milliseconds per move]. Games per second = 1,000,000 / (us_per_move * game_length). The ratio = slow_ms * 1000 / us_per_move.",
+     "fn": "rollout_stats",
+     "starter": "def rollout_stats(us_per_move, game_length, slow_ms):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2,
+        150,
+        3
+       ],
+       "expect": [
+        3333.3333333333335,
+        1500.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        10,
+        100,
+        3
+       ],
+       "expect": [
+        1000.0,
+        300.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        2,
+        1,
+        5
+       ],
+       "expect": [
+        500000.0,
+        2500.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        4,
+        200,
+        1
+       ],
+       "expect": [
+        1250.0,
+        250.0
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Convert units carefully.",
+     "solution": "def rollout_stats(us_per_move, game_length, slow_ms):\n    gps = 1000000.0 / (us_per_move * game_length)\n    return [gps, slow_ms * 1000.0 / us_per_move]\n"
+    },
+    {
+     "type": "python",
+     "title": "Draw a rollout move",
+     "intro": "Write sample_move(p, u): choose a move index from the probability list p using a uniform number u in [0, 1): return the first index whose cumulative probability exceeds u (the last index if none does).",
+     "fn": "sample_move",
+     "starter": "def sample_move(p, u):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.3,
+         0.2
+        ],
+        0.0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.3,
+         0.2
+        ],
+        0.55
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.3,
+         0.2
+        ],
+        0.95
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         0.25,
+         0.25,
+         0.25,
+         0.25
+        ],
+        0.5
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        0.9
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Walk through the cumulative sum.",
+     "solution": "def sample_move(p, u):\n    total = 0.0\n    for i in range(len(p)):\n        total += p[i]\n        if total > u:\n            return i\n    return len(p) - 1\n"
+    },
+    {
+     "type": "order",
+     "title": "Why two policies",
+     "intro": "Order the argument.",
+     "items": [
+      "The deep network is accurate but takes milliseconds",
+      "Rollouts need millions of moves",
+      "A linear softmax takes microseconds",
+      "Train it on the same expert moves",
+      "Use it for rollouts and keep the deep network for the tree"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Policies",
+     "intro": "Match each policy with its property.",
+     "pairs": [
+      [
+       "SL policy network",
+       "Deep, 57.0 percent, milliseconds"
+      ],
+      [
+       "Rollout policy",
+       "Linear, 24.2 percent, microseconds"
+      ],
+      [
+       "Tree policy",
+       "Provisional priors for new nodes"
+      ],
+      [
+       "RL policy network",
+       "Self-play improved"
+      ],
+      [
+       "Value network",
+       "Position evaluation"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Speed",
+     "text": "The rollout policy is a {{linear}} softmax of pattern features. It takes about {{2}} microseconds per move, trading {{accuracy}} for speed."
+    }
+   ]
+  },
+  {
+   "title": "Getting better: policy gradient self-play",
+   "maps": [
+    {
+     "title": "Reinforcement learning",
+     "links": [
+      "RL policy network | starts as | Copy of SL network",
+      "Self-play | plays against | Earlier versions",
+      "Reward | is | Plus or minus one at game end",
+      "REINFORCE | follows | Outcome times gradient of log p",
+      "Opponent pool | prevents | Overfitting to one opponent",
+      "RL network | wins | Over 80 percent against SL",
+      "RL network | wins | 85 percent against Pachi"
+     ]
+    }
+   ],
+   "summary": [
+    "Imitation copies the experts' moves; it does not directly optimize winning. The second stage fixes that. The RL policy network starts as a copy of the SL network and plays games against earlier versions of itself, adjusting its weights to win.",
+    "The update is the policy gradient. After a game, every move played is made more likely if the game was won and less likely if it was lost: the weights move in the direction of the gradient of log p, multiplied by plus one or minus one.",
+    "The result was strong. The RL policy network won more than 80 percent of games against the SL network, and 85 percent against Pachi with no search at all."
+   ],
+   "glossary": [
+    {
+     "term": "Self-play",
+     "def": "The program plays games against itself or earlier copies."
+    },
+    {
+     "term": "Policy gradient",
+     "def": "Adjust a policy's parameters to increase the expected reward."
+    },
+    {
+     "term": "REINFORCE",
+     "def": "The simplest policy gradient: reward times the gradient of the log probability of the action taken."
+    },
+    {
+     "term": "Opponent pool",
+     "def": "A set of earlier versions to play against, for stability."
+    },
+    {
+     "term": "Outcome z",
+     "def": "Plus one for a win, minus one for a loss, at the end of the game."
+    },
+    {
+     "term": "Baseline",
+     "def": "A number subtracted from the reward to reduce noise; the simplest choice is zero."
+    }
+   ],
+   "keyPoints": [
+    "The RL network is initialized to the SL weights (rho = sigma).",
+    "It plays against randomly selected earlier iterations, to avoid overfitting to the current self.",
+    "Update: delta rho is proportional to (d log p_rho(a_t | s_t) / d rho) times z_t.",
+    "The reward is +1 for a win and -1 for a loss; zero for all other steps.",
+    "Training used 10,000 mini-batches of 128 games on 50 GPUs for a day.",
+    "The RL network beat the SL network over 80 percent of the time and Pachi 85 percent without search."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Supervised learning optimizes the wrong thing. It makes the network predict what a human would do, which is related to winning but not the same thing. The paper's second stage adjusts the policy toward the correct goal of winning games, rather than maximizing predictive accuracy."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The RL policy network p rho has the same structure as the SL network, and its weights rho start equal to the SL weights sigma. It then plays games against other versions. The paper says the opponent is a randomly selected earlier iteration of the network.",
+      "Using a pool of older versions stabilizes training and prevents overfitting to the current policy. The pool is refreshed every five hundred iterations."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Each game ends with a reward. The outcome z at the end is plus one for a win and minus one for a loss, and all intermediate rewards are zero. Now the learning rule.",
+      "For every position s t and move a t in the game, the weights move in proportion to the gradient of the log probability of the move, multiplied by the outcome z t of the game as seen by the player who made the move."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\Delta\\rho \\;\\propto\\; \\frac{\\partial \\log p_\\rho(a_t \\mid s_t)}{\\partial \\rho}\\; z_t"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Read this carefully. If the player won, z is plus one, and the gradient is added: every move of the winning game becomes a bit more probable. If the player lost, z is minus one, and the gradient is subtracted: every move of the lost game becomes a bit less probable.",
+      "Some of those moves were good and some bad, but on average winners play better moves than losers. With many games, signal beats noise."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The scale was large. The paper reports training with mini-batches of 128 games, 10,000 of them, on 50 GPUs, for one day. The result, tested by play, was strong. Playing head-to-head, the RL policy network won more than 80 percent of games against the SL policy network.",
+      "Using no search at all, it won 85 percent of games against Pachi, the strongest open-source program, which ran 100,000 simulations per move. Earlier networks trained only by supervised learning won 11 percent against Pachi."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An important caution from the paper: when the strongest RL network was used to give priors in the tree search, AlphaGo played worse than with the SL network. The RL network was stronger alone but its use in the search was less helpful.",
+      "Where the RL network matters is the next stage: it generates the games from which the value network learns."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section implements the REINFORCE update on a tiny softmax policy, the expected update when the game outcomes are known, a training loop that watches the policy shift toward winning moves, and the pool schedule."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How is the RL network initialized?",
+     "options": [
+      "From the SL network",
+      "At random",
+      "From the rules",
+      "From the value network"
+     ],
+     "answer": 0,
+     "explain": "rho = sigma."
+    },
+    {
+     "q": "What does a won game do to its moves?",
+     "options": [
+      "Makes them more probable",
+      "Makes them less probable",
+      "Nothing",
+      "Removes them"
+     ],
+     "answer": 0,
+     "explain": "z = +1 pushes the gradient up."
+    },
+    {
+     "q": "Why play against older versions?",
+     "options": [
+      "It stabilizes training",
+      "It is faster",
+      "To save memory",
+      "To copy humans"
+     ],
+     "answer": 0,
+     "explain": "Prevents overfitting to the current policy."
+    },
+    {
+     "q": "How did the RL network do against Pachi without search?",
+     "options": [
+      "Won 85 percent",
+      "Lost most games",
+      "Won 11 percent",
+      "Tied"
+     ],
+     "answer": 0,
+     "explain": "Compared to 11 percent for the SL-only network."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is the reward?",
+     "a": "+1 for a win and -1 for a loss at the end."
+    },
+    {
+     "q": "What does REINFORCE multiply?",
+     "a": "The gradient of log probability by the outcome."
+    },
+    {
+     "q": "How often was the pool refreshed?",
+     "a": "Every 500 iterations."
+    },
+    {
+     "q": "Was the RL network better in the tree search?",
+     "a": "No, the SL network gave better priors."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "One REINFORCE step",
+     "intro": "A policy has logits (a list). The agent took action a and the game outcome was z (+1 or -1). Write reinforce_step(logits, a, z, lr): p = softmax(logits); return logits[i] + lr * z * (onehot[i] - p[i]) for each i. Use import math.",
+     "fn": "reinforce_step",
+     "starter": "def reinforce_step(logits, a, z, lr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.0,
+         0.0
+        ],
+        0,
+        1,
+        0.5
+       ],
+       "expect": [
+        0.25,
+        -0.25
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.0,
+         0.0
+        ],
+        0,
+        -1,
+        0.5
+       ],
+       "expect": [
+        -0.25,
+        0.25
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0,
+         2.0,
+         3.0
+        ],
+        2,
+        1,
+        0.1
+       ],
+       "expect": [
+        0.9909969426829619,
+        1.9755271528945202,
+        3.033475904422518
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5,
+         0.5
+        ],
+        1,
+        -1,
+        1.0
+       ],
+       "expect": [
+        0.8333333333333333,
+        -0.16666666666666674,
+        0.8333333333333333
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "The direction is z times (onehot minus p).",
+     "solution": "import math\ndef reinforce_step(logits, a, z, lr):\n    m = max(logits)\n    e = [math.exp(t - m) for t in logits]\n    s = sum(e)\n    p = [t / s for t in e]\n    out = []\n    for i in range(len(logits)):\n        t = 1.0 if i == a else 0.0\n        out.append(logits[i] + lr * z * (t - p[i]))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Expected update",
+     "intro": "Suppose action i always gives outcome zs[i] (each +1 or -1). The expected REINFORCE update is the sum over i of p[i] * zs[i] * (onehot_i - p). Write expected_step(logits, zs, lr): return the new logits after one expected update with learning rate lr. Use import math.",
+     "fn": "expected_step",
+     "starter": "def expected_step(logits, zs, lr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.0,
+         0.0
+        ],
+        [
+         1,
+         -1
+        ],
+        1.0
+       ],
+       "expect": [
+        0.5,
+        -0.5
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.0,
+         0.0,
+         0.0
+        ],
+        [
+         -1,
+         1,
+         -1
+        ],
+        0.5
+       ],
+       "expect": [
+        -0.11111111111111113,
+        0.22222222222222224,
+        -0.11111111111111112
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         2.0,
+         0.0
+        ],
+        [
+         1,
+         -1
+        ],
+        0.1
+       ],
+       "expect": [
+        2.020998717080701,
+        -0.020998717080701303
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.0,
+         0.0
+        ],
+        [
+         1,
+         1
+        ],
+        1.0
+       ],
+       "expect": [
+        0.0,
+        0.0
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Accumulate p_i times z_i times (onehot_i[j] minus p_j) for each j.",
+     "solution": "import math\ndef expected_step(logits, zs, lr):\n    m = max(logits)\n    e = [math.exp(t - m) for t in logits]\n    s = sum(e)\n    p = [t / s for t in e]\n    n = len(logits)\n    out = []\n    for j in range(n):\n        g = 0.0\n        for i in range(n):\n            t = 1.0 if i == j else 0.0\n            g += p[i] * zs[i] * (t - p[j])\n        out.append(logits[j] + lr * g)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Does it learn?",
+     "intro": "Repeat expected_step many times. Write train_bandit(zs, lr, steps): start from zero logits and apply the expected update steps times; return the probability of the first best action (the lowest index with the largest outcome) after training, rounded to 4 decimals.",
+     "fn": "train_bandit",
+     "starter": "def train_bandit(zs, lr, steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         -1
+        ],
+        0.5,
+        40
+       ],
+       "expect": 0.9867,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         -1,
+         1,
+         -1
+        ],
+        0.5,
+        60
+       ],
+       "expect": 0.9877,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         1,
+         -1,
+         -1,
+         -1
+        ],
+        1.0,
+        10
+       ],
+       "expect": 0.947,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        0.5,
+        5
+       ],
+       "expect": 0.5,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Run the expected update in a loop; compute the softmax at the end.",
+     "solution": "import math\ndef train_bandit(zs, lr, steps):\n    n = len(zs)\n    logits = [0.0] * n\n    for k in range(steps):\n        m = max(logits)\n        e = [math.exp(t - m) for t in logits]\n        s = sum(e)\n        p = [t / s for t in e]\n        new = []\n        for j in range(n):\n            g = 0.0\n            for i in range(n):\n                t = 1.0 if i == j else 0.0\n                g += p[i] * zs[i] * (t - p[j])\n            new.append(logits[j] + lr * g)\n        logits = new\n    m = max(logits)\n    e = [math.exp(t - m) for t in logits]\n    s = sum(e)\n    best = 0\n    for i in range(n):\n        if zs[i] > zs[best]:\n            best = i\n    return round(e[best] / s, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Opponent pool schedule",
+     "intro": "The opponent pool receives a snapshot of the current policy every `every` iterations. Write snapshots(total, every): the list of iteration numbers (counting from 1) at which a snapshot is added, up to and including total.",
+     "fn": "snapshots",
+     "starter": "def snapshots(total, every):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2000,
+        500
+       ],
+       "expect": [
+        500,
+        1000,
+        1500,
+        2000
+       ]
+      },
+      {
+       "args": [
+        499,
+        500
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        10,
+        3
+       ],
+       "expect": [
+        3,
+        6,
+        9
+       ]
+      },
+      {
+       "args": [
+        0,
+        5
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        1500,
+        500
+       ],
+       "expect": [
+        500,
+        1000,
+        1500
+       ]
+      }
+     ],
+     "hint": "Step through multiples of every.",
+     "solution": "def snapshots(total, every):\n    out = []\n    t = every\n    while t <= total:\n        out.append(t)\n        t += every\n    return out\n"
+    },
+    {
+     "type": "order",
+     "title": "RL update",
+     "intro": "Order the steps.",
+     "items": [
+      "Start from the SL weights",
+      "Play a game against a random earlier version",
+      "Record the outcome z",
+      "Add z times the gradient of log p for each move",
+      "Refresh the opponent pool every 500 iterations"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "z",
+       "Game outcome, plus or minus one"
+      ],
+      [
+       "Policy gradient",
+       "Move toward higher expected reward"
+      ],
+      [
+       "Opponent pool",
+       "Earlier versions as opponents"
+      ],
+      [
+       "rho",
+       "Weights of the RL network"
+      ],
+      [
+       "sigma",
+       "Weights of the SL network"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Self-play",
+     "text": "Winning games make their moves {{more}} probable and losing games make them {{less}} probable. The RL network is initialized from the {{SL|supervised}} network."
+    }
+   ]
+  },
+  {
+   "title": "Judging positions: the value network",
+   "maps": [
+    {
+     "title": "Evaluation",
+     "links": [
+      "Value network | predicts | Winner from position",
+      "Training data | is | Self-play games of RL network",
+      "One position | per | Game",
+      "Loss | is | Mean squared error",
+      "KGS data | causes | Overfitting",
+      "Value network | matches | RL rollouts",
+      "Value network | is | 15,000 times cheaper"
+     ]
+    }
+   ],
+   "summary": [
+    "The value network estimates the outcome of the game from a position: a single number between minus one and one. It is a deep network like the policy network, with one scalar output, and it takes an extra input plane saying whose turn it is.",
+    "Training it needed care. Positions from a single game are strongly correlated, and early attempts that used all positions from human games memorized the games and failed on new ones.",
+    "The fix was to generate 30 million positions, each from a different self-play game, and to regress them on the game outcomes.",
+    "The result approached the accuracy of Monte Carlo rollouts with the RL policy, with about 15,000 times less computation."
+   ],
+   "glossary": [
+    {
+     "term": "Value function",
+     "def": "The expected outcome of the game from a position under good play."
+    },
+    {
+     "term": "Regression",
+     "def": "Training a network to output a number close to a target, here the game outcome."
+    },
+    {
+     "term": "Mean squared error",
+     "def": "The average of squared differences between prediction and target."
+    },
+    {
+     "term": "Overfitting",
+     "def": "Memorizing training data instead of learning general patterns."
+    },
+    {
+     "term": "Correlated data",
+     "def": "Samples that are not independent, such as many positions from one game."
+    },
+    {
+     "term": "Target z",
+     "def": "The final result of the game, +1 or -1, from the viewpoint of the player to move."
+    }
+   ],
+   "keyPoints": [
+    "v_theta(s) predicts the game outcome from position s.",
+    "Trained by regression with mean squared error on (s, z) pairs.",
+    "30 million positions, each from a separate self-play game of the RL network.",
+    "Training on KGS human games overfit: test error 0.37 against training error 0.19.",
+    "With the self-play data: training MSE 0.226 and test MSE 0.234.",
+    "One evaluation approaches the accuracy of RL-policy rollouts at about 15,000 times less compute."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Now the part that gave AlphaGo its eye for positions. The value network v theta takes a board and predicts the outcome of the game for the player to move, between minus one for a sure loss and plus one for a sure win.",
+      "It has the same convolutional structure as the policy network, plus the player-colour plane, and ends in a single number."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The data are pairs: a position and the final result of the game it came from. Training is regression. The network's output should be close to the result, and the loss is the mean squared error.",
+      "A perfectly unsure network that always says zero has a squared error of one on every sample, since the result is plus or minus one. So an error below one means the network has learned something."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} L(\\theta) \\;=\\; \\bigl(z - v_\\theta(s)\\bigr)^2 \\\\[0.6em] \\text{(averaged over training positions)} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The obvious plan, training on positions from the human expert games, failed. The paper reports that the network memorized the game outcomes instead of generalizing: mean squared error 0.19 on the training set but 0.37 on the test set. The reason is correlation.",
+      "Successive positions in one game are nearly identical, and all share one result, so the network can recognize which game a position is from and recite the result."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The cure is to break the correlation. The paper generated a new data set by self-play with the RL policy network.",
+      "For each game, it picks one random time step u, plays the moves before u from the SL policy network, makes one random move at step u to add variety, and then plays on with the RL policy network until the end. Only the position at step u and the final outcome go into the data.",
+      "This produced 30 million positions, each from a separate game."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "With that data the value network trained properly, with a mean squared error of 0.226 on the training set and 0.234 on the test set, little overfitting. The paper trained it with 50 million mini-batches of 32 positions on 50 GPUs for a week.",
+      "The result: a single evaluation of the value network approached the accuracy of Monte Carlo rollouts using the RL policy network, with about fifteen thousand times less computation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The comparison is vivid. Before this, evaluating a position meant playing it out many times. Now one forward pass of the network gives a comparable answer. This is the second half of how AlphaGo shortens the search: the value network replaces deep lines of play by a single judgement."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you compute the squared-error loss, the target from the winner, the sampling schedule used for the self-play data set, and the gap that reveals overfitting."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does v_theta(s) output?",
+     "options": [
+      "The expected game outcome",
+      "A move",
+      "The komi",
+      "The number of liberties"
+     ],
+     "answer": 0,
+     "explain": "A number between -1 and 1."
+    },
+    {
+     "q": "Why did training on KGS games overfit?",
+     "options": [
+      "Positions within a game are correlated",
+      "The games were short",
+      "Go has no rules",
+      "The network was too small"
+     ],
+     "answer": 0,
+     "explain": "The network memorized the outcomes."
+    },
+    {
+     "q": "How were the 30 million self-play positions chosen?",
+     "options": [
+      "One position from each separate game",
+      "All positions from a few games",
+      "The first move only",
+      "Random boards"
+     ],
+     "answer": 0,
+     "explain": "That breaks the correlation."
+    },
+    {
+     "q": "How much cheaper was a value evaluation than RL rollouts?",
+     "options": [
+      "About 15,000 times",
+      "About 2 times",
+      "The same",
+      "Slightly"
+     ],
+     "answer": 0,
+     "explain": "Near equal accuracy."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What loss is used?",
+     "a": "Mean squared error."
+    },
+    {
+     "q": "What does always predicting 0 score?",
+     "a": "A squared error of 1."
+    },
+    {
+     "q": "What is the fix for overfitting?",
+     "a": "One position per self-play game."
+    },
+    {
+     "q": "What does the value network add as input?",
+     "a": "A plane for the player's colour."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Value loss",
+     "intro": "Write value_mse(preds, targets): the mean of (target - pred)^2.",
+     "fn": "value_mse",
+     "starter": "def value_mse(preds, targets):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.0,
+         0.0
+        ],
+        [
+         1,
+         -1
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0.5,
+         -0.5
+        ],
+        [
+         1,
+         -1
+        ]
+       ],
+       "expect": 0.25,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         1.0,
+         -1.0,
+         1.0
+        ],
+        [
+         1,
+         -1,
+         -1
+        ]
+       ],
+       "expect": 1.3333333333333333,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0.2
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": 0.6400000000000001,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Average the squared differences.",
+     "solution": "def value_mse(preds, targets):\n    total = 0.0\n    for p, z in zip(preds, targets):\n        total += (z - p) ** 2\n    return total / len(preds)\n"
+    },
+    {
+     "type": "python",
+     "title": "Target from the winner",
+     "intro": "Write target(winner, to_move): +1 if the player to move is the winner, otherwise -1 (both are 'B' or 'W').",
+     "fn": "target",
+     "starter": "def target(winner, to_move):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "B",
+        "B"
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "B",
+        "W"
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        "W",
+        "W"
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "W",
+        "B"
+       ],
+       "expect": -1
+      }
+     ],
+     "hint": "Compare the two letters.",
+     "solution": "def target(winner, to_move):\n    if winner == to_move:\n        return 1\n    return -1\n"
+    },
+    {
+     "type": "python",
+     "title": "Sign accuracy",
+     "intro": "A value prediction is right if it has the same sign as the target (a prediction of exactly 0 is wrong). Write sign_accuracy(preds, targets): the fraction right.",
+     "fn": "sign_accuracy",
+     "starter": "def sign_accuracy(preds, targets):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.3,
+         -0.2,
+         0.0,
+         0.9
+        ],
+        [
+         1,
+         -1,
+         1,
+         -1
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0.5
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         -0.5,
+         -0.5
+        ],
+        [
+         1,
+         -1
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         0.1,
+         0.2
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Multiply and check the sign.",
+     "solution": "def sign_accuracy(preds, targets):\n    ok = 0\n    for p, z in zip(preds, targets):\n        if p * z > 0:\n            ok += 1\n    return ok / len(preds)\n"
+    },
+    {
+     "type": "python",
+     "title": "Overfitting gap",
+     "intro": "Write overfit_report(train_mse, test_mse): return [gap, flag] where gap = test_mse - train_mse (rounded to 3 decimals) and flag is 1 if the gap exceeds 0.1, else 0.",
+     "fn": "overfit_report",
+     "starter": "def overfit_report(train_mse, test_mse):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.19,
+        0.37
+       ],
+       "expect": [
+        0.18,
+        1
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.226,
+        0.234
+       ],
+       "expect": [
+        0.008,
+        0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.3,
+        0.3
+       ],
+       "expect": [
+        0.0,
+        0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.1,
+        0.25
+       ],
+       "expect": [
+        0.15,
+        1
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Subtract, round, compare.",
+     "solution": "def overfit_report(train_mse, test_mse):\n    gap = round(test_mse - train_mse, 3)\n    flag = 0\n    if gap > 0.1:\n        flag = 1\n    return [gap, flag]\n"
+    },
+    {
+     "type": "python",
+     "title": "Pick the self-play sample",
+     "intro": "Write sample_plan(game_length, u): for a game of the given length and the chosen random step u (1-based), return [number of moves played by the SL policy, 1 for the random move, number of moves played by the RL policy until the game ends]. The data point is the position after the random move.",
+     "fn": "sample_plan",
+     "starter": "def sample_plan(game_length, u):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        100,
+        30
+       ],
+       "expect": [
+        29,
+        1,
+        70
+       ]
+      },
+      {
+       "args": [
+        150,
+        1
+       ],
+       "expect": [
+        0,
+        1,
+        149
+       ]
+      },
+      {
+       "args": [
+        120,
+        120
+       ],
+       "expect": [
+        119,
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        60,
+        31
+       ],
+       "expect": [
+        30,
+        1,
+        29
+       ]
+      }
+     ],
+     "hint": "Moves before u, the move u, and the moves after.",
+     "solution": "def sample_plan(game_length, u):\n    return [u - 1, 1, game_length - u]\n"
+    },
+    {
+     "type": "order",
+     "title": "Building the value data",
+     "intro": "Order the steps for one data point.",
+     "items": [
+      "Pick a random step u",
+      "Play moves before u with the SL policy",
+      "Make one random move at step u",
+      "Finish the game with the RL policy",
+      "Store the position after step u with the final outcome"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Numbers",
+     "intro": "Match each item with its value.",
+     "pairs": [
+      [
+       "Training positions",
+       "30 million"
+      ],
+      [
+       "KGS training error",
+       "0.19"
+      ],
+      [
+       "KGS test error",
+       "0.37"
+      ],
+      [
+       "Self-play test error",
+       "0.234"
+      ],
+      [
+       "Speed advantage over rollouts",
+       "About 15,000 times"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Value",
+     "text": "The value network is trained by {{regression}} on the game {{outcome|result}}. Each of the 30 million positions came from a {{separate|different}} game."
+    }
+   ]
+  },
+  {
+   "title": "The search: policy and value inside MCTS",
+   "maps": [
+    {
+     "title": "AlphaGo search",
+     "links": [
+      "Selection | maximizes | Q plus u",
+      "u | grows with | Prior",
+      "u | shrinks with | Visit count",
+      "Leaf evaluation | mixes | Value network and rollout",
+      "Backup | updates | Q and N",
+      "Final move | is | Most visited",
+      "Expansion | needs | Visit threshold"
+     ]
+    }
+   ],
+   "summary": [
+    "AlphaGo's search is Monte Carlo tree search with a twist: the networks guide it. Each edge of the tree stores a prior probability P from the SL policy network, a visit count N, and an average value Q.",
+    "Selection picks the move with the highest Q plus a bonus u that is large for moves with a big prior and few visits. When a leaf is reached it is expanded, then evaluated two ways: by the value network, and by a fast rollout. The two are mixed with weight one half each.",
+    "After the search the program plays the most visited move, not the one with the highest Q."
+   ],
+   "glossary": [
+    {
+     "term": "Prior P(s, a)",
+     "def": "The policy network's probability for move a in position s."
+    },
+    {
+     "term": "Visit count N(s, a)",
+     "def": "How many simulations passed through the edge."
+    },
+    {
+     "term": "Action value Q(s, a)",
+     "def": "The mean of the evaluations of all simulations through the edge."
+    },
+    {
+     "term": "Bonus u(s, a)",
+     "def": "An exploration term, proportional to P divided by 1 plus N."
+    },
+    {
+     "term": "Mixing parameter lambda",
+     "def": "The weight on the rollout in the leaf evaluation; 0.5 in the paper."
+    },
+    {
+     "term": "Virtual loss",
+     "def": "A temporary penalty added to a path being explored, so parallel threads spread out."
+    }
+   ],
+   "keyPoints": [
+    "Selection: a_t = argmax over a of Q(s_t, a) + u(s_t, a).",
+    "u = c_puct * P * sqrt(sum_b N(s, b)) / (1 + N(s, a)) with c_puct = 5 in the paper.",
+    "Leaf value: V = (1 - lambda) v_theta + lambda z, with lambda = 0.5.",
+    "Backup: N += 1 and Q becomes the mean of all V in the subtree.",
+    "A leaf is expanded when its edge has been visited 40 times (threshold n_thr = 40).",
+    "At the end, play the most visited move; resign if the win estimate falls below 10 percent."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The search is the heart of AlphaGo, where the four learned components meet. Each node of the search tree is a position. For each legal move from it, an edge stores three numbers. P is the prior probability of the move, supplied by a policy network.",
+      "N is how many simulations have passed through the edge. Q is the average value of the evaluations found beneath it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Every simulation starts at the root and walks down the tree, at each node taking the action that maximizes Q plus a bonus u. The bonus is proportional to the prior and shrinks as the edge is visited more. Moves the network likes get explored first; moves visited often rely on their measured value."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} a_t \\;=\\; \\arg\\max_a\\bigl(\\, Q(s_t, a) + u(s_t, a)\\,\\bigr), \\\\[0.6em] u(s,a) \\;=\\; c_{\\mathrm{puct}}\\, P(s,a)\\, \\frac{\\sqrt{\\sum_b N(s,b)}}{1 + N(s,a)} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper's methods give the constant c puct as five. The main text says only that u is proportional to the prior over one plus the visit count, and the fuller form with the square root appears in the methods.",
+      "This is the rule that AlphaZero later reused under the name PUCT, a variant of the UCT rule from chapter 3."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When a simulation reaches a leaf, the leaf is evaluated in two ways. The value network gives v theta of the leaf, and a fast rollout with the rollout policy plays the game to the end for a result z. The leaf value is a blend of the two."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} V(s_L) \\;=\\; (1-\\lambda)\\, v_\\theta(s_L) \\;+\\; \\lambda\\, z_L, \\\\[0.6em] \\lambda = 0.5 \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper tested the blend. A version using only the value network, lambda equal to zero, reached an Elo rating of about 2,177, and the mixed version with lambda one half did best, with the two kinds of evaluation complementing each other: the value network is accurate on the position as a whole and the rollouts catch sharp tactical details."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The backup step then goes up the path. Each edge on the path gets its count N increased by one, and its Q set to the mean of all leaf values from the simulations that passed through it.",
+      "A detail to watch: Q must be seen from the viewpoint of the player who owns the edge, so the sign flips from level to level."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Other numbers from the methods. The SL policy network supplies the priors, with a softmax temperature of 0.67. A node is expanded only once its edge has been visited forty times; before that the cheaper tree policy provides the priors.",
+      "Parallel threads use a virtual loss of three to avoid all following the same path. In the end the program plays the most visited move at the root, and it resigns if its best estimated win probability drops below ten percent."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the bonus u favour?",
+     "options": [
+      "High prior and few visits",
+      "Low prior and many visits",
+      "Illegal moves",
+      "The last move"
+     ],
+     "answer": 0,
+     "explain": "P over 1 plus N."
+    },
+    {
+     "q": "What is lambda in the leaf evaluation?",
+     "options": [
+      "The rollout weight, 0.5",
+      "The komi",
+      "The learning rate",
+      "The number of threads"
+     ],
+     "answer": 0,
+     "explain": "V = (1 - lambda) v + lambda z."
+    },
+    {
+     "q": "Which move does AlphaGo play at the root?",
+     "options": [
+      "The most visited",
+      "The highest prior",
+      "A random one",
+      "The last explored"
+     ],
+     "answer": 0,
+     "explain": "Visits are more robust than Q."
+    },
+    {
+     "q": "What is virtual loss for?",
+     "options": [
+      "To spread parallel threads over different paths",
+      "To lose games on purpose",
+      "To resign",
+      "To raise Q"
+     ],
+     "answer": 0,
+     "explain": "A temporary penalty."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is c_puct?",
+     "a": "A constant, 5 in the paper."
+    },
+    {
+     "q": "What does Q average?",
+     "a": "The leaf values in the subtree."
+    },
+    {
+     "q": "When is a node expanded?",
+     "a": "After 40 visits to its edge."
+    },
+    {
+     "q": "When does AlphaGo resign?",
+     "a": "When its win estimate drops below 10 percent."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Select an edge",
+     "intro": "Write select(Q, N, P, cpuct): return the index of the edge maximizing Q[i] + cpuct * P[i] * sqrt(sum(N)) / (1 + N[i]); ties go to the smaller index. Use import math.",
+     "fn": "select",
+     "starter": "def select(Q, N, P, cpuct):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.0,
+         0.0,
+         0.0
+        ],
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         0.2,
+         0.5,
+         0.3
+        ],
+        5.0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         0.1,
+         0.4,
+         0.0
+        ],
+        [
+         10,
+         5,
+         1
+        ],
+        [
+         0.2,
+         0.5,
+         0.3
+        ],
+        5.0
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.0
+        ],
+        [
+         100,
+         1
+        ],
+        [
+         0.1,
+         0.9
+        ],
+        5.0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         -0.2,
+         0.3,
+         0.3
+        ],
+        [
+         4,
+         4,
+         4
+        ],
+        [
+         0.3,
+         0.3,
+         0.4
+        ],
+        1.0
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.1
+        ],
+        [
+         50,
+         0
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        0.0
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Compute Q plus the bonus for every edge and take the largest.",
+     "solution": "import math\ndef select(Q, N, P, cpuct):\n    root = math.sqrt(sum(N))\n    best = -1e9\n    arg = 0\n    for i in range(len(Q)):\n        s = Q[i] + cpuct * P[i] * root / (1 + N[i])\n        if s > best + 1e-12:\n            best = s\n            arg = i\n    return arg\n"
+    },
+    {
+     "type": "python",
+     "title": "Mix the leaf evaluations",
+     "intro": "Write leaf_value(v, z, lam): (1 - lam) * v + lam * z.",
+     "fn": "leaf_value",
+     "starter": "def leaf_value(v, z, lam):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.4,
+        1,
+        0.5
+       ],
+       "expect": 0.7,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        0.4,
+        -1,
+        0.5
+       ],
+       "expect": -0.3,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        0.4,
+        1,
+        0.0
+       ],
+       "expect": 0.4,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        -0.6,
+        1,
+        1.0
+       ],
+       "expect": 1.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        0.0,
+        0,
+        0.5
+       ],
+       "expect": 0.0,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "A weighted average of the two numbers.",
+     "solution": "def leaf_value(v, z, lam):\n    return (1 - lam) * v + lam * z\n"
+    },
+    {
+     "type": "python",
+     "title": "Back up a value",
+     "intro": "An edge has visit count N and mean value Q. A simulation returns value v through it. Write backup(Q, N, v): return [new Q, new N] with N + 1 and Q equal to the running mean.",
+     "fn": "backup",
+     "starter": "def backup(Q, N, v):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.0,
+        0,
+        1.0
+       ],
+       "expect": [
+        1.0,
+        1
+       ],
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        0.5,
+        1,
+        -0.5
+       ],
+       "expect": [
+        0.0,
+        2
+       ],
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        0.2,
+        9,
+        1.0
+       ],
+       "expect": [
+        0.28,
+        10
+       ],
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        -1.0,
+        3,
+        -1.0
+       ],
+       "expect": [
+        -1.0,
+        4
+       ],
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        0.25,
+        4,
+        0.75
+       ],
+       "expect": [
+        0.35,
+        5
+       ],
+       "approx": 1e-12
+      }
+     ],
+     "hint": "New mean = old mean + (v - old mean) / new count.",
+     "solution": "def backup(Q, N, v):\n    n = N + 1\n    return [Q + (v - Q) / n, n]\n"
+    },
+    {
+     "type": "python",
+     "title": "Virtual loss",
+     "intro": "With virtual loss n_vl a path being explored temporarily has N + n_vl visits and total value W - n_vl. Write q_virtual(W, N, nvl): the resulting Q = (W - nvl) / (N + nvl).",
+     "fn": "q_virtual",
+     "starter": "def q_virtual(W, N, nvl):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        6.0,
+        10,
+        3
+       ],
+       "expect": 0.23076923076923078,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        0.0,
+        0,
+        3
+       ],
+       "expect": -1.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        -2.0,
+        4,
+        3
+       ],
+       "expect": -0.7142857142857143,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        10.0,
+        20,
+        0
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Apply the penalty to both numerator and denominator.",
+     "solution": "def q_virtual(W, N, nvl):\n    return (W - nvl) / (N + nvl)\n"
+    },
+    {
+     "type": "python",
+     "title": "Final move and resignation",
+     "intro": "Write finish(N, Q): return [index of the most visited move (ties go to the smaller index), 1 if the best Q is below -0.8 (resign) else 0]. N and Q are lists per root move.",
+     "fn": "finish",
+     "starter": "def finish(N, Q):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         10,
+         50,
+         20
+        ],
+        [
+         0.1,
+         0.3,
+         0.2
+        ]
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         5
+        ],
+        [
+         0.0,
+         0.1
+        ]
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         -0.9,
+         -0.85,
+         -0.95
+        ]
+       ],
+       "expect": [
+        2,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         7
+        ],
+        [
+         -0.8
+        ]
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Most visits for the move; compare the largest Q with the resign threshold.",
+     "solution": "def finish(N, Q):\n    best = 0\n    for i in range(len(N)):\n        if N[i] > N[best]:\n            best = i\n    resign = 0\n    if max(Q) < -0.8:\n        resign = 1\n    return [best, resign]\n"
+    },
+    {
+     "type": "order",
+     "title": "One AlphaGo simulation",
+     "intro": "Order the steps.",
+     "items": [
+      "Walk down the tree choosing the edge with the highest Q plus u",
+      "Reach a leaf and expand it",
+      "Evaluate with the value network",
+      "Play a fast rollout to the end",
+      "Mix the two values and back them up"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Search terms",
+     "intro": "Match each symbol with its meaning.",
+     "pairs": [
+      [
+       "P",
+       "Prior from the policy network"
+      ],
+      [
+       "N",
+       "Visit count"
+      ],
+      [
+       "Q",
+       "Mean value of simulations"
+      ],
+      [
+       "u",
+       "Exploration bonus"
+      ],
+      [
+       "lambda",
+       "Mixing weight of the rollout"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Search",
+     "text": "The leaf value mixes the {{value network|value}} with a {{rollout}}. The program plays the {{most visited|most-visited}} move."
+    }
+   ]
+  },
+  {
+   "title": "Engineering and strength: hardware, Elo, scaling",
+   "maps": [
+    {
+     "title": "Strength",
+     "links": [
+      "Elo rating | predicts | Win probability",
+      "Single machine | used | 48 CPUs and 8 GPUs",
+      "Distributed AlphaGo | used | 1,202 CPUs and 176 GPUs",
+      "Asynchronous search | runs | Many simulations in parallel",
+      "Virtual loss | spreads | Threads",
+      "AlphaGo | won | 494 of 495 games against programs",
+      "Value-only | scored | Elo about 2,177"
+     ]
+    }
+   ],
+   "summary": [
+    "Strength in Go is measured with the Elo rating: a difference of 400 points means the stronger side is expected to win about 91 percent of the time. The paper's table gives a single-machine AlphaGo about 2,890 and the distributed version about 3,140, against 1,929 for Crazy Stone.",
+    "The distributed version used 1,202 CPUs and 176 GPUs in the match against Fan Hui. The paper also ran a tournament in which the single-machine version, with 48 CPUs and 8 GPUs, won 494 of its 495 games against other Go programs.",
+    "The search ran asynchronously: many threads walk the tree at once, while the networks are evaluated on GPUs in a batch behind them."
+   ],
+   "glossary": [
+    {
+     "term": "Elo rating",
+     "def": "A rating scale where the expected score depends on the rating difference."
+    },
+    {
+     "term": "Expected score",
+     "def": "1 / (1 + 10^(-d/400)) for a rating advantage d."
+    },
+    {
+     "term": "Asynchronous search",
+     "def": "Many simulations run at the same time and share the tree."
+    },
+    {
+     "term": "Search thread",
+     "def": "One of the parallel workers."
+    },
+    {
+     "term": "Handicap",
+     "def": "Extra stones given to the weaker player at the start."
+    },
+    {
+     "term": "Distributed version",
+     "def": "AlphaGo running across a cluster of machines."
+    }
+   ],
+   "keyPoints": [
+    "Elo: expected score = 1 / (1 + 10^(-d/400)); 400 points is about 91 percent.",
+    "Single machine: 40 search threads, 48 CPUs, 8 GPUs, Elo about 2,890.",
+    "Distributed: 40 search threads, 1,202 CPUs, 176 GPUs, Elo about 3,140.",
+    "Against other programs the single machine won 494 of 495 games with 5 seconds per move.",
+    "Distributed AlphaGo beat the single-machine version 77 percent of the time.",
+    "Mixed evaluation beat value-only and rollout-only versions."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "How strong is strong? The Nature paper answers with a tournament. It pitted AlphaGo against the best programs available: Crazy Stone, Zen, Pachi, Fuego and GnuGo, giving each five seconds per move. The single-machine AlphaGo won 494 out of 495 games, a winning rate of 99.8 percent.",
+      "Against four handicap stones it still won 77 percent against Crazy Stone, 86 percent against Zen and 99 percent against Pachi."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The paper converts results to Elo ratings, a scale in which a given rating difference corresponds to a given expected score. Distributed AlphaGo scored 3,140, single-machine AlphaGo 2,890, Crazy Stone 1,929, Zen 1,888, Pachi 1,298, Fuego 1,148 and GnuGo 431.",
+      "The distributed version won 77 percent of games against the single machine, which fits a difference of about 250 Elo."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "E \\;=\\; \\frac{1}{1 + 10^{-d/400}}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Here d is the rating advantage, and E the expected score. A difference of zero gives one half. A difference of four hundred gives about ninety-one percent. The formula can be reversed to get the Elo difference implied by a winning rate, which the practice section does."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now the engineering. The single-machine version used 48 CPUs and 8 GPUs, and forty search threads. The distributed version used 1,202 CPUs and 176 GPUs, again with forty search threads but with evaluation spread across machines.",
+      "The paper's largest test configuration reached 1,920 CPUs and 280 GPUs. The paper's table also shows the rating rising with extra GPUs on one machine, then flattening."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Parallel search raises a problem. If forty threads each pick the best edge at the same time, they all pick the same one. The remedy is virtual loss: when a thread passes through an edge, the edge temporarily looks worse by a few lost games, so the next thread is nudged to a different path.",
+      "When the evaluation returns, the penalty is removed and the real result is added."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The networks are slow, so the search does not wait for them. When a thread reaches a leaf, it requests an evaluation and continues.",
+      "The paper says that the evaluation of the policy network happens asynchronously on GPUs, while the search thread uses the quick tree policy for provisional priors, then updates them when the network answers. Rollouts, by contrast, run on the CPUs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you convert between Elo and win rates, build a rating table, compute the cost of the rollouts, and decide handicaps from rating differences."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a 400 Elo advantage mean?",
+     "options": [
+      "About 91 percent expected score",
+      "A guaranteed win",
+      "A draw",
+      "50 percent"
+     ],
+     "answer": 0,
+     "explain": "E = 1 / (1 + 10^-1)."
+    },
+    {
+     "q": "What did single-machine AlphaGo score against other programs?",
+     "options": [
+      "494 of 495",
+      "250 of 495",
+      "1 of 495",
+      "495 of 495"
+     ],
+     "answer": 0,
+     "explain": "99.8 percent."
+    },
+    {
+     "q": "Why use virtual loss?",
+     "options": [
+      "So parallel threads explore different paths",
+      "To reduce hardware",
+      "To end games",
+      "To make Q negative"
+     ],
+     "answer": 0,
+     "explain": "A temporary penalty."
+    },
+    {
+     "q": "What does the distributed version have over the single machine?",
+     "options": [
+      "More CPUs and GPUs",
+      "A different rule set",
+      "Human help",
+      "A bigger board"
+     ],
+     "answer": 0,
+     "explain": "1,202 CPUs and 176 GPUs against 48 and 8."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is Elo for?",
+     "a": "Predicting win probabilities."
+    },
+    {
+     "q": "How many search threads were used?",
+     "a": "Forty."
+    },
+    {
+     "q": "What won 77 percent against the single machine?",
+     "a": "The distributed version."
+    },
+    {
+     "q": "What is asynchronous search?",
+     "a": "Parallel simulations sharing one tree."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Expected score",
+     "intro": "Write elo_expected(d): 1 / (1 + 10 ** (-d / 400)).",
+     "fn": "elo_expected",
+     "starter": "def elo_expected(d):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        400
+       ],
+       "expect": 0.9090909090909091,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -400
+       ],
+       "expect": 0.09090909090909091,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        250
+       ],
+       "expect": 0.8083176725494586,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1000
+       ],
+       "expect": 0.9968476908167399,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Direct formula.",
+     "solution": "def elo_expected(d):\n    return 1 / (1 + 10 ** (-d / 400))\n"
+    },
+    {
+     "type": "python",
+     "title": "Elo from a win rate",
+     "intro": "Write elo_diff(w): the rating advantage implied by winning rate w (0 < w < 1): 400 * log10(w / (1 - w)), rounded to 1 decimal. Use import math.",
+     "fn": "elo_diff",
+     "starter": "def elo_diff(w):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5
+       ],
+       "expect": 0.0
+      },
+      {
+       "args": [
+        0.77
+       ],
+       "expect": 209.9
+      },
+      {
+       "args": [
+        0.8
+       ],
+       "expect": 240.8
+      },
+      {
+       "args": [
+        0.85
+       ],
+       "expect": 301.3
+      },
+      {
+       "args": [
+        0.998
+       ],
+       "expect": 1079.2
+      }
+     ],
+     "hint": "Invert the expected-score formula.",
+     "solution": "import math\ndef elo_diff(w):\n    return round(400 * math.log10(w / (1 - w)), 1)\n"
+    },
+    {
+     "type": "python",
+     "title": "Predict a match",
+     "intro": "ratings is a dict-free list of [name, rating] pairs. Write head_to_head(ratings, i, j): the expected score of player i against player j, rounded to 3 decimals.",
+     "fn": "head_to_head",
+     "starter": "def head_to_head(ratings, i, j):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "distributed",
+          3140
+         ],
+         [
+          "single",
+          2890
+         ],
+         [
+          "Crazy Stone",
+          1929
+         ]
+        ],
+        0,
+        1
+       ],
+       "expect": 0.808
+      },
+      {
+       "args": [
+        [
+         [
+          "distributed",
+          3140
+         ],
+         [
+          "single",
+          2890
+         ],
+         [
+          "Crazy Stone",
+          1929
+         ]
+        ],
+        1,
+        2
+       ],
+       "expect": 0.996
+      },
+      {
+       "args": [
+        [
+         [
+          "distributed",
+          3140
+         ],
+         [
+          "single",
+          2890
+         ],
+         [
+          "Crazy Stone",
+          1929
+         ]
+        ],
+        2,
+        0
+       ],
+       "expect": 0.001
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          1000
+         ],
+         [
+          "b",
+          1000
+         ]
+        ],
+        0,
+        1
+       ],
+       "expect": 0.5
+      }
+     ],
+     "hint": "Take the rating difference, then the formula.",
+     "solution": "def head_to_head(ratings, i, j):\n    d = ratings[i][1] - ratings[j][1]\n    return round(1 / (1 + 10 ** (-d / 400)), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Rank by rating",
+     "intro": "Write ranking(ratings): the list of names sorted from highest to lowest rating (ties by the order given). ratings is a list of [name, rating].",
+     "fn": "ranking",
+     "starter": "def ranking(ratings):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "Pachi",
+          1298
+         ],
+         [
+          "Zen",
+          1888
+         ],
+         [
+          "Crazy Stone",
+          1929
+         ],
+         [
+          "Fuego",
+          1148
+         ]
+        ]
+       ],
+       "expect": [
+        "Crazy Stone",
+        "Zen",
+        "Pachi",
+        "Fuego"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          5
+         ],
+         [
+          "b",
+          5
+         ]
+        ]
+       ],
+       "expect": [
+        "a",
+        "b"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "x",
+          1
+         ],
+         [
+          "y",
+          3
+         ],
+         [
+          "z",
+          2
+         ]
+        ]
+       ],
+       "expect": [
+        "y",
+        "z",
+        "x"
+       ]
+      }
+     ],
+     "hint": "Sort the indices by rating, highest first.",
+     "solution": "def ranking(ratings):\n    order = sorted(range(len(ratings)), key=lambda i: (-ratings[i][1], i))\n    return [ratings[i][0] for i in order]\n"
+    },
+    {
+     "type": "order",
+     "title": "Parallel search",
+     "intro": "Order the events for one thread.",
+     "items": [
+      "Walk down the tree",
+      "Add a virtual loss on the path",
+      "Request evaluation of the leaf",
+      "Continue with provisional priors",
+      "Replace the virtual loss with the real result"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Hardware and ratings",
+     "intro": "Match each item with its value.",
+     "pairs": [
+      [
+       "Single machine",
+       "48 CPUs, 8 GPUs"
+      ],
+      [
+       "Distributed (match)",
+       "1,202 CPUs, 176 GPUs"
+      ],
+      [
+       "Distributed Elo",
+       "About 3,140"
+      ],
+      [
+       "Single Elo",
+       "About 2,890"
+      ],
+      [
+       "Crazy Stone Elo",
+       "About 1,929"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Strength",
+     "text": "A {{400|four hundred}} point Elo advantage gives about {{91}} percent expected score. Virtual loss helps {{parallel|multiple}} threads explore different paths."
+    }
+   ]
+  },
+  {
+   "title": "Capstone: a miniature AlphaGo",
+   "maps": [
+    {
+     "title": "A tiny AlphaGo",
+     "links": [
+      "Policy prior | guides | Search",
+      "PUCT selection | chooses | Edges",
+      "Rollout | plays | To the end",
+      "Value stub | gives | Zero",
+      "Leaf value | mixes | Value and rollout",
+      "Backup | flips | Sign each level",
+      "Visits | decide | The move"
+     ]
+    }
+   ],
+   "summary": [
+    "This chapter puts the pieces together on tic-tac-toe, small enough to run in a lab. The prior comes from a hand-made rule instead of a policy network, the value network is a stub that always says zero, and the rollouts use a tiny random generator.",
+    "Everything else follows the paper: PUCT selection with constant five, a leaf value mixing value and rollout, a sign flip in backup and the most-visited move at the end.",
+    "It is a teaching miniature, not DeepMind's program. Its purpose is to show that the loop of chapter 9 is short to write.",
+    "Build it in steps: result detection, prior, rollout, then the full search."
+   ],
+   "glossary": [
+    {
+     "term": "Prior",
+     "def": "The preference over moves before any search; here a hand-made table."
+    },
+    {
+     "term": "Stub value",
+     "def": "A placeholder value network that returns zero."
+    },
+    {
+     "term": "Rollout",
+     "def": "A random game played to the end from the leaf."
+    },
+    {
+     "term": "Sign flip",
+     "def": "The value of a child is the negative of its value for the parent."
+    },
+    {
+     "term": "Visit counts",
+     "def": "The result of the search; the most visited move is played."
+    },
+    {
+     "term": "Seed",
+     "def": "The start of the pseudo-random generator, fixing the results."
+    }
+   ],
+   "keyPoints": [
+    "Selection uses Q + 5 * P * sqrt(sum N) / (1 + N).",
+    "A new leaf is evaluated as 0.5 * v + 0.5 * z with v = 0 here.",
+    "z is the outcome of a random rollout from the leaf's player-to-move view.",
+    "Values flip sign each level going up.",
+    "Terminal positions are scored exactly: -1 for the player to move who has lost, 0 for a draw.",
+    "The move with most visits is chosen."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Time to build. The game is tic-tac-toe, played on a board of nine characters, X, O or a dot. It has no hidden depth, but it has everything the search needs: legal moves, terminal positions and sign flips between the players."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Start with the prior. A real AlphaGo asks the SL policy network. We use a hand-made table that favours the centre, then the corners, then the edges. After a softmax over the legal moves it plays the role of the probabilities P. Next, the value network.",
+      "A trained one is out of reach in a lab, so the stub value is zero, meaning no opinion. The rollouts do the real work, and the mixing weight one half applies to the zero."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The rollout is a random game played from the leaf to the end. We use the same small generator as in chapter 3, so the results are repeatable.",
+      "The outcome z is scored from the point of view of the player to move at the leaf: plus one if that player eventually wins, minus one if they lose, zero for a draw."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The search itself is a loop. In each simulation, walk down from the root. At each node already in the tree, apply the PUCT rule to choose a move, using the stored visit counts and values. At the first new node, create it, compute its priors, evaluate it with the mixed value, and stop.",
+      "If the walk reaches a finished game, score it exactly. Then walk back up, adding one to each count and the value to each total, flipping the sign each time."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} V = \\tfrac12\\, v_\\theta + \\tfrac12\\, z, \\\\[0.6em] v_\\theta \\equiv 0 \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The sign flip deserves attention. A value is always stored from the viewpoint of the player who plays the edge. A good result for the child node, where the opponent moves, is a bad result for us. So when passing a value up one level, negate it.",
+      "Forgetting this is the commonest bug in tree-search code."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "At the end the visit counts at the root are the answer. With enough simulations the winning moves collect most of the visits. The most visited move is played, following the paper. The program is far too small to play Go, but the same loop with a real network and a Go simulator is what AlphaGo does."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you first write the board helpers and the prior, then the rollout, and finally the whole search, comparing it with a position where the win is easy to see."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the stub value network return?",
+     "options": [
+      "Zero",
+      "One",
+      "The best move",
+      "The komi"
+     ],
+     "answer": 0,
+     "explain": "No opinion; the rollouts do the work."
+    },
+    {
+     "q": "Why flip the sign in backup?",
+     "options": [
+      "Players alternate",
+      "Values are negative",
+      "To save memory",
+      "It is optional"
+     ],
+     "answer": 0,
+     "explain": "A good result for the child is bad for the parent."
+    },
+    {
+     "q": "Which move does the miniature play?",
+     "options": [
+      "The most visited",
+      "The highest prior",
+      "The first legal",
+      "The last visited"
+     ],
+     "answer": 0,
+     "explain": "As in the paper."
+    },
+    {
+     "q": "What is z?",
+     "options": [
+      "The rollout outcome",
+      "The prior",
+      "The komi",
+      "The loss"
+     ],
+     "answer": 0,
+     "explain": "Scored from the leaf player's view."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What replaces the policy network?",
+     "a": "A hand-made prior table."
+    },
+    {
+     "q": "What replaces the value network?",
+     "a": "A stub returning zero."
+    },
+    {
+     "q": "Why use a seeded generator?",
+     "a": "So results are repeatable."
+    },
+    {
+     "q": "Is the miniature strong?",
+     "a": "No, it is a teaching example."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Prior over moves",
+     "intro": "The hand-made score of each square is [3, 2, 3, 2, 4, 2, 3, 2, 3] (corners 3, edges 2, centre 4). Write prior(board): the softmax of 0.5 * score over the empty squares (zero probability for occupied squares). Return a list of nine probabilities rounded to 9 decimals. Use import math.",
+     "fn": "prior",
+     "starter": "def prior(board):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "........."
+       ],
+       "expect": [
+        0.123841403,
+        0.075113608,
+        0.123841403,
+        0.075113608,
+        0.204179956,
+        0.075113608,
+        0.123841403,
+        0.075113608,
+        0.123841403
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        "....X...."
+       ],
+       "expect": [
+        0.155614833,
+        0.094385167,
+        0.155614833,
+        0.094385167,
+        0.0,
+        0.094385167,
+        0.155614833,
+        0.094385167,
+        0.155614833
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        "XOXOXOO.."
+       ],
+       "expect": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.377540669,
+        0.622459331
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        "X.O.X.O.."
+       ],
+       "expect": [
+        0.0,
+        0.177031217,
+        0.0,
+        0.177031217,
+        0.0,
+        0.177031217,
+        0.0,
+        0.177031217,
+        0.291875133
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Exponentiate scaled scores for empty squares only, then normalize.",
+     "solution": "import math\nSC = [3, 2, 3, 2, 4, 2, 3, 2, 3]\ndef prior(board):\n    e = []\n    for i in range(9):\n        if board[i] == '.':\n            e.append(math.exp(0.5 * SC[i]))\n        else:\n            e.append(0.0)\n    s = sum(e)\n    return [round(x / s, 9) for x in e]\n"
+    },
+    {
+     "type": "python",
+     "title": "A random rollout",
+     "intro": "Using the generator x = (75 * x + 74) % 65537 (state starts at seed), play random moves from the board for the player to move until the game ends; at each turn choose empty squares in ascending order and use index x % (number of empty squares). Write rollout(board, player, seed): return [outcome from the view of the player to move at the start (+1 win, -1 loss, 0 draw), the final state of the generator].",
+     "fn": "rollout",
+     "starter": "def rollout(board, player, seed):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "XX.OO....",
+        "X",
+        5
+       ],
+       "expect": [
+        -1,
+        33749
+       ]
+      },
+      {
+       "args": [
+        ".........",
+        "X",
+        1
+       ],
+       "expect": [
+        1,
+        25472
+       ]
+      },
+      {
+       "args": [
+        "XOXOXOO..",
+        "X",
+        9
+       ],
+       "expect": [
+        1,
+        749
+       ]
+      },
+      {
+       "args": [
+        "XO.XO....",
+        "O",
+        3
+       ],
+       "expect": [
+        1,
+        5030
+       ]
+      },
+      {
+       "args": [
+        "XXXOO....",
+        "O",
+        2
+       ],
+       "expect": [
+        -1,
+        2
+       ]
+      }
+     ],
+     "hint": "Play until result() says the game is over; map the winner to +1, -1 or 0.",
+     "solution": "LINES = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]\ndef result(b):\n    for l in LINES:\n        if b[l[0]] != '.' and b[l[0]] == b[l[1]] and b[l[1]] == b[l[2]]:\n            return b[l[0]]\n    if '.' not in b:\n        return 'D'\n    return '.'\n\ndef rollout(board, player, seed):\n    b = list(board)\n    x = seed\n    me = player\n    cur = player\n    while True:\n        r = result(b)\n        if r != '.':\n            if r == 'D':\n                return [0, x]\n            if r == me:\n                return [1, x]\n            return [-1, x]\n        empt = [i for i in range(9) if b[i] == '.']\n        x = (75 * x + 74) % 65537\n        m = empt[x % len(empt)]\n        b[m] = cur\n        if cur == 'X':\n            cur = 'O'\n        else:\n            cur = 'X'\n"
+    },
+    {
+     "type": "python",
+     "title": "Miniature AlphaGo",
+     "intro": "Write mini_alphago(board, player, sims, seed): run sims simulations of the AlphaGo search on tic-tac-toe. Each tree node (keyed by the board string and player) stores per-move N and W (total value) and priors from the prior() table above. Selection: argmax over legal moves of Q + 5 * P * sqrt(sum N) / (1 + N), Q = W / N (0 if N = 0), ties go to the smaller index. At an unseen node create it and evaluate the leaf as 0.5 * 0 + 0.5 * z where z is the random rollout outcome (generator state shared across simulations, starting at seed) from that node's player-to-move view; at a finished game use the exact value (-1 if the previous mover just won, 0 for a draw). Back up with sign flips. Return the list of nine root visit counts.",
+     "fn": "mini_alphago",
+     "starter": "def mini_alphago(board, player, sims, seed):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "XX.OO....",
+        "X",
+        40,
+        1
+       ],
+       "expect": [
+        0,
+        0,
+        25,
+        0,
+        0,
+        3,
+        4,
+        2,
+        5
+       ]
+      },
+      {
+       "args": [
+        ".........",
+        "X",
+        30,
+        3
+       ],
+       "expect": [
+        2,
+        4,
+        3,
+        3,
+        6,
+        1,
+        3,
+        2,
+        5
+       ]
+      },
+      {
+       "args": [
+        "XO.XO....",
+        "X",
+        40,
+        7
+       ],
+       "expect": [
+        0,
+        0,
+        5,
+        0,
+        0,
+        2,
+        25,
+        2,
+        5
+       ]
+      },
+      {
+       "args": [
+        "XOXOX.O..",
+        "O",
+        30,
+        5
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        0,
+        5,
+        20
+       ]
+      }
+     ],
+     "hint": "Follow chapter 9: select, expand once per simulation, evaluate, back up with sign flips.",
+     "solution": "LINES = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]\ndef result(b):\n    for l in LINES:\n        if b[l[0]] != '.' and b[l[0]] == b[l[1]] and b[l[1]] == b[l[2]]:\n            return b[l[0]]\n    if '.' not in b:\n        return 'D'\n    return '.'\n\nimport math\nSC = [3, 2, 3, 2, 4, 2, 3, 2, 3]\ndef mini_alphago(board, player, sims, seed):\n    state = [seed]\n    tree = {}\n    def other(p):\n        if p == 'X':\n            return 'O'\n        return 'X'\n    def rollout(b0, p0):\n        b = list(b0)\n        cur = p0\n        while True:\n            r = result(b)\n            if r != '.':\n                if r == 'D':\n                    return 0\n                if r == p0:\n                    return 1\n                return -1\n            empt = [i for i in range(9) if b[i] == '.']\n            state[0] = (75 * state[0] + 74) % 65537\n            b[empt[state[0] % len(empt)]] = cur\n            cur = other(cur)\n    def make(b):\n        e = []\n        for i in range(9):\n            if b[i] == '.':\n                e.append(math.exp(0.5 * SC[i]))\n            else:\n                e.append(0.0)\n        s = sum(e)\n        return {'P': [x / s for x in e], 'N': [0] * 9, 'W': [0.0] * 9}\n    def sim(b, p):\n        r = result(b)\n        if r != '.':\n            if r == 'D':\n                return 0.0\n            return -1.0\n        key = ''.join(b) + p\n        if key not in tree:\n            tree[key] = make(b)\n            z = rollout(b, p)\n            return 0.5 * 0.0 + 0.5 * z\n        nd = tree[key]\n        root = math.sqrt(sum(nd['N']))\n        best = -1e9\n        mv = -1\n        for i in range(9):\n            if b[i] == '.':\n                q = 0.0\n                if nd['N'][i] > 0:\n                    q = nd['W'][i] / nd['N'][i]\n                s = q + 5 * nd['P'][i] * root / (1 + nd['N'][i])\n                if s > best + 1e-12:\n                    best = s\n                    mv = i\n        nb = list(b)\n        nb[mv] = p\n        v = -sim(nb, other(p))\n        nd['N'][mv] += 1\n        nd['W'][mv] += v\n        return v\n    b = list(board)\n    for k in range(sims):\n        sim(b, player)\n    return tree[''.join(b) + player]['N']\n"
+    },
+    {
+     "type": "python",
+     "title": "Which move does it play?",
+     "intro": "Write choose(counts): the index of the largest visit count (ties to the smaller index).",
+     "fn": "choose",
+     "starter": "def choose(counts):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         5,
+         1,
+         0,
+         9,
+         0,
+         0,
+         0,
+         2
+        ]
+       ],
+       "expect": 4
+      },
+      {
+       "args": [
+        [
+         3,
+         3,
+         0
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         0
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         3,
+         2,
+         1
+        ]
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "Keep the first maximum.",
+     "solution": "def choose(counts):\n    best = 0\n    for i in range(len(counts)):\n        if counts[i] > counts[best]:\n            best = i\n    return best\n"
+    },
+    {
+     "type": "order",
+     "title": "Build the miniature",
+     "intro": "Order the build steps.",
+     "items": [
+      "Detect finished games",
+      "Write the prior table",
+      "Write the random rollout",
+      "Write selection with the bonus",
+      "Write backup with sign flips"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Stand-ins",
+     "intro": "Match each stand-in with the real component.",
+     "pairs": [
+      [
+       "Hand-made table",
+       "SL policy network"
+      ],
+      [
+       "Stub returning 0",
+       "Value network"
+      ],
+      [
+       "Random generator rollouts",
+       "Rollout policy"
+      ],
+      [
+       "Tic-tac-toe rules",
+       "Go simulator"
+      ],
+      [
+       "Visit counts",
+       "Final move choice"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Capstone",
+     "text": "Values flip {{sign}} going up the tree. The final move is the {{most visited|most-visited}} one. The stub value network always says {{zero|0}}."
+    }
+   ]
+  },
+  {
+   "title": "Matches, successors and criticism",
+   "maps": [
+    {
+     "title": "History and legacy",
+     "links": [
+      "AlphaGo Fan | beat | Fan Hui 5-0",
+      "AlphaGo Lee | beat | Lee Sedol 4-1",
+      "Lee Sedol | won | Game 4",
+      "AlphaGo Master | won | 60-0 online",
+      "AlphaGo Zero | dropped | Human data",
+      "AlphaZero | generalized | To chess and shogi",
+      "Criticism | targets | Compute and generality"
+     ]
+    }
+   ],
+   "summary": [
+    "The first AlphaGo, later called Fan, beat Fan Hui 5-0 in October 2015. A stronger version, Lee, beat Lee Sedol four games to one in March 2016. Lee won game four after a move, number 78, that the program had not anticipated.",
+    "Master, an updated version, won 60 straight online games in late December 2016 and early January 2017, and in May 2017 beat Ke Jie 3-0. AlphaGo Zero then learned Go from self-play alone, without human games, and beat the Lee version 100-0.",
+    "Critics pointed to the huge computing cost, the reliance on human data in the first versions, and the narrowness of Go as a test of intelligence."
+   ],
+   "glossary": [
+    {
+     "term": "AlphaGo Fan",
+     "def": "The October 2015 version that beat Fan Hui."
+    },
+    {
+     "term": "AlphaGo Lee",
+     "def": "The March 2016 version that beat Lee Sedol."
+    },
+    {
+     "term": "AlphaGo Master",
+     "def": "The 2017 version that won 60-0 online and beat Ke Jie."
+    },
+    {
+     "term": "AlphaGo Zero",
+     "def": "A version trained from scratch by self-play with no human data."
+    },
+    {
+     "term": "Move 78",
+     "def": "Lee Sedol's move in game four, called the divine move."
+    },
+    {
+     "term": "Honorary dan",
+     "def": "A professional rank awarded by Go associations to AlphaGo."
+    }
+   ],
+   "keyPoints": [
+    "October 2015: AlphaGo beat Fan Hui, a 2-dan professional, 5-0.",
+    "March 2016: AlphaGo beat Lee Sedol 4-1; all games ended by resignation; Chinese rules with 7.5 komi.",
+    "Lee won game four by resignation at move 180, his move 78 was unanticipated by the program.",
+    "Master won 60 online games without a loss and beat Ke Jie 3-0 in May 2017.",
+    "AlphaGo Zero beat the Lee version 100-0 and later versions without human data.",
+    "AlphaZero extended the Zero method to chess and shogi."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The first public match was in secret. In October 2015 the distributed version of AlphaGo played Fan Hui, the European champion and a professional of two dan, in five games. It won all five. It was the first time a Go program had beaten a professional without handicap on a full board.",
+      "The news was held until the Nature paper appeared on 27 January 2016."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Then came Seoul. From 9 to 15 March 2016, AlphaGo played Lee Sedol, a nine dan professional, in five games under Chinese rules with seven and a half points komi. The prize was one million US dollars, to be donated to charities.",
+      "AlphaGo won games one, two and three, each by resignation, so the match was decided after three games."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Game two is remembered for move 37 by AlphaGo, a surprising shoulder hit that commentators found strange at first; this is widely reported but is not covered in the sources that I used here. Game four is remembered for Lee Sedol.",
+      "He won by resignation at move 180, and his move 78 is often called the divine move. Afterwards Aja Huang explained that AlphaGo's networks had not expected that move and so the program failed to adjust, a weakness the team patched. Game five went to AlphaGo, for a final score of four to one."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Lee Sedol said after the match that he had misjudged the program's abilities and that the loss was not a defeat of mankind. AlphaGo received an honorary nine dan from the Korea Baduk Association.",
+      "Fan Hui, by contrast, described the program's style as conservative, and the referee of his match said the same. Strategists noted that AlphaGo prized probability of winning over the size of its lead, so it often chose safe moves that won by little."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Next versions. In late December 2016 and early January 2017, an account named Master, later confirmed to be an updated AlphaGo, won sixty games without a loss against top professionals online, including three against the top-ranked Ke Jie.",
+      "In May 2017 at the Future of Go Summit in Wuzhen, Master beat Ke Jie three games to nothing. AlphaGo was then retired."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Then the Zero line removed the human data. AlphaGo Zero, published in October 2017, learned from self-play alone. After three days it surpassed the Lee version, winning a hundred games to none, and after forty days it exceeded all earlier versions.",
+      "AlphaZero, in December 2017, applied the same idea to chess and shogi as well as Go. The AlphaZero course in this library covers it."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\text{Fan}\\ \\to\\ \\text{Lee}\\ \\to\\ \\text{Master}\\ \\to\\ \\text{Zero}\\ \\to\\ \\text{AlphaZero}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Criticism and caveats. The original needed expert game records, so it depended on human knowledge. Its hardware was large: a cluster of CPUs and GPUs, or by one account 1,920 CPUs and 280 GPUs for the Lee match. It needs a perfect simulator of the rules to search.",
+      "Go is also only one game, and doing well at it does not by itself show general intelligence. Lee Sedol retired in 2019, saying that AI dominance meant he could never be the top overall player."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "What changed in the world? Professional players studied AlphaGo's moves and revised long-held opening habits. Fan Hui, who lost to it, said the experience taught him to see things he had not seen before, and his ranking climbed afterwards.",
+      "A film about the preparation for the Lee match, directed by Greg Kohs, was released."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Who did AlphaGo beat in October 2015?",
+     "options": [
+      "Fan Hui",
+      "Lee Sedol",
+      "Ke Jie",
+      "Kasparov"
+     ],
+     "answer": 0,
+     "explain": "5-0."
+    },
+    {
+     "q": "Who won game four of the Lee match?",
+     "options": [
+      "Lee Sedol",
+      "AlphaGo",
+      "Nobody",
+      "Fan Hui"
+     ],
+     "answer": 0,
+     "explain": "By resignation at move 180."
+    },
+    {
+     "q": "What did AlphaGo Zero remove?",
+     "options": [
+      "Human game data",
+      "The search",
+      "The rules",
+      "The networks"
+     ],
+     "answer": 0,
+     "explain": "It learned from self-play alone."
+    },
+    {
+     "q": "What did Master win online?",
+     "options": [
+      "60 games without a loss",
+      "10 games",
+      "All but one",
+      "None"
+     ],
+     "answer": 0,
+     "explain": "Late December 2016 to January 2017."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What was the Lee match prize?",
+     "a": "One million US dollars, donated to charity."
+    },
+    {
+     "q": "What was the komi?",
+     "a": "7.5 points."
+    },
+    {
+     "q": "What extended Zero to chess and shogi?",
+     "a": "AlphaZero."
+    },
+    {
+     "q": "How did Lee describe the result?",
+     "a": "Not a defeat of mankind."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Match arithmetic",
+     "intro": "Write match_status(results): results is a list of 'A' (AlphaGo wins) or 'L' (Lee wins) per game, in order. Return [AlphaGo wins, Lee wins, the 1-based game number at which someone first reached 3 wins, or 0 if nobody did].",
+     "fn": "match_status",
+     "starter": "def match_status(results):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "A",
+         "A",
+         "A",
+         "L",
+         "A"
+        ]
+       ],
+       "expect": [
+        4,
+        1,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         "A",
+         "A",
+         "L",
+         "L",
+         "A"
+        ]
+       ],
+       "expect": [
+        3,
+        2,
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         "L",
+         "A"
+        ]
+       ],
+       "expect": [
+        1,
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         "A",
+         "L",
+         "A",
+         "L",
+         "L"
+        ]
+       ],
+       "expect": [
+        2,
+        3,
+        5
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": [
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Count wins and note when either reaches three.",
+     "solution": "def match_status(results):\n    a = 0\n    l = 0\n    decided = 0\n    for i in range(len(results)):\n        if results[i] == 'A':\n            a += 1\n        else:\n            l += 1\n        if decided == 0 and (a == 3 or l == 3):\n            decided = i + 1\n    return [a, l, decided]\n"
+    },
+    {
+     "type": "python",
+     "title": "Win rate to Elo",
+     "intro": "AlphaGo Zero beat the Lee version 100-0 and the Master version 89-11. Write score_pct(wins, losses): the percentage of games won, rounded to 1 decimal.",
+     "fn": "score_pct",
+     "starter": "def score_pct(wins, losses):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        4,
+        1
+       ],
+       "expect": 80.0
+      },
+      {
+       "args": [
+        100,
+        0
+       ],
+       "expect": 100.0
+      },
+      {
+       "args": [
+        89,
+        11
+       ],
+       "expect": 89.0
+      },
+      {
+       "args": [
+        60,
+        0
+       ],
+       "expect": 100.0
+      },
+      {
+       "args": [
+        1,
+        4
+       ],
+       "expect": 20.0
+      }
+     ],
+     "hint": "A simple ratio.",
+     "solution": "def score_pct(wins, losses):\n    return round(100.0 * wins / (wins + losses), 1)\n"
+    },
+    {
+     "type": "python",
+     "title": "Order the versions",
+     "intro": "versions is a list of [name, year, month]. Write timeline(versions): the names sorted by date (year, then month; ties by the given order).",
+     "fn": "timeline",
+     "starter": "def timeline(versions):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "Lee",
+          2016,
+          3
+         ],
+         [
+          "Fan",
+          2015,
+          10
+         ],
+         [
+          "Zero",
+          2017,
+          10
+         ],
+         [
+          "Master",
+          2017,
+          5
+         ]
+        ]
+       ],
+       "expect": [
+        "Fan",
+        "Lee",
+        "Master",
+        "Zero"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          2020,
+          1
+         ],
+         [
+          "b",
+          2020,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        "a",
+        "b"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "x",
+          2019,
+          12
+         ],
+         [
+          "y",
+          2019,
+          2
+         ]
+        ]
+       ],
+       "expect": [
+        "y",
+        "x"
+       ]
+      }
+     ],
+     "hint": "Sort indices by year and month.",
+     "solution": "def timeline(versions):\n    order = sorted(range(len(versions)), key=lambda i: (versions[i][1], versions[i][2], i))\n    return [versions[i][0] for i in order]\n"
+    },
+    {
+     "type": "order",
+     "title": "History",
+     "intro": "Put the milestones in order.",
+     "items": [
+      "AlphaGo Fan beats Fan Hui 5-0",
+      "AlphaGo Lee beats Lee Sedol 4-1",
+      "Master wins 60-0 online",
+      "Master beats Ke Jie 3-0",
+      "AlphaGo Zero beats Lee 100-0"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Versions",
+     "intro": "Match each version with its achievement.",
+     "pairs": [
+      [
+       "AlphaGo Fan",
+       "5-0 against Fan Hui"
+      ],
+      [
+       "AlphaGo Lee",
+       "4-1 against Lee Sedol"
+      ],
+      [
+       "AlphaGo Master",
+       "60-0 online, 3-0 against Ke Jie"
+      ],
+      [
+       "AlphaGo Zero",
+       "No human data; 100-0 against Lee"
+      ],
+      [
+       "AlphaZero",
+       "Chess, shogi and Go"
+      ]
+     ]
+    },
+    {
+     "type": "webxdc",
+     "title": "Go liberties board",
+     "intro": "Play on a small board. Place stones in turn, watch the liberties of each group, and capture a group. Capture at least one group and play six moves.",
+     "height": 680,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px 3px 3px 0}\nbutton.t{background:#2d2046;color:#e7d9ff}.m{color:#c9b8e8;margin:6px 0}\n#b{display:grid;grid-template-columns:repeat(7,1fr);gap:0;background:#c9964a;border-radius:8px;padding:4px;max-width:420px;margin:8px auto}\n.c{aspect-ratio:1;position:relative;display:flex;align-items:center;justify-content:center;border:1px solid #6b4a1a}\n.s{width:78%;height:78%;border-radius:50%;display:flex;align-items:center;justify-content:center;font:11px ui-monospace,monospace}\n.X{background:#111;color:#eee}.O{background:#f4f4f4;color:#222}.hl{outline:3px solid #8fe3a8;border-radius:50%}\n.good{color:#8fe3a8}\n</style></head><body>\n<div class=\"m\">7 by 7 board. Tap an empty point to place a stone; Black goes first. The number on a stone is its group's liberties. Capture a group and make at least six moves.</div>\n<div id=\"b\"></div>\n<div><button id=\"pass\" class=\"t\">Pass</button><button id=\"rst\" class=\"t\">Reset</button></div>\n<div class=\"m\" id=\"msg\"></div>\n<script>\nvar N=7,bd,turn,prev,moves,caps,fin;\nfunction done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nfunction init(){bd=[];for(var i=0;i<N*N;i++)bd.push(\".\");turn=\"X\";prev=null;moves=0;caps=0;fin=false;draw(\"\")}\nfunction nb(i){var r=Math.floor(i/N),c=i%N,o=[];if(r>0)o.push(i-N);if(r<N-1)o.push(i+N);if(c>0)o.push(i-1);if(c<N-1)o.push(i+1);return o}\nfunction grp(b,i){var col=b[i],seen={},st=[i],libs={};seen[i]=1;var g=[i];\n while(st.length){var p=st.pop();nb(p).forEach(function(q){if(b[q]===\".\"){libs[q]=1}else if(b[q]===col&&!seen[q]){seen[q]=1;g.push(q);st.push(q)}})}\n return{g:g,l:Object.keys(libs).length}}\nfunction other(p){return p===\"X\"?\"O\":\"X\"}\nfunction tryMove(i){if(bd[i]!==\".\")return null;var b=bd.slice();b[i]=turn;var cap=0;\n nb(i).forEach(function(q){if(b[q]===other(turn)){var g=grp(b,q);if(g.l===0){g.g.forEach(function(x){b[x]=\".\";cap++})}}});\n if(grp(b,i).l===0)return null;\n var key=b.join(\"\");if(prev!==null&&key===prev)return null;\n return{b:b,cap:cap}}\nfunction draw(note){var h=\"\";for(var i=0;i<N*N;i++){var s=\"\";if(bd[i]!==\".\"){s=\"<div class='s \"+bd[i]+\"'>\"+grp(bd,i).l+\"</div>\"}h+=\"<div class='c' data-i='\"+i+\"'>\"+s+\"</div>\"}\n var el=document.getElementById(\"b\");el.innerHTML=h;\n Array.prototype.forEach.call(el.querySelectorAll(\".c\"),function(d){d.onclick=function(){play(+d.getAttribute(\"data-i\"))}});\n document.getElementById(\"msg\").innerHTML=(turn===\"X\"?\"Black\":\"White\")+\" to play. Moves: \"+moves+\". Captured: \"+caps+\". \"+(note||\"\")+(fin?\" <span class='good'>Done.</span>\":\"\")}\nfunction play(i){var r=tryMove(i);if(!r){draw(\"Illegal move (occupied, suicide or ko).\");return}\n prev=bd.join(\"\");bd=r.b;caps+=r.cap;moves++;turn=other(turn);\n var note=r.cap?(\"Captured \"+r.cap+\" stone\"+(r.cap>1?\"s\":\"\")+\".\"):\"\";\n if(!fin&&caps>=1&&moves>=6){fin=true;done()}draw(note)}\ndocument.getElementById(\"pass\").onclick=function(){turn=other(turn);moves++;draw(\"Pass.\")};\ndocument.getElementById(\"rst\").onclick=init;init();\n</script></body></html>\n"
+    },
+    {
+     "type": "fill",
+     "title": "Legacy",
+     "text": "Lee Sedol won game {{four|4}} with move {{78}}. AlphaGo {{Zero}} learned from self-play without human data."
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: AlphaGo",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "Who did AlphaGo beat in October 2015?",
+    "options": [
+     "Fan Hui",
+     "Lee Sedol",
+     "Ke Jie",
+     "Kasparov"
+    ],
+    "answer": 0,
+    "explain": "5-0."
+   },
+   {
+    "q": "In which journal was the AlphaGo paper published?",
+    "options": [
+     "Nature",
+     "Science",
+     "Cell",
+     "PNAS"
+    ],
+    "answer": 0,
+    "explain": "28 January 2016."
+   },
+   {
+    "q": "What does the policy network reduce?",
+    "options": [
+     "Breadth of the search",
+     "Depth of the search",
+     "The board size",
+     "The komi"
+    ],
+    "answer": 0,
+    "explain": "It proposes likely moves."
+   },
+   {
+    "q": "What does the value network reduce?",
+    "options": [
+     "Depth of the search",
+     "Breadth of the search",
+     "The rules",
+     "Memory"
+    ],
+    "answer": 0,
+    "explain": "It judges positions directly."
+   },
+   {
+    "q": "What is a liberty?",
+    "options": [
+     "An empty point next to a group",
+     "A captured stone",
+     "A pass",
+     "A scoring unit"
+    ],
+    "answer": 0,
+    "explain": "Groups live by their liberties."
+   },
+   {
+    "q": "When is a group captured?",
+    "options": [
+     "When it has no liberties",
+     "When it has one stone",
+     "When the opponent passes",
+     "At move 100"
+    ],
+    "answer": 0,
+    "explain": "Zero liberties."
+   },
+   {
+    "q": "Why does White get komi?",
+    "options": [
+     "Black moves first",
+     "White is weaker",
+     "To end ties in chess",
+     "It is a penalty"
+    ],
+    "answer": 0,
+    "explain": "Compensation."
+   },
+   {
+    "q": "About what branching factor does Go have?",
+    "options": [
+     "250",
+     "35",
+     "10",
+     "2"
+    ],
+    "answer": 0,
+    "explain": "Chess is about 35."
+   },
+   {
+    "q": "What do rollouts estimate?",
+    "options": [
+     "The value of a position",
+     "The rules",
+     "The komi",
+     "The rating"
+    ],
+    "answer": 0,
+    "explain": "By the win rate of sampled games."
+   },
+   {
+    "q": "What does the UCB bonus do as a move is tried more?",
+    "options": [
+     "It shrinks",
+     "It grows",
+     "It stays fixed",
+     "It flips sign"
+    ],
+    "answer": 0,
+    "explain": "The count is in the denominator."
+   },
+   {
+    "q": "How many input planes does the policy network use?",
+    "options": [
+     "48",
+     "3",
+     "361",
+     "8"
+    ],
+    "answer": 0,
+    "explain": "Each is 19 by 19."
+   },
+   {
+    "q": "What does softmax guarantee?",
+    "options": [
+     "Positive numbers that sum to 1",
+     "A single winner",
+     "Integers",
+     "Legal moves only"
+    ],
+    "answer": 0,
+    "explain": "Probabilities."
+   },
+   {
+    "q": "What data trained the SL policy network?",
+    "options": [
+     "Positions from the KGS Go Server",
+     "Self-play",
+     "Chess games",
+     "Random boards"
+    ],
+    "answer": 0,
+    "explain": "30 million positions."
+   },
+   {
+    "q": "What accuracy did the SL network reach?",
+    "options": [
+     "57.0 percent",
+     "24.2 percent",
+     "99 percent",
+     "10 percent"
+    ],
+    "answer": 0,
+    "explain": "With all input features."
+   },
+   {
+    "q": "What is the gradient of -log p_a with respect to the logits?",
+    "options": [
+     "p minus a one-hot vector",
+     "p times 2",
+     "Zero",
+     "The board"
+    ],
+    "answer": 0,
+    "explain": "It pushes the right move up."
+   },
+   {
+    "q": "Why does AlphaGo have a separate rollout policy?",
+    "options": [
+     "The deep network is too slow for rollouts",
+     "It is more accurate",
+     "The rules differ",
+     "It is simpler to code"
+    ],
+    "answer": 0,
+    "explain": "Speed: about 2 microseconds a move."
+   },
+   {
+    "q": "What accuracy does the rollout policy have?",
+    "options": [
+     "24.2 percent",
+     "57.0 percent",
+     "85 percent",
+     "5 percent"
+    ],
+    "answer": 0,
+    "explain": "Weaker but about 1,500 times faster."
+   },
+   {
+    "q": "How is the RL policy network initialized?",
+    "options": [
+     "From the SL network",
+     "At random",
+     "From the value network",
+     "From the rules"
+    ],
+    "answer": 0,
+    "explain": "rho = sigma."
+   },
+   {
+    "q": "What does a won game do to its moves in policy gradient?",
+    "options": [
+     "Makes them more probable",
+     "Makes them less probable",
+     "Nothing",
+     "Removes them"
+    ],
+    "answer": 0,
+    "explain": "z = +1."
+   },
+   {
+    "q": "Why play against older versions?",
+    "options": [
+     "It stabilizes training",
+     "It is faster",
+     "To save memory",
+     "To copy humans"
+    ],
+    "answer": 0,
+    "explain": "Prevents overfitting to the current policy."
+   },
+   {
+    "q": "How did the RL network do against Pachi with no search?",
+    "options": [
+     "Won 85 percent",
+     "Lost most games",
+     "Won 11 percent",
+     "Tied"
+    ],
+    "answer": 0,
+    "explain": "Against 11 percent for SL."
+   },
+   {
+    "q": "What does the value network output?",
+    "options": [
+     "The expected game outcome",
+     "A move",
+     "The komi",
+     "The number of liberties"
+    ],
+    "answer": 0,
+    "explain": "A number between -1 and 1."
+   },
+   {
+    "q": "Why did training the value network on KGS games overfit?",
+    "options": [
+     "Positions in a game are correlated",
+     "Games were short",
+     "Go has no rules",
+     "The network was small"
+    ],
+    "answer": 0,
+    "explain": "The network memorized outcomes."
+   },
+   {
+    "q": "How were the 30 million value positions chosen?",
+    "options": [
+     "One position from each separate self-play game",
+     "All positions from few games",
+     "The first move only",
+     "Random boards"
+    ],
+    "answer": 0,
+    "explain": "This breaks correlation."
+   },
+   {
+    "q": "In the search, what does u favour?",
+    "options": [
+     "High prior and few visits",
+     "Low prior and many visits",
+     "Illegal moves",
+     "The last move"
+    ],
+    "answer": 0,
+    "explain": "P over 1 plus N."
+   },
+   {
+    "q": "What is c_puct in the paper?",
+    "options": [
+     "5",
+     "0.5",
+     "40",
+     "3"
+    ],
+    "answer": 0,
+    "explain": "u = c * P * sqrt(sum N) / (1 + N)."
+   },
+   {
+    "q": "What is lambda in the leaf evaluation?",
+    "options": [
+     "The rollout weight, 0.5",
+     "The komi",
+     "The learning rate",
+     "The thread count"
+    ],
+    "answer": 0,
+    "explain": "V = (1 - lambda) v + lambda z."
+   },
+   {
+    "q": "Which move does AlphaGo play at the root?",
+    "options": [
+     "The most visited",
+     "The highest prior",
+     "A random one",
+     "The last explored"
+    ],
+    "answer": 0,
+    "explain": "Visits are robust."
+   },
+   {
+    "q": "What is virtual loss for?",
+    "options": [
+     "To spread parallel threads over different paths",
+     "To lose games on purpose",
+     "To resign",
+     "To raise Q"
+    ],
+    "answer": 0,
+    "explain": "A temporary penalty."
+   },
+   {
+    "q": "What does a 400 Elo advantage give?",
+    "options": [
+     "About 91 percent expected score",
+     "A guaranteed win",
+     "A draw",
+     "50 percent"
+    ],
+    "answer": 0,
+    "explain": "E = 1 / (1 + 10^-1)."
+   },
+   {
+    "q": "How many of 495 games did single-machine AlphaGo win against other programs?",
+    "options": [
+     "494",
+     "250",
+     "1",
+     "495"
+    ],
+    "answer": 0,
+    "explain": "99.8 percent."
+   },
+   {
+    "q": "Who won game four of the Lee Sedol match?",
+    "options": [
+     "Lee Sedol",
+     "AlphaGo",
+     "Nobody",
+     "Fan Hui"
+    ],
+    "answer": 0,
+    "explain": "By resignation at move 180."
+   },
+   {
+    "q": "What was the final score of the Lee Sedol match?",
+    "options": [
+     "4-1 for AlphaGo",
+     "5-0 for AlphaGo",
+     "3-2 for Lee",
+     "1-4 for AlphaGo"
+    ],
+    "answer": 0,
+    "explain": "March 2016."
+   },
+   {
+    "q": "What komi was used in the Lee match?",
+    "options": [
+     "7.5",
+     "6.5",
+     "0",
+     "5.5"
+    ],
+    "answer": 0,
+    "explain": "Chinese rules."
+   },
+   {
+    "q": "What did AlphaGo Zero remove?",
+    "options": [
+     "Human game data",
+     "The search",
+     "The rules",
+     "The networks"
+    ],
+    "answer": 0,
+    "explain": "It learned from self-play alone."
+   },
+   {
+    "q": "What did Master win online?",
+    "options": [
+     "60 games without a loss",
+     "10 games",
+     "All but one",
+     "None"
+    ],
+    "answer": 0,
+    "explain": "Late 2016 to early 2017."
+   },
+   {
+    "q": "Why is the value flipped in the backup step?",
+    "options": [
+     "Players alternate",
+     "Values are negative",
+     "To save memory",
+     "It is optional"
+    ],
+    "answer": 0,
+    "explain": "A good result for the child is bad for the parent."
+   },
+   {
+    "q": "Did DeepMind release the AlphaGo code?",
+    "options": [
+     "No",
+     "Yes",
+     "Only the networks",
+     "Only for chess"
+    ],
+    "answer": 0,
+    "explain": "The labs here are miniatures."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "AlphaGo lookup",
+  "prompt": "go>",
+  "intro": "A scripted lookup, not a real engine. Try: nets, search, elo, matches, help",
+  "chips": [
+   "nets",
+   "search",
+   "elo",
+   "matches",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "nets     the four learned components",
+     "search   the selection and evaluation rules",
+     "elo      the rating formula",
+     "matches  the headline matches"
+    ]
+   },
+   {
+    "re": "^nets$",
+    "out": [
+     "rollout policy (linear, 24.2%) | SL policy (13 layers, 57.0%) | RL policy (self-play) | value network (MSE 0.234)"
+    ]
+   },
+   {
+    "re": "^search$",
+    "out": [
+     "a = argmax Q + c * P * sqrt(sum N) / (1 + N), c = 5 | V = 0.5 v + 0.5 z | play the most visited move"
+    ]
+   },
+   {
+    "re": "^elo$",
+    "out": [
+     "expected score = 1 / (1 + 10^(-d/400))"
+    ]
+   },
+   {
+    "re": "^matches$",
+    "out": [
+     "Oct 2015 Fan Hui 5-0",
+     "Mar 2016 Lee Sedol 4-1",
+     "Jan 2017 Master 60-0 online",
+     "May 2017 Ke Jie 3-0"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ }
+}

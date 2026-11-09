@@ -1,0 +1,39 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}
+button{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px 3px 3px 0}
+button.t{background:#2d2046;color:#e7d9ff}.m{color:#c9b8e8;margin:6px 0}
+#b{display:grid;grid-template-columns:repeat(7,1fr);gap:0;background:#c9964a;border-radius:8px;padding:4px;max-width:420px;margin:8px auto}
+.c{aspect-ratio:1;position:relative;display:flex;align-items:center;justify-content:center;border:1px solid #6b4a1a}
+.s{width:78%;height:78%;border-radius:50%;display:flex;align-items:center;justify-content:center;font:11px ui-monospace,monospace}
+.X{background:#111;color:#eee}.O{background:#f4f4f4;color:#222}.hl{outline:3px solid #8fe3a8;border-radius:50%}
+.good{color:#8fe3a8}
+</style></head><body>
+<div class="m">7 by 7 board. Tap an empty point to place a stone; Black goes first. The number on a stone is its group's liberties. Capture a group and make at least six moves.</div>
+<div id="b"></div>
+<div><button id="pass" class="t">Pass</button><button id="rst" class="t">Reset</button></div>
+<div class="m" id="msg"></div>
+<script>
+var N=7,bd,turn,prev,moves,caps,fin;
+function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+function init(){bd=[];for(var i=0;i<N*N;i++)bd.push(".");turn="X";prev=null;moves=0;caps=0;fin=false;draw("")}
+function nb(i){var r=Math.floor(i/N),c=i%N,o=[];if(r>0)o.push(i-N);if(r<N-1)o.push(i+N);if(c>0)o.push(i-1);if(c<N-1)o.push(i+1);return o}
+function grp(b,i){var col=b[i],seen={},st=[i],libs={};seen[i]=1;var g=[i];
+ while(st.length){var p=st.pop();nb(p).forEach(function(q){if(b[q]==="."){libs[q]=1}else if(b[q]===col&&!seen[q]){seen[q]=1;g.push(q);st.push(q)}})}
+ return{g:g,l:Object.keys(libs).length}}
+function other(p){return p==="X"?"O":"X"}
+function tryMove(i){if(bd[i]!==".")return null;var b=bd.slice();b[i]=turn;var cap=0;
+ nb(i).forEach(function(q){if(b[q]===other(turn)){var g=grp(b,q);if(g.l===0){g.g.forEach(function(x){b[x]=".";cap++})}}});
+ if(grp(b,i).l===0)return null;
+ var key=b.join("");if(prev!==null&&key===prev)return null;
+ return{b:b,cap:cap}}
+function draw(note){var h="";for(var i=0;i<N*N;i++){var s="";if(bd[i]!=="."){s="<div class='s "+bd[i]+"'>"+grp(bd,i).l+"</div>"}h+="<div class='c' data-i='"+i+"'>"+s+"</div>"}
+ var el=document.getElementById("b");el.innerHTML=h;
+ Array.prototype.forEach.call(el.querySelectorAll(".c"),function(d){d.onclick=function(){play(+d.getAttribute("data-i"))}});
+ document.getElementById("msg").innerHTML=(turn==="X"?"Black":"White")+" to play. Moves: "+moves+". Captured: "+caps+". "+(note||"")+(fin?" <span class='good'>Done.</span>":"")}
+function play(i){var r=tryMove(i);if(!r){draw("Illegal move (occupied, suicide or ko).");return}
+ prev=bd.join("");bd=r.b;caps+=r.cap;moves++;turn=other(turn);
+ var note=r.cap?("Captured "+r.cap+" stone"+(r.cap>1?"s":"")+"."):"";
+ if(!fin&&caps>=1&&moves>=6){fin=true;done()}draw(note)}
+document.getElementById("pass").onclick=function(){turn=other(turn);moves++;draw("Pass.")};
+document.getElementById("rst").onclick=init;init();
+</script></body></html>
