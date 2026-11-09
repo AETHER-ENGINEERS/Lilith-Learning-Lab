@@ -1,0 +1,5305 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "alphazero",
+ "title": "AlphaZero",
+ "subtitle": "Self-play, tree search and learning without human knowledge",
+ "author": "Lilith Learning Lab",
+ "description": "A 12-chapter course on AlphaZero, the DeepMind algorithm that learns chess, shogi and Go from self-play with only the rules. Based on the AlphaZero preprint and Science paper by Silver and colleagues, the AlphaGo Zero Nature paper and reports on the matches and the debate that followed. Covers game search, Monte Carlo tree search, the policy and value network, PUCT, exploration noise and temperature, self-play data, the loss and training, differences from AlphaGo Zero, results and criticism, a working tic-tac-toe search and successors such as MuZero. Python labs run on the built-in MicroPython engine. The original program was never released; the capstone is a teaching miniature.",
+ "pronounce": {
+  "AlphaGo Zero": "alpha go zero",
+  "AlphaZero": "alpha zero",
+  "AlphaGo": "alpha go",
+  "MuZero": "mew zero",
+  "KataGo": "kata go",
+  "Leela Chess Zero": "lee la chess zero",
+  "Leela Zero": "lee la zero",
+  "Leela": "lee la",
+  "Lc0": "L C zero",
+  "Stockfish": "stock fish",
+  "Elmo": "el mo",
+  "Elo": "ee low",
+  "shogi": "show gee",
+  "joseki": "joe seh kee",
+  "PUCT": "P U C T",
+  "MCTS": "M C T S",
+  "UCB1": "U C B one",
+  "UCT": "U C T",
+  "TPUs": "T P Us",
+  "TPU": "T P U",
+  "Dirichlet": "dee rish lay",
+  "Tromp-Taylor": "tromp taylor",
+  "Syzygy": "siz ih jee",
+  "NNUE": "N N U E",
+  "tabula rasa": "tabula rah sa",
+  "Szepesvári": "seh peh shvar ee",
+  "Kocsis": "ko chish",
+  "Schrittwieser": "shrit vee zer",
+  "Hassabis": "ha sah bis",
+  "negamax": "nega max",
+  "Negamax": "Nega max",
+  "softmax": "soft max",
+  "Softmax": "Soft max",
+  "TCEC": "T C E C",
+  "Gumbel": "gum bel",
+  "Pascutto": "pas coo toe",
+  "Kaufman": "kaw man",
+  "Fan Hui": "fan hway",
+  "Lee Sedol": "lee se dole"
+ },
+ "chapters": [
+  {
+   "title": "What is AlphaZero?",
+   "maps": [
+    {
+     "title": "The big picture",
+     "links": [
+      "AlphaZero | generalizes | AlphaGo Zero",
+      "AlphaZero | learns by | Self-play",
+      "AlphaZero | knows | Only the game rules",
+      "Neural network | outputs | Move probabilities and value",
+      "Monte Carlo tree search | uses | The network",
+      "Search result | trains | The network",
+      "AlphaZero | played | Chess, shogi and Go"
+     ]
+    }
+   ],
+   "summary": [
+    "AlphaZero is a reinforcement learning algorithm from DeepMind that learns board games from scratch. It starts from random play and is given nothing but the rules. It plays against itself, and in its first paper it reached superhuman strength in chess, shogi and Go.",
+    "Its core is a loop. A neural network guides a Monte Carlo tree search. The search picks moves and plays games against itself. The finished games become training data that improve the network, which makes the next search better.",
+    "The course builds every piece in small Python programs: game search, tree search, the network's outputs, the loss, the training loop and a tiny working search for tic-tac-toe."
+   ],
+   "glossary": [
+    {
+     "term": "Tabula rasa",
+     "def": "Latin for blank slate: learning without human data or hand-written knowledge."
+    },
+    {
+     "term": "Self-play",
+     "def": "The program plays games against itself and learns from the results."
+    },
+    {
+     "term": "Policy",
+     "def": "A probability distribution over moves."
+    },
+    {
+     "term": "Value",
+     "def": "A number estimating how good a position is; here the expected game outcome."
+    },
+    {
+     "term": "MCTS",
+     "def": "Monte Carlo tree search: a search that builds a tree from many simulated games."
+    },
+    {
+     "term": "Reinforcement learning",
+     "def": "Learning from outcomes of actions rather than from labelled examples."
+    }
+   ],
+   "keyPoints": [
+    "AlphaZero is a general version of AlphaGo Zero.",
+    "It uses only the rules of the game: no opening books, no human games, no hand-written evaluation.",
+    "One network f(s) = (p, v) gives move probabilities and a value.",
+    "MCTS guided by the network chooses moves; the search results train the network.",
+    "The same algorithm and hyperparameters were used for chess, shogi and Go, except the exploration noise.",
+    "The program was never released; the papers describe the algorithm."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "AlphaZero is a reinforcement learning algorithm published by DeepMind in a preprint in December 2017, with a peer-reviewed version in the journal Science on 7 December 2018.",
+      "Its abstract claims that, starting from random play and given no domain knowledge except the game rules, it reached superhuman play in chess and shogi as well as Go within 24 hours, and convincingly defeated a world-champion program in each."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To see why that mattered, look at what came before. The strongest chess and shogi programs used a highly optimized alpha-beta search with many domain-specific adaptations, and an evaluation function written by human experts over decades.",
+      "AlphaZero replaces the handwritten evaluation and move-ordering rules with a deep neural network, and replaces alpha-beta with a general-purpose Monte Carlo tree search."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The line of programs. AlphaGo Fan beat the European Go champion Fan Hui in October 2015. AlphaGo Lee beat Lee Sedol in March 2016. AlphaGo Master then beat a team of professionals online. These versions all started from supervised learning on human expert games.",
+      "AlphaGo Zero, published in Nature in October 2017, removed the human data completely and learned Go from self-play alone; it beat the earlier champion-defeating AlphaGo 100 games to 0."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "AlphaZero is the next step: a more generic version of AlphaGo Zero. It drops Go-specific details such as symmetry augmentation and the gating of new networks, and applies the same algorithm to chess and shogi, whose rules are asymmetric and whose moves are harder to encode.",
+      "The only game-specific setting that changed between games was the scale of the exploration noise."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "(\\mathbf{p},\\, v) = f_{\\theta}(s)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The heart of it is one function. A neural network f with parameters theta takes a board position s and returns a vector p of move probabilities and a scalar v, the expected outcome of the game for the player to move. Early in training the outputs are close to random.",
+      "Everything else in the algorithm exists to make them good."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The loop has three steps that repeat. First, play: at every position, run a tree search that uses the network, choose a move from the search result, and play a whole game against yourself. Second, record: for each position keep the search's move probabilities and the final outcome.",
+      "Third, train: adjust the network so that p matches the search probabilities and v matches the outcomes. Then play again with the improved network."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A useful way to see it, used in the papers: the search acts as a policy improvement step, since it produces better move probabilities than the raw network gives, and the network is trained toward them. Self-play outcomes act as policy evaluation. Chapter 8 returns to this."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A note on sources. This course follows the AlphaZero preprint and Science paper by Silver and colleagues, the AlphaGo Zero paper in Nature, and secondary coverage of the matches and the debate that followed. Numbers quoted come from those sources.",
+      "Chapter 11 is my own tic-tac-toe implementation, a small demonstration of the idea and not a copy of DeepMind's code, which was never released."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Be realistic about scale. The published training used thousands of specialized chips. The labs here are tiny versions that teach the mechanics; they are not meant to reach master strength."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does AlphaZero need to know about a game?",
+     "options": [
+      "Opening books",
+      "Only the rules",
+      "Human games",
+      "A hand-written evaluation"
+     ],
+     "answer": 1,
+     "explain": "It starts tabula rasa."
+    },
+    {
+     "q": "What does the network f(s) output?",
+     "options": [
+      "A move only",
+      "Move probabilities and a value",
+      "A board image",
+      "A win count"
+     ],
+     "answer": 1,
+     "explain": "(p, v) = f_theta(s)."
+    },
+    {
+     "q": "What replaces alpha-beta search in AlphaZero?",
+     "options": [
+      "Minimax",
+      "Monte Carlo tree search guided by the network",
+      "Brute force",
+      "A lookup table"
+     ],
+     "answer": 1,
+     "explain": "A general-purpose MCTS."
+    },
+    {
+     "q": "What is the main difference from AlphaGo?",
+     "options": [
+      "It plays slower",
+      "It uses no human data",
+      "It uses no neural network",
+      "It plays only Go"
+     ],
+     "answer": 1,
+     "explain": "AlphaGo started from human expert games."
+    }
+   ],
+   "cards": [
+    {
+     "q": "When was the Science paper published?",
+     "a": "7 December 2018."
+    },
+    {
+     "q": "Which games in the first paper?",
+     "a": "Chess, shogi and Go."
+    },
+    {
+     "q": "What are p and v?",
+     "a": "Move probabilities and the expected outcome."
+    },
+    {
+     "q": "Was the code released?",
+     "a": "No, the program was not released."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "The AlphaZero loop",
+     "intro": "Put the steps in order.",
+     "items": [
+      "Play a game with network-guided tree search",
+      "Record each position with its search probabilities",
+      "Score the finished game as win, draw or loss",
+      "Train the network on the recorded data",
+      "Play again with the improved network"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Programs",
+     "intro": "Match each program with its description.",
+     "pairs": [
+      [
+       "AlphaGo Lee",
+       "Beat Lee Sedol in 2016"
+      ],
+      [
+       "AlphaGo Zero",
+       "Go from self-play only"
+      ],
+      [
+       "AlphaZero",
+       "One algorithm for chess, shogi and Go"
+      ],
+      [
+       "Stockfish",
+       "Alpha-beta chess engine"
+      ],
+      [
+       "Elmo",
+       "Shogi champion program"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Basics",
+     "text": "AlphaZero learns {{tabula rasa|from scratch}} using only the game {{rules}}. A network gives move probabilities and a {{value}}. Games against itself are called {{self-play}}."
+    }
+   ]
+  },
+  {
+   "title": "Games, search and classical engines",
+   "maps": [
+    {
+     "title": "Game trees",
+     "links": [
+      "Game | has | States and legal moves",
+      "Zero-sum game | gives | Opposite payoffs",
+      "Game tree | lists | All move sequences",
+      "Minimax | assumes | Best play by both",
+      "Negamax | is | Minimax with sign flip",
+      "Alpha-beta | prunes | Hopeless branches",
+      "Evaluation function | scores | Non-terminal positions"
+     ]
+    }
+   ],
+   "summary": [
+    "The games AlphaZero plays are two-player, zero-sum, perfect-information games: players alternate, one's gain is the other's loss, and nothing is hidden. They can be drawn as a game tree whose root is the current position and whose edges are legal moves.",
+    "Minimax searches the tree assuming both sides play best. Negamax is the same idea written with one function by flipping the sign at each level. Alpha-beta pruning skips branches that cannot change the result.",
+    "Full trees are far too big for chess, so classical engines search to a limited depth and score the leaves with a handwritten evaluation function. Replacing that function with a learned one is the main idea AlphaZero builds on."
+   ],
+   "glossary": [
+    {
+     "term": "State",
+     "def": "A complete description of the game position, including whose turn it is."
+    },
+    {
+     "term": "Zero-sum",
+     "def": "One player's win is exactly the other's loss."
+    },
+    {
+     "term": "Game tree",
+     "def": "A tree of positions connected by legal moves."
+    },
+    {
+     "term": "Minimax",
+     "def": "Choose the move that is best assuming the opponent also plays best."
+    },
+    {
+     "term": "Negamax",
+     "def": "Minimax written as value(s) = max over moves of minus value(child)."
+    },
+    {
+     "term": "Alpha-beta pruning",
+     "def": "Skip branches that cannot affect the final minimax value."
+    },
+    {
+     "term": "Evaluation function",
+     "def": "A heuristic that scores a position when the search stops early."
+    }
+   ],
+   "keyPoints": [
+    "Perfect-information two-player zero-sum games can be searched as trees.",
+    "Negamax: value(s) = max over moves of -value(child); terminal win = +1 for the winner's side.",
+    "Alpha-beta gives the same value as minimax with fewer nodes if moves are well ordered.",
+    "Chess programs before AlphaZero used alpha-beta with handwritten evaluation and many tricks.",
+    "Shogi is harder than chess: bigger board and captured pieces can be dropped back.",
+    "Stockfish later adopted a small neural evaluation, so the contrast is no longer absolute."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Before AlphaZero's own ideas, we need the vocabulary of game search. The papers apply to games with two players who alternate moves, where one player's win is the other's loss and the full position is visible to both. Chess, shogi and Go all fit. Poker, with hidden cards, does not."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A game tree has the current position at its root, one child for each legal move, and so on until positions where the game is over. Each finished position has a result, win, draw or loss. For tic-tac-toe the tree is small enough to search completely. For chess it is astronomically large."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Minimax gives each position a value, assuming that both players choose the best option. The player to move picks the child with the best value for themselves.",
+      "Negamax is the compact way to write it, using the fact that the game is zero-sum: the value of a position for the player to move is the best, over all moves, of the negative of the child's value, because the child is seen from the opponent's side."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} V(s) = \\max_{a}\\,\\bigl(-V(s')\\bigr), \\\\[0.6em] s' = \\text{result of move } a \\text{ in } s \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "At a finished position the value is plus one if the player to move has won, minus one if they have lost and zero for a draw. In practice the player to move has always just been beaten when a game ends by a completed line, so the value there is minus one."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Alpha-beta pruning keeps two numbers, the best value already guaranteed to the player to move and to the opponent, and stops looking at a branch once it cannot matter. The result is exactly the minimax value, but far fewer nodes are visited when good moves are tried first.",
+      "Chess engines add move-ordering rules, transposition tables, search extensions, opening books, endgame tablebases and many other devices."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Even so, nobody can search chess to the end. Engines stop at a depth and call an evaluation function, a formula written by humans from features such as material, king safety and pawn structure.",
+      "The AlphaZero paper describes Stockfish this way, and notes that other strong programs, including Deep Blue, use very similar architectures.",
+      "Stockfish itself later added a small neural network evaluation, so today's classical engines blur the line; the 2017 contrast was between handwritten and learned knowledge."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Shogi, Japanese chess, is harder for such methods than chess: it is played on a larger board, and a captured piece changes sides and may be dropped almost anywhere. Go, with its large branching factor and hard-to-score positions, resisted classical search for even longer.",
+      "The question AlphaZero asks is whether one method can handle all three without handwritten knowledge."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The practice section implements the fundamentals on tic-tac-toe: detect a winner, compute negamax values, and count how many nodes minimax and alpha-beta visit. Boards are strings of nine characters, X, O or a dot for empty, read row by row."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which kind of game fits AlphaZero's setting?",
+     "options": [
+      "Poker",
+      "Chess",
+      "Hidden-information games",
+      "One-player puzzles only"
+     ],
+     "answer": 1,
+     "explain": "Perfect-information two-player zero-sum games."
+    },
+    {
+     "q": "What does negamax return at a position?",
+     "options": [
+      "The best value for the player to move",
+      "The number of moves",
+      "The loser",
+      "Zero always"
+     ],
+     "answer": 0,
+     "explain": "It flips the sign for the opponent's view."
+    },
+    {
+     "q": "What does alpha-beta pruning change?",
+     "options": [
+      "The minimax value",
+      "How many nodes are examined",
+      "The rules",
+      "The evaluation"
+     ],
+     "answer": 1,
+     "explain": "The value is the same, with fewer nodes."
+    },
+    {
+     "q": "What did classical chess engines use at depth limits?",
+     "options": [
+      "A handwritten evaluation function",
+      "A neural network",
+      "Random play",
+      "Human games"
+     ],
+     "answer": 0,
+     "explain": "They scored leaves with expert-designed formulas."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a zero-sum game?",
+     "a": "One player's gain is the other's loss."
+    },
+    {
+     "q": "What is a leaf?",
+     "a": "A position where the search stops."
+    },
+    {
+     "q": "Why is shogi harder than chess?",
+     "a": "Larger board and drops."
+    },
+    {
+     "q": "What does alpha-beta need to be effective?",
+     "a": "Good move ordering."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Who has won?",
+     "intro": "A board is a string of nine characters 'X', 'O' or '.', read row by row. Write winner(board): return 'X' or 'O' if that player has three in a row, 'D' if the board is full with no line, and '.' if the game is still going.",
+     "fn": "winner",
+     "starter": "def winner(board):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "XXXOO...."
+       ],
+       "expect": "X"
+      },
+      {
+       "args": [
+        "XOXOXOOXO"
+       ],
+       "expect": "D"
+      },
+      {
+       "args": [
+        "XOXXOOOXX"
+       ],
+       "expect": "D"
+      },
+      {
+       "args": [
+        "X...O...."
+       ],
+       "expect": "."
+      },
+      {
+       "args": [
+        "OOO.XX.X."
+       ],
+       "expect": "O"
+      },
+      {
+       "args": [
+        "........."
+       ],
+       "expect": "."
+      }
+     ],
+     "hint": "Check the eight lines, then whether any square is empty.",
+     "solution": "def winner(board):\n    lines = [(0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6)]\n    for a, b, c in lines:\n        if board[a] != '.' and board[a] == board[b] and board[b] == board[c]:\n            return board[a]\n    if '.' not in board:\n        return 'D'\n    return '.'\n"
+    },
+    {
+     "type": "python",
+     "title": "Negamax",
+     "intro": "Write negamax(board, player): the game value for the player to move, assuming best play by both: +1 if they can force a win, 0 for a draw, -1 if they lose. If the game is already over, a finished line belongs to the other player, so return -1 when the winner is not player, +1 when it is, and 0 for a draw. player is 'X' or 'O'.",
+     "fn": "negamax",
+     "starter": "def negamax(board, player):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "XX.OO....",
+        "X"
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "XO.XO....",
+        "X"
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "XO.XO....",
+        "O"
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "XOXOXO...",
+        "X"
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "XXOOO.X..",
+        "X"
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        "XOXOOXXXO",
+        "X"
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Recurse on every empty square and negate the child's value.",
+     "solution": "def negamax(board, player):\n    lines = [(0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6)]\n    def result(b):\n        for x, y, z in lines:\n            if b[x] != '.' and b[x] == b[y] and b[y] == b[z]:\n                return b[x]\n        if '.' not in b:\n            return 'D'\n        return '.'\n    r = result(board)\n    if r == 'D':\n        return 0\n    if r != '.':\n        if r == player:\n            return 1\n        return -1\n    other = 'O'\n    if player == 'O':\n        other = 'X'\n    best = -2\n    for i in range(9):\n        if board[i] == '.':\n            v = -negamax(board[:i] + player + board[i + 1:], other)\n            if v > best:\n                best = v\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "How much does pruning save?",
+     "intro": "Write node_counts(board, player): return [plain, pruned]. plain is the number of positions visited (including the starting one) by negamax that tries every empty square in index order. pruned is the number visited by alpha-beta negamax (window starting at -2 and 2, same move order, cut off when alpha reaches beta). A position with a finished game counts as visited but is not expanded.",
+     "fn": "node_counts",
+     "starter": "def node_counts(board, player):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "XO.XO....",
+        "X"
+       ],
+       "expect": [
+        157,
+        60
+       ]
+      },
+      {
+       "args": [
+        "XX.OO....",
+        "X"
+       ],
+       "expect": [
+        157,
+        36
+       ]
+      },
+      {
+       "args": [
+        "XOXOXO...",
+        "X"
+       ],
+       "expect": [
+        8,
+        6
+       ]
+      },
+      {
+       "args": [
+        "XOXOX.O..",
+        "O"
+       ],
+       "expect": [
+        14,
+        14
+       ]
+      },
+      {
+       "args": [
+        "XOXXOOOX.",
+        "X"
+       ],
+       "expect": [
+        2,
+        2
+       ]
+      }
+     ],
+     "hint": "Write two recursive functions; in the pruned one pass (-beta, -alpha) down and keep alpha updated.",
+     "solution": "def node_counts(board, player):\n    lines = [(0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6)]\n    def result(b):\n        for x, y, z in lines:\n            if b[x] != '.' and b[x] == b[y] and b[y] == b[z]:\n                return b[x]\n        if '.' not in b:\n            return 'D'\n        return '.'\n    def flip(p):\n        if p == 'X':\n            return 'O'\n        return 'X'\n    def plain(b, p):\n        if result(b) != '.':\n            return 1\n        n = 1\n        for i in range(9):\n            if b[i] == '.':\n                n += plain(b[:i] + p + b[i + 1:], flip(p))\n        return n\n    count = [0]\n    def ab(b, p, alpha, beta):\n        count[0] += 1\n        r = result(b)\n        if r == 'D':\n            return 0\n        if r != '.':\n            if r == p:\n                return 1\n            return -1\n        best = -2\n        for i in range(9):\n            if b[i] == '.':\n                v = -ab(b[:i] + p + b[i + 1:], flip(p), -beta, -alpha)\n                if v > best:\n                    best = v\n                if best > alpha:\n                    alpha = best\n                if alpha >= beta:\n                    break\n        return best\n    ab(board, player, -2, 2)\n    return [plain(board, player), count[0]]\n"
+    },
+    {
+     "type": "order",
+     "title": "Negamax step",
+     "intro": "Order the steps for one position.",
+     "items": [
+      "Check whether the game is over",
+      "If not, list every legal move",
+      "Search each resulting position from the opponent's side",
+      "Negate each child's value",
+      "Return the best of these values"
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Search",
+     "text": "In a {{zero-sum|zero sum}} game, one player's gain is the other's loss. Negamax flips the {{sign}} at each level. Alpha-beta {{pruning|prunes}} branches that cannot change the result."
+    }
+   ]
+  },
+  {
+   "title": "Monte Carlo tree search",
+   "maps": [
+    {
+     "title": "Search by sampling",
+     "links": [
+      "MCTS | builds | Search tree incrementally",
+      "Selection | descends | From root to leaf",
+      "Expansion | adds | New node",
+      "Simulation | plays out | A game to the end",
+      "Backup | updates | Visit counts and values",
+      "UCB1 | balances | Exploration and exploitation",
+      "Bandit problem | inspires | Selection rule"
+     ]
+    }
+   ],
+   "summary": [
+    "Monte Carlo tree search grows a tree one simulation at a time. Each simulation walks down the tree choosing promising moves, adds a new node, evaluates it and passes the result back up. Over many simulations the statistics at the root point to the best move.",
+    "The classic choice rule comes from multi-armed bandits: try moves with a high average reward, but also moves tried rarely. UCB1 adds an exploration bonus that shrinks as a move is visited more.",
+    "Classic MCTS evaluates a new node by playing random moves to the end of the game. AlphaZero keeps the same four phases but replaces the random rollout with the network's value."
+   ],
+   "glossary": [
+    {
+     "term": "Simulation",
+     "def": "One pass of the search: select down the tree, expand, evaluate, back up."
+    },
+    {
+     "term": "Rollout",
+     "def": "Playing a game to the end, often with random moves, to estimate a position's value."
+    },
+    {
+     "term": "Exploitation",
+     "def": "Choosing the move that looks best so far."
+    },
+    {
+     "term": "Exploration",
+     "def": "Trying moves with little data in case they are better."
+    },
+    {
+     "term": "UCB1",
+     "def": "Upper confidence bound rule: mean reward plus a bonus that falls with visits."
+    },
+    {
+     "term": "Multi-armed bandit",
+     "def": "Repeated choice among options with unknown payoffs, balancing learning and earning."
+    },
+    {
+     "term": "UCT",
+     "def": "UCB applied to trees of moves, from Kocsis and Szepesvári."
+    }
+   ],
+   "keyPoints": [
+    "Four phases: selection, expansion, evaluation (or simulation), backup.",
+    "Each node stores visit counts and a mean value.",
+    "UCB1 score: mean + c * sqrt(ln(parent visits) / visits).",
+    "Unvisited moves are tried first.",
+    "Classic MCTS uses random rollouts; AlphaZero uses a learned value instead.",
+    "The root's visit counts are the output of the search."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Alpha-beta search looks at every move to a fixed depth. Monte Carlo tree search instead grows a tree unevenly, spending most effort on promising lines. It needs no handwritten evaluation, only the rules, which is why it suited Go, where good evaluation functions were hard to write."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Each node of the tree is a position, and each edge a move. For every edge we keep a visit count and a total value. One simulation has four phases. Selection: starting at the root, repeatedly choose a child by a rule until reaching a position not yet in the tree. Expansion: add that position.",
+      "Evaluation: estimate how good it is. Backup: walk back up the path and update the counts and values of every edge used."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The question is how to choose in selection. This is the multi-armed bandit problem: several slot machines with unknown payoffs. You want to pull the best one, but you only learn about each by pulling it. Pure greed can get stuck on a mediocre option that happened to pay early.",
+      "Pure exploration wastes pulls."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\mathrm{UCB1}(a) = \\frac{W_a}{N_a} + c\\,\\sqrt{\\frac{\\ln N}{N_a}}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The UCB1 rule picks the option with the highest score. W over N is the average reward so far of option a, which favours good options. The second term is a bonus that is large for options with few visits and shrinks as they are tried, which favours exploring.",
+      "N is the total number of pulls and c sets how adventurous the search is. Applied to the edges at each tree node this gives the UCT algorithm, due to Kocsis and Szepesvári."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Classic MCTS evaluates a newly added position by a rollout: play random moves to the end and note who won. One rollout is a noisy estimate, but averaged over thousands it is informative. Go programs built on this approach reached strong amateur level before neural networks."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The final move is chosen from the root's statistics. Usually the most visited move is chosen, not the one with the best average, because visit counts are more robust. A move with a great average after two visits is probably luck."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "What AlphaZero changes: the rollout is replaced by the network's value estimate, and the UCB rule is replaced by a variant that also uses the network's move probabilities as a prior. The structure of four phases stays the same. Chapter 5 gives the exact rule."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you compute the UCB1 score and write the selection step."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What are the four phases of an MCTS simulation?",
+     "options": [
+      "Selection, expansion, evaluation, backup",
+      "Train, test, deploy, repeat",
+      "Shuffle, deal, bid, play",
+      "Read, write, run, halt"
+     ],
+     "answer": 0,
+     "explain": "Walk down, add, evaluate, update."
+    },
+    {
+     "q": "Why does UCB1 add a bonus term?",
+     "options": [
+      "To favour rarely tried moves",
+      "To slow the search",
+      "To remove randomness",
+      "To count wins"
+     ],
+     "answer": 0,
+     "explain": "It encourages exploration."
+    },
+    {
+     "q": "What does classic MCTS do to evaluate a new node?",
+     "options": [
+      "A rollout with random moves",
+      "A neural network",
+      "A database lookup",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "AlphaZero replaces this with a learned value."
+    },
+    {
+     "q": "What is usually used to pick the final move?",
+     "options": [
+      "The root visit counts",
+      "The deepest line",
+      "A coin flip",
+      "The last move tried"
+     ],
+     "answer": 0,
+     "explain": "Visit counts are robust."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is c in UCB1?",
+     "a": "The exploration constant."
+    },
+    {
+     "q": "Who introduced UCT?",
+     "a": "Kocsis and Szepesvári."
+    },
+    {
+     "q": "Why rollouts?",
+     "a": "To estimate value without handwritten knowledge."
+    },
+    {
+     "q": "What does AlphaZero replace rollouts with?",
+     "a": "The network's value output."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "UCB1 score",
+     "intro": "Write ucb1(total, n, parent_n, c): total / n + c * sqrt(ln(parent_n) / n). For an option never tried (n = 0) return 1000000000.0 so it is chosen first. Use math.sqrt and math.log.",
+     "fn": "ucb1",
+     "starter": "def ucb1(total, n, parent_n, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        5,
+        20,
+        1.4
+       ],
+       "expect": 1.6836637168573856,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0,
+        0,
+        20,
+        1.4
+       ],
+       "expect": 1000000000.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        10,
+        10,
+        100,
+        1.0
+       ],
+       "expect": 1.6786140424415112,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1,
+        1,
+        3,
+        2.0
+       ],
+       "expect": 3.09629414793641,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Handle n = 0 first; otherwise apply the formula.",
+     "solution": "import math\ndef ucb1(total, n, parent_n, c):\n    if n == 0:\n        return 1000000000.0\n    return total / n + c * math.sqrt(math.log(parent_n) / n)\n"
+    },
+    {
+     "type": "python",
+     "title": "UCB selection",
+     "intro": "Each option is [total, n]. The parent count is the sum of all n. Write select_ucb(stats, c): the index of an untried option if there is one (the lowest index), otherwise the index with the highest UCB1 score (the lowest index on ties).",
+     "fn": "select_ucb",
+     "starter": "def select_ucb(stats, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          3,
+          5
+         ],
+         [
+          2,
+          2
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        1.4
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          5
+         ],
+         [
+          2,
+          2
+         ],
+         [
+          0,
+          0
+         ]
+        ],
+        1.4
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         [
+          30,
+          50
+         ],
+         [
+          1,
+          2
+         ]
+        ],
+        0.1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          30,
+          50
+         ],
+         [
+          1,
+          2
+         ]
+        ],
+        3.0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          1,
+          2
+         ]
+        ],
+        1.0
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Return the first untried index; else track the best score with a strict comparison.",
+     "solution": "import math\ndef select_ucb(stats, c):\n    parent = 0\n    for s in stats:\n        parent += s[1]\n    for i in range(len(stats)):\n        if stats[i][1] == 0:\n            return i\n    best = -1\n    bestscore = None\n    for i in range(len(stats)):\n        score = stats[i][0] / stats[i][1] + c * math.sqrt(math.log(parent) / stats[i][1])\n        if bestscore is None or score > bestscore:\n            bestscore = score\n            best = i\n    return best\n"
+    },
+    {
+     "type": "order",
+     "title": "One simulation",
+     "intro": "Put the phases of one MCTS simulation in order.",
+     "items": [
+      "Select moves from the root down the tree",
+      "Expand a new position",
+      "Evaluate it",
+      "Back up the value along the path"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "MCTS terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Selection",
+       "Walk down using a rule"
+      ],
+      [
+       "Expansion",
+       "Add a new node"
+      ],
+      [
+       "Rollout",
+       "Random play to the end"
+      ],
+      [
+       "Backup",
+       "Update stats along the path"
+      ],
+      [
+       "UCB1",
+       "Mean plus exploration bonus"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "MCTS",
+     "text": "UCB1 adds an {{exploration}} bonus to the mean value. The final move is chosen from the root {{visit}} counts. AlphaZero replaces rollouts with the network's {{value}}."
+    }
+   ]
+  },
+  {
+   "title": "The policy and value network",
+   "maps": [
+    {
+     "title": "The function f",
+     "links": [
+      "Network f | maps | Position to policy and value",
+      "Policy head | outputs | Move probabilities",
+      "Value head | outputs | Expected outcome",
+      "Softmax | turns | Scores into probabilities",
+      "Legal move mask | removes | Illegal moves",
+      "Chess | uses | 8 by 8 by 73 move planes",
+      "Residual blocks | form | Network body"
+     ]
+    }
+   ],
+   "summary": [
+    "AlphaZero's network takes a board position and returns two things: a probability for every possible move (the policy) and one number estimating the outcome (the value). One shared body of convolutional layers feeds two output heads.",
+    "The policy is produced with a softmax over all moves, then illegal moves are zeroed out and the rest renormalized. For chess, moves are encoded as 73 planes of 8 by 8 squares: for each from-square, 56 queen-style moves, 8 knight moves and 9 underpromotions.",
+    "Early in training the network knows nothing, so p is nearly uniform and v is near zero. Everything it later knows comes from self-play."
+   ],
+   "glossary": [
+    {
+     "term": "Policy",
+     "def": "A probability for each move, written p."
+    },
+    {
+     "term": "Value",
+     "def": "A number v between -1 and +1: expected outcome for the player to move."
+    },
+    {
+     "term": "Softmax",
+     "def": "A function that turns any list of scores into positive numbers summing to 1."
+    },
+    {
+     "term": "Legal-move mask",
+     "def": "Setting the probability of illegal moves to zero and renormalizing."
+    },
+    {
+     "term": "Residual block",
+     "def": "A group of convolutional layers with a skip connection; AlphaGo Zero and AlphaZero stack many."
+    },
+    {
+     "term": "Plane",
+     "def": "One 8 by 8 layer of the input or the output."
+    },
+    {
+     "term": "Input planes",
+     "def": "Layers describing the position, such as piece locations, history and castling rights."
+    }
+   ],
+   "keyPoints": [
+    "(p, v) = f_theta(s).",
+    "Softmax: p_i = exp(x_i) / sum_j exp(x_j).",
+    "Illegal moves are masked out and the policy renormalized.",
+    "Chess input: 119 planes of 8x8 (8 steps of piece history plus constant planes).",
+    "Chess output: 8 x 8 x 73 = 4,672 move slots.",
+    "Value target z is -1 for a loss, 0 for a draw, +1 for a win."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The learned part of AlphaZero is a single neural network f with parameters theta. It takes a position and returns a pair: a vector p giving a probability for each move, and a scalar v estimating the expected outcome.",
+      "The papers describe the body as many residual blocks of convolutional layers with batch normalization and rectifier non-linearities, followed by two small output heads."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The value v is a number between minus one and plus one, from the point of view of the player to move. A value near plus one means a likely win, near minus one a likely loss.",
+      "Unlike AlphaGo Zero, which assumed only win or loss, AlphaZero estimates the expected outcome, which also covers draws, an important thing in chess where most top games are drawn."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Turning scores into a policy. The last layer of the policy head produces one raw score per possible move. A softmax makes them positive and sums them to one. It subtracts the largest score first for numerical stability, which does not change the result."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "p_i = \\frac{e^{x_i}}{\\sum_j e^{x_j}}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Most possible moves are illegal in any given position. So the policy is masked: probabilities of illegal moves are set to zero and the remainder renormalized to sum to one. If every legal move happens to have zero probability, a sensible fallback is to spread probability evenly over the legal moves."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Representing chess. The paper's input is a stack of 8 by 8 planes. It holds piece positions for each side over the last eight positions, plus constant planes for the side to move, the move count, castling rights and the no-progress counter, 119 planes in total. The output is 8 by 8 by 73.",
+      "Each square of the grid marks the square a piece moves from, and the 73 planes say how it moves."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Of the 73 planes, 56 are queen-style moves: eight compass directions times seven distances. Eight are knight moves. Nine are underpromotions, a pawn moving or capturing to a knight, bishop or rook. That gives 8 times 8 times 73, which is 4,672 move slots.",
+      "Promotions to a queen are encoded as ordinary queen-style moves."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "For shogi and Go the encodings differ, but the principle is the same: the game rules supply the board and a fixed catalogue of moves, and the network learns everything else. This is why the algorithm is general: only the encoding of positions and moves is game-specific."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you implement the softmax, the legal-move mask, and the queen-move plane numbering. The compass order used in the lab is my own convention; the paper does not fix an order in its text."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the value output estimate?",
+     "options": [
+      "The best move",
+      "The expected game outcome",
+      "The number of moves left",
+      "The board size"
+     ],
+     "answer": 1,
+     "explain": "From the viewpoint of the player to move."
+    },
+    {
+     "q": "What does a softmax do?",
+     "options": [
+      "Sorts scores",
+      "Turns scores into probabilities",
+      "Removes illegal moves",
+      "Doubles the score"
+     ],
+     "answer": 1,
+     "explain": "Positive numbers that sum to 1."
+    },
+    {
+     "q": "How many move slots does AlphaZero's chess output have?",
+     "options": [
+      "64",
+      "73",
+      "4,672",
+      "119"
+     ],
+     "answer": 2,
+     "explain": "8 x 8 x 73."
+    },
+    {
+     "q": "What happens to illegal moves?",
+     "options": [
+      "They are rewarded",
+      "They get zero probability and the rest is renormalized",
+      "They are ignored by the board",
+      "They are repeated"
+     ],
+     "answer": 1,
+     "explain": "A legal-move mask."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is the head?",
+     "a": "An output branch of the network."
+    },
+    {
+     "q": "How many queen-style planes?",
+     "a": "56 (8 directions x 7 distances)."
+    },
+    {
+     "q": "What is z?",
+     "a": "The final outcome: -1, 0 or +1."
+    },
+    {
+     "q": "Why 119 input planes?",
+     "a": "Eight steps of piece history plus constant planes."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Softmax",
+     "intro": "Write softmax(xs): subtract the maximum score from every score, exponentiate each (math.exp), and divide by the total. Return the list of probabilities.",
+     "fn": "softmax",
+     "starter": "def softmax(xs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.0,
+         0.0
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0,
+         2.0,
+         3.0
+        ]
+       ],
+       "expect": [
+        0.09003057317038046,
+        0.24472847105479764,
+        0.6652409557748218
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1000.0,
+         1001.0
+        ]
+       ],
+       "expect": [
+        0.2689414213699951,
+        0.7310585786300049
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         -1.0,
+         0.0,
+         1.0,
+         2.0
+        ]
+       ],
+       "expect": [
+        0.03205860328008499,
+        0.08714431874203257,
+        0.23688281808991013,
+        0.6439142598879724
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Subtract the max first so large scores do not overflow.",
+     "solution": "import math\ndef softmax(xs):\n    m = max(xs)\n    exps = []\n    for x in xs:\n        exps.append(math.exp(x - m))\n    total = 0.0\n    for e in exps:\n        total += e\n    out = []\n    for e in exps:\n        out.append(e / total)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Mask illegal moves",
+     "intro": "Write mask_normalize(p, legal): keep p[i] for the indices in the list legal, set all others to 0, and divide by the new total so it sums to 1. If the total is 0, give every legal move probability 1 / len(legal).",
+     "fn": "mask_normalize",
+     "starter": "def mask_normalize(p, legal):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.3,
+         0.2
+        ],
+        [
+         0,
+         2
+        ]
+       ],
+       "expect": [
+        0.7142857142857143,
+        0.0,
+        0.28571428571428575
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.25,
+         0.25,
+         0.25,
+         0.25
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.0,
+         0.0,
+         1.0
+        ],
+        [
+         0,
+         1
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5,
+        0.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.1,
+         0.2,
+         0.3,
+         0.4
+        ],
+        [
+         0,
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        0.1,
+        0.2,
+        0.3,
+        0.4
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "First zero the illegal entries, then divide by the sum of what remains.",
+     "solution": "def mask_normalize(p, legal):\n    q = []\n    total = 0.0\n    for i in range(len(p)):\n        if i in legal:\n            q.append(p[i])\n            total += p[i]\n        else:\n            q.append(0.0)\n    out = []\n    for i in range(len(p)):\n        if total == 0:\n            if i in legal:\n                out.append(1.0 / len(legal))\n            else:\n                out.append(0.0)\n        else:\n            out.append(q[i] / total)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Queen-move plane",
+     "intro": "In AlphaZero's chess encoding, 56 planes hold queen-style moves. Use this convention: directions are numbered 0 to 7 in the order N (-1,0), NE (-1,+1), E (0,+1), SE (+1,+1), S (+1,0), SW (+1,-1), W (0,-1), NW (-1,-1), written as (row change, column change), and distances run 1 to 7. Write queen_move_plane(dr, dc): the plane number direction * 7 + (distance - 1), or -1 if (dr, dc) is not a straight or diagonal move of distance 1 to 7.",
+     "fn": "queen_move_plane",
+     "starter": "def queen_move_plane(dr, dc):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -1,
+        0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        0,
+        3
+       ],
+       "expect": 16
+      },
+      {
+       "args": [
+        2,
+        2
+       ],
+       "expect": 22
+      },
+      {
+       "args": [
+        -7,
+        7
+       ],
+       "expect": 13
+      },
+      {
+       "args": [
+        1,
+        2
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        0,
+        0
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        0,
+        -7
+       ],
+       "expect": 48
+      },
+      {
+       "args": [
+        -3,
+        -3
+       ],
+       "expect": 51
+      },
+      {
+       "args": [
+        8,
+        0
+       ],
+       "expect": -1
+      }
+     ],
+     "hint": "Find the unit direction, the distance, then look up the direction number.",
+     "solution": "def queen_move_plane(dr, dc):\n    if dr == 0 and dc == 0:\n        return -1\n    if dr != 0 and dc != 0 and abs(dr) != abs(dc):\n        return -1\n    dist = max(abs(dr), abs(dc))\n    if dist > 7:\n        return -1\n    sr = 0\n    if dr > 0:\n        sr = 1\n    elif dr < 0:\n        sr = -1\n    sc = 0\n    if dc > 0:\n        sc = 1\n    elif dc < 0:\n        sc = -1\n    dirs = [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)]\n    for k in range(8):\n        if dirs[k][0] == sr and dirs[k][1] == sc:\n            return k * 7 + dist - 1\n    return -1\n"
+    },
+    {
+     "type": "match",
+     "title": "Network outputs",
+     "intro": "Match each item with its meaning.",
+     "pairs": [
+      [
+       "p",
+       "Move probabilities"
+      ],
+      [
+       "v",
+       "Expected outcome"
+      ],
+      [
+       "Softmax",
+       "Scores to probabilities"
+      ],
+      [
+       "Mask",
+       "Zero for illegal moves"
+      ],
+      [
+       "73 planes",
+       "Move types per from-square in chess"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Network",
+     "text": "The chess output has 8 x 8 x {{73}} = 4,672 move slots. The value is between -1 and {{+1|1|plus one}}. A {{softmax}} turns scores into probabilities."
+    }
+   ]
+  },
+  {
+   "title": "MCTS guided by the network (PUCT)",
+   "maps": [
+    {
+     "title": "AlphaZero's search",
+     "links": [
+      "Edge | stores | N, W, Q and P",
+      "Selection | maximizes | Q plus U",
+      "U | grows with | Prior P",
+      "U | shrinks with | Visits N",
+      "Leaf | is evaluated by | Network",
+      "Backup | flips | Sign each level",
+      "Root visits | give | Move probabilities"
+     ]
+    }
+   ],
+   "summary": [
+    "Each edge of the search tree stores a visit count N, a total value W, a mean value Q equal to W over N, and a prior probability P from the network. Selection picks the edge with the largest Q plus U, where U is an exploration bonus proportional to the prior and shrinking with visits.",
+    "When a simulation reaches a leaf, the network evaluates it. Its policy becomes the priors of the new edges and its value is backed up along the path, with the sign flipped at every level since the players alternate. No random rollout is used.",
+    "After many simulations the root visit counts form a probability distribution over moves. That distribution is the search's answer, and it is also the training target for the policy."
+   ],
+   "glossary": [
+    {
+     "term": "Edge statistics",
+     "def": "For each move from a position: visit count N, total value W, mean value Q = W/N, prior P."
+    },
+    {
+     "term": "PUCT",
+     "def": "Polynomial upper confidence trees: the selection rule Q + c * P * sqrt(sum N) / (1 + N)."
+    },
+    {
+     "term": "Prior",
+     "def": "The network's probability for a move, used to guide search before the move has been tried."
+    },
+    {
+     "term": "Leaf expansion",
+     "def": "Creating the edges for a new position, with priors from the network."
+    },
+    {
+     "term": "Backup",
+     "def": "Updating counts and values along the path from leaf to root."
+    },
+    {
+     "term": "Search policy",
+     "def": "The distribution over root moves given by visit counts."
+    }
+   ],
+   "keyPoints": [
+    "Selection: a = argmax over moves of Q(s,a) + U(s,a).",
+    "U(s,a) = c * P(s,a) * sqrt(sum_b N(s,b)) / (1 + N(s,a)).",
+    "Leaf: (p, v) = f(s); store p as priors, back up v.",
+    "Backup: N += 1, W += v, Q = W / N, with the sign flipped at each level.",
+    "In the AlphaZero pseudocode c is c_init + log((1 + N + c_base) / c_base), with c_init = 1.25 and c_base = 19652.",
+    "Training used 800 simulations per move."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Chapter 3 described MCTS with UCB1 and random rollouts. AlphaZero keeps the four phases but changes both ingredients. Let us look at the tree.",
+      "For every position s in the tree and every legal move a, there is an edge storing four numbers: a visit count N, a total value W, a mean value Q equal to W divided by N, and a prior probability P that came from the network when the position was first expanded."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Selection. Starting at the root, each simulation picks, at every position, the edge that maximizes Q plus U. The exploration term U is proportional to the prior, grows with the total number of visits to the position, and shrinks as the edge itself is visited. This follows the AlphaGo Zero paper."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "U(s,a) = c_{\\mathrm{puct}}\\; P(s,a)\\;\\frac{\\sqrt{\\sum_b N(s,b)}}{1 + N(s,a)}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Look at the behaviour. Early in the search all N are zero, so Q is taken as zero and moves are chosen by the prior alone: the network's favourites are tried first. As a move is visited its bonus falls, and moves with lower priors but good values start to win. Moves with high Q keep being visited.",
+      "In the long run the visit counts concentrate on the best moves."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Expansion and evaluation. When the walk reaches a position that is not yet in the tree, the network is called once on it. It returns p and v. The vector p, masked to the legal moves, gives the priors of the new edges. The scalar v is the value of the position for the player to move.",
+      "There is no rollout to the end of the game."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Backup, with a subtlety. Every edge's Q is from the point of view of the player who chooses that move. The value v belongs to the player to move at the leaf, who is the opponent of the player who chose the last edge.",
+      "So the last edge receives minus v, the one above it plus v, and so on, alternating up to the root. Each edge on the path also gets N plus one."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The AlphaZero paper does not print the exploration formula in its main text, and the later pseudocode makes the constant depend on the visit count of the position: log of one plus N plus c_base over c_base, plus c_init, with c_init equal to 1.25 and c_base equal to 19652.",
+      "The constant grows very slowly with visits. The papers give no experiments on this choice, and the reason for modifying the formula was not discussed. The version in the lab is the simple AlphaGo Zero form."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Choosing the move. After the simulations, the search returns a probability distribution based on root visit counts. In training, moves are chosen in proportion to those counts. In evaluation, the program picks the most-visited move. During training each search used 800 simulations."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Cost and speed. The papers report AlphaZero searching about 80 thousand positions per second in chess, 40 thousand in shogi and 16 thousand in Go. Stockfish searched about 70 million per second, and the shogi program Elmo about 35 million.",
+      "AlphaZero examines roughly a thousand times fewer positions, but each is judged by a much better evaluator. In the practice section you will implement the score, the selection and the backup."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which statistics does each edge store?",
+     "options": [
+      "N, W, Q and P",
+      "Only N",
+      "Only a win flag",
+      "The whole board"
+     ],
+     "answer": 0,
+     "explain": "Visit count, total value, mean value and prior."
+    },
+    {
+     "q": "What replaces the rollout in AlphaZero's MCTS?",
+     "options": [
+      "Random play",
+      "The network's value output",
+      "A database",
+      "Alpha-beta"
+     ],
+     "answer": 1,
+     "explain": "The leaf is evaluated by f."
+    },
+    {
+     "q": "Why is the value negated going up the tree?",
+     "options": [
+      "To confuse the search",
+      "The players alternate, so one's gain is the other's loss",
+      "Values are always negative",
+      "It saves memory"
+     ],
+     "answer": 1,
+     "explain": "Each edge is scored from its mover's view."
+    },
+    {
+     "q": "How does U change as N(s,a) grows?",
+     "options": [
+      "It grows",
+      "It shrinks",
+      "It stays",
+      "It becomes the prior"
+     ],
+     "answer": 1,
+     "explain": "The exploration bonus decays with visits."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is c_init?",
+     "a": "1.25 in the AlphaZero pseudocode."
+    },
+    {
+     "q": "What is c_base?",
+     "a": "19652 in the pseudocode."
+    },
+    {
+     "q": "How many simulations per move in training?",
+     "a": "800."
+    },
+    {
+     "q": "What does the search return?",
+     "a": "A distribution from root visit counts."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "PUCT score",
+     "intro": "Write puct_score(q, p, n_a, n_parent, c): q + c * p * sqrt(n_parent) / (1 + n_a), where n_parent is the total visits to the position.",
+     "fn": "puct_score",
+     "starter": "def puct_score(q, p, n_a, n_parent, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.0,
+        0.5,
+        0,
+        0,
+        1.5
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.2,
+        0.5,
+        3,
+        10,
+        1.5
+       ],
+       "expect": 0.7929270612815711,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -0.1,
+        0.1,
+        20,
+        100,
+        2.0
+       ],
+       "expect": -0.004761904761904773,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.5,
+        0.0,
+        5,
+        50,
+        1.0
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Direct from the formula.",
+     "solution": "import math\ndef puct_score(q, p, n_a, n_parent, c):\n    return q + c * p * math.sqrt(n_parent) / (1 + n_a)\n"
+    },
+    {
+     "type": "python",
+     "title": "Select an edge",
+     "intro": "The position has three lists: Q (mean values), P (priors) and N (visit counts), one entry per move. Write puct_select(Q, P, N, c): the index of the move with the highest PUCT score, taking n_parent as the sum of N. On equal scores choose the lowest index.",
+     "fn": "puct_select",
+     "starter": "def puct_select(Q, P, N, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         0.2,
+         0.5,
+         0.3
+        ],
+        [
+         0,
+         0,
+         0
+        ],
+        1.5
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         0.1,
+         0.4,
+         0.0
+        ],
+        [
+         0.5,
+         0.3,
+         0.2
+        ],
+        [
+         10,
+         4,
+         1
+        ],
+        1.5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.0
+        ],
+        [
+         0.1,
+         0.9
+        ],
+        [
+         50,
+         0
+        ],
+        1.0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         0.0,
+         0.0
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        [
+         3,
+         3
+        ],
+        2.0
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Compute each score and keep the first strict maximum.",
+     "solution": "import math\ndef puct_select(Q, P, N, c):\n    total = 0\n    for n in N:\n        total += n\n    best = -1\n    bestscore = None\n    for i in range(len(Q)):\n        score = Q[i] + c * P[i] * math.sqrt(total) / (1 + N[i])\n        if bestscore is None or score > bestscore:\n            bestscore = score\n            best = i\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Visit-dependent constant",
+     "intro": "In the AlphaZero pseudocode the constant grows with the number of visits n to the position: c(n) = ln((1 + n + c_base) / c_base) + c_init. Write c_dynamic(n, c_init, c_base) using math.log.",
+     "fn": "c_dynamic",
+     "starter": "def c_dynamic(n, c_init, c_base):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        1.25,
+        19652
+       ],
+       "expect": 1.250050884111447,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        800,
+        1.25,
+        19652
+       ],
+       "expect": 1.2899504566896276,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        100000,
+        1.25,
+        19652
+       ],
+       "expect": 3.056416772863617,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0,
+        1.5,
+        100
+       ],
+       "expect": 1.509950330853168,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Plug in the formula.",
+     "solution": "import math\ndef c_dynamic(n, c_init, c_base):\n    return math.log((1 + n + c_base) / c_base) + c_init\n"
+    },
+    {
+     "type": "python",
+     "title": "Back up a value",
+     "intro": "stats is a list of [N, W] pairs, one per edge. path lists the edge indices from the root down to the last edge, and v is the leaf's value for the player to move at the leaf. Write backup(stats, path, v): the last edge gets W += -v, the one above it W += +v, alternating, and every edge on the path gets N += 1. Return the new stats.",
+     "fn": "backup",
+     "starter": "def backup(stats, path, v):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0.0
+         ],
+         [
+          0,
+          0.0
+         ],
+         [
+          0,
+          0.0
+         ]
+        ],
+        [
+         0,
+         2
+        ],
+        0.5
+       ],
+       "expect": [
+        [
+         1,
+         0.5
+        ],
+        [
+         0,
+         0.0
+        ],
+        [
+         1,
+         -0.5
+        ]
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0.25
+         ],
+         [
+          0,
+          0.0
+         ]
+        ],
+        [
+         0
+        ],
+        -1.0
+       ],
+       "expect": [
+        [
+         2,
+         1.25
+        ],
+        [
+         0,
+         0.0
+        ]
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0.0
+         ],
+         [
+          0,
+          0.0
+         ],
+         [
+          0,
+          0.0
+         ],
+         [
+          0,
+          0.0
+         ]
+        ],
+        [
+         3,
+         1,
+         0
+        ],
+        1.0
+       ],
+       "expect": [
+        [
+         1,
+         -1.0
+        ],
+        [
+         1,
+         1.0
+        ],
+        [
+         0,
+         0.0
+        ],
+        [
+         1,
+         -1.0
+        ]
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          1.0
+         ]
+        ],
+        [],
+        0.7
+       ],
+       "expect": [
+        [
+         2,
+         1.0
+        ]
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Walk the path from the end; start with -v and flip the sign at each step.",
+     "solution": "def backup(stats, path, v):\n    out = []\n    for s in stats:\n        out.append([s[0], s[1]])\n    sign = -1.0\n    for k in range(len(path) - 1, -1, -1):\n        e = path[k]\n        out[e][0] += 1\n        out[e][1] += sign * v\n        sign = -sign\n    return out\n"
+    },
+    {
+     "type": "order",
+     "title": "Selection walk",
+     "intro": "Put the steps of one simulation in order.",
+     "items": [
+      "Start at the root",
+      "Pick the edge with the highest Q plus U",
+      "Repeat until reaching a position not yet in the tree",
+      "Evaluate that position with the network",
+      "Back up the value, flipping the sign each level"
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "PUCT",
+     "text": "The exploration bonus is proportional to the {{prior}} and shrinks with {{visits|visit counts}}. The value is {{negated|flipped}} at each level because the players alternate. Training used {{800}} simulations."
+    }
+   ]
+  },
+  {
+   "title": "Exploration: noise and temperature",
+   "maps": [
+    {
+     "title": "Making self-play diverse",
+     "links": [
+      "Self-play | needs | Exploration",
+      "Dirichlet noise | is added to | Root priors",
+      "Noise scale | follows | Typical legal moves",
+      "Temperature | shapes | Move choice",
+      "Early moves | are sampled | In proportion to visits",
+      "Late moves | are chosen | Greedily",
+      "Search inside tree | ignores | Temperature"
+     ]
+    }
+   ],
+   "summary": [
+    "If a program always plays its single best move, it may play the same game forever and learn nothing new. AlphaZero adds randomness in two places: noise on the root priors, and sampling the played move from the visit counts.",
+    "The Dirichlet noise mixes a random probability vector into the network's priors at the root. Its concentration is scaled inversely to the typical number of legal moves: 0.3 for chess, 0.15 for shogi, 0.03 for Go. This was the only game-specific hyperparameter.",
+    "Temperature controls how sharply the visit counts are turned into move probabilities. At temperature one, moves are chosen in proportion to visits. As it approaches zero, the most-visited move is always chosen."
+   ],
+   "glossary": [
+    {
+     "term": "Dirichlet noise",
+     "def": "A random probability vector added to the root priors to force some exploration."
+    },
+    {
+     "term": "Concentration alpha",
+     "def": "A Dirichlet parameter; small values give spiky vectors favouring a few moves."
+    },
+    {
+     "term": "Epsilon",
+     "def": "The mixing weight of the noise; 0.25 in AlphaGo Zero."
+    },
+    {
+     "term": "Temperature tau",
+     "def": "Exponent 1/tau applied to visit counts before normalizing."
+    },
+    {
+     "term": "Greedy play",
+     "def": "Always choosing the move with the most visits."
+    },
+    {
+     "term": "Sampling",
+     "def": "Choosing a move at random according to a probability distribution."
+    }
+   ],
+   "keyPoints": [
+    "Root prior with noise: P = (1 - eps) * p + eps * eta, eta ~ Dirichlet(alpha).",
+    "alpha is 0.3 (chess), 0.15 (shogi), 0.03 (Go): inversely related to move counts.",
+    "Move choice: pi(a) proportional to N(a)^(1/tau).",
+    "AlphaGo Zero: tau = 1 for the first 30 moves of a game, then tau near 0.",
+    "In evaluation matches the most-visited move is played.",
+    "Noise and temperature affect the move played, not the learning rule."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Self-play only teaches the program something if the games vary. A program that always plays its best-looking move, from the same start, would repeat one game. So AlphaZero deliberately injects randomness, in two places."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The first place is the root of each search. Dirichlet noise is added to the network's prior probabilities at the root, so moves the network currently dislikes still get tried. The mix is a weighted average of the network's prior and a random vector eta drawn from a Dirichlet distribution.",
+      "AlphaGo Zero used epsilon equal to 0.25; the AlphaZero paper does not state epsilon in its main text."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} P(s_{\\mathrm{root}}, a) = (1-\\varepsilon)\\, p_a + \\varepsilon\\, \\eta_a, \\\\[0.6em] \\eta \\sim \\mathrm{Dir}(\\alpha) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "What the Dirichlet distribution does. It produces random vectors of non-negative numbers summing to one. With a small concentration alpha the vectors are spiky: most mass sits on a few moves, chosen at random.",
+      "That is what you want, since a good surprise is usually one specific alternative, not a faint boost for everything. The AlphaZero paper scales alpha inversely to the typical number of legal moves: 0.3 for chess, 0.15 for shogi and 0.03 for Go. Go has the most legal moves and gets the smallest alpha."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The second place is the move actually played. After the search, the root visit counts N are turned into a distribution with a temperature tau. The probability of a move is proportional to its visit count raised to the power one over tau. At tau equal to one this is plain proportion to visits.",
+      "As tau goes toward zero the largest count takes everything, so the most-visited move is chosen."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\pi(a) = \\frac{N(a)^{1/\\tau}}{\\sum_b N(b)^{1/\\tau}}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "AlphaGo Zero used tau equal to one for the first 30 moves of each game, so openings vary, and then almost zero, so later play is sharp.",
+      "The AlphaZero paper describes moves chosen in proportion to root visit counts during training and greedily in evaluation, without printing a temperature schedule in its main text. Both settings are therefore described here as AlphaGo Zero's."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two clarifications. First, the temperature affects only which real move is played in the game. Inside a search, the tree is still walked by the PUCT rule.",
+      "Second, the training target for the policy is the visit distribution, not the move that was played, so the occasional exploratory move does not teach the network to play badly."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you turn visit counts into a policy at a given temperature, mix noise into priors, set the schedule, and sample from a distribution given a random number."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is Dirichlet noise added to?",
+     "options": [
+      "The board",
+      "The root priors",
+      "The reward",
+      "The weights"
+     ],
+     "answer": 1,
+     "explain": "It forces extra exploration at the root."
+    },
+    {
+     "q": "Which game gets the smallest alpha?",
+     "options": [
+      "Chess",
+      "Shogi",
+      "Go",
+      "All the same"
+     ],
+     "answer": 2,
+     "explain": "Go has the most legal moves."
+    },
+    {
+     "q": "What does tau close to zero do?",
+     "options": [
+      "Plays proportional to visits",
+      "Always plays the most visited move",
+      "Plays at random",
+      "Passes"
+     ],
+     "answer": 1,
+     "explain": "N^(1/tau) concentrates on the maximum."
+    },
+    {
+     "q": "Does the temperature change how the tree is searched?",
+     "options": [
+      "Yes, everywhere",
+      "No, only the move played",
+      "Only at leaves",
+      "Only at the root's children"
+     ],
+     "answer": 1,
+     "explain": "Inside the search PUCT is used."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is eps in AlphaGo Zero?",
+     "a": "0.25."
+    },
+    {
+     "q": "Temperature rule in AlphaGo Zero?",
+     "a": "tau = 1 for the first 30 moves, then near 0."
+    },
+    {
+     "q": "What is the policy training target?",
+     "a": "The search visit distribution."
+    },
+    {
+     "q": "Why spiky noise?",
+     "a": "To try specific alternative moves."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Visits to policy",
+     "intro": "Write visits_to_policy(N, tau): if tau is 0, return a list with 1.0 at the first index of the largest count and 0.0 elsewhere. Otherwise raise each count to the power 1 / tau and divide by the total. The counts are not all zero.",
+     "fn": "visits_to_policy",
+     "starter": "def visits_to_policy(N, tau):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        1.0
+       ],
+       "expect": [
+        0.1,
+        0.2,
+        0.3,
+        0.4
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        0
+       ],
+       "expect": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         10,
+         30,
+         60
+        ],
+        0.5
+       ],
+       "expect": [
+        0.021739130434782608,
+        0.1956521739130435,
+        0.782608695652174
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         10,
+         30,
+         60
+        ],
+        2.0
+       ],
+       "expect": [
+        0.19299279630882288,
+        0.3342733287016725,
+        0.4727338749895048
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         5,
+         5,
+         0
+        ],
+        1.0
+       ],
+       "expect": [
+        0.5,
+        0.5,
+        0.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0,
+         7,
+         7
+        ],
+        0
+       ],
+       "expect": [
+        0.0,
+        1.0,
+        0.0
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "tau = 0 is the argmax special case; otherwise normalize N ** (1/tau).",
+     "solution": "def visits_to_policy(N, tau):\n    if tau == 0:\n        best = 0\n        for i in range(len(N)):\n            if N[i] > N[best]:\n                best = i\n        out = [0.0] * len(N)\n        out[best] = 1.0\n        return out\n    w = []\n    total = 0.0\n    for n in N:\n        x = n ** (1.0 / tau)\n        w.append(x)\n        total += x\n    out = []\n    for x in w:\n        out.append(x / total)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Mix in noise",
+     "intro": "Write mix_noise(p, noise, eps): the list (1 - eps) * p[i] + eps * noise[i].",
+     "fn": "mix_noise",
+     "starter": "def mix_noise(p, noise, eps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.3,
+         0.2
+        ],
+        [
+         0.0,
+         1.0,
+         0.0
+        ],
+        0.25
+       ],
+       "expect": [
+        0.375,
+        0.475,
+        0.15000000000000002
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        0.0
+       ],
+       "expect": [
+        1.0,
+        0.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        1.0
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "A weighted average of two vectors.",
+     "solution": "def mix_noise(p, noise, eps):\n    out = []\n    for i in range(len(p)):\n        out.append((1 - eps) * p[i] + eps * noise[i])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Temperature schedule",
+     "intro": "Write temperature_for_move(move_number, threshold): 1.0 if move_number (counting from 1) is at most threshold, otherwise 0.0.",
+     "fn": "temperature_for_move",
+     "starter": "def temperature_for_move(move_number, threshold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        30
+       ],
+       "expect": 1.0
+      },
+      {
+       "args": [
+        30,
+        30
+       ],
+       "expect": 1.0
+      },
+      {
+       "args": [
+        31,
+        30
+       ],
+       "expect": 0.0
+      },
+      {
+       "args": [
+        5,
+        0
+       ],
+       "expect": 0.0
+      }
+     ],
+     "hint": "A simple threshold.",
+     "solution": "def temperature_for_move(move_number, threshold):\n    if move_number <= threshold:\n        return 1.0\n    return 0.0\n"
+    },
+    {
+     "type": "python",
+     "title": "Sample a move",
+     "intro": "Sampling from a distribution can be done with one uniform random number u in [0, 1). Write sample_index(pi, u): the first index whose running total of probabilities is greater than u (if rounding leaves none, return the last index whose probability is above 0).",
+     "fn": "sample_index",
+     "starter": "def sample_index(pi, u):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.2,
+         0.5,
+         0.3
+        ],
+        0.0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.5,
+         0.3
+        ],
+        0.19
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.5,
+         0.3
+        ],
+        0.2
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.5,
+         0.3
+        ],
+        0.69
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.5,
+         0.3
+        ],
+        0.71
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         0.0,
+         1.0,
+         0.0
+        ],
+        0.5
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Accumulate the probabilities and stop when the total passes u.",
+     "solution": "def sample_index(pi, u):\n    total = 0.0\n    last = 0\n    for i in range(len(pi)):\n        if pi[i] > 0:\n            last = i\n        total += pi[i]\n        if total > u:\n            return i\n    return last\n"
+    },
+    {
+     "type": "match",
+     "title": "Exploration",
+     "intro": "Match each device with its effect.",
+     "pairs": [
+      [
+       "Dirichlet noise",
+       "Extra root exploration"
+      ],
+      [
+       "Temperature 1",
+       "Sample in proportion to visits"
+      ],
+      [
+       "Temperature near 0",
+       "Play the most visited move"
+      ],
+      [
+       "Small alpha",
+       "Spiky random vector"
+      ],
+      [
+       "Epsilon",
+       "Mixing weight of the noise"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Exploration",
+     "text": "Noise is added to the root {{priors|prior probabilities}}. The temperature turns {{visit}} counts into move probabilities. AlphaGo Zero used temperature 1 for the first {{30}} moves."
+    }
+   ]
+  },
+  {
+   "title": "Self-play and training data",
+   "maps": [
+    {
+     "title": "What a game produces",
+     "links": [
+      "Self-play game | produces | Position records",
+      "Record | contains | State, pi and z",
+      "pi | is | Search probabilities",
+      "z | is | Final outcome",
+      "z | is seen from | Player to move",
+      "Symmetry augmentation | is used by | AlphaGo Zero",
+      "AlphaZero | does not use | Augmentation"
+     ]
+    }
+   ],
+   "summary": [
+    "A self-play game gives one training example per position played: the position s, the search probabilities pi that were used to choose the move, and the final outcome z of the game. The outcome is the same game result, but seen from the side of whoever was to move in that position.",
+    "So if the first player wins, z is plus one for every position where the first player was to move and minus one for the others. A draw gives zero for all.",
+    "Go has eightfold symmetry, which AlphaGo Zero used to multiply its data. Chess and shogi are not symmetric, so AlphaZero does not augment its data or transform positions during search."
+   ],
+   "glossary": [
+    {
+     "term": "Training example",
+     "def": "A triple (s, pi, z): position, search probabilities and outcome."
+    },
+    {
+     "term": "Search probabilities pi",
+     "def": "The distribution over moves produced by MCTS at that position."
+    },
+    {
+     "term": "Outcome z",
+     "def": "-1, 0 or +1 from the point of view of the player to move."
+    },
+    {
+     "term": "Replay data",
+     "def": "Recent self-play games from which training batches are drawn."
+    },
+    {
+     "term": "Symmetry augmentation",
+     "def": "Using rotated and reflected copies of a position as extra examples."
+    },
+    {
+     "term": "Terminal position",
+     "def": "A position where the game is over and can be scored by the rules."
+    }
+   ],
+   "keyPoints": [
+    "Each position in a game yields (s_t, pi_t, z_t).",
+    "z_t = +1 if the player to move at t eventually wins, -1 if loses, 0 for a draw.",
+    "pi_t comes from the visit counts, not from the move actually played.",
+    "Games end by the rules of the game; Go also ends after 722 moves.",
+    "AlphaGo Zero used the symmetries of Go; AlphaZero does not augment data.",
+    "Positions are drawn from recent games to train the network."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "What does a game of self-play teach? Each game is a sequence of positions s1, s2, up to a final position sT. At every position the program ran a search and played a move. After the game ends, the rules say who won. The program then writes one record for every position played."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A record has three parts. The position s_t, in the network's input encoding. The search probabilities pi_t, the distribution over moves produced by the tree search at that position. And the outcome z_t.",
+      "The value z is plus one if the player to move at position t went on to win, minus one if they went on to lose, and zero for a draw."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "z_t = \\begin{cases} +1 & \\text{player to move at } t \\text{ wins} \\\\ 0 & \\text{draw} \\\\ -1 & \\text{player to move at } t \\text{ loses} \\end{cases}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "An example. Suppose a game lasts five moves and the first player wins. The first player moved at moves one, three and five; they get z equal to plus one for those positions. The second player moved at positions two and four, and gets minus one.",
+      "Note that the same game result is seen from alternating sides, which matches the network's value being defined for the player to move."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where the target pi comes from matters. It is the visit distribution from the search, not the move chosen. Because moves early in a game are sampled randomly in proportion to visits, the move played is a noisy sample, while pi is the search's whole opinion.",
+      "Training the policy toward pi teaches the network to predict what a better search would conclude."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where the game ends. The rules decide: checkmate, stalemate or other draws in chess, for example. AlphaGo Zero ended Go games when both players passed or after 19 times 19 times 2, which is 722, moves, and scored by Tromp-Taylor rules.",
+      "In AlphaZero the outcome may be a draw, which matters for chess: it optimizes the expected outcome, not just the chance of winning."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Symmetry. Go positions have eight symmetries: four rotations, each with or without a reflection. AlphaGo Zero used these, for example by feeding the network a random transform of the board during training and search.",
+      "The rules of chess and shogi are asymmetric, and so AlphaZero does not augment the training data and does not transform the board during MCTS."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where the data goes. Self-play games are generated continuously by many workers; the training process samples mini-batches of positions from recent games. In the published AlphaZero runs, self-play used 5,000 first-generation TPUs while 64 second-generation TPUs trained the network."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you build the outcome list for a game, form the training triples, and count the distinct symmetric copies of a tic-tac-toe board."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a self-play record contain?",
+     "options": [
+      "Only the winner",
+      "State, search probabilities and outcome",
+      "Only the moves",
+      "The network weights"
+     ],
+     "answer": 1,
+     "explain": "(s, pi, z)."
+    },
+    {
+     "q": "From whose view is z defined?",
+     "options": [
+      "Always the first player",
+      "The player to move at that position",
+      "The winner",
+      "The loser"
+     ],
+     "answer": 1,
+     "explain": "So it matches the value head."
+    },
+    {
+     "q": "What is pi in a training record?",
+     "options": [
+      "The move played",
+      "The search's visit distribution",
+      "The reward",
+      "A random vector"
+     ],
+     "answer": 1,
+     "explain": "It comes from MCTS."
+    },
+    {
+     "q": "Does AlphaZero use symmetry augmentation?",
+     "options": [
+      "Yes, for chess",
+      "No, chess and shogi are asymmetric",
+      "Yes, for shogi",
+      "Only at test time"
+     ],
+     "answer": 1,
+     "explain": "AlphaGo Zero used it for Go; AlphaZero does not."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is z for a draw?",
+     "a": "0."
+    },
+    {
+     "q": "Who generates the data?",
+     "a": "Self-play workers using the latest network."
+    },
+    {
+     "q": "How many symmetries has Go?",
+     "a": "Eight."
+    },
+    {
+     "q": "Why is the target pi not the played move?",
+     "a": "pi is less noisy and richer."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Outcomes from the mover's view",
+     "intro": "A game lasts num_plies moves. Player 0 moves first, then players alternate (plies 0, 1, 2, ...). winner is 0 or 1, or -1 for a draw. Write outcomes(num_plies, winner): the list of z for each ply: 0 for a draw, +1 if the player moving at that ply is the winner, otherwise -1.",
+     "fn": "outcomes",
+     "starter": "def outcomes(num_plies, winner):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        0
+       ],
+       "expect": [
+        1,
+        -1,
+        1,
+        -1,
+        1
+       ]
+      },
+      {
+       "args": [
+        4,
+        1
+       ],
+       "expect": [
+        -1,
+        1,
+        -1,
+        1
+       ]
+      },
+      {
+       "args": [
+        3,
+        -1
+       ],
+       "expect": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        0,
+        0
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        6,
+        0
+       ],
+       "expect": [
+        1,
+        -1,
+        1,
+        -1,
+        1,
+        -1
+       ]
+      }
+     ],
+     "hint": "The mover at ply t is t % 2.",
+     "solution": "def outcomes(num_plies, winner):\n    out = []\n    for t in range(num_plies):\n        mover = t % 2\n        if winner == -1:\n            out.append(0)\n        elif mover == winner:\n            out.append(1)\n        else:\n            out.append(-1)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Build training examples",
+     "intro": "states and pis are lists with one entry per ply (a state string and a probability list). Write build_examples(states, pis, winner): a list of [state, pi, z] for each ply, with z computed as in the previous lab (player 0 moves at even plies, winner is 0, 1 or -1 for a draw).",
+     "fn": "build_examples",
+     "starter": "def build_examples(states, pis, winner):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c"
+        ],
+        [
+         [
+          1.0
+         ],
+         [
+          0.5,
+          0.5
+         ],
+         [
+          1.0
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        [
+         "a",
+         [
+          1.0
+         ],
+         1
+        ],
+        [
+         "b",
+         [
+          0.5,
+          0.5
+         ],
+         -1
+        ],
+        [
+         "c",
+         [
+          1.0
+         ],
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         [
+          0.4,
+          0.6
+         ],
+         [
+          1.0
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        [
+         "a",
+         [
+          0.4,
+          0.6
+         ],
+         -1
+        ],
+        [
+         "b",
+         [
+          1.0
+         ],
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        [
+         [
+          1.0
+         ]
+        ],
+        -1
+       ],
+       "expect": [
+        [
+         "a",
+         [
+          1.0
+         ],
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [],
+        [],
+        0
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Combine each state and pi with the z for that ply.",
+     "solution": "def build_examples(states, pis, winner):\n    out = []\n    for t in range(len(states)):\n        mover = t % 2\n        if winner == -1:\n            z = 0\n        elif mover == winner:\n            z = 1\n        else:\n            z = -1\n        out.append([states[t], pis[t], z])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Symmetric copies",
+     "intro": "A 3x3 board is a string of nine characters read row by row. Its eight symmetries are the four rotations and their mirror images. Write symmetric_boards(board): the sorted list of distinct boards among those eight (including the original).",
+     "fn": "symmetric_boards",
+     "starter": "def symmetric_boards(board):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "X........"
+       ],
+       "expect": [
+        "........X",
+        "......X..",
+        "..X......",
+        "X........"
+       ]
+      },
+      {
+       "args": [
+        "....X...."
+       ],
+       "expect": [
+        "....X...."
+       ]
+      },
+      {
+       "args": [
+        "X...O...."
+       ],
+       "expect": [
+        "....O...X",
+        "....O.X..",
+        "..X.O....",
+        "X...O...."
+       ]
+      },
+      {
+       "args": [
+        "XO......."
+       ],
+       "expect": [
+        ".......OX",
+        "......XO.",
+        ".....O..X",
+        "...O..X..",
+        "..X..O...",
+        ".OX......",
+        "X..O.....",
+        "XO......."
+       ]
+      },
+      {
+       "args": [
+        "XOX......"
+       ],
+       "expect": [
+        "......XOX",
+        "..X..O..X",
+        "X..O..X..",
+        "XOX......"
+       ]
+      }
+     ],
+     "hint": "Rotate four times, mirror each, and keep the distinct strings.",
+     "solution": "def symmetric_boards(board):\n    def rot(b):\n        out = ['.'] * 9\n        for r in range(3):\n            for c in range(3):\n                out[c * 3 + (2 - r)] = b[r * 3 + c]\n        return ''.join(out)\n    def mirror(b):\n        out = ['.'] * 9\n        for r in range(3):\n            for c in range(3):\n                out[r * 3 + (2 - c)] = b[r * 3 + c]\n        return ''.join(out)\n    seen = []\n    b = board\n    for i in range(4):\n        for x in (b, mirror(b)):\n            if x not in seen:\n                seen.append(x)\n        b = rot(b)\n    seen.sort()\n    return seen\n"
+    },
+    {
+     "type": "order",
+     "title": "From game to data",
+     "intro": "Put the steps in order.",
+     "items": [
+      "Play a game using MCTS at every move",
+      "The game ends and the rules give the result",
+      "Compute z for each position from the mover's view",
+      "Store (state, pi, z) for each position",
+      "Sample batches of records to train the network"
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Data",
+     "text": "Each record is a {{state|position}}, search probabilities pi and an {{outcome|result}} z. AlphaZero does not use symmetry {{augmentation}}. A draw has z equal to {{0|zero}}."
+    }
+   ]
+  },
+  {
+   "title": "The loss function and training",
+   "maps": [
+    {
+     "title": "Learning from search",
+     "links": [
+      "Value head | learns | Outcome z",
+      "Policy head | learns | Search pi",
+      "Loss | adds | Value, policy and weight terms",
+      "Cross-entropy | measures | Policy mismatch",
+      "L2 term | limits | Weight size",
+      "Search | acts as | Policy improvement",
+      "Self-play result | acts as | Policy evaluation"
+     ]
+    }
+   ],
+   "summary": [
+    "The network is trained on the self-play records to make two predictions: the value v should match the game outcome z, and the policy p should match the search probabilities pi. A third term penalizes large weights.",
+    "The loss is the sum of a squared error on the value, a cross-entropy between pi and p, and an L2 regularization term. It is minimized with mini-batch gradient descent on batches of positions.",
+    "This works as policy iteration. The search improves on the raw policy, the network is trained to imitate the improved policy, and the improved network makes the next search stronger."
+   ],
+   "glossary": [
+    {
+     "term": "Loss function",
+     "def": "A number that measures the network's error; training lowers it."
+    },
+    {
+     "term": "Mean squared error",
+     "def": "The average of squared differences, used for the value."
+    },
+    {
+     "term": "Cross-entropy",
+     "def": "-sum pi log p: how well p matches the target distribution pi."
+    },
+    {
+     "term": "L2 regularization",
+     "def": "A penalty c times the squared size of the weights."
+    },
+    {
+     "term": "Mini-batch",
+     "def": "A small random sample of training positions used for one gradient step."
+    },
+    {
+     "term": "Learning rate",
+     "def": "The size of each update step; AlphaZero lowered it in stages."
+    },
+    {
+     "term": "KL divergence",
+     "def": "A measure of how different two distributions are; cross-entropy minus entropy."
+    }
+   ],
+   "keyPoints": [
+    "l = (z - v)^2 - pi . log p + c ||theta||^2.",
+    "The value target z is -1, 0 or +1.",
+    "The policy target pi is the MCTS visit distribution.",
+    "AlphaZero used mini-batches of 4,096 positions for 700 thousand steps.",
+    "The learning rate was 0.2, dropped to 0.02, then 0.002, then 0.0002.",
+    "Search = policy improvement; game outcome = policy evaluation."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The records from chapter 7 are the training data. For each position s, the network gives p and v. We want v close to the outcome z, and p close to the search distribution pi. One number combines these goals, the loss."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\ell = (z - v)^2 \\;-\\; \\boldsymbol{\\pi}^{\\top} \\log \\mathbf{p} \\;+\\; c\\,\\lVert \\theta \\rVert^2"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The first term is a squared error on the value: if the network said minus one for a position whose game was won, the error is large. The second term is the cross-entropy between the search distribution pi and the network's p, a sum over moves of minus pi times the logarithm of p.",
+      "It is smallest when p equals pi. The third term is a penalty on the size of the weights controlled by a constant c, a standard guard against overfitting."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Cross-entropy is related to a distance between distributions. The cross-entropy of pi against p equals the entropy of pi plus the KL divergence from pi to p.",
+      "The entropy of pi does not depend on the network, so minimizing the cross-entropy is the same as minimizing the KL divergence: pulling p toward pi."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Gradient descent. The loss is averaged over a mini-batch of positions sampled from self-play data, and the parameters theta take a step against the gradient, scaled by the learning rate. AlphaZero's published runs used 700 thousand mini-batches of 4,096 positions.",
+      "The learning rate started at 0.2 and was dropped to 0.02, then 0.002 and finally 0.0002. The same network and settings were used for all three games."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why does this work at all? The viewpoint in the papers is policy iteration. The raw network policy is a guess. Searching with the network gives a better policy, because the search looks ahead and corrects the network's mistakes with real game continuations.",
+      "The network is trained toward that better policy, which improves it. This is policy improvement. The game outcomes, in turn, show how good the play really was, and so train the value, which is policy evaluation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Bootstrapping. At first the network is random, so the search is only slightly better than random, and its games are noisy. But the outcomes of games are real facts decided by the rules, so even random play carries signal: positions leading to wins are given higher values.",
+      "Gradually the value estimates improve, the search improves, and so on."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A note of caution from the literature. Later research observed that neither AlphaZero nor MuZero guarantees policy improvement unless all actions are evaluated at the root, and proposed Gumbel-based variants that do.",
+      "So the improvement picture is a good intuition, not a theorem about the original algorithm."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you compute the policy loss, the whole loss, the KL divergence and the learning rate schedule."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the value head try to match?",
+     "options": [
+      "The search probabilities",
+      "The game outcome z",
+      "The move played",
+      "The weights"
+     ],
+     "answer": 1,
+     "explain": "Squared error against z."
+    },
+    {
+     "q": "What is the target for the policy head?",
+     "options": [
+      "The move played",
+      "The search visit distribution pi",
+      "A random vector",
+      "The value"
+     ],
+     "answer": 1,
+     "explain": "Cross-entropy with pi."
+    },
+    {
+     "q": "What is the third term of the loss for?",
+     "options": [
+      "Speed",
+      "Penalizing large weights",
+      "Counting moves",
+      "Drawing games"
+     ],
+     "answer": 1,
+     "explain": "L2 regularization."
+    },
+    {
+     "q": "How did the learning rate change?",
+     "options": [
+      "It rose",
+      "It was lowered in stages from 0.2",
+      "It stayed 0.2",
+      "It was random"
+     ],
+     "answer": 1,
+     "explain": "0.2, 0.02, 0.002, 0.0002."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is l?",
+     "a": "(z-v)^2 - pi.log p + c||theta||^2."
+    },
+    {
+     "q": "Why is the search a policy improvement?",
+     "a": "It beats the raw network policy."
+    },
+    {
+     "q": "How many steps were used?",
+     "a": "700 thousand mini-batches of 4,096."
+    },
+    {
+     "q": "What is KL used for?",
+     "a": "The distance from pi to p."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Policy loss",
+     "intro": "Write policy_loss(pi, p): the cross-entropy, minus the sum over moves of pi[i] * ln(p[i]), skipping moves where pi[i] is 0. Use math.log.",
+     "fn": "policy_loss",
+     "starter": "def policy_loss(pi, p):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.6931471805599453,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.6931471805599453,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.7,
+         0.2,
+         0.1
+        ],
+        [
+         0.6,
+         0.3,
+         0.1
+        ]
+       ],
+       "expect": 0.8286310068007852,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        [
+         1.0
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Skip terms with zero target probability.",
+     "solution": "import math\ndef policy_loss(pi, p):\n    total = 0.0\n    for i in range(len(pi)):\n        if pi[i] > 0:\n            total -= pi[i] * math.log(p[i])\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "The whole loss",
+     "intro": "Write total_loss(z, v, pi, p, theta, c): (z - v)^2 + policy loss (as above) + c * the sum of squares of the numbers in theta.",
+     "fn": "total_loss",
+     "starter": "def total_loss(z, v, pi, p, theta, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        0.5,
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        [
+         1.0,
+         -1.0
+        ],
+        0.01
+       ],
+       "expect": 0.9631471805599453,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -1,
+        -1,
+        [
+         1.0,
+         0.0
+        ],
+        [
+         0.9,
+         0.1
+        ],
+        [],
+        0.1
+       ],
+       "expect": 0.10536051565782628,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0,
+        0.3,
+        [
+         0.2,
+         0.8
+        ],
+        [
+         0.4,
+         0.6
+        ],
+        [
+         2.0
+        ],
+        0.5
+       ],
+       "expect": 2.681918645387624,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Three terms: value error, cross-entropy and weight penalty.",
+     "solution": "import math\ndef total_loss(z, v, pi, p, theta, c):\n    value = (z - v) ** 2\n    pol = 0.0\n    for i in range(len(pi)):\n        if pi[i] > 0:\n            pol -= pi[i] * math.log(p[i])\n    reg = 0.0\n    for w in theta:\n        reg += w * w\n    return value + pol + c * reg\n"
+    },
+    {
+     "type": "python",
+     "title": "KL divergence",
+     "intro": "Write kl_divergence(pi, p): the sum over moves where pi[i] > 0 of pi[i] * ln(pi[i] / p[i]). Cross-entropy minus the entropy of pi equals this.",
+     "fn": "kl_divergence",
+     "starter": "def kl_divergence(pi, p):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.6931471805599453,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.7,
+         0.2,
+         0.1
+        ],
+        [
+         0.6,
+         0.3,
+         0.1
+        ]
+       ],
+       "expect": 0.026812454257447993,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.25,
+         0.75
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.13081203594113697,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Only moves with positive pi contribute.",
+     "solution": "import math\ndef kl_divergence(pi, p):\n    total = 0.0\n    for i in range(len(pi)):\n        if pi[i] > 0:\n            total += pi[i] * math.log(pi[i] / p[i])\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "Learning-rate schedule",
+     "intro": "A schedule is a list of [start_step, rate] pairs sorted by start_step. Write lr_at(step, schedule): the rate of the last pair whose start_step is at most step.",
+     "fn": "lr_at",
+     "starter": "def lr_at(step, schedule):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        [
+         [
+          0,
+          0.2
+         ],
+         [
+          100,
+          0.02
+         ],
+         [
+          200,
+          0.002
+         ]
+        ]
+       ],
+       "expect": 0.2,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        99,
+        [
+         [
+          0,
+          0.2
+         ],
+         [
+          100,
+          0.02
+         ],
+         [
+          200,
+          0.002
+         ]
+        ]
+       ],
+       "expect": 0.2,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        100,
+        [
+         [
+          0,
+          0.2
+         ],
+         [
+          100,
+          0.02
+         ],
+         [
+          200,
+          0.002
+         ]
+        ]
+       ],
+       "expect": 0.02,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        500,
+        [
+         [
+          0,
+          0.2
+         ],
+         [
+          100,
+          0.02
+         ],
+         [
+          200,
+          0.002
+         ]
+        ]
+       ],
+       "expect": 0.002,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Scan the schedule and keep the rate of the latest start that has been reached.",
+     "solution": "def lr_at(step, schedule):\n    rate = schedule[0][1]\n    for s in schedule:\n        if s[0] <= step:\n            rate = s[1]\n    return rate\n"
+    },
+    {
+     "type": "match",
+     "title": "Loss terms",
+     "intro": "Match each term with its job.",
+     "pairs": [
+      [
+       "(z - v)^2",
+       "Value matches the outcome"
+      ],
+      [
+       "- pi . log p",
+       "Policy matches the search"
+      ],
+      [
+       "c ||theta||^2",
+       "Keeps weights small"
+      ],
+      [
+       "KL divergence",
+       "Distance from pi to p"
+      ],
+      [
+       "Learning rate",
+       "Size of each update step"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Training",
+     "text": "The policy target is the search {{visit|visit count}} distribution. The value target is the game {{outcome|result}}. Training moves the network toward a {{better|improved}} policy found by the search."
+    }
+   ]
+  },
+  {
+   "title": "From AlphaGo Zero to AlphaZero",
+   "maps": [
+    {
+     "title": "What changed",
+     "links": [
+      "AlphaGo Zero | used | Gating of new networks",
+      "AlphaZero | keeps | One continuously updated network",
+      "AlphaGo Zero | optimized | Win probability",
+      "AlphaZero | optimizes | Expected outcome",
+      "AlphaGo Zero | augmented | With symmetries",
+      "AlphaZero | uses | Same hyperparameters everywhere",
+      "Training | needs | Large hardware"
+     ]
+    }
+   ],
+   "summary": [
+    "AlphaZero is described in its paper as a more generic version of AlphaGo Zero. It differs in several places. Gone is the evaluation step in which a newly trained network had to beat the best player by a 55 percent margin before it could generate self-play games.",
+    "Instead a single network is updated continually and always generates the games. AlphaZero also optimizes the expected outcome including draws, uses no symmetry augmentation, and uses the same hyperparameters across games without per-game tuning, except for the exploration noise.",
+    "The published training used thousands of first-generation TPUs for self-play and 64 second-generation TPUs for learning. The training lasted 9, 12 and 34 hours for chess, shogi and Go."
+   ],
+   "glossary": [
+    {
+     "term": "Gating",
+     "def": "Only letting a newly trained network replace the best one if it wins a match by enough margin; used in AlphaGo Zero."
+    },
+    {
+     "term": "Expected outcome",
+     "def": "The average result including draws, as opposed to a win probability."
+    },
+    {
+     "term": "Bayesian optimization",
+     "def": "A method for tuning hyperparameters; AlphaGo Zero used it, AlphaZero did not."
+    },
+    {
+     "term": "TPU",
+     "def": "Tensor processing unit: Google's chip for neural network computation."
+    },
+    {
+     "term": "Replay of recent games",
+     "def": "Training batches are sampled from recent self-play positions."
+    },
+    {
+     "term": "Hyperparameter",
+     "def": "A setting of the algorithm that is chosen, not learned."
+    }
+   ],
+   "keyPoints": [
+    "AlphaGo Zero: a new network must win by about 55 percent to replace the best player.",
+    "AlphaZero: one network, always the latest, generates self-play.",
+    "AlphaGo Zero estimated win probability; AlphaZero the expected outcome.",
+    "No symmetry augmentation or board transformation in AlphaZero.",
+    "No per-game hyperparameter tuning; only the Dirichlet noise scale differs.",
+    "Chess: 9 h, 44 million games; shogi: 12 h, 24 million; Go: 34 h, 21 million."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "AlphaZero grew out of AlphaGo Zero, and the AlphaZero paper lists the differences with care. They show which parts of the earlier design were Go-specific or only precautions."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Difference one: gating. In AlphaGo Zero, self-play games were generated by the best player found so far. After each training iteration, the new network was played against the best one, and only if it won by a margin of 55 percent did it replace it. In AlphaZero this evaluation step is removed.",
+      "A single network is updated continually, and self-play always uses its latest parameters. This is simpler and removes a source of delay, at the cost of possibly using a slightly worse network for a while."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Difference two: the target. AlphaGo Zero estimated and optimized the probability of winning, assuming outcomes are win or loss. AlphaZero estimates and optimizes the expected outcome, taking account of draws or other outcomes.",
+      "That fits chess, where draws are common and an important part of the game."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Difference three: symmetry. Go is invariant to rotation and reflection, and AlphaGo Zero used that to augment training data and to transform positions during the search. The rules of chess and shogi are asymmetric, so AlphaZero does neither."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Difference four: tuning. AlphaGo Zero tuned its search hyperparameters by Bayesian optimization. AlphaZero reuses the same hyperparameters and network architecture across games, with only the Dirichlet noise scaled in inverse proportion to the typical number of legal moves."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "What stayed the same: a deep network giving a policy and a value, Monte Carlo tree search with the same selection logic, self-play from random initial parameters, and the loss function of chapter 8. In that sense the algorithm is general because it was already mostly game-independent."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Scale. The paper reports 700 thousand training steps with mini-batches of 4,096 positions. Self-play used 5,000 first-generation TPUs and training used 64 second-generation TPUs.",
+      "The games generated were 44 million for chess, 24 million for shogi and 21 million for Go, taking about 9, 12 and 34 hours. Each move was chosen after 800 simulations in training."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A note on what AlphaGo Zero's own numbers were. Its Nature paper reports about three days of training from random play, 4.9 million self-play games, 1,600 simulations per move, which is roughly 0.4 seconds of thinking per move, and a 100 to 0 win over the AlphaGo version that had beaten Lee Sedol.",
+      "Different networks and hardware were used for the two programs, so the sizes are not directly comparable."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the practice section you implement the gating decision and a simple replay buffer."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is gating?",
+     "options": [
+      "Training faster",
+      "Requiring a new network to beat the best by a margin before it generates games",
+      "Adding noise",
+      "Counting moves"
+     ],
+     "answer": 1,
+     "explain": "AlphaGo Zero used it; AlphaZero removed it."
+    },
+    {
+     "q": "What does AlphaZero optimize?",
+     "options": [
+      "Win probability only",
+      "The expected outcome including draws",
+      "Game length",
+      "Number of captures"
+     ],
+     "answer": 1,
+     "explain": "That suits chess."
+    },
+    {
+     "q": "Which hyperparameter was game-specific?",
+     "options": [
+      "Learning rate",
+      "Dirichlet noise scale",
+      "Batch size",
+      "Number of simulations"
+     ],
+     "answer": 1,
+     "explain": "Alpha = 0.3, 0.15 and 0.03."
+    },
+    {
+     "q": "Why no symmetry augmentation in chess?",
+     "options": [
+      "It is slow",
+      "The rules are asymmetric",
+      "Boards are too small",
+      "It was forgotten"
+     ],
+     "answer": 1,
+     "explain": "Rotating a chess board changes the game."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What margin gated AlphaGo Zero?",
+     "a": "55 percent."
+    },
+    {
+     "q": "How many TPUs for self-play?",
+     "a": "5,000 first-generation TPUs."
+    },
+    {
+     "q": "How long was Go training?",
+     "a": "34 hours."
+    },
+    {
+     "q": "How many simulations per move in training?",
+     "a": "800."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Gating decision",
+     "intro": "A new network played games against the best player. Write gate_decision(wins, draws, losses, threshold): score = (wins + 0.5 * draws) / games; return true if the number of games is above 0 and the score is at least threshold. (The papers do not say how draws were counted, so this is one reasonable convention.)",
+     "fn": "gate_decision",
+     "starter": "def gate_decision(wins, draws, losses, threshold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        55,
+        0,
+        45,
+        0.55
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        54,
+        0,
+        46,
+        0.55
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        40,
+        30,
+        30,
+        0.55
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        0,
+        0,
+        0,
+        0.55
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        10,
+        80,
+        10,
+        0.5
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Compute the score and compare with the threshold.",
+     "solution": "def gate_decision(wins, draws, losses, threshold):\n    games = wins + draws + losses\n    if games == 0:\n        return False\n    return (wins + 0.5 * draws) / games >= threshold\n"
+    },
+    {
+     "type": "python",
+     "title": "A replay buffer",
+     "intro": "Training uses recent games. Write replay_buffer(buf, new, cap): add the items in new to the end of buf and keep only the last cap items. Return the list.",
+     "fn": "replay_buffer",
+     "starter": "def replay_buffer(buf, new, cap):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5
+        ],
+        4
+       ],
+       "expect": [
+        2,
+        3,
+        4,
+        5
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         1
+        ],
+        3
+       ],
+       "expect": [
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [],
+        5
+       ],
+       "expect": [
+        1,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5,
+         6,
+         7
+        ],
+        3
+       ],
+       "expect": [
+        5,
+        6,
+        7
+       ]
+      }
+     ],
+     "hint": "Join the lists and slice off the oldest items.",
+     "solution": "def replay_buffer(buf, new, cap):\n    both = list(buf) + list(new)\n    if len(both) > cap:\n        both = both[len(both) - cap:]\n    return both\n"
+    },
+    {
+     "type": "match",
+     "title": "AlphaGo Zero vs AlphaZero",
+     "intro": "Match each feature with the program that has it.",
+     "pairs": [
+      [
+       "55 percent gating",
+       "AlphaGo Zero"
+      ],
+      [
+       "One continuously updated network",
+       "AlphaZero"
+      ],
+      [
+       "Symmetry augmentation",
+       "AlphaGo Zero"
+      ],
+      [
+       "Expected outcome with draws",
+       "AlphaZero"
+      ],
+      [
+       "Same hyperparameters across games",
+       "AlphaZero"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Differences",
+     "text": "AlphaGo Zero used {{gating}} of new networks. AlphaZero optimizes the expected {{outcome}}. Only the noise {{scale|alpha}} differed between games."
+    }
+   ]
+  },
+  {
+   "title": "Results, Elo and the debate",
+   "maps": [
+    {
+     "title": "What was shown and how it was disputed",
+     "links": [
+      "AlphaZero | beat | Stockfish 8",
+      "Match 2017 | was | 100 games",
+      "Match 2018 | was | 1000 games",
+      "Elo | converts | Score to rating gap",
+      "Critics | questioned | Hardware and settings",
+      "Positions per second | differ | By orders of magnitude",
+      "Shogi and Go | also won | Against champions"
+     ]
+    }
+   ],
+   "summary": [
+    "In the 2017 preprint AlphaZero played a 100-game match against Stockfish 8 and scored 28 wins, 72 draws and no losses. It also beat Elmo in shogi and a 3-day AlphaGo Zero in Go.",
+    "The result was criticized for the settings: Stockfish had 64 threads and only 1 GB of hash memory, one minute per move, and no opening book or tablebases.",
+    "The Science paper in 2018 reported a new 1000-game match under tournament-style conditions, 3 hours plus 15 seconds per move with 44 threads, 32 GB hash and tablebases, against a Stockfish 9 development version: 155 wins, 839 draws and 6 losses. AlphaZero ran on four TPUs and a 44-core CPU.",
+    "Elo turns a match score into a rating difference. The 1000-game score of about 57 percent is around 52 Elo, a clear but not enormous edge, on very different hardware. Some experts judged that a later Stockfish version might have matched it."
+   ],
+   "glossary": [
+    {
+     "term": "Elo rating",
+     "def": "A rating system where the expected score depends on the rating difference."
+    },
+    {
+     "term": "Match score",
+     "def": "(wins + half the draws) divided by games."
+    },
+    {
+     "term": "Hash table",
+     "def": "Memory a chess engine uses to remember positions it has searched."
+    },
+    {
+     "term": "Tablebase",
+     "def": "A precomputed database of perfect play for endgames with few pieces."
+    },
+    {
+     "term": "Time odds",
+     "def": "Giving one side more thinking time than the other."
+    },
+    {
+     "term": "TCEC",
+     "def": "Top Chess Engine Championship, where engines play under fixed conditions."
+    }
+   ],
+   "keyPoints": [
+    "2017 chess match: +28 =72 -0 vs Stockfish 8, one minute per move.",
+    "2018 chess match: +155 =839 -6 vs Stockfish 9 dev, 3 hours + 15 s per move.",
+    "Shogi vs Elmo: 90 wins, 2 draws, 8 losses in the first paper's two 50-game sets.",
+    "Go: 60 to 40 over a 3-day AlphaGo Zero in two 50-game sets.",
+    "Positions per second: AlphaZero about 80,000 in chess; Stockfish about 70 million.",
+    "Elo difference = 400 log10(s / (1 - s)) for score s."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "What did AlphaZero actually achieve? The first paper reports 100-game matches against a world-champion program in each game, and time to reach those levels. We will go through the numbers, then the controversy."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Chess. Against Stockfish 8, the 2016 TCEC champion, with one minute per move, AlphaZero scored 25 wins and 25 draws as White and 3 wins and 47 draws as Black, with no losses: 28 wins, 72 draws, 0 losses in 100 games. Stockfish 8 and Elmo were run with 64 threads and 1 gigabyte of hash.",
+      "AlphaZero is reported to have matched Stockfish's strength after about 4 hours of training."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Shogi. Against Elmo, the 2017 champion of the Computer Shogi Association, AlphaZero played two sets of 50 games, one for each colour, winning 43, drawing 2 and losing 5 in one and winning 47 and losing 3 in the other, and passed Elmo in under two hours of training. Go.",
+      "Against the 3-day version of AlphaGo Zero, AlphaZero won 31 of 50 games and 29 of 50 in the two colour assignments, passing AlphaGo Lee in about 8 hours."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The engines searched very differently. AlphaZero examined about 80 thousand positions per second in chess, 40 thousand in shogi and 16 thousand in Go. Stockfish examined about 70 million per second and Elmo about 35 million.",
+      "So AlphaZero used roughly a thousand times fewer evaluations in chess, each more informed."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\Delta_{\\mathrm{Elo}} = 400\\,\\log_{10}\\frac{s}{1-s}, \\\\[0.6em] s = \\frac{\\text{wins} + \\tfrac12\\,\\text{draws}}{\\text{games}} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "To compare results we turn a match score s into an Elo difference. For the 2017 match, s is 64 percent, about 100 Elo. For the 2018 match, 155 wins, 839 draws and 6 losses give s about 57.5 percent and a difference of about 52 Elo.",
+      "Elo is only meaningful for the conditions of the match, and small score differences can be noise in small samples."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The criticism. After the preprint, commentators noted that the first match gave Stockfish little hash memory, a fixed time per move that denied its time management, and no opening book or endgame tablebase, and that the hardware was not comparable.",
+      "DeepMind answered in the Science paper with 1000 games under conditions like the TCEC superfinal, on 44 threads and 32 GB of hash with tablebases, and also tried openings from human games and time-odds matches.",
+      "The result held, +155 -6 =839, and Stockfish needed about ten to one time odds to match AlphaZero, according to the reports."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Not everyone was convinced even then. The match was private and only a small share of the games were published.",
+      "The Stockfish used was a development build from January 2018, and some experts, including the chess engine developer Larry Kaufman, said a newer Stockfish would probably beat AlphaZero under TCEC conditions. Meanwhile AlphaZero was never released.",
+      "What survives is the algorithm, which open-source projects such as Leela Chess Zero reproduced."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A fair summary: the evidence that a general self-learning method can reach top-engine strength in a day is solid. Claims about exactly how much stronger it was depend on hardware and settings, and should be read with the conditions attached."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How did AlphaZero score in the 2017 chess match?",
+     "options": [
+      "+28 =72 -0",
+      "+155 =839 -6",
+      "+5 =0 -95",
+      "+50 =0 -50"
+     ],
+     "answer": 0,
+     "explain": "Against Stockfish 8 at one minute per move."
+    },
+    {
+     "q": "Which was a criticism of the first match?",
+     "options": [
+      "Too many games",
+      "Stockfish had little hash memory and no opening book",
+      "AlphaZero used a book",
+      "Stockfish had a supercomputer"
+     ],
+     "answer": 1,
+     "explain": "That limited Stockfish."
+    },
+    {
+     "q": "What did the 2018 match change?",
+     "options": [
+      "Used tournament-like conditions with 3 hours + 15 s per move",
+      "Reduced to 10 games",
+      "Removed Stockfish",
+      "Used a book for AlphaZero only"
+     ],
+     "answer": 0,
+     "explain": "And it still won."
+    },
+    {
+     "q": "About how many positions per second did Stockfish search?",
+     "options": [
+      "80 thousand",
+      "70 million",
+      "16 thousand",
+      "1 million"
+     ],
+     "answer": 1,
+     "explain": "AlphaZero searched about 80 thousand."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is Elo?",
+     "a": "A rating where score depends on rating gap."
+    },
+    {
+     "q": "Elo of s = 0.64?",
+     "a": "About +100."
+    },
+    {
+     "q": "Was the code released?",
+     "a": "No."
+    },
+    {
+     "q": "What open project reproduced it for chess?",
+     "a": "Leela Chess Zero."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Match score",
+     "intro": "Write match_score(w, d, l): (w + d / 2) / (w + d + l).",
+     "fn": "match_score",
+     "starter": "def match_score(w, d, l):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        28,
+        72,
+        0
+       ],
+       "expect": 0.64,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        155,
+        839,
+        6
+       ],
+       "expect": 0.5745,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        3,
+        47,
+        0
+       ],
+       "expect": 0.53,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        0,
+        10,
+        0
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Draws count half.",
+     "solution": "def match_score(w, d, l):\n    return (w + d / 2) / (w + d + l)\n"
+    },
+    {
+     "type": "python",
+     "title": "Elo difference",
+     "intro": "Write elo_diff(score): 400 * log10(score / (1 - score)) for a score strictly between 0 and 1. Use math.log(x) / math.log(10) for log10.",
+     "fn": "elo_diff",
+     "starter": "def elo_diff(score):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5
+       ],
+       "expect": 0.0,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        0.64
+       ],
+       "expect": 99.95098928663997,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        0.5745
+       ],
+       "expect": 52.156187441478934,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        0.25
+       ],
+       "expect": -190.84850188786496,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        0.9
+       ],
+       "expect": 381.6970037757299,
+       "approx": 1e-06
+      }
+     ],
+     "hint": "Take the log of the odds.",
+     "solution": "import math\ndef elo_diff(score):\n    return 400 * math.log(score / (1 - score)) / math.log(10)\n"
+    },
+    {
+     "type": "python",
+     "title": "Expected score",
+     "intro": "The inverse: write expected_score(diff) = 1 / (1 + 10 ** (-diff / 400)).",
+     "fn": "expected_score",
+     "starter": "def expected_score(diff):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        100
+       ],
+       "expect": 0.6400649998028851,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        52
+       ],
+       "expect": 0.5742802036545245,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -200
+       ],
+       "expect": 0.2402530733520421,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        400
+       ],
+       "expect": 0.9090909090909091,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Plug into the logistic formula.",
+     "solution": "def expected_score(diff):\n    return 1 / (1 + 10 ** (-diff / 400))\n"
+    },
+    {
+     "type": "match",
+     "title": "Matches",
+     "intro": "Match each match with its result.",
+     "pairs": [
+      [
+       "2017 chess vs Stockfish 8",
+       "28 wins, 72 draws, 0 losses"
+      ],
+      [
+       "2018 chess vs Stockfish 9 dev",
+       "155 wins, 839 draws, 6 losses"
+      ],
+      [
+       "Shogi vs Elmo",
+       "Won overwhelmingly"
+      ],
+      [
+       "Go vs 3-day AlphaGo Zero",
+       "Won 60 of 100"
+      ],
+      [
+       "Hash memory",
+       "Criticized in the first match"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Debate",
+     "text": "The first match was criticized for little {{hash}} memory and no opening {{book}}. The 2018 match had {{1000}} games. {{Elo}} converts a match score to a rating gap."
+    }
+   ]
+  },
+  {
+   "title": "Build a tiny AlphaZero search",
+   "maps": [
+    {
+     "title": "A working miniature",
+     "links": [
+      "Tiny search | uses | Tic-tac-toe",
+      "Network | is replaced by | Uniform prior, zero value",
+      "Selection | uses | PUCT",
+      "Backup | flips | Sign",
+      "Terminal states | give | Exact result",
+      "Root visits | give | Move preference",
+      "Real network | would improve | Priors and values"
+     ]
+    }
+   ],
+   "summary": [
+    "The capstone is a working AlphaZero-style search for tic-tac-toe, with the network stubbed out: every legal move gets the same prior, and every non-terminal leaf has value zero.",
+    "What remains is the machinery of the previous chapters: tree, PUCT selection, expansion, backup with sign flips and terminal results from the rules.",
+    "Even with a know-nothing network, the search finds forced wins and blocks, because real results at terminal positions flow back up the tree. Visit counts concentrate on the right move.",
+    "A trained network would supply better priors and values and make the search reach further for the same number of simulations."
+   ],
+   "glossary": [
+    {
+     "term": "Stub network",
+     "def": "A stand-in for the network: uniform policy and zero value for unknown positions."
+    },
+    {
+     "term": "Terminal value",
+     "def": "+1 for a win, 0 for a draw, -1 for a loss, from the mover's view, given by the rules."
+    },
+    {
+     "term": "Simulation count",
+     "def": "How many times the root is searched; more simulations give better visit counts."
+    },
+    {
+     "term": "Visit counts",
+     "def": "How often each root move was chosen during the search."
+    },
+    {
+     "term": "Forced win",
+     "def": "A move that wins by force against any reply."
+    },
+    {
+     "term": "Block",
+     "def": "A move that stops the opponent from completing a line."
+    }
+   ],
+   "keyPoints": [
+    "Each node: legal moves, priors P (uniform), visit counts N, total values W.",
+    "Simulation: select by PUCT, recurse on the child, back up the negated value.",
+    "Unknown leaf: create its node, return value 0 (the stub network).",
+    "Finished game: win = +1 for the player who moved last, seen as -1 by the mover now.",
+    "Result: the list of root visit counts.",
+    "More simulations sharpen the counts."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Time to put everything together. The capstone lab is a small version of the AlphaZero search for tic-tac-toe, with the neural network replaced by a stub. We keep everything else: the tree, the statistics on each edge, the PUCT rule, the backup with sign flips."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The stub network says two things about any position it is asked about. The policy is uniform over the legal moves, as an untrained network's would roughly be after masking. The value is zero, meaning no opinion. It knows nothing about tic-tac-toe, not even that three in a row wins."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The only real information comes from the rules. When a simulation reaches a position where the game is over, we do not ask the network: the rules say who won. If the last mover completed a line, the player to move at that position has lost, so the value there is minus one for them.",
+      "A drawn board is zero."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A simulation is a recursive function. It takes a position and the player to move. If the game is over, return the exact value. If the position is not in the tree yet, create its node, with uniform priors, and return zero.",
+      "Otherwise pick the move maximizing Q plus U, play it, call the simulation on the child with the other player, and negate the result. Update that edge's visit count and total, and return the negated value to the caller."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why does negating work? The child's value is for the player to move at the child, who is the opponent. What is good for the opponent is bad for us. This is the same sign flip of chapter 5, written as a recursion."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Run it. At the root you have nine counters. Start with the position X X dot, O O dot dot dot dot, with X to move: X wins by playing square 2. Early simulations spread visits by the uniform prior.",
+      "As soon as one simulation plays square 2 the child is terminal, returns a win, and that edge's Q becomes high. PUCT keeps choosing it, and its visit count dominates. No knowledge of tic-tac-toe was needed, only the rules."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "What the real network adds. A trained network would give the winning move a high prior from the start, and would rate quiet positions by their likely outcome, not zero.",
+      "The tree could then answer correctly with far fewer simulations, and would work in games like chess, where terminal positions are too far away to be reached by chance. That is the entire point of the network: it gives the search a sense of direction."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The app after this chapter's labs runs the same search in your browser. Change the number of simulations and the exploration constant and watch the visit counts, the mean values and the priors on each square."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Finally, remember the limits of the miniature. It has no learning at all. Chapter 12 describes what is missing from a full system, and where later research went."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the stub network return for a non-terminal leaf?",
+     "options": [
+      "A strong policy",
+      "Uniform priors and value zero",
+      "A random move",
+      "The winner"
+     ],
+     "answer": 1,
+     "explain": "It knows nothing."
+    },
+    {
+     "q": "How does the search learn about wins?",
+     "options": [
+      "From the network",
+      "From terminal positions scored by the rules",
+      "From a book",
+      "From the user"
+     ],
+     "answer": 1,
+     "explain": "Real results flow back up."
+    },
+    {
+     "q": "What is the value of a position where the opponent just completed a line?",
+     "options": [
+      "+1 for the player to move",
+      "-1 for the player to move",
+      "0",
+      "Undefined"
+     ],
+     "answer": 1,
+     "explain": "The mover has lost."
+    },
+    {
+     "q": "What would a trained network improve?",
+     "options": [
+      "Priors and values so fewer simulations are needed",
+      "The rules",
+      "The board",
+      "The terminal results"
+     ],
+     "answer": 0,
+     "explain": "It gives the search direction."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is returned?",
+     "a": "Root visit counts."
+    },
+    {
+     "q": "Why negate the child's value?",
+     "a": "The child is seen by the opponent."
+    },
+    {
+     "q": "What is the prior here?",
+     "a": "Uniform over legal moves."
+    },
+    {
+     "q": "What is the leaf value?",
+     "a": "Zero for non-terminal positions."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Tiny AlphaZero search",
+     "intro": "Boards are nine-character strings of 'X', 'O' and '.'; player is the side to move. Write tictactoe_puct(board, player, sims, c). Each tree node (keyed by board and player) keeps the legal moves in index order, uniform priors 1/k, visit counts N and total values W. A simulation: if the game is over return +1 if the winner is the player to move, -1 if it is the other player, 0 for a draw. If the node does not exist yet, create it and return 0.0. Otherwise pick the move j maximizing Q + c * P * sqrt(sum N) / (1 + N) with Q = W/N (0 if N = 0), lowest j on ties; recurse on the child with the other player; v = minus the returned value; N += 1; W += v; return v. The root node is created before the simulations; run sims simulations. Return the list of nine root visit counts (0 for occupied squares). If the game is already over, return nine zeros.",
+     "fn": "tictactoe_puct",
+     "starter": "def tictactoe_puct(board, player, sims, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "XX.OO....",
+        "X",
+        100,
+        1.5
+       ],
+       "expect": [
+        0,
+        0,
+        92,
+        0,
+        0,
+        2,
+        2,
+        2,
+        2
+       ]
+      },
+      {
+       "args": [
+        "XO.XO....",
+        "X",
+        200,
+        1.25
+       ],
+       "expect": [
+        0,
+        0,
+        3,
+        0,
+        0,
+        3,
+        188,
+        3,
+        3
+       ]
+      },
+      {
+       "args": [
+        ".........",
+        "X",
+        30,
+        1.5
+       ],
+       "expect": [
+        4,
+        4,
+        4,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+       ]
+      },
+      {
+       "args": [
+        "XOX.O....",
+        "X",
+        150,
+        1.0
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        5,
+        0,
+        5,
+        5,
+        129,
+        6
+       ]
+      },
+      {
+       "args": [
+        "X........",
+        "O",
+        60,
+        1.5
+       ],
+       "expect": [
+        0,
+        8,
+        8,
+        8,
+        8,
+        7,
+        7,
+        7,
+        7
+       ]
+      },
+      {
+       "args": [
+        "XXXOO....",
+        "O",
+        10,
+        1.0
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Write simulate(board, player) recursively with a dictionary tree keyed by (board, player). Compute the PUCT score for each move as in chapter 5.",
+     "solution": "import math\ndef tictactoe_puct(board, player, sims, c):\n    lines = [(0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6)]\n    def result(b):\n        for x, y, z in lines:\n            if b[x] != '.' and b[x] == b[y] and b[y] == b[z]:\n                return b[x]\n        if '.' not in b:\n            return 'D'\n        return '.'\n    def flip(p):\n        if p == 'X':\n            return 'O'\n        return 'X'\n    tree = {}\n    def new_node(b):\n        moves = []\n        for i in range(9):\n            if b[i] == '.':\n                moves.append(i)\n        k = len(moves)\n        return [moves, [1.0 / k] * k, [0] * k, [0.0] * k]\n    def simulate(b, p):\n        r = result(b)\n        if r != '.':\n            if r == 'D':\n                return 0.0\n            if r == p:\n                return 1.0\n            return -1.0\n        key = (b, p)\n        if key not in tree:\n            tree[key] = new_node(b)\n            return 0.0\n        node = tree[key]\n        moves = node[0]\n        P = node[1]\n        N = node[2]\n        W = node[3]\n        total = 0\n        for n in N:\n            total += n\n        root = math.sqrt(total)\n        best = -1\n        bestscore = None\n        for j in range(len(moves)):\n            q = 0.0\n            if N[j] > 0:\n                q = W[j] / N[j]\n            s = q + c * P[j] * root / (1 + N[j])\n            if bestscore is None or s > bestscore:\n                bestscore = s\n                best = j\n        m = moves[best]\n        v = -simulate(b[:m] + p + b[m + 1:], flip(p))\n        N[best] += 1\n        W[best] += v\n        return v\n    counts = [0] * 9\n    if result(board) != '.':\n        return counts\n    tree[(board, player)] = new_node(board)\n    for i in range(sims):\n        simulate(board, player)\n    node = tree[(board, player)]\n    for j in range(len(node[0])):\n        counts[node[0][j]] = node[2][j]\n    return counts\n"
+    },
+    {
+     "type": "python",
+     "title": "Pick the move",
+     "intro": "Write best_move(counts): the index of the largest visit count (the lowest index on ties).",
+     "fn": "best_move",
+     "starter": "def best_move(counts):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0,
+         40,
+         5,
+         3,
+         0,
+         0,
+         0,
+         0
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         3,
+         9,
+         9,
+         1,
+         0,
+         0,
+         0,
+         0,
+         0
+        ]
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Scan for the first maximum.",
+     "solution": "def best_move(counts):\n    best = 0\n    for i in range(len(counts)):\n        if counts[i] > counts[best]:\n            best = i\n    return best\n"
+    },
+    {
+     "type": "webxdc",
+     "title": "PUCT explorer",
+     "intro": "Set up a position and run the tiny search. Compare a small and a large exploration constant.",
+     "height": 640,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px 3px 3px 0}\nbutton.t{background:#2d2046;color:#e7d9ff}label{display:block;margin:6px 0 2px;color:#c9b8e8}\ninput[type=range]{width:100%}.g{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}\n.cell{border:1px solid #4a3770;border-radius:10px;background:#1e1336;min-height:84px;padding:4px;text-align:center;position:relative}\n.cell .x{font:26px ui-monospace,monospace;font-weight:700}.cell small{display:block;font:11px ui-monospace,monospace;color:#c9b8e8}\n.cell.best{outline:2px solid #8fe3a8}.m{color:#c9b8e8;margin:6px 0}.bar{height:6px;border-radius:3px;background:#b26bff;margin-top:3px}\n</style></head><body>\n<div class=\"m\">Tap squares to cycle . / X / O. X moves first when counts are equal, otherwise O. Then run the search.</div>\n<div class=\"g\" id=\"g\"></div>\n<label for=\"s\">simulations: <b id=\"sv\">100</b></label><input id=\"s\" type=\"range\" min=\"10\" max=\"800\" step=\"10\" value=\"100\">\n<label for=\"c\">exploration constant c: <b id=\"cv\">1.5</b></label><input id=\"c\" type=\"range\" min=\"0\" max=\"5\" step=\"0.25\" value=\"1.5\">\n<div class=\"row\"><button id=\"run\">Run search</button><button id=\"ex1\" class=\"t\">Win in one</button><button id=\"ex2\" class=\"t\">Empty board</button><button id=\"clr\" class=\"t\">Clear</button></div>\n<div class=\"m\" id=\"msg\"></div>\n<script>\nvar L=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];\nvar b=\".........\".split(\"\"),runs=[],last=null;\nfunction done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nfunction res(s){for(var i=0;i<8;i++){var l=L[i];if(s[l[0]]!==\".\"&&s[l[0]]===s[l[1]]&&s[l[1]]===s[l[2]])return s[l[0]]}return s.indexOf(\".\")<0?\"D\":\".\"}\nfunction flip(p){return p===\"X\"?\"O\":\"X\"}\nfunction turn(s){var x=0,o=0;s.split(\"\").forEach(function(c){if(c===\"X\")x++;if(c===\"O\")o++});return x<=o?\"X\":\"O\"}\nfunction search(board,player,sims,c){var tree={};\n function mk(s){var m=[];for(var i=0;i<9;i++)if(s[i]===\".\")m.push(i);var k=m.length;var P=[],N=[],W=[];for(var j=0;j<k;j++){P.push(1/k);N.push(0);W.push(0)}return{m:m,P:P,N:N,W:W}}\n function sim(s,p){var r=res(s);if(r!==\".\"){return r===\"D\"?0:(r===p?1:-1)}\n  var key=s+p;if(!tree[key]){tree[key]=mk(s);return 0}\n  var n=tree[key],tot=0;n.N.forEach(function(x){tot+=x});var rt=Math.sqrt(tot),best=-1,bs=null;\n  for(var j=0;j<n.m.length;j++){var q=n.N[j]>0?n.W[j]/n.N[j]:0,sc=q+c*n.P[j]*rt/(1+n.N[j]);if(bs===null||sc>bs){bs=sc;best=j}}\n  var mv=n.m[best],v=-sim(s.slice(0,mv)+p+s.slice(mv+1),flip(p));n.N[best]++;n.W[best]+=v;return v}\n if(res(board)!==\".\")return null;tree[board+player]=mk(board);\n for(var i=0;i<sims;i++)sim(board,player);\n return tree[board+player]}\nfunction draw(){var g=document.getElementById(\"g\"),h=\"\";var nd=last;\n for(var i=0;i<9;i++){var inner=\"<div class='x'>\"+(b[i]===\".\"?\"&nbsp;\":b[i])+\"</div>\";\n  if(nd){var j=nd.m.indexOf(i);if(j>=0){var mx=Math.max.apply(null,nd.N),fr=mx>0?nd.N[j]/mx:0;inner+=\"<small>N \"+nd.N[j]+\"</small><small>Q \"+(nd.N[j]>0?(nd.W[j]/nd.N[j]).toFixed(2):\"-\")+\"</small><div class='bar' style='width:\"+Math.round(fr*100)+\"%'></div>\"}}\n  var cls=\"cell\";if(nd){var j2=nd.m.indexOf(i);if(j2>=0&&nd.N[j2]===Math.max.apply(null,nd.N)&&nd.N[j2]>0)cls+=\" best\"}\n  h+=\"<div class='\"+cls+\"' data-i='\"+i+\"'>\"+inner+\"</div>\"}\n g.innerHTML=h;Array.prototype.forEach.call(g.querySelectorAll(\".cell\"),function(el){el.onclick=function(){var i=+el.getAttribute(\"data-i\");b[i]=b[i]===\".\"?\"X\":(b[i]===\"X\"?\"O\":\".\");last=null;draw()}})}\nfunction run(){var s=b.join(\"\"),p=turn(s),sims=+document.getElementById(\"s\").value,c=+document.getElementById(\"c\").value;\n var r=res(s);if(r!==\".\"){document.getElementById(\"msg\").textContent=\"The game is already over.\";last=null;draw();return}\n last=search(s,p,sims,c);draw();\n runs.push(sims+\"/\"+c);var msg=p+\" to move, \"+sims+\" simulations, c = \"+c+\". The green square has the most visits.\";\n var uniq={};runs.forEach(function(x){uniq[x]=1});if(Object.keys(uniq).length>=2)done();else msg+=\" Now change the simulations or c and run again.\";\n document.getElementById(\"msg\").textContent=msg}\ndocument.getElementById(\"run\").onclick=run;\ndocument.getElementById(\"s\").oninput=function(){document.getElementById(\"sv\").textContent=this.value};\ndocument.getElementById(\"c\").oninput=function(){document.getElementById(\"cv\").textContent=this.value};\ndocument.getElementById(\"ex1\").onclick=function(){b=\"XX.OO....\".split(\"\");last=null;draw()};\ndocument.getElementById(\"ex2\").onclick=function(){b=\".........\".split(\"\");last=null;draw()};\ndocument.getElementById(\"clr\").onclick=function(){b=\".........\".split(\"\");last=null;document.getElementById(\"msg\").textContent=\"\";draw()};\ndraw();\n</script></body></html>\n"
+    },
+    {
+     "type": "order",
+     "title": "One simulation",
+     "intro": "Put the steps of the recursive simulation in order.",
+     "items": [
+      "Check whether the game is over and return the exact value",
+      "If the node is new, create it with uniform priors and return 0",
+      "Pick the move with the best Q plus U",
+      "Recurse on the child with the other player",
+      "Negate the value and update N and W"
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Tiny search",
+     "text": "The stub network gives a {{uniform}} policy and value {{zero|0}}. Exact results at {{terminal}} positions flow back up the tree. The child's value is {{negated|flipped}} for the parent."
+    }
+   ]
+  },
+  {
+   "title": "Successors, limits and open questions",
+   "maps": [
+    {
+     "title": "Beyond AlphaZero",
+     "links": [
+      "Open projects | reproduced | AlphaZero ideas",
+      "Leela Zero | targets | Go",
+      "Leela Chess Zero | targets | Chess",
+      "MuZero | removes | Need for the rules",
+      "Gumbel variants | add | Policy improvement guarantee",
+      "AlphaZero | needs | A perfect simulator",
+      "Compute cost | limits | Reproduction"
+     ]
+    }
+   ],
+   "summary": [
+    "AlphaZero was not released, but its papers were detailed enough for the community to rebuild it. Leela Zero followed AlphaGo Zero for Go and Leela Chess Zero followed AlphaZero for chess, both powered by volunteers who donate computing time for self-play. KataGo and others extended the idea.",
+    "MuZero, also from DeepMind, drops the requirement that the rules are given: it learns a model of the environment and plans with it, so the same approach covers video games as well as board games.",
+    "Gumbel variants of AlphaZero and MuZero change the search to guarantee policy improvement even with few simulations.",
+    "The limits are real. AlphaZero needs a perfect and fast simulator of the game rules, perfect information, and a lot of compute. The strongest-claims about generality refer to this class of games."
+   ],
+   "glossary": [
+    {
+     "term": "Leela Zero",
+     "def": "An open-source Go program based on AlphaGo Zero, trained by distributed volunteer effort."
+    },
+    {
+     "term": "Leela Chess Zero",
+     "def": "An open-source chess program based on the AlphaZero paper, also trained by volunteers."
+    },
+    {
+     "term": "KataGo",
+     "def": "An open-source Go program in the AlphaZero family."
+    },
+    {
+     "term": "MuZero",
+     "def": "A successor that learns its own model of the environment instead of being given the rules."
+    },
+    {
+     "term": "Gumbel AlphaZero",
+     "def": "A variant that uses Gumbel noise to guarantee policy improvement, even with few simulations."
+    },
+    {
+     "term": "Perfect information",
+     "def": "A game where all players see the full state."
+    }
+   ],
+   "keyPoints": [
+    "Leela Zero (Go, from 2017) and Leela Chess Zero (chess, from 2018) reproduced the methods with volunteer compute.",
+    "By 2020 Lc0 had reached the strength of AlphaZero's published results, according to a University of Alberta paper.",
+    "MuZero does not need the rules; AlphaZero does.",
+    "Later research showed AlphaZero does not guarantee policy improvement without evaluating all root actions.",
+    "AlphaZero covers perfect-information, two-player, zero-sum games with a known simulator.",
+    "The original program and training code were never published."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "What happened next? The AlphaZero papers described the algorithm well enough to build, and the community did. Leela Zero, released in October 2017 by Gian-Carlo Pascutto, was an almost exact replication of AlphaGo Zero for Go.",
+      "In early 2018 another team branched Leela Chess Zero from it, to verify the methods in the AlphaZero paper for chess."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Both are distributed efforts: volunteers run clients that generate self-play games on their own machines and upload them, while a server trains the network. The Leela Zero server was shut down in February 2021, pointing users to KataGo and SAI.",
+      "Leela Chess Zero kept going, and according to a 2021 University of Alberta paper surpassed AlphaZero's published playing strength in 2020."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "MuZero is the main successor from DeepMind. AlphaZero is given the rules of the game, both to run the search and to score finished games.",
+      "MuZero removes that: it learns a model that predicts, from its own internal state, the next state, the reward and the policy and value, and does the tree search inside that learned model. That lets the family include Atari games, where the rules are not available as a program."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Gumbel AlphaZero and Gumbel MuZero. Research on how the search improves the policy noted that neither AlphaZero nor MuZero guarantees policy improvement unless all actions are evaluated at the root.",
+      "The Gumbel variants add Gumbel noise in the way actions are chosen at the root so that improvement is guaranteed, and they remain effective with very few simulations."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "What AlphaZero cannot do. It needs a fast, exact simulator of the game, since the search runs thousands of simulated games per move. It assumes perfect information: both players see everything, which excludes poker or Stratego-like games without extensions.",
+      "It assumes two players with opposing goals, so the sign-flip backup applies. And it needs computing power: thousands of specialized chips in the published runs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Open questions remain, and the literature raises them. How much of the result depends on the compute budget rather than the algorithm? How do these systems fail, for example on positions with a deep tactical trap or in long endgames, where studies of open-source reproductions compare their choices with tablebases? The Alberta studies find that even strong AlphaZero-style programs still make mistakes in endgames that tablebases solve exactly."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The ideas that last. A learned evaluation guiding search. Search as a source of better training targets than the network alone. Self-play as a source of unlimited data when the game can be simulated. These ideas carry over to other domains, though each transfer needs its own simulator and reward."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "You have now built and run the parts. The final exam covers the whole course. A closing reminder of the honesty rules: numbers here come from the papers and reports named in chapter 1, the capstone is a teaching miniature, and claims about the strength of AlphaZero versus current engines depend on the conditions of each match."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does MuZero remove?",
+     "options": [
+      "The neural network",
+      "The need to be given the rules",
+      "Self-play",
+      "The search"
+     ],
+     "answer": 1,
+     "explain": "It learns a model."
+    },
+    {
+     "q": "Which program reproduced AlphaZero for chess?",
+     "options": [
+      "Leela Chess Zero",
+      "Deep Blue",
+      "Elmo",
+      "Stockfish 8"
+     ],
+     "answer": 0,
+     "explain": "A volunteer project."
+    },
+    {
+     "q": "Which of these is an assumption of AlphaZero?",
+     "options": [
+      "Hidden information",
+      "A fast, exact simulator of the rules",
+      "A single player",
+      "No search"
+     ],
+     "answer": 1,
+     "explain": "The search needs it."
+    },
+    {
+     "q": "What do Gumbel variants add?",
+     "options": [
+      "More layers",
+      "A guarantee of policy improvement",
+      "Opening books",
+      "Symmetry augmentation"
+     ],
+     "answer": 1,
+     "explain": "Even with few simulations."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is KataGo?",
+     "a": "An open-source Go program in the AlphaZero family."
+    },
+    {
+     "q": "Is the AlphaZero code public?",
+     "a": "No."
+    },
+    {
+     "q": "What does perfect information mean?",
+     "a": "Both players see the full state."
+    },
+    {
+     "q": "Who made Leela Zero?",
+     "a": "Gian-Carlo Pascutto, with volunteers."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Search speed ratio",
+     "intro": "Write search_ratio(a, b): how many times more positions per second b searches than a, rounded to one decimal place: round(b / a, 1). Check: AlphaZero searched about 80,000 positions per second in chess and Stockfish 70,000,000.",
+     "fn": "search_ratio",
+     "starter": "def search_ratio(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        80000,
+        70000000
+       ],
+       "expect": 875.0
+      },
+      {
+       "args": [
+        40000,
+        35000000
+       ],
+       "expect": 875.0
+      },
+      {
+       "args": [
+        16000,
+        70000000
+       ],
+       "expect": 4375.0
+      },
+      {
+       "args": [
+        1000,
+        1000
+       ],
+       "expect": 1.0
+      }
+     ],
+     "hint": "A single division and rounding.",
+     "solution": "def search_ratio(a, b):\n    return round(b / a, 1)\n"
+    },
+    {
+     "type": "order",
+     "title": "Timeline",
+     "intro": "Put the programs in the order they appeared.",
+     "items": [
+      "AlphaGo Fan beats Fan Hui (2015)",
+      "AlphaGo Lee beats Lee Sedol (2016)",
+      "AlphaGo Zero in Nature (October 2017)",
+      "AlphaZero preprint (December 2017)",
+      "AlphaZero in Science (December 2018)"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Successors",
+     "intro": "Match each program with its description.",
+     "pairs": [
+      [
+       "Leela Zero",
+       "Open-source Go, from AlphaGo Zero"
+      ],
+      [
+       "Leela Chess Zero",
+       "Open-source chess, from AlphaZero"
+      ],
+      [
+       "KataGo",
+       "Open-source Go in the family"
+      ],
+      [
+       "MuZero",
+       "Learns the model, no rules needed"
+      ],
+      [
+       "Gumbel AlphaZero",
+       "Guaranteed policy improvement"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Limits",
+     "text": "AlphaZero needs a fast, exact {{simulator}} of the rules. It assumes {{perfect}} information. {{MuZero}} learns a model instead of being given the rules."
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: AlphaZero",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What does AlphaZero need to know about a game?",
+    "options": [
+     "Opening books",
+     "Only the rules",
+     "Human games",
+     "A handwritten evaluation"
+    ],
+    "answer": 1,
+    "explain": "It starts tabula rasa."
+   },
+   {
+    "q": "What does the network f(s) output?",
+    "options": [
+     "A move only",
+     "Move probabilities and a value",
+     "A board image",
+     "A win count"
+    ],
+    "answer": 1,
+    "explain": "(p, v) = f_theta(s)."
+   },
+   {
+    "q": "In which journal was the final AlphaZero paper published?",
+    "options": [
+     "Nature",
+     "Science",
+     "Cell",
+     "PNAS"
+    ],
+    "answer": 1,
+    "explain": "Science, 7 December 2018."
+   },
+   {
+    "q": "What did AlphaGo Zero remove compared with AlphaGo Lee?",
+    "options": [
+     "The neural network",
+     "Human game data",
+     "Search",
+     "Self-play"
+    ],
+    "answer": 1,
+    "explain": "It learned from self-play alone."
+   },
+   {
+    "q": "Which games were in the first AlphaZero paper?",
+    "options": [
+     "Chess, shogi and Go",
+     "Chess only",
+     "Go only",
+     "Chess and checkers"
+    ],
+    "answer": 0,
+    "explain": "Three games, one algorithm."
+   },
+   {
+    "q": "What does negamax return for a lost position?",
+    "options": [
+     "+1",
+     "0",
+     "-1",
+     "Undefined"
+    ],
+    "answer": 2,
+    "explain": "The mover has lost."
+   },
+   {
+    "q": "What does alpha-beta pruning change?",
+    "options": [
+     "The minimax value",
+     "The number of nodes examined",
+     "The rules",
+     "The evaluation"
+    ],
+    "answer": 1,
+    "explain": "Same value, fewer nodes."
+   },
+   {
+    "q": "What did classical engines use at the depth limit?",
+    "options": [
+     "A neural network",
+     "A handwritten evaluation",
+     "Random play",
+     "A rollout"
+    ],
+    "answer": 1,
+    "explain": "Expert-designed features."
+   },
+   {
+    "q": "What are the four phases of an MCTS simulation?",
+    "options": [
+     "Selection, expansion, evaluation, backup",
+     "Read, write, run, halt",
+     "Train, test, deploy, repeat",
+     "Shuffle, deal, bid, play"
+    ],
+    "answer": 0,
+    "explain": "Walk down, add, evaluate, update."
+   },
+   {
+    "q": "Why does UCB1 have an exploration bonus?",
+    "options": [
+     "To favour rarely tried moves",
+     "To make search slower",
+     "To remove randomness",
+     "To count wins"
+    ],
+    "answer": 0,
+    "explain": "It balances exploration and exploitation."
+   },
+   {
+    "q": "What replaces the random rollout in AlphaZero?",
+    "options": [
+     "A lookup table",
+     "The network's value estimate",
+     "Alpha-beta",
+     "Nothing"
+    ],
+    "answer": 1,
+    "explain": "The leaf is evaluated by f."
+   },
+   {
+    "q": "How many move planes does chess use in the output?",
+    "options": [
+     "64",
+     "73",
+     "119",
+     "8"
+    ],
+    "answer": 1,
+    "explain": "8 x 8 x 73 = 4,672 slots."
+   },
+   {
+    "q": "What does a softmax produce?",
+    "options": [
+     "Sorted scores",
+     "Probabilities that sum to 1",
+     "A single move",
+     "Zeros"
+    ],
+    "answer": 1,
+    "explain": "Positive numbers summing to one."
+   },
+   {
+    "q": "What happens to illegal moves in the policy?",
+    "options": [
+     "They are masked to zero and the rest renormalized",
+     "They are kept",
+     "They get negative probability",
+     "They are repeated"
+    ],
+    "answer": 0,
+    "explain": "A legal-move mask."
+   },
+   {
+    "q": "Which statistics does each tree edge store?",
+    "options": [
+     "N, W, Q and P",
+     "Only N",
+     "Only P",
+     "The board"
+    ],
+    "answer": 0,
+    "explain": "Visits, total value, mean value, prior."
+   },
+   {
+    "q": "In PUCT, what happens to the bonus U as an edge is visited more?",
+    "options": [
+     "It grows",
+     "It shrinks",
+     "It is constant",
+     "It becomes the value"
+    ],
+    "answer": 1,
+    "explain": "N is in the denominator."
+   },
+   {
+    "q": "Why is the value negated going up the tree?",
+    "options": [
+     "The players alternate",
+     "Values are negative",
+     "To save memory",
+     "It is a bug"
+    ],
+    "answer": 0,
+    "explain": "Each edge is scored from its mover's view."
+   },
+   {
+    "q": "What is Dirichlet noise added to?",
+    "options": [
+     "The weights",
+     "The root priors",
+     "The board",
+     "The reward"
+    ],
+    "answer": 1,
+    "explain": "To force exploration."
+   },
+   {
+    "q": "Which game used the smallest Dirichlet alpha?",
+    "options": [
+     "Chess",
+     "Shogi",
+     "Go",
+     "All equal"
+    ],
+    "answer": 2,
+    "explain": "Go has the most legal moves (0.03)."
+   },
+   {
+    "q": "What does temperature near zero do?",
+    "options": [
+     "Samples uniformly",
+     "Plays the most-visited move",
+     "Passes",
+     "Resigns"
+    ],
+    "answer": 1,
+    "explain": "N^(1/tau) concentrates on the maximum."
+   },
+   {
+    "q": "What is z for a drawn game?",
+    "options": [
+     "+1",
+     "-1",
+     "0",
+     "Undefined"
+    ],
+    "answer": 2,
+    "explain": "Draws score zero."
+   },
+   {
+    "q": "What is the policy training target?",
+    "options": [
+     "The move played",
+     "The search visit distribution",
+     "A random vector",
+     "The value"
+    ],
+    "answer": 1,
+    "explain": "Cross-entropy with pi."
+   },
+   {
+    "q": "What does the value head learn to predict?",
+    "options": [
+     "The game outcome z",
+     "The next move",
+     "The weights",
+     "The search time"
+    ],
+    "answer": 0,
+    "explain": "Squared error against z."
+   },
+   {
+    "q": "Which term in the loss limits weight size?",
+    "options": [
+     "(z - v)^2",
+     "pi . log p",
+     "c ||theta||^2",
+     "None"
+    ],
+    "answer": 2,
+    "explain": "L2 regularization."
+   },
+   {
+    "q": "How was the learning rate changed in training?",
+    "options": [
+     "It rose steadily",
+     "It was lowered in stages from 0.2",
+     "It stayed constant",
+     "It was random"
+    ],
+    "answer": 1,
+    "explain": "0.2, 0.02, 0.002, 0.0002."
+   },
+   {
+    "q": "What did AlphaGo Zero use that AlphaZero dropped?",
+    "options": [
+     "A neural network",
+     "Gating of new networks at a 55 percent margin",
+     "Self-play",
+     "Search"
+    ],
+    "answer": 1,
+    "explain": "AlphaZero updates one network continually."
+   },
+   {
+    "q": "What does AlphaZero optimize?",
+    "options": [
+     "Win probability only",
+     "The expected outcome including draws",
+     "Game length",
+     "Captures"
+    ],
+    "answer": 1,
+    "explain": "That suits chess."
+   },
+   {
+    "q": "Why no symmetry augmentation for chess?",
+    "options": [
+     "The rules are asymmetric",
+     "It is too slow",
+     "Boards are small",
+     "It was forgotten"
+    ],
+    "answer": 0,
+    "explain": "Rotating a chess board changes the game."
+   },
+   {
+    "q": "What was the 2017 chess match result against Stockfish 8?",
+    "options": [
+     "+28 =72 -0",
+     "+155 =839 -6",
+     "+0 =0 -100",
+     "+50 =0 -50"
+    ],
+    "answer": 0,
+    "explain": "100 games, one minute per move."
+   },
+   {
+    "q": "What was the 2018 chess match result?",
+    "options": [
+     "+28 =72 -0",
+     "+155 =839 -6",
+     "+60 =40 -0",
+     "+6 =839 -155"
+    ],
+    "answer": 1,
+    "explain": "1000 games, 3 hours plus 15 s."
+   },
+   {
+    "q": "Which was a criticism of the first match?",
+    "options": [
+     "Stockfish had little hash memory and no opening book",
+     "Too few games",
+     "AlphaZero used a book",
+     "Stockfish ran on TPUs"
+    ],
+    "answer": 0,
+    "explain": "Settings limited Stockfish."
+   },
+   {
+    "q": "About how many positions per second did AlphaZero search in chess?",
+    "options": [
+     "80 thousand",
+     "70 million",
+     "1 billion",
+     "100"
+    ],
+    "answer": 0,
+    "explain": "Stockfish searched about 70 million."
+   },
+   {
+    "q": "What does MuZero remove?",
+    "options": [
+     "The network",
+     "The need to be given the rules",
+     "Self-play",
+     "Search"
+    ],
+    "answer": 1,
+    "explain": "It learns a model of the environment."
+   },
+   {
+    "q": "Which program reproduced AlphaZero for chess?",
+    "options": [
+     "Leela Chess Zero",
+     "Deep Blue",
+     "Elmo",
+     "Stockfish 8"
+    ],
+    "answer": 0,
+    "explain": "A volunteer-trained project."
+   },
+   {
+    "q": "Which is an assumption of AlphaZero?",
+    "options": [
+     "Hidden information",
+     "A fast exact simulator of the rules",
+     "One player",
+     "No search"
+    ],
+    "answer": 1,
+    "explain": "Search needs the simulator."
+   },
+   {
+    "q": "In the tiny tic-tac-toe search, what is the value of a non-terminal leaf?",
+    "options": [
+     "+1",
+     "-1",
+     "0",
+     "The prior"
+    ],
+    "answer": 2,
+    "explain": "The stub network has no opinion."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "AlphaZero lookup",
+  "prompt": "az>",
+  "intro": "A scripted lookup, not a real engine. Try: loop, puct, loss, results, help",
+  "chips": [
+   "loop",
+   "puct",
+   "loss",
+   "results",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "loop     the self-play and training loop",
+     "puct     the selection rule",
+     "loss     the training loss",
+     "results  the headline matches"
+    ]
+   },
+   {
+    "re": "^loop$",
+    "out": [
+     "search with the network -> play a game against itself -> store (state, pi, z) -> train the network -> repeat"
+    ]
+   },
+   {
+    "re": "^puct$",
+    "out": [
+     "choose the move maximizing Q + c * P * sqrt(sum N) / (1 + N)"
+    ]
+   },
+   {
+    "re": "^loss$",
+    "out": [
+     "l = (z - v)^2 - pi . log p + c * ||theta||^2"
+    ]
+   },
+   {
+    "re": "^results$",
+    "out": [
+     "2017 chess vs Stockfish 8: +28 =72 -0 (100 games)",
+     "2018 chess vs Stockfish 9 dev: +155 =839 -6 (1000 games)"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ }
+}

@@ -1,0 +1,52 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}
+button{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px 3px 3px 0}
+button.t{background:#2d2046;color:#e7d9ff}label{display:block;margin:6px 0 2px;color:#c9b8e8}
+input[type=range]{width:100%}.g{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
+.cell{border:1px solid #4a3770;border-radius:10px;background:#1e1336;min-height:84px;padding:4px;text-align:center;position:relative}
+.cell .x{font:26px ui-monospace,monospace;font-weight:700}.cell small{display:block;font:11px ui-monospace,monospace;color:#c9b8e8}
+.cell.best{outline:2px solid #8fe3a8}.m{color:#c9b8e8;margin:6px 0}.bar{height:6px;border-radius:3px;background:#b26bff;margin-top:3px}
+</style></head><body>
+<div class="m">Tap squares to cycle . / X / O. X moves first when counts are equal, otherwise O. Then run the search.</div>
+<div class="g" id="g"></div>
+<label for="s">simulations: <b id="sv">100</b></label><input id="s" type="range" min="10" max="800" step="10" value="100">
+<label for="c">exploration constant c: <b id="cv">1.5</b></label><input id="c" type="range" min="0" max="5" step="0.25" value="1.5">
+<div class="row"><button id="run">Run search</button><button id="ex1" class="t">Win in one</button><button id="ex2" class="t">Empty board</button><button id="clr" class="t">Clear</button></div>
+<div class="m" id="msg"></div>
+<script>
+var L=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+var b=".........".split(""),runs=[],last=null;
+function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+function res(s){for(var i=0;i<8;i++){var l=L[i];if(s[l[0]]!=="."&&s[l[0]]===s[l[1]]&&s[l[1]]===s[l[2]])return s[l[0]]}return s.indexOf(".")<0?"D":"."}
+function flip(p){return p==="X"?"O":"X"}
+function turn(s){var x=0,o=0;s.split("").forEach(function(c){if(c==="X")x++;if(c==="O")o++});return x<=o?"X":"O"}
+function search(board,player,sims,c){var tree={};
+ function mk(s){var m=[];for(var i=0;i<9;i++)if(s[i]===".")m.push(i);var k=m.length;var P=[],N=[],W=[];for(var j=0;j<k;j++){P.push(1/k);N.push(0);W.push(0)}return{m:m,P:P,N:N,W:W}}
+ function sim(s,p){var r=res(s);if(r!=="."){return r==="D"?0:(r===p?1:-1)}
+  var key=s+p;if(!tree[key]){tree[key]=mk(s);return 0}
+  var n=tree[key],tot=0;n.N.forEach(function(x){tot+=x});var rt=Math.sqrt(tot),best=-1,bs=null;
+  for(var j=0;j<n.m.length;j++){var q=n.N[j]>0?n.W[j]/n.N[j]:0,sc=q+c*n.P[j]*rt/(1+n.N[j]);if(bs===null||sc>bs){bs=sc;best=j}}
+  var mv=n.m[best],v=-sim(s.slice(0,mv)+p+s.slice(mv+1),flip(p));n.N[best]++;n.W[best]+=v;return v}
+ if(res(board)!==".")return null;tree[board+player]=mk(board);
+ for(var i=0;i<sims;i++)sim(board,player);
+ return tree[board+player]}
+function draw(){var g=document.getElementById("g"),h="";var nd=last;
+ for(var i=0;i<9;i++){var inner="<div class='x'>"+(b[i]==="."?"&nbsp;":b[i])+"</div>";
+  if(nd){var j=nd.m.indexOf(i);if(j>=0){var mx=Math.max.apply(null,nd.N),fr=mx>0?nd.N[j]/mx:0;inner+="<small>N "+nd.N[j]+"</small><small>Q "+(nd.N[j]>0?(nd.W[j]/nd.N[j]).toFixed(2):"-")+"</small><div class='bar' style='width:"+Math.round(fr*100)+"%'></div>"}}
+  var cls="cell";if(nd){var j2=nd.m.indexOf(i);if(j2>=0&&nd.N[j2]===Math.max.apply(null,nd.N)&&nd.N[j2]>0)cls+=" best"}
+  h+="<div class='"+cls+"' data-i='"+i+"'>"+inner+"</div>"}
+ g.innerHTML=h;Array.prototype.forEach.call(g.querySelectorAll(".cell"),function(el){el.onclick=function(){var i=+el.getAttribute("data-i");b[i]=b[i]==="."?"X":(b[i]==="X"?"O":".");last=null;draw()}})}
+function run(){var s=b.join(""),p=turn(s),sims=+document.getElementById("s").value,c=+document.getElementById("c").value;
+ var r=res(s);if(r!=="."){document.getElementById("msg").textContent="The game is already over.";last=null;draw();return}
+ last=search(s,p,sims,c);draw();
+ runs.push(sims+"/"+c);var msg=p+" to move, "+sims+" simulations, c = "+c+". The green square has the most visits.";
+ var uniq={};runs.forEach(function(x){uniq[x]=1});if(Object.keys(uniq).length>=2)done();else msg+=" Now change the simulations or c and run again.";
+ document.getElementById("msg").textContent=msg}
+document.getElementById("run").onclick=run;
+document.getElementById("s").oninput=function(){document.getElementById("sv").textContent=this.value};
+document.getElementById("c").oninput=function(){document.getElementById("cv").textContent=this.value};
+document.getElementById("ex1").onclick=function(){b="XX.OO....".split("");last=null;draw()};
+document.getElementById("ex2").onclick=function(){b=".........".split("");last=null;draw()};
+document.getElementById("clr").onclick=function(){b=".........".split("");last=null;document.getElementById("msg").textContent="";draw()};
+draw();
+</script></body></html>
