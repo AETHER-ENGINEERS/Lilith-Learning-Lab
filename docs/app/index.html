@@ -2427,7 +2427,7 @@ dialog textarea{margin-top:8px}
     var out = chapters.map(function (c) {
       var ch = {}; for (var k in c) if (k !== 'eli5') ch[k] = c[k];
       ch.lesson = (c.lesson || []).map(function (b) { return typeof b === 'string' ? { type: 'text', items: [b] } : b; });
-      var f = c.eli5 || c.feynman; if (f && f.analogy) ch.lesson.unshift({ type: 'text', items: ['ELI5. ' + String(f.analogy).slice(0, 380)] });
+      var f = c.eli5; if (f && f.analogy) ch.lesson.unshift({ type: 'text', items: ['ELI5. ' + String(f.analogy).slice(0, 380)] });
       return ch;
     });
     if (sources.length) out.push({ title: 'Sources', summary: ['Where the facts in this course came from. Check them for yourself.'], keyPoints: ['Read the sources, because a summary can be wrong.'], lesson: [{ type: 'text', items: sources.slice(0, 30).map(function (s) { return s.title + ': ' + s.url; }) }],

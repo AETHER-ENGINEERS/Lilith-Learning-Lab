@@ -59,7 +59,7 @@ EXAM = [
 
 CFG = dict(id="data-structures-algorithms", title="Data Structures and Algorithms",
     subtitle="Complexity, arrays, lists, hashing, trees, heaps, graphs, sorting, searching, recursion, dynamic programming and greedy methods, with Python labs",
-    description="The core data structures and algorithms every programmer needs, explained intuitively and practised in Python: Big-O, arrays and two pointers, linked lists, stacks and queues, hash tables, trees, heaps, graph traversal, sorting, binary search, recursion and divide and conquer, dynamic programming, and greedy algorithms with shortest paths and spanning trees. Every chapter has an explain-it-simply Feynman block.",
+    description="The core data structures and algorithms every programmer needs, explained intuitively and practised in Python: Big-O, arrays and two pointers, linked lists, stacks and queues, hash tables, trees, heaps, graph traversal, sorting, binary search, recursion and divide and conquer, dynamic programming, and greedy algorithms with shortest paths and spanning trees. Every chapter has an ELI5 block.",
     pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, appdir="dsa", apps={})
 
 if __name__ == "__main__":

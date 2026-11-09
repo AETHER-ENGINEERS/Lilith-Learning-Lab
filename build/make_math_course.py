@@ -71,7 +71,7 @@ EXAM = [
 
 CFG = dict(id="mathematics-for-cs-ai", title="Mathematics for Computer Science and AI",
     subtitle="Discrete maths, linear algebra, calculus, probability, information theory, category and type theory, with Python labs",
-    description="The mathematics behind modern computer science and machine learning, built from the ground up and explained intuitively: logic and proof, sets, counting, graphs, number theory, linear algebra, calculus and multivariate calculus, optimization, probability and statistics, information theory, Markov chains, abstract algebra and category theory, type theory and the lambda calculus. Every chapter has an explain-it-simply Feynman block, quizzes and Python labs.",
+    description="The mathematics behind modern computer science and machine learning, built from the ground up and explained intuitively: logic and proof, sets, counting, graphs, number theory, linear algebra, calculus and multivariate calculus, optimization, probability and statistics, information theory, Markov chains, abstract algebra and category theory, type theory and the lambda calculus. Every chapter has an ELI5 block, quizzes and Python labs.",
     pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, appdir="mfa", apps={})
 
 if __name__ == "__main__":

@@ -80,7 +80,7 @@ The same app runs in any modern browser, with no install and no server: **https:
 * `mathematics-for-cs-ai.course.json`: Mathematics for Computer Science and AI (17 chapters: logic and proof, sets and functions, counting, graphs, number theory, linear algebra I and II, calculus, multivariate calculus, optimization, probability, distributions, statistics, information theory, Markov chains, algebra and category theory, type theory and the lambda calculus). 122 labs, 71 of them Python labs on the built-in MicroPython, and a 38-question final exam.
 * `data-structures-algorithms.course.json`: Data Structures and Algorithms (13 chapters: Big-O, arrays, linked lists, stacks and queues, hash tables, trees, heaps, graph traversal, sorting, binary search, recursion, dynamic programming, greedy algorithms with shortest paths and spanning trees). 96 labs, 57 of them Python labs on the built-in MicroPython, and a 34-question final exam.
 
-Every chapter of every course opens with an ELI5 block ("explain it like I am five"): a very plain everyday analogy. The text lives in `build/eli5/<course-id>.py` and is inserted into the course JSON by `build/apply_feynman.py` (run automatically by `build/make_catalog.py`).
+Every chapter of every course opens with an ELI5 block ("explain it like I am five"): a very plain everyday analogy. The text lives in `build/eli5/<course-id>.py` and is inserted into the course JSON by `build/apply_eli5.py` (run automatically by `build/make_catalog.py`).
 * `sample-percentages.course.json`: a tiny second-subject sample.
 
 Course format: see the header of `build/src/course.js` or use "Template" and "AI prompt" in the app's library.
