@@ -37,7 +37,7 @@ def route(r):
             plan = {'title': 'Tiny Topic', 'subtitle': 's', 'description': 'd', 'category': 'Science', 'tags': ['t'], 'chapters': [{'title': 'One', 'focus': 'f', 'queries': ['q']}]}
             return r.fulfill(status=200, headers=H, content_type='application/x-ndjson', body=nd({'message': {'content': json.dumps(plan)}}, {'done': True}))
         if 'Write chapter' in last['content']:
-            ch = {'title': 'One', 'summary': ['A summary.'], 'lesson': [{'type': 'text', 'items': ['Some lesson text.']}], 'quiz': [{'q': 'Q?', 'options': ['a', 'b'], 'answer': 1, 'explain': 'e'}], 'feynman': {'analogy': 'like a bee', 'stall': 'why?'}}
+            ch = {'title': 'One', 'summary': ['A summary.'], 'lesson': [{'type': 'text', 'items': ['Some lesson text.']}], 'quiz': [{'q': 'Q?', 'options': ['a', 'b'], 'answer': 1, 'explain': 'e'}], 'eli5': {'analogy': 'like a bee', 'stall': 'why?'}}
             return r.fulfill(status=200, headers=H, content_type='application/x-ndjson', body=nd({'message': {'content': json.dumps(ch)}}, {'done': True}))
         return r.fulfill(status=200, headers=H, content_type='application/x-ndjson', body=nd({'message': {'content': 'Think of it '}}, {'message': {'content': 'like a pizza.'}}, {'done': True}))
     if 'wikipedia' in u: return r.fulfill(status=200, headers=H, content_type='application/json', body=json.dumps({'query': {'search': [{'title': 'Bee', 'snippet': 'insect'}]}}))
@@ -45,7 +45,7 @@ def route(r):
     r.fulfill(status=404, headers=H, body='nf')
 agent_log = []
 CH_BAD = {'title': 'Bees', 'summary': ['Bees make honey.'], 'lesson': [{'type': 'text', 'items': ['Bees live in hives.']}], 'quiz': [{'q': 'What do bees make?', 'options': ['honey', 'milk'], 'answer': 9, 'explain': 'Honey.'}],
-          'feynman': {'analogy': 'A hive is like a busy kitchen.', 'stall': 'Why do bees visit flowers?'}}
+          'eli5': {'analogy': 'A hive is like a busy kitchen.', 'stall': 'Why do bees visit flowers?'}}
 def call(name, args): return {'message': {'content': '', 'tool_calls': [{'function': {'name': name, 'arguments': args}}]}}
 def agent_step(j, tools):
     msgs = j['messages']; done = [m for m in msgs if m['role'] == 'assistant' and m.get('tool_calls')]

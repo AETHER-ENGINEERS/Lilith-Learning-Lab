@@ -289,14 +289,14 @@
       '   {"type": "fill", "title": "", "text": "A sentence with the {{missing word}} in double braces."},',
       '   {"type": "order", "title": "", "items": ["first step", "second", "third"]},',
       '   {"type": "match", "title": "", "pairs": [["term", "meaning"], ["", ""]]}],',
-      ' "feynman": {"analogy": "a plain-words analogy under 330 characters, for a ten-year-old", "stall": "one question the learner must be able to answer"}}', '',
+      ' "eli5": {"analogy": "a plain-words analogy under 330 characters, for a ten-year-old", "stall": "one question the learner must be able to answer"}}', '',
       'Rules: valid JSON (double quotes, no trailing commas, no comments). Spoken text: no Markdown symbols in summary, keyPoints or lesson text.'
     ].join('\n'),
     'office-hours': [
       '# Office hours', '',
       'You are Teacher. Answer the question asked, in plain words first, then add precision.',
       'Ground answers in the course (`search_course`); use the web for things the course does not cover, and cite URLs you read.',
-      'If the learner seems unsure, ask them to explain it back (Feynman) and point to the gap. Check arithmetic with `python`.',
+      'If the learner seems unsure, ask them to explain it back (ELI5) and point to the gap. Check arithmetic with `python`.',
       'Keep replies phone-sized. Say "I am not sure" rather than guess.'
     ].join('\n')
   };
@@ -463,7 +463,7 @@
 
   /* ---------- the teacher's persona and context ---------- */
   AI.teacherSystem = function (ctx) {
-    var s = 'You are Teacher, the friendly tutor inside Lilith Learning Lab. Explain simply first (analogies, plain words), then add precision. Use the Feynman method: when the learner is unsure, ask them to explain it back in their own words and point to the gap. Keep replies short enough for a phone screen. If you are not sure, say so. ';
+    var s = 'You are Teacher, the friendly tutor inside Lilith Learning Lab. Explain simply first (analogies, plain words), then add precision. Use the ELI5 method (explain like I am five): when the learner is unsure, ask them to explain it back in their own words and point to the gap. Keep replies short enough for a phone screen. If you are not sure, say so. ';
     s += 'Use search_course to ground answers in the installed courses, and web_search and web_fetch when the course does not cover something or the question is about recent facts; cite the URLs you used. For a question that needs several sources, call deep_research once instead of many searches.';
     if (ctx && ctx.course) s += '\nThe learner is studying "' + ctx.course + '"' + (ctx.chapter ? ', chapter "' + ctx.chapter + '"' : '') + '.';
     if (ctx && ctx.passages) s += '\nRelevant passages from the course:\n' + ctx.passages;
@@ -474,7 +474,7 @@
   var SCHEMA = 'A chapter object: {"title":"", "maps":[{"title":"","links":["A | relation | B", ...]}], "summary":["2-3 short sentences"], "glossary":[{"term":"","def":""}], "keyPoints":["",...], ' +
     '"lesson":[{"type":"text","items":["short paragraphs"]}], "quiz":[{"q":"","options":["","",""],"answer":0,"explain":""}], "cards":[{"q":"","a":""}], ' +
     '"practice":[{"type":"fill","title":"","text":"The word is {{answer}}."},{"type":"order","title":"","items":["first","second","third"]},{"type":"match","title":"","pairs":[["term","meaning"],["",""]]}], ' +
-    '"feynman":{"analogy":"a plain-words analogy of under 330 characters, as if for a ten-year-old","stall":"one question the learner must be able to answer"}}';
+    '"eli5":{"analogy":"a plain-words analogy of under 330 characters, as if for a ten-year-old","stall":"one question the learner must be able to answer"}}';
   /* progress for the learner: one plain line and a percentage that only moves forward; details go to the log */
   function progress(o) {
     var last = 0;
@@ -614,9 +614,9 @@
   AI.checkChapter = function (c) { var p = AI.chapterProblems(c); if (p.length) throw new Error(p.join('; ')); };
   AI.assembleCourse = function (plan, chapters, sources, level) {
     var out = chapters.map(function (c) {
-      var ch = {}; for (var k in c) if (k !== 'feynman') ch[k] = c[k];
+      var ch = {}; for (var k in c) if (k !== 'eli5') ch[k] = c[k];
       ch.lesson = (c.lesson || []).map(function (b) { return typeof b === 'string' ? { type: 'text', items: [b] } : b; });
-      var f = c.feynman; if (f && f.analogy) ch.lesson.unshift({ type: 'text', items: ['Explain it simply. ' + String(f.analogy).slice(0, 380), 'Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: ' + (f.stall || 'what is the main idea?')] });
+      var f = c.eli5 || c.feynman; if (f && f.analogy) ch.lesson.unshift({ type: 'text', items: ['ELI5. ' + String(f.analogy).slice(0, 380), 'Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: ' + (f.stall || 'what is the main idea?')] });
       return ch;
     });
     if (sources.length) out.push({ title: 'Sources', summary: ['Where the facts in this course came from. Check them for yourself.'], keyPoints: ['Read the sources, because a summary can be wrong.'], lesson: [{ type: 'text', items: sources.slice(0, 30).map(function (s) { return s.title + ': ' + s.url; }) }],

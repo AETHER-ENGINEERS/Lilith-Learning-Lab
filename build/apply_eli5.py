@@ -1,9 +1,10 @@
-"""Insert a Feynman-method block ("Explain it simply" + "Teach it back") at the
-start of each chapter's lesson. Data: build/feynman/<course-id>.py defining
+"""Insert an ELI5 block ("ELI5" analogy + "Teach it back") at the
+start of each chapter's lesson. Data: build/eli5/<course-id>.py defining
 FEY = [ (analogy, stall) or None per chapter ]. Idempotent."""
 import json, glob, os, sys, importlib.util
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MARK = "Explain it simply."
+MARK = "ELI5."
+OLD = ("Explain it simply.",)
 
 def block(analogy, stall):
     return {"type": "text", "items": [
@@ -13,7 +14,7 @@ def block(analogy, stall):
 
 def apply(path):
     d = json.load(open(path))
-    fp = os.path.join(ROOT, "build", "feynman", d["id"] + ".py")
+    fp = os.path.join(ROOT, "build", "eli5", d["id"] + ".py")
     if not os.path.exists(fp):
         return None
     spec = importlib.util.spec_from_file_location("fey_" + d["id"].replace("-", "_"), fp)
@@ -23,10 +24,11 @@ def apply(path):
         e = m.FEY[i] if i < len(m.FEY) else None
         lesson = [b for b in ch.get("lesson", [])
                   if not (isinstance(b, dict) and b.get("type", "text") == "text"
-                          and (b.get("items") or [""])[0].startswith(MARK))]
+                          and (b.get("items") or [""])[0].startswith((MARK,) + OLD))]
         if e:
             lesson.insert(0, block(*e)); n += 1
         ch["lesson"] = lesson
+    d.setdefault("pronounce", {})["ELI5"] = "E L I five"
     json.dump(d, open(path, "w"), ensure_ascii=False, indent=1)
     return n
 

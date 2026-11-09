@@ -52,13 +52,13 @@ const server = http.createServer((req, res) => {
   AI.complete = async (m) => {
     n++; const u = m[m.length - 1].content;
     if (/Design a/.test(u)) return '```json\n' + JSON.stringify({ title: 'Bees', subtitle: 's', description: 'd', category: 'Science', tags: ['bees'], chapters: [{ title: 'Hive', focus: 'f', queries: ['hive'] }, { title: 'Honey', focus: 'f' }] }) + '\n```';
-    if (/previous reply was invalid/.test(u)) return JSON.stringify({ title: 'Honey', summary: ['s'], lesson: [{ type: 'text', items: ['x'] }], quiz: [{ q: 'q', options: ['a', 'b'], answer: 1, explain: 'e' }], feynman: { analogy: 'a', stall: 'why?' } });
+    if (/previous reply was invalid/.test(u)) return JSON.stringify({ title: 'Honey', summary: ['s'], lesson: [{ type: 'text', items: ['x'] }], quiz: [{ q: 'q', options: ['a', 'b'], answer: 1, explain: 'e' }], eli5: { analogy: 'a', stall: 'why?' } });
     if (/chapter 2/.test(u)) return '{"title":"Honey","summary":["s"],"lesson":["x"],"quiz":[{"q":"q","options":["a","b"],"answer":5}]}';
-    return JSON.stringify({ title: 'Hive', summary: ['s'], lesson: [{ type: 'text', items: ['x'] }], quiz: [{ q: 'q', options: ['a', 'b'], answer: 0, explain: 'e' }], feynman: { analogy: 'bees live in a city', stall: 'what does a hive do?' } });
+    return JSON.stringify({ title: 'Hive', summary: ['s'], lesson: [{ type: 'text', items: ['x'] }], quiz: [{ q: 'q', options: ['a', 'b'], answer: 0, explain: 'e' }], eli5: { analogy: 'bees live in a city', stall: 'what does a hive do?' } });
   };
   const logs = []; const course = await AI.buildCourse({ topic: 'Bees', chapters: 2, onLog: m => logs.push(m) });
   assert.strictEqual(course.chapters.length, 3); assert.strictEqual(course.chapters[2].title, 'Sources');
-  assert(course.chapters[0].lesson[0].items[0].startsWith('Explain it simply.')); assert(/chapter 2 invalid/.test(AI.logText())); assert(logs.includes('Writing chapter 2 of 2') && !logs.some(l => /Searching|Reading|http/.test(l)), 'progress is plain: ' + logs);
+  assert(course.chapters[0].lesson[0].items[0].startsWith('ELI5.')); assert(/chapter 2 invalid/.test(AI.logText())); assert(logs.includes('Writing chapter 2 of 2') && !logs.some(l => /Searching|Reading|http/.test(l)), 'progress is plain: ' + logs);
   const K = require('../src/course.js'); const v = K.validate(JSON.stringify(course)); assert(v.ok, JSON.stringify(v.errors));
   AI.complete = realChat;
   // chapter checks give actionable problems

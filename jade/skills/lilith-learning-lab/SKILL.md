@@ -36,4 +36,4 @@ Search first, read the matching chapter part, answer in a few sentences and name
 
 To write or fix a course by hand, the web course editor (https://lucky-edgelord.github.io/Lilith-Learning-Lab/editor/, source `build/src/editor.html`) checks it with the same validator as the app. The app's optional AI features (office hours, background deep research, the AI course builder in a hidden Jade Agent Kit workspace, settings export/import, the AI log) are described in the README section "AI features".
 
-Every chapter should open with a Feynman block ("Explain it simply" analogy plus "Teach it back" prompt): write `build/feynman/<course-id>.py` with `FEY = [(analogy, stall_question), ...]`, one per chapter; `build/apply_feynman.py` (called by `make_catalog.py`) inserts it. Keep the analogy under about 360 characters.
+Every chapter should open with a ELI5 block ("ELI5." analogy plus "Teach it back" prompt): write `build/eli5/<course-id>.py` with `FEY = [(analogy, stall_question), ...]`, one per chapter; `build/apply_feynman.py` (called by `make_catalog.py`) inserts it. Keep the analogy under about 360 characters.

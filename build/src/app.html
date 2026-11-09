@@ -1319,9 +1319,9 @@ function mountOffice(el, S) {
     $('#ofset', el).onclick = () => openAISettings(); return;
   }
   const th = officeThread(S); let busy = null, tb = false;
-  const chips = S.kind === 'lab' ? ['Give me a hint, not the answer', 'Why did my answer fail?', 'Explain it simply', 'Check my teach-back']
+  const chips = S.kind === 'lab' ? ['Give me a hint, not the answer', 'Why did my answer fail?', 'ELI5 this', 'Check my teach-back']
     : S.kind === 'course' ? ['What should I study next?', 'Explain the big picture simply', 'Quiz me on this course', 'Check my teach-back']
-    : ['Explain it simply', 'Give me an example', 'Quiz me on this', 'Check my teach-back'];
+    : ['ELI5 this', 'Give me an example', 'Quiz me on this', 'Check my teach-back'];
   el.innerHTML = '<div class="ofc"><div class="muted ofl">Office hours: ' + esc(S.label) + '</div><div class="ofm" id="ofm"></div><div class="ofchips" id="ofchips">' + chips.map((t, i) => '<button class="chip" data-c="' + i + '">' + esc(t) + '</button>').join('') + '</div>' +
     '<div class="ofin"><textarea id="ofq" rows="2" placeholder="Ask anything about this' + (S.kind === 'course' ? ' course' : ' section') + '..." autocapitalize="sentences"></textarea>' + '<button class="btn pri" id="ofsend" aria-label="Send">' + ic('arrow_forward') + '</button></div>' +
     '<div class="row" style="margin-top:6px"><button class="btn sm" id="ofclear">' + ic('delete') + '<span>Clear chat</span></button><span class="muted" id="ofmodel" style="margin-left:auto"></span></div></div>';

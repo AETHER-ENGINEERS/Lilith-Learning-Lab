@@ -32,9 +32,9 @@ if os.path.exists(EXTRA):
 
 
 def main():
-    import apply_feynman  # add the Feynman block to every chapter first
+    import apply_eli5  # add the ELI5 block to every chapter first
     for f in sorted(glob.glob(os.path.join(ROOT, 'courses', '*.course.json'))):
-        apply_feynman.apply(f)
+        apply_eli5.apply(f)
     out = []
     for p in sorted(glob.glob(os.path.join(ROOT, "courses", "*.course.json"))):
         raw = open(p, encoding="utf-8").read()
