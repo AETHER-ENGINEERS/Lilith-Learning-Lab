@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lilith University</title>
+<meta name="description" content="Search and read about the free, offline courses of Lilith Learning Lab: AI, computer science, mathematics and more.">
+<style>
+:root{--bg:#0f0b18;--panel:#1a1327;--panel2:#241a36;--line:#35294d;--tx:#efe9fb;--dim:#a99bc4;--g:#b388ff;--g2:#d7bfff;--ok:#7be0a8}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,Segoe UI,Roboto,sans-serif}
+a{color:var(--g2)}
+header.top{padding:48px 20px 28px;text-align:center;background:radial-gradient(900px 300px at 50% -80px,#3b2766 0,transparent 70%)}
+header.top h1{margin:0;font-size:clamp(30px,6vw,52px);letter-spacing:.5px}
+header.top h1 span{color:var(--g)}
+header.top p{margin:10px auto 0;max-width:720px;color:var(--dim)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 60px}
+.bar{position:sticky;top:0;z-index:5;background:linear-gradient(var(--bg) 85%,transparent);padding:12px 0 10px}
+input[type=search]{width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:#0a0712;color:var(--tx);font:inherit}
+input[type=search]:focus{outline:2px solid var(--g)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+.chip{border:1px solid var(--line);background:transparent;color:var(--dim);border-radius:999px;padding:6px 14px;font:inherit;font-size:14px;cursor:pointer}
+.chip.on{background:var(--panel2);color:var(--g2);border-color:var(--g)}
+.stats{color:var(--dim);font-size:14px;margin:14px 2px}
+h2.cat{margin:26px 0 8px;color:var(--g2);font-size:22px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:.15s}
+.card:hover,.card:focus{border-color:var(--g);transform:translateY(-2px);outline:none}
+.card h3{margin:0;font-size:18px;color:var(--g2)}
+.sub{color:var(--dim);font-size:14px}
+.meta{font-size:13px;color:var(--dim)}
+.desc{font-size:14px;color:#d8cfe9}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 10px;color:var(--dim)}
+.badge{display:inline-block;font-size:12px;border-radius:6px;padding:1px 8px;background:var(--panel2);color:var(--g2);margin-right:6px}
+.badge.py{color:var(--ok)}
+dialog{width:min(860px,96vw);max-height:92vh;border:1px solid var(--line);border-radius:18px;background:var(--panel);color:var(--tx);padding:0}
+dialog::backdrop{background:rgba(5,2,10,.75)}
+.dh{padding:20px 22px 10px;position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--line)}
+.dh h2{margin:0;font-size:24px;color:var(--g2)}
+.db{padding:10px 22px 24px;overflow:auto;max-height:calc(92vh - 130px)}
+.btn{display:inline-block;background:var(--g);color:#1b0f33;border:0;border-radius:999px;padding:9px 18px;font:600 15px system-ui;text-decoration:none;cursor:pointer;margin:4px 8px 4px 0}
+.btn.alt{background:var(--panel2);color:var(--g2);border:1px solid var(--line)}
+details{border:1px solid var(--line);border-radius:12px;margin:8px 0;background:#150f20}
+summary{cursor:pointer;padding:10px 14px;font-weight:600}
+details .in{padding:0 14px 12px;color:#d8cfe9;font-size:15px}
+details ul{margin:6px 0 6px 18px;padding:0}
+.how{margin-top:40px;padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+.how h2{margin-top:0;color:var(--g2)}
+code{background:#0a0712;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:13px}
+footer{text-align:center;color:var(--dim);font-size:13px;padding:30px 10px}
+.empty{padding:40px;text-align:center;color:var(--dim)}
+</style></head>
+<body>
+<header class="top">
+  <h1>Lilith <span>University</span></h1>
+  <p>Free courses for the offline Lilith Learning Lab app: theory, animated lectures, concept maps, quizzes and hands-on Python labs. Search the catalog, read a course outline, then download it.</p>
+</header>
+<div class="wrap">
+  <div class="bar">
+    <input type="search" id="q" placeholder="Search courses, topics and chapters..." aria-label="Search courses" autofocus>
+    <div class="chips" id="cats"></div>
+    <div class="chips" id="lv"></div>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div id="list"></div>
+  <section class="how">
+    <h2>How to use a course</h2>
+    <ol>
+      <li>Install the <b>Lilith Learning Lab</b> app on Android.</li>
+      <li>Open <b>Library &gt; Browse online</b> and tap <b>Get</b> on a course, or download a course file here and use <b>Import file</b>.</li>
+      <li>Teacher then gives you animated lectures, concept maps, quizzes, labs and a final exam, all offline.</li>
+    </ol>
+    <p>Course files are plain JSON (<code>format: "lilith-course"</code>). The source, the app and the build scripts are in the <a id="repo" href="#">GitHub repository</a>.</p>
+  </section>
+</div>
+<footer>Lilith University &middot; part of Lilith Learning Lab</footer>
+<dialog id="dlg"><div class="dh"><h2 id="dt"></h2><div class="meta" id="dm"></div></div><div class="db" id="db"></div></dialog>
+<script>
+(function () {
+  'use strict';
+  var CAT = null, state = { q: '', cat: '', lv: '' };
+  var $ = function (s) { return document.querySelector(s); };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function kb(b) { return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB'; }
+  function hay(c) { if (c._h) return c._h; c._h = (c.title + ' ' + c.subtitle + ' ' + c.description + ' ' + c.category + ' ' + c.level + ' ' + (c.tags || []).join(' ') + ' ' + c.outline.map(function (o) { return o.title + ' ' + (o.glossary || []).join(' '); }).join(' ')).toLowerCase(); return c._h; }
+  function score(c, terms) {
+    var s = 0, t = c.title.toLowerCase(), h = hay(c);
+    for (var i = 0; i < terms.length; i++) {
+      var w = terms[i]; if (h.indexOf(w) < 0) return -1;
+      if (t.indexOf(w) >= 0) s += 5; if ((c.tags || []).join(' ').toLowerCase().indexOf(w) >= 0) s += 3; if (c.subtitle.toLowerCase().indexOf(w) >= 0) s += 2; s += 1;
+    }
+    return s;
+  }
+  function chips(el, items, cur, key) {
+    el.innerHTML = '<button class="chip' + (cur ? '' : ' on') + '" data-v="">All</button>' + items.map(function (x) { return '<button class="chip' + (cur === x ? ' on' : '') + '" data-v="' + esc(x) + '">' + esc(x) + '</button>'; }).join('');
+    Array.prototype.forEach.call(el.querySelectorAll('button'), function (b) { b.onclick = function () { state[key] = b.getAttribute('data-v'); draw(); }; });
+  }
+  function card(c) {
+    return '<article class="card" tabindex="0" data-id="' + esc(c.id) + '"><h3>' + esc(c.title) + '</h3><div class="sub">' + esc(c.subtitle) + '</div>' +
+      '<div class="meta"><span class="badge">' + esc(c.level) + '</span>' + c.chapters + ' chapters &middot; ' + c.labs + ' labs' + (c.pythonLabs ? ' <span class="badge py">' + c.pythonLabs + ' Python</span>' : '') + '</div>' +
+      '<div class="desc">' + esc(c.description.length > 200 ? c.description.slice(0, 200) + '...' : c.description) + '</div>' +
+      '<div class="tags">' + (c.tags || []).slice(0, 5).map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('') + '</div></article>';
+  }
+  function draw() {
+    if (!CAT) return;
+    chips($('#cats'), CAT.categories, state.cat, 'cat');
+    chips($('#lv'), ['Beginner', 'Intermediate', 'Advanced'], state.lv, 'lv');
+    var terms = state.q.toLowerCase().split(/\s+/).filter(Boolean);
+    var rows = CAT.courses.map(function (c) { return { c: c, s: terms.length ? score(c, terms) : 0 }; }).filter(function (r) {
+      return r.s >= 0 && (!state.cat || r.c.category === state.cat) && (!state.lv || r.c.level === state.lv);
+    });
+    if (terms.length) rows.sort(function (a, b) { return b.s - a.s; });
+    $('#stats').textContent = rows.length + ' of ' + CAT.courses.length + ' courses' + (terms.length ? ' match' : '');
+    if (!rows.length) { $('#list').innerHTML = '<div class="empty">No course matches. Try another word.</div>'; return; }
+    var h = '';
+    if (terms.length) h = '<div class="grid">' + rows.map(function (r) { return card(r.c); }).join('') + '</div>';
+    else CAT.categories.forEach(function (k) {
+      var rs = rows.filter(function (r) { return r.c.category === k; }); if (!rs.length) return;
+      h += '<h2 class="cat">' + esc(k) + '</h2><div class="grid">' + rs.map(function (r) { return card(r.c); }).join('') + '</div>';
+    });
+    $('#list').innerHTML = h;
+    Array.prototype.forEach.call(document.querySelectorAll('.card'), function (el) {
+      el.onclick = function () { open(el.getAttribute('data-id')); };
+      el.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(el.getAttribute('data-id')); } };
+    });
+  }
+  function open(id) {
+    var c = CAT.courses.filter(function (x) { return x.id === id; })[0]; if (!c) return;
+    var url = CAT.raw + c.file;
+    $('#dt').textContent = c.title;
+    $('#dm').innerHTML = esc(c.category) + ' &middot; ' + esc(c.level) + ' &middot; ' + c.chapters + ' chapters &middot; ' + c.labs + ' labs' + (c.pythonLabs ? ' (' + c.pythonLabs + ' Python)' : '') + ' &middot; ' + c.quiz + ' quiz questions' + (c.exam ? ' &middot; ' + c.exam + '-question final exam' : '') + ' &middot; ' + kb(c.bytes);
+    var h = '<p>' + esc(c.description) + '</p><div class="tags" style="margin-bottom:10px">' + (c.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('') + '</div>' +
+      '<a class="btn" href="' + esc(url) + '" download>Download course file</a><a class="btn alt" href="https://github.com/' + CAT.repo + '/blob/main/courses/' + esc(c.file) + '" target="_blank" rel="noopener">View on GitHub</a>' +
+      '<h3 style="color:var(--g2)">Course outline</h3>';
+    c.outline.forEach(function (o, i) {
+      h += '<details><summary>' + (i + 1) + '. ' + esc(o.title) + '</summary><div class="in"><p>' + esc(o.summary) + '</p>' +
+        (o.keyPoints && o.keyPoints.length ? '<b>Key points</b><ul>' + o.keyPoints.map(function (k) { return '<li>' + esc(k) + '</li>'; }).join('') + '</ul>' : '') +
+        (o.glossary && o.glossary.length ? '<div class="meta">Terms: ' + esc(o.glossary.join(', ')) + '</div>' : '') + '</div></details>';
+    });
+    $('#db').innerHTML = h; $('#db').scrollTop = 0;
+    var d = $('#dlg'); if (!d.open) d.showModal();
+    history.replaceState(null, '', '#' + id);
+  }
+  $('#dlg').addEventListener('click', function (e) { if (e.target === this) this.close(); });
+  $('#dlg').addEventListener('close', function () { history.replaceState(null, '', location.pathname + location.search); });
+  $('#q').addEventListener('input', function () { state.q = this.value; draw(); });
+  fetch('catalog.json').then(function (r) { return r.json(); }).then(function (j) {
+    CAT = j; $('#repo').href = 'https://github.com/' + j.repo; draw();
+    var id = decodeURIComponent(location.hash.replace('#', '')); if (id) open(id);
+  }).catch(function (e) { $('#list').innerHTML = '<div class="empty">Could not load the course catalog (' + esc(e.message || e) + ').</div>'; });
+})();
+</script>
+</body></html>

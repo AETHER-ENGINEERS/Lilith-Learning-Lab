@@ -21,7 +21,7 @@ import java.util.Locale;
  * Teacher's voice uses Android's built-in text-to-speech engine through the AndroidTTS bridge below.
  */
 public class MainActivity extends Activity implements TextToSpeech.OnInitListener {
-    private WebView web;
+    WebView web;
     private FileChooser chooser;
     TextToSpeech tts;
     volatile boolean ttsReady = false;

@@ -131,7 +131,7 @@
     if (errors.length) return { ok: false, errors: errors, warnings: warnings };
     var course = {
       format: FORMAT, version: VERSION, id: slug(raw.id || raw.title), title: s(raw.title).trim(), subtitle: s(raw.subtitle).trim(),
-      author: s(raw.author).trim(), description: s(raw.description).trim(), teacher: s(raw.teacher).trim(), images: {}, pronounce: {}, chapters: [], sandbox: null, apps: [], exam: null
+      author: s(raw.author).trim(), description: s(raw.description).trim(), teacher: s(raw.teacher).trim(), category: s(raw.category).trim().slice(0, 40), level: s(raw.level).trim().slice(0, 20), tags: Array.isArray(raw.tags) ? raw.tags.filter(function (t) { return typeof t === 'string'; }).slice(0, 12) : [], images: {}, pronounce: {}, chapters: [], sandbox: null, apps: [], exam: null
     };
     if (raw.images && typeof raw.images === 'object') Object.keys(raw.images).forEach(function (k) { if (typeof raw.images[k] === 'string' && /<svg[\s>]/i.test(raw.images[k])) course.images[k] = raw.images[k]; });
     if (raw.pronounce && typeof raw.pronounce === 'object') Object.keys(raw.pronounce).forEach(function (k) { if (typeof raw.pronounce[k] === 'string') course.pronounce[k] = raw.pronounce[k]; });

@@ -406,7 +406,7 @@ if (ENV.setVoice && ST.set.voice) ENV.setVoice(ST.set.voice);
 let tab = 'lecture', view = null, readCh = null, practice = 'labs', mapPick = 0, mapSel = null, labSel = null;
 const main = $('#main');
 $$('#nav button').forEach(b => b.addEventListener('click', () => go(b.dataset.t)));
-$('#libbtn').onclick = () => { leaveLecture(); view = view === 'lib' ? null : 'lib'; render(); };
+$('#libbtn').onclick = () => { leaveLecture(); view = (view === 'lib' || view === 'store') ? null : 'lib'; render(); };
 function go(t) { if (t !== 'lecture') leaveLecture(); tab = t; view = null; if (t === 'read') readCh = null; if (t === 'practice') { labSel = null; } render(); }
 function leaveLecture() { if (mode === 'lecture' && NAR.state.playing) NAR.pause(); }
 function updateHeader() {
@@ -414,11 +414,12 @@ function updateHeader() {
   const p = coursePct(); $('#sub').textContent = CUR.course.title + ' · ' + p + '% complete'; $('#pb').style.width = p + '%';
 }
 function render() {
-  $$('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === tab && view !== 'lib' && view !== 'exam'));
-  $('#libbtn').classList.toggle('on', view === 'lib');
+  $$('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === tab && view !== 'lib' && view !== 'store' && view !== 'exam'));
+  $('#libbtn').classList.toggle('on', view === 'lib' || view === 'store');
   main.classList.toggle('fill', tab === 'lecture' && !!LEC && view !== 'lib');
   main.scrollTop = 0;
-  if (view === 'lib' || !CUR) renderLibrary();
+  if (view === 'store') renderStore();
+  else if (view === 'lib' || !CUR) renderLibrary();
   else if (view === 'exam') renderExam();
   else if (tab === 'lecture') renderLecture();
   else if (tab === 'read') readCh === null ? renderReadList() : renderChapter(readCh);
@@ -431,6 +432,7 @@ function render() {
 window.__onBack = function () {
   if ($('#modal').open) { closeModal(); return true; }
   if ($('#settings').open) { $('#settings').close(); return true; }
+  if (view === 'store') { view = 'lib'; render(); return true; }
   if (view === 'lib' && CUR) { view = null; render(); return true; }
   if (view === 'exam') { if (EXAM && EXAM.stage === 'run' && !EXAM.done) { ask('Leave the exam?', 'Leave', 'Your answers so far are discarded.').then(y => { if (y) { EXAM = null; view = null; render(); } }); return true; } EXAM = null; view = null; render(); return true; }
   if (tab === 'lecture' && LEC) { NAR.stop(); LEC = null; mode = null; render(); return true; }
@@ -450,6 +452,7 @@ const GUIDE_PROMPT = 'Create a course for Lilith Learning Lab as ONE JSON file (
   '{"type":"terminal","title":"","prompt":"$","commands":[{"re":"^ls$","out":["file.txt"]}],"tasks":[{"text":"List the files","cmd":"^ls$"}],"chips":["ls"]}.\n' +
   'Return only valid JSON, no commentary. Include a quiz and at least one practice lab in every chapter. Math: write LaTeX between dollar signs, $x^2$ inline or $$...$$ for a displayed formula, and remember to double every backslash inside JSON strings (\\\\lambda, \\\\to). Keep formulas short and say what they mean in plain words nearby, because the Teacher reads them aloud.';
 
+let libQ = '', libCat = '', srcRepo = '';
 function renderLibrary() {
   let h = '';
   if (!CUR && !ST.courses.length) {
@@ -458,8 +461,18 @@ function renderLibrary() {
   } else {
     h += '<div class="muted" style="margin:6px 2px">Your courses are stored on this device. Progress is kept for each one.</div>';
   }
-  h += '<div class="row" style="margin:10px 0">' + btn('imp', 'upload_file', 'Import file', 'pri') + btn('pst', 'content_paste', 'Paste JSON', '') + '</div>';
-  ST.courses.forEach(c => {
+  h += '<div class="row" style="margin:10px 0">' + btn('imp', 'upload_file', 'Import file', 'pri') + btn('pst', 'content_paste', 'Paste JSON', '') + btn('brw', 'download', 'Browse online', '') + '</div>';
+  const cats = Array.from(new Set(ST.courses.map(c => c.cat || 'Other'))).sort();
+  if (ST.courses.length > 3) {
+    h += '<input type="search" id="lq" placeholder="Search your courses..." value="' + esc(libQ) + '">';
+    if (cats.length > 1) h += '<div class="chips"><button class="chip ' + (libCat ? '' : 'on') + '" data-lc="">All</button>' + cats.map(k => '<button class="chip ' + (libCat === k ? 'on' : '') + '" data-lc="' + esc(k) + '">' + esc(k) + '</button>').join('') + '</div>';
+  }
+  const ql = libQ.trim().toLowerCase();
+  const shown = ST.courses.filter(c => (!libCat || (c.cat || 'Other') === libCat) && (!ql || (c.title + ' ' + (c.subtitle || '') + ' ' + (c.tags || []).join(' ')).toLowerCase().includes(ql)))
+    .sort((a, b) => (a.cat || 'Other').localeCompare(b.cat || 'Other') || a.title.localeCompare(b.title));
+  let lastCat = null;
+  shown.forEach(c => {
+    if (cats.length > 1 && (c.cat || 'Other') !== lastCat) { lastCat = c.cat || 'Other'; h += '<h3 style="margin:16px 2px 0;color:var(--g2)">' + esc(lastCat) + '</h3>'; }
     const prog = ST.prog[c.id] || {}, full = readCourse(c.id), cur = CUR && CUR.course.id === c.id;
     let pct = 0;
     if (full) { const v = K.validate(full); if (v.ok) { const vs = v.course.chapters.map(x => K.chapterView(x, v.course)); const saved = CUR; CUR = { course: v.course, ch: vs }; try { pct = coursePct(); } catch (e) {} CUR = saved; } }
@@ -474,6 +487,9 @@ function renderLibrary() {
   main.innerHTML = h;
   $('#imp').onclick = () => $('#filein').click();
   $('#pst').onclick = pasteDialog;
+  $('#brw').onclick = () => { view = 'store'; render(); };
+  const lq = $('#lq'); if (lq) lq.oninput = () => { libQ = lq.value; const pos = lq.selectionStart; renderLibrary(); const n = $('#lq'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} } };
+  $$('[data-lc]').forEach(b => b.onclick = () => { libCat = b.dataset.lc; renderLibrary(); });
   $('#tpl').onclick = () => { const t = JSON.stringify(K.template(), null, 2); modal('<h3 class="dh">Course template</h3><div class="muted">Edit it, or give it to an AI as an example. It covers every lab type.</div><textarea readonly class="big" id="tt">' + esc(t) + '</textarea><div class="row end">' + btn('tc', 'content_copy', 'Copy', '') + btn('ts', 'share', 'Share', '') + btn('tx', 'close', 'Close', 'pri') + '</div>', d => { $('#tc', d).onclick = () => copyText(t, 'Template'); $('#ts', d).onclick = () => shareText('course-template.json', t); $('#tx', d).onclick = closeModal; }); };
   $('#gde').onclick = () => modal('<h3 class="dh">Prompt for an AI</h3><div class="muted">Copy this, add your subject, and paste the AI\'s JSON reply with "Paste JSON".</div><textarea readonly class="big" id="gp">' + esc(GUIDE_PROMPT) + '</textarea><div class="row end">' + btn('gc', 'content_copy', 'Copy', 'pri') + btn('gx', 'close', 'Close', '') + '</div>', d => { $('#gc', d).onclick = () => copyText(GUIDE_PROMPT, 'Prompt'); $('#gx', d).onclick = closeModal; });
   $$('[data-open]').forEach(b => b.onclick = () => { openCourse(b.dataset.open); });
@@ -483,6 +499,84 @@ function renderLibrary() {
     if (await ask('Delete "' + c.title + '"?', 'Delete', 'The course and your progress in it are removed from this device. You can import the file again later.')) deleteCourse(c.id);
   });
 }
+
+/* ================= BROWSE ONLINE: courses from a GitHub repository ================= */
+const DEFAULT_REPO = 'lucky-edgelord/Lilith-Learning-Lab';
+let STORE = { cat: null, err: '', loading: false, q: '', c: '', repo: '' };
+const repoOk = r => /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(r);
+const rawBase = r => 'https://raw.githubusercontent.com/' + r + '/main/courses/';
+const netCbs = {}; let netId = 0;
+window.__netDone = function (id, ok, text) { const f = netCbs[id]; delete netCbs[id]; if (f) f(ok, text); };
+function netGet(url) {
+  return new Promise((res, rej) => {
+    if (window.AndroidTTS && window.AndroidTTS.fetchUrl) {
+      const id = ++netId; netCbs[id] = (ok, text) => ok ? res(text) : rej(new Error(text || 'network error'));
+      try { window.AndroidTTS.fetchUrl(url, id); } catch (e) { delete netCbs[id]; rej(e); }
+    } else {
+      fetch(url).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); }).then(res, rej);
+    }
+  });
+}
+function loadCatalog(force) {
+  const repo = ST.repo || DEFAULT_REPO;
+  if (STORE.loading || (STORE.cat && STORE.repo === repo && !force)) return;
+  STORE.loading = true; STORE.err = ''; STORE.repo = repo;
+  netGet(rawBase(repo) + 'catalog.json').then(t => {
+    const j = JSON.parse(t);
+    if (!j || j.format !== 'lilith-catalog' || !Array.isArray(j.courses)) throw new Error('This repository has no course catalog.');
+    STORE.cat = j; STORE.loading = false; if (view === 'store') renderStore();
+  }).catch(e => { STORE.loading = false; STORE.cat = null; STORE.err = String(e && e.message || e); if (view === 'store') renderStore(); });
+}
+function fmtKB(b) { return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB'; }
+function renderStore() {
+  const repo = ST.repo || DEFAULT_REPO;
+  if (!STORE.cat && !STORE.loading && !STORE.err) loadCatalog();
+  let h = '<div class="row" style="margin:6px 0">' + btn('sb', 'arrow_back', 'Library', 'txt') + btn('sr', 'replay', 'Refresh', '') + btn('ss', 'tune', 'Source', 'txt') + '</div>';
+  h += '<div class="muted" style="margin:2px 2px 8px">Courses from <b>' + esc(repo) + '</b> on GitHub. Downloading needs an internet connection; everything you download then works offline.</div>';
+  if (STORE.loading) h += '<div class="card"><div class="muted">Loading the course list...</div></div>';
+  else if (STORE.err) h += '<div class="card"><div class="big">Could not load the catalog</div><div class="muted">' + esc(STORE.err) + '<br>Check your connection, or change the source repository.</div></div>';
+  else if (STORE.cat) {
+    const cat = STORE.cat, cs = cat.categories || [], ql = STORE.q.trim().toLowerCase();
+    h += '<input type="search" id="sq" placeholder="Search ' + cat.courses.length + ' courses..." value="' + esc(STORE.q) + '">';
+    h += '<div class="chips"><button class="chip ' + (STORE.c ? '' : 'on') + '" data-sc="">All</button>' + cs.map(k => '<button class="chip ' + (STORE.c === k ? 'on' : '') + '" data-sc="' + esc(k) + '">' + esc(k) + '</button>').join('') + '</div>';
+    const list = cat.courses.filter(c => (!STORE.c || c.category === STORE.c) && (!ql || (c.title + ' ' + c.subtitle + ' ' + c.description + ' ' + (c.tags || []).join(' ')).toLowerCase().includes(ql)));
+    if (!list.length) h += '<div class="card"><div class="muted">No course matches.</div></div>';
+    let last = null;
+    list.forEach(c => {
+      if (!STORE.c && c.category !== last) { last = c.category; h += '<h3 style="margin:16px 2px 0;color:var(--g2)">' + esc(last) + '</h3>'; }
+      const have = ST.courses.some(x => x.id === c.id);
+      h += '<div class="crs"><h4>' + esc(c.title) + '</h4><div class="muted">' + esc(c.subtitle || '') + '</div>' +
+        '<div class="muted" style="margin-top:4px">' + esc(c.level) + ' · ' + c.chapters + ' chapters · ' + c.labs + ' labs' + (c.pythonLabs ? ' (' + c.pythonLabs + ' Python)' : '') + ' · ' + fmtKB(c.bytes) + '</div>' +
+        '<div class="muted" style="margin-top:6px">' + esc((c.description || '').slice(0, 220)) + ((c.description || '').length > 220 ? '...' : '') + '</div>' +
+        '<div class="chips">' + (c.tags || []).slice(0, 6).map(t => '<span class="chip sm">' + esc(t) + '</span>').join('') + '</div>' +
+        '<div class="row"><button class="btn pri sm" data-get="' + esc(c.id) + '">' + ic('download') + '<span>' + (have ? 'Update' : 'Get') + '</span></button>' +
+        '<button class="btn sm" data-det="' + esc(c.id) + '">' + ic('menu_book') + '<span>Details</span></button>' + (have ? '<span class="muted">Installed</span>' : '') + '</div></div>';
+    });
+  }
+  main.innerHTML = h;
+  $('#sb').onclick = () => { view = 'lib'; render(); };
+  $('#sr').onclick = () => { STORE.cat = null; loadCatalog(true); renderStore(); };
+  $('#ss').onclick = () => modal('<h3 class="dh">Course source</h3><div class="muted">A GitHub repository (owner/name) with a courses/catalog.json file. Only raw.githubusercontent.com is contacted.</div><input type="text" id="rp" value="' + esc(repo) + '" autocapitalize="off" spellcheck="false"><div class="row end">' + btn('rd', 'restart_alt', 'Default', 'txt') + btn('rx', 'close', 'Cancel', 'txt') + btn('rs', 'check', 'Save', 'pri') + '</div>', d => {
+    $('#rx', d).onclick = closeModal;
+    $('#rd', d).onclick = () => { ST.repo = ''; save(); STORE.cat = null; closeModal(); renderStore(); };
+    $('#rs', d).onclick = () => { const v = $('#rp', d).value.trim(); if (!repoOk(v)) { toast('Use owner/name'); return; } ST.repo = v === DEFAULT_REPO ? '' : v; save(); STORE.cat = null; STORE.err = ''; closeModal(); renderStore(); };
+  });
+  const sq = $('#sq'); if (sq) sq.oninput = () => { STORE.q = sq.value; const pos = sq.selectionStart; renderStore(); const n = $('#sq'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} } };
+  $$('[data-sc]').forEach(b => b.onclick = () => { STORE.c = b.dataset.sc; renderStore(); });
+  $$('[data-det]').forEach(b => b.onclick = () => {
+    const c = STORE.cat.courses.find(x => x.id === b.dataset.det); if (!c) return;
+    modal('<h3 class="dh">' + esc(c.title) + '</h3><div class="muted">' + esc(c.category) + ' · ' + esc(c.level) + ' · ' + c.chapters + ' chapters, ' + c.labs + ' labs, ' + c.quiz + ' quiz questions' + (c.exam ? ', ' + c.exam + '-question exam' : '') + '</div><p>' + esc(c.description) + '</p><ol class="warnl">' + c.outline.map(o => '<li>' + esc(o.title) + '</li>').join('') + '</ol><div class="row end">' + btn('dg', 'download', 'Get', 'pri') + btn('dc', 'close', 'Close', 'txt') + '</div>', d => {
+      $('#dc', d).onclick = closeModal; $('#dg', d).onclick = () => { closeModal(); getCourse(c); };
+    });
+  });
+  $$('[data-get]').forEach(b => b.onclick = () => { const c = STORE.cat.courses.find(x => x.id === b.dataset.get); if (c) getCourse(c); });
+}
+function getCourse(c) {
+  toast('Downloading ' + c.title + '...');
+  netGet(rawBase(STORE.repo || DEFAULT_REPO) + c.file).then(t => { srcRepo = STORE.repo || DEFAULT_REPO; try { importText(t, c.title); } finally { srcRepo = ''; } })
+    .catch(e => modal('<h3 class="dh">Download failed</h3><div class="muted">' + esc(String(e && e.message || e)) + '</div><div class="row end">' + btn('mx', 'close', 'Close', 'pri') + '</div>', d => { $('#mx', d).onclick = closeModal; }));
+}
+
 function openCourse(id) { NAR.stop(); LEC = null; mode = null; setCourse(id); tab = 'lecture'; view = null; readCh = null; labSel = null; render(); }
 function deleteCourse(id) {
   try { localStorage.removeItem(CKEY(id)); } catch (e) {} delete memCourses[id];
@@ -501,7 +595,7 @@ function importText(text, name) {
   if (!v.ok) { modal('<h3 class="dh">Could not import ' + esc(name) + '</h3><ul class="warnl">' + v.errors.map(e => '<li>' + esc(e) + '</li>').join('') + '</ul><div class="row end">' + btn('mx', 'close', 'Close', 'pri') + '</div>', d => { $('#mx', d).onclick = closeModal; }); return null; }
   const c = v.course, existed = ST.courses.some(x => x.id === c.id);
   if (!writeCourse(c)) { modal('<h3 class="dh">Not enough storage</h3><div class="muted">This device would not store the course. Delete a course you no longer need and try again.</div><div class="row end">' + btn('mx', 'close', 'Close', 'pri') + '</div>', d => { $('#mx', d).onclick = closeModal; }); return null; }
-  const meta = { id: c.id, title: c.title, subtitle: c.subtitle, author: c.author, chapters: c.chapters.length, added: Date.now() };
+  const meta = { id: c.id, title: c.title, subtitle: c.subtitle, author: c.author, chapters: c.chapters.length, added: Date.now(), cat: c.category || '', level: c.level || '', tags: c.tags || [], src: srcRepo || '' };
   ST.courses = ST.courses.filter(x => x.id !== c.id).concat([meta]); save();
   const warn = v.warnings.slice(0, 8);
   modal('<h3 class="dh">' + (existed ? 'Updated' : 'Imported') + ': ' + esc(c.title) + '</h3><div class="muted">' + c.chapters.length + ' chapters. ' + c.chapters.reduce((a, x) => a + x.quiz.length, 0) + ' quiz questions, ' + c.chapters.reduce((a, x) => a + x.practice.length, 0) + ' practice labs.' + (existed ? ' Your progress was kept.' : '') + '</div>' +

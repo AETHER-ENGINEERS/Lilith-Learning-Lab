@@ -6,7 +6,14 @@ A standalone, offline Android app with a talking, animated Teacher. It comes **e
 * Practice labs: fill, order, match, write, code (JavaScript, runs on the device), **python** (MicroPython 1.29 in WebAssembly, built in, runs on the device, ~0.7 MB), scripted terminal, and **webxdc** apps that can travel inside the course JSON.
 * Final exam: a course can define `finalExam`; otherwise it is built from the chapter quizzes.
 * Courses are stored on the device, can be deleted, and can be shared as JSON. Progress is kept per course.
-* No internet permission. Voice uses the phone's own text-to-speech.
+* Offline by design: the only network use is the optional **Browse online** screen, which downloads courses from this repository (`courses/catalog.json`) and talks to raw.githubusercontent.com only. Voice uses the phone's own text-to-speech.
+* Courses carry optional `category`, `level` and `tags`; the library groups and searches by them.
+
+## Lilith University (website) and the course catalog
+
+* `courses/catalog.json` lists every course with its category, level, tags, counts and a chapter outline. Rebuild it with `python3 build/make_catalog.py` after adding a course (register new ids in `build/catalog_meta.json`: `{"id": ["Category", "Level", ["tag", ...]]}`).
+* `docs/index.html` is **Lilith University**, a static page (GitHub Pages, source: `main` branch, `/docs` folder) where you can search courses, filter by category and read each course's outline before downloading it.
+* In the app, **Library > Browse online** shows the same catalog; **Get** downloads and imports a course. The source repository can be changed in **Source**.
 
 ## Courses (`courses/`)
 
