@@ -1,0 +1,51 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}
+button{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px 3px 3px 0}
+button.t{background:#2d2046;color:#e7d9ff}button.on{background:#6bd3ff;color:#06222f}
+input{font:16px ui-monospace,monospace;width:100%;padding:8px;border-radius:10px;border:1px solid #4a3770;background:#1e1336;color:#f1ebff}
+.m{color:#c9b8e8;margin:6px 0}.tape{display:flex;gap:2px;overflow:hidden;margin:10px 0 2px}
+.c{flex:1;min-width:0;text-align:center;font:18px ui-monospace,monospace;border:1px solid #4a3770;border-radius:6px;padding:6px 0;background:#1e1336}
+.c.h{background:#b26bff;color:#1b0b33;font-weight:700}.hd{display:flex;gap:2px}.hd div{flex:1;text-align:center;color:#b26bff;height:18px;font-size:14px}
+table{border-collapse:collapse;font:12px ui-monospace,monospace;width:100%}td,th{padding:2px 5px;border-bottom:1px solid #3a2a5c;text-align:left}
+tr.a td{background:#3a2a5c}.ok{color:#8fe3a8}.wn{color:#ffd28f}
+</style></head><body>
+<div class="m" id="desc"></div>
+<div class="row"><button id="m0" class="on">Binary incrementer</button><button id="m1" class="t">Never halts</button></div>
+<input id="in" value="1011" autocomplete="off" inputmode="numeric" spellcheck="false">
+<div class="row"><button id="rs" class="t">Reset</button><button id="st">Step</button><button id="run" class="t">Run</button></div>
+<div class="tape" id="tape"></div><div class="hd" id="hd"></div>
+<div class="m" id="info"></div><div class="m" id="msg"></div>
+<table id="tb"></table>
+<script>
+var B=2;
+var MS=[{name:"Binary incrementer",halt:2,rules:{"0,0":[0,0,1],"0,1":[0,1,1],"0,2":[1,2,-1],"1,1":[1,0,-1],"1,0":[2,1,-1],"1,2":[2,1,-1]},
+ desc:"Adds one to a binary number. State 0 scans right to the end, state 1 carries leftward. State 2 is the halting state. Blank is shown as _."},
+ {name:"Never halts",halt:1,rules:{"0,0":[0,0,1],"0,1":[0,1,1],"0,2":[0,2,1]},
+ desc:"State 0 moves right forever, whatever it reads. There is no way for it to reach the halting state 1."}];
+var cur=0,tape,head,state,steps,seenH=false,seenL=false,timer=null;
+function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+function sym(v){return v===B?"_":String(v)}
+function reset(){stop();var s=document.getElementById("in").value.replace(/[^01]/g,"");tape={};for(var i=0;i<s.length;i++)tape[i]=+s[i];head=0;state=0;steps=0;draw("")}
+function halted(){return state===MS[cur].halt}
+function step(){if(halted())return false;var k=state+","+(tape[head]===undefined?B:tape[head]);var r=MS[cur].rules[k];
+ if(!r){draw("No rule for "+k+".");return false}
+ tape[head]=r[1];state=r[0];head+=r[2];steps++;
+ if(halted()){if(cur===0)seenH=true;draw("<span class='ok'>Halted after "+steps+" steps.</span>"+(seenL?"":" Now try the machine that never halts."))}
+ else if(cur===1&&steps>=60){seenL=true;stop();draw("<span class='wn'>60 steps and still running. You cannot tell by watching whether it will ever stop.</span>"+(seenH?"":" Now halt the incrementer."))}
+ else draw("");
+ return !halted()&&!(cur===1&&steps>=60)}
+function stop(){if(timer){clearInterval(timer);timer=null}}
+function draw(note){var W=15,lo=head-7,h="",hd="";
+ for(var i=lo;i<lo+W;i++){var v=tape[i]===undefined?B:tape[i];h+="<div class='c"+(i===head?" h":"")+"'>"+sym(v)+"</div>";hd+="<div>"+(i===head?"▲":"")+"</div>"}
+ document.getElementById("tape").innerHTML=h;document.getElementById("hd").innerHTML=hd;
+ document.getElementById("info").innerHTML="State "+state+(halted()?" (halting)":"")+" · steps "+steps;
+ document.getElementById("msg").innerHTML=note;
+ var t="<tr><th>state</th><th>read</th><th>new state</th><th>write</th><th>move</th></tr>",ru=MS[cur].rules,key=state+","+(tape[head]===undefined?B:tape[head]);
+ Object.keys(ru).forEach(function(k){var p=k.split(","),r=ru[k];t+="<tr"+(k===key&&!halted()?" class='a'":"")+"><td>"+p[0]+"</td><td>"+sym(+p[1])+"</td><td>"+r[0]+"</td><td>"+sym(r[1])+"</td><td>"+(r[2]>0?"R":"L")+"</td></tr>"});
+ document.getElementById("tb").innerHTML=t;if(seenH&&seenL)done()}
+function pick(i){cur=i;document.getElementById("m0").className=i===0?"on":"t";document.getElementById("m1").className=i===1?"on":"t";document.getElementById("desc").textContent=MS[i].desc;reset()}
+document.getElementById("m0").onclick=function(){pick(0)};document.getElementById("m1").onclick=function(){pick(1)};
+document.getElementById("rs").onclick=reset;document.getElementById("st").onclick=function(){stop();step()};
+document.getElementById("run").onclick=function(){stop();timer=setInterval(function(){if(!step())stop()},cur===1?60:300)};
+document.getElementById("in").oninput=reset;pick(0);
+</script></body></html>
