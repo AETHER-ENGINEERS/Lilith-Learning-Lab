@@ -19,7 +19,21 @@ A standalone, offline Android app with a talking, animated Teacher. It comes **e
 |---|---|---|
 | ![Python lab](docs/screenshots/5-python-lab.png) | ![Progress](docs/screenshots/6-progress.png) | ![Browse online](docs/screenshots/7-browse.png) |
 
+| Office hours with Teacher | Graded teach-back | AI settings |
+|---|---|---|
+| ![Office hours](docs/screenshots/ai2_office_course.png) | ![Teach-back](docs/screenshots/ai3_teachback.png) | ![AI settings](docs/screenshots/ai1_settings.png) |
+
 Regenerate them with `python3 build/build_web.py --web /tmp/web` then `python3 build/tests/readme_shots.py /tmp/web courses docs/screenshots`.
+
+## AI features (optional, off until you set them up)
+
+Settings > AI settings (or the Office tab) connects the app to **Ollama on your own computer**, **Ollama Cloud** (API key) or **any OpenAI-compatible endpoint**. Nothing is sent anywhere until you do. The Android app allows cleartext HTTP so a phone can reach Ollama on your LAN; the web version needs the server to allow the site (Ollama: `OLLAMA_ORIGINS`) or an optional CORS proxy URL (setting, `{url}` is replaced by the encoded address).
+
+* **Office hours**: talk to Teacher about the whole course (Office tab), after every lecture section (an "Ask Teacher" pause after the summary, glossary, key points, lesson and quiz; switch it off in AI settings), on every lab, and from the Read view or the header help button. Each chat knows the section or lab you are on (and your current answer) and keeps its history per chapter.
+* **Tools**: Teacher searches the installed courses with BM25 (Okapi ranking, as in `rank_bm25`, with the Lucene idf) before answering, and can use `web_search` and `web_fetch` (Ollama Cloud web API with a key, otherwise Wikipedia/DuckDuckGo search and the r.jina.ai reader). Replies can be read aloud.
+* **Decisions API**: Ollama's `/v1/systemone` (local and cloud, model `clef` by default on cloud) grades **teach-backs** (the Feynman "Teach it back" step): type your explanation and get a score with a confidence, then feedback. If no decision model is set, the chat model gives the verdict.
+* **Build with AI** (Library): enter a topic, level and chapter count. Teacher researches the web, plans the outline, then writes each chapter (summary, glossary, key points, lesson, quiz, flashcards, concept map, fill/order/match labs and a Feynman block), validates it and imports the course with a **Sources** chapter listing the pages it used. Verify the facts: AI-written courses can be wrong.
+* Code: `build/src/ai.js` (providers, tools, BM25, decisions, builder; tested by `node build/tests/test_ai.js` against mock servers) and the office/settings UI in `build/src/app.html` (tested by `python3 build/tests/ai_ui_test.py <web> courses`).
 
 ## Web version
 

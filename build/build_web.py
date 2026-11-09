@@ -12,7 +12,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 def make_html():
     tpl = open(os.path.join(HERE, "src", "app.html"), encoding="utf-8").read()
     js = lambda n: open(os.path.join(HERE, "src", n), encoding="utf-8").read().replace("</", "<\\/")
-    for tag, f in (("ICONS", "icons.js"), ("XDC", "xdc.js"), ("COURSE", "course.js"), ("MAPS", "maps.js"), ("MATH", "math.js"), ("NARRATE", "narrate.js"), ("SLIDES", "slides.js")):
+    for tag, f in (("ICONS", "icons.js"), ("XDC", "xdc.js"), ("COURSE", "course.js"), ("MAPS", "maps.js"), ("MATH", "math.js"), ("NARRATE", "narrate.js"), ("SLIDES", "slides.js"), ("AI", "ai.js")):
         tpl = tpl.replace("/*__%s__*/" % tag, js(f))
     return tpl
 

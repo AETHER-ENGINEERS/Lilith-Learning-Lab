@@ -42,6 +42,12 @@
       }
     }
 
+    function office(stage, label) {
+      if (!opts.office) return;
+      var oi = slide({ type: 'office', stage: stage, heading: 'Office hours', sub: label, section: stage });
+      say(oi, 0, 'Office hours', 'Any questions about ' + label + '? Tap Ask Teacher to talk it through, or continue when you are ready.', { hold: true });
+    }
+
     var s0 = slide({ type: 'title', stage: 'title', heading: ch.title, sub: (opts.label || 'Chapter') + ' ' + ch.n });
     say(s0, 0, 'Chapter', (opts.label || 'Chapter') + ' ' + ch.n + '. ' + ch.title + '.');
 
@@ -58,7 +64,7 @@
     var sums = [];
     (ch.raw.summary || []).forEach(function (t) { N.sentences(t).forEach(function (x) { sums.push(x); }); });
     if (sums.length > 5) sums = sums.slice(0, 4).concat([sums.slice(4).join(' ')]);
-    if (sums.length) bulletSlides('summary', 'The big idea', sums, 'Summary');
+    if (sums.length) { bulletSlides('summary', 'The big idea', sums, 'Summary'); office('summary', 'the summary'); }
 
     // 3. glossary
     var terms = ch.glossary || [], per = 5;
@@ -67,10 +73,11 @@
       var gi = slide({ type: 'bullets', stage: 'glossary', heading: 'Glossary ' + (Math.floor(g / per) + 1) + '/' + Math.ceil(terms.length / per), bullets: part.map(function (t) { return { head: t.term, detail: N.plain(t.def), raw: t.term + '. ' + t.def }; }) });
       part.forEach(function (t, i) { say(gi, i, 'Glossary', t.term + '. ' + t.def); });
     }
+    if (terms.length) office('glossary', 'the glossary');
 
     // 4. key points
     var pts = ch.raw.keyPoints || [];
-    if (pts.length) bulletSlides('points', 'Key points', pts, 'Key points');
+    if (pts.length) { bulletSlides('points', 'Key points', pts, 'Key points'); office('points', 'the key points'); }
 
     // 5. lesson: figures, text, code, extra maps
     var textBuf = [];
@@ -98,6 +105,7 @@
       } else if (b.type === 'text') b.items.forEach(function (t) { textBuf.push(t); });
     });
     flushText();
+    if ((ch.examples || '').trim()) office('lesson', 'the lesson');
 
     // 6. quiz: interactive, the narrator waits for the answer
     var quiz = ch.quiz || [];
@@ -108,6 +116,8 @@
       chunks.push({ slide: qi, step: 1, label: 'Answer', text: '', shown: '', emotion: 'neutral', feedback: true });   // filled in after the learner answers
       slides[qi].steps = 2;
     });
+
+    if (quiz.length) office('quiz', 'the quiz');
 
     // 7. practice: opens the labs for this chapter
     if ((ch.practice || []).length) {

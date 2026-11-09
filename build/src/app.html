@@ -150,6 +150,16 @@ textarea{min-height:190px;font-size:14px;line-height:1.45;resize:vertical}
   nav button{min-height:44px;flex-direction:row;justify-content:center;gap:6px}
   header{padding-top:4px;padding-bottom:2px}
 }
+/* office hours */
+dialog#office{border:1px solid var(--line);background:var(--bg);color:var(--tx);border-radius:18px;padding:12px;width:min(720px,96vw);height:min(90vh,calc(100vh - 20px));max-height:100vh;box-sizing:border-box}
+dialog#office[open]{display:flex;flex-direction:column}dialog#office::backdrop{background:rgba(0,0,0,.62)}
+.ofc{display:flex;flex-direction:column;height:100%;min-height:380px}#askhost .ofc{height:calc(100vh - 230px)}
+.ofm{flex:1;min-height:120px;overflow:auto;padding:4px 2px}.ofl{margin:2px 2px 6px}
+.ob{margin:8px 0;padding:10px 12px;border-radius:14px;max-width:94%;overflow-wrap:anywhere}.ob.u{background:var(--panel2);margin-left:auto;border:1px solid var(--line)}.ob.a{background:var(--panel);border:1px solid var(--line)}
+.ob .st{font-size:12px;margin-bottom:4px}
+.ofchips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.ofin{display:flex;gap:8px;align-items:flex-end}.ofin textarea{flex:1;resize:none;min-height:46px}
+.fl{display:block;margin:8px 0;font-size:13px;color:var(--dim)}.fl input,.fl select{display:block;width:100%;box-sizing:border-box;margin-top:3px}
 /* dock for read-aloud */
 .dock{flex:none;display:none;align-items:center;gap:8px;padding:6px 10px;background:linear-gradient(180deg,#26193f,#1b1229);border-top:1px solid var(--line)}
 .dock.on{display:flex}
@@ -254,6 +264,7 @@ dialog textarea{margin-top:8px}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="sprite"></defs></svg>
 <header>
   <div class="t"><h1>Lilith Learning Lab</h1><div class="sub" id="sub">Import a course to begin</div></div>
+  <button class="ibtn" id="askbtn" aria-label="Office hours with Teacher"></button>
   <button class="ibtn" id="libbtn" aria-label="Course library"></button>
   <button class="ibtn" id="gear" aria-label="Settings"></button>
 </header>
@@ -272,10 +283,12 @@ dialog textarea{margin-top:8px}
   <button data-t="read"><span class="pill"></span>Read</button>
   <button data-t="maps"><span class="pill"></span>Maps</button>
   <button data-t="practice"><span class="pill"></span>Practice</button>
+  <button data-t="ask"><span class="pill"></span>Office</button>
   <button data-t="progress"><span class="pill"></span>Progress</button>
 </nav>
 <dialog id="settings"></dialog>
 <dialog id="modal"></dialog>
+<dialog id="office"></dialog>
 <input type="file" id="filein" accept=".json,application/json,text/plain,*/*" multiple class="hide">
 
 <script>
@@ -296,6 +309,7 @@ dialog textarea{margin-top:8px}
 </script>
 <script>
 /*__SLIDES__*/
+/*__AI__*/
 </script>
 <script>
 (function () {
@@ -311,8 +325,8 @@ const LET = 'ABCDEFGH';
 $('#sprite').innerHTML = Object.keys(ICONS).map(k => '<symbol id="i-' + k + '" viewBox="0 0 24 24">' + ICONS[k] + '</symbol>').join('');
 const ic = (n, cls) => '<svg class="ic ' + (cls || '') + '" aria-hidden="true"><use href="#i-' + n + '"/></svg>';
 const setIcon = (sel, n) => { const e = $(sel); if (e) e.innerHTML = ic(n); };
-setIcon('#libbtn', 'library_books'); setIcon('#gear', 'settings'); setIcon('#dprev', 'skip_previous'); setIcon('#dnext', 'skip_next'); setIcon('#dclose', 'close'); setIcon('#dplay', 'play_arrow');
-const NAVI = { lecture: 'school', read: 'menu_book', maps: 'account_tree', practice: 'science', progress: 'insights' };
+setIcon('#libbtn', 'library_books'); setIcon('#askbtn', 'help_outline'); setIcon('#gear', 'settings'); setIcon('#dprev', 'skip_previous'); setIcon('#dnext', 'skip_next'); setIcon('#dclose', 'close'); setIcon('#dplay', 'play_arrow');
+const NAVI = { lecture: 'school', read: 'menu_book', maps: 'account_tree', practice: 'science', ask: 'lightbulb', progress: 'insights' };
 $$('#nav button').forEach(b => { $('.pill', b).innerHTML = ic(NAVI[b.dataset.t]); });
 const KIND = { fill: 'Fill in', order: 'Order', match: 'Match', write: 'Write', code: 'Code', python: 'Python', terminal: 'Terminal', webxdc: 'App' };
 
@@ -418,6 +432,7 @@ if (ENV.setVoice && ST.set.voice) ENV.setVoice(ST.set.voice);
 let tab = 'lecture', view = null, readCh = null, practice = 'labs', mapPick = 0, mapSel = null, labSel = null;
 const main = $('#main');
 $$('#nav button').forEach(b => b.addEventListener('click', () => go(b.dataset.t)));
+$('#askbtn').onclick = () => openOffice();
 $('#libbtn').onclick = () => { leaveLecture(); view = (view === 'lib' || view === 'store') ? null : 'lib'; render(); };
 function go(t) { if (t !== 'lecture') leaveLecture(); tab = t; view = null; if (t === 'read') readCh = null; if (t === 'practice') { labSel = null; } render(); }
 function leaveLecture() { if (mode === 'lecture' && NAR.state.playing) NAR.pause(); }
@@ -437,11 +452,13 @@ function render() {
   else if (tab === 'read') readCh === null ? renderReadList() : renderChapter(readCh);
   else if (tab === 'maps') renderMaps();
   else if (tab === 'practice') renderPractice();
+  else if (tab === 'ask') renderAskTab();
   else renderProgress();
   updateHeader();
   $('#dock').classList.toggle('on', mode === 'read' && NAR.state.chunks.length > 0 && tab !== 'lecture');
 }
 window.__onBack = function () {
+  if ($('#office').open) { $('#office').close(); return true; }
   if ($('#modal').open) { closeModal(); return true; }
   if ($('#settings').open) { $('#settings').close(); return true; }
   if (view === 'store') { view = 'lib'; render(); return true; }
@@ -495,13 +512,14 @@ function renderLibrary() {
       '<button class="btn sm danger" data-del="' + esc(c.id) + '">' + ic('delete') + '<span>Delete</span></button></div></div>';
   });
   h += '<div class="card"><h3>Make your own course</h3><div class="muted">A course is a single JSON file. Ask Jade or Claude to write one for any subject, or start from the template.</div>' +
-    '<div class="row" style="margin-top:8px">' + btn('tpl', 'description', 'Template', '') + btn('gde', 'auto_stories', 'AI prompt', '') + '</div></div>';
+    '<div class="row" style="margin-top:8px">' + btn('tpl', 'description', 'Template', '') + btn('gde', 'auto_stories', 'AI prompt', '') + btn('bld', 'auto_stories', 'Build with AI', 'pri') + '</div></div>';
   main.innerHTML = h;
   $('#imp').onclick = () => $('#filein').click();
   $('#pst').onclick = pasteDialog;
   $('#brw').onclick = () => { view = 'store'; render(); };
   const lq = $('#lq'); if (lq) lq.oninput = () => { libQ = lq.value; const pos = lq.selectionStart; renderLibrary(); const n = $('#lq'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} } };
   $$('[data-lc]').forEach(b => b.onclick = () => { libCat = b.dataset.lc; renderLibrary(); });
+  $('#bld').onclick = openBuilder;
   $('#tpl').onclick = () => { const t = JSON.stringify(K.template(), null, 2); modal('<h3 class="dh">Course template</h3><div class="muted">Edit it, or give it to an AI as an example. It covers every lab type.</div><textarea readonly class="big" id="tt">' + esc(t) + '</textarea><div class="row end">' + btn('tc', 'content_copy', 'Copy', '') + btn('ts', 'share', 'Share', '') + btn('tx', 'close', 'Close', 'pri') + '</div>', d => { $('#tc', d).onclick = () => copyText(t, 'Template'); $('#ts', d).onclick = () => shareText('course-template.json', t); $('#tx', d).onclick = closeModal; }); };
   $('#gde').onclick = () => modal('<h3 class="dh">Prompt for an AI</h3><div class="muted">Copy this, add your subject, and paste the AI\'s JSON reply with "Paste JSON".</div><textarea readonly class="big" id="gp">' + esc(GUIDE_PROMPT) + '</textarea><div class="row end">' + btn('gc', 'content_copy', 'Copy', 'pri') + btn('gx', 'close', 'Close', '') + '</div>', d => { $('#gc', d).onclick = () => copyText(GUIDE_PROMPT, 'Prompt'); $('#gx', d).onclick = closeModal; });
   $$('[data-open]').forEach(b => b.onclick = () => { openCourse(b.dataset.open); });
@@ -678,7 +696,7 @@ function renderLecture() {
   const last = p.last && chBy(p.last.n), first = last || CUR.ch.find(c => chPct(c) < 100) || CUR.ch[0];
   h += '<div class="row">' + '<button class="btn pri" id="lgo">' + ic('play_arrow') + '<span>' + (last ? 'Resume' : 'Start') + ': ' + esc(first.title.length > 24 ? first.title.slice(0, 22) + '...' : first.title) + '</span></button></div>';
   CUR.ch.forEach(c => {
-    const L = S.buildLecture(c, { readCode: ST.set.readCode }), pct = chPct(c);
+    const L = S.buildLecture(c, { readCode: ST.set.readCode, office: officeOn() }), pct = chPct(c);
     h += '<button class="chap ' + (pct === 100 ? 'done' : '') + '" data-lec="' + c.n + '"><span class="n">' + (pct === 100 ? ic('check') : c.n) + '</span><span class="mid">' + esc(c.title) + '<small>' + L.slides.length + ' slides, about ' + Math.max(1, Math.round(L.chunks.length * 6 / 60)) + ' min</small>' + pips(c) + '</span><span class="pct">' + pct + '%</span></button>';
   });
   h += examCard();
@@ -692,7 +710,7 @@ function openLecture(n, autoplay, start, stage) {
   const ch = chBy(n); if (!ch) return;
   NAR.stop();
   mode = 'lecture'; tab = 'lecture'; view = null;
-  const deck = S.buildLecture(ch, { readCode: ST.set.readCode });
+  const deck = S.buildLecture(ch, { readCode: ST.set.readCode, office: officeOn() });
   LEC = { ch, deck, slide: -1, starts: S.slideStarts(deck), qa: {}, tour: false, stageEnd: {} };
   deck.chunks.forEach((c, i) => { LEC.stageEnd[deck.slides[c.slide].stage] = i; });
   let st = start || 0;
@@ -769,6 +787,7 @@ function slideHTML(s, idx) {
     case 'code': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="codeblk">' + chartLines(s.code) + '</div>';
     case 'map': return '<h3 class="sh">' + esc(s.heading) + '</h3><div style="flex:1;min-height:0">' + mapSVG(s.layout, false) + '</div>';
     case 'quiz': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="q">' + inline(s.q) + '</div><div class="opts">' + s.options.map((o, k) => '<button class="opt" data-k="' + k + '"><b>' + LET[k] + '</b><span>' + inline(o) + '</span></button>').join('') + '</div><div class="fb hid" id="fb"></div>';
+    case 'office': return '<h3 class="sh">Office hours</h3><div class="muted">Questions about ' + esc(s.sub) + '? Ask Teacher, or continue when you are ready.</div><div class="row" style="margin-top:14px">' + btn('askhere', 'help_outline', 'Ask Teacher', 'pri') + '</div>';
     case 'practice': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="muted">Try these to lock in the chapter. Tap one; Teacher waits here.</div><div class="pl">' + s.labs.map(l => '<button class="btn tonal" data-lab="' + esc(l.id) + '">' + ic(l.kind === 'terminal' ? 'terminal' : (l.kind === 'code' || l.kind === 'python') ? 'code' : 'extension') + '<span>' + esc(l.title) + '</span><span class="kind">' + KIND[l.kind] + '</span>' + (P().lab[LEC.ch.id + '/' + l.id] ? ic('check_circle', 'okc') : '') + '</button>').join('') + '</div>';
     case 'end': {
       let cf = ''; const cols = ['#b26bff', '#e06aa8', '#6bb6ff', '#e3b341', '#7be0a4'];
@@ -848,6 +867,7 @@ function lecShow(i) {
     if (s.type === 'end') { const nb = $('#nextlec'); if (nb) nb.onclick = () => openLecture(nextChapter(LEC.ch.n).n, true); }
     if (s.type === 'map') LEC.svg = $('svg.mapsvg', el);
     if (s.type === 'quiz') { $$('.opt', el).forEach(o => o.onclick = () => answerQuiz(c.slide, +o.dataset.k)); }
+    if (s.type === 'office') { const ab = $('#askhere', el); if (ab) ab.onclick = () => { NAR.pause(); openOffice({ kind: 'section', chId: LEC.ch.id, stage: s.section }); }; }
     if (s.type === 'practice') { $$('[data-lab]', el).forEach(b => b.onclick = () => { NAR.pause(); openLab(LEC.ch.id, b.dataset.lab, true); }); }
   }
   if (s.type === 'bullets') {
@@ -898,13 +918,14 @@ function renderChapter(n) {
   if (c.quiz.length) { const q = P().q[c.id]; h += '<div class="card"><h3>Quiz</h3><div class="muted">' + c.quiz.length + ' questions' + (q ? '. Best score ' + q.best + ' / ' + q.total : '') + '</div><div class="row" style="margin-top:8px">' + btn('doquiz', 'quiz', q ? 'Take it again' : 'Take the quiz', 'pri') + '</div></div>'; }
   if (c.practice.length) h += '<div class="card"><h3>Practice</h3><div class="pl">' + c.practice.map(l => '<button class="btn tonal" data-lab="' + esc(l.id) + '">' + ic(l.type === 'terminal' ? 'terminal' : (l.type === 'code' || l.type === 'python') ? 'code' : 'extension') + '<span>' + esc(l.title) + '</span><span class="kind">' + KIND[l.type] + '</span>' + (P().lab[c.id + '/' + l.id] ? ic('check_circle', 'okc') : '') + '</button>').join('') + '</div></div>';
   if (c.cards.length) { h += '<div class="card"><h3>Check yourself</h3>'; c.cards.forEach(q => { h += '<div class="qa"><div>' + inline(q.q) + '</div><div class="a">' + inline(q.a) + '</div><button class="btn sm" style="margin-top:6px">Show answer</button></div>'; }); h += '</div>'; }
-  h += '<div class="row" style="margin:14px 0">' + btn('mark', 'done_all', 'Mark text sections as read', 'tonal') + '</div>';
+  h += '<div class="row" style="margin:14px 0">' + btn('mark', 'done_all', 'Mark text sections as read', 'tonal') + btn('askch', 'help_outline', 'Office hours: ask Teacher', 'tonal') + '</div>';
   h += '<div class="row">' + (i > 0 ? btn('prev', 'chevron_left', 'Previous', '') : '') + (i < CUR.ch.length - 1 ? btn('next', 'chevron_right', 'Next', 'pri') : '') + '</div>';
   main.innerHTML = h;
   $('#back').onclick = () => { readCh = null; render(); };
   $('#mark').onclick = () => { ['map', 'summary', 'glossary', 'points', 'lesson'].forEach(k => markStage(c, k)); toast('Marked as read'); updateHeader(); };
   $('#listen').onclick = () => { NAR.stop(); mode = 'read'; READ = { ch: c }; NAR.load(N.buildChunks(c, { readCode: ST.set.readCode }), 0); render(); NAR.play(); };
   $('#lectureit').onclick = () => openLecture(c.n, true);
+  $('#askch').onclick = () => openOffice({ kind: 'chapter', chId: c.id });
   const dq = $('#doquiz'); if (dq) dq.onclick = () => openLecture(c.n, true, 0, 'quiz');
   const p = $('#prev'), nx = $('#next');
   if (p) p.onclick = () => { readCh = CUR.ch[i - 1].n; render(); };
@@ -1000,7 +1021,9 @@ function renderLab() {
   const key = c.id + '/' + lab.id, p = P();
   let h = '<div class="row">' + btn('lback', 'arrow_back', labSel.fromLecture ? 'Back to lecture' : 'Labs', 'sm') + '<span class="kind">' + KIND[lab.type] + '</span>' + (p.lab[key] ? '<span class="kind" style="color:var(--ok)">done</span>' : '') + '</div>';
   h += '<div class="card"><h3>Chapter ' + c.n + ': ' + esc(lab.title) + '</h3>' + (lab.intro && lab.type !== 'write' ? '<p style="margin:0 0 8px">' + inline(lab.intro) + '</p>' : '') + '<div id="labbody"></div></div>';
+  h += '<div class="row" style="margin-top:8px">' + btn('asklab', 'help_outline', 'Office hours: ask about this lab', 'sm') + '</div>';
   main.innerHTML = h;
+  $('#asklab').onclick = () => openOffice({ kind: 'lab', chId: c.id, labId: lab.id });
   $('#lback').onclick = () => { const fl = labSel.fromLecture; labSel = null; if (fl && LEC) { tab = 'lecture'; } render(); };
   const body = $('#labbody');
   const extra = (hint, sol) => '<div class="row" style="margin-top:8px">' + (hint ? btn('hint', 'lightbulb', 'Hint', 'sm') : '') + (sol ? btn('sol', 'visibility', 'Show answer', 'sm') : '') + btn('reset', 'restart_alt', 'Reset', 'sm') + '</div><div class="out hide" id="aux"></div>';
@@ -1225,6 +1248,195 @@ function finishExam() {
   save(); E.stage = 'result'; E.done = true; renderExam(); updateHeader();
 }
 
+/* ================= OFFICE HOURS (talk to Teacher) AND AI SETTINGS ================= */
+const AIx = window.LilithAI;
+const officeOn = () => AIx.enabled() && ST.set.office !== false;
+let courseIdxCache = null;
+function courseIdx() {
+  const sig = ST.courses.map(c => c.id).join('|');
+  if (courseIdxCache && courseIdxCache.sig === sig) return courseIdxCache.v;
+  const all = []; ST.courses.forEach(m => { const f = readCourse(m.id); if (f && f.chapters) all.push({ id: m.id, title: m.title, chapters: f.chapters.map(ch => ({ title: ch.title, summary: ch.summary || [], glossary: ch.glossary || [], keyPoints: ch.keyPoints || [], lesson: ch.lesson || [] })) }); });
+  courseIdxCache = { sig, v: AIx.indexCourses(all) }; return courseIdxCache.v;
+}
+const clipS = (s, n) => { s = String(s || ''); return s.length > n ? s.slice(0, n) + '...' : s; };
+function officeScope(sc) {
+  sc = sc || {};
+  if (!sc.kind) {   // from the header button: use where the learner is
+    if (labSel) sc = { kind: 'lab', chId: labSel.chId, labId: labSel.labId };
+    else if (tab === 'lecture' && LEC) { const ck = LEC.deck.chunks[NAR.state.i]; sc = { kind: 'section', chId: LEC.ch.id, stage: ck ? LEC.deck.slides[ck.slide].stage : null }; }
+    else if (tab === 'read' && readCh !== null && CUR && CUR.ch[readCh]) sc = { kind: 'chapter', chId: CUR.ch[readCh].id };
+    else sc = { kind: 'course' };
+  }
+  const c = sc.chId && CUR ? chBy2(sc.chId) : null;
+  if (!c || !CUR) return { kind: 'course', key: 'course', label: CUR ? CUR.course.title + ' (whole course)' : 'your courses' };
+  const names = { summary: 'the summary', glossary: 'the glossary', points: 'the key points', lesson: 'the lesson', quiz: 'the quiz', map: 'the concept map', practice: 'the practice' };
+  const lab = sc.kind === 'lab' ? c.practice.find(l => l.id === sc.labId) : null;
+  return { kind: lab ? 'lab' : sc.kind === 'section' ? 'section' : 'chapter', c, lab, stage: sc.stage, key: 'ch:' + c.id,
+    label: 'Chapter ' + c.n + ': ' + c.title + (lab ? ' / lab "' + lab.title + '"' : sc.kind === 'section' && names[sc.stage] ? ' / ' + names[sc.stage] : '') };
+}
+function officeContext(S) {
+  if (!CUR) return '';
+  if (S.kind === 'course') {
+    const p = coursePct(); return 'Whole-course office hours for "' + CUR.course.title + '" (' + p + '% complete).\n' + (CUR.course.description || '') + '\nChapters: ' + CUR.ch.map(x => x.n + '. ' + x.title).join('; ');
+  }
+  const c = S.c; let t = 'Chapter ' + c.n + ': ' + c.title + '\n';
+  const raw = c.raw || {};
+  if (S.lab) {
+    const l = S.lab, key = c.id + '/' + l.id, d = P().drafts[key];
+    t += 'The learner is working on the ' + l.type + ' lab "' + l.title + '".\n' + clipS(l.intro || l.prompt || l.text || (l.items || []).join(', ') || '', 800) + '\n';
+    if (d) t += 'Their current answer or code:\n' + clipS(typeof d === 'string' ? d : JSON.stringify(d), 1200) + '\n';
+    if (l.solution) t += 'Reference solution (for your eyes; coach with hints and do not reveal it unless the learner clearly gives up):\n' + clipS(l.solution, 1200) + '\n';
+    return t;
+  }
+  const st = S.stage;
+  if (st === 'summary') t += 'Summary: ' + (raw.summary || []).join(' ');
+  else if (st === 'glossary') t += 'Glossary: ' + (c.glossary || []).map(g => g.term + ': ' + g.def).join(' ');
+  else if (st === 'points') t += 'Key points: ' + (raw.keyPoints || []).join(' ');
+  else if (st === 'quiz') t += 'Quiz: ' + (c.quiz || []).map(q => q.q + ' (answer: ' + q.options[q.answer] + '; ' + (q.explain || '') + ')').join(' | ');
+  else if (st === 'lesson') t += 'Lesson: ' + clipS(c.examples, 3000);
+  else t += 'Summary: ' + (raw.summary || []).join(' ') + '\nKey points: ' + (raw.keyPoints || []).join(' ') + '\nLesson: ' + clipS(c.examples, 1500);
+  return t;
+}
+const mdAI = t => inline(String(t || '')).replace(/\n/g, '<br>');
+function officeThread(S) { if (!CUR) return []; ST.office = ST.office || {}; const o = ST.office[CUR.course.id] = ST.office[CUR.course.id] || {}; return o[S.key] = o[S.key] || []; }
+function speakAI(text) {
+  const plain = String(text || '').replace(/https?:\/\/\S+/g, '').replace(/[`*_#>]/g, '');
+  const parts = plain.match(/[^.!?\n]+[.!?]*\s*/g) || [plain], chunks = []; let cur = '';
+  parts.forEach(s => { if ((cur + s).length > 380 && cur) { chunks.push(cur); cur = ''; } cur += s; }); if (cur.trim()) chunks.push(cur);
+  NAR.stop(); mode = 'read';
+  NAR.load(chunks.slice(0, 8).map(t => ({ label: 'Teacher', text: t.trim(), shown: t.trim(), emotion: 'happy' })), 0); NAR.play();
+}
+function mountOffice(el, S) {
+  if (!CUR) { el.innerHTML = '<div class="card"><div class="muted">Open a course to start office hours.</div></div>'; return; }
+  if (!AIx.enabled()) {
+    el.innerHTML = '<div class="card"><h3>Office hours</h3><div class="muted">Talk to Teacher about anything in this course. Connect an AI first: Ollama on your own computer, Ollama Cloud, or any OpenAI-compatible service. Nothing is sent anywhere until you do.</div><div class="row" style="margin-top:10px">' + btn('ofset', 'tune', 'Set up AI', 'pri') + '</div></div>';
+    $('#ofset', el).onclick = () => openAISettings(); return;
+  }
+  const th = officeThread(S); let busy = null, tb = false;
+  const chips = S.kind === 'lab' ? ['Give me a hint, not the answer', 'Why did my answer fail?', 'Explain it simply', 'Check my teach-back']
+    : S.kind === 'course' ? ['What should I study next?', 'Explain the big picture simply', 'Quiz me on this course', 'Check my teach-back']
+    : ['Explain it simply', 'Give me an example', 'Quiz me on this', 'Check my teach-back'];
+  el.innerHTML = '<div class="ofc"><div class="muted ofl">Office hours: ' + esc(S.label) + '</div><div class="ofm" id="ofm"></div><div class="ofchips" id="ofchips">' + chips.map((t, i) => '<button class="chip" data-c="' + i + '">' + esc(t) + '</button>').join('') + '</div>' +
+    '<div class="ofin"><textarea id="ofq" rows="2" placeholder="Ask anything about this' + (S.kind === 'course' ? ' course' : ' section') + '..." autocapitalize="sentences"></textarea>' + '<button class="btn pri" id="ofsend" aria-label="Send">' + ic('arrow_forward') + '</button></div>' +
+    '<div class="row" style="margin-top:6px"><button class="btn sm" id="ofclear">' + ic('delete') + '<span>Clear chat</span></button><span class="muted" id="ofmodel" style="margin-left:auto"></span></div></div>';
+  const box = $('#ofm', el), q = $('#ofq', el), send = $('#ofsend', el); $('#ofmodel', el).textContent = AIx.model();
+  const addMsg = (m) => {
+    const d = document.createElement('div'); d.className = 'ob ' + (m.role === 'user' ? 'u' : 'a');
+    d.innerHTML = '<div class="bt">' + mdAI(m.content) + '</div>' + (m.role === 'assistant' && m.content ? '<div class="row" style="margin-top:6px"><button class="btn sm" data-say>' + ic('volume_up') + '<span>Read aloud</span></button></div>' : '');
+    const sb = $('[data-say]', d); if (sb) sb.onclick = () => speakAI(m.content);
+    box.appendChild(d); box.scrollTop = box.scrollHeight; return d;
+  };
+  th.forEach(addMsg);
+  if (!th.length) { const g = addMsg({ role: 'assistant', content: S.kind === 'course' ? 'Hi, I am Teacher. This is office hours for the whole course. Ask me anything, or pick a quick question below.' : 'Hi, I am Teacher. Ask me anything about ' + S.label + '. I will explain it simply first.' }); g.dataset.greet = 1; }
+  const status = (d, t) => { let s = $('.st', d); if (!s) { s = document.createElement('div'); s.className = 'st muted'; d.insertBefore(s, d.firstChild); } s.textContent = t; };
+  async function ask(text) {
+    if (busy) return; text = String(text || '').trim(); if (!text) return;
+    const um = { role: 'user', content: text }; th.push(um); addMsg(um); q.value = '';
+    const ad = addMsg({ role: 'assistant', content: '' }), bt = $('.bt', ad); const ctl = new AbortController(); busy = ctl; send.innerHTML = ic('close');
+    let reply = '';
+    try {
+      let verdict = '';
+      if (tb) {
+        tb = false; q.placeholder = 'Ask anything...'; status(ad, 'Grading your explanation...');
+        try {
+          const d = await AIx.decide({ type: 'score', question: 'Grade how accurate and complete the learner\'s explanation of the material is.', options: ['Misses the main idea', 'Partly right, with gaps', 'Mostly right', 'Clear and correct'], state: 'MATERIAL:\n' + clipS(officeContext(S), 3500) + '\n\nLEARNER EXPLANATION:\n' + text, signal: ctl.signal });
+          const lab = typeof d.answer === 'number' ? ['Misses the main idea', 'Partly right, with gaps', 'Mostly right', 'Clear and correct'][d.answer] || String(d.answer) : String(d.answer);
+          verdict = 'Teach-back check: ' + lab + (d.confidence != null ? ' (confidence ' + Math.round(d.confidence * 100) + '%)' : '') + ' via ' + d.via + '.';
+          reply = '**' + verdict + '**\n\n'; bt.innerHTML = mdAI(reply);
+        } catch (e) { verdict = ''; }
+      }
+      const hits = (() => { try { return courseIdx().idx.search(text, 3).map(h => h.doc.head + ': ' + clipS(h.doc.body, 500)).join('\n'); } catch (e) { return ''; } })();
+      const msgs = [{ role: 'system', content: AIx.teacherSystem({ course: CUR.course.title, chapter: S.c && S.c.title, passages: officeContext(S) + (hits ? '\n\nOther related passages:\n' + hits : '') }) + (verdict ? '\nThe learner just gave a teach-back. ' + verdict + ' Give kind, specific feedback: what they got right, the one gap to fix, and one question to try again.' : '') }]
+        .concat(th.slice(-13, -1).map(m => ({ role: m.role, content: m.content })), [{ role: 'user', content: tb === false && verdict ? 'My teach-back: ' + text : text }]);
+      status(ad, 'Thinking...');
+      const out = await AIx.agent(msgs, { tools: ['search_course', 'web_search', 'web_fetch'], courseIndex: courseIdx(), signal: ctl.signal,
+        onDelta: d => { reply += d; $('.st', ad) && $('.st', ad).remove(); bt.innerHTML = mdAI(reply); box.scrollTop = box.scrollHeight; },
+        onTool: (n, a) => status(ad, n === 'search_course' ? 'Searching the course...' : n === 'web_search' ? 'Searching the web: ' + clipS(a.query, 60) : 'Reading ' + clipS(a.url, 60)) });
+      if (!reply && out) { reply = out; bt.innerHTML = mdAI(reply); }
+      $('.st', ad) && $('.st', ad).remove();
+    } catch (e) {
+      if (e.name === 'AbortError') reply += '\n\n(stopped)'; else reply = (reply ? reply + '\n\n' : '') + 'Could not reach the AI: ' + e.message + '. Check Settings > AI.';
+      bt.innerHTML = mdAI(reply);
+    }
+    th.push({ role: 'assistant', content: reply }); while (th.length > 40) th.shift(); save();
+    const sb = document.createElement('div'); sb.className = 'row'; sb.style.marginTop = '6px'; sb.innerHTML = '<button class="btn sm" data-say>' + ic('volume_up') + '<span>Read aloud</span></button>'; $('[data-say]', sb).onclick = () => speakAI(reply); ad.appendChild(sb);
+    busy = null; send.innerHTML = ic('arrow_forward');
+  }
+  send.onclick = () => { if (busy) busy.abort(); else ask(q.value); };
+  q.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); if (!busy) ask(q.value); } };
+  $$('[data-c]', el).forEach(b => b.onclick = () => {
+    const t = chips[+b.dataset.c];
+    if (t === 'Check my teach-back') { tb = true; q.placeholder = 'Explain this in your own words, as if to a ten-year-old, then send.'; q.focus(); toast('Type your explanation and press send'); }
+    else ask(t);
+  });
+  $('#ofclear', el).onclick = () => { th.length = 0; save(); mountOffice(el, S); };
+}
+function openOffice(sc) {
+  const S = officeScope(sc), d = $('#office');
+  d.innerHTML = '<div class="row" style="margin-bottom:6px"><b style="flex:1">Office hours</b>' + btn('ofx', 'close', 'Close', 'sm') + '</div><div id="ofhost" style="flex:1;min-height:0"></div>';
+  d.classList.add('open'); $('#ofx', d).onclick = () => d.close(); d.addEventListener('close', () => { NAR.stop(); }, { once: true });
+  d.showModal(); mountOffice($('#ofhost', d), S);
+}
+function renderAskTab() { main.innerHTML = '<div id="askhost"></div>'; mountOffice($('#askhost'), officeScope({ kind: 'course' })); }
+
+/* ---- AI settings ---- */
+function openAISettings() {
+  const c = AIx.cfg(), isWeb = ENV.kind !== 'android';
+  const sw = (k, label, on) => '<div class="set"><span>' + label + '</span><button class="sw ' + (on ? 'on' : '') + '" data-k="' + k + '" aria-label="' + label + '"></button></div>';
+  const field = (id, label, val, ph, type) => '<label class="fl">' + label + '<input type="' + (type || 'text') + '" id="' + id + '" value="' + esc(val || '') + '" placeholder="' + esc(ph || '') + '" autocapitalize="off" autocorrect="off" spellcheck="false"></label>';
+  const d = modal('<h3 class="dh">AI settings</h3><div class="muted">Optional. Lets you talk to Teacher (office hours), grade your teach-backs and build courses from web research. Nothing is sent until you set this up.</div>' +
+    '<div class="row" style="margin:8px 0" id="aipv">' + [['ollama', 'Ollama (local)'], ['cloud', 'Ollama Cloud'], ['openai', 'OpenAI-compatible']].map(p => '<button class="chip ' + (c.provider === p[0] ? 'on' : '') + '" data-p="' + p[0] + '">' + p[1] + '</button>').join('') + '</div>' +
+    '<div id="aif"></div>' +
+    sw('search', 'Web search and fetch', c.search) + sw('decide', 'Decisions API (graded teach-backs)', c.decide) + sw('office', 'Pause for office hours after each lecture section', ST.set.office !== false) +
+    field('aidm', 'Decision model (Ollama; cloud default: clef)', c.decideModel, 'clef') + (isWeb ? field('aicp', 'CORS proxy for the web version (optional)', c.corsProxy, 'https://my-proxy.example/?{url}') : '') +
+    '<div class="out hide" id="aires"></div><div class="row end" style="margin-top:12px">' + btn('aitest', 'play_arrow', 'Test', '') + btn('aiok', 'check', 'Save', 'pri') + '</div>');
+  let cfg = Object.assign({}, c);
+  const form = () => {
+    const p = cfg.provider, dl = '<datalist id="aimods"></datalist>';
+    $('#aif', d).innerHTML = (p === 'ollama' ? field('aiurl', 'Ollama address', cfg.ollamaUrl, 'http://localhost:11434') + '<div class="muted">On the same computer. Allow this site: set OLLAMA_ORIGINS, or on a phone use your computer\'s LAN address.</div>'
+      : p === 'cloud' ? field('aikey', 'Ollama Cloud API key', cfg.cloudKey, 'from ollama.com/settings/keys', 'password')
+      : field('aiurl', 'Base URL', cfg.openaiUrl, 'https://api.openai.com/v1') + field('aikey', 'API key', cfg.openaiKey, 'sk-...', 'password')) +
+      '<label class="fl">Model<input type="text" id="aimodel" list="aimods" value="' + esc(p === 'openai' ? cfg.openaiModel : p === 'cloud' ? cfg.cloudModel : cfg.ollamaModel) + '" placeholder="pick or type a model" autocapitalize="off" spellcheck="false"></label>' + dl + '<div class="row">' + btn('aiscan', 'replay', 'Scan models', 'sm') + '</div>';
+    $('#aiscan', d).onclick = scan;
+  };
+  const pull = () => {
+    const g = id => { const e = $('#' + id, d); return e ? e.value.trim() : null; }, p = cfg.provider;
+    if (p === 'ollama') { cfg.ollamaUrl = g('aiurl') || cfg.ollamaUrl; cfg.ollamaModel = g('aimodel') || ''; }
+    else if (p === 'cloud') { cfg.cloudKey = g('aikey') || ''; cfg.cloudModel = g('aimodel') || ''; }
+    else { cfg.openaiUrl = g('aiurl') || cfg.openaiUrl; cfg.openaiKey = g('aikey') || ''; cfg.openaiModel = g('aimodel') || ''; }
+    cfg.decideModel = g('aidm') || ''; if (isWeb) cfg.corsProxy = g('aicp') || '';
+    AIx.setCfg(cfg);
+  };
+  const out = (t, bad) => { const o = $('#aires', d); o.classList.remove('hide'); o.textContent = t; o.style.color = bad ? 'var(--err)' : ''; };
+  async function scan() { pull(); out('Scanning...'); try { const m = await AIx.listModels(); $('#aimods', d).innerHTML = m.map(x => '<option value="' + esc(x) + '">').join(''); out(m.length + ' model(s): ' + m.slice(0, 12).join(', ')); const mi = $('#aimodel', d); if (mi && !mi.value && m.length) mi.value = m[0]; } catch (e) { out('Could not scan: ' + e.message + (e.message === 'Failed to fetch' ? ' (is it running, and does it allow this site? see the note above)' : ''), true); } }
+  form();
+  $$('[data-p]', d).forEach(b => b.onclick = () => { pull(); cfg = AIx.cfg(); cfg.provider = b.dataset.p; AIx.setCfg({ provider: cfg.provider }); $$('[data-p]', d).forEach(x => x.classList.toggle('on', x === b)); form(); });
+  $$('[data-k]', d).forEach(b => b.onclick = () => { const k = b.dataset.k, on = !b.classList.contains('on'); b.classList.toggle('on', on); if (k === 'office') { ST.set.office = on; save(); } else { cfg[k] = on; AIx.setCfg(cfg); } });
+  $('#aitest', d).onclick = async () => { pull(); out('Asking the model...'); try { const r = await AIx.complete([{ role: 'user', content: 'Reply with the single word: ready' }], { temperature: 0 }); out('Model says: ' + r.trim().slice(0, 80)); } catch (e) { out('Failed: ' + e.message, true); } };
+  $('#aiok', d).onclick = () => { pull(); closeModal(); courseIdxCache = null; if (tab === 'ask' || tab === 'lecture') render(); toast(AIx.enabled() ? 'AI ready' : 'Saved (pick a model to finish)'); };
+}
+
+/* ---- the research-based course builder ---- */
+function openBuilder() {
+  if (!AIx.enabled()) { openAISettings(); return; }
+  const d = modal('<h3 class="dh">Build a course with AI</h3><div class="muted">Teacher researches the web (search and fetch), plans an outline, then writes each chapter with quizzes, flashcards, practice and a Feynman block. Facts come from the pages it reads, which are listed in a Sources chapter. Check them.</div>' +
+    '<label class="fl">Topic<input type="text" id="bt" placeholder="e.g. How vaccines work" autocapitalize="sentences"></label>' +
+    '<label class="fl">Level<select id="bl"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></label>' +
+    '<label class="fl">Chapters<select id="bn">' + [3, 4, 5, 6, 8, 10].map(n => '<option ' + (n === 5 ? 'selected' : '') + '>' + n + '</option>').join('') + '</select></label>' +
+    '<div class="out hide" id="blog" style="max-height:30vh;overflow:auto;white-space:pre-wrap"></div><div class="row end" style="margin-top:12px">' + btn('bx', 'close', 'Cancel', 'txt') + btn('bgo', 'play_arrow', 'Build', 'pri') + '</div>');
+  let ctl = null;
+  $('#bx', d).onclick = () => { if (ctl) ctl.abort(); closeModal(); };
+  $('#bgo', d).onclick = async () => {
+    const topic = $('#bt', d).value.trim(); if (!topic) { toast('Say what the course is about'); return; }
+    ctl = new AbortController(); const lg = $('#blog', d); lg.classList.remove('hide'); lg.textContent = ''; $('#bgo', d).disabled = true;
+    const log = m => { lg.textContent += m + '\n'; lg.scrollTop = lg.scrollHeight; };
+    try {
+      const course = await AIx.buildCourse({ topic, level: $('#bl', d).value, chapters: +$('#bn', d).value, onLog: log, signal: ctl.signal });
+      log('Checking and importing...'); closeModal(); importText(JSON.stringify(course), course.title + '.course.json');
+    } catch (e) { log('Stopped: ' + e.message); $('#bgo', d).disabled = false; }
+  };
+}
+
 /* ================= SETTINGS ================= */
 $('#gear').onclick = () => {
   const d = $('#settings');
@@ -1235,11 +1447,13 @@ $('#gear').onclick = () => {
     '<div class="set"><span>Speech speed</span><span class="row">' + [0.8, 1, 1.2, 1.5, 1.8].map(r => '<button class="chip ' + (ST.set.rate === r ? 'on' : '') + '" data-r="' + r + '">' + r + 'x</button>').join('') + '</span></div>' +
     sw('captions', 'Show captions') + sw('autoNext', 'Continue to the next chapter') + sw('readCode', 'Read code aloud') +
     (voices.length > 1 ? '<div class="set"><span>Voice</span><select id="vsel">' + voices.map(v => '<option ' + (v.name === ST.set.voice ? 'selected' : '') + '>' + esc(v.name) + '</option>').join('') + '</select></div>' : '') +
+    '<div class="set"><span>AI: office hours and course builder</span>' + btn('aiset', 'tune', 'AI settings', 'sm') + '</div>' +
     '<div class="row end" style="margin-top:12px">' + btn('vtest', 'volume_up', 'Test voice', '') + btn('vclose', 'check', 'Done', 'pri') + '</div>';
   $$('[data-k]', d).forEach(b => b.onclick = () => { const k = b.dataset.k; ST.set[k] = !ST.set[k]; save(); b.classList.toggle('on', ST.set[k]); });
   $$('[data-r]', d).forEach(b => b.onclick = () => { ST.set.rate = +b.dataset.r; save(); NAR.setRate(ST.set.rate); $$('[data-r]', d).forEach(x => x.classList.toggle('on', x === b)); const lr = $('#lrate'); if (lr) lr.textContent = ST.set.rate + 'x'; });
   const vs = $('#vsel'); if (vs) vs.onchange = () => { ST.set.voice = vs.value; save(); ENV.setVoice(vs.value); };
   $('#vtest').onclick = () => { NAR.stop(); mode = 'read'; NAR.load([{ label: 'Test', text: 'Hello, I am Teacher. Welcome to the Lilith Learning Lab.', shown: 'Hello, I am Teacher.', emotion: 'happy' }], 0); NAR.play(); };
+  $('#aiset').onclick = () => { d.close(); openAISettings(); };
   $('#vclose').onclick = () => d.close();
   d.showModal();
 };
