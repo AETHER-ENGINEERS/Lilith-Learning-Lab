@@ -1,0 +1,6415 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "data-structures-algorithms",
+ "title": "Data Structures and Algorithms",
+ "subtitle": "Complexity, arrays, lists, hashing, trees, heaps, graphs, sorting, searching, recursion, dynamic programming and greedy methods, with Python labs",
+ "author": "Lilith Learning Lab",
+ "description": "The core data structures and algorithms every programmer needs, explained intuitively and practised in Python: Big-O, arrays and two pointers, linked lists, stacks and queues, hash tables, trees, heaps, graph traversal, sorting, binary search, recursion and divide and conquer, dynamic programming, and greedy algorithms with shortest paths and spanning trees. Every chapter has an explain-it-simply Feynman block.",
+ "pronounce": {
+  "BFS": "B F S",
+  "DFS": "D F S",
+  "BST": "B S T",
+  "DAG": "dag",
+  "LIFO": "lie foe",
+  "FIFO": "fie foe",
+  "LCS": "L C S",
+  "Dijkstra's": "dike struz",
+  "Dijkstra": "dike stra",
+  "Kruskal's": "kruss kulz",
+  "Kruskal": "kruss kul",
+  "Huffman": "huff man",
+  "Floyd's": "floyds",
+  "Timsort": "tim sort",
+  "AVL": "A V L",
+  "Omega": "oh may guh",
+  "Theta": "thay tuh",
+  "memoisation": "mem oh eye zation",
+  "Eratosthenes": "air uh tos thuh neez",
+  "heapify": "heap ih fy",
+  "Heapify": "heap ih fy",
+  "Prim": "prim"
+ },
+ "chapters": [
+  {
+   "title": "Complexity and Big-O",
+   "maps": [
+    {
+     "title": "Complexity",
+     "links": [
+      "Algorithm | solves | A problem",
+      "Time | grows with | Input size",
+      "Big-O | bounds | Growth rate",
+      "Constant | beats | Linear",
+      "Logarithmic | beats | Linear",
+      "Exponential | explodes | Quickly",
+      "Space | counts | Memory used"
+     ]
+    }
+   ],
+   "summary": [
+    "An algorithm is a step-by-step method that solves a problem. We compare algorithms not by seconds on one machine but by how the work grows as the input grows. Big-O notation describes that growth, keeping only the dominant term.",
+    "Common classes, from fast to slow, are constant, logarithmic, linear, n log n, quadratic and exponential. Space complexity counts memory in the same way. Amortised analysis averages occasional expensive steps over many cheap ones.",
+    "The labs count operations, compare growth rates and find the Big-O class of simple loops."
+   ],
+   "glossary": [
+    {
+     "term": "Algorithm",
+     "def": "A finite sequence of precise steps that solves a problem."
+    },
+    {
+     "term": "Big-O",
+     "def": "An upper bound on growth: f(n) is O(g(n)) if f stays below a constant times g for large n."
+    },
+    {
+     "term": "Time complexity",
+     "def": "How the number of steps grows with input size n."
+    },
+    {
+     "term": "Space complexity",
+     "def": "How the memory used grows with n."
+    },
+    {
+     "term": "Amortised cost",
+     "def": "Average cost per operation over a long sequence."
+    },
+    {
+     "term": "Worst case",
+     "def": "The most work over all inputs of a given size."
+    }
+   ],
+   "keyPoints": [
+    "Order: O(1) < O(log n) < O(n) < O(n log n) < O(n^2) < O(2^n) < O(n!).",
+    "Drop constants and lower terms: 3n^2 + 5n + 2 is O(n^2).",
+    "A single loop over n items is O(n); nested loops are O(n^2).",
+    "Halving the problem each step gives O(log n).",
+    "Appending to a growing array is O(1) amortised.",
+    "Big-O is an upper bound; Omega is a lower bound; Theta is both."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Big-O asks how the work grows when the job gets bigger. Finding a name in a phone book by reading every page grows with the book. Opening to the middle and halving grows very slowly. We care about that growth, not the stopwatch.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why does doubling the input quadruple an O(n squared) job?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How fast is a program? Seconds depend on the machine, so we count steps instead, and ask how the count grows as the input gets bigger. Finding a name in an unsorted list of n names takes up to n looks.",
+      "Finding a word in a dictionary takes far fewer, because you can jump to the middle and halve the search each time."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "f(n) = O(g(n)) \\iff \\exists\\, c, n_0:\\ f(n) \\le c\\,g(n)\\ \\ \\forall n \\ge n_0"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Big-O keeps only the part that grows fastest and ignores constant factors. The expression three n squared plus five n plus two is O of n squared, because for big n the square dominates. Doubling n makes an O of n squared algorithm four times slower, but an O of n algorithm only twice as slow."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A few classes cover most programs. Constant time, O of one, does not depend on n, like reading one array cell. Logarithmic time, O of log n, halves the work each step, as in binary search. Linear time scans everything once. N log n is the cost of good sorting. Quadratic time compares all pairs.",
+      "Exponential time doubles with each added item and is only usable for tiny inputs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To analyse code, count the loops. One loop over n items is linear. A loop inside a loop is quadratic. A loop that halves the remaining range is logarithmic. Recursive code gives recurrences, solved later in the divide and conquer chapter."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sometimes an operation is usually cheap but occasionally costly, like appending to a dynamic array that doubles its storage when full. Amortised analysis spreads the rare cost over all operations and shows the average is constant.",
+      "Always state whether you mean the worst, the average or the amortised case."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is O(3n^2 + 5n)?",
+     "options": [
+      "O(n^2)",
+      "O(n)",
+      "O(5n)",
+      "O(3)"
+     ],
+     "answer": 0,
+     "explain": "Keep the dominant term."
+    },
+    {
+     "q": "Which grows fastest?",
+     "options": [
+      "2^n",
+      "n^2",
+      "n log n",
+      "n"
+     ],
+     "answer": 0,
+     "explain": "Exponential."
+    },
+    {
+     "q": "Binary search takes?",
+     "options": [
+      "O(log n)",
+      "O(n)",
+      "O(1)",
+      "O(n^2)"
+     ],
+     "answer": 0,
+     "explain": "Halves each step."
+    },
+    {
+     "q": "Two nested loops over n items?",
+     "options": [
+      "O(n^2)",
+      "O(n)",
+      "O(log n)",
+      "O(2n)"
+     ],
+     "answer": 0,
+     "explain": "All pairs."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Why ignore constants?",
+     "a": "They do not change the growth rate."
+    },
+    {
+     "q": "What is amortised O(1)?",
+     "a": "Cheap on average over many operations."
+    },
+    {
+     "q": "Theta means?",
+     "a": "Tight bound, both upper and lower."
+    },
+    {
+     "q": "What is the worst case?",
+     "a": "The most steps over all inputs."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Count loop steps",
+     "intro": "Write steps(n): the number of times the body runs in two nested loops, i from 0..n-1 and j from i..n-1.",
+     "fn": "steps",
+     "starter": "def steps(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": 15
+      },
+      {
+       "args": [
+        10
+       ],
+       "expect": 55
+      }
+     ],
+     "hint": "It is n(n+1)/2.",
+     "solution": "def steps(n):\n    c = 0\n    for i in range(n):\n        for j in range(i, n):\n            c += 1\n    return c\n"
+    },
+    {
+     "type": "python",
+     "title": "Halving steps",
+     "intro": "Write halvings(n): how many times you can halve n (integer division) before it reaches 1. That is floor(log2 n); for n < 1 return 0.",
+     "fn": "halvings",
+     "starter": "def halvings(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        2
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        8
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        1000
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        1024
+       ],
+       "expect": 10
+      }
+     ],
+     "hint": "Logarithms count halvings.",
+     "solution": "def halvings(n):\n    c = 0\n    while n > 1:\n        n //= 2\n        c += 1\n    return c\n"
+    },
+    {
+     "type": "python",
+     "title": "Which grows faster",
+     "intro": "Write faster(n): return 1 if 2^n is larger than n^3 for this n, else 0.",
+     "fn": "faster",
+     "starter": "def faster(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        10
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        9
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        20
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Exponential eventually wins.",
+     "solution": "def faster(n):\n    return 1 if 2 ** n > n ** 3 else 0\n"
+    },
+    {
+     "type": "python",
+     "title": "Linear search count",
+     "intro": "Write comparisons(xs, t): the number of comparisons a linear search makes to find t (or len(xs) if absent).",
+     "fn": "comparisons",
+     "starter": "def comparisons(xs, t):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         5,
+         3,
+         8
+        ],
+        3
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         5,
+         3,
+         8
+        ],
+        9
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [],
+        4
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Stop at the first match.",
+     "solution": "def comparisons(xs, t):\n    c = 0\n    for x in xs:\n        c += 1\n        if x == t:\n            return c\n    return c\n"
+    },
+    {
+     "type": "python",
+     "title": "Doubling array growth",
+     "intro": "A dynamic array starts with capacity 1 and doubles when full. Write copies(n): the total number of element copies made while appending n items.",
+     "fn": "copies",
+     "starter": "def copies(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        2
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": 7
+      },
+      {
+       "args": [
+        16
+       ],
+       "expect": 15
+      },
+      {
+       "args": [
+        100
+       ],
+       "expect": 127
+      }
+     ],
+     "hint": "Total copies stay below 2n.",
+     "solution": "def copies(n):\n    cap = 1\n    size = 0\n    total = 0\n    for _ in range(n):\n        if size == cap:\n            total += size\n            cap *= 2\n        size += 1\n    return total\n"
+    },
+    {
+     "type": "order",
+     "title": "Analyse an algorithm",
+     "intro": "Order the steps.",
+     "items": [
+      "Define the input size n",
+      "Identify the basic operation",
+      "Count how often it runs as n grows",
+      "Drop constants and lower terms",
+      "State the Big-O class"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Growth",
+     "intro": "Match each algorithm with its class.",
+     "pairs": [
+      [
+       "Array index",
+       "O(1)"
+      ],
+      [
+       "Binary search",
+       "O(log n)"
+      ],
+      [
+       "Linear scan",
+       "O(n)"
+      ],
+      [
+       "Merge sort",
+       "O(n log n)"
+      ],
+      [
+       "All pairs",
+       "O(n^2)"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Big-O",
+     "text": "Big-O keeps only the {{dominant|fastest-growing}} term; halving the range each step gives {{logarithmic|log n|O(log n)}} time."
+    }
+   ]
+  },
+  {
+   "title": "Arrays, strings and two pointers",
+   "maps": [
+    {
+     "title": "Arrays",
+     "links": [
+      "Array | stores | Items contiguously",
+      "Index | gives | O(1) access",
+      "Insert | shifts | Later items",
+      "String | is | An array of characters",
+      "Two pointers | scan | From both ends",
+      "Sliding window | tracks | A range",
+      "Prefix sum | answers | Range queries"
+     ]
+    }
+   ],
+   "summary": [
+    "An array stores items side by side in memory, so any item is reached by its index in constant time. Inserting or deleting in the middle shifts later items and costs linear time. Dynamic arrays grow by doubling.",
+    "Strings are arrays of characters. Many problems on arrays fall to simple patterns: two pointers moving from both ends, a sliding window over a range, and prefix sums that answer range-sum questions in constant time after one pass.",
+    "The labs reverse in place, check palindromes, find pairs with a target sum, maximise a window and build prefix sums."
+   ],
+   "glossary": [
+    {
+     "term": "Array",
+     "def": "A contiguous block of equal-sized cells indexed from 0."
+    },
+    {
+     "term": "Dynamic array",
+     "def": "An array that doubles its capacity when full."
+    },
+    {
+     "term": "Two pointers",
+     "def": "Two indices moving through the data, often from opposite ends."
+    },
+    {
+     "term": "Sliding window",
+     "def": "A range that grows or shrinks as it moves along."
+    },
+    {
+     "term": "Prefix sum",
+     "def": "P[i] = sum of the first i items; range sum = P[j] - P[i]."
+    },
+    {
+     "term": "In place",
+     "def": "Modifying data without extra storage proportional to n."
+    }
+   ],
+   "keyPoints": [
+    "Access O(1); search O(n); insert or delete in the middle O(n); append O(1) amortised.",
+    "Two pointers on a sorted array finds a pair in O(n).",
+    "Sliding window turns an O(n k) scan into O(n).",
+    "Prefix sums answer sum(i..j) in O(1) after O(n) setup.",
+    "Strings are immutable in many languages: building by repeated joining costs O(n^2).",
+    "Check the empty array and one-element cases."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. An array is a row of numbered lockers: you can walk straight to locker 37. Adding a locker in the middle means shifting everyone after it. Two pointers is two people walking toward each other along the row.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why is inserting in the middle slow but reading by index fast?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine a row of lockers numbered from zero. Because they are side by side, you can walk straight to locker 37 without opening the others. That is an array: any element is available by index in constant time.",
+      "The price is that inserting in the middle forces everyone after the new item to shift one place."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A dynamic array hides the fixed size. When full, it allocates a block twice as big and copies the items over. Most appends are cheap and the occasional copy is paid for by the many cheap ones, so appending is constant on average. Python lists work this way."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two pointers is a favourite trick. To reverse an array, swap the first and last items and move the pointers inward. To find two numbers in a sorted array that add to a target, start at both ends: if the sum is too big, move the right pointer left; if too small, move the left pointer right.",
+      "One pass, no nested loops."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\text{sum}(i..j) = P[j+1] - P[i], \\\\[0.6em] P[0]=0,\\ P[k+1] = P[k] + a_k \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A sliding window handles questions about ranges. To find the largest sum of any k consecutive numbers, add the next item and drop the oldest one instead of recomputing the whole range.",
+      "Prefix sums do the opposite job: after one pass that stores running totals, the sum of any range is a single subtraction."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Strings are arrays of characters, so the same patterns apply: palindromes by two pointers, longest substring without repeats by a sliding window. A frequent gotcha is that strings can be immutable, so gluing them in a loop copies repeatedly; collect pieces in a list and join once."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Access by index costs?",
+     "options": [
+      "O(1)",
+      "O(n)",
+      "O(log n)",
+      "O(n^2)"
+     ],
+     "answer": 0,
+     "explain": "Direct address."
+    },
+    {
+     "q": "Insert in the middle of an array costs?",
+     "options": [
+      "O(n)",
+      "O(1)",
+      "O(log n)",
+      "O(n^2)"
+     ],
+     "answer": 0,
+     "explain": "Shift the rest."
+    },
+    {
+     "q": "What do prefix sums give?",
+     "options": [
+      "O(1) range sums",
+      "Sorting",
+      "Searching",
+      "Hashing"
+     ],
+     "answer": 0,
+     "explain": "One subtraction."
+    },
+    {
+     "q": "Two pointers on a sorted array finds a pair in?",
+     "options": [
+      "O(n)",
+      "O(n^2)",
+      "O(log n)",
+      "O(1)"
+     ],
+     "answer": 0,
+     "explain": "One pass."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Why double the capacity?",
+     "a": "Amortised O(1) append."
+    },
+    {
+     "q": "What is in place?",
+     "a": "No extra storage proportional to n."
+    },
+    {
+     "q": "Window trick?",
+     "a": "Add new item, drop old one."
+    },
+    {
+     "q": "String join gotcha?",
+     "a": "Repeated concatenation copies."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Reverse in place",
+     "intro": "Write reverse(a): return the list reversed using two pointers (swap from both ends).",
+     "fn": "reverse",
+     "starter": "def reverse(a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ]
+       ],
+       "expect": [
+        4,
+        3,
+        2,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         1
+        ]
+       ],
+       "expect": [
+        1
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         5,
+         4,
+         3
+        ]
+       ],
+       "expect": [
+        3,
+        4,
+        5
+       ]
+      }
+     ],
+     "hint": "Swap and move inward.",
+     "solution": "def reverse(a):\n    a = list(a)\n    i = 0\n    j = len(a) - 1\n    while i < j:\n        a[i], a[j] = a[j], a[i]\n        i += 1\n        j -= 1\n    return a\n"
+    },
+    {
+     "type": "python",
+     "title": "Palindrome",
+     "intro": "Write is_pal(s): 1 if the string reads the same both ways, else 0.",
+     "fn": "is_pal",
+     "starter": "def is_pal(s):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "abba"
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "abc"
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        "a"
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "racecar"
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Compare the ends.",
+     "solution": "def is_pal(s):\n    i = 0\n    j = len(s) - 1\n    while i < j:\n        if s[i] != s[j]:\n            return 0\n        i += 1\n        j -= 1\n    return 1\n"
+    },
+    {
+     "type": "python",
+     "title": "Pair with target sum",
+     "intro": "Write pair_sum(a, t): for a sorted list a, return [i, j] with i < j and a[i] + a[j] == t using two pointers, or [-1, -1].",
+     "fn": "pair_sum",
+     "starter": "def pair_sum(a, t):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         4,
+         7,
+         11
+        ],
+        9
+       ],
+       "expect": [
+        1,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        10
+       ],
+       "expect": [
+        -1,
+        -1
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         5
+        ],
+        7
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [],
+        1
+       ],
+       "expect": [
+        -1,
+        -1
+       ]
+      }
+     ],
+     "hint": "Move the pointer that fixes the sum.",
+     "solution": "def pair_sum(a, t):\n    i = 0\n    j = len(a) - 1\n    while i < j:\n        s = a[i] + a[j]\n        if s == t:\n            return [i, j]\n        if s < t:\n            i += 1\n        else:\n            j -= 1\n    return [-1, -1]\n"
+    },
+    {
+     "type": "python",
+     "title": "Max window sum",
+     "intro": "Write max_window(a, k): the largest sum of k consecutive items (a has at least k items), by sliding the window.",
+     "fn": "max_window",
+     "starter": "def max_window(a, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         4,
+         2,
+         10,
+         2,
+         3,
+         1
+        ],
+        3
+       ],
+       "expect": 16
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        1
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         -1,
+         -2,
+         -3
+        ],
+        2
+       ],
+       "expect": -3
+      },
+      {
+       "args": [
+        [
+         2,
+         2,
+         2,
+         2
+        ],
+        4
+       ],
+       "expect": 8
+      }
+     ],
+     "hint": "Add the new, drop the old.",
+     "solution": "def max_window(a, k):\n    s = sum(a[:k])\n    best = s\n    for i in range(k, len(a)):\n        s += a[i] - a[i - k]\n        if s > best:\n            best = s\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Prefix sums",
+     "intro": "Write range_sums(a, queries): for each [i, j] (inclusive) return sum(a[i..j]) using prefix sums.",
+     "fn": "range_sums",
+     "starter": "def range_sums(a, queries):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         [
+          0,
+          3
+         ],
+         [
+          1,
+          2
+         ],
+         [
+          2,
+          2
+         ]
+        ]
+       ],
+       "expect": [
+        10,
+        5,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         -1,
+         2
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          0,
+          2
+         ]
+        ]
+       ],
+       "expect": [
+        5,
+        6
+       ]
+      }
+     ],
+     "hint": "One subtraction each.",
+     "solution": "def range_sums(a, queries):\n    p = [0]\n    for x in a:\n        p.append(p[-1] + x)\n    return [p[j + 1] - p[i] for i, j in queries]\n"
+    },
+    {
+     "type": "order",
+     "title": "Sliding window",
+     "intro": "Order the steps for the max sum of k items.",
+     "items": [
+      "Sum the first k items",
+      "Record it as the best",
+      "Add the next item",
+      "Subtract the item leaving the window",
+      "Update the best and repeat"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Array patterns",
+     "intro": "Match each pattern with its use.",
+     "pairs": [
+      [
+       "Two pointers",
+       "Pairs in sorted data"
+      ],
+      [
+       "Sliding window",
+       "Best range of fixed size"
+      ],
+      [
+       "Prefix sum",
+       "Fast range sums"
+      ],
+      [
+       "Dynamic array",
+       "Amortised append"
+      ],
+      [
+       "In place",
+       "No extra storage"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Arrays",
+     "text": "Array access by index is {{O(1)|constant}} time; inserting in the middle must {{shift}} later items."
+    }
+   ]
+  },
+  {
+   "title": "Linked lists",
+   "maps": [
+    {
+     "title": "Linked lists",
+     "links": [
+      "Node | holds | Value and next",
+      "Head | starts | The list",
+      "Insert at head | costs | O(1)",
+      "Search | costs | O(n)",
+      "Reverse | flips | Pointers",
+      "Fast and slow | detect | Cycles",
+      "Doubly linked | adds | Previous"
+     ]
+    }
+   ],
+   "summary": [
+    "A linked list is a chain of nodes; each node holds a value and a pointer to the next node. Unlike arrays there is no jump-by-index, but inserting or deleting at a known node needs only pointer changes.",
+    "Classic tasks are reversing a list, finding the middle with a fast and a slow pointer, detecting a cycle and merging sorted lists. Doubly linked lists keep a pointer back as well, which makes deletion from both ends easy.",
+    "The labs use arrays to simulate nodes: a list of values and a list of next-indices."
+   ],
+   "glossary": [
+    {
+     "term": "Node",
+     "def": "A record with a value and a link to another node."
+    },
+    {
+     "term": "Head",
+     "def": "The first node; the entry point to the list."
+    },
+    {
+     "term": "Singly linked",
+     "def": "Each node points only forward."
+    },
+    {
+     "term": "Doubly linked",
+     "def": "Each node points forward and backward."
+    },
+    {
+     "term": "Cycle",
+     "def": "A node whose chain leads back to an earlier node."
+    },
+    {
+     "term": "Floyd's algorithm",
+     "def": "Fast pointer moves 2 steps, slow 1; they meet if there is a cycle."
+    }
+   ],
+   "keyPoints": [
+    "Insert or delete at the head: O(1).",
+    "Access or search by position: O(n).",
+    "Reverse in O(n) time and O(1) extra space.",
+    "Fast and slow pointers find the middle and detect cycles.",
+    "Linked lists use extra memory for pointers and are cache-unfriendly.",
+    "Arrays win for random access; lists win for frequent splicing."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A linked list is a treasure hunt: each clue says where the next one is. You cannot jump to clue ten, but you can slip a new clue in just by changing two notes. A fast and a slow walker reveal loops, as the fast one laps the slow one.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: how do a fast and a slow pointer find the middle or a loop?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Picture a treasure hunt where each clue tells you where the next clue is. That is a linked list. Each node stores a value and a reference to the next node, and the head is the first clue. To reach the tenth item you must follow ten links, so access by position costs linear time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The reward is cheap changes. To insert a new node after a given node, point the new node at that node's successor and the node at the new one: two pointer updates, no shifting. Deleting works the same way. Adding at the head is constant time, which makes linked lists a natural base for stacks."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To reverse a list, walk along it keeping three pointers: the previous node, the current node and the next. At each step, redirect the current node's pointer back to the previous one, then advance. When the walk ends, the previous node is the new head. It takes one pass and no extra storage."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The fast and slow pointer trick finds the middle: move one pointer two steps and another one step, and when the fast one reaches the end the slow one is at the middle. If the list has a cycle, the fast pointer eventually laps the slow one, so they meet. This is Floyd's tortoise and hare algorithm."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A doubly linked list keeps a link backward too, so you can delete a node you are standing on and walk in both directions, at the price of more memory.",
+      "In practice arrays are faster for most work because they are laid out contiguously and friendly to the processor cache; linked lists matter when you splice often."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Insert at the head costs?",
+     "options": [
+      "O(1)",
+      "O(n)",
+      "O(log n)",
+      "O(n^2)"
+     ],
+     "answer": 0,
+     "explain": "Two pointer changes."
+    },
+    {
+     "q": "Access the k-th node costs?",
+     "options": [
+      "O(k)",
+      "O(1)",
+      "O(log k)",
+      "O(k^2)"
+     ],
+     "answer": 0,
+     "explain": "Follow links."
+    },
+    {
+     "q": "What does Floyd's algorithm detect?",
+     "options": [
+      "A cycle",
+      "The maximum",
+      "Sorted order",
+      "Duplicates"
+     ],
+     "answer": 0,
+     "explain": "Fast meets slow."
+    },
+    {
+     "q": "Where does the slow pointer end when fast reaches the end?",
+     "options": [
+      "The middle",
+      "The head",
+      "The end",
+      "Nowhere"
+     ],
+     "answer": 0,
+     "explain": "Half speed."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Why reverse needs three pointers?",
+     "a": "To avoid losing the rest of the list."
+    },
+    {
+     "q": "Doubly linked benefit?",
+     "a": "Delete and walk in both directions."
+    },
+    {
+     "q": "Why are arrays faster in practice?",
+     "a": "Cache-friendly layout."
+    },
+    {
+     "q": "Linked-list weakness?",
+     "a": "No random access."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Walk a list",
+     "intro": "A list is given as vals and nxt arrays (nxt[i] is the index of the next node or -1) with head index h. Write to_list(vals, nxt, h): the values in order.",
+     "fn": "to_list",
+     "starter": "def to_list(vals, nxt, h):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         10,
+         20,
+         30
+        ],
+        [
+         1,
+         2,
+         -1
+        ],
+        0
+       ],
+       "expect": [
+        10,
+        20,
+        30
+       ]
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        [
+         -1
+        ],
+        0
+       ],
+       "expect": [
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         -1,
+         0,
+         1
+        ],
+        2
+       ],
+       "expect": [
+        3,
+        2,
+        1
+       ]
+      },
+      {
+       "args": [
+        [],
+        [],
+        -1
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Follow next until -1.",
+     "solution": "def to_list(vals, nxt, h):\n    out = []\n    while h != -1:\n        out.append(vals[h])\n        h = nxt[h]\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Reverse a list",
+     "intro": "Write reverse_list(vals, nxt, h): reverse the linked list by redirecting pointers (not copying values) and return the values in the new order.",
+     "fn": "reverse_list",
+     "starter": "def reverse_list(vals, nxt, h):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         10,
+         20,
+         30
+        ],
+        [
+         1,
+         2,
+         -1
+        ],
+        0
+       ],
+       "expect": [
+        30,
+        20,
+        10
+       ]
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        [
+         -1
+        ],
+        0
+       ],
+       "expect": [
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         1,
+         -1
+        ],
+        0
+       ],
+       "expect": [
+        2,
+        1
+       ]
+      }
+     ],
+     "hint": "prev, cur, next.",
+     "solution": "def reverse_list(vals, nxt, h):\n    nxt = list(nxt)\n    prev = -1\n    cur = h\n    while cur != -1:\n        n = nxt[cur]\n        nxt[cur] = prev\n        prev = cur\n        cur = n\n    out = []\n    cur = prev\n    while cur != -1:\n        out.append(vals[cur])\n        cur = nxt[cur]\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Middle node",
+     "intro": "Write middle(vals, nxt, h): the value of the middle node (the second middle for even length), using fast and slow pointers.",
+     "fn": "middle",
+     "starter": "def middle(vals, nxt, h):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         1,
+         2,
+         -1
+        ],
+        0
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         1,
+         2,
+         3,
+         -1
+        ],
+        0
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         7
+        ],
+        [
+         -1
+        ],
+        0
+       ],
+       "expect": 7
+      }
+     ],
+     "hint": "Fast moves twice as far.",
+     "solution": "def middle(vals, nxt, h):\n    slow = h\n    fast = h\n    while fast != -1 and nxt[fast] != -1:\n        slow = nxt[slow]\n        fast = nxt[nxt[fast]]\n    return vals[slow]\n"
+    },
+    {
+     "type": "python",
+     "title": "Has a cycle",
+     "intro": "Write has_cycle(nxt, h): 1 if following next from h loops forever (Floyd's algorithm), else 0.",
+     "fn": "has_cycle",
+     "starter": "def has_cycle(nxt, h):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         -1
+        ],
+        0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         0
+        ],
+        0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         0
+        ],
+        0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         -1
+        ],
+        0
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "They meet if there is a loop.",
+     "solution": "def has_cycle(nxt, h):\n    slow = h\n    fast = h\n    while fast != -1 and nxt[fast] != -1:\n        slow = nxt[slow]\n        fast = nxt[nxt[fast]]\n        if slow == fast:\n            return 1\n    return 0\n"
+    },
+    {
+     "type": "order",
+     "title": "Reverse a list",
+     "intro": "Order the steps in the loop.",
+     "items": [
+      "Save the next node",
+      "Point the current node back at the previous",
+      "Move previous to current",
+      "Move current to the saved next",
+      "Stop when current is empty"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Lists",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Head",
+       "First node"
+      ],
+      [
+       "Singly linked",
+       "Pointers forward only"
+      ],
+      [
+       "Doubly linked",
+       "Pointers both ways"
+      ],
+      [
+       "Floyd",
+       "Cycle detection"
+      ],
+      [
+       "Insert at head",
+       "O(1)"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Lists",
+     "text": "A linked list node stores a value and a {{next|pointer}} link; finding a cycle uses a {{fast}} and a slow pointer."
+    }
+   ]
+  },
+  {
+   "title": "Stacks, queues and deques",
+   "maps": [
+    {
+     "title": "Stacks and queues",
+     "links": [
+      "Stack | is | Last in first out",
+      "Queue | is | First in first out",
+      "Deque | works | At both ends",
+      "Push and pop | change | The top",
+      "Enqueue and dequeue | change | The ends",
+      "Call stack | tracks | Function calls",
+      "Monotonic stack | finds | Next greater"
+     ]
+    }
+   ],
+   "summary": [
+    "A stack allows adding and removing only at one end: last in, first out, like a pile of plates. A queue adds at the back and removes from the front: first in, first out, like a line at a shop. A deque works at both ends.",
+    "Stacks power undo, expression evaluation, bracket matching and the call stack of recursion. Queues power scheduling and breadth-first search. A monotonic stack solves next-greater-element problems in linear time.",
+    "The labs match brackets, evaluate postfix expressions, simulate a queue and find the next greater elements."
+   ],
+   "glossary": [
+    {
+     "term": "Stack",
+     "def": "LIFO structure with push and pop."
+    },
+    {
+     "term": "Queue",
+     "def": "FIFO structure with enqueue and dequeue."
+    },
+    {
+     "term": "Deque",
+     "def": "Double-ended queue: push and pop at both ends."
+    },
+    {
+     "term": "Call stack",
+     "def": "The stack of active function calls."
+    },
+    {
+     "term": "Postfix notation",
+     "def": "Operators follow operands: 3 4 + means 3 + 4."
+    },
+    {
+     "term": "Monotonic stack",
+     "def": "A stack kept in sorted order to answer next-greater queries."
+    }
+   ],
+   "keyPoints": [
+    "All basic stack and queue operations are O(1).",
+    "A stack implemented on an array pushes and pops at the end.",
+    "A queue on an array uses head and tail indices or a deque.",
+    "Balanced brackets: push openers, pop on closers and match.",
+    "Postfix evaluation: push numbers, apply operators to the top two.",
+    "Next greater element: pop smaller items as larger ones arrive."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A stack is a pile of plates: last on, first off. A queue is a line at a shop: first in, first served. The undo button is a stack; the print queue is a queue.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: which one would you use for undo, and which for a waiting line?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A stack is a pile of plates. You add a plate on top and you take a plate from the top, so the last plate in is the first out. The two operations, push and pop, take constant time. Your web browser's back button and your editor's undo are stacks of past states."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Computers use a stack to remember where they were. When a function calls another, the return address goes on the call stack; when the callee finishes, it is popped. Deep recursion can overflow this stack. Any recursive algorithm can be rewritten with an explicit stack."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To check brackets, scan the text. Push each opening bracket; for each closing bracket, pop and check it matches. If the stack is empty at the end and no mismatch occurred, the brackets are balanced.",
+      "The same idea evaluates postfix expressions: push numbers, and when an operator arrives, pop two numbers, apply it and push the result."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A queue is the line at a shop: people join at the back and are served from the front. Operating systems queue jobs; breadth-first search uses a queue to explore nearest nodes first. A deque supports both ends and is the standard tool for sliding-window maximum problems."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A monotonic stack keeps its items in sorted order. To find, for each number, the next larger number to its right, scan from left to right and pop every stack item smaller than the new number: the new number is their answer. Each item is pushed and popped once, so the whole scan is linear."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Stack order?",
+     "options": [
+      "Last in first out",
+      "First in first out",
+      "Sorted",
+      "Random"
+     ],
+     "answer": 0,
+     "explain": "Like plates."
+    },
+    {
+     "q": "Queue order?",
+     "options": [
+      "First in first out",
+      "Last in first out",
+      "Sorted",
+      "Reverse"
+     ],
+     "answer": 0,
+     "explain": "Like a line."
+    },
+    {
+     "q": "What does BFS use?",
+     "options": [
+      "A queue",
+      "A stack",
+      "A heap",
+      "A tree"
+     ],
+     "answer": 0,
+     "explain": "Nearest first."
+    },
+    {
+     "q": "What stores function calls?",
+     "options": [
+      "The call stack",
+      "The heap",
+      "A queue",
+      "A hash table"
+     ],
+     "answer": 0,
+     "explain": "Return addresses."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Cost of push and pop?",
+     "a": "O(1)."
+    },
+    {
+     "q": "Deque use?",
+     "a": "Both ends; sliding window max."
+    },
+    {
+     "q": "Recursion and stacks?",
+     "a": "Recursion uses the call stack."
+    },
+    {
+     "q": "Postfix benefit?",
+     "a": "No parentheses needed."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Balanced brackets",
+     "intro": "Write balanced(s): 1 if the brackets ()[]{} in s are properly nested and matched, else 0.",
+     "fn": "balanced",
+     "starter": "def balanced(s):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "()[]{}"
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "(]"
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        "((("
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "{[()]}"
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Push openers, pop on closers.",
+     "solution": "def balanced(s):\n    pairs = {')': '(', ']': '[', '}': '{'}\n    st = []\n    for ch in s:\n        if ch in '([{':\n            st.append(ch)\n        elif ch in pairs:\n            if not st or st.pop() != pairs[ch]:\n                return 0\n    return 1 if not st else 0\n"
+    },
+    {
+     "type": "python",
+     "title": "Postfix evaluation",
+     "intro": "Write postfix(tokens): evaluate a list of strings such as ['3','4','+','2','*'] with + - * and integers; return the result.",
+     "fn": "postfix",
+     "starter": "def postfix(tokens):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "3",
+         "4",
+         "+",
+         "2",
+         "*"
+        ]
+       ],
+       "expect": 14
+      },
+      {
+       "args": [
+        [
+         "5"
+        ]
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         "2",
+         "3",
+         "4",
+         "*",
+         "+"
+        ]
+       ],
+       "expect": 14
+      },
+      {
+       "args": [
+        [
+         "10",
+         "3",
+         "-"
+        ]
+       ],
+       "expect": 7
+      }
+     ],
+     "hint": "Pop two, push result.",
+     "solution": "def postfix(tokens):\n    st = []\n    for t in tokens:\n        if t in ('+', '-', '*'):\n            b = st.pop()\n            a = st.pop()\n            if t == '+':\n                st.append(a + b)\n            elif t == '-':\n                st.append(a - b)\n            else:\n                st.append(a * b)\n        else:\n            st.append(int(t))\n    return st[0]\n"
+    },
+    {
+     "type": "python",
+     "title": "Next greater element",
+     "intro": "Write next_greater(a): for each item the next larger item to its right, or -1, with a monotonic stack.",
+     "fn": "next_greater",
+     "starter": "def next_greater(a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         2,
+         1,
+         5,
+         3,
+         6
+        ]
+       ],
+       "expect": [
+        5,
+        5,
+        6,
+        6,
+        -1
+       ]
+      },
+      {
+       "args": [
+        [
+         3,
+         2,
+         1
+        ]
+       ],
+       "expect": [
+        -1,
+        -1,
+        -1
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        2,
+        3,
+        -1
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Pop smaller items.",
+     "solution": "def next_greater(a):\n    res = [-1] * len(a)\n    st = []\n    for i, x in enumerate(a):\n        while st and a[st[-1]] < x:\n            res[st.pop()] = x\n        st.append(i)\n    return res\n"
+    },
+    {
+     "type": "python",
+     "title": "Queue simulation",
+     "intro": "Write serve(arrivals, k): jobs arrive in the given order into a queue and the server removes k jobs in order; return the list of jobs left in the queue (front first).",
+     "fn": "serve",
+     "starter": "def serve(arrivals, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        2
+       ],
+       "expect": [
+        3,
+        4
+       ]
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        5
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [],
+        1
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         5,
+         6
+        ],
+        0
+       ],
+       "expect": [
+        5,
+        6
+       ]
+      }
+     ],
+     "hint": "First in, first out.",
+     "solution": "def serve(arrivals, k):\n    q = list(arrivals)\n    head = 0\n    for _ in range(k):\n        if head < len(q):\n            head += 1\n    return q[head:]\n"
+    },
+    {
+     "type": "order",
+     "title": "Check brackets",
+     "intro": "Order the steps.",
+     "items": [
+      "Scan the characters left to right",
+      "Push each opening bracket",
+      "On a closing bracket pop and compare",
+      "Fail if empty or mismatched",
+      "Succeed if the stack is empty at the end"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Stacks and queues",
+     "intro": "Match each use with its structure.",
+     "pairs": [
+      [
+       "Undo",
+       "Stack"
+      ],
+      [
+       "Print jobs",
+       "Queue"
+      ],
+      [
+       "Breadth-first search",
+       "Queue"
+      ],
+      [
+       "Recursion",
+       "Call stack"
+      ],
+      [
+       "Sliding window maximum",
+       "Deque"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Stack",
+     "text": "A stack is {{LIFO|last in first out|last-in first-out}}; a queue is {{FIFO|first in first out|first-in first-out}}."
+    }
+   ]
+  },
+  {
+   "title": "Hash tables",
+   "maps": [
+    {
+     "title": "Hashing",
+     "links": [
+      "Hash function | maps | Keys to numbers",
+      "Bucket | holds | Entries",
+      "Collision | is | Two keys one bucket",
+      "Chaining | stores | Lists in buckets",
+      "Open addressing | probes | Other slots",
+      "Load factor | triggers | Resizing",
+      "Dictionary | is | A hash table"
+     ]
+    }
+   ],
+   "summary": [
+    "A hash table stores key-value pairs and finds a key in constant time on average. A hash function turns the key into a number, which picks a bucket. Different keys can land in the same bucket, a collision, handled by chaining or probing.",
+    "When the table fills up, the load factor grows and collisions rise, so the table is resized. Python dictionaries and sets are hash tables. They are the first tool for counting, grouping and finding duplicates.",
+    "The labs implement a hash function, a chained table, two-sum with a dictionary and frequency counts."
+   ],
+   "glossary": [
+    {
+     "term": "Hash function",
+     "def": "A function mapping a key to an integer bucket index."
+    },
+    {
+     "term": "Collision",
+     "def": "Two different keys with the same bucket."
+    },
+    {
+     "term": "Chaining",
+     "def": "Each bucket holds a list of entries."
+    },
+    {
+     "term": "Open addressing",
+     "def": "On collision, probe other slots in a fixed order."
+    },
+    {
+     "term": "Load factor",
+     "def": "Number of entries divided by number of buckets."
+    },
+    {
+     "term": "Hash set",
+     "def": "A hash table that stores keys only."
+    }
+   ],
+   "keyPoints": [
+    "Average insert, lookup and delete: O(1); worst case O(n).",
+    "A good hash spreads keys evenly over buckets.",
+    "Resize (double the buckets) when the load factor passes about 0.7.",
+    "Keys must be hashable: immutable and with stable hashes.",
+    "Use a dictionary for counting, grouping and caching.",
+    "Hash tables do not keep sorted order."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A hash table is a coat check. The ticket number tells the attendant exactly where your coat is, with no searching. Two coats sometimes share a hook, and then they go in a little pile on it.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what is a collision and how can it be handled?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Suppose you want to find a person's phone number instantly. You could store numbers in an array indexed by a code computed from the name. That code is a hash, and the array is a hash table.",
+      "Looking up a key means computing its hash, jumping to that cell and reading the value: constant time, no matter how many entries there are."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\text{bucket}(k) = h(k) \\bmod m"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A good hash function spreads keys evenly. A simple one for strings multiplies a running total by a prime and adds each character, then takes the remainder by the table size. Since there are far more possible keys than buckets, two keys sometimes collide, by the pigeonhole principle."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There are two main ways to handle collisions. Chaining makes each bucket a small list holding all entries that landed there. Open addressing keeps everything in the array and, on a collision, tries the next slot or another one given by a probe sequence. Both stay fast when the table is not too full."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The load factor is the ratio of entries to buckets. When it grows past a threshold such as seventy percent, the table doubles its bucket array and re-inserts every key. Like the dynamic array, this rare costly step is amortised across many cheap operations."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Hash tables answer the question 'have I seen this before?' in one step, which is why they solve counting words, finding duplicates and the classic two-sum problem: for each number, check whether its complement is already in the dictionary. Their weakness is order: they do not keep keys sorted."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Average lookup in a hash table?",
+     "options": [
+      "O(1)",
+      "O(n)",
+      "O(log n)",
+      "O(n^2)"
+     ],
+     "answer": 0,
+     "explain": "Constant on average."
+    },
+    {
+     "q": "What is a collision?",
+     "options": [
+      "Two keys in one bucket",
+      "A full table",
+      "A missing key",
+      "A hash error"
+     ],
+     "answer": 0,
+     "explain": "Pigeonhole."
+    },
+    {
+     "q": "What does chaining do?",
+     "options": [
+      "Stores lists in buckets",
+      "Sorts keys",
+      "Resizes",
+      "Deletes keys"
+     ],
+     "answer": 0,
+     "explain": "Many entries per bucket."
+    },
+    {
+     "q": "When is a table resized?",
+     "options": [
+      "When the load factor is high",
+      "When empty",
+      "Never",
+      "On every insert"
+     ],
+     "answer": 0,
+     "explain": "Keeps collisions low."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Why immutable keys?",
+     "a": "Their hash must not change."
+    },
+    {
+     "q": "Worst-case lookup?",
+     "a": "O(n) if everything collides."
+    },
+    {
+     "q": "Two-sum idea?",
+     "a": "Look up the complement."
+    },
+    {
+     "q": "Hash tables and order?",
+     "a": "No sorted order."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "String hash",
+     "intro": "Write h(s, m): the hash of string s: start with 0; for each character c do v = (v * 31 + ord(c)) % m; return v.",
+     "fn": "h",
+     "starter": "def h(s, m):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "abc",
+        101
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        "",
+        7
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        "hello",
+        1000
+       ],
+       "expect": 322
+      },
+      {
+       "args": [
+        "a",
+        10
+       ],
+       "expect": 7
+      }
+     ],
+     "hint": "Multiply, add, wrap.",
+     "solution": "def h(s, m):\n    v = 0\n    for c in s:\n        v = (v * 31 + ord(c)) % m\n    return v\n"
+    },
+    {
+     "type": "python",
+     "title": "Chained table",
+     "intro": "Write chained(keys, m): insert the integer keys into a table with m buckets (bucket = key % m) using chaining; return the list of bucket lengths.",
+     "fn": "chained",
+     "starter": "def chained(keys, m):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5,
+         6
+        ],
+        3
+       ],
+       "expect": [
+        2,
+        2,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         10,
+         20,
+         30
+        ],
+        10
+       ],
+       "expect": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [],
+        4
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "One list per bucket.",
+     "solution": "def chained(keys, m):\n    b = [[] for i in range(m)]\n    for k in keys:\n        b[k % m].append(k)\n    return [len(x) for x in b]\n"
+    },
+    {
+     "type": "python",
+     "title": "Two-sum with a dictionary",
+     "intro": "Write two_sum(a, t): indices [i, j] (i < j) of two items summing to t using a dictionary, or [-1, -1].",
+     "fn": "two_sum",
+     "starter": "def two_sum(a, t):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         2,
+         7,
+         11,
+         15
+        ],
+        9
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         3,
+         2,
+         4
+        ],
+        6
+       ],
+       "expect": [
+        1,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        10
+       ],
+       "expect": [
+        -1,
+        -1
+       ]
+      },
+      {
+       "args": [
+        [
+         3,
+         3
+        ],
+        6
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      }
+     ],
+     "hint": "Look up the complement.",
+     "solution": "def two_sum(a, t):\n    seen = {}\n    for j, x in enumerate(a):\n        if t - x in seen:\n            return [seen[t - x], j]\n        seen[x] = j\n    return [-1, -1]\n"
+    },
+    {
+     "type": "python",
+     "title": "Most frequent item",
+     "intro": "Write most_common(a): the value that occurs most often (the smallest value if tied).",
+     "fn": "most_common",
+     "starter": "def most_common(a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         2,
+         3,
+         3
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         5
+        ]
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         4,
+         4,
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Count with a dictionary.",
+     "solution": "def most_common(a):\n    c = {}\n    for x in a:\n        c[x] = c.get(x, 0) + 1\n    best = None\n    for k in c:\n        if best is None or c[k] > c[best] or (c[k] == c[best] and k < best):\n            best = k\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Has duplicates",
+     "intro": "Write has_dup(a): 1 if any value appears twice, else 0, using a set.",
+     "fn": "has_dup",
+     "starter": "def has_dup(a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         1
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         7,
+         7
+        ]
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Seen before?",
+     "solution": "def has_dup(a):\n    s = set()\n    for x in a:\n        if x in s:\n            return 1\n        s.add(x)\n    return 0\n"
+    },
+    {
+     "type": "order",
+     "title": "Insert into a hash table",
+     "intro": "Order the steps.",
+     "items": [
+      "Compute the hash of the key",
+      "Reduce it modulo the table size",
+      "Find the bucket",
+      "Handle any collision",
+      "Store the key and value"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Hashing",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Collision",
+       "Two keys one bucket"
+      ],
+      [
+       "Chaining",
+       "List per bucket"
+      ],
+      [
+       "Load factor",
+       "Entries over buckets"
+      ],
+      [
+       "Hash set",
+       "Keys only"
+      ],
+      [
+       "Probe",
+       "Try another slot"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Hashing",
+     "text": "A hash table finds keys in {{O(1)|constant}} time on average; two keys in one bucket form a {{collision}}."
+    }
+   ]
+  },
+  {
+   "title": "Trees and binary search trees",
+   "maps": [
+    {
+     "title": "Trees",
+     "links": [
+      "Tree | has | A root and children",
+      "Binary tree | has | At most two children",
+      "BST | orders | Left smaller right larger",
+      "Traversal | visits | Every node",
+      "Height | limits | Search time",
+      "Balanced | keeps | Height log n",
+      "Inorder | gives | Sorted order"
+     ]
+    }
+   ],
+   "summary": [
+    "A tree is a hierarchy: a root with children, each a root of its own subtree. A binary tree allows at most two children. A binary search tree keeps smaller keys on the left and larger on the right, so search, insertion and deletion follow one path.",
+    "Traversals visit every node: preorder, inorder, postorder and level order. Inorder on a BST gives sorted order. Cost depends on height; balanced trees such as AVL and red-black trees keep the height logarithmic.",
+    "The labs build a BST from an array of nodes, search it, compute heights and traverse."
+   ],
+   "glossary": [
+    {
+     "term": "Tree",
+     "def": "A connected graph with no cycles, rooted at one node."
+    },
+    {
+     "term": "Binary search tree",
+     "def": "A binary tree where left < node < right at every node."
+    },
+    {
+     "term": "Height",
+     "def": "The number of edges on the longest root-to-leaf path."
+    },
+    {
+     "term": "Traversal",
+     "def": "A systematic visit of all nodes."
+    },
+    {
+     "term": "Balanced tree",
+     "def": "A tree whose height stays O(log n)."
+    },
+    {
+     "term": "Leaf",
+     "def": "A node with no children."
+    }
+   ],
+   "keyPoints": [
+    "BST search, insert, delete: O(h), with h the height.",
+    "Balanced: h = O(log n); degenerate (sorted inserts): h = n.",
+    "Inorder (left, node, right) of a BST lists keys sorted.",
+    "Preorder copies a tree; postorder deletes it bottom-up.",
+    "Level order uses a queue.",
+    "AVL and red-black trees rebalance with rotations."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A binary search tree is a game of higher or lower built into a tree: smaller on the left, bigger on the right. Each step throws away half. If you add things in sorted order the tree becomes a stick and loses its power.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: why does the shape of the tree decide the speed?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A family tree is a hierarchy: one ancestor at the top, children below, and each child can have children. Computer scientists draw the same shape for file systems, web pages and expressions. The top is the root, nodes without children are leaves, and the height counts the longest path down."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A binary search tree is a tree for fast searching. Every node has a key; everything in its left subtree is smaller, and everything in its right subtree is larger. To find a key, compare it with the node and go left or right, discarding half the tree each time, like binary search."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\text{search cost} = O(h), \\\\[0.6em] h \\approx \\log_2 n \\text{ if balanced}, \\\\[0.6em] h = n \\text{ if a chain} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The cost depends on the height. If keys arrive in random order the tree is bushy and the height is about log of n. But inserting sorted keys makes a chain with height n, and search becomes linear.",
+      "Self-balancing trees such as AVL and red-black trees fix this by rotating nodes after inserts and deletes, guaranteeing logarithmic height."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Traversals visit each node exactly once. Inorder goes left, node, right and prints a BST in sorted order. Preorder visits the node first and is used to copy a tree. Postorder visits children first and is used to delete one or evaluate an expression tree. Level order uses a queue and goes row by row."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Deleting from a BST has three cases. A leaf is removed outright. A node with one child is replaced by that child. A node with two children is replaced by its inorder successor, the smallest key in the right subtree, which keeps the ordering intact."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Inorder traversal of a BST gives?",
+     "options": [
+      "Sorted keys",
+      "Reverse keys",
+      "Random keys",
+      "Levels"
+     ],
+     "answer": 0,
+     "explain": "Left, node, right."
+    },
+    {
+     "q": "Worst-case BST search?",
+     "options": [
+      "O(n)",
+      "O(log n)",
+      "O(1)",
+      "O(n log n)"
+     ],
+     "answer": 0,
+     "explain": "A chain."
+    },
+    {
+     "q": "What fixes unbalanced trees?",
+     "options": [
+      "Rotations",
+      "Hashing",
+      "Sorting",
+      "Queues"
+     ],
+     "answer": 0,
+     "explain": "AVL and red-black."
+    },
+    {
+     "q": "Level order uses?",
+     "options": [
+      "A queue",
+      "A stack",
+      "A heap",
+      "Recursion only"
+     ],
+     "answer": 0,
+     "explain": "Row by row."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Leaf?",
+     "a": "A node with no children."
+    },
+    {
+     "q": "Height of a single node?",
+     "a": "0 edges."
+    },
+    {
+     "q": "Successor use?",
+     "a": "Replaces a deleted node with two children."
+    },
+    {
+     "q": "Why balance?",
+     "a": "Keep search O(log n)."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "BST search",
+     "intro": "A BST is given as arrays key, left, right (child index or -1) with root 0. Write bst_has(key, left, right, t): 1 if t is in the tree else 0.",
+     "fn": "bst_has",
+     "starter": "def bst_has(key, left, right, t):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         5,
+         3,
+         8
+        ],
+        [
+         1,
+         -1,
+         -1
+        ],
+        [
+         2,
+         -1,
+         -1
+        ],
+        8
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         5,
+         3,
+         8
+        ],
+        [
+         1,
+         -1,
+         -1
+        ],
+        [
+         2,
+         -1,
+         -1
+        ],
+        4
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        [
+         -1
+        ],
+        [
+         -1
+        ],
+        5
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Go left or right.",
+     "solution": "def bst_has(key, left, right, t):\n    cur = 0\n    while cur != -1:\n        if key[cur] == t:\n            return 1\n        cur = left[cur] if t < key[cur] else right[cur]\n    return 0\n"
+    },
+    {
+     "type": "python",
+     "title": "Inorder traversal",
+     "intro": "Write inorder(key, left, right): the keys by inorder traversal from root 0.",
+     "fn": "inorder",
+     "starter": "def inorder(key, left, right):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         5,
+         3,
+         8,
+         1
+        ],
+        [
+         1,
+         3,
+         -1,
+         -1
+        ],
+        [
+         2,
+         -1,
+         -1,
+         -1
+        ]
+       ],
+       "expect": [
+        1,
+        3,
+        5,
+        8
+       ]
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        [
+         -1
+        ],
+        [
+         -1
+        ]
+       ],
+       "expect": [
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         1,
+         3
+        ],
+        [
+         1,
+         -1,
+         -1
+        ],
+        [
+         2,
+         -1,
+         -1
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        3
+       ]
+      }
+     ],
+     "hint": "Left, node, right.",
+     "solution": "def inorder(key, left, right):\n    out = []\n    st = []\n    cur = 0\n    while cur != -1 or st:\n        while cur != -1:\n            st.append(cur)\n            cur = left[cur]\n        cur = st.pop()\n        out.append(key[cur])\n        cur = right[cur]\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Tree height",
+     "intro": "Write height(left, right): the height (edges on the longest root-to-leaf path) of the tree rooted at 0; a single node has height 0.",
+     "fn": "height",
+     "starter": "def height(left, right):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         -1,
+         -1
+        ],
+        [
+         2,
+         -1,
+         -1
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         -1
+        ],
+        [
+         -1
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         -1
+        ],
+        [
+         -1,
+         -1,
+         -1
+        ]
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "Track the depth.",
+     "solution": "def height(left, right):\n    best = 0\n    st = [[0, 0]]\n    while st:\n        node, d = st.pop()\n        if d > best:\n            best = d\n        if left[node] != -1:\n            st.append([left[node], d + 1])\n        if right[node] != -1:\n            st.append([right[node], d + 1])\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Build a BST by insertion",
+     "intro": "Write build_inorder(keys): insert the distinct keys one by one into a BST (as nodes in arrays) and return the inorder keys, which must come out sorted.",
+     "fn": "build_inorder",
+     "starter": "def build_inorder(keys):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         5,
+         2,
+         8,
+         1,
+         9
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        5,
+        8,
+        9
+       ]
+      },
+      {
+       "args": [
+        [
+         3,
+         2,
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         1
+        ]
+       ],
+       "expect": [
+        1
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Insertion keeps the order.",
+     "solution": "def build_inorder(keys):\n    key = []\n    left = []\n    right = []\n    for k in keys:\n        key.append(k)\n        left.append(-1)\n        right.append(-1)\n        i = len(key) - 1\n        if i == 0:\n            continue\n        cur = 0\n        while True:\n            if k < key[cur]:\n                if left[cur] == -1:\n                    left[cur] = i\n                    break\n                cur = left[cur]\n            else:\n                if right[cur] == -1:\n                    right[cur] = i\n                    break\n                cur = right[cur]\n    out = []\n    st = []\n    cur = 0 if key else -1\n    while cur != -1 or st:\n        while cur != -1:\n            st.append(cur)\n            cur = left[cur]\n        cur = st.pop()\n        out.append(key[cur])\n        cur = right[cur]\n    return out\n"
+    },
+    {
+     "type": "order",
+     "title": "BST insert",
+     "intro": "Order the steps.",
+     "items": [
+      "Start at the root",
+      "Compare the new key with the node",
+      "Go left if smaller, right if larger",
+      "Repeat until an empty child slot",
+      "Attach the new node there"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Trees",
+     "intro": "Match each traversal with its order.",
+     "pairs": [
+      [
+       "Preorder",
+       "Node, left, right"
+      ],
+      [
+       "Inorder",
+       "Left, node, right"
+      ],
+      [
+       "Postorder",
+       "Left, right, node"
+      ],
+      [
+       "Level order",
+       "Row by row"
+      ],
+      [
+       "Height",
+       "Longest path"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "BST",
+     "text": "In a BST the left subtree holds {{smaller}} keys; an {{inorder}} traversal lists keys sorted."
+    }
+   ]
+  },
+  {
+   "title": "Heaps and priority queues",
+   "maps": [
+    {
+     "title": "Heaps",
+     "links": [
+      "Priority queue | serves | The best item first",
+      "Binary heap | is | A complete tree in an array",
+      "Min-heap | keeps | Smallest on top",
+      "Push | sifts | Up",
+      "Pop | sifts | Down",
+      "Heapify | builds | In O(n)",
+      "Heap sort | sorts | In O(n log n)"
+     ]
+    }
+   ],
+   "summary": [
+    "A priority queue always serves the item with the highest priority next, like an emergency room. A binary heap implements it as a complete binary tree stored in an array where each parent is no larger than its children (a min-heap).",
+    "Push adds at the end and sifts up; pop removes the top, moves the last item to the root and sifts down. Both take logarithmic time. Heapify builds a heap from n items in linear time, and heap sort uses it. Heaps power Dijkstra's algorithm and top-k queries.",
+    "The labs implement push and pop, heapify, heap sort and a top-k selector."
+   ],
+   "glossary": [
+    {
+     "term": "Priority queue",
+     "def": "An abstract type with insert and extract-min (or max)."
+    },
+    {
+     "term": "Binary heap",
+     "def": "A complete binary tree with the heap property, stored in an array."
+    },
+    {
+     "term": "Heap property",
+     "def": "In a min-heap each parent is at most its children."
+    },
+    {
+     "term": "Sift up/down",
+     "def": "Swap an item with its parent or smaller child to restore order."
+    },
+    {
+     "term": "Heapify",
+     "def": "Turn an arbitrary array into a heap in O(n)."
+    },
+    {
+     "term": "Top-k",
+     "def": "Keep a heap of size k to find the k largest items."
+    }
+   ],
+   "keyPoints": [
+    "Array layout: parent of i is (i-1)//2; children are 2i+1 and 2i+2.",
+    "Push and pop are O(log n); peek is O(1).",
+    "Heapify is O(n); heap sort is O(n log n) and in place.",
+    "A min-heap gives the smallest quickly, not full sorted order.",
+    "Top-k of n items: O(n log k) with a size-k heap.",
+    "Dijkstra and Huffman coding use heaps."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A heap is a tournament bracket where the winner is always on top. Take the winner out, let the last player take the seat, and let them sink down until the bracket is fair again. You always get the best next.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: how does a removed top get replaced and fixed?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In a hospital, the sickest patient is treated first, not the one who arrived first. A priority queue behaves like this: you may insert anything at any time, and the next item out is always the most urgent. A sorted list would do, but inserting into it costs linear time.",
+      "A heap does both operations in logarithmic time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A binary heap is a complete binary tree: every level is full except possibly the last, which fills from the left. That shape fits perfectly in an array. The root is at index zero. The children of node i sit at 2i plus 1 and 2i plus 2, and its parent at i minus 1 divided by two, rounded down."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\text{parent}(i) = \\lfloor (i-1)/2 \\rfloor, \\\\[0.6em] \\text{children}(i) = 2i+1,\\ 2i+2 \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "In a min-heap each parent is no larger than its children, so the smallest item is always at the root. To push, put the new item at the end and swap it with its parent while it is smaller.",
+      "To pop, take the root, move the last item to the root and swap it downward with its smaller child until the order is restored. Each walk is at most the height, log n."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Building a heap from a whole array can be done in linear time: starting from the last parent, sift each node down. Heap sort builds a max-heap and repeatedly swaps the top into the sorted tail.",
+      "Heaps also answer top-k questions: keep a small heap of the k best so far and replace its smallest when something better arrives."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Where is the minimum in a min-heap?",
+     "options": [
+      "At the root",
+      "At the end",
+      "In the middle",
+      "Anywhere"
+     ],
+     "answer": 0,
+     "explain": "Heap property."
+    },
+    {
+     "q": "Push cost?",
+     "options": [
+      "O(log n)",
+      "O(1)",
+      "O(n)",
+      "O(n log n)"
+     ],
+     "answer": 0,
+     "explain": "Sift up."
+    },
+    {
+     "q": "Children of index i?",
+     "options": [
+      "2i+1 and 2i+2",
+      "i+1 and i+2",
+      "i/2",
+      "i*i"
+     ],
+     "answer": 0,
+     "explain": "Array layout."
+    },
+    {
+     "q": "Heapify cost?",
+     "options": [
+      "O(n)",
+      "O(n log n)",
+      "O(1)",
+      "O(n^2)"
+     ],
+     "answer": 0,
+     "explain": "Less than n pushes."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Heap vs sorted array?",
+     "a": "Faster inserts."
+    },
+    {
+     "q": "Peek cost?",
+     "a": "O(1)."
+    },
+    {
+     "q": "Heap sort in place?",
+     "a": "Yes."
+    },
+    {
+     "q": "Top-k trick?",
+     "a": "Size-k heap."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Push into a min-heap",
+     "intro": "Write push(h, x): the list after pushing x into min-heap list h (sift up).",
+     "fn": "push",
+     "starter": "def push(h, x):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         5
+        ],
+        2
+       ],
+       "expect": [
+        1,
+        2,
+        5,
+        3
+       ]
+      },
+      {
+       "args": [
+        [],
+        4
+       ],
+       "expect": [
+        4
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         3,
+         4
+        ],
+        1
+       ],
+       "expect": [
+        1,
+        2,
+        4,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        9
+       ],
+       "expect": [
+        1,
+        2,
+        9
+       ]
+      }
+     ],
+     "hint": "Swap with a larger parent.",
+     "solution": "def push(h, x):\n    h = list(h)\n    h.append(x)\n    i = len(h) - 1\n    while i > 0:\n        p = (i - 1) // 2\n        if h[p] > h[i]:\n            h[p], h[i] = h[i], h[p]\n            i = p\n        else:\n            break\n    return h\n"
+    },
+    {
+     "type": "python",
+     "title": "Pop from a min-heap",
+     "intro": "Write pop(h): return [smallest, rest-of-heap-list] after removing the root (sift down). h is non-empty.",
+     "fn": "pop",
+     "starter": "def pop(h):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         5,
+         4
+        ]
+       ],
+       "expect": [
+        1,
+        [
+         3,
+         4,
+         5
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         7
+        ]
+       ],
+       "expect": [
+        7,
+        []
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        1,
+        [
+         2,
+         3
+        ]
+       ]
+      }
+     ],
+     "hint": "Swap with the smaller child.",
+     "solution": "def pop(h):\n    h = list(h)\n    top = h[0]\n    last = h.pop()\n    if h:\n        h[0] = last\n        i = 0\n        n = len(h)\n        while True:\n            l = 2 * i + 1\n            r = 2 * i + 2\n            s = i\n            if l < n and h[l] < h[s]:\n                s = l\n            if r < n and h[r] < h[s]:\n                s = r\n            if s == i:\n                break\n            h[i], h[s] = h[s], h[i]\n            i = s\n    return [top, h]\n"
+    },
+    {
+     "type": "python",
+     "title": "Heap sort",
+     "intro": "Write heap_sort(a): the list sorted ascending using a min-heap (push all, pop all).",
+     "fn": "heap_sort",
+     "starter": "def heap_sort(a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         5,
+         2,
+         9,
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        5,
+        9
+       ]
+      },
+      {
+       "args": [
+        [
+         1
+        ]
+       ],
+       "expect": [
+        1
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         3,
+         3,
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        3,
+        3
+       ]
+      }
+     ],
+     "hint": "Pop in order.",
+     "solution": "def heap_sort(a):\n    h = []\n    for x in a:\n        h.append(x)\n        i = len(h) - 1\n        while i > 0 and h[(i - 1) // 2] > h[i]:\n            p = (i - 1) // 2\n            h[p], h[i] = h[i], h[p]\n            i = p\n    out = []\n    while h:\n        out.append(h[0])\n        last = h.pop()\n        if h:\n            h[0] = last\n            i = 0\n            n = len(h)\n            while True:\n                l = 2 * i + 1\n                r = 2 * i + 2\n                s = i\n                if l < n and h[l] < h[s]:\n                    s = l\n                if r < n and h[r] < h[s]:\n                    s = r\n                if s == i:\n                    break\n                h[i], h[s] = h[s], h[i]\n                i = s\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Top k largest",
+     "intro": "Write top_k(a, k): the k largest items in descending order, keeping a min-heap of size k (a simple list kept as a heap is fine).",
+     "fn": "top_k",
+     "starter": "def top_k(a, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         5,
+         1,
+         9,
+         3,
+         7
+        ],
+        3
+       ],
+       "expect": [
+        9,
+        7,
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        5
+       ],
+       "expect": [
+        2,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         4,
+         4,
+         4
+        ],
+        2
+       ],
+       "expect": [
+        4,
+        4
+       ]
+      }
+     ],
+     "hint": "Replace the smallest when beaten.",
+     "solution": "def top_k(a, k):\n    best = []\n    for x in a:\n        if len(best) < k:\n            best.append(x)\n        else:\n            m = min(best)\n            if x > m:\n                best[best.index(m)] = x\n    best.sort()\n    best.reverse()\n    return best\n"
+    },
+    {
+     "type": "order",
+     "title": "Pop from a min-heap",
+     "intro": "Order the steps.",
+     "items": [
+      "Save the root as the answer",
+      "Move the last item to the root",
+      "Compare it with its children",
+      "Swap with the smaller child if larger",
+      "Repeat until the heap property holds"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Heaps",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Priority queue",
+       "Best item next"
+      ],
+      [
+       "Heap property",
+       "Parent <= children"
+      ],
+      [
+       "Sift up",
+       "Used by push"
+      ],
+      [
+       "Sift down",
+       "Used by pop"
+      ],
+      [
+       "Heapify",
+       "Build in O(n)"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Heaps",
+     "text": "In a min-heap the {{smallest|minimum}} item is at the root; push and pop each take {{O(log n)|logarithmic}} time."
+    }
+   ]
+  },
+  {
+   "title": "Graphs and traversal",
+   "maps": [
+    {
+     "title": "Graphs",
+     "links": [
+      "Graph | has | Vertices and edges",
+      "Adjacency list | stores | Neighbours",
+      "BFS | explores | Layer by layer",
+      "DFS | explores | Deep first",
+      "Visited set | prevents | Loops",
+      "Topological sort | orders | A DAG",
+      "Connected components | group | Reachable nodes"
+     ]
+    }
+   ],
+   "summary": [
+    "Graphs model networks of things and links. Stored as adjacency lists, they use memory proportional to vertices plus edges. Two traversals underlie almost every graph algorithm: breadth-first search with a queue and depth-first search with a stack or recursion.",
+    "A visited set keeps traversals from looping. BFS finds shortest paths in unweighted graphs, DFS finds connected components, detects cycles and gives topological orders of dependency graphs.",
+    "The labs build adjacency lists, run BFS and DFS, count components and sort tasks topologically."
+   ],
+   "glossary": [
+    {
+     "term": "Adjacency list",
+     "def": "For each vertex, the list of its neighbours."
+    },
+    {
+     "term": "BFS",
+     "def": "Visit nearest vertices first, using a queue."
+    },
+    {
+     "term": "DFS",
+     "def": "Follow a path as deep as possible, then backtrack."
+    },
+    {
+     "term": "Connected component",
+     "def": "A maximal set of mutually reachable vertices."
+    },
+    {
+     "term": "DAG",
+     "def": "A directed graph with no cycles."
+    },
+    {
+     "term": "Topological order",
+     "def": "Vertices ordered so each edge goes forward."
+    }
+   ],
+   "keyPoints": [
+    "BFS and DFS both run in O(V + E).",
+    "BFS gives fewest-edge paths in unweighted graphs.",
+    "DFS timestamps help find cycles and components.",
+    "Adjacency lists suit sparse graphs; matrices suit dense ones.",
+    "Topological order exists only for DAGs.",
+    "Always mark a vertex visited when you first reach it."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Breadth-first search is a ripple on a pond, moving out ring by ring. Depth-first search is exploring a cave, going as deep as you can, then backing up. Both mark where they have been so they never go round in circles.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: which search finds the fewest-step path, and why?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A graph is a set of vertices joined by edges. Maps, social networks, the web and course prerequisites are graphs. To store one, give each vertex a list of its neighbours. That takes memory proportional to the number of vertices plus edges, much better than an n by n table when few links exist."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Breadth-first search starts at a source and visits all neighbours, then their neighbours, and so on, using a queue. Because it explores in rings, the first time it reaches a vertex is along a path with the fewest edges. It runs in time proportional to vertices plus edges."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "T_{\\text{BFS}} = T_{\\text{DFS}} = O(V + E)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Depth-first search goes the other way: follow one path as far as it goes, then back up and try the next branch. It uses a stack, or recursion, which is the same thing. Marking vertices as visited stops it from going round cycles forever.",
+      "It is the basis for finding connected components, checking for cycles and finding strongly connected components."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A topological sort orders the tasks of a dependency graph so every task comes after the tasks it needs. A simple method repeatedly removes a vertex with no incoming edges, Kahn's algorithm. If some vertices are left over, the graph has a cycle and no order exists.",
+      "Build tools and course planners use it all the time."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "BFS finds?",
+     "options": [
+      "Fewest-edge paths",
+      "Weighted shortest paths",
+      "The maximum",
+      "A cycle only"
+     ],
+     "answer": 0,
+     "explain": "Rings outward."
+    },
+    {
+     "q": "What does BFS use?",
+     "options": [
+      "A queue",
+      "A stack",
+      "A heap",
+      "A hash"
+     ],
+     "answer": 0,
+     "explain": "First in first out."
+    },
+    {
+     "q": "Cost of BFS or DFS?",
+     "options": [
+      "O(V + E)",
+      "O(V^2) always",
+      "O(E^2)",
+      "O(1)"
+     ],
+     "answer": 0,
+     "explain": "Each vertex and edge once."
+    },
+    {
+     "q": "Topological order exists for?",
+     "options": [
+      "DAGs",
+      "Any graph",
+      "Trees only",
+      "Complete graphs"
+     ],
+     "answer": 0,
+     "explain": "No cycles."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Why a visited set?",
+     "a": "Avoid loops and repeats."
+    },
+    {
+     "q": "Sparse graph storage?",
+     "a": "Adjacency lists."
+    },
+    {
+     "q": "Kahn's algorithm?",
+     "a": "Remove sources repeatedly."
+    },
+    {
+     "q": "DFS data structure?",
+     "a": "A stack or recursion."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Build adjacency lists",
+     "intro": "Write adj(n, edges): the undirected adjacency list (neighbours sorted ascending) for vertices 0..n-1 from a list of [u, v] edges.",
+     "fn": "adj",
+     "starter": "def adj(n, edges):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        [
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          2
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1
+        ],
+        [
+         0,
+         2
+        ],
+        [
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        2,
+        []
+       ],
+       "expect": [
+        [],
+        []
+       ]
+      },
+      {
+       "args": [
+        4,
+        [
+         [
+          0,
+          3
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          3,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         3
+        ],
+        [
+         0,
+         3
+        ],
+        [],
+        [
+         0,
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Add both directions.",
+     "solution": "def adj(n, edges):\n    a = [[] for i in range(n)]\n    for u, v in edges:\n        a[u].append(v)\n        a[v].append(u)\n    return [sorted(x) for x in a]\n"
+    },
+    {
+     "type": "python",
+     "title": "BFS order",
+     "intro": "Write bfs(n, edges, s): the vertices in BFS visiting order from s (neighbours in ascending order).",
+     "fn": "bfs",
+     "starter": "def bfs(n, edges, s):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        4,
+        [
+         [
+          0,
+          1
+         ],
+         [
+          0,
+          2
+         ],
+         [
+          1,
+          3
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        0,
+        1,
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        3,
+        [
+         [
+          0,
+          1
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        2
+       ]
+      },
+      {
+       "args": [
+        5,
+        [
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          2
+         ],
+         [
+          2,
+          3
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        2,
+        1,
+        3,
+        0,
+        4
+       ]
+      }
+     ],
+     "hint": "A queue and a seen list.",
+     "solution": "def bfs(n, edges, s):\n    a = [[] for i in range(n)]\n    for u, v in edges:\n        a[u].append(v)\n        a[v].append(u)\n    a = [sorted(x) for x in a]\n    seen = [0] * n\n    seen[s] = 1\n    q = [s]\n    i = 0\n    while i < len(q):\n        x = q[i]\n        i += 1\n        for y in a[x]:\n            if not seen[y]:\n                seen[y] = 1\n                q.append(y)\n    return q\n"
+    },
+    {
+     "type": "python",
+     "title": "Count components",
+     "intro": "Write components(n, edges): the number of connected components, using DFS.",
+     "fn": "components",
+     "starter": "def components(n, edges):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        [
+         [
+          0,
+          1
+         ],
+         [
+          2,
+          3
+         ]
+        ]
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        3,
+        []
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        4,
+        [
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          2
+         ],
+         [
+          2,
+          3
+         ]
+        ]
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Start a new search for each unseen vertex.",
+     "solution": "def components(n, edges):\n    a = [[] for i in range(n)]\n    for u, v in edges:\n        a[u].append(v)\n        a[v].append(u)\n    seen = [0] * n\n    c = 0\n    for s in range(n):\n        if not seen[s]:\n            c += 1\n            st = [s]\n            seen[s] = 1\n            while st:\n                x = st.pop()\n                for y in a[x]:\n                    if not seen[y]:\n                        seen[y] = 1\n                        st.append(y)\n    return c\n"
+    },
+    {
+     "type": "python",
+     "title": "Topological sort",
+     "intro": "Write topo(n, edges): a topological order of a DAG of directed edges [u, v] using Kahn's algorithm; always take the smallest available vertex. Return [] if there is a cycle.",
+     "fn": "topo",
+     "starter": "def topo(n, edges):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        4,
+        [
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          2
+         ],
+         [
+          0,
+          3
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        1,
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        3,
+        [
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          2
+         ],
+         [
+          2,
+          0
+         ]
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        3,
+        []
+       ],
+       "expect": [
+        0,
+        1,
+        2
+       ]
+      }
+     ],
+     "hint": "Remove vertices with no prerequisites.",
+     "solution": "def topo(n, edges):\n    indeg = [0] * n\n    out = [[] for i in range(n)]\n    for u, v in edges:\n        out[u].append(v)\n        indeg[v] += 1\n    ready = [i for i in range(n) if indeg[i] == 0]\n    res = []\n    while ready:\n        ready.sort()\n        x = ready.pop(0)\n        res.append(x)\n        for y in out[x]:\n            indeg[y] -= 1\n            if indeg[y] == 0:\n                ready.append(y)\n    return res if len(res) == n else []\n"
+    },
+    {
+     "type": "order",
+     "title": "BFS",
+     "intro": "Order the steps.",
+     "items": [
+      "Put the source in the queue and mark it",
+      "Take the front vertex",
+      "Visit its unmarked neighbours",
+      "Mark them and enqueue them",
+      "Repeat until the queue is empty"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Graph terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "BFS",
+       "Queue; rings outward"
+      ],
+      [
+       "DFS",
+       "Stack; deep first"
+      ],
+      [
+       "DAG",
+       "Directed, no cycles"
+      ],
+      [
+       "Component",
+       "Reachable group"
+      ],
+      [
+       "Adjacency list",
+       "Neighbour lists"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Graphs",
+     "text": "Breadth-first search uses a {{queue}}; both traversals cost O(V + E) because each vertex and {{edge}} is handled once."
+    }
+   ]
+  },
+  {
+   "title": "Sorting",
+   "maps": [
+    {
+     "title": "Sorting",
+     "links": [
+      "Sort | orders | Items",
+      "Bubble | swaps | Neighbours",
+      "Insertion | inserts | Into a sorted prefix",
+      "Merge sort | merges | Sorted halves",
+      "Quick sort | partitions | Around a pivot",
+      "Counting sort | counts | Small integers",
+      "Stable | keeps | Equal order"
+     ]
+    }
+   ],
+   "summary": [
+    "Sorting puts items in order and makes many other tasks easier, such as searching and finding duplicates. Simple methods like bubble and insertion sort take quadratic time. Merge sort and quick sort take n log n.",
+    "Merge sort splits, sorts each half and merges, and it is stable. Quick sort partitions around a pivot and is fast on average. Comparison sorting cannot beat n log n, but counting sort uses the key values to reach linear time for small integer keys.",
+    "The labs implement insertion sort, merge, quick sort partition and counting sort."
+   ],
+   "glossary": [
+    {
+     "term": "Stable sort",
+     "def": "Keeps the original order of equal items."
+    },
+    {
+     "term": "In-place sort",
+     "def": "Uses O(1) extra memory."
+    },
+    {
+     "term": "Merge sort",
+     "def": "Divide, sort halves, merge: O(n log n) always."
+    },
+    {
+     "term": "Quick sort",
+     "def": "Partition around a pivot: O(n log n) average, O(n^2) worst."
+    },
+    {
+     "term": "Counting sort",
+     "def": "Counts each key; O(n + k) for keys in 0..k."
+    },
+    {
+     "term": "Comparison bound",
+     "def": "Any comparison sort needs Omega(n log n) comparisons."
+    }
+   ],
+   "keyPoints": [
+    "Insertion sort: O(n^2) worst, O(n) on nearly sorted data.",
+    "Merge sort: O(n log n), O(n) extra space, stable.",
+    "Quick sort: O(n log n) average, in place, not stable.",
+    "Heap sort: O(n log n), in place.",
+    "Counting and radix sort: linear for bounded keys.",
+    "Library sorts (Timsort) combine merge and insertion sort."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Sorting is arranging cards. Insertion sort slides each card into place. Merge sort splits the pile, sorts each half and zips them together. Quick sort picks a card and puts smaller ones left and bigger ones right.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: how does merge sort turn two sorted piles into one?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sorting is like arranging a hand of playing cards. Insertion sort does what you do naturally: take the next card and slide it into its place among the cards already sorted. For n cards it may take up to n squared moves, but if the hand is almost sorted it is very fast."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Merge sort splits the array in half, sorts each half recursively and merges the two sorted halves by repeatedly taking the smaller front item. There are log n levels of splitting, each costing n for the merges, so the total is n log n, whatever the input.",
+      "It needs extra memory for merging but is stable."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "T(n) = 2\\,T(n/2) + O(n) \\;\\Rightarrow\\; T(n) = O(n\\log n)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Quick sort picks a pivot, moves smaller items to its left and larger to its right, and recurses on both sides. On average it takes n log n and works in place, which makes it very fast in practice.",
+      "A bad pivot, such as the smallest item every time, degrades it to n squared, so pivots are chosen randomly or by median of three."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There is a limit: any sorting method that works only by comparing items needs at least about n log n comparisons, because it must distinguish among n factorial orderings. To go faster you must use more than comparisons.",
+      "Counting sort tallies how many times each small integer occurs and writes them out in order, in time linear in n plus the key range."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A sort is stable if equal items keep their relative order, which matters when sorting records by one field after another. The sort in your language library is usually Timsort, a stable hybrid of merge and insertion sort that exploits runs already in order."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Merge sort time?",
+     "options": [
+      "O(n log n)",
+      "O(n^2)",
+      "O(n)",
+      "O(log n)"
+     ],
+     "answer": 0,
+     "explain": "Always."
+    },
+    {
+     "q": "Quick sort worst case?",
+     "options": [
+      "O(n^2)",
+      "O(n log n)",
+      "O(n)",
+      "O(1)"
+     ],
+     "answer": 0,
+     "explain": "Bad pivots."
+    },
+    {
+     "q": "What does stable mean?",
+     "options": [
+      "Equal items keep their order",
+      "No extra memory",
+      "Always fast",
+      "In place"
+     ],
+     "answer": 0,
+     "explain": "Matters for multi-key sorts."
+    },
+    {
+     "q": "Counting sort needs?",
+     "options": [
+      "Small integer keys",
+      "Any keys",
+      "Sorted input",
+      "A heap"
+     ],
+     "answer": 0,
+     "explain": "O(n + k)."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Insertion sort strength?",
+     "a": "Nearly sorted data."
+    },
+    {
+     "q": "Lower bound?",
+     "a": "n log n for comparisons."
+    },
+    {
+     "q": "Pivot choice?",
+     "a": "Random or median of three."
+    },
+    {
+     "q": "Timsort?",
+     "a": "Hybrid of merge and insertion."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Insertion sort",
+     "intro": "Write insertion_sort(a): the list sorted ascending by insertion.",
+     "fn": "insertion_sort",
+     "starter": "def insertion_sort(a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         5,
+         2,
+         4,
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        4,
+        5
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         3,
+         3,
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        3,
+        3
+       ]
+      }
+     ],
+     "hint": "Slide into place.",
+     "solution": "def insertion_sort(a):\n    a = list(a)\n    for i in range(1, len(a)):\n        x = a[i]\n        j = i - 1\n        while j >= 0 and a[j] > x:\n            a[j + 1] = a[j]\n            j -= 1\n        a[j + 1] = x\n    return a\n"
+    },
+    {
+     "type": "python",
+     "title": "Merge two sorted lists",
+     "intro": "Write merge(a, b): merge two sorted lists into one sorted list.",
+     "fn": "merge",
+     "starter": "def merge(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         5
+        ],
+        [
+         2,
+         4,
+         6
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         1
+        ]
+       ],
+       "expect": [
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        [
+         1,
+         2
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        5
+       ]
+      }
+     ],
+     "hint": "Take the smaller front item.",
+     "solution": "def merge(a, b):\n    i = 0\n    j = 0\n    out = []\n    while i < len(a) and j < len(b):\n        if a[i] <= b[j]:\n            out.append(a[i])\n            i += 1\n        else:\n            out.append(b[j])\n            j += 1\n    out.extend(a[i:])\n    out.extend(b[j:])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Merge sort",
+     "intro": "Write merge_sort(a): the list sorted using recursive merge sort.",
+     "fn": "merge_sort",
+     "starter": "def merge_sort(a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         5,
+         2,
+         9,
+         1,
+         5,
+         6
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        5,
+        5,
+        6,
+        9
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         1
+        ]
+       ],
+       "expect": [
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         3,
+         2,
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        3
+       ]
+      }
+     ],
+     "hint": "Split, sort, merge.",
+     "solution": "def merge_sort(a):\n    if len(a) <= 1:\n        return list(a)\n    m = len(a) // 2\n    l = merge_sort(a[:m])\n    r = merge_sort(a[m:])\n    i = 0\n    j = 0\n    out = []\n    while i < len(l) and j < len(r):\n        if l[i] <= r[j]:\n            out.append(l[i])\n            i += 1\n        else:\n            out.append(r[j])\n            j += 1\n    out.extend(l[i:])\n    out.extend(r[j:])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Partition",
+     "intro": "Write partition(a): take the last element as pivot; return [smaller_items, pivot, larger_or_equal_items] keeping the original order inside each part.",
+     "fn": "partition",
+     "starter": "def partition(a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         3,
+         8,
+         1,
+         5,
+         4
+        ]
+       ],
+       "expect": [
+        [
+         3,
+         1
+        ],
+        4,
+        [
+         8,
+         5
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1
+        ]
+       ],
+       "expect": [
+        [],
+        1,
+        []
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         2,
+         2
+        ]
+       ],
+       "expect": [
+        [],
+        2,
+        [
+         2,
+         2
+        ]
+       ]
+      }
+     ],
+     "hint": "Smaller left, larger right.",
+     "solution": "def partition(a):\n    p = a[-1]\n    lo = [x for x in a[:-1] if x < p]\n    hi = [x for x in a[:-1] if x >= p]\n    return [lo, p, hi]\n"
+    },
+    {
+     "type": "python",
+     "title": "Counting sort",
+     "intro": "Write counting_sort(a, k): sort integers in 0..k with counting sort.",
+     "fn": "counting_sort",
+     "starter": "def counting_sort(a, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         3,
+         1,
+         2,
+         1,
+         0
+        ],
+        3
+       ],
+       "expect": [
+        0,
+        1,
+        1,
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [],
+        2
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         2,
+         2
+        ],
+        2
+       ],
+       "expect": [
+        2,
+        2
+       ]
+      }
+     ],
+     "hint": "Count then write out.",
+     "solution": "def counting_sort(a, k):\n    c = [0] * (k + 1)\n    for x in a:\n        c[x] += 1\n    out = []\n    for v in range(k + 1):\n        out.extend([v] * c[v])\n    return out\n"
+    },
+    {
+     "type": "order",
+     "title": "Quick sort",
+     "intro": "Order the steps.",
+     "items": [
+      "Pick a pivot",
+      "Partition around it",
+      "Recursively sort the smaller side",
+      "Recursively sort the larger side",
+      "Concatenate the results"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Sorting",
+     "intro": "Match each sort with its key property.",
+     "pairs": [
+      [
+       "Merge sort",
+       "Always n log n, stable"
+      ],
+      [
+       "Quick sort",
+       "Fast in place on average"
+      ],
+      [
+       "Insertion sort",
+       "Great on nearly sorted data"
+      ],
+      [
+       "Counting sort",
+       "Linear for small keys"
+      ],
+      [
+       "Heap sort",
+       "n log n in place"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Sorting",
+     "text": "Comparison sorts need at least about n log n comparisons; a {{stable}} sort keeps equal items in their original order."
+    }
+   ]
+  },
+  {
+   "title": "Searching and binary search",
+   "maps": [
+    {
+     "title": "Searching",
+     "links": [
+      "Linear search | scans | Everything",
+      "Binary search | halves | A sorted range",
+      "Midpoint | splits | The range",
+      "Invariant | guards | Correctness",
+      "Lower bound | finds | First position",
+      "Search on answer | binary searches | A property",
+      "Hash lookup | skips | Order"
+     ]
+    }
+   ],
+   "summary": [
+    "Linear search checks every item, taking linear time. If the data is sorted, binary search compares with the middle item and discards half the range each step, taking logarithmic time.",
+    "Binary search is easy to describe and easy to get wrong. A clear invariant, the answer lies within the current range, prevents off-by-one errors. Variants find the first or last position of a value. You can also binary search over an answer, such as the smallest speed that finishes in time.",
+    "The labs write binary search, find insertion points, count occurrences and search on an answer."
+   ],
+   "glossary": [
+    {
+     "term": "Binary search",
+     "def": "Repeatedly halve a sorted range by comparing with the middle."
+    },
+    {
+     "term": "Invariant",
+     "def": "A condition true at each loop step that proves correctness."
+    },
+    {
+     "term": "Lower bound",
+     "def": "The first index whose item is not less than the target."
+    },
+    {
+     "term": "Monotonic predicate",
+     "def": "A yes/no test that is false then true as the input grows."
+    },
+    {
+     "term": "Off-by-one error",
+     "def": "Using lo or hi one place wrong."
+    },
+    {
+     "term": "Interpolation search",
+     "def": "Guess the position from the value, for uniform data."
+    }
+   ],
+   "keyPoints": [
+    "Binary search needs sorted data and random access.",
+    "Time O(log n): 1000 items need at most 10 steps; a billion need 30.",
+    "Use mid = lo + (hi - lo) // 2 in languages with fixed-width integers.",
+    "Decide the invariant first, then write the loop.",
+    "Lower bound gives insertion points and counts via two searches.",
+    "Search on answer works whenever a yes/no test is monotonic."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Binary search is guessing a number by asking higher or lower. Each guess halves the choices, so a thousand needs ten guesses. The trick is to keep a promise: the answer is always inside my current range.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what promise must hold at every step of the loop?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Guess a number between one and a thousand. If I only say higher or lower, you can always find it in ten guesses: ask about 500, then 250 or 750, and so on. Each guess halves what remains. This is binary search, and it works on any sorted array."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} n \\to n/2 \\to n/4 \\to \\cdots \\to 1 \\\\[0.6em] \\Rightarrow \\\\[0.6em] \\lceil \\log_2 n \\rceil \\text{ steps} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The idea is simple, but small mistakes are common: infinite loops, skipping the answer, reading outside the array. The cure is to state an invariant. For example: the target, if present, lies in positions lo to hi inclusive. Each step must keep that true while shrinking the range."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A useful variant is the lower bound: the first position whose item is at least the target. It gives the insertion point for a new item in a sorted list. The number of occurrences of a value is the upper bound minus the lower bound, two searches."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Binary search is not only for arrays. Whenever a yes/no question is monotonic, false for small inputs and true from some point on, you can binary search for the switch.",
+      "What is the smallest speed that lets a machine finish a job in eight hours? Test a speed; if it works, try slower, otherwise faster. This search on the answer solves many problems that look hard at first."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Binary search time?",
+     "options": [
+      "O(log n)",
+      "O(n)",
+      "O(1)",
+      "O(n log n)"
+     ],
+     "answer": 0,
+     "explain": "Halving."
+    },
+    {
+     "q": "What does it require?",
+     "options": [
+      "Sorted data",
+      "A hash table",
+      "Unique items",
+      "A tree"
+     ],
+     "answer": 0,
+     "explain": "And random access."
+    },
+    {
+     "q": "How many steps for 1,000,000 items?",
+     "options": [
+      "About 20",
+      "About 1000",
+      "About 500,000",
+      "1"
+     ],
+     "answer": 0,
+     "explain": "log2 of a million."
+    },
+    {
+     "q": "What is a monotonic predicate?",
+     "options": [
+      "False then true as input grows",
+      "Always true",
+      "Random",
+      "A hash"
+     ],
+     "answer": 0,
+     "explain": "Allows search on the answer."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Invariant for binary search?",
+     "a": "The target lies in lo..hi."
+    },
+    {
+     "q": "Lower bound?",
+     "a": "First item not less than the target."
+    },
+    {
+     "q": "Count of a value?",
+     "a": "Upper bound minus lower bound."
+    },
+    {
+     "q": "Search on answer?",
+     "a": "Binary search on a yes/no test."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Binary search",
+     "intro": "Write bsearch(a, t): the index of t in the sorted list a, or -1.",
+     "fn": "bsearch",
+     "starter": "def bsearch(a, t):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         5,
+         7,
+         9
+        ],
+        7
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         1,
+         3,
+         5
+        ],
+        4
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        [],
+        1
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        [
+         2
+        ],
+        2
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Keep the target in lo..hi.",
+     "solution": "def bsearch(a, t):\n    lo = 0\n    hi = len(a) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if a[mid] == t:\n            return mid\n        if a[mid] < t:\n            lo = mid + 1\n        else:\n            hi = mid - 1\n    return -1\n"
+    },
+    {
+     "type": "python",
+     "title": "Lower bound",
+     "intro": "Write lower_bound(a, t): the first index i with a[i] >= t (len(a) if none) in a sorted list.",
+     "fn": "lower_bound",
+     "starter": "def lower_bound(a, t):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         2,
+         2,
+         5
+        ],
+        2
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         5
+        ],
+        3
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        9
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [],
+        1
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "The insertion point.",
+     "solution": "def lower_bound(a, t):\n    lo = 0\n    hi = len(a)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if a[mid] < t:\n            lo = mid + 1\n        else:\n            hi = mid\n    return lo\n"
+    },
+    {
+     "type": "python",
+     "title": "Count occurrences",
+     "intro": "Write count(a, t): how many times t appears in sorted list a, using two binary searches.",
+     "fn": "count",
+     "starter": "def count(a, t):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         2,
+         2,
+         5
+        ],
+        2
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         5
+        ],
+        3
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         7,
+         7,
+         7
+        ],
+        7
+       ],
+       "expect": 3
+      }
+     ],
+     "hint": "Integers: lower bound of t+1 minus that of t.",
+     "solution": "def count(a, t):\n    def lb(x):\n        lo = 0\n        hi = len(a)\n        while lo < hi:\n            mid = (lo + hi) // 2\n            if a[mid] < x:\n                lo = mid + 1\n            else:\n                hi = mid\n        return lo\n    return lb(t + 1) - lb(t)\n"
+    },
+    {
+     "type": "python",
+     "title": "Search on the answer",
+     "intro": "Write min_speed(piles, hours): the smallest integer speed k such that eating every pile at k per hour (a pile of p takes ceil(p/k) hours) finishes within hours. Binary search k between 1 and max(piles).",
+     "fn": "min_speed",
+     "starter": "def min_speed(piles, hours):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         3,
+         6,
+         7,
+         11
+        ],
+        8
+       ],
+       "expect": 4
+      },
+      {
+       "args": [
+        [
+         30,
+         11,
+         23,
+         4,
+         20
+        ],
+        5
+       ],
+       "expect": 30
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        3
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Faster is monotonic.",
+     "solution": "def min_speed(piles, hours):\n    lo = 1\n    hi = max(piles)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        need = 0\n        for p in piles:\n            need += (p + mid - 1) // mid\n        if need <= hours:\n            hi = mid\n        else:\n            lo = mid + 1\n    return lo\n"
+    },
+    {
+     "type": "order",
+     "title": "Binary search",
+     "intro": "Order the steps in one loop.",
+     "items": [
+      "Set lo and hi to the ends",
+      "Find the middle index",
+      "Compare the middle item with the target",
+      "Discard the half that cannot hold the target",
+      "Stop when the range is empty"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Searching",
+     "intro": "Match each search with its cost.",
+     "pairs": [
+      [
+       "Linear search",
+       "O(n)"
+      ],
+      [
+       "Binary search",
+       "O(log n)"
+      ],
+      [
+       "Hash lookup",
+       "O(1) average"
+      ],
+      [
+       "BST search",
+       "O(height)"
+      ],
+      [
+       "Search on answer",
+       "O(log range) tests"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Binary search",
+     "text": "Binary search needs {{sorted}} data and halves the range each step, so it takes {{O(log n)|logarithmic|log n}} time."
+    }
+   ]
+  },
+  {
+   "title": "Recursion and divide and conquer",
+   "maps": [
+    {
+     "title": "Recursion",
+     "links": [
+      "Recursion | calls | Itself",
+      "Base case | stops | The recursion",
+      "Divide and conquer | splits | Then combines",
+      "Recurrence | describes | The cost",
+      "Master theorem | solves | Recurrences",
+      "Backtracking | tries | Then undoes",
+      "Memoisation | caches | Results"
+     ]
+    }
+   ],
+   "summary": [
+    "Recursion solves a problem by solving smaller versions of the same problem. Every recursive function needs a base case that stops it and a step that makes progress toward it. The call stack remembers pending work.",
+    "Divide and conquer splits a problem into parts, solves them recursively and combines the answers. Merge sort and binary search are examples. The cost is written as a recurrence, and the master theorem gives its solution.",
+    "Backtracking explores choices and undoes them to enumerate subsets, permutations and puzzles.",
+    "The labs write recursive functions, count recurrence cost and enumerate subsets and permutations."
+   ],
+   "glossary": [
+    {
+     "term": "Base case",
+     "def": "The smallest input answered directly."
+    },
+    {
+     "term": "Recursive case",
+     "def": "Reduces the problem and calls the function again."
+    },
+    {
+     "term": "Divide and conquer",
+     "def": "Split, solve parts, combine."
+    },
+    {
+     "term": "Recurrence",
+     "def": "A formula giving the cost in terms of smaller inputs."
+    },
+    {
+     "term": "Backtracking",
+     "def": "Build a solution step by step, undoing choices that fail."
+    },
+    {
+     "term": "Tail recursion",
+     "def": "A recursive call as the very last action."
+    }
+   ],
+   "keyPoints": [
+    "Always write the base case first.",
+    "T(n) = a T(n/b) + O(n^d): compare a with b^d (master theorem).",
+    "Binary search: T(n) = T(n/2) + O(1) = O(log n).",
+    "Merge sort: T(n) = 2T(n/2) + O(n) = O(n log n).",
+    "Naive Fibonacci is exponential; caching makes it linear.",
+    "Subsets: 2^n; permutations: n!."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Recursion is Russian dolls: open one and find a smaller set inside, until the last doll that does not open. Divide and conquer splits a job into halves, does each half, and joins the answers.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what is the smallest doll, and what happens without it?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Russian dolls: to open the whole set, open the biggest doll and find a smaller set of dolls inside. Keep going until the last tiny doll that does not open. Recursion works this way. A function solves a big problem by calling itself on a smaller one.",
+      "The tiny doll is the base case, and without it the calls never stop."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A classic example is the factorial. By definition, n factorial is n times the factorial of n minus one, and the factorial of zero is one. The function calls itself with a smaller number each time until it reaches zero, then the pending multiplications finish on the way back.",
+      "The computer remembers them on the call stack."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Divide and conquer is recursion with three steps: divide the problem into parts, conquer each part recursively and combine the answers. Merge sort divides the array in half, sorts each half and merges. Fast exponentiation computes a to the n by squaring a to the n over two.",
+      "Many geometric and numeric algorithms follow this pattern."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "T(n) = a\\,T(n/b) + O(n^d) \\;\\Rightarrow\\; T(n)=\\begin{cases}O(n^d) & a<b^d\\\\ O(n^d\\log n) & a=b^d\\\\ O(n^{\\log_b a}) & a>b^d\\end{cases}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The master theorem reads the cost off the recurrence. Merge sort has a equal to two, b equal to two and d equal to one: a equals b to the d, so the answer is n log n. Binary search has a equal to one, b equal to two and d equal to zero, again balanced, giving log n."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Backtracking explores choices one at a time. To list all subsets, for each item either include it or not, recurse, then undo the choice. The tree of choices has two to the n leaves.",
+      "It is also how puzzle solvers like sudoku and the n-queens problem work, cutting off branches that already break the rules."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does every recursion need?",
+     "options": [
+      "A base case",
+      "A loop",
+      "A hash",
+      "A heap"
+     ],
+     "answer": 0,
+     "explain": "Otherwise it never stops."
+    },
+    {
+     "q": "Merge sort recurrence?",
+     "options": [
+      "2T(n/2) + O(n)",
+      "T(n-1) + 1",
+      "T(n/2) + 1",
+      "2T(n-1)"
+     ],
+     "answer": 0,
+     "explain": "Two halves plus merge."
+    },
+    {
+     "q": "How many subsets of n items?",
+     "options": [
+      "2^n",
+      "n!",
+      "n^2",
+      "2n"
+     ],
+     "answer": 0,
+     "explain": "Include or not."
+    },
+    {
+     "q": "How many permutations of n items?",
+     "options": [
+      "n!",
+      "2^n",
+      "n^2",
+      "n"
+     ],
+     "answer": 0,
+     "explain": "Orderings."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Master theorem balanced case?",
+     "a": "n^d log n."
+    },
+    {
+     "q": "Why does naive Fibonacci blow up?",
+     "a": "It repeats subproblems."
+    },
+    {
+     "q": "Backtracking idea?",
+     "a": "Choose, recurse, undo."
+    },
+    {
+     "q": "Recursion and stacks?",
+     "a": "Each call uses stack space."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Power by squaring",
+     "intro": "Write power(a, n): a^n by divide and conquer (n >= 0) using about log n multiplications.",
+     "fn": "power",
+     "starter": "def power(a, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2,
+        10
+       ],
+       "expect": 1024
+      },
+      {
+       "args": [
+        3,
+        0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        5,
+        3
+       ],
+       "expect": 125
+      },
+      {
+       "args": [
+        7,
+        1
+       ],
+       "expect": 7
+      }
+     ],
+     "hint": "Square the half.",
+     "solution": "def power(a, n):\n    if n == 0:\n        return 1\n    h = power(a, n // 2)\n    if n % 2 == 0:\n        return h * h\n    return h * h * a\n"
+    },
+    {
+     "type": "python",
+     "title": "Sum of digits",
+     "intro": "Write digit_sum(n): the sum of decimal digits of n >= 0, recursively.",
+     "fn": "digit_sum",
+     "starter": "def digit_sum(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        9
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        123
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        9999
+       ],
+       "expect": 36
+      }
+     ],
+     "hint": "Last digit plus the rest.",
+     "solution": "def digit_sum(n):\n    if n < 10:\n        return n\n    return n % 10 + digit_sum(n // 10)\n"
+    },
+    {
+     "type": "python",
+     "title": "All subsets",
+     "intro": "Write subsets(a): the list of all subsets of a, each a list in input order, ordered by backtracking where each item is first excluded then included. For [1,2] the result is [[], [2], [1], [1, 2]].",
+     "fn": "subsets",
+     "starter": "def subsets(a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2
+        ]
+       ],
+       "expect": [
+        [],
+        [
+         2
+        ],
+        [
+         1
+        ],
+        [
+         1,
+         2
+        ]
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": [
+        []
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        [],
+        [
+         3
+        ],
+        [
+         2
+        ],
+        [
+         2,
+         3
+        ],
+        [
+         1
+        ],
+        [
+         1,
+         3
+        ],
+        [
+         1,
+         2
+        ],
+        [
+         1,
+         2,
+         3
+        ]
+       ]
+      }
+     ],
+     "hint": "Choose, recurse, undo.",
+     "solution": "def subsets(a):\n    out = []\n    cur = []\n    def go(i):\n        if i == len(a):\n            out.append(list(cur))\n            return\n        go(i + 1)\n        cur.append(a[i])\n        go(i + 1)\n        cur.pop()\n    go(0)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Permutations count",
+     "intro": "Write perms(a): all permutations of a list of distinct items in lexicographic order of positions (swap-free: pick each unused item in turn).",
+     "fn": "perms",
+     "starter": "def perms(a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         1,
+         3,
+         2
+        ],
+        [
+         2,
+         1,
+         3
+        ],
+        [
+         2,
+         3,
+         1
+        ],
+        [
+         3,
+         1,
+         2
+        ],
+        [
+         3,
+         2,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1
+        ]
+       ],
+       "expect": [
+        [
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         2
+        ],
+        [
+         2,
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Pick each unused item in turn.",
+     "solution": "def perms(a):\n    out = []\n    used = [0] * len(a)\n    cur = []\n    def go():\n        if len(cur) == len(a):\n            out.append(list(cur))\n            return\n        for i in range(len(a)):\n            if not used[i]:\n                used[i] = 1\n                cur.append(a[i])\n                go()\n                cur.pop()\n                used[i] = 0\n    go()\n    return out\n"
+    },
+    {
+     "type": "order",
+     "title": "Write a recursion",
+     "intro": "Order the steps.",
+     "items": [
+      "State what the function returns",
+      "Write the base case",
+      "Reduce the problem",
+      "Call the function on the smaller problem",
+      "Combine the result"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Recursion",
+     "intro": "Match each recurrence with its solution.",
+     "pairs": [
+      [
+       "T(n) = T(n/2) + 1",
+       "O(log n)"
+      ],
+      [
+       "T(n) = 2T(n/2) + n",
+       "O(n log n)"
+      ],
+      [
+       "T(n) = T(n-1) + 1",
+       "O(n)"
+      ],
+      [
+       "T(n) = 2T(n-1)",
+       "O(2^n)"
+      ],
+      [
+       "T(n) = 2T(n/2) + 1",
+       "O(n)"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Recursion",
+     "text": "Every recursive function needs a {{base}} case; merge sort's cost solves to O(n {{log n|log}})."
+    }
+   ]
+  },
+  {
+   "title": "Dynamic programming",
+   "maps": [
+    {
+     "title": "Dynamic programming",
+     "links": [
+      "Subproblem | repeats | Often",
+      "Memoisation | caches | Top-down",
+      "Tabulation | fills | Bottom-up",
+      "State | names | A subproblem",
+      "Transition | links | States",
+      "Knapsack | picks | Items under a limit",
+      "LCS | compares | Sequences"
+     ]
+    }
+   ],
+   "summary": [
+    "Dynamic programming solves problems whose recursive solution repeats the same subproblems. By storing each answer once, either top-down with a cache or bottom-up with a table, exponential work becomes polynomial.",
+    "The recipe is to define the state, write the transition that builds a state from smaller ones, set the base cases and read off the answer. Classic problems include Fibonacci, coin change, the knapsack, the longest common subsequence and edit distance.",
+    "The labs solve Fibonacci, coin change, 0/1 knapsack, longest common subsequence and edit distance."
+   ],
+   "glossary": [
+    {
+     "term": "Overlapping subproblems",
+     "def": "The same smaller problem is needed many times."
+    },
+    {
+     "term": "Optimal substructure",
+     "def": "An optimal solution contains optimal solutions to subproblems."
+    },
+    {
+     "term": "Memoisation",
+     "def": "Top-down recursion with a cache."
+    },
+    {
+     "term": "Tabulation",
+     "def": "Bottom-up filling of a table."
+    },
+    {
+     "term": "State",
+     "def": "The parameters that identify a subproblem."
+    },
+    {
+     "term": "Transition",
+     "def": "The rule computing a state from smaller states."
+    }
+   ],
+   "keyPoints": [
+    "Cost is (number of states) x (cost per transition).",
+    "Fibonacci: F(n) = F(n-1) + F(n-2); O(n) with a cache.",
+    "Coin change: ways[a] sums ways[a - coin] over coins.",
+    "Knapsack: best[i][w] = max(skip item, take item).",
+    "LCS: match extends the diagonal; else take the max of two neighbours.",
+    "Space can often be reduced to one or two rows."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. Dynamic programming is writing down answers so you never solve the same puzzle twice. Like a student keeping a notebook of solved sums: before working one out, check the notebook.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: what repeated work does the notebook save?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The naive recursive Fibonacci recomputes the same values again and again: computing F of fifty makes billions of calls. The fix is to remember. Each time you compute a value, store it; next time just look it up. This simple idea, remember what you computed, is dynamic programming."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There are two styles. In memoisation you keep the recursive code and add a dictionary: before computing, check the cache. In tabulation you fill a table from the smallest subproblems upward, so no recursion is needed. Both give the same result and the same running time; tabulation uses less stack."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Designing a solution follows a recipe. First choose the state: what numbers describe a subproblem? Then find the transition: how is the answer for a state built from answers of smaller ones? Then set the base cases, decide the order to fill the table and say where the final answer sits.",
+      "The cost is the number of states times the work per state."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\text{best}[i][w] = \\max\\bigl(\\text{best}[i-1][w],\\ v_i + \\text{best}[i-1][w-w_i]\\bigr)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the 0/1 knapsack you may take or leave each item to maximise value under a weight limit. For each item and each capacity, either skip the item, or take it and use the remaining capacity best from before. The table has items times capacity cells, so it runs in pseudo-polynomial time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sequence problems use two-dimensional tables. The longest common subsequence of two strings extends the diagonal when the characters match, and otherwise takes the better of dropping a character from either string.",
+      "Edit distance, the fewest insertions, deletions and replacements to turn one word into another, is similar and powers spell checkers."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does DP avoid?",
+     "options": [
+      "Recomputing subproblems",
+      "Recursion",
+      "Tables",
+      "Sorting"
+     ],
+     "answer": 0,
+     "explain": "Cache the answers."
+    },
+    {
+     "q": "Memoisation is?",
+     "options": [
+      "Top-down with a cache",
+      "Bottom-up",
+      "Greedy",
+      "Random"
+     ],
+     "answer": 0,
+     "explain": "Recursive plus dictionary."
+    },
+    {
+     "q": "Cost of a DP?",
+     "options": [
+      "States times work per state",
+      "Always exponential",
+      "Always linear",
+      "Constant"
+     ],
+     "answer": 0,
+     "explain": "Count the table."
+    },
+    {
+     "q": "Knapsack transition?",
+     "options": [
+      "Skip or take the item",
+      "Sort items",
+      "Always take",
+      "Random"
+     ],
+     "answer": 0,
+     "explain": "A max of two choices."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Overlapping subproblems?",
+     "a": "Same smaller problem needed repeatedly."
+    },
+    {
+     "q": "Edit distance uses?",
+     "a": "Insert, delete, replace."
+    },
+    {
+     "q": "Why fill in order?",
+     "a": "Dependencies must be ready."
+    },
+    {
+     "q": "Space reduction?",
+     "a": "Keep only the rows needed."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Fibonacci with memo",
+     "intro": "Write fib(n): the n-th Fibonacci number (F0 = 0, F1 = 1) using a table.",
+     "fn": "fib",
+     "starter": "def fib(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        10
+       ],
+       "expect": 55
+      },
+      {
+       "args": [
+        50
+       ],
+       "expect": 12586269025
+      },
+      {
+       "args": [
+        70
+       ],
+       "expect": 190392490709135
+      }
+     ],
+     "hint": "Remember the last two values.",
+     "solution": "def fib(n):\n    if n < 2:\n        return n\n    a = 0\n    b = 1\n    for _ in range(n - 1):\n        a, b = b, a + b\n    return b\n"
+    },
+    {
+     "type": "python",
+     "title": "Coin change ways",
+     "intro": "Write ways(coins, amount): the number of combinations of coins (unlimited supply) that sum to amount.",
+     "fn": "ways",
+     "starter": "def ways(coins, amount):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         5
+        ],
+        5
+       ],
+       "expect": 4
+      },
+      {
+       "args": [
+        [
+         2
+        ],
+        3
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        4
+       ],
+       "expect": 4
+      }
+     ],
+     "hint": "Loop over coins outside.",
+     "solution": "def ways(coins, amount):\n    w = [0] * (amount + 1)\n    w[0] = 1\n    for c in coins:\n        for a in range(c, amount + 1):\n            w[a] += w[a - c]\n    return w[amount]\n"
+    },
+    {
+     "type": "python",
+     "title": "0/1 knapsack",
+     "intro": "Write knapsack(weights, values, cap): the best total value with total weight at most cap, each item used at most once.",
+     "fn": "knapsack",
+     "starter": "def knapsack(weights, values, cap):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         4,
+         5
+        ],
+        [
+         1,
+         4,
+         5,
+         7
+        ],
+        7
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        [
+         2
+        ],
+        [
+         3
+        ],
+        1
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         1,
+         1
+        ],
+        2
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "Go downward to use items once.",
+     "solution": "def knapsack(weights, values, cap):\n    best = [0] * (cap + 1)\n    for i in range(len(weights)):\n        w = weights[i]\n        v = values[i]\n        for c in range(cap, w - 1, -1):\n            if best[c - w] + v > best[c]:\n                best[c] = best[c - w] + v\n    return best[cap]\n"
+    },
+    {
+     "type": "python",
+     "title": "Longest common subsequence",
+     "intro": "Write lcs(a, b): the length of the longest common subsequence of two strings.",
+     "fn": "lcs",
+     "starter": "def lcs(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "abcde",
+        "ace"
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        "abc",
+        "def"
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        "",
+        "a"
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        "aggtab",
+        "gxtxayb"
+       ],
+       "expect": 4
+      }
+     ],
+     "hint": "Extend the diagonal on a match.",
+     "solution": "def lcs(a, b):\n    n = len(a)\n    m = len(b)\n    t = [[0] * (m + 1) for i in range(n + 1)]\n    for i in range(1, n + 1):\n        for j in range(1, m + 1):\n            if a[i - 1] == b[j - 1]:\n                t[i][j] = t[i - 1][j - 1] + 1\n            else:\n                t[i][j] = max(t[i - 1][j], t[i][j - 1])\n    return t[n][m]\n"
+    },
+    {
+     "type": "python",
+     "title": "Edit distance",
+     "intro": "Write edit(a, b): the minimum insertions, deletions and replacements to turn a into b.",
+     "fn": "edit",
+     "starter": "def edit(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "kitten",
+        "sitting"
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        "",
+        "abc"
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        "abc",
+        "abc"
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        "horse",
+        "ros"
+       ],
+       "expect": 3
+      }
+     ],
+     "hint": "Three moves, take the cheapest.",
+     "solution": "def edit(a, b):\n    n = len(a)\n    m = len(b)\n    t = [[0] * (m + 1) for i in range(n + 1)]\n    for i in range(n + 1):\n        t[i][0] = i\n    for j in range(m + 1):\n        t[0][j] = j\n    for i in range(1, n + 1):\n        for j in range(1, m + 1):\n            c = 0 if a[i - 1] == b[j - 1] else 1\n            t[i][j] = min(t[i - 1][j] + 1, t[i][j - 1] + 1, t[i - 1][j - 1] + c)\n    return t[n][m]\n"
+    },
+    {
+     "type": "order",
+     "title": "Design a DP",
+     "intro": "Order the steps.",
+     "items": [
+      "Define the state",
+      "Write the transition",
+      "Set the base cases",
+      "Choose the fill order",
+      "Read the answer from the table"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "DP problems",
+     "intro": "Match each problem with its table.",
+     "pairs": [
+      [
+       "Fibonacci",
+       "One row"
+      ],
+      [
+       "Knapsack",
+       "Items by capacity"
+      ],
+      [
+       "LCS",
+       "Two strings by two strings"
+      ],
+      [
+       "Edit distance",
+       "Prefix pairs"
+      ],
+      [
+       "Coin change",
+       "Amount"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "DP",
+     "text": "Dynamic programming stores answers to {{overlapping|repeated}} subproblems; memoisation is {{top-down|top down}} and tabulation is bottom-up."
+    }
+   ]
+  },
+  {
+   "title": "Greedy algorithms, shortest paths and spanning trees",
+   "maps": [
+    {
+     "title": "Greedy",
+     "links": [
+      "Greedy | picks | The best now",
+      "Exchange argument | proves | Greedy correct",
+      "Interval scheduling | picks | Earliest finish",
+      "Dijkstra | finds | Shortest paths",
+      "Minimum spanning tree | connects | At least cost",
+      "Union-find | tracks | Components",
+      "Huffman | builds | Short codes"
+     ]
+    }
+   ],
+   "summary": [
+    "A greedy algorithm makes the best-looking choice at each step and never looks back. It is fast and simple, and for the right problems it is provably optimal. The proof usually shows that an optimal solution can be changed to include the greedy choice.",
+    "Classic greedy results: choosing the most intervals by earliest finish time, Huffman coding, Dijkstra's shortest paths with non-negative weights, and Kruskal's and Prim's minimum spanning trees. Union-find is the data structure that makes Kruskal fast.",
+    "The labs schedule intervals, run Dijkstra, build a minimum spanning tree with union-find and compute Huffman code cost."
+   ],
+   "glossary": [
+    {
+     "term": "Greedy choice",
+     "def": "Take the locally best option and commit."
+    },
+    {
+     "term": "Exchange argument",
+     "def": "Show swapping into the greedy choice never hurts."
+    },
+    {
+     "term": "Dijkstra",
+     "def": "Repeatedly settle the unsettled vertex with the smallest distance."
+    },
+    {
+     "term": "Spanning tree",
+     "def": "A tree that connects all vertices."
+    },
+    {
+     "term": "Union-find",
+     "def": "Structure with find (which set) and union (merge sets)."
+    },
+    {
+     "term": "Huffman code",
+     "def": "A prefix code with shorter codes for frequent symbols."
+    }
+   ],
+   "keyPoints": [
+    "Interval scheduling: sort by finish time, take every compatible interval.",
+    "Dijkstra with a heap: O((V + E) log V); needs non-negative weights.",
+    "Kruskal: sort edges, add if they join different components; O(E log E).",
+    "Prim: grow a tree from a vertex by the cheapest edge out.",
+    "Union-find with path compression is almost O(1) per operation.",
+    "Greedy fails for coin change with odd coin sets and for knapsack."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Explain it simply. A greedy algorithm always takes the best-looking choice right now, like picking the closest next shop. It is quick, and for the right problems it is perfect, but sometimes the nearest choice leads you astray.",
+      "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: can you give a case where taking the biggest coin first fails?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A greedy algorithm is like making change: give the biggest coin that fits, then repeat. For ordinary currencies this gives the fewest coins, but with coins of one, three and four, making six by greed takes four, one and one when two threes would do.",
+      "Greedy is only right for problems with the right structure, and each use needs a proof."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Interval scheduling asks to fit the most non-overlapping meetings in one room. The best greedy rule is surprising: always pick the meeting that finishes earliest.",
+      "The proof is an exchange argument: in any optimal schedule you can swap the first meeting for the earliest-finishing one without losing any."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Dijkstra's algorithm finds shortest paths from a source in a graph with non-negative edge weights. Keep a tentative distance for every vertex. Repeatedly take the unsettled vertex with the smallest distance, settle it, and relax its edges: if going through it makes a neighbour closer, update.",
+      "A heap makes the choice fast."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "d[v] \\leftarrow \\min\\bigl(d[v],\\ d[u] + w(u,v)\\bigr)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A minimum spanning tree connects all vertices with the least total edge weight. Kruskal's algorithm sorts the edges and adds each one unless it would form a cycle. To test for a cycle quickly we use union-find: each component is a set; find returns its representative and union merges two sets."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Huffman coding builds the best prefix code for compression. Repeatedly take the two least frequent symbols and join them under a new node whose weight is the sum. Frequent symbols end up near the top with short codes. The total cost is the sum of all the merged weights."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Interval scheduling rule?",
+     "options": [
+      "Earliest finish time first",
+      "Shortest first",
+      "Earliest start first",
+      "Random"
+     ],
+     "answer": 0,
+     "explain": "Exchange argument."
+    },
+    {
+     "q": "Dijkstra needs?",
+     "options": [
+      "Non-negative weights",
+      "A tree",
+      "Negative weights",
+      "Sorted nodes"
+     ],
+     "answer": 0,
+     "explain": "Else the greedy step is wrong."
+    },
+    {
+     "q": "Kruskal sorts?",
+     "options": [
+      "Edges",
+      "Vertices",
+      "Components",
+      "Paths"
+     ],
+     "answer": 0,
+     "explain": "By weight."
+    },
+    {
+     "q": "Union-find answers?",
+     "options": [
+      "Whether two items share a set",
+      "Shortest paths",
+      "Sorted order",
+      "The maximum"
+     ],
+     "answer": 0,
+     "explain": "Find and union."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Why can greedy fail?",
+     "a": "Local best is not always global best."
+    },
+    {
+     "q": "Prim vs Kruskal?",
+     "a": "Grow one tree vs. merge forests."
+    },
+    {
+     "q": "Path compression?",
+     "a": "Flatten the tree on find."
+    },
+    {
+     "q": "Huffman prefix code?",
+     "a": "No code is a prefix of another."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Interval scheduling",
+     "intro": "Write max_meetings(intervals): the maximum number of non-overlapping [start, end] intervals (an interval may start exactly when another ends).",
+     "fn": "max_meetings",
+     "starter": "def max_meetings(intervals):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          3
+         ],
+         [
+          2,
+          4
+         ],
+         [
+          3,
+          5
+         ]
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          10
+         ],
+         [
+          2,
+          3
+         ],
+         [
+          4,
+          5
+         ]
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Earliest finish first.",
+     "solution": "def max_meetings(intervals):\n    iv = sorted(intervals, key=lambda p: p[1])\n    count = 0\n    end = None\n    for s, e in iv:\n        if end is None or s >= end:\n            count += 1\n            end = e\n    return count\n"
+    },
+    {
+     "type": "python",
+     "title": "Dijkstra",
+     "intro": "Write dijkstra(n, edges, s): shortest distances from s on a directed graph with edges [u, v, w] (w >= 0); unreachable vertices get -1.",
+     "fn": "dijkstra",
+     "starter": "def dijkstra(n, edges, s):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        [
+         [
+          0,
+          1,
+          4
+         ],
+         [
+          0,
+          2,
+          1
+         ],
+         [
+          2,
+          1,
+          2
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        0,
+        3,
+        1
+       ]
+      },
+      {
+       "args": [
+        3,
+        [
+         [
+          0,
+          1,
+          1
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        0,
+        1,
+        -1
+       ]
+      },
+      {
+       "args": [
+        2,
+        [],
+        1
+       ],
+       "expect": [
+        -1,
+        0
+       ]
+      }
+     ],
+     "hint": "Settle the closest vertex each time.",
+     "solution": "def dijkstra(n, edges, s):\n    INF = 10 ** 9\n    adj = [[] for i in range(n)]\n    for u, v, w in edges:\n        adj[u].append([v, w])\n    d = [INF] * n\n    d[s] = 0\n    done = [0] * n\n    for _ in range(n):\n        u = -1\n        for i in range(n):\n            if not done[i] and d[i] < INF and (u == -1 or d[i] < d[u]):\n                u = i\n        if u == -1:\n            break\n        done[u] = 1\n        for v, w in adj[u]:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n    return [x if x < INF else -1 for x in d]\n"
+    },
+    {
+     "type": "python",
+     "title": "Minimum spanning tree weight",
+     "intro": "Write mst(n, edges): total weight of a minimum spanning tree (Kruskal with union-find) of an undirected connected graph with edges [u, v, w].",
+     "fn": "mst",
+     "starter": "def mst(n, edges):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        [
+         [
+          0,
+          1,
+          1
+         ],
+         [
+          1,
+          2,
+          2
+         ],
+         [
+          0,
+          2,
+          3
+         ]
+        ]
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        4,
+        [
+         [
+          0,
+          1,
+          1
+         ],
+         [
+          1,
+          2,
+          1
+         ],
+         [
+          2,
+          3,
+          1
+         ],
+         [
+          0,
+          3,
+          5
+         ]
+        ]
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        1,
+        []
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Add an edge unless it makes a cycle.",
+     "solution": "def mst(n, edges):\n    parent = list(range(n))\n    def find(x):\n        while parent[x] != x:\n            parent[x] = parent[parent[x]]\n            x = parent[x]\n        return x\n    total = 0\n    for u, v, w in sorted(edges, key=lambda e: e[2]):\n        a = find(u)\n        b = find(v)\n        if a != b:\n            parent[a] = b\n            total += w\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "Huffman cost",
+     "intro": "Write huffman(freqs): the total weighted cost of the Huffman code: repeatedly merge the two smallest frequencies, adding their sum to the cost.",
+     "fn": "huffman",
+     "starter": "def huffman(freqs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         5,
+         9,
+         12,
+         13,
+         16,
+         45
+        ]
+       ],
+       "expect": 224
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         7
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": 9
+      }
+     ],
+     "hint": "Merge the two smallest.",
+     "solution": "def huffman(freqs):\n    h = sorted(freqs)\n    cost = 0\n    while len(h) > 1:\n        a = h.pop(0)\n        b = h.pop(0)\n        cost += a + b\n        h.append(a + b)\n        h.sort()\n    return cost\n"
+    },
+    {
+     "type": "order",
+     "title": "Kruskal",
+     "intro": "Order the steps.",
+     "items": [
+      "Sort all edges by weight",
+      "Take the lightest unused edge",
+      "Check its ends are in different components",
+      "If so add it and union the components",
+      "Stop when n - 1 edges are chosen"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Greedy",
+     "intro": "Match each algorithm with its rule.",
+     "pairs": [
+      [
+       "Interval scheduling",
+       "Earliest finish"
+      ],
+      [
+       "Dijkstra",
+       "Closest unsettled vertex"
+      ],
+      [
+       "Kruskal",
+       "Lightest safe edge"
+      ],
+      [
+       "Huffman",
+       "Merge two smallest"
+      ],
+      [
+       "Union-find",
+       "Track components"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Greedy",
+     "text": "Dijkstra requires {{non-negative|nonnegative}} edge weights; Kruskal uses {{union-find|union find}} to avoid cycles."
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Data Structures and Algorithms",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What is O(3n^2 + 5n)?",
+    "options": [
+     "O(n^2)",
+     "O(n)",
+     "O(3n)",
+     "O(1)"
+    ],
+    "answer": 0,
+    "explain": "Dominant term."
+   },
+   {
+    "q": "Binary search time?",
+    "options": [
+     "O(log n)",
+     "O(n)",
+     "O(1)",
+     "O(n^2)"
+    ],
+    "answer": 0,
+    "explain": "Halving."
+   },
+   {
+    "q": "Insert in the middle of an array costs?",
+    "options": [
+     "O(n)",
+     "O(1)",
+     "O(log n)",
+     "O(n^2)"
+    ],
+    "answer": 0,
+    "explain": "Shift later items."
+   },
+   {
+    "q": "Appending to a dynamic array is?",
+    "options": [
+     "O(1) amortised",
+     "O(n) always",
+     "O(log n)",
+     "O(n^2)"
+    ],
+    "answer": 0,
+    "explain": "Doubling."
+   },
+   {
+    "q": "What do prefix sums give?",
+    "options": [
+     "O(1) range sums",
+     "Sorting",
+     "Hashing",
+     "Searching"
+    ],
+    "answer": 0,
+    "explain": "One subtraction."
+   },
+   {
+    "q": "Insert at the head of a linked list?",
+    "options": [
+     "O(1)",
+     "O(n)",
+     "O(log n)",
+     "O(n^2)"
+    ],
+    "answer": 0,
+    "explain": "Two pointers."
+   },
+   {
+    "q": "What does Floyd's algorithm detect?",
+    "options": [
+     "A cycle",
+     "A maximum",
+     "Duplicates",
+     "Sorted order"
+    ],
+    "answer": 0,
+    "explain": "Fast meets slow."
+   },
+   {
+    "q": "Stack order?",
+    "options": [
+     "Last in first out",
+     "First in first out",
+     "Sorted",
+     "Random"
+    ],
+    "answer": 0,
+    "explain": "Like plates."
+   },
+   {
+    "q": "Which structure does BFS use?",
+    "options": [
+     "A queue",
+     "A stack",
+     "A heap",
+     "A tree"
+    ],
+    "answer": 0,
+    "explain": "Rings outward."
+   },
+   {
+    "q": "What stores function calls?",
+    "options": [
+     "The call stack",
+     "A queue",
+     "A hash table",
+     "A heap"
+    ],
+    "answer": 0,
+    "explain": "Return addresses."
+   },
+   {
+    "q": "Average hash table lookup?",
+    "options": [
+     "O(1)",
+     "O(n)",
+     "O(log n)",
+     "O(n^2)"
+    ],
+    "answer": 0,
+    "explain": "Constant."
+   },
+   {
+    "q": "What is a collision?",
+    "options": [
+     "Two keys in one bucket",
+     "A full table",
+     "A missing key",
+     "A resize"
+    ],
+    "answer": 0,
+    "explain": "Pigeonhole."
+   },
+   {
+    "q": "What does an inorder traversal of a BST give?",
+    "options": [
+     "Sorted keys",
+     "Reverse keys",
+     "Levels",
+     "Random keys"
+    ],
+    "answer": 0,
+    "explain": "Left, node, right."
+   },
+   {
+    "q": "Worst-case BST search?",
+    "options": [
+     "O(n)",
+     "O(log n)",
+     "O(1)",
+     "O(n log n)"
+    ],
+    "answer": 0,
+    "explain": "A chain."
+   },
+   {
+    "q": "Where is the minimum of a min-heap?",
+    "options": [
+     "At the root",
+     "At the end",
+     "In the middle",
+     "Anywhere"
+    ],
+    "answer": 0,
+    "explain": "Heap property."
+   },
+   {
+    "q": "Heap push or pop cost?",
+    "options": [
+     "O(log n)",
+     "O(1)",
+     "O(n)",
+     "O(n log n)"
+    ],
+    "answer": 0,
+    "explain": "Sift."
+   },
+   {
+    "q": "BFS or DFS cost?",
+    "options": [
+     "O(V + E)",
+     "O(V^2) always",
+     "O(E^2)",
+     "O(1)"
+    ],
+    "answer": 0,
+    "explain": "Each once."
+   },
+   {
+    "q": "A topological order exists for?",
+    "options": [
+     "DAGs",
+     "Any graph",
+     "Trees only",
+     "Complete graphs"
+    ],
+    "answer": 0,
+    "explain": "No cycles."
+   },
+   {
+    "q": "Merge sort time?",
+    "options": [
+     "O(n log n)",
+     "O(n^2)",
+     "O(n)",
+     "O(log n)"
+    ],
+    "answer": 0,
+    "explain": "Always."
+   },
+   {
+    "q": "Quick sort worst case?",
+    "options": [
+     "O(n^2)",
+     "O(n log n)",
+     "O(n)",
+     "O(1)"
+    ],
+    "answer": 0,
+    "explain": "Bad pivots."
+   },
+   {
+    "q": "Counting sort needs?",
+    "options": [
+     "Small integer keys",
+     "Any keys",
+     "Sorted input",
+     "A heap"
+    ],
+    "answer": 0,
+    "explain": "O(n + k)."
+   },
+   {
+    "q": "What does binary search require?",
+    "options": [
+     "Sorted data",
+     "A hash table",
+     "Unique items",
+     "A tree"
+    ],
+    "answer": 0,
+    "explain": "And random access."
+   },
+   {
+    "q": "What is a monotonic predicate?",
+    "options": [
+     "False then true as input grows",
+     "Always true",
+     "Random",
+     "A hash"
+    ],
+    "answer": 0,
+    "explain": "Allows search on answer."
+   },
+   {
+    "q": "What does every recursion need?",
+    "options": [
+     "A base case",
+     "A loop",
+     "A hash",
+     "A heap"
+    ],
+    "answer": 0,
+    "explain": "Else it never stops."
+   },
+   {
+    "q": "How many subsets of n items?",
+    "options": [
+     "2^n",
+     "n!",
+     "n^2",
+     "2n"
+    ],
+    "answer": 0,
+    "explain": "Include or not."
+   },
+   {
+    "q": "What does dynamic programming avoid?",
+    "options": [
+     "Recomputing subproblems",
+     "Recursion",
+     "Tables",
+     "Sorting"
+    ],
+    "answer": 0,
+    "explain": "Cache."
+   },
+   {
+    "q": "Memoisation is?",
+    "options": [
+     "Top-down with a cache",
+     "Bottom-up",
+     "Greedy",
+     "Random"
+    ],
+    "answer": 0,
+    "explain": "Recursive plus dictionary."
+   },
+   {
+    "q": "Cost of a DP?",
+    "options": [
+     "States times work per state",
+     "Always exponential",
+     "Always linear",
+     "Constant"
+    ],
+    "answer": 0,
+    "explain": "Count the table."
+   },
+   {
+    "q": "Interval scheduling greedy rule?",
+    "options": [
+     "Earliest finish first",
+     "Shortest first",
+     "Earliest start first",
+     "Random"
+    ],
+    "answer": 0,
+    "explain": "Exchange argument."
+   },
+   {
+    "q": "Dijkstra needs?",
+    "options": [
+     "Non-negative weights",
+     "A tree",
+     "Negative weights",
+     "Sorted nodes"
+    ],
+    "answer": 0,
+    "explain": "Else greedy fails."
+   },
+   {
+    "q": "What does Kruskal sort?",
+    "options": [
+     "Edges",
+     "Vertices",
+     "Components",
+     "Paths"
+    ],
+    "answer": 0,
+    "explain": "By weight."
+   },
+   {
+    "q": "What does union-find answer?",
+    "options": [
+     "Whether two items share a set",
+     "Shortest paths",
+     "Sorted order",
+     "The maximum"
+    ],
+    "answer": 0,
+    "explain": "Find and union."
+   },
+   {
+    "q": "Can greedy fail?",
+    "options": [
+     "Yes, for some problems",
+     "Never",
+     "Only on trees",
+     "Only with heaps"
+    ],
+    "answer": 0,
+    "explain": "Coin change with odd coins."
+   },
+   {
+    "q": "What is stable sorting?",
+    "options": [
+     "Equal items keep their order",
+     "No extra memory",
+     "Always fast",
+     "In place"
+    ],
+    "answer": 0,
+    "explain": "Matters for records."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Complexity lookup",
+  "prompt": "ds>",
+  "intro": "A scripted cheat sheet, not a profiler. Try: sort, search, structures, graph, help",
+  "chips": [
+   "sort",
+   "search",
+   "structures",
+   "graph",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "sort       insertion O(n^2) | merge O(n log n) | quick O(n log n) avg |",
+     "search     linear O(n) | binary O(log n) on sorted data | hash O(1) ave",
+     "structures array: index O(1) | linked list: head insert O(1) | stack, q",
+     "graph      BFS, DFS O(V + E) | Dijkstra O((V + E) log V) | Kruskal O(E "
+    ]
+   },
+   {
+    "re": "^sort$",
+    "out": [
+     "insertion O(n^2) | merge O(n log n) | quick O(n log n) avg | heap O(n log n) | counting O(n + k)"
+    ]
+   },
+   {
+    "re": "^search$",
+    "out": [
+     "linear O(n) | binary O(log n) on sorted data | hash O(1) average | BST O(height)"
+    ]
+   },
+   {
+    "re": "^structures$",
+    "out": [
+     "array: index O(1) | linked list: head insert O(1) | stack, queue: O(1) | heap: push, pop O(log n) | hash table: O(1) avg"
+    ]
+   },
+   {
+    "re": "^graph$",
+    "out": [
+     "BFS, DFS O(V + E) | Dijkstra O((V + E) log V) | Kruskal O(E log E)"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Computer Science",
+ "level": "Beginner",
+ "tags": [
+  "algorithms",
+  "data structures",
+  "python",
+  "big-o",
+  "sorting",
+  "graphs",
+  "dynamic programming"
+ ]
+}
