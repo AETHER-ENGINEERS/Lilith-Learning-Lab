@@ -1,0 +1,2659 @@
+<!doctype html><meta charset=utf-8><style>
+@page{size:A4;margin:22mm 18mm 20mm 18mm}
+*{box-sizing:border-box}
+body{font:11.5pt/1.62 'DejaVu Serif',Georgia,serif;color:#222;margin:0}
+.cover{height:250mm;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;page-break-after:always;background:linear-gradient(180deg,#2c1a52,#150d27);color:#fff;margin:-22mm -18mm;padding:30mm;height:297mm;width:210mm}
+.cover h1{font:700 34pt/1.15 'DejaVu Sans',sans-serif;margin:0 0 10mm;color:#e0c8ff}
+.cover .sub{font:16pt 'DejaVu Sans',sans-serif;color:#c9b5f0;margin-bottom:30mm}
+.cover .note{font:10pt/1.5 'DejaVu Sans',sans-serif;color:#b3a2d6;max-width:130mm;border-top:1px solid #6d52a8;padding-top:6mm}
+.tocpage{page-break-after:always;padding-top:4mm}
+.tocpage h1{font:700 24pt 'DejaVu Sans',sans-serif;color:#4b2a8a;border-bottom:3px solid #b26bff;padding-bottom:3mm}
+.tocpage ol{list-style:none;padding:0;columns:1}
+.tocpage li{padding:2.2mm 0;border-bottom:1px dotted #ccc;font:11.5pt 'DejaVu Sans',sans-serif}
+.tocpage a{color:#222;text-decoration:none}
+.chap{page-break-before:always}
+.chno{font:700 11pt 'DejaVu Sans',sans-serif;letter-spacing:2px;text-transform:uppercase;color:#b26bff;margin-top:8mm}
+.chap>h1{font:700 26pt/1.15 'DejaVu Sans',sans-serif;color:#2c1a52;margin:2mm 0 8mm;padding-bottom:3mm;border-bottom:3px solid #b26bff}
+h2{font:700 15pt 'DejaVu Sans',sans-serif;color:#4b2a8a;margin:8mm 0 3mm;padding-left:3mm;border-left:5px solid #b26bff;page-break-after:avoid}
+h3{font:700 12.5pt 'DejaVu Sans',sans-serif;color:#6b3fb8;margin:6mm 0 2mm;page-break-after:avoid}
+p{margin:0 0 3.5mm;text-align:left}
+ul,ol{margin:0 0 4mm;padding-left:7mm}li{margin:1.2mm 0}
+table{border-collapse:collapse;width:100%;margin:4mm 0 5mm;font:10pt/1.4 'DejaVu Sans',sans-serif;page-break-inside:avoid}
+th{background:#4b2a8a;color:#fff;text-align:left;padding:2mm 3mm}td{border:1px solid #d8cbef;padding:2mm 3mm;vertical-align:top}
+tr:nth-child(even) td{background:#f6f1ff}
+code{font:10pt 'DejaVu Sans Mono',monospace;background:#f1ecfa;padding:0 1mm;border-radius:2px}
+strong{color:#2c1a52}
+h2:contains(Summary){}
+</style><div class="cover"><h1>Artificial Intelligence<br>A Condensed Tutorial</h1><div class="sub">Agents, search, logic, uncertainty, learning, language, vision, robotics and safety</div><div class="note">A study guide in original wording, organised after the chapters of <i>Artificial Intelligence: A Modern Approach</i> (Russell &amp; Norvig, 4th edition). It condenses ideas, not text: read the book for depth and exercises.</div></div><div class='tocpage'><h1>Contents</h1><ol><li><a href="#c0">1. Introduction to AI</a></li><li><a href="#c1">2. Intelligent Agents</a></li><li><a href="#c2">3. Solving Problems by Searching</a></li><li><a href="#c3">4. Search in Complex Environments</a></li><li><a href="#c4">5. Adversarial Search and Games</a></li><li><a href="#c5">6. Constraint Satisfaction Problems</a></li><li><a href="#c6">7. Logical Agents</a></li><li><a href="#c7">8. First-Order Logic</a></li><li><a href="#c8">9. Inference in First-Order Logic</a></li><li><a href="#c9">10. Knowledge Representation</a></li><li><a href="#c10">11. Automated Planning</a></li><li><a href="#c11">12. Quantifying Uncertainty</a></li><li><a href="#c12">13. Probabilistic Reasoning</a></li><li><a href="#c13">14. Probabilistic Reasoning over Time</a></li><li><a href="#c14">15. Probabilistic Programming</a></li><li><a href="#c15">16. Making Simple Decisions</a></li><li><a href="#c16">17. Making Complex Decisions</a></li><li><a href="#c17">18. Multiagent Decision Making</a></li><li><a href="#c18">19. Learning from Examples</a></li><li><a href="#c19">20. Learning Probabilistic Models</a></li><li><a href="#c20">21. Deep Learning</a></li><li><a href="#c21">22. Reinforcement Learning</a></li><li><a href="#c22">23. Natural Language Processing</a></li><li><a href="#c23">24. Deep Learning for Natural Language Processing</a></li><li><a href="#c24">25. Computer Vision</a></li><li><a href="#c25">26. Robotics</a></li><li><a href="#c26">27. Philosophy, Ethics, and Safety of AI</a></li><li><a href="#c27">28. The Future of AI</a></li><li><a href="#c28">Appendix A. Mathematical Background</a></li><li><a href="#c29">Appendix B. Notes on Languages and Algorithms</a></li></ol></div><section class="chap" id="c0"><div class="chno">Chapter 1</div><h1>Introduction to AI</h1><h2>What is AI?</h2>
+<p>Artificial Intelligence (AI) is the study and construction of <strong>agents</strong> that perceive an environment and act in it to achieve goals. The field has four classic ways of defining its aim: acting humanly (pass the Turing test), thinking humanly (model the mind), thinking rationally (follow the laws of logic) and acting rationally (do the best thing given what is known).</p>
+<p>Modern AI mostly follows the last view. A <strong>rational agent</strong> chooses the action that is expected to maximise its performance measure, given what it has perceived. This definition is general: it covers a thermostat, a chess program and a self-driving car.</p>
+<h2>The Standard Model and the Value Alignment Problem</h2>
+<p>In the <em>standard model</em> we build machines that optimise an objective that we specify. This works when the objective is complete, but a machine given a slightly wrong objective may pursue it with perfect efficiency and cause harm. This is the <strong>value alignment problem</strong>: making sure the machine's objectives match human preferences. A newer view builds machines that are uncertain about the true objective and therefore defer to people.</p>
+<h2>A Short History</h2>
+<ul>
+<li><strong>1943-1955:</strong> artificial neurons (McCulloch and Pitts), Turing's paper on machine intelligence, early neural networks.</li>
+<li><strong>1956:</strong> the Dartmouth workshop names the field "artificial intelligence".</li>
+<li><strong>1956-1969:</strong> early enthusiasm: logic provers, game players, the perceptron.</li>
+<li><strong>1966-1973:</strong> a dose of reality: combinatorial explosion, limits of single-layer perceptrons.</li>
+<li><strong>1969-1986:</strong> expert systems capture human knowledge as rules.</li>
+<li><strong>1986 onward:</strong> back-propagation revives neural networks; probability and statistics enter the mainstream.</li>
+<li><strong>2011 onward:</strong> big data, fast hardware and deep learning give breakthroughs in vision, speech, games and language.</li>
+</ul>
+<h2>State of the Art</h2>
+<p>AI systems now play Go and chess above human level, recognise images and speech, translate languages, drive vehicles in limited conditions, help diagnose disease and write text and code. Each of these successes is narrow; general intelligence remains an open goal.</p>
+<h2>Risks and Benefits</h2>
+<p>Benefits include automation of dull work, scientific discovery and better health care. Risks include bias in decisions, loss of privacy, surveillance, misuse in weapons, job disruption and loss of control. Responsible AI means measuring and managing these risks from the start.</p>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Agent</strong></td>
+<td>Something that perceives an environment and acts in it.</td>
+</tr>
+<tr>
+<td><strong>Rational agent</strong></td>
+<td>One that picks the action expected to score best on its performance measure.</td>
+</tr>
+<tr>
+<td><strong>Turing test</strong></td>
+<td>A test in which a person tries to tell a machine from a human by conversation.</td>
+</tr>
+<tr>
+<td><strong>Standard model</strong></td>
+<td>Building machines that optimise an objective we specify.</td>
+</tr>
+<tr>
+<td><strong>Value alignment</strong></td>
+<td>Making the machine's objective match what people really want.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why is rationality defined by expected outcomes and not by perfect outcomes?</strong></p>
+<p><em>Answer:</em> Because an agent only knows what it has perceived; it cannot be blamed for facts it could not know.</p>
+<p><strong>Q2. What goes wrong in the standard model?</strong></p>
+<p><em>Answer:</em> If the stated objective is slightly wrong, a capable machine pursues it fully and may cause harm.</p>
+<p><strong>Q3. Name two reasons AI progressed quickly after 2011.</strong></p>
+<p><em>Answer:</em> Large datasets and fast hardware (GPUs), together with deep learning methods.</p></section><section class="chap" id="c1"><div class="chno">Chapter 2</div><h1>Intelligent Agents</h1><h2>Agents and Environments</h2>
+<p>An <strong>agent</strong> maps what it perceives to an action. The sequence of everything it has perceived is the <em>percept sequence</em>. The <strong>agent function</strong> gives the action for each percept sequence; the <strong>agent program</strong> is the code that implements it.</p>
+<h2>Good Behaviour: Rationality</h2>
+<p>A <strong>performance measure</strong> scores a sequence of environment states. A rational agent picks, for each percept sequence, the action expected to maximise that score using the knowledge it has. Rationality is not omniscience: it depends on what the agent knows and can perceive. It also includes <strong>exploration</strong> and <strong>learning</strong>: gathering information is part of acting well.</p>
+<h2>The Task Environment (PEAS)</h2>
+<p>Describing a problem starts with PEAS: <strong>P</strong>erformance measure, <strong>E</strong>nvironment, <strong>A</strong>ctuators, <strong>S</strong>ensors. For an automated taxi: performance is safety, speed and comfort; the environment is roads and traffic; actuators are steering, brakes and horn; sensors are cameras, GPS and speedometer.</p>
+<h2>Properties of Environments</h2>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Easy</th>
+<th>Hard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Observability</td>
+<td>Fully observable</td>
+<td>Partially observable</td>
+</tr>
+<tr>
+<td>Agents</td>
+<td>Single agent</td>
+<td>Multi-agent</td>
+</tr>
+<tr>
+<td>Determinism</td>
+<td>Deterministic</td>
+<td>Stochastic</td>
+</tr>
+<tr>
+<td>Episodes</td>
+<td>Episodic</td>
+<td>Sequential</td>
+</tr>
+<tr>
+<td>Change</td>
+<td>Static</td>
+<td>Dynamic</td>
+</tr>
+<tr>
+<td>State</td>
+<td>Discrete</td>
+<td>Continuous</td>
+</tr>
+<tr>
+<td>Rules</td>
+<td>Known</td>
+<td>Unknown</td>
+</tr>
+</tbody>
+</table>
+<p>Chess is fully observable, deterministic, discrete and multi-agent. Taxi driving is partially observable, stochastic, sequential, dynamic and continuous: the hardest case.</p>
+<h2>Structure of Agents</h2>
+<ul>
+<li><strong>Simple reflex agents</strong> act on the current percept using condition-action rules.</li>
+<li><strong>Model-based reflex agents</strong> keep an internal state that tracks the parts of the world they cannot see, using a transition model and a sensor model.</li>
+<li><strong>Goal-based agents</strong> consider the future consequences of actions in order to reach a goal.</li>
+<li><strong>Utility-based agents</strong> score outcomes with a utility function so they can trade off conflicting goals and handle uncertainty.</li>
+<li><strong>Learning agents</strong> add a learning element that improves the performance element, a critic that gives feedback, and a problem generator that proposes exploratory actions.</li>
+</ul>
+<h2>How Agent Components Represent the World</h2>
+<p>Representations range from <strong>atomic</strong> (a state is a black box), through <strong>factored</strong> (a state is a set of variables with values), to <strong>structured</strong> (objects and relations between them). More expressive representations are more powerful but make reasoning and learning harder.</p>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Percept sequence</strong></td>
+<td>Everything the agent has perceived so far.</td>
+</tr>
+<tr>
+<td><strong>Agent function</strong></td>
+<td>The mapping from percept sequences to actions.</td>
+</tr>
+<tr>
+<td><strong>PEAS</strong></td>
+<td>Performance measure, Environment, Actuators, Sensors: the task description.</td>
+</tr>
+<tr>
+<td><strong>Utility-based agent</strong></td>
+<td>An agent that compares outcomes with a utility score and handles trade-offs.</td>
+</tr>
+<tr>
+<td><strong>Learning agent</strong></td>
+<td>An agent with a learning element that improves its performance element.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Is a table-driven agent practical?</strong></p>
+<p><em>Answer:</em> No. The table grows with every possible percept sequence, so it is far too big.</p>
+<p><strong>Q2. Give one fully observable and one partially observable environment.</strong></p>
+<p><em>Answer:</em> Chess is fully observable; driving a taxi is partially observable.</p>
+<p><strong>Q3. What does a goal-based agent add to a model-based reflex agent?</strong></p>
+<p><em>Answer:</em> A goal, so it can consider the future consequences of its actions.</p></section><section class="chap" id="c2"><div class="chno">Chapter 3</div><h1>Solving Problems by Searching</h1><h2>Problem-Solving Agents</h2>
+<p>A problem-solving agent with a goal finds a sequence of actions that reaches it. The process is: formulate the goal, formulate the problem, <strong>search</strong> for a solution, then execute it. This works best in observable, deterministic, discrete, known environments.</p>
+<h2>Formal Definition of a Search Problem</h2>
+<p>A search problem consists of:</p>
+<ul>
+<li>a set of <strong>states</strong> (the state space);</li>
+<li>an <strong>initial state</strong>;</li>
+<li>one or more <strong>goal states</strong> (or a goal test);</li>
+<li>the <strong>actions</strong> available in each state;</li>
+<li>a <strong>transition model</strong> giving the result of an action;</li>
+<li>an <strong>action cost</strong> function.</li>
+</ul>
+<p>A <strong>solution</strong> is a path from the initial state to a goal; an <strong>optimal</strong> solution has the lowest path cost. Example: route finding on a map, where states are cities, actions are drives and cost is distance.</p>
+<h2>Search Algorithms</h2>
+<p>Search builds a <strong>search tree</strong> from the initial state. A node holds a state, its parent, the action that led to it and the path cost. The <strong>frontier</strong> is the set of nodes that have been generated but not expanded. The generic loop: take a node from the frontier, test it, expand it and add the children. A <strong>reached</strong> table avoids revisiting states (graph search).</p>
+<h3>Measuring performance</h3>
+<ul>
+<li><strong>Completeness:</strong> does it find a solution if one exists?</li>
+<li><strong>Cost optimality:</strong> is the solution the cheapest?</li>
+<li><strong>Time complexity</strong> and <strong>space complexity</strong>, in terms of branching factor <em>b</em>, solution depth <em>d</em> and maximum depth <em>m</em>.</li>
+</ul>
+<h2>Uninformed (Blind) Search</h2>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Frontier</th>
+<th>Complete</th>
+<th>Optimal</th>
+<th>Time</th>
+<th>Space</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Breadth-first</td>
+<td>FIFO queue</td>
+<td>Yes</td>
+<td>Yes (equal costs)</td>
+<td>O(b^d)</td>
+<td>O(b^d)</td>
+</tr>
+<tr>
+<td>Uniform-cost</td>
+<td>Priority by path cost</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>O(b^(1+C*/e))</td>
+<td>same</td>
+</tr>
+<tr>
+<td>Depth-first</td>
+<td>LIFO stack</td>
+<td>No (infinite paths)</td>
+<td>No</td>
+<td>O(b^m)</td>
+<td>O(bm)</td>
+</tr>
+<tr>
+<td>Depth-limited</td>
+<td>Stack with a depth limit l</td>
+<td>No</td>
+<td>No</td>
+<td>O(b^l)</td>
+<td>O(bl)</td>
+</tr>
+<tr>
+<td>Iterative deepening</td>
+<td>Repeated depth-limited</td>
+<td>Yes</td>
+<td>Yes (equal costs)</td>
+<td>O(b^d)</td>
+<td>O(bd)</td>
+</tr>
+<tr>
+<td>Bidirectional</td>
+<td>Two frontiers</td>
+<td>Yes</td>
+<td>Yes (equal costs)</td>
+<td>O(b^(d/2))</td>
+<td>O(b^(d/2))</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Breadth-first</strong> expands the shallowest node first, so it finds the shortest path in steps but uses much memory. <strong>Uniform-cost</strong> expands the node with the lowest path cost. <strong>Depth-first</strong> uses little memory but can get lost. <strong>Iterative deepening</strong> combines the memory of depth-first with the completeness of breadth-first and is the preferred blind method for large spaces.</p>
+<h2>Informed (Heuristic) Search</h2>
+<p>A <strong>heuristic</strong> h(n) estimates the cost from node n to a goal. It lets the search prefer promising nodes.</p>
+<ul>
+<li><strong>Greedy best-first search</strong> expands the node with the smallest h(n). It is fast but neither optimal nor complete in general.</li>
+<li><strong>A* search</strong> expands the node with the smallest f(n) = g(n) + h(n), where g(n) is the cost so far. If h is <strong>admissible</strong> (never overestimates) and, for graph search, <strong>consistent</strong> (h(n) &lt;= c(n, a, n') + h(n')), A* is complete and optimal.</li>
+<li><strong>Weighted A*</strong> uses f = g + W h with W &gt; 1: faster, but only bounded-suboptimal.</li>
+<li><strong>Memory-bounded variants:</strong> IDA*, recursive best-first search (RBFS) and simplified memory-bounded A* (SMA*).</li>
+</ul>
+<h3>Designing heuristics</h3>
+<p>Good heuristics come from <strong>relaxed problems</strong>: remove constraints, solve the easier problem exactly, and use its cost. For the 8-puzzle, ignoring that tiles block each other gives the <strong>Manhattan distance</strong>. Another source is <strong>pattern databases</strong>, which store exact costs of solving sub-problems, and <strong>learning</strong> heuristics from experience. A heuristic that dominates another (always at least as large, still admissible) expands fewer nodes.</p>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>State space</strong></td>
+<td>All the states reachable from the initial state.</td>
+</tr>
+<tr>
+<td><strong>Frontier</strong></td>
+<td>The nodes generated but not yet expanded.</td>
+</tr>
+<tr>
+<td><strong>Completeness</strong></td>
+<td>A search finds a solution whenever one exists.</td>
+</tr>
+<tr>
+<td><strong>Admissible heuristic</strong></td>
+<td>A heuristic that never overestimates the true remaining cost.</td>
+</tr>
+<tr>
+<td><strong>A* search</strong></td>
+<td>Best-first search ordered by g(n) + h(n), optimal with an admissible heuristic.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why is breadth-first search often too costly?</strong></p>
+<p><em>Answer:</em> It stores every node at the current depth, so memory grows like b to the power d.</p>
+<p><strong>Q2. What does iterative deepening combine?</strong></p>
+<p><em>Answer:</em> The small memory of depth-first search with the completeness and optimality of breadth-first search.</p>
+<p><strong>Q3. How can you build a heuristic?</strong></p>
+<p><em>Answer:</em> Solve a relaxed version of the problem, or use a pattern database of sub-problem costs.</p></section><section class="chap" id="c3"><div class="chno">Chapter 4</div><h1>Search in Complex Environments</h1><h2>Local Search and Optimisation</h2>
+<p>When the path does not matter and only the final state does (scheduling, circuit layout, n-queens), <strong>local search</strong> keeps a single current state and moves to neighbours. It uses little memory and works in huge spaces. The landscape has a <strong>global maximum</strong>, <strong>local maxima</strong>, <strong>ridges</strong> and <strong>plateaus</strong>.</p>
+<ul>
+<li><strong>Hill climbing</strong> moves to the best neighbour and can stall at local maxima. Variants: stochastic, first-choice, random-restart.</li>
+<li><strong>Simulated annealing</strong> sometimes accepts a worse move with probability e^(dE/T), where the temperature T falls slowly. Early randomness escapes local maxima; later it settles.</li>
+<li><strong>Local beam search</strong> keeps k states, choosing the best k successors of all of them.</li>
+<li><strong>Evolutionary algorithms</strong> keep a population, select fit individuals, recombine them (crossover) and mutate them.</li>
+</ul>
+<h2>Search in Continuous Spaces</h2>
+<p>For continuous variables, use <strong>gradient ascent or descent</strong>: x &lt;- x + alpha grad f(x). <strong>Newton-Raphson</strong> uses second derivatives for faster convergence. <strong>Constrained optimisation</strong> adds restrictions; <strong>linear programming</strong> has linear objective and constraints and can be solved efficiently, and <strong>convex optimisation</strong> generalises this.</p>
+<h2>Search with Nondeterministic Actions</h2>
+<p>When actions have uncertain outcomes, a solution is a <strong>contingency plan</strong>, not a path. It uses conditional branches (if-then-else). An <strong>AND-OR search tree</strong> has OR nodes (the agent chooses an action) and AND nodes (all possible outcomes must be handled).</p>
+<h2>Search in Partially Observable Environments</h2>
+<p>With no or limited sensing the agent works with a <strong>belief state</strong>: the set of states it might be in. In a <strong>sensorless</strong> (conformant) problem, a plan must work from any state in the belief set. In general, after each action and percept the belief state is updated (predict, then update with the percept).</p>
+<h2>Online Search and Unknown Environments</h2>
+<p>In <strong>online search</strong> the agent must act and explore at once, because it does not know the map or the effects of actions. It must also be able to undo moves (safe exploration). <strong>Online DFS</strong> and <strong>LRTA*</strong> (learning real-time A*) improve their cost estimates as they travel.</p>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Local search</strong></td>
+<td>Search that keeps only the current state and moves to neighbours.</td>
+</tr>
+<tr>
+<td><strong>Hill climbing</strong></td>
+<td>Move to the best neighbour; stop at a peak.</td>
+</tr>
+<tr>
+<td><strong>Simulated annealing</strong></td>
+<td>Hill climbing that sometimes accepts worse moves, less often over time.</td>
+</tr>
+<tr>
+<td><strong>Genetic algorithm</strong></td>
+<td>Search that evolves a population by selection, crossover and mutation.</td>
+</tr>
+<tr>
+<td><strong>Belief state</strong></td>
+<td>The set of states the agent thinks it might be in.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why can hill climbing get stuck?</strong></p>
+<p><em>Answer:</em> On a local maximum, a ridge or a plateau, where no neighbour is better.</p>
+<p><strong>Q2. What does random restart do?</strong></p>
+<p><em>Answer:</em> It runs hill climbing from many starting points and keeps the best result.</p>
+<p><strong>Q3. When do we need belief states?</strong></p>
+<p><em>Answer:</em> When the environment is partially observable or actions have uncertain outcomes.</p></section><section class="chap" id="c4"><div class="chno">Chapter 5</div><h1>Adversarial Search and Games</h1><h2>Game Theory Basics</h2>
+<p>AI studies deterministic, turn-taking, two-player, zero-sum, perfect-information games such as chess and Go. A game has an initial state, a to-move function, actions, a result function, a terminal test and a <strong>utility</strong> at terminal states. The agent is MAX, the opponent MIN.</p>
+<h2>Minimax Search</h2>
+<p>The <strong>minimax value</strong> of a node is the utility for MAX of playing optimally from there, assuming MIN also plays optimally. MAX chooses the maximum of the children's values; MIN the minimum. Minimax is a depth-first search of the game tree. Its time is O(b^m); the space is O(bm).</p>
+<h2>Alpha-Beta Pruning</h2>
+<p>Alpha-beta pruning gives the same answer as minimax but skips branches that cannot affect the result. <strong>alpha</strong> is the best value found so far for MAX along the path; <strong>beta</strong> is the best for MIN. If a node's value is already worse for the player than an option available earlier, the rest of its children are skipped. With perfect move ordering, the time falls to O(b^(m/2)), allowing about twice the search depth. Good ordering uses <strong>killer moves</strong>, the best move from a shallower search, and <strong>transposition tables</strong> that cache positions already evaluated.</p>
+<h2>Heuristic Evaluation and Cutoffs</h2>
+<p>Real games are too large to search to the end. Instead, cut off the search at a depth limit and apply a <strong>heuristic evaluation function</strong> that estimates the utility of a non-terminal position, typically a weighted sum of features such as material and mobility. Techniques include <strong>iterative deepening</strong>, quiescence search (continue in unstable positions) and forward pruning.</p>
+<h2>Monte Carlo Tree Search</h2>
+<p>MCTS builds a search tree selectively using random playouts. Four steps repeat: <strong>selection</strong> (descend by a policy such as UCB1, which balances exploitation and exploration), <strong>expansion</strong>, <strong>simulation</strong> (a playout to the end) and <strong>backpropagation</strong> of the result. It works without a hand-written evaluation function and powers modern Go programs, where it was combined with neural networks in AlphaGo.</p>
+<h2>Stochastic Games</h2>
+<p>With chance (dice, cards) add <strong>chance nodes</strong>: a node's value is the expected value over outcomes. This is <strong>expectiminimax</strong>. Because the evaluation function must now measure expected utility, it should be a positive linear transformation of the true probability of winning.</p>
+<h2>Limitations</h2>
+<p>Game search assumes a known model and exact rules. Its limits include huge branching factors (Go), partial observability (poker) and the need for a good evaluation. Modern systems learn both policy and evaluation by self-play.</p>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Minimax</strong></td>
+<td>Choose the move that is best assuming the opponent plays best.</td>
+</tr>
+<tr>
+<td><strong>Alpha-beta pruning</strong></td>
+<td>Skip branches that cannot change the minimax decision.</td>
+</tr>
+<tr>
+<td><strong>Evaluation function</strong></td>
+<td>An estimate of how good a position is when the search is cut off.</td>
+</tr>
+<tr>
+<td><strong>Monte Carlo tree search</strong></td>
+<td>Choose moves by many random playouts guided by statistics.</td>
+</tr>
+<tr>
+<td><strong>Zero-sum game</strong></td>
+<td>One player's gain is exactly the other's loss.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. How much can alpha-beta save with perfect move ordering?</strong></p>
+<p><em>Answer:</em> It can roughly double the depth reached in the same time.</p>
+<p><strong>Q2. Why use Monte Carlo tree search for Go?</strong></p>
+<p><em>Answer:</em> Go has a huge branching factor and positions are hard to evaluate by hand.</p>
+<p><strong>Q3. What is the horizon effect?</strong></p>
+<p><em>Answer:</em> A bad event just past the search depth is not seen, so the agent may delay it uselessly.</p></section><section class="chap" id="c5"><div class="chno">Chapter 6</div><h1>Constraint Satisfaction Problems</h1><h2>Defining a CSP</h2>
+<p>A <strong>constraint satisfaction problem</strong> has variables X1..Xn, each with a domain of values, and constraints that limit the combinations. A solution assigns every variable a value that satisfies all constraints. Examples: map colouring (adjacent regions differ), Sudoku, scheduling, circuit layout.</p>
+<p>Constraints can be unary, binary, or higher-order (global constraints such as <em>Alldiff</em>). A binary CSP is drawn as a <strong>constraint graph</strong>.</p>
+<h2>Constraint Propagation</h2>
+<p><strong>Inference</strong> reduces domains by enforcing local consistency:</p>
+<ul>
+<li><strong>Node consistency:</strong> every value satisfies the unary constraints.</li>
+<li><strong>Arc consistency:</strong> for every arc (Xi, Xj), each value of Xi has some compatible value in Xj. The <strong>AC-3</strong> algorithm repeatedly revises arcs and re-queues affected neighbours, in O(c d^3) time.</li>
+<li><strong>Path consistency</strong> and <strong>k-consistency</strong> check larger groups of variables.</li>
+<li><strong>Global constraints</strong> use special algorithms, for example <em>Alldiff</em> detects when m variables share fewer than m values.</li>
+</ul>
+<h2>Backtracking Search</h2>
+<p><strong>Backtracking</strong> assigns one variable at a time and backs up when a conflict appears. It is smarter with heuristics:</p>
+<ul>
+<li><strong>Minimum remaining values (MRV):</strong> pick the variable with the fewest legal values.</li>
+<li><strong>Degree heuristic:</strong> break ties by the most constraints on unassigned variables.</li>
+<li><strong>Least constraining value:</strong> try the value that rules out the fewest options for neighbours.</li>
+<li><strong>Forward checking and MAC</strong> (maintaining arc consistency) propagate after every assignment.</li>
+<li><strong>Conflict-directed backjumping</strong> returns to the variable that actually caused the failure.</li>
+</ul>
+<h2>Local Search for CSPs</h2>
+<p><strong>Min-conflicts</strong> starts with a full assignment and repeatedly changes a variable in conflict to the value that causes the fewest conflicts. It solves n-queens for a million queens in a few steps, and is widely used for scheduling.</p>
+<h2>Problem Structure</h2>
+<p>If the constraint graph is a <strong>tree</strong>, the CSP can be solved in O(n d^2) by making it arc-consistent from the leaves to the root. General graphs can be reduced by <strong>cutset conditioning</strong> (fix a set of variables so the rest forms a tree) or by <strong>tree decomposition</strong>. Symmetries can be broken with extra constraints to cut the search.</p>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CSP</strong></td>
+<td>A problem defined by variables, domains and constraints.</td>
+</tr>
+<tr>
+<td><strong>Arc consistency</strong></td>
+<td>Every value of a variable has a supporting value in each neighbour.</td>
+</tr>
+<tr>
+<td><strong>Backtracking search</strong></td>
+<td>Assign variables one at a time and undo when a constraint fails.</td>
+</tr>
+<tr>
+<td><strong>MRV heuristic</strong></td>
+<td>Pick the variable with the fewest legal values left.</td>
+</tr>
+<tr>
+<td><strong>Min-conflicts</strong></td>
+<td>Local search that repairs the variable in the most conflicts.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why are CSPs easier than general search?</strong></p>
+<p><em>Answer:</em> The structure lets us prune whole families of assignments by constraint propagation.</p>
+<p><strong>Q2. What does forward checking do?</strong></p>
+<p><em>Answer:</em> After an assignment it removes inconsistent values from neighbouring variables' domains.</p>
+<p><strong>Q3. When is a CSP solvable in linear time?</strong></p>
+<p><em>Answer:</em> When its constraint graph is a tree.</p></section><section class="chap" id="c6"><div class="chno">Chapter 7</div><h1>Logical Agents</h1><h2>Knowledge-Based Agents</h2>
+<p>A <strong>knowledge-based agent</strong> keeps a <strong>knowledge base (KB)</strong>: a set of sentences written in a formal language. It works in a loop. It TELLs the KB what it perceives, ASKs the KB what to do, and then TELLs the KB which action it took. The big idea is the split between <em>what the agent knows</em> (the sentences) and <em>how it reasons</em> (the inference procedure). You can improve either one without touching the other.</p>
+<p>Two styles of building the KB exist. The <strong>declarative</strong> approach writes down facts and lets inference do the rest. The <strong>procedural</strong> approach hard-codes behaviour. Real agents usually mix both.</p>
+<h2>The Wumpus World</h2>
+<p>The wumpus world is a small grid cave used as a running example. It contains a monster (the wumpus), bottomless pits and a heap of gold. The agent perceives a <em>stench</em> next to the wumpus, a <em>breeze</em> next to a pit, a <em>glitter</em> on the gold square, a <em>bump</em> when it hits a wall, and a <em>scream</em> when the wumpus dies.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Environment</td>
+<td>Partially observable, discrete, static, sequential</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Grab the gold and climb out alive</td>
+</tr>
+<tr>
+<td>Danger</td>
+<td>Falling into a pit, meeting a live wumpus</td>
+</tr>
+<tr>
+<td>Actions</td>
+<td>Move forward, turn, grab, shoot (one arrow), climb</td>
+</tr>
+</tbody>
+</table>
+<p>The agent cannot see which squares are safe. It must <em>infer</em> safety from breezes and stenches. For example, if square [1,2] has no breeze, then neighbouring squares cannot hold a pit.</p>
+<h2>Logic: Syntax, Semantics, Models</h2>
+<ul>
+<li><strong>Syntax</strong> says which strings are well-formed sentences.</li>
+<li><strong>Semantics</strong> says what a sentence means: in each possible world (a <strong>model</strong>) it is true or false.</li>
+<li>A sentence <strong>entails</strong> another (written α ⊨ β) when β is true in every model where α is true.</li>
+<li>A procedure is <strong>sound</strong> if it derives only entailed sentences, and <strong>complete</strong> if it can derive every entailed sentence.</li>
+</ul>
+<p>Model checking enumerates models to test entailment. It is easy to understand but costs time exponential in the number of symbols.</p>
+<h2>Propositional Logic</h2>
+<p>Propositional logic uses symbols that are true or false, joined by the connectives <strong>not (¬)</strong>, <strong>and (∧)</strong>, <strong>or (∨)</strong>, <strong>implies (⇒)</strong> and <strong>if and only if (⇔)</strong>.</p>
+<p>Useful facts:</p>
+<ul>
+<li>A sentence is <strong>valid</strong> if true in all models (a tautology) and <strong>satisfiable</strong> if true in at least one.</li>
+<li>Inference rules such as <strong>modus ponens</strong> (from α and α ⇒ β, conclude β) and <strong>resolution</strong> are sound.</li>
+<li><strong>Conjunctive normal form (CNF)</strong> is an AND of ORs of literals; any sentence can be converted to it.</li>
+</ul>
+<h3>Wumpus rules in propositional form</h3>
+<p>Let B(x,y) mean "breeze at x,y" and P(x,y) mean "pit at x,y". The rule "a square is breezy exactly when a neighbour has a pit" is written once per square:</p>
+<p>B(1,1) ⇔ (P(1,2) ∨ P(2,1))</p>
+<p>The weakness is clear: one rule per square, so the KB grows with the cave.</p>
+<h2>Inference by Theorem Proving</h2>
+<h3>Resolution</h3>
+<p>Resolution takes two clauses that contain complementary literals and produces a new clause without them. To prove KB ⊨ α, add ¬α to the KB, convert to CNF and resolve repeatedly. If the <strong>empty clause</strong> appears, the set is contradictory and α follows. Resolution is sound and complete for propositional logic.</p>
+<h3>Horn clauses and chaining</h3>
+<p>A <strong>Horn clause</strong> has at most one positive literal. KBs made only of Horn clauses allow very fast inference:</p>
+<ul>
+<li><strong>Forward chaining</strong> starts from known facts and fires rules whose premises are all true, until the query appears. It is <em>data-driven</em>.</li>
+<li><strong>Backward chaining</strong> starts from the query and looks for rules that conclude it, then tries to prove their premises. It is <em>goal-driven</em>.</li>
+</ul>
+<p>Both run in time linear in the size of the KB.</p>
+<h2>Efficient Model Checking: SAT Solvers</h2>
+<p>The <strong>SAT problem</strong> asks whether a propositional formula is satisfiable. It is NP-complete, yet modern solvers handle formulas with millions of variables.</p>
+<ul>
+<li><strong>DPLL</strong> is a backtracking search with three tricks: <em>early termination</em>, <em>pure symbol heuristic</em> and <em>unit clause heuristic</em>.</li>
+<li><strong>CDCL</strong> (conflict-driven clause learning) adds <em>learned clauses</em> so the same mistake is never repeated.</li>
+<li><strong>Local search</strong> such as WalkSAT flips variables to reduce unsatisfied clauses; it is incomplete but often fast.</li>
+</ul>
+<p>Many planning and verification problems are turned into SAT and handed to a solver.</p>
+<h2>Agents Based on Propositional Logic</h2>
+<p>A <strong>logical agent</strong> can keep a <em>current-state</em> belief: which squares are known safe, which may hold pits. It uses <strong>fluents</strong> (facts that change over time) with a time index, and <strong>effect axioms</strong> plus <strong>frame axioms</strong> (what does <em>not</em> change). The frame problem is the cost of writing all the "unchanged" facts. <strong>Successor-state axioms</strong> say, for each fluent, how it becomes true at the next step.</p>
+<h2>Summary</h2>
+<ul>
+<li>A knowledge-based agent TELLs and ASKs a KB.</li>
+<li>Logic gives syntax, semantics and entailment; inference should be sound and ideally complete.</li>
+<li>Resolution is complete for propositional logic; Horn-clause chaining is linear.</li>
+<li>SAT solvers (DPLL, CDCL, WalkSAT) make propositional reasoning practical.</li>
+<li>Propositional logic is limited because it cannot talk about objects and relations compactly.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Knowledge base</strong></td>
+<td>A set of sentences the agent holds to be true.</td>
+</tr>
+<tr>
+<td><strong>Entailment</strong></td>
+<td>α entails β when β is true in every model where α is true.</td>
+</tr>
+<tr>
+<td><strong>Resolution</strong></td>
+<td>An inference rule that is complete for propositional logic.</td>
+</tr>
+<tr>
+<td><strong>Horn clause</strong></td>
+<td>A clause with at most one positive literal.</td>
+</tr>
+<tr>
+<td><strong>SAT solver</strong></td>
+<td>A program that decides whether a propositional formula is satisfiable.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. What is the difference between sound and complete inference?</strong></p>
+<p><em>Answer:</em> Sound derives only what is entailed; complete can derive everything that is entailed.</p>
+<p><strong>Q2. Why are Horn clauses attractive?</strong></p>
+<p><em>Answer:</em> Forward and backward chaining decide them in time linear in the size of the KB.</p>
+<p><strong>Q3. What is the frame problem?</strong></p>
+<p><em>Answer:</em> Stating compactly what does not change when an action is performed.</p></section><section class="chap" id="c7"><div class="chno">Chapter 8</div><h1>First-Order Logic</h1><h2>Why Go Beyond Propositional Logic</h2>
+<p>Propositional logic has no way to say "all squares next to a pit are breezy" in one sentence. <strong>First-order logic (FOL)</strong> adds <strong>objects</strong>, <strong>relations</strong> and <strong>functions</strong>, and the <strong>quantifiers</strong> <em>for all</em> (∀) and <em>there exists</em> (∃). It is expressive enough for most of mathematics and much of common sense.</p>
+<h2>Syntax and Semantics</h2>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Constant</td>
+<td>names one object</td>
+<td>Richard, John</td>
+</tr>
+<tr>
+<td>Predicate</td>
+<td>a relation among objects</td>
+<td>Brother(Richard, John)</td>
+</tr>
+<tr>
+<td>Function</td>
+<td>maps objects to an object</td>
+<td>LeftLeg(John)</td>
+</tr>
+<tr>
+<td>Variable</td>
+<td>stands for any object</td>
+<td>x</td>
+</tr>
+<tr>
+<td>Quantifier</td>
+<td>∀x or ∃x</td>
+<td>∀x King(x) ⇒ Person(x)</td>
+</tr>
+<tr>
+<td>Equality</td>
+<td>two terms are the same object</td>
+<td>Father(John) = Henry</td>
+</tr>
+</tbody>
+</table>
+<p>A <strong>model</strong> in FOL contains a set of objects (the <em>domain</em>) and an <em>interpretation</em> that says which object each constant names, and which tuples satisfy each predicate.</p>
+<h3>Quantifier rules of thumb</h3>
+<ul>
+<li>Use <strong>⇒</strong> with <strong>∀</strong>: "all kings are persons" is ∀x King(x) ⇒ Person(x).</li>
+<li>Use <strong>∧</strong> with <strong>∃</strong>: "some king is crazy" is ∃x King(x) ∧ Crazy(x).</li>
+<li>¬∀x P is the same as ∃x ¬P, and ¬∃x P is the same as ∀x ¬P.</li>
+</ul>
+<p>Getting these pairings wrong is the most common beginner mistake.</p>
+<h2>Using First-Order Logic</h2>
+<h3>Assertions and queries</h3>
+<p>TELL the KB facts such as King(John); ASK queries such as ∃x Person(x). The answer may be a <strong>substitution</strong> (binding list) such as {x/John}.</p>
+<h3>Domains</h3>
+<ul>
+<li><strong>Kinship:</strong> Parent, Mother, Grandparent are defined from a few base predicates.</li>
+<li><strong>Numbers and sets:</strong> Peano axioms define the natural numbers; set axioms define membership, union and subset.</li>
+<li><strong>Lists:</strong> Nil and Cons build sequences.</li>
+</ul>
+<h3>The wumpus world in FOL</h3>
+<p>Perception rules link percepts to the world: "if the agent perceives a breeze at time t then the agent's square is breezy." One general rule replaces dozens of propositional ones:</p>
+<p>∀s Breezy(s) ⇔ ∃r Adjacent(r, s) ∧ Pit(r)</p>
+<h2>Knowledge Engineering in FOL</h2>
+<p>A reliable process for building a KB:</p>
+<ol>
+<li><strong>Identify the task</strong> (which questions must the KB answer?).</li>
+<li><strong>Assemble the knowledge</strong> from experts and documents.</li>
+<li><strong>Decide on a vocabulary</strong> of predicates, functions and constants (the <em>ontology</em>).</li>
+<li><strong>Encode general knowledge</strong> as axioms.</li>
+<li><strong>Encode a specific problem instance.</strong></li>
+<li><strong>Pose queries</strong> and get answers.</li>
+<li><strong>Debug</strong> the KB: missing axioms give "cannot prove", wrong axioms give wrong proofs.</li>
+</ol>
+<h2>Summary</h2>
+<ul>
+<li>FOL adds objects, relations, functions and quantifiers to propositional logic.</li>
+<li>Pair ∀ with ⇒ and ∃ with ∧.</li>
+<li>A good ontology and a careful knowledge-engineering process matter as much as the logic.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Predicate</strong></td>
+<td>A relation among objects, such as Brother(x, y).</td>
+</tr>
+<tr>
+<td><strong>Quantifier</strong></td>
+<td>∀ (for all) or ∃ (there exists).</td>
+</tr>
+<tr>
+<td><strong>Domain</strong></td>
+<td>The set of objects a model contains.</td>
+</tr>
+<tr>
+<td><strong>Ontology</strong></td>
+<td>The vocabulary and structure of concepts chosen for a domain.</td>
+</tr>
+<tr>
+<td><strong>Term</strong></td>
+<td>An expression that names an object: a constant, variable or function application.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Which connective goes with ∀ and which with ∃?</strong></p>
+<p><em>Answer:</em> Use ⇒ with ∀ and ∧ with ∃.</p>
+<p><strong>Q2. What is ¬∀x P(x) equivalent to?</strong></p>
+<p><em>Answer:</em> ∃x ¬P(x).</p>
+<p><strong>Q3. Name two steps of knowledge engineering.</strong></p>
+<p><em>Answer:</em> Decide the vocabulary, and encode the general axioms, then test with queries.</p></section><section class="chap" id="c8"><div class="chno">Chapter 9</div><h1>Inference in First-Order Logic</h1><h2>Reducing to Propositional Inference</h2>
+<p><strong>Universal instantiation</strong> replaces a universally quantified variable by a ground term. <strong>Existential instantiation</strong> replaces ∃ with a new constant (a <em>Skolem constant</em>). By instantiating with every possible ground term, a FOL KB can be turned into a propositional one. With functions the set of ground terms is infinite, but <strong>Herbrand's theorem</strong> says that if a sentence is entailed, a finite subset of instantiations proves it. FOL entailment is <strong>semidecidable</strong>: algorithms can say yes to every entailed sentence, but may run forever on a non-entailed one.</p>
+<h2>Unification and Lifting</h2>
+<p>Instantiating blindly creates many useless facts. <strong>Lifted inference</strong> works with variables directly. The key tool is <strong>unification</strong>: find a substitution that makes two expressions identical.</p>
+<table>
+<thead>
+<tr>
+<th>Pair</th>
+<th>Unifier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Knows(John, x) and Knows(John, Jane)</td>
+<td>{x/Jane}</td>
+</tr>
+<tr>
+<td>Knows(John, x) and Knows(y, Mother(y))</td>
+<td>{y/John, x/Mother(John)}</td>
+</tr>
+<tr>
+<td>Knows(John, x) and Knows(x, Elizabeth)</td>
+<td>fails (same variable x)</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>most general unifier (MGU)</strong> is unique up to renaming. The <strong>occur check</strong> prevents binding a variable to a term that contains it.</p>
+<p><strong>Generalised modus ponens</strong> applies a rule whose premises unify with known facts and produces the substituted conclusion.</p>
+<h2>Forward Chaining</h2>
+<p>A <strong>definite clause</strong> has exactly one positive literal. Forward chaining repeatedly fires any rule whose premises unify with known facts and adds the new conclusion, until the query is derived or nothing changes. For <em>Datalog</em> knowledge bases (no function symbols) it terminates and is complete. Efficiency tricks include:</p>
+<ul>
+<li><strong>Pattern matching</strong> of rule premises against facts (the <em>Rete</em> network keeps partial matches).</li>
+<li><strong>Incremental forward chaining:</strong> only rules affected by a new fact are rechecked.</li>
+<li><strong>Irrelevant facts:</strong> magic sets restrict work to facts relevant to the goal.</li>
+</ul>
+<p>Forward chaining powers <strong>production systems</strong> and <strong>deductive databases</strong>.</p>
+<h2>Backward Chaining</h2>
+<p>Backward chaining starts with the goal and finds rules whose conclusion unifies with it, then proves their premises depth-first, passing along the growing substitution. It is the engine of <strong>Prolog</strong>.</p>
+<ul>
+<li>It is a depth-first search, so it uses little memory.</li>
+<li>It can loop forever (left recursion) and repeat work; <strong>tabling</strong> fixes the repetition.</li>
+<li><strong>Logic programming</strong> (Prolog) uses Horn clauses, the <em>closed world assumption</em> and <em>negation as failure</em>.</li>
+</ul>
+<h2>Resolution</h2>
+<p>For FOL, convert sentences to <strong>clausal form</strong>:</p>
+<ol>
+<li>Eliminate implications.</li>
+<li>Move negation inward.</li>
+<li>Standardise variables apart.</li>
+<li><strong>Skolemise</strong> to remove existential quantifiers.</li>
+<li>Drop universal quantifiers.</li>
+<li>Distribute ∨ over ∧.</li>
+</ol>
+<p>The <strong>resolution rule</strong> unifies a literal with the negation of one in another clause. Resolution is <strong>refutation-complete</strong>: if KB ∧ ¬α is unsatisfiable, resolution will find the empty clause. Practical provers add strategies such as <em>unit preference</em>, <em>set of support</em>, <em>input resolution</em> and <strong>subsumption</strong> (delete clauses that are less general than another). Equality is handled with <em>paramodulation</em> or a <strong>demodulation</strong> rewrite.</p>
+<p>Theorem provers have proved real results: the Robbins conjecture, and they are used to verify hardware and software.</p>
+<h2>Summary</h2>
+<ul>
+<li>Lifted inference uses unification to avoid blind instantiation.</li>
+<li>Forward chaining suits data-driven problems; backward chaining suits goal-driven problems.</li>
+<li>Resolution is refutation-complete for FOL, though search may not halt.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Unification</strong></td>
+<td>Finding a substitution that makes two expressions identical.</td>
+</tr>
+<tr>
+<td><strong>Skolemisation</strong></td>
+<td>Replacing ∃ by a new constant or function to remove the quantifier.</td>
+</tr>
+<tr>
+<td><strong>Forward chaining</strong></td>
+<td>Fire rules from known facts until the goal appears.</td>
+</tr>
+<tr>
+<td><strong>Backward chaining</strong></td>
+<td>Work from the goal back to supporting facts.</td>
+</tr>
+<tr>
+<td><strong>Refutation completeness</strong></td>
+<td>If KB ∧ ¬α is unsatisfiable, resolution finds the empty clause.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. What does the occur check prevent?</strong></p>
+<p><em>Answer:</em> Binding a variable to a term that contains that same variable.</p>
+<p><strong>Q2. Why is FOL entailment only semidecidable?</strong></p>
+<p><em>Answer:</em> An algorithm can confirm every entailed sentence but may run forever on a non-entailed one.</p>
+<p><strong>Q3. What language is built on backward chaining?</strong></p>
+<p><em>Answer:</em> Prolog.</p></section><section class="chap" id="c9"><div class="chno">Chapter 10</div><h1>Knowledge Representation</h1><h2>Ontological Engineering</h2>
+<p>An <strong>ontology</strong> organises the concepts of a domain. An <strong>upper ontology</strong> describes the most general concepts (objects, events, time, substances) that every domain shares.</p>
+<h2>Categories and Objects</h2>
+<ul>
+<li>Categories group objects. They can be <strong>predicates</strong> (Basketball(b)) or <strong>objects</strong> (Basketballs) so we can state properties of the category itself.</li>
+<li><strong>Inheritance</strong> passes properties down a hierarchy: members of a subclass have the properties of its superclass.</li>
+<li><strong>Physical composition</strong> (PartOf) and <strong>measurements</strong> (Length(x) = Inches(1.5)) extend the vocabulary.</li>
+<li><strong>Natural kinds</strong> (tigers) differ from <strong>defined kinds</strong> (bachelor) because they have no crisp definition.</li>
+</ul>
+<h2>Events and Time</h2>
+<p><strong>Event calculus</strong> describes <em>fluents</em> and the events that start (Initiates) or end (Terminates) them, and the times at which they hold. Intervals, ordering and <strong>processes</strong> (continuous events such as flying) are represented with predicates such as Meet, Before, During and Overlap.</p>
+<h2>Mental Objects and Modal Logic</h2>
+<p>To talk about what agents <em>know</em> or <em>believe</em>, we need <strong>modal logic</strong>: operators like K_A(P) ("A knows P") whose arguments are propositions, not objects. Possible-world semantics gives them meaning. The alternative is to treat sentences as <strong>reified</strong> objects (strings) in FOL.</p>
+<h2>Reasoning Systems for Categories</h2>
+<ul>
+<li><strong>Semantic networks</strong> draw categories as nodes and relations as links; fast inheritance is their strength.</li>
+<li><strong>Description logics</strong> define concepts from other concepts with operators such as And, All, AtLeast. The core tasks are <em>subsumption</em> (is concept A a subset of B?) and <em>classification</em>. They underlie the <strong>Web Ontology Language (OWL)</strong> and the semantic web.</li>
+</ul>
+<h2>Reasoning with Default Information</h2>
+<p>Common sense uses defaults: "birds fly" is true unless the bird is a penguin. Reasoning that takes back conclusions when new facts arrive is <strong>nonmonotonic</strong>.</p>
+<ul>
+<li><strong>Circumscription</strong> minimises the abnormal cases.</li>
+<li><strong>Default logic</strong> adds rules like "if P holds and it is consistent that Q, conclude Q."</li>
+<li><strong>Truth maintenance systems (TMS)</strong> record why each belief is held, so beliefs can be retracted when their justification disappears.</li>
+<li>The <strong>closed-world assumption</strong> treats anything not provably true as false.</li>
+</ul>
+<h2>Summary</h2>
+<ul>
+<li>Ontologies organise concepts; categories support inheritance.</li>
+<li>Event calculus represents change; modal logic represents belief and knowledge.</li>
+<li>Description logics power knowledge graphs and OWL.</li>
+<li>Nonmonotonic reasoning handles defaults and exceptions.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Upper ontology</strong></td>
+<td>The most general concepts shared across domains.</td>
+</tr>
+<tr>
+<td><strong>Inheritance</strong></td>
+<td>Subclasses receive the properties of their superclass.</td>
+</tr>
+<tr>
+<td><strong>Description logic</strong></td>
+<td>A logic that defines concepts from other concepts and supports subsumption.</td>
+</tr>
+<tr>
+<td><strong>Nonmonotonic reasoning</strong></td>
+<td>Reasoning where conclusions can be withdrawn when new facts arrive.</td>
+</tr>
+<tr>
+<td><strong>Truth maintenance system</strong></td>
+<td>Records why each belief is held so it can be retracted.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why do we represent categories as objects?</strong></p>
+<p><em>Answer:</em> So we can state properties of the category itself, such as its size or membership rules.</p>
+<p><strong>Q2. Give an example of default reasoning.</strong></p>
+<p><em>Answer:</em> Birds fly, unless the bird is a penguin.</p>
+<p><strong>Q3. What does OWL build on?</strong></p>
+<p><em>Answer:</em> Description logics, for the semantic web.</p></section><section class="chap" id="c10"><div class="chno">Chapter 11</div><h1>Automated Planning</h1><h2>The Planning Problem</h2>
+<p><strong>Planning</strong> finds a sequence of actions that achieves a goal. Unlike search with a black-box successor function, planning uses a <strong>factored representation</strong>: states are sets of propositions, and actions are described by their effects.</p>
+<h3>PDDL</h3>
+<p>The <strong>Planning Domain Definition Language (PDDL)</strong> describes:</p>
+<ul>
+<li>the <strong>initial state</strong> (a conjunction of ground atoms),</li>
+<li><strong>actions</strong> with <em>preconditions</em> (what must hold) and <em>effects</em> (what becomes true or false),</li>
+<li>the <strong>goal</strong> (a conjunction of literals).</li>
+</ul>
+<p>Example action (air cargo):</p>
+<p><em>Fly(p, from, to)</em>: precondition At(p, from) ∧ Plane(p) ∧ Airport(from) ∧ Airport(to); effect ¬At(p, from) ∧ At(p, to).</p>
+<p>The <strong>closed-world assumption</strong> applies: anything not listed is false. The <strong>STRIPS</strong> assumption means effects only change what is listed, so the frame problem disappears.</p>
+<h2>Algorithms for Classical Planning</h2>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Idea</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Forward state-space search</strong></td>
+<td>start at the initial state, apply applicable actions</td>
+</tr>
+<tr>
+<td><strong>Backward (regression) search</strong></td>
+<td>start from the goal, work back to the start</td>
+</tr>
+<tr>
+<td><strong>SAT planning</strong></td>
+<td>encode "a plan of length k exists" as a SAT problem</td>
+</tr>
+<tr>
+<td><strong>Planning graph (GRAPHPLAN)</strong></td>
+<td>layered graph of possible facts and actions; extracts plans</td>
+</tr>
+<tr>
+<td><strong>Partial-order planning</strong></td>
+<td>commit only to needed orderings</td>
+</tr>
+</tbody>
+</table>
+<h3>Heuristics for planning</h3>
+<p>Good heuristics come from <strong>relaxed problems</strong>:</p>
+<ul>
+<li><strong>Ignore preconditions:</strong> each action may be done anytime.</li>
+<li><strong>Ignore delete lists:</strong> actions never remove facts (very effective; used in FF and its descendants).</li>
+<li><strong>State abstraction:</strong> merge states to build a pattern database.</li>
+</ul>
+<h3>Planning graphs</h3>
+<p>A planning graph alternates <em>state levels</em> and <em>action levels</em>. <strong>Mutex links</strong> mark pairs of actions or facts that cannot hold together. If a goal fact never appears, or only appears mutex, the goal is unreachable within that many steps. The level at which all goal facts appear gives an admissible heuristic.</p>
+<h2>Hierarchical Planning</h2>
+<p>A <strong>hierarchical task network (HTN)</strong> starts with a high-level action and refines it using <strong>methods</strong> into lower-level steps until only primitive actions remain. It lets experts write the structure of good plans ("to travel: book, pack, go") and scales to very large problems. <strong>Angelic</strong> semantics reason about the set of outcomes a high-level action might achieve.</p>
+<h2>Planning and Acting in Nondeterministic Domains</h2>
+<p>When the world is not fully predictable, plans become more complex:</p>
+<ul>
+<li><strong>Sensorless (conformant) planning</strong> finds a plan that works without observations.</li>
+<li><strong>Contingent planning</strong> builds a plan with conditional branches ("if the door is locked, then ...").</li>
+<li><strong>Online planning</strong> interleaves planning, acting and <strong>replanning</strong>.</li>
+</ul>
+<p>States become <strong>belief states</strong> (sets of possible states). Fast progress comes from <strong>monitoring</strong> the execution and replanning when something unexpected occurs.</p>
+<h2>Time, Schedules and Resources</h2>
+<p>Real planning needs durations and resources. A <strong>scheduling</strong> problem assigns start times to actions under ordering constraints and resource limits. The <strong>critical path method</strong> finds the longest chain of dependent actions and hence the shortest possible total time. Hierarchical planning and constraint solving are combined for jobs such as factory production and space-mission operations.</p>
+<h2>Analysis of Planning Approaches</h2>
+<ul>
+<li>Forward search with good heuristics is the dominant approach for classical planning.</li>
+<li>SAT-based planning wins when plans are short and highly constrained.</li>
+<li>HTN planning is the practical choice when domain knowledge about plan structure is available.</li>
+</ul>
+<h2>Summary</h2>
+<ul>
+<li>PDDL describes states, actions, and goals in a factored way.</li>
+<li>Relaxed-problem heuristics make forward search effective.</li>
+<li>HTNs, contingent plans and online replanning extend planning to realistic settings.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PDDL</strong></td>
+<td>A language that describes initial state, actions and goals.</td>
+</tr>
+<tr>
+<td><strong>Precondition and effect</strong></td>
+<td>What must hold to act, and what changes afterward.</td>
+</tr>
+<tr>
+<td><strong>Delete-relaxation</strong></td>
+<td>A heuristic that pretends actions never remove facts.</td>
+</tr>
+<tr>
+<td><strong>HTN</strong></td>
+<td>Hierarchical task network: refine high-level tasks into primitive steps.</td>
+</tr>
+<tr>
+<td><strong>Contingent plan</strong></td>
+<td>A plan with branches that depend on observations.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. What does the STRIPS assumption remove?</strong></p>
+<p><em>Answer:</em> The frame problem: only the listed effects change.</p>
+<p><strong>Q2. What do mutex links in a planning graph mean?</strong></p>
+<p><em>Answer:</em> Two facts or actions cannot both hold or occur at the same level.</p>
+<p><strong>Q3. Why replan during execution?</strong></p>
+<p><em>Answer:</em> The world may not follow the model, so monitoring and replanning keep the plan valid.</p></section><section class="chap" id="c11"><div class="chno">Chapter 12</div><h1>Quantifying Uncertainty</h1><h2>Acting Under Uncertainty</h2>
+<p>An agent rarely knows the exact state of the world. Logic gives either "true" or "false", which breaks down when sensors are noisy or knowledge is incomplete. A <strong>rational</strong> agent weighs how likely each outcome is and how much it matters. <strong>Decision theory = probability theory + utility theory.</strong></p>
+<h2>Basic Probability Notation</h2>
+<ul>
+<li>A <strong>sample space</strong> is the set of all possible worlds; a <strong>probability model</strong> assigns each world a number between 0 and 1, and the numbers add up to 1.</li>
+<li>A <strong>proposition</strong> is a set of worlds; its probability is the sum of the worlds in it.</li>
+<li><strong>Unconditional (prior) probability</strong> P(a) is the belief before evidence. <strong>Conditional probability</strong> P(a | b) is the belief after learning b:</li>
+</ul>
+<p>P(a | b) = P(a ∧ b) / P(b)</p>
+<ul>
+<li><strong>Random variables</strong> have a <em>domain</em> (Weather could be sunny, rain, cloud, snow) and a <em>probability distribution</em> over it. A <strong>joint distribution</strong> gives the probability of every combination of values of several variables.</li>
+</ul>
+<h3>Axioms (Kolmogorov)</h3>
+<ol>
+<li>0 ≤ P(ω) ≤ 1 for every world.</li>
+<li>The probabilities of all worlds sum to 1.</li>
+<li>For any proposition, P(a) is the sum of the probabilities of the worlds in a.</li>
+</ol>
+<p>Useful consequences: P(¬a) = 1 − P(a), and <strong>inclusion-exclusion</strong>: P(a ∨ b) = P(a) + P(b) − P(a ∧ b).</p>
+<p>Why should an agent follow these axioms? If its betting odds violate them, a clever opponent can construct bets that guarantee the agent loses (the <em>Dutch book</em> argument).</p>
+<h2>Inference Using Full Joint Distributions</h2>
+<p>With a full joint table you can answer any query by adding up matching entries. To get P(cavity | toothache):</p>
+<ol>
+<li>Sum all entries where <em>toothache</em> is true to get P(toothache).</li>
+<li>Sum the entries where both are true.</li>
+<li>Divide.</li>
+</ol>
+<p><strong>Normalisation</strong> simplifies this: compute the unnormalised values for each answer and scale them so they sum to 1; the constant α replaces the division.</p>
+<p>The problem: the table has 2ⁿ entries for n Boolean variables. It is useless in practice for large n, so we need structure.</p>
+<h2>Independence</h2>
+<p>Two variables are <strong>independent</strong> if P(a, b) = P(a)P(b), that is, knowing one tells nothing about the other. Independence cuts a joint table into small independent pieces, but absolute independence is rare. A weaker, more useful idea is <strong>conditional independence</strong>: Toothache and Catch are independent <em>given</em> Cavity. Conditional independence turns exponential tables into products of small ones.</p>
+<h2>Bayes' Rule and Its Use</h2>
+<p><strong>Bayes' rule</strong> reverses a conditional:</p>
+<p>P(b | a) = P(a | b) P(b) / P(a)</p>
+<p>It matters because causal knowledge P(symptom | disease) is often easier to get than diagnostic knowledge P(disease | symptom).</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P(b)</td>
+<td>prior</td>
+</tr>
+<tr>
+<td>P(a | b)</td>
+<td>likelihood</td>
+</tr>
+<tr>
+<td>P(b | a)</td>
+<td>posterior</td>
+</tr>
+<tr>
+<td>P(a)</td>
+<td>evidence (normaliser)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Worked example.</strong> A disease affects 1 in 10,000 people. A test is 99% sensitive with a 1% false-positive rate. If you test positive, the chance you have the disease is only about 1%, because false positives from the huge healthy population outnumber true positives. Ignoring the prior (<em>base-rate neglect</em>) is a classic error.</p>
+<p>Bayes' rule combines evidence naively as: P(cause | e₁, e₂) ∝ P(cause) P(e₁ | cause) P(e₂ | cause). This is the <strong>naive Bayes</strong> model: one cause with conditionally independent effects. It is simple, scales linearly and works surprisingly well for classification (for example, spam filtering).</p>
+<h2>Summary</h2>
+<ul>
+<li>Probability lets an agent express degrees of belief.</li>
+<li>Conditional independence is the key to compact representations.</li>
+<li>Bayes' rule turns causal knowledge into diagnostic inference.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Prior probability</strong></td>
+<td>Belief before seeing evidence.</td>
+</tr>
+<tr>
+<td><strong>Conditional probability</strong></td>
+<td>Belief after learning evidence: P(a</td>
+</tr>
+<tr>
+<td><strong>Conditional independence</strong></td>
+<td>A and B are independent given C.</td>
+</tr>
+<tr>
+<td><strong>Bayes' rule</strong></td>
+<td>P(b</td>
+</tr>
+<tr>
+<td><strong>Naive Bayes</strong></td>
+<td>One cause with conditionally independent effects.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. A test is 99% accurate for a 1-in-10,000 disease. You test positive. Is the disease likely?</strong></p>
+<p><em>Answer:</em> No: about 1%, because false positives from the many healthy people outnumber true positives.</p>
+<p><strong>Q2. Why does a full joint table fail in practice?</strong></p>
+<p><em>Answer:</em> It has 2 to the power n entries for n Boolean variables.</p>
+<p><strong>Q3. What is normalisation used for?</strong></p>
+<p><em>Answer:</em> Scaling unnormalised values so they sum to 1, avoiding computing P(evidence).</p></section><section class="chap" id="c12"><div class="chno">Chapter 13</div><h1>Probabilistic Reasoning</h1><h2>Bayesian Networks</h2>
+<p>A <strong>Bayesian network</strong> is a directed acyclic graph with:</p>
+<ul>
+<li>one <strong>node</strong> per random variable,</li>
+<li>an <strong>edge</strong> from X to Y when X directly influences Y (X is a <em>parent</em> of Y),</li>
+<li>a <strong>conditional probability table (CPT)</strong> P(X | Parents(X)) for every node.</li>
+</ul>
+<p>The network represents the full joint distribution as a product of local terms:</p>
+<p>P(x₁,...,xₙ) = ∏ P(xᵢ | parents(xᵢ))</p>
+<p>A network with n Boolean variables and at most k parents per node needs only n·2ᵏ numbers instead of 2ⁿ.</p>
+<h3>Building a network</h3>
+<ol>
+<li>Choose the variables.</li>
+<li>Order them so causes come before effects (a <strong>causal</strong> ordering gives the smallest, most natural networks).</li>
+<li>For each variable, pick as parents the earlier variables that directly affect it.</li>
+<li>Fill in the CPTs.</li>
+</ol>
+<h3>Example: burglar alarm</h3>
+<p>Burglary and Earthquake cause Alarm; Alarm causes JohnCalls and MaryCalls. From a handful of numbers you can compute questions like P(Burglary | JohnCalls, MaryCalls).</p>
+<h2>Conditional Independence: d-separation</h2>
+<p>The graph structure encodes conditional independence:</p>
+<ul>
+<li>A variable is independent of its <strong>non-descendants</strong> given its <strong>parents</strong>.</li>
+<li>A variable is independent of every other variable given its <strong>Markov blanket</strong> (parents, children and children's other parents).</li>
+<li><strong>d-separation</strong> is a graph test that says exactly which independencies hold given evidence. Three basic patterns: a <strong>chain</strong> (A→B→C) is blocked by observing B; a <strong>common cause</strong> (A←B→C) is blocked by observing B; a <strong>collider</strong> (A→B←C) is <em>opened</em> by observing B or any descendant (this is the "explaining away" effect: if the alarm rang and an earthquake happened, burglary becomes less likely).</li>
+</ul>
+<h2>Efficient Representation of CPTs</h2>
+<p>Big CPTs can be written compactly:</p>
+<ul>
+<li><strong>Deterministic nodes</strong> (value fixed by parents, e.g. NorthAmerican = Canadian ∨ US ∨ Mexican).</li>
+<li><strong>Noisy-OR:</strong> each cause independently fails to produce the effect with some inhibition probability; needs only k numbers for k causes.</li>
+<li><strong>Continuous variables</strong> use parametric forms such as the <em>linear Gaussian</em> and <em>logistic/probit</em> models for discrete children with continuous parents.</li>
+</ul>
+<h2>Exact Inference</h2>
+<h3>Enumeration</h3>
+<p>Sum the joint over all hidden variables. Correct but repeats work.</p>
+<h3>Variable elimination</h3>
+<p>Evaluate the sum right to left, storing intermediate results as <strong>factors</strong> and multiplying/summing out variables one at a time. Cost depends on the <strong>elimination order</strong> and the network's <strong>treewidth</strong>. For <strong>polytrees</strong> (singly connected networks) it is linear in the network size; for general networks the problem is <strong>#P-hard</strong>.</p>
+<h3>Clustering (junction tree)</h3>
+<p>Group nodes into a tree of clusters to answer many queries after a single preprocessing step.</p>
+<h2>Approximate Inference</h2>
+<p>When exact inference is too costly, use sampling:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Idea</th>
+<th>Weakness</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Direct (prior) sampling</strong></td>
+<td>sample variables in topological order</td>
+<td>wastes samples that disagree with evidence</td>
+</tr>
+<tr>
+<td><strong>Rejection sampling</strong></td>
+<td>throw away samples that contradict the evidence</td>
+<td>very wasteful when evidence is unlikely</td>
+</tr>
+<tr>
+<td><strong>Likelihood weighting</strong></td>
+<td>fix evidence, weight each sample by its likelihood</td>
+<td>weights can become tiny in large networks</td>
+</tr>
+<tr>
+<td><strong>Markov chain Monte Carlo (MCMC, Gibbs sampling)</strong></td>
+<td>do a random walk over complete assignments, resampling one variable given its Markov blanket</td>
+<td>needs time to "burn in"</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Loopy belief propagation</strong> passes messages on graphs with cycles; it often works well but may not converge.</p>
+<h2>Causal Networks</h2>
+<p>A Bayesian network can be read as a <strong>causal</strong> model. The <strong>do-operator</strong> distinguishes <em>observing</em> X = x from <em>intervening</em> to set X = x. Intervention cuts the arrows into X. The <strong>backdoor criterion</strong> says which variables to adjust for to estimate a causal effect from observational data, and <strong>counterfactuals</strong> ask "what would have happened if...?" Causal reasoning explains why correlation is not causation.</p>
+<h2>Summary</h2>
+<ul>
+<li>Bayesian networks encode joint distributions compactly through conditional independence.</li>
+<li>Exact inference is polynomial on trees and hard in general; sampling and MCMC give approximate answers.</li>
+<li>Causal networks support reasoning about interventions.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bayesian network</strong></td>
+<td>A directed acyclic graph with a conditional probability table per node.</td>
+</tr>
+<tr>
+<td><strong>Markov blanket</strong></td>
+<td>Parents, children and children's other parents.</td>
+</tr>
+<tr>
+<td><strong>d-separation</strong></td>
+<td>A graph test for conditional independence.</td>
+</tr>
+<tr>
+<td><strong>Variable elimination</strong></td>
+<td>Exact inference by summing out variables one at a time.</td>
+</tr>
+<tr>
+<td><strong>Do-operator</strong></td>
+<td>Models an intervention that sets a variable, cutting arrows into it.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. What does a collider (A → B ← C) do when B is observed?</strong></p>
+<p><em>Answer:</em> It makes A and C dependent: this is the explaining-away effect.</p>
+<p><strong>Q2. When is exact inference cheap?</strong></p>
+<p><em>Answer:</em> In polytrees, or networks with small treewidth.</p>
+<p><strong>Q3. Name two approximate inference methods.</strong></p>
+<p><em>Answer:</em> Likelihood weighting and Gibbs sampling (MCMC).</p></section><section class="chap" id="c13"><div class="chno">Chapter 14</div><h1>Probabilistic Reasoning over Time</h1><h2>Time and Uncertainty</h2>
+<p>To track a changing world, model it as a sequence of <strong>time slices</strong>. Each slice has hidden <strong>state variables</strong> Xₜ and observed <strong>evidence variables</strong> Eₜ.</p>
+<p>Two assumptions simplify the model:</p>
+<ul>
+<li><strong>Markov assumption:</strong> the current state depends only on a bounded history, usually the previous state: P(Xₜ | X₀:ₜ₋₁) = P(Xₜ | Xₜ₋₁).</li>
+<li><strong>Sensor (evidence) assumption:</strong> the evidence depends only on the current state.</li>
+</ul>
+<p>A <strong>stationary process</strong> has the same rules at every step. We need three things: a prior P(X₀), a <strong>transition model</strong> P(Xₜ | Xₜ₋₁) and a <strong>sensor model</strong> P(Eₜ | Xₜ).</p>
+<h2>Inference Tasks</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Question</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Filtering</strong></td>
+<td>what is the belief state now, given all evidence so far?</td>
+</tr>
+<tr>
+<td><strong>Prediction</strong></td>
+<td>what will the state be k steps ahead?</td>
+</tr>
+<tr>
+<td><strong>Smoothing</strong></td>
+<td>what was the state at an earlier time, given all evidence up to now?</td>
+</tr>
+<tr>
+<td><strong>Most likely explanation</strong></td>
+<td>which sequence of states best explains the evidence?</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Filtering</strong> is done <em>recursively</em>: new belief = α · sensor model × (sum over old states of transition model × old belief). The cost per update is constant, so an agent can track the world forever.</p>
+<p><strong>Smoothing</strong> uses a forward pass and a backward pass (the <strong>forward-backward algorithm</strong>), with time linear in the sequence length.</p>
+<p><strong>Viterbi</strong> finds the most likely state sequence, by dynamic programming with "max" in place of "sum".</p>
+<h2>Hidden Markov Models (HMMs)</h2>
+<p>An <strong>HMM</strong> has a single discrete state variable. With S states the transition model is an S×S matrix, so the filtering update is a matrix–vector product. Classic uses include speech recognition, gene finding and activity recognition. The matrix view makes <strong>constant-space smoothing</strong> and <strong>online</strong> algorithms possible.</p>
+<h3>Example: locating a robot</h3>
+<p>A robot on a grid has noisy distance sensors. The HMM belief is a probability over grid cells. Each move spreads the belief (transition uncertainty), and each sensor reading sharpens it.</p>
+<h2>Kalman Filters</h2>
+<p>A <strong>Kalman filter</strong> handles <strong>continuous</strong> state with <em>linear</em> dynamics and Gaussian noise. The belief stays Gaussian forever; it is described by a mean and covariance that are updated in closed form. It is used for tracking aircraft, GPS and navigation.</p>
+<p>Its limits: it needs linear models and unimodal Gaussians. The <strong>extended Kalman filter</strong> linearises nonlinear models but can fail badly with strong nonlinearity.</p>
+<h2>Dynamic Bayesian Networks (DBNs)</h2>
+<p>A <strong>DBN</strong> has several state variables per slice and edges between consecutive slices. HMMs and Kalman filters are special cases. A DBN is more compact than the equivalent HMM, since a factored state with n Boolean variables avoids a table of 2ⁿ × 2ⁿ numbers. Exact inference by "unrolling" the network is usually too costly, so we use:</p>
+<ul>
+<li><strong>Particle filtering:</strong> keep N samples ("particles") of the state. At each step: (1) propagate each particle through the transition model, (2) weight it by the likelihood of the new evidence, (3) <em>resample</em> in proportion to the weights. The cost per update is constant and it handles non-Gaussian, nonlinear problems. It is the standard tool in robot localisation.</li>
+</ul>
+<h2>Keeping Track of Many Objects</h2>
+<p>When several objects are tracked at once, the <strong>data association</strong> problem appears: which observation belongs to which object? Solutions use probabilistic assignment, the Hungarian algorithm, or MCMC.</p>
+<h2>Summary</h2>
+<ul>
+<li>Temporal models rest on the Markov and sensor assumptions.</li>
+<li>Filtering, prediction, smoothing and most-likely-sequence are the key tasks.</li>
+<li>HMMs, Kalman filters and DBNs are structured models; particle filters give general approximate inference.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Markov assumption</strong></td>
+<td>The current state depends only on a bounded history.</td>
+</tr>
+<tr>
+<td><strong>Filtering</strong></td>
+<td>Estimating the current belief from all evidence so far.</td>
+</tr>
+<tr>
+<td><strong>HMM</strong></td>
+<td>A temporal model with one discrete hidden state variable.</td>
+</tr>
+<tr>
+<td><strong>Kalman filter</strong></td>
+<td>Exact filtering for linear systems with Gaussian noise.</td>
+</tr>
+<tr>
+<td><strong>Particle filter</strong></td>
+<td>Filtering with a set of weighted samples.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. What are the three steps of particle filtering?</strong></p>
+<p><em>Answer:</em> Propagate each particle, weight by the evidence, and resample.</p>
+<p><strong>Q2. Why can an agent filter forever?</strong></p>
+<p><em>Answer:</em> The update is recursive and takes constant time per step.</p>
+<p><strong>Q3. When does a Kalman filter fail?</strong></p>
+<p><em>Answer:</em> With strongly nonlinear dynamics or multimodal beliefs.</p></section><section class="chap" id="c14"><div class="chno">Chapter 15</div><h1>Probabilistic Programming</h1><h2>Relational Probability Models</h2>
+<p>Bayesian networks are like propositional logic: one node per ground fact. A <strong>relational probability model (RPM)</strong> brings FOL-like expressiveness. It defines random variables for <em>all objects</em> and relations through templates such as:</p>
+<p>Honest(s) ~ Bernoulli(0.9) and Rating(r) depends on Quality(b) and Honest(Reviewer(r)).</p>
+<p>A <em>book-rating</em> example: each book has a hidden quality; each customer has an honesty; each rating depends on both. One short program defines a network of any size.</p>
+<p>Under <strong>closed-universe semantics</strong> you know the objects. With <strong>open-universe</strong> semantics you are uncertain about <em>how many</em> objects exist and which observations refer to which object (identity uncertainty). Examples: counting vehicles in video, or deciding if two web records are the same person.</p>
+<h2>Probabilistic Programming Languages</h2>
+<p>A <strong>probabilistic programming language (PPL)</strong> lets you write a generative model as a program and handles inference automatically. Typical features:</p>
+<ul>
+<li>Random choices (<code>sample</code>) and <strong>observations</strong> (<code>observe</code> or conditioning).</li>
+<li><strong>Inference engines:</strong> importance sampling, MCMC (including Hamiltonian Monte Carlo), variational inference.</li>
+<li>Language families: logic-based (BLOG, ProbLog), Lisp-style (Church, Venture), Python-embedded (Pyro, PyMC, Stan, NumPyro).</li>
+</ul>
+<p>A <em>generative</em> model is easy to write; the PPL inverts it to answer "given the data, what are the parameters?".</p>
+<h3>Example: a Bayesian coin</h3>
+<p>Model: bias ~ Uniform(0,1); each flip ~ Bernoulli(bias). Observe 7 heads in 10 flips. The posterior for the bias is concentrated near 0.7 with visible spread, giving honest uncertainty rather than a single point estimate.</p>
+<h2>Inference in Probabilistic Programs</h2>
+<ul>
+<li><strong>Likelihood weighting</strong> and <strong>importance sampling</strong> on the program trace.</li>
+<li><strong>MCMC</strong> proposes changes to random choices and accepts or rejects them (Metropolis–Hastings).</li>
+<li><strong>Variational inference</strong> fits a simpler distribution to the posterior by optimisation.</li>
+<li><strong>Open-universe inference</strong> uses MCMC moves that add or delete objects.</li>
+</ul>
+<h2>Why It Matters</h2>
+<p>PPLs separate <em>modelling</em> from <em>inference</em>. They are used in:</p>
+<ul>
+<li>the CTBT seismic-monitoring system (detecting nuclear tests),</li>
+<li>cognitive science, epidemiology and astronomy,</li>
+<li>model-based machine learning.</li>
+</ul>
+<h2>Summary</h2>
+<ul>
+<li>RPMs define whole families of Bayesian networks with objects and relations.</li>
+<li>Open-universe models handle uncertainty about what exists.</li>
+<li>PPLs provide generic inference engines so that modelling is separate from algorithms.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Relational probability model</strong></td>
+<td>Templates that define a Bayesian network over objects and relations.</td>
+</tr>
+<tr>
+<td><strong>Open universe</strong></td>
+<td>A model where the number of objects is uncertain.</td>
+</tr>
+<tr>
+<td><strong>Probabilistic program</strong></td>
+<td>A generative model written as code, with automatic inference.</td>
+</tr>
+<tr>
+<td><strong>Importance sampling</strong></td>
+<td>Weight samples drawn from an easy distribution.</td>
+</tr>
+<tr>
+<td><strong>Variational inference</strong></td>
+<td>Fit a simple distribution to the posterior by optimisation.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. What does a PPL separate?</strong></p>
+<p><em>Answer:</em> Modelling from inference.</p>
+<p><strong>Q2. What is identity uncertainty?</strong></p>
+<p><em>Answer:</em> Not knowing whether two observations refer to the same object.</p>
+<p><strong>Q3. Name two Python probabilistic programming tools.</strong></p>
+<p><em>Answer:</em> PyMC and Pyro (also Stan and NumPyro).</p></section><section class="chap" id="c15"><div class="chno">Chapter 16</div><h1>Making Simple Decisions</h1><h2>Combining Beliefs and Desires</h2>
+<p>A rational agent chooses the action with the highest <strong>expected utility (EU)</strong>:</p>
+<p>EU(a) = Σ P(outcome | a) × U(outcome)</p>
+<p>The principle of <strong>maximum expected utility (MEU)</strong> is the foundation of decision theory.</p>
+<h2>The Basis of Utility Theory</h2>
+<p>If an agent's preferences satisfy a few <em>axioms of utility theory</em> (orderability, transitivity, continuity, substitutability, monotonicity, decomposability), then a utility function exists and the agent acts as if maximising its expectation. Violating transitivity makes the agent exploitable (a "money pump").</p>
+<ul>
+<li><strong>Utility</strong> is only defined up to a positive linear transformation: the <em>ratios of differences</em> matter.</li>
+<li>A <strong>normalised utility</strong> gives 1 to the best prize and 0 to the worst catastrophe.</li>
+<li>The <strong>micromort</strong> (one-in-a-million chance of death) and <strong>QALY</strong> (quality-adjusted life year) are practical units used in health and safety.</li>
+</ul>
+<h2>Utility Functions</h2>
+<h3>Money</h3>
+<p>People generally prefer a sure payoff to a gamble with the same expected money: they are <strong>risk-averse</strong>. The utility of money is <em>concave</em> (diminishing returns). The gap between the expected value of a gamble and its <strong>certainty equivalent</strong> is the <strong>risk premium</strong> (this is why insurance exists).</p>
+<h3>Multiattribute utility</h3>
+<p>When outcomes have several attributes (cost, safety, time), use:</p>
+<ul>
+<li><strong>Dominance:</strong> if option A is at least as good as B on every attribute, discard B.</li>
+<li><strong>Preference independence</strong> and an <strong>additive</strong> value function V = Σ wᵢ Vᵢ(xᵢ).</li>
+<li><strong>Utility under uncertainty</strong> with multiplicative or more complex forms.</li>
+</ul>
+<h3>Common human biases</h3>
+<p>People violate the axioms systematically: the <strong>Allais paradox</strong>, the <strong>Ellsberg paradox</strong> (ambiguity aversion), <strong>framing effects</strong> and the <strong>optimiser's curse</strong> (picking the option with the highest <em>estimate</em> biases estimates upward). Prospect theory describes how people actually behave.</p>
+<h2>Decision Networks</h2>
+<p>A <strong>decision network</strong> (influence diagram) extends a Bayesian network with:</p>
+<ul>
+<li><strong>chance nodes</strong> (ovals): random variables,</li>
+<li><strong>decision nodes</strong> (rectangles): the agent's choices,</li>
+<li><strong>utility nodes</strong> (diamonds): the value of an outcome.</li>
+</ul>
+<p>To decide: for each setting of the decision nodes, compute the expected utility with a Bayesian-network query, then choose the best.</p>
+<h3>Example: airport siting</h3>
+<p>Decisions: where to build. Chance: noise, cost, accidents. Utility: a function of those. The network computes the expected utility of each site.</p>
+<h2>The Value of Information</h2>
+<p>Sometimes it is worth paying for information before deciding. The <strong>value of perfect information (VPI)</strong> about a variable E is the expected increase in utility if we learn E before acting:</p>
+<p>VPI(E) = (expected utility with knowledge of E) − (expected utility now)</p>
+<p>Properties: VPI is never negative; it is not additive across several variables; and it depends on the order of acquisition. A good agent asks for information only when VPI exceeds the cost, which is the basis for <em>information-gathering</em> actions such as medical tests.</p>
+<h2>Unknown Preferences</h2>
+<p>An agent may be uncertain about <em>what the human wants</em>. The <strong>assistance game</strong> formulation has a robot that does not know the human's utility function but tries to maximise it. The <strong>off-switch</strong> result: a robot that is uncertain about the human's preferences has a reason to <em>allow</em> itself to be switched off, because the human's action is evidence about what is best. A robot that is certain of its objective has no such incentive.</p>
+<h2>Summary</h2>
+<ul>
+<li>Rational choice is maximum expected utility; utility reflects preferences, risk attitude and multiple attributes.</li>
+<li>Decision networks combine probability and utility; information has computable value.</li>
+<li>Uncertainty about human preferences is central to building safe, beneficial AI.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Expected utility</strong></td>
+<td>The sum over outcomes of probability times utility.</td>
+</tr>
+<tr>
+<td><strong>Risk aversion</strong></td>
+<td>Preferring a sure payoff to a gamble of equal expected value.</td>
+</tr>
+<tr>
+<td><strong>Decision network</strong></td>
+<td>A Bayesian network with decision and utility nodes.</td>
+</tr>
+<tr>
+<td><strong>Value of information</strong></td>
+<td>The expected gain in utility from learning a variable before deciding.</td>
+</tr>
+<tr>
+<td><strong>Off-switch problem</strong></td>
+<td>A robot unsure of human preferences has a reason to allow shutdown.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why is utility concave for money?</strong></p>
+<p><em>Answer:</em> Each extra dollar adds less value than the last.</p>
+<p><strong>Q2. Can the value of information be negative?</strong></p>
+<p><em>Answer:</em> No, it is never negative.</p>
+<p><strong>Q3. What does the Allais paradox show?</strong></p>
+<p><em>Answer:</em> People violate the axioms of utility theory.</p></section><section class="chap" id="c16"><div class="chno">Chapter 17</div><h1>Making Complex Decisions</h1><h2>Sequential Decision Problems</h2>
+<p>In a <strong>sequential</strong> problem the utility depends on a <em>sequence</em> of decisions. In a stochastic, fully observable environment the problem is a <strong>Markov decision process (MDP)</strong>:</p>
+<ul>
+<li>a set of <strong>states</strong>, with an initial state,</li>
+<li>a set of <strong>actions</strong> for each state,</li>
+<li>a <strong>transition model</strong> P(s′ | s, a),</li>
+<li>a <strong>reward function</strong> R(s, a, s′).</li>
+</ul>
+<p>The solution is a <strong>policy</strong> π(s) that gives an action for every state (a fixed plan is not enough, because the outcome is uncertain). The <strong>optimal policy</strong> π* maximises expected total (discounted) reward.</p>
+<h3>Utilities over time</h3>
+<ul>
+<li><strong>Finite horizon:</strong> the best action may depend on the time left (nonstationary).</li>
+<li><strong>Infinite horizon</strong> with <strong>discount factor γ</strong> &lt; 1 makes the sum of rewards finite and the optimal policy stationary. The utility of a sequence is the <strong>discounted sum</strong> R₀ + γR₁ + γ²R₂ + ...</li>
+</ul>
+<h2>Value Iteration</h2>
+<p>The <strong>utility of a state</strong> U(s) is the expected discounted sum of rewards from s under the optimal policy. It satisfies the <strong>Bellman equation</strong>:</p>
+<p>U(s) = max over a of Σ P(s′ | s, a) [R(s, a, s′) + γ U(s′)]</p>
+<p><strong>Value iteration</strong> starts with arbitrary utilities and repeatedly applies the Bellman update to every state. It converges to the unique solution (the update is a <strong>contraction</strong>). Then the policy is read off by choosing the action that maximises the right-hand side. Convergence is faster for smaller γ.</p>
+<h2>Policy Iteration</h2>
+<p><strong>Policy iteration</strong> alternates two steps:
+1. <strong>Policy evaluation:</strong> compute the utility of the current policy by solving a linear system (or by a few simple Bellman backups).
+2. <strong>Policy improvement:</strong> make the policy greedy with respect to those utilities.</p>
+<p>It stops when the policy no longer changes, which usually takes few iterations. It can be faster than value iteration. <strong>Asynchronous</strong> versions update states in any order and focus on important ones (prioritised sweeping).</p>
+<h2>Partially Observable MDPs (POMDPs)</h2>
+<p>When the agent cannot see the state, we have a <strong>POMDP</strong>: an MDP plus a <strong>sensor model</strong> P(e | s). The agent maintains a <strong>belief state</strong> b (a probability distribution over states). The <strong>optimal action depends only on the belief state</strong>, so a POMDP is an MDP over a continuous belief space.</p>
+<ul>
+<li>The belief update after action a and percept e is the same as filtering.</li>
+<li>Value functions over belief space are piecewise linear and convex.</li>
+<li>Exact solution is intractable for all but tiny problems, so approximate methods are used: <strong>point-based value iteration</strong>, <strong>online search</strong> (look ahead over belief states with sampling, e.g. POMCP), and DBN-based representations.</li>
+</ul>
+<p>A POMDP agent naturally values <strong>information-gathering</strong>: it acts to reduce uncertainty when that leads to better rewards later.</p>
+<h2>Algorithms for Solving MDPs, at a Glance</h2>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Needs</th>
+<th>Idea</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Value iteration</td>
+<td>model</td>
+<td>repeat Bellman updates</td>
+</tr>
+<tr>
+<td>Policy iteration</td>
+<td>model</td>
+<td>evaluate, then improve</td>
+</tr>
+<tr>
+<td>Online search</td>
+<td>model + simulator</td>
+<td>look ahead from the current state</td>
+</tr>
+<tr>
+<td>Monte Carlo methods</td>
+<td>simulator</td>
+<td>estimate values from sampled trajectories</td>
+</tr>
+<tr>
+<td>Reinforcement learning (Ch. 22)</td>
+<td>experience only</td>
+<td>learn without knowing the model</td>
+</tr>
+</tbody>
+</table>
+<h2>Summary</h2>
+<ul>
+<li>MDPs model sequential decisions under uncertainty; solutions are policies.</li>
+<li>Value and policy iteration solve small MDPs exactly using the Bellman equation.</li>
+<li>POMDPs add partial observability and need belief states and approximation.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MDP</strong></td>
+<td>States, actions, a transition model and rewards.</td>
+</tr>
+<tr>
+<td><strong>Policy</strong></td>
+<td>A map from states to actions.</td>
+</tr>
+<tr>
+<td><strong>Bellman equation</strong></td>
+<td>U(s) = max over actions of the expected reward plus discounted next utility.</td>
+</tr>
+<tr>
+<td><strong>Discount factor</strong></td>
+<td>γ &lt; 1: how much future rewards count.</td>
+</tr>
+<tr>
+<td><strong>POMDP</strong></td>
+<td>An MDP in which the state is only partly observable.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why is a policy needed, not a plan?</strong></p>
+<p><em>Answer:</em> Outcomes are uncertain, so the agent needs a best action for every state it may reach.</p>
+<p><strong>Q2. What makes value iteration converge?</strong></p>
+<p><em>Answer:</em> The Bellman update is a contraction.</p>
+<p><strong>Q3. What is a belief state?</strong></p>
+<p><em>Answer:</em> A probability distribution over states.</p></section><section class="chap" id="c17"><div class="chno">Chapter 18</div><h1>Multiagent Decision Making</h1><h2>Properties of Multiagent Environments</h2>
+<p>When several agents act in the same world, each agent's best action depends on the others. Dimensions to consider: how many agents; whether they share goals (cooperative) or compete; whether they can communicate; and whether the environment is static or dynamic.</p>
+<h2>Non-Cooperative Game Theory</h2>
+<p>A <strong>game</strong> has players, actions (strategies) and a <strong>payoff</strong> for each combination. A <strong>pure strategy</strong> picks one action; a <strong>mixed strategy</strong> randomises.</p>
+<h3>Dominance and equilibrium</h3>
+<ul>
+<li>A strategy is <strong>dominant</strong> if it is best regardless of what others do.</li>
+<li>A <strong>Nash equilibrium</strong> is a profile of strategies where no player can gain by changing alone. Every finite game has at least one Nash equilibrium (possibly mixed).</li>
+<li><strong>Prisoner's dilemma:</strong> both players defect even though both would do better by cooperating. Defection is dominant, yet the outcome is <strong>Pareto-dominated</strong>.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Cooperate</th>
+<th>Defect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cooperate</strong></td>
+<td>3, 3</td>
+<td>0, 5</td>
+</tr>
+<tr>
+<td><strong>Defect</strong></td>
+<td>5, 0</td>
+<td>1, 1</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Zero-sum games</strong> (one player's gain is the other's loss) are solved by the <strong>minimax</strong> and <strong>maximin</strong> values; mixed strategies from a <strong>linear program</strong> give the equilibrium (e.g. rock-paper-scissors).</li>
+<li><strong>Repeated games</strong> allow cooperation to emerge via strategies like <strong>tit-for-tat</strong>.</li>
+<li><strong>Sequential games</strong> are drawn as game trees; <strong>imperfect information</strong> is handled by information sets and by sequence-form linear programs (poker).</li>
+</ul>
+<h2>Cooperative Game Theory</h2>
+<p>Players may form <strong>coalitions</strong> and share a payoff. The <strong>core</strong> is the set of fair divisions that no coalition wants to leave. The <strong>Shapley value</strong> assigns each player their average marginal contribution over all orderings of joining the coalition. These concepts price teamwork in settings such as cost sharing.</p>
+<h2>Making Collective Decisions</h2>
+<h3>Auctions</h3>
+<p>Auction design aims to make bidding simple and results good for the seller or society.</p>
+<ul>
+<li><strong>English (ascending) auction:</strong> bid up; the winner pays their bid.</li>
+<li><strong>Sealed-bid first-price:</strong> the winner pays their bid, so bidders shade their bids.</li>
+<li><strong>Vickrey (second-price) auction:</strong> the highest bidder wins but pays the <em>second-highest</em> bid. Bidding your true value is a <strong>dominant strategy</strong> (it is <em>strategy-proof</em>).</li>
+</ul>
+<h3>Mechanism design</h3>
+<p><strong>Mechanism design</strong> engineers the rules of a game so that self-interested agents produce a good collective outcome. The <strong>revelation principle</strong> says that we can restrict attention to mechanisms in which truthful reporting is optimal. The <strong>VCG</strong> mechanism makes each agent pay the harm they cause to others.</p>
+<h3>Voting and social choice</h3>
+<p><strong>Arrow's theorem</strong> says no ranking-based voting rule can satisfy a short list of reasonable fairness conditions at once. <strong>Gibbard–Satterthwaite</strong> says that any reasonable voting rule is open to manipulation. Rules include plurality, Borda count, approval voting and instant-runoff.</p>
+<h3>Matching</h3>
+<p><strong>Stable matching</strong> (Gale–Shapley) pairs students with schools or doctors with hospitals so that no two parties prefer each other to their assigned partners.</p>
+<h2>Multiagent Planning and Coordination</h2>
+<p>For cooperative agents we need <strong>joint plans</strong> and <strong>conventions</strong> (shared expectations such as which side of the road to drive on). Mechanisms include communication, <strong>joint intentions</strong>, and <strong>multibody planning</strong>. Common models:</p>
+<ul>
+<li><strong>Decentralised POMDPs</strong> (Dec-POMDPs), where agents share rewards but not observations,</li>
+<li><strong>task allocation</strong> by auction or by contract-net protocols,</li>
+<li><strong>emergent behaviour</strong> of swarms, ants and flocks from simple local rules.</li>
+</ul>
+<p>Learning in multiagent environments (<strong>multiagent reinforcement learning</strong>) adds the difficulty that the environment is non-stationary because other agents are also learning.</p>
+<h2>Summary</h2>
+<ul>
+<li>Game theory analyses strategic interaction; Nash equilibrium is the main solution concept.</li>
+<li>Mechanism design, auctions and voting shape the rules so that good outcomes arise.</li>
+<li>Cooperation needs shared plans, conventions and communication.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Nash equilibrium</strong></td>
+<td>No player gains by changing strategy alone.</td>
+</tr>
+<tr>
+<td><strong>Dominant strategy</strong></td>
+<td>Best whatever the others do.</td>
+</tr>
+<tr>
+<td><strong>Vickrey auction</strong></td>
+<td>Highest bidder wins and pays the second-highest bid.</td>
+</tr>
+<tr>
+<td><strong>Shapley value</strong></td>
+<td>A player's average marginal contribution over all orders.</td>
+</tr>
+<tr>
+<td><strong>Mechanism design</strong></td>
+<td>Designing the rules so self-interest yields good outcomes.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why is the prisoner's dilemma a dilemma?</strong></p>
+<p><em>Answer:</em> Defecting is dominant, yet mutual defection is worse for both than mutual cooperation.</p>
+<p><strong>Q2. Why bid your true value in a Vickrey auction?</strong></p>
+<p><em>Answer:</em> Truthful bidding is a dominant strategy.</p>
+<p><strong>Q3. What does Arrow's theorem say?</strong></p>
+<p><em>Answer:</em> No ranked voting rule meets a short list of fairness conditions together.</p></section><section class="chap" id="c18"><div class="chno">Chapter 19</div><h1>Learning from Examples</h1><h2>Forms of Learning</h2>
+<p>An agent <strong>learns</strong> when its performance on future tasks improves after observing the world. Design choices: <em>which component</em> to improve, <em>what prior knowledge</em> to use, <em>how the data is represented</em>, and <em>what feedback</em> is available.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Feedback</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Supervised</strong></td>
+<td>input–output pairs</td>
+<td>classify emails as spam or not</td>
+</tr>
+<tr>
+<td><strong>Unsupervised</strong></td>
+<td>no labels</td>
+<td>group customers by behaviour</td>
+</tr>
+<tr>
+<td><strong>Semi-supervised</strong></td>
+<td>a few labels plus many unlabelled examples</td>
+<td>web page categories</td>
+</tr>
+<tr>
+<td><strong>Reinforcement</strong></td>
+<td>rewards and punishments</td>
+<td>learning to play a game</td>
+</tr>
+</tbody>
+</table>
+<p>In <strong>supervised learning</strong> the task is to find a hypothesis h that approximates the unknown function f from examples (x, y). If y is a category it is <strong>classification</strong>; if y is a number it is <strong>regression</strong>.</p>
+<h2>Supervised Learning Basics</h2>
+<ul>
+<li>A <strong>hypothesis space</strong> is the set of functions the learner may choose from.</li>
+<li><strong>Consistent</strong> hypotheses agree with the training data. With noise, choose the one that <strong>generalises</strong> best to new data.</li>
+<li><strong>Bias</strong> is the error from the hypothesis space being too simple (<strong>underfitting</strong>). <strong>Variance</strong> is the error from sensitivity to the particular training set (<strong>overfitting</strong>). More flexible models have lower bias and higher variance: the <strong>bias–variance tradeoff</strong>.</li>
+<li>Prefer simple hypotheses (<strong>Ockham's razor</strong>).</li>
+<li>A <strong>model-selection</strong> loop picks hyperparameters on a <strong>validation set</strong>, then reports the final error on a held-out <strong>test set</strong>. <strong>Cross-validation</strong> reuses data when it is scarce. Never tune on the test set.</li>
+</ul>
+<h3>Measures</h3>
+<p>For classification count <strong>error rate</strong>, <strong>precision</strong>, <strong>recall</strong> and their combination (F1). For skewed classes use the <strong>confusion matrix</strong> and <strong>ROC / precision–recall curves</strong> rather than plain accuracy. <strong>Loss functions</strong> make the cost of errors explicit: squared error (L2), absolute error (L1), 0/1 loss.</p>
+<h2>Decision Trees</h2>
+<p>A <strong>decision tree</strong> tests one attribute at each internal node and gives a prediction at each leaf. To grow one:</p>
+<ol>
+<li>If all examples have the same label, make a leaf.</li>
+<li>Otherwise choose the attribute with the highest <strong>information gain</strong> (largest reduction in <strong>entropy</strong>).</li>
+<li>Split and recurse.</li>
+</ol>
+<p>Entropy of a distribution is H = −Σ p log₂ p. A fair coin has 1 bit; a certain outcome has 0.</p>
+<p>Trees are easy to read and handle mixed data types. They overfit, so they are <strong>pruned</strong> (stop splitting if the gain is not significant) or combined into ensembles.</p>
+<h2>Linear Models</h2>
+<ul>
+<li><strong>Linear regression</strong> fits y = w·x + b by minimising squared error. The solution can be found in closed form (<strong>normal equations</strong>) or by <strong>gradient descent</strong>.</li>
+<li><strong>Logistic regression</strong> passes the linear score through the <strong>sigmoid</strong> σ(z) = 1/(1 + e⁻ᶻ) and gives a probability; it is trained by gradient descent on the log-loss.</li>
+<li><strong>Regularisation</strong> adds a penalty to the loss: <strong>L2 (ridge)</strong> shrinks weights; <strong>L1 (lasso)</strong> drives many weights to exactly zero, giving sparse models.</li>
+<li><strong>Gradient descent</strong> repeats w ← w − α ∇L(w); <strong>stochastic</strong> and <strong>mini-batch</strong> versions use a few examples per step and are the workhorse of modern learning.</li>
+</ul>
+<h2>Nonparametric Models</h2>
+<p>These keep the data and use it directly.</p>
+<ul>
+<li><strong>k-nearest neighbours:</strong> predict by the majority (or average) of the k closest examples. Works well in few dimensions; suffers from the <strong>curse of dimensionality</strong> (in high dimensions everything is far).</li>
+<li><strong>Locally weighted regression</strong> fits a small linear model around the query.</li>
+<li><strong>Nearest neighbour search</strong> is sped up with k-d trees or locality-sensitive hashing.</li>
+</ul>
+<h2>Support Vector Machines</h2>
+<p>An <strong>SVM</strong> finds the linear separator with the <strong>maximum margin</strong> (the widest gap between classes). Only the closest examples (<strong>support vectors</strong>) matter. The <strong>kernel trick</strong> lets an SVM learn nonlinear boundaries: replace the dot product with a kernel function k(x, x′) (for example polynomial or Gaussian), which implicitly maps data into a high-dimensional space.</p>
+<h2>Ensemble Learning</h2>
+<p>Combine several models to get a better one.</p>
+<ul>
+<li><strong>Bagging:</strong> train each model on a bootstrap resample and average/vote. <strong>Random forests</strong> bag decision trees and also randomise the features at each split, reducing variance.</li>
+<li><strong>Boosting:</strong> train models in sequence, each focusing on examples the previous ones got wrong (<strong>AdaBoost</strong>, <strong>gradient boosting</strong>). Gradient-boosted trees (XGBoost, LightGBM) are the dominant method on tabular data.</li>
+<li><strong>Stacking</strong> trains a model on the outputs of other models.</li>
+</ul>
+<h2>Developing Machine Learning Systems</h2>
+<p>Practical steps:</p>
+<ol>
+<li><strong>Problem formulation</strong> and a clear metric.</li>
+<li><strong>Data collection, cleaning and splitting</strong>; watch for <strong>data leakage</strong> and <strong>class imbalance</strong>.</li>
+<li><strong>Feature engineering</strong>, normalisation, handling of missing values.</li>
+<li><strong>Model selection</strong> and hyperparameter tuning (grid or random search).</li>
+<li><strong>Error analysis</strong> and <strong>debugging</strong> (learning curves show if more data or a richer model would help).</li>
+<li><strong>Deployment and monitoring</strong> for <strong>dataset shift</strong>, when the live data differs from the training data.</li>
+</ol>
+<p>Learning from data also raises concerns about <strong>fairness</strong>, <strong>privacy</strong> and <strong>explainability</strong>, covered in Chapter 27.</p>
+<h2>Summary</h2>
+<ul>
+<li>Supervised learning fits a function to labelled examples; generalisation is the goal.</li>
+<li>Decision trees, linear models, nearest neighbours, SVMs and ensembles are the classic toolbox.</li>
+<li>Good practice: separate data for training, validation and testing; regularise; analyse errors.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Overfitting</strong></td>
+<td>Fitting noise so that performance on new data is poor.</td>
+</tr>
+<tr>
+<td><strong>Cross-validation</strong></td>
+<td>Reusing the data in folds to estimate generalisation.</td>
+</tr>
+<tr>
+<td><strong>Information gain</strong></td>
+<td>Reduction in entropy from splitting on an attribute.</td>
+</tr>
+<tr>
+<td><strong>Regularisation</strong></td>
+<td>A penalty that discourages complex models.</td>
+</tr>
+<tr>
+<td><strong>Ensemble</strong></td>
+<td>A combination of models, such as a random forest or boosted trees.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why keep a separate test set?</strong></p>
+<p><em>Answer:</em> So the final error estimate is not biased by tuning.</p>
+<p><strong>Q2. How do bagging and boosting differ?</strong></p>
+<p><em>Answer:</em> Bagging averages independent models; boosting trains models in sequence to fix earlier errors.</p>
+<p><strong>Q3. What does the kernel trick do?</strong></p>
+<p><em>Answer:</em> It lets a linear method learn nonlinear boundaries.</p></section><section class="chap" id="c19"><div class="chno">Chapter 20</div><h1>Learning Probabilistic Models</h1><h2>Statistical Learning</h2>
+<p>Learning can be seen as <strong>Bayesian inference</strong>: the <strong>hypotheses</strong> are models, and the <strong>data</strong> are evidence. By Bayes' rule P(h | d) ∝ P(d | h) P(h).</p>
+<p>Three practical estimators:</p>
+<ul>
+<li><strong>Bayesian learning</strong> averages predictions over all hypotheses weighted by their posterior. It is optimal but usually intractable.</li>
+<li><strong>Maximum a posteriori (MAP)</strong> picks the single most probable hypothesis. It adds a <strong>prior</strong> that penalises complex models.</li>
+<li><strong>Maximum likelihood (ML)</strong> picks the hypothesis that makes the data most likely; it is MAP with a uniform prior.</li>
+</ul>
+<p>For many data, the prior matters less and all three agree.</p>
+<h2>Learning with Complete Data</h2>
+<ul>
+<li><strong>Maximum-likelihood parameter learning</strong> for a discrete model: the best estimate is the <strong>observed frequency</strong>. For a coin with 7 heads in 10 flips, the ML estimate is 0.7.</li>
+<li>With few samples this overfits (zero counts give zero probabilities); a <strong>prior</strong> such as the <strong>beta distribution</strong> (equivalent to adding "pseudo-counts", i.e. <strong>Laplace smoothing</strong>) fixes it.</li>
+<li><strong>Naive Bayes classifier:</strong> learn P(class) and P(feature | class) by counting; classify by choosing the class with the highest posterior. Fast, robust, good for text.</li>
+<li><strong>Continuous models:</strong> ML estimates for a Gaussian are the sample mean and variance. <strong>Linear regression</strong> is ML estimation with Gaussian noise.</li>
+<li><strong>Bayesian networks:</strong> with complete data, each CPT is estimated independently from counts. <strong>Structure learning</strong> searches over graphs with a score that balances fit and complexity (BIC).</li>
+<li><strong>Nonparametric density estimation</strong> (kernel density, nearest neighbour) estimates a distribution without a fixed form.</li>
+</ul>
+<h2>Learning with Hidden Variables: the EM Algorithm</h2>
+<p>Many models have <strong>hidden (latent)</strong> variables, which makes direct estimation hard. The <strong>expectation–maximisation (EM)</strong> algorithm alternates:</p>
+<ul>
+<li><strong>E-step:</strong> use the current parameters to compute the expected values (soft assignments) of the hidden variables.</li>
+<li><strong>M-step:</strong> re-estimate the parameters as if those expected values had been observed.</li>
+</ul>
+<p>Each iteration never decreases the likelihood, but EM can get stuck in a local maximum, so it is run from several starting points.</p>
+<h3>Unsupervised clustering with Gaussian mixtures</h3>
+<p>A <strong>mixture of Gaussians</strong> says each point comes from one of k Gaussian components. EM learns the component means, covariances and mixing weights. The <strong>k-means</strong> algorithm is a "hard" version: assign each point to the nearest centre, move each centre to the mean of its points, repeat.</p>
+<h3>Other uses of EM</h3>
+<ul>
+<li><strong>Hidden Markov models:</strong> the <strong>Baum–Welch</strong> algorithm.</li>
+<li><strong>Bayesian networks with hidden variables</strong>, <strong>topic models</strong> and <strong>missing data</strong>.</li>
+</ul>
+<h2>Summary</h2>
+<ul>
+<li>Learning can be viewed as probabilistic inference: Bayes, MAP and ML.</li>
+<li>With complete data, parameters are estimated by counting; with hidden variables, EM is the standard tool.</li>
+<li>Priors and smoothing prevent overfitting from small samples.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Maximum likelihood</strong></td>
+<td>Pick parameters that make the data most probable.</td>
+</tr>
+<tr>
+<td><strong>MAP</strong></td>
+<td>Maximum likelihood with a prior.</td>
+</tr>
+<tr>
+<td><strong>Laplace smoothing</strong></td>
+<td>Add pseudo-counts so no probability is zero.</td>
+</tr>
+<tr>
+<td><strong>EM algorithm</strong></td>
+<td>Alternate expected hidden values and parameter updates.</td>
+</tr>
+<tr>
+<td><strong>Gaussian mixture</strong></td>
+<td>A model in which each point comes from one of several Gaussians.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. For 7 heads in 10 flips, what is the ML estimate of the bias?</strong></p>
+<p><em>Answer:</em> 0.7.</p>
+<p><strong>Q2. Can EM get stuck?</strong></p>
+<p><em>Answer:</em> Yes, in a local maximum, so run it from several starts.</p>
+<p><strong>Q3. What is k-means in relation to EM?</strong></p>
+<p><em>Answer:</em> A hard-assignment version of EM for a mixture of Gaussians.</p></section><section class="chap" id="c20"><div class="chno">Chapter 21</div><h1>Deep Learning</h1><h2>Simple Feedforward Networks</h2>
+<p>A <strong>neural network</strong> is a graph of simple computing units. Each unit computes a weighted sum of its inputs, adds a <strong>bias</strong>, and applies a nonlinear <strong>activation function</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Activation</th>
+<th>Formula</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sigmoid</td>
+<td>1/(1+e⁻ᶻ)</td>
+<td>outputs 0–1; saturates</td>
+</tr>
+<tr>
+<td>Tanh</td>
+<td>(eᶻ−e⁻ᶻ)/(eᶻ+e⁻ᶻ)</td>
+<td>outputs −1 to 1</td>
+</tr>
+<tr>
+<td><strong>ReLU</strong></td>
+<td>max(0, z)</td>
+<td>default for hidden layers; cheap, avoids saturation</td>
+</tr>
+<tr>
+<td>Softmax</td>
+<td>e^zᵢ / Σ e^zⱼ</td>
+<td>turns scores into a probability distribution</td>
+</tr>
+</tbody>
+</table>
+<p>A <strong>feedforward network</strong> has <em>layers</em>: input, one or more <strong>hidden layers</strong>, and output. With enough hidden units a network can approximate any continuous function (<strong>universal approximation</strong>). <strong>Deep</strong> networks use many layers, which lets each layer build more abstract features out of the previous one: pixels → edges → parts → objects.</p>
+<h2>Computation Graphs and Back-Propagation</h2>
+<p>A network is a <strong>computation graph</strong>. Training minimises a <strong>loss</strong> (cross-entropy for classification, squared error for regression). <strong>Back-propagation</strong> computes the gradient of the loss with respect to every weight by applying the chain rule backward from the output, reusing intermediate results. <strong>Automatic differentiation</strong> in modern frameworks (PyTorch, TensorFlow, JAX) does this for any program.</p>
+<p>Training loop:</p>
+<ol>
+<li>Forward pass to compute predictions and the loss on a mini-batch.</li>
+<li>Backward pass to get gradients.</li>
+<li>Update the weights with an <strong>optimiser</strong>.</li>
+</ol>
+<p>Common optimisers: <strong>SGD with momentum</strong>, <strong>RMSprop</strong>, <strong>Adam</strong> (adaptive per-weight step sizes).</p>
+<h3>Practical problems</h3>
+<ul>
+<li><strong>Vanishing and exploding gradients</strong> in deep nets: use ReLU, careful <strong>weight initialisation</strong> and <strong>residual (skip) connections</strong>.</li>
+<li><strong>Batch normalisation</strong> and <strong>layer normalisation</strong> rescale activations to stabilise training.</li>
+<li><strong>Overfitting:</strong> use <strong>regularisation</strong>, <strong>dropout</strong> (randomly zero units during training), <strong>data augmentation</strong> and <strong>early stopping</strong>.</li>
+</ul>
+<h2>Convolutional Networks</h2>
+<p>For images, a fully connected layer has too many weights and ignores spatial structure. A <strong>convolutional neural network (CNN)</strong>:</p>
+<ul>
+<li>uses small <strong>filters (kernels)</strong> shared across positions, exploiting <strong>local</strong> patterns and <strong>translation equivariance</strong>;</li>
+<li>applies <strong>pooling</strong> layers to reduce size and gain small-shift invariance;</li>
+<li>stacks many <strong>convolution + nonlinearity</strong> blocks, then a classifier.</li>
+</ul>
+<p>CNNs such as <strong>AlexNet</strong>, <strong>VGG</strong> and <strong>ResNet</strong> transformed image recognition. <strong>Residual networks</strong> let hundreds of layers train because each block learns a correction to its input.</p>
+<h2>Recurrent Networks</h2>
+<p>A <strong>recurrent neural network (RNN)</strong> processes sequences by passing a <strong>hidden state</strong> from one step to the next. Plain RNNs struggle with long-range dependencies because gradients vanish. <strong>LSTM</strong> and <strong>GRU</strong> cells use <strong>gates</strong> that control what to keep, forget and output, giving much longer memory.</p>
+<h2>Unsupervised and Transfer Learning</h2>
+<ul>
+<li><strong>Autoencoders</strong> learn to compress and reconstruct data; the compressed code is a useful representation. <strong>Variational autoencoders (VAEs)</strong> make this a generative model.</li>
+<li><strong>Generative adversarial networks (GANs)</strong> train a <strong>generator</strong> to fool a <strong>discriminator</strong> that tries to tell real from fake.</li>
+<li><strong>Self-supervised learning</strong> invents labels from the data itself (predict the next word, fill a masked patch), allowing training on huge unlabelled datasets.</li>
+<li><strong>Transfer learning:</strong> pre-train a large model once, then <strong>fine-tune</strong> it on a small task. This is the dominant recipe in vision and language.</li>
+</ul>
+<h2>Applications</h2>
+<p>Deep learning gives state-of-the-art results in image classification and detection, speech recognition, machine translation, game playing, protein structure prediction and more. Its limits include data hunger, brittleness to small adversarial changes, lack of explanation, and energy cost.</p>
+<h2>Summary</h2>
+<ul>
+<li>Neural networks stack units with nonlinear activations; back-propagation computes gradients; optimisers update weights.</li>
+<li>CNNs exploit spatial structure; RNNs and gated cells handle sequences.</li>
+<li>Pre-training and fine-tuning make deep learning practical with small datasets.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Activation function</strong></td>
+<td>A nonlinearity such as ReLU applied to a unit's weighted sum.</td>
+</tr>
+<tr>
+<td><strong>Back-propagation</strong></td>
+<td>The chain rule applied backward to compute gradients.</td>
+</tr>
+<tr>
+<td><strong>Convolution</strong></td>
+<td>A small filter shared across positions in an image.</td>
+</tr>
+<tr>
+<td><strong>Dropout</strong></td>
+<td>Randomly zeroing units during training to reduce overfitting.</td>
+</tr>
+<tr>
+<td><strong>Fine-tuning</strong></td>
+<td>Adapting a pretrained model to a new task.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why use ReLU instead of sigmoid in hidden layers?</strong></p>
+<p><em>Answer:</em> It is cheap and does not saturate for positive inputs, which helps gradients.</p>
+<p><strong>Q2. What problem do residual connections solve?</strong></p>
+<p><em>Answer:</em> They make very deep networks trainable by easing gradient flow.</p>
+<p><strong>Q3. Why are LSTMs better than plain RNNs?</strong></p>
+<p><em>Answer:</em> Gates help them keep information over longer spans.</p></section><section class="chap" id="c21"><div class="chno">Chapter 22</div><h1>Reinforcement Learning</h1><h2>Learning from Rewards</h2>
+<p>In <strong>reinforcement learning (RL)</strong> an agent is not told the right action. It receives only a <strong>reward</strong> signal after acting and must discover which behaviour is good. The environment is an MDP whose transition and reward functions the agent does <em>not</em> know. The agent's aim is a policy that maximises expected discounted return.</p>
+<p>Two big problems:</p>
+<ul>
+<li><strong>Credit assignment:</strong> which of many earlier actions led to this reward?</li>
+<li><strong>Exploration vs. exploitation:</strong> try new actions to learn, or use the best known one to earn?</li>
+</ul>
+<p><strong>Passive</strong> RL evaluates a <em>fixed</em> policy; <strong>active</strong> RL also chooses actions. <strong>Model-based</strong> agents learn the model and plan with it; <strong>model-free</strong> agents learn values or policies directly.</p>
+<h2>Passive Reinforcement Learning</h2>
+<p>Goal: estimate the utility Uπ(s) of states under policy π.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Idea</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Direct utility estimation</strong></td>
+<td>average the observed returns from each state; ignores the structure of Bellman equations, so it learns slowly</td>
+</tr>
+<tr>
+<td><strong>Adaptive dynamic programming (ADP)</strong></td>
+<td>learn the transition model from counts, then solve the Bellman equations</td>
+</tr>
+<tr>
+<td><strong>Temporal-difference (TD) learning</strong></td>
+<td>after each step, nudge U(s) toward the one-step target: U(s) ← U(s) + α [r + γU(s′) − U(s)]</td>
+</tr>
+</tbody>
+</table>
+<p>TD learning needs no model, updates after every step and is the basis of most modern RL.</p>
+<h2>Active Reinforcement Learning</h2>
+<h3>Exploration</h3>
+<ul>
+<li><strong>ε-greedy:</strong> with small probability ε take a random action.</li>
+<li><strong>Optimism in the face of uncertainty:</strong> treat unvisited actions as if they were great, so the agent tries them (UCB, optimistic initial values).</li>
+<li><strong>Multi-armed bandits</strong> are the single-state version; <strong>Thompson sampling</strong> and UCB manage the tradeoff with regret guarantees.</li>
+</ul>
+<h3>Q-learning</h3>
+<p><strong>Q-learning</strong> learns the action-value function Q(s, a), the expected return of taking a in s and following the best policy after:</p>
+<p>Q(s, a) ← Q(s, a) + α [ r + γ maxₐ′ Q(s′, a′) − Q(s, a) ]</p>
+<p>It is <strong>off-policy</strong>: it learns the optimal policy while following an exploratory one. <strong>SARSA</strong> is <strong>on-policy</strong>: it uses the action actually taken next.</p>
+<h2>Generalisation in Reinforcement Learning</h2>
+<p>Tables fail when there are many states. <strong>Function approximation</strong> represents Q or U as a parameterised function (a linear model or a neural net) and updates the parameters by gradient steps.</p>
+<ul>
+<li><strong>Deep Q-networks (DQN)</strong> use a CNN to approximate Q from raw pixels. Stability comes from <strong>experience replay</strong> (train on random old transitions) and a slowly updated <strong>target network</strong>. DQN reached human level on many Atari games.</li>
+<li>Function approximation with bootstrapping and off-policy updates can diverge (the "deadly triad"), so care is needed.</li>
+<li><strong>Reward shaping</strong> adds hints, but badly designed rewards produce unintended behaviour. <strong>Potential-based shaping</strong> keeps the optimal policy unchanged. <strong>Hierarchical RL</strong> learns temporally extended actions ("options") and subgoals.</li>
+</ul>
+<h2>Policy Search</h2>
+<p>Instead of learning values, <strong>policy search</strong> adjusts the parameters θ of a policy πθ directly to increase the expected return.</p>
+<ul>
+<li>The <strong>policy gradient theorem</strong> gives ∇J(θ) = E[∇ log πθ(a | s) × (return)]. The <strong>REINFORCE</strong> algorithm estimates it from sampled episodes; variance is reduced with a <strong>baseline</strong>.</li>
+<li><strong>Actor–critic</strong> methods learn both a policy (the <em>actor</em>) and a value function (the <em>critic</em>) that reduces variance.</li>
+<li>Modern stable variants: <strong>trust-region</strong> and <strong>proximal policy optimisation (PPO)</strong>, which limit how much the policy can change in one update.</li>
+</ul>
+<p>Policy search copes with continuous actions and is popular in robotics.</p>
+<h2>Apprenticeship and Inverse Reinforcement Learning</h2>
+<p>When designing a reward is hard, learn from a demonstrator.</p>
+<ul>
+<li><strong>Imitation (behavioural cloning)</strong> copies the expert's actions; errors compound when the agent drifts to unfamiliar states.</li>
+<li><strong>Inverse reinforcement learning (IRL)</strong> infers the reward function that makes the demonstrator's behaviour look optimal, then optimises it.</li>
+<li><strong>Learning from human feedback</strong> trains a reward model from human preferences between outputs and then optimises it (RLHF), a key step in aligning language models.</li>
+</ul>
+<h2>Applications</h2>
+<p>Game playing (backgammon, Atari, Go, StarCraft), robot control, recommendation, data-centre cooling, resource management and chip design.</p>
+<h2>Summary</h2>
+<ul>
+<li>RL learns from rewards without a model of the world; the key challenges are credit assignment and exploration.</li>
+<li>TD learning and Q-learning estimate values; deep networks let them scale.</li>
+<li>Policy-gradient methods optimise behaviour directly; inverse RL and human feedback help specify goals.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Reward</strong></td>
+<td>The signal that tells the agent how well it is doing.</td>
+</tr>
+<tr>
+<td><strong>TD learning</strong></td>
+<td>Update a value toward reward plus the next state's value.</td>
+</tr>
+<tr>
+<td><strong>Q-learning</strong></td>
+<td>Off-policy learning of action values.</td>
+</tr>
+<tr>
+<td><strong>Policy gradient</strong></td>
+<td>Adjust policy parameters to raise expected return.</td>
+</tr>
+<tr>
+<td><strong>Inverse RL</strong></td>
+<td>Infer the reward function from demonstrations.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. What is the exploration-exploitation tradeoff?</strong></p>
+<p><em>Answer:</em> Trying new actions to learn versus using the best known one to earn.</p>
+<p><strong>Q2. Why does DQN use experience replay?</strong></p>
+<p><em>Answer:</em> To break correlations in the data and stabilise training.</p>
+<p><strong>Q3. Name one use of human feedback in RL.</strong></p>
+<p><em>Answer:</em> Training a reward model from preferences, as in RLHF.</p></section><section class="chap" id="c22"><div class="chno">Chapter 23</div><h1>Natural Language Processing</h1><h2>Language Models</h2>
+<p>A <strong>language model</strong> assigns a probability to a sequence of words. It is the basis of speech recognition, translation, spelling correction and text generation.</p>
+<ul>
+<li><strong>n-gram models</strong> predict each word from the previous n−1 words: P(wᵢ | wᵢ₋ₙ₊₁ ... wᵢ₋₁). They are estimated by counting. Unseen n-grams need <strong>smoothing</strong> (add-one, back-off, interpolation).</li>
+<li><strong>Evaluation:</strong> <strong>perplexity</strong> measures how surprised the model is by held-out text; lower is better.</li>
+<li><strong>Tokenisation</strong> splits text into units. Modern systems use <strong>subword</strong> tokens (byte-pair encoding) so rare words are built from common pieces.</li>
+</ul>
+<p>Other early tasks: <strong>text classification</strong> (spam, sentiment, topic) with naive Bayes or logistic regression over word counts, and <strong>information retrieval</strong> with <strong>TF-IDF</strong> or <strong>BM25</strong> scoring of documents against a query.</p>
+<h2>Grammar</h2>
+<p>A <strong>grammar</strong> states which word sequences are valid and gives them structure.</p>
+<ul>
+<li>A <strong>context-free grammar (CFG)</strong> has rewrite rules such as S → NP VP and NP → Det Noun. A <strong>probabilistic CFG (PCFG)</strong> attaches a probability to each rule, so the most likely parse can be chosen.</li>
+<li>A <strong>lexicon</strong> lists the words with their categories (noun, verb, adjective...).</li>
+<li><strong>Ambiguity</strong> is everywhere: "I saw the man with the telescope" has two parses. Lexical, syntactic and semantic ambiguity all appear.</li>
+</ul>
+<h2>Parsing</h2>
+<p><strong>Parsing</strong> finds the structure of a sentence.
+- <strong>Top-down</strong> and <strong>bottom-up</strong> parsers build trees; the <strong>CYK algorithm</strong> is a bottom-up dynamic-programming parser that works in O(n³) time on grammars in Chomsky normal form and records all parses in a chart.
+- <strong>Dependency parsing</strong> links each word to its head and is widely used for its simplicity and speed. <strong>Transition-based</strong> parsers (shift-reduce) build it left to right and run in linear time; <strong>graph-based</strong> parsers choose the best tree overall.
+- <strong>Treebanks</strong> (such as the Penn Treebank) provide human-annotated parses from which statistical parsers learn.</p>
+<h2>Augmented Grammars and Semantic Interpretation</h2>
+<p>Features and <strong>unification</strong> enforce agreement (number, case, person). <strong>Semantic interpretation</strong> maps a parse to a logical form: "Every dog barks" becomes ∀x Dog(x) ⇒ Barks(x). Hard cases include:</p>
+<ul>
+<li><strong>Quantifier scope</strong> ambiguity,</li>
+<li><strong>Pragmatics:</strong> what is meant given context (indexicals, speech acts),</li>
+<li><strong>Anaphora</strong> (to what does "it" refer?) and <strong>discourse</strong> structure,</li>
+<li><strong>Metonymy</strong> and <strong>metaphor</strong>.</li>
+</ul>
+<h2>Real Language Is Hard</h2>
+<p>Natural language is open-ended, ambiguous and constantly changing. Handling it needs world knowledge and common sense. This is why large <em>learned</em> models, which absorb statistical regularities from huge text corpora, outperformed hand-built grammars (Chapter 24).</p>
+<h2>Summary</h2>
+<ul>
+<li>Language models assign probabilities to text; n-grams are the simplest.</li>
+<li>Grammars and parsers give structure; ambiguity makes parsing hard.</li>
+<li>Semantic interpretation and pragmatics link language to meaning and the world.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Language model</strong></td>
+<td>A probability distribution over word sequences.</td>
+</tr>
+<tr>
+<td><strong>n-gram</strong></td>
+<td>A model that predicts a word from the previous n−1 words.</td>
+</tr>
+<tr>
+<td><strong>Perplexity</strong></td>
+<td>How surprised a model is by held-out text; lower is better.</td>
+</tr>
+<tr>
+<td><strong>PCFG</strong></td>
+<td>A context-free grammar with probabilities on its rules.</td>
+</tr>
+<tr>
+<td><strong>CYK</strong></td>
+<td>A dynamic-programming parser that runs in cubic time.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why smooth n-gram counts?</strong></p>
+<p><em>Answer:</em> Unseen n-grams would otherwise get zero probability.</p>
+<p><strong>Q2. What makes natural language parsing hard?</strong></p>
+<p><em>Answer:</em> Ambiguity at the lexical, syntactic and semantic levels.</p>
+<p><strong>Q3. What does TF-IDF measure?</strong></p>
+<p><em>Answer:</em> How important a word is to a document relative to a collection.</p></section><section class="chap" id="c23"><div class="chno">Chapter 24</div><h1>Deep Learning for Natural Language Processing</h1><h2>Word Embeddings</h2>
+<p>A <strong>word embedding</strong> is a vector (typically 100–1000 numbers) that represents a word so that words used in similar contexts have similar vectors. <strong>Word2vec</strong> and <strong>GloVe</strong> learn them from text. Vectors capture analogies: <em>king − man + woman ≈ queen</em>. They replace sparse one-hot vectors and allow knowledge to transfer between words. <strong>Subword</strong> and <strong>contextual</strong> embeddings handle rare words and polysemy.</p>
+<h2>Recurrent Networks for NLP</h2>
+<p>An <strong>RNN</strong> reads a sentence word by word. <strong>LSTMs</strong> and <strong>GRUs</strong> improved memory, and <strong>bidirectional</strong> RNNs read in both directions. Tasks include <strong>part-of-speech tagging</strong>, <strong>named-entity recognition</strong> and sentence classification. The weakness is that a single hidden state must hold the entire past, and processing is sequential, which is slow on modern hardware.</p>
+<h2>Sequence-to-Sequence Models</h2>
+<p>A <strong>sequence-to-sequence (seq2seq)</strong> model has an <strong>encoder</strong> that reads the input and a <strong>decoder</strong> that produces the output one word at a time. It handles translation, summarisation and dialogue.</p>
+<p><strong>Attention</strong> solved the bottleneck: at each output step the decoder computes weights over <em>all</em> encoder states and takes a weighted sum, so it "looks at" the relevant input words. Attention also gives interpretable alignments.</p>
+<h2>The Transformer Architecture</h2>
+<p>The <strong>transformer</strong> drops recurrence and relies only on <strong>self-attention</strong>, which lets every position look at every other position in parallel.</p>
+<ul>
+<li>Each token produces a <strong>query</strong>, <strong>key</strong> and <strong>value</strong> vector. The attention weights come from the dot product of a query with all keys (scaled and passed through softmax), and the output is the weighted sum of values.</li>
+<li><strong>Multi-head</strong> attention runs several attention functions in parallel to capture different relations.</li>
+<li><strong>Positional encodings</strong> inject word order, which attention alone does not know.</li>
+<li>Each block also has a feedforward layer, <strong>residual connections</strong> and <strong>layer normalisation</strong>.</li>
+<li>The <strong>encoder</strong> stack reads the input; the <strong>decoder</strong> stack uses <em>masked</em> self-attention (it cannot see future words) plus cross-attention to the encoder.</li>
+</ul>
+<p>Transformers train much faster than RNNs on GPUs and scale to billions of parameters.</p>
+<h2>Pretraining and Transfer Learning</h2>
+<p>The modern recipe: <strong>pretrain</strong> a huge model on raw text with a self-supervised objective, then <strong>adapt</strong> it.</p>
+<table>
+<thead>
+<tr>
+<th>Model type</th>
+<th>Objective</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Encoder-only</strong></td>
+<td>predict masked words (masked language model)</td>
+<td>BERT</td>
+</tr>
+<tr>
+<td><strong>Decoder-only</strong></td>
+<td>predict the next word</td>
+<td>GPT family</td>
+</tr>
+<tr>
+<td><strong>Encoder-decoder</strong></td>
+<td>text-to-text tasks</td>
+<td>T5</td>
+</tr>
+</tbody>
+</table>
+<p>After pretraining the model can be <strong>fine-tuned</strong> for a task, steered by <strong>prompts</strong> (zero-shot and few-shot learning with examples in the input), or aligned with <strong>instruction tuning</strong> and <strong>reinforcement learning from human feedback</strong>. Scale brings emergent abilities; it also brings costs, bias and the risk of fluent but wrong output (<strong>hallucination</strong>).</p>
+<h2>State of the Art</h2>
+<p>Large language models achieve strong performance on translation, question answering, summarisation, code generation and reasoning benchmarks. Typical caveats: they may reflect biases in training data, can be tricked by adversarial prompts, and do not reliably distinguish what they know from what they guess. <strong>Retrieval-augmented generation</strong> and <strong>tool use</strong> help ground answers in sources.</p>
+<h2>Summary</h2>
+<ul>
+<li>Embeddings turn words into vectors; seq2seq with attention improved translation.</li>
+<li>Transformers use self-attention and parallel training; pretrained models can be adapted to many tasks.</li>
+<li>Large language models are powerful but need careful evaluation for accuracy and fairness.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Embedding</strong></td>
+<td>A vector representing a word or token.</td>
+</tr>
+<tr>
+<td><strong>Attention</strong></td>
+<td>A weighted focus on relevant inputs.</td>
+</tr>
+<tr>
+<td><strong>Self-attention</strong></td>
+<td>Every position attends to every other position.</td>
+</tr>
+<tr>
+<td><strong>Transformer</strong></td>
+<td>An architecture built on self-attention, without recurrence.</td>
+</tr>
+<tr>
+<td><strong>Pretraining</strong></td>
+<td>Learning general language skills from raw text before a task.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why do transformers train faster than RNNs?</strong></p>
+<p><em>Answer:</em> They process all positions in parallel.</p>
+<p><strong>Q2. What does positional encoding add?</strong></p>
+<p><em>Answer:</em> Information about word order.</p>
+<p><strong>Q3. What is hallucination?</strong></p>
+<p><em>Answer:</em> Fluent output that is not supported by facts.</p></section><section class="chap" id="c24"><div class="chno">Chapter 25</div><h1>Computer Vision</h1><h2>Introduction</h2>
+<p><strong>Computer vision</strong> extracts information from images and video for navigation, manipulation, recognition and more. Images are arrays of pixel values; the task is to infer the scene that produced them, a hard inverse problem because a 3-D world projects onto a 2-D image.</p>
+<h2>Image Formation</h2>
+<ul>
+<li>A <strong>pinhole camera</strong> projects a 3-D point (X, Y, Z) to the image point (fX/Z, fY/Z). Distant objects appear smaller (<strong>perspective</strong>).</li>
+<li><strong>Lenses</strong> gather more light but have limited focus. <strong>Sensors</strong> record intensity or colour; <strong>colour</strong> comes from three channel filters (RGB).</li>
+<li><strong>Lighting and reflectance</strong> matter: a pixel's value depends on illumination, surface material and orientation. The <strong>shading</strong> and <strong>shadow</strong> cues help interpret shape.</li>
+</ul>
+<h2>Simple Image Features</h2>
+<ul>
+<li><strong>Edges</strong> are locations of sudden intensity change, found by <strong>convolving</strong> with derivative filters (Sobel) or the <strong>Canny</strong> detector.</li>
+<li><strong>Texture</strong> is a repeated local pattern, described by filter-response statistics.</li>
+<li><strong>Optical flow</strong> is the apparent motion of pixels between frames; it estimates how objects or the camera move.</li>
+<li><strong>Segmentation</strong> groups pixels into regions that belong together.</li>
+</ul>
+<h2>Classifying Images</h2>
+<p><strong>Image classification</strong> assigns a label to an entire picture. Convolutional networks (Chapter 21) took this over: <strong>ImageNet</strong> (over a million labelled photos) and deep CNNs cut error dramatically starting in 2012. Key ideas:
+- <strong>Data augmentation</strong> (flips, crops, colour jitter) reduces overfitting.
+- <strong>Transfer learning</strong> from ImageNet works for many tasks with little data.
+- <strong>Vision transformers</strong> apply self-attention to image patches and match or beat CNNs at scale.</p>
+<h2>Detecting Objects</h2>
+<p><strong>Object detection</strong> finds <em>what</em> and <em>where</em>. Methods predict <strong>bounding boxes</strong> and labels:
+- Two-stage detectors (R-CNN family) propose regions and then classify them.
+- One-stage detectors (YOLO, SSD) predict boxes in a single pass for speed.
+- <strong>Semantic segmentation</strong> labels each pixel; <strong>instance segmentation</strong> separates individual objects.</p>
+<p>Detection is evaluated with <strong>intersection over union (IoU)</strong> and <strong>mean average precision</strong>.</p>
+<h2>The 3-D World</h2>
+<ul>
+<li><strong>Stereo:</strong> two cameras give a <strong>disparity</strong> between matching points, from which depth is Z = fB/disparity (B is the baseline).</li>
+<li><strong>Motion:</strong> a moving camera gives <strong>structure from motion</strong>; <strong>SLAM</strong> builds a map while tracking position.</li>
+<li><strong>Monocular depth</strong> can be learned from cues such as texture gradients, size and occlusion, and from large datasets.</li>
+<li>Other sensors: <strong>LIDAR</strong> and depth cameras measure distance directly.</li>
+</ul>
+<h2>Using Computer Vision</h2>
+<p>Applications: understanding human actions and pose, <strong>face recognition</strong>, reading text (OCR), medical imaging, autonomous driving, robot manipulation, photo search and augmented reality. Responsible deployment must consider <strong>bias</strong> across demographic groups, <strong>privacy</strong> and <strong>surveillance</strong>, and <strong>adversarial examples</strong> that fool classifiers with imperceptible changes.</p>
+<h2>Summary</h2>
+<ul>
+<li>Vision infers the 3-D world from 2-D images; features such as edges and flow are early steps.</li>
+<li>Deep CNNs and transformers dominate classification and detection.</li>
+<li>Stereo, motion and LIDAR provide depth; ethics of deployment matters.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Edge</strong></td>
+<td>A place where image intensity changes sharply.</td>
+</tr>
+<tr>
+<td><strong>Optical flow</strong></td>
+<td>Apparent motion of pixels between frames.</td>
+</tr>
+<tr>
+<td><strong>Disparity</strong></td>
+<td>The shift of a point between stereo images; depth is inversely related to it.</td>
+</tr>
+<tr>
+<td><strong>IoU</strong></td>
+<td>Intersection over union: overlap between boxes.</td>
+</tr>
+<tr>
+<td><strong>SLAM</strong></td>
+<td>Mapping while localising.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why is vision an inverse problem?</strong></p>
+<p><em>Answer:</em> Many 3-D scenes could produce the same 2-D image.</p>
+<p><strong>Q2. How does stereo give depth?</strong></p>
+<p><em>Answer:</em> Depth equals focal length times baseline divided by disparity.</p>
+<p><strong>Q3. Name one risk of face recognition.</strong></p>
+<p><em>Answer:</em> Bias across groups, and loss of privacy through surveillance.</p></section><section class="chap" id="c25"><div class="chno">Chapter 26</div><h1>Robotics</h1><h2>Robots</h2>
+<p>A <strong>robot</strong> is a physical agent that manipulates the physical world. It has <strong>effectors</strong> (wheels, legs, arms, grippers) and <strong>sensors</strong> (cameras, range finders, touch, inertial and GPS).</p>
+<p>Types: <strong>manipulators</strong> (arms), <strong>mobile robots</strong> (ground, aerial, underwater), and <strong>mobile manipulators</strong> or humanoids. Applications include manufacturing, logistics, surgery, agriculture, exploration, household help and driving.</p>
+<p>Key challenges: <strong>partial observability</strong>, <strong>uncertainty</strong> in both sensing and motion, <strong>continuous</strong> state and action spaces, <strong>real-time</strong> operation and <strong>safety</strong> around people.</p>
+<h2>Robot Hardware</h2>
+<ul>
+<li><strong>Sensors:</strong> cameras, <strong>LIDAR</strong>, sonar, force/torque sensors, <strong>proprioceptive</strong> sensors (joint encoders, gyros, accelerometers).</li>
+<li><strong>Effectors:</strong> electric motors, hydraulics; <strong>degrees of freedom (DOF)</strong> count the independent ways a robot can move. A <strong>holonomic</strong> robot can move in any direction; a car cannot move sideways.</li>
+</ul>
+<h2>Robotic Perception</h2>
+<p><strong>Localisation</strong> finds the robot's pose on a known map. Use <strong>Monte Carlo localisation</strong> (a particle filter): particles represent possible poses, move with the robot, and are reweighted by sensor readings. <strong>SLAM (simultaneous localisation and mapping)</strong> builds the map while localising, using extended Kalman filters, particle filters or graph optimisation. Perception also includes object recognition, <strong>tactile</strong> sensing and <strong>proprioception</strong>. Learned perception (deep networks) now handles detection and scene understanding.</p>
+<h2>Planning and Control</h2>
+<h3>Configuration space</h3>
+<p>The <strong>configuration space</strong> has one dimension per DOF. The set of configurations where the robot would hit an obstacle is the <strong>obstacle region</strong>; the rest is <strong>free space</strong>. Path planning becomes finding a path through free space.</p>
+<h3>Motion planning</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Idea</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cell decomposition</strong></td>
+<td>grid the space; search with A*</td>
+</tr>
+<tr>
+<td><strong>Visibility graph</strong></td>
+<td>shortest paths touch obstacle corners</td>
+</tr>
+<tr>
+<td><strong>Voronoi diagram</strong></td>
+<td>paths far from obstacles, safer</td>
+</tr>
+<tr>
+<td><strong>Probabilistic roadmap (PRM)</strong></td>
+<td>sample random free configurations and connect them</td>
+</tr>
+<tr>
+<td><strong>Rapidly-exploring random tree (RRT)</strong></td>
+<td>grow a tree from the start toward random samples</td>
+</tr>
+<tr>
+<td><strong>Trajectory optimisation</strong></td>
+<td>optimise a smooth path under dynamics and costs</td>
+</tr>
+</tbody>
+</table>
+<p>Sampling-based planners (PRM, RRT) handle high-dimensional arms. A path is then <strong>time-parametrised</strong> into a <strong>trajectory</strong>.</p>
+<h3>Control</h3>
+<p>A <strong>controller</strong> follows the trajectory:</p>
+<ul>
+<li><strong>PID control</strong> adjusts effort based on the current error, its integral and derivative.</li>
+<li><strong>Model-predictive control</strong> re-plans over a short horizon repeatedly.</li>
+<li><strong>Optimal control</strong> and <strong>reinforcement learning</strong> can learn controllers directly; <strong>sim-to-real</strong> transfer trains in simulation and adapts to the real robot.</li>
+</ul>
+<h3>Planning under uncertainty</h3>
+<p>Treat uncertainty explicitly: <strong>belief-space</strong> planning, <strong>conformant</strong> and <strong>compliant motion</strong> (use contact to reduce uncertainty, as when inserting a peg).</p>
+<h2>Planning Uncertain Movements and Tasks</h2>
+<p>Tasks are decomposed hierarchically: a high-level <strong>task planner</strong> chooses what to do, a <strong>motion planner</strong> chooses how to move, and a <strong>controller</strong> executes. Failures trigger replanning.</p>
+<h2>Human–Robot Interaction</h2>
+<p>Robots working with people must predict human motion and intent, convey their own intent, and learn from demonstration or feedback. Issues: <strong>coordination</strong>, <strong>trust</strong>, <strong>legibility</strong> of motion (making the goal obvious), and handing over objects safely. In <strong>assistance games</strong> the robot is unsure of the person's goal and learns it through interaction.</p>
+<h2>Application Domains</h2>
+<p>Industrial robots, warehouse automation, surgery, self-driving cars, drones, agriculture, space exploration, and domestic and service robots.</p>
+<h2>Summary</h2>
+<ul>
+<li>Robots must act in the continuous, uncertain real world.</li>
+<li>Perception (localisation, SLAM), planning (configuration space, sampling-based planners) and control (PID, MPC) form the main stack.</li>
+<li>Learning and human interaction extend what robots can do.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Configuration space</strong></td>
+<td>One dimension per degree of freedom of the robot.</td>
+</tr>
+<tr>
+<td><strong>RRT</strong></td>
+<td>A sampling-based tree planner.</td>
+</tr>
+<tr>
+<td><strong>PID controller</strong></td>
+<td>Control from error, its integral and its derivative.</td>
+</tr>
+<tr>
+<td><strong>Monte Carlo localisation</strong></td>
+<td>A particle filter that estimates the robot's pose.</td>
+</tr>
+<tr>
+<td><strong>Degrees of freedom</strong></td>
+<td>Independent ways a robot can move.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why use sampling-based planners for arms?</strong></p>
+<p><em>Answer:</em> Explicit cell grids explode in high-dimensional configuration spaces.</p>
+<p><strong>Q2. What does SLAM solve?</strong></p>
+<p><em>Answer:</em> Building a map while estimating the robot's position in it.</p>
+<p><strong>Q3. What is sim-to-real transfer?</strong></p>
+<p><em>Answer:</em> Training in simulation and adapting to the real robot.</p></section><section class="chap" id="c26"><div class="chno">Chapter 27</div><h1>Philosophy, Ethics, and Safety of AI</h1><h2>The Limits of AI</h2>
+<ul>
+<li><strong>Weak AI</strong> says machines can act <em>as if</em> intelligent; <strong>strong AI</strong> says they can really think. Most researchers pursue the first and leave the second open.</li>
+<li><strong>The argument from disability</strong> ("a machine can never do X") has lost force as machines have mastered many tasks.</li>
+<li><strong>The mathematical objection</strong> (Gödel's incompleteness) claims machines cannot do some reasoning humans can; most scholars find it unconvincing because humans are also formal systems with limits.</li>
+<li><strong>The Chinese room</strong> argument says that symbol manipulation without understanding is not thinking. Replies include the <em>systems reply</em> (the whole system understands).</li>
+<li>The <strong>hard problem of consciousness</strong> asks why there is subjective experience at all; there is no agreed account.</li>
+</ul>
+<h2>Measuring AI</h2>
+<p>The <strong>Turing test</strong> judges whether a machine's conversation can be told apart from a human's. It is a useful thought experiment, but modern research measures performance on defined tasks with benchmarks and with real-world evaluation.</p>
+<h2>The Ethics of AI</h2>
+<p>Principles often listed: <strong>fairness</strong>, <strong>accountability</strong>, <strong>transparency</strong>, <strong>privacy</strong>, <strong>safety</strong>, <strong>human oversight</strong>, and <strong>beneficial</strong> purpose. Key topics:</p>
+<h3>Lethal autonomous weapons</h3>
+<p>Weapons that select and attack targets without human control raise issues of accountability, scale and the lowering of the threshold for war. Debates on bans and meaningful human control continue.</p>
+<h3>Surveillance, security and privacy</h3>
+<p>AI makes it cheap to identify, track and profile people at scale. Defences include <strong>data minimisation</strong>, <strong>differential privacy</strong> (adding noise so individuals cannot be identified) and <strong>federated learning</strong> (train without centralising data). Security concerns include <strong>adversarial examples</strong>, <strong>data poisoning</strong> and <strong>model extraction</strong>.</p>
+<h3>Fairness and bias</h3>
+<p>Models trained on historical data can reproduce or amplify unfair patterns. Different mathematical definitions of fairness (equal opportunity, demographic parity, calibration) cannot all hold at once when base rates differ, so choices must be made explicitly with stakeholders.</p>
+<p>Ways to reduce harm: audit data and models by group, document datasets and models, include diverse teams, and involve those affected. <strong>Disparate impact</strong> is measured by comparing error and decision rates across groups.</p>
+<h3>Trust and transparency</h3>
+<p>Systems should be <strong>explainable</strong> and <strong>verifiable</strong> where stakes are high. Techniques include interpretable models, feature attribution, counterfactual explanations and thorough testing. Safety-critical software needs <strong>verification and validation</strong> and clear responsibility.</p>
+<h3>The future of work</h3>
+<p>Automation changes jobs: some tasks vanish, others appear. Questions include retraining, distribution of gains and inequality. Many jobs are bundles of tasks, so partial automation is common.</p>
+<h3>Robot rights, deepfakes and misinformation</h3>
+<p>Whether machines deserve moral consideration is debated. <strong>Deepfakes</strong> and generated text make persuasive false content cheap, so <strong>provenance</strong> and <strong>authentication</strong> matter.</p>
+<h3>Sustainability</h3>
+<p>Training and running large models uses energy and materials; efficiency and responsible deployment matter.</p>
+<h2>AI Safety</h2>
+<p>The central concern: powerful systems that pursue the <em>wrong objective</em> or behave unexpectedly can cause harm at scale.</p>
+<ul>
+<li><strong>Specification problem:</strong> a precise objective that misses what we really want leads to harmful optimisation (<strong>specification gaming</strong>, "reward hacking").</li>
+<li><strong>Value alignment:</strong> build systems whose goals match human values and that stay uncertain about those values, deferring to humans (Chapter 16).</li>
+<li><strong>Instrumental subgoals:</strong> almost any goal is helped by self-preservation and resource gathering, so a capable system may resist being switched off unless designed not to.</li>
+<li><strong>Robustness and distribution shift:</strong> systems may fail outside the conditions they were trained on.</li>
+<li><strong>Oversight and control:</strong> keep humans able to monitor, correct and stop systems; test and red-team before deployment.</li>
+<li><strong>Beneficial AI:</strong> design goals as "do what humans would prefer" with the machine learning those preferences, rather than optimising a fixed objective.</li>
+</ul>
+<h2>Summary</h2>
+<ul>
+<li>Philosophy asks whether machines can think; practice focuses on capability and benefit.</li>
+<li>Ethical AI considers fairness, privacy, transparency, safety, work and weapons.</li>
+<li>Safety research aims to ensure systems pursue human-compatible goals and remain under control.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Weak vs strong AI</strong></td>
+<td>Acting as if intelligent versus actually thinking.</td>
+</tr>
+<tr>
+<td><strong>Chinese room</strong></td>
+<td>An argument that symbol manipulation alone is not understanding.</td>
+</tr>
+<tr>
+<td><strong>Differential privacy</strong></td>
+<td>Adding noise so individuals cannot be identified.</td>
+</tr>
+<tr>
+<td><strong>Specification gaming</strong></td>
+<td>A system exploits a flawed objective in unintended ways.</td>
+</tr>
+<tr>
+<td><strong>Disparate impact</strong></td>
+<td>Different outcomes for different groups.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Why can fairness definitions conflict?</strong></p>
+<p><em>Answer:</em> When base rates differ, equal opportunity, parity and calibration cannot all hold.</p>
+<p><strong>Q2. Why might a capable agent resist shutdown?</strong></p>
+<p><em>Answer:</em> Staying on helps almost any goal, unless it is designed to accept correction.</p>
+<p><strong>Q3. What does federated learning protect?</strong></p>
+<p><em>Answer:</em> Raw data, which stays on the user's device.</p></section><section class="chap" id="c27"><div class="chno">Chapter 28</div><h1>The Future of AI</h1><h2>Components of Future Systems</h2>
+<p>Where are the gaps between current systems and general, reliable intelligence? The authors point to:</p>
+<ul>
+<li><strong>Sensing and perception</strong> at human level in the real world, including touch and long-horizon video.</li>
+<li><strong>Learning from small data:</strong> humans learn new concepts from very few examples; current deep learning needs far more.</li>
+<li><strong>Reasoning and knowledge:</strong> combining the strengths of <strong>learned</strong> representations and <strong>symbolic</strong> reasoning (<strong>neuro-symbolic</strong> systems) for robust planning, causality and common sense.</li>
+<li><strong>Hierarchy and abstraction:</strong> acting over long time spans by building subgoals, concepts and plans (hierarchical RL and planning).</li>
+<li><strong>Memory and continual learning:</strong> keeping and updating knowledge over a lifetime without forgetting.</li>
+<li><strong>Real-time decision-making</strong> and <strong>metareasoning:</strong> deciding how much to think.</li>
+<li><strong>Understanding people:</strong> inferring and respecting human preferences.</li>
+<li><strong>Natural language</strong> with grounded meaning, not just statistics of text.</li>
+</ul>
+<h2>Architectures</h2>
+<p>An <strong>agent architecture</strong> must integrate perception, learning, memory, reasoning, planning, language and action. Open questions include how to share representations across tasks (<strong>foundation models</strong>), how to combine modules, and how an agent should allocate computation. Research on <strong>cognitive architectures</strong> (Soar, ACT-R) and on <strong>embodied</strong> agents continues.</p>
+<h2>Are We Going in the Right Direction?</h2>
+<p>The standard model, building systems that optimise a <em>fixed</em> objective, may be flawed as machines grow more capable. A more cautious design builds machines that are <strong>provably beneficial</strong>: uncertain about human preferences, observing human behaviour to learn them, and willing to be corrected. This links the technical agenda of probabilistic reasoning, decision theory and game theory (Chapters 12–18) with safety (Chapter 27).</p>
+<h2>What If AI Does Succeed?</h2>
+<p>If general AI is achieved, the consequences, positive and negative, could be vast: faster science, abundance, and equal opportunity on one side; misuse, loss of control, concentration of power and displacement on the other. This is why technical work, governance, standards and public debate must proceed together. The authors close by urging that we steer AI toward systems that are beneficial to humanity.</p>
+<h2>Summary</h2>
+<ul>
+<li>Many open problems remain: small-data learning, reasoning, long-term planning, common sense, grounded language.</li>
+<li>Safe progress means designing AI around uncertain, learnable human preferences rather than fixed objectives.</li>
+<li>The future depends on technical choices and on collective decisions about how AI is used.</li>
+</ul>
+<h2>Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Neuro-symbolic AI</strong></td>
+<td>Combining learned representations with symbolic reasoning.</td>
+</tr>
+<tr>
+<td><strong>Foundation model</strong></td>
+<td>A large pretrained model adapted to many tasks.</td>
+</tr>
+<tr>
+<td><strong>Metareasoning</strong></td>
+<td>Deciding how much to think.</td>
+</tr>
+<tr>
+<td><strong>Provably beneficial AI</strong></td>
+<td>Machines uncertain about our preferences and willing to be corrected.</td>
+</tr>
+<tr>
+<td><strong>Continual learning</strong></td>
+<td>Learning over a lifetime without forgetting.</td>
+</tr>
+</tbody>
+</table>
+<h2>Check your understanding</h2>
+<p><strong>Q1. Name two gaps between today's AI and general intelligence.</strong></p>
+<p><em>Answer:</em> Learning from few examples, and robust long-horizon reasoning with common sense.</p>
+<p><strong>Q2. What alternative to the standard model do the authors suggest?</strong></p>
+<p><em>Answer:</em> Machines that are uncertain about human preferences and learn them from behaviour.</p>
+<p><strong>Q3. Why does governance matter alongside technical work?</strong></p>
+<p><em>Answer:</em> Because the consequences of capable AI depend on how it is used and controlled.</p></section><section class="chap" id="c28"><div class="chno">Appendix</div><h1>Mathematical Background</h1><h2>Complexity Analysis and O() Notation</h2>
+<p>An algorithm's running time is described by a <strong>growth rate</strong>. f(n) = O(g(n)) means f grows no faster than a constant times g for large n.</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O(1)</td>
+<td>array lookup</td>
+</tr>
+<tr>
+<td>O(log n)</td>
+<td>binary search</td>
+</tr>
+<tr>
+<td>O(n)</td>
+<td>scan a list</td>
+</tr>
+<tr>
+<td>O(n log n)</td>
+<td>good sorting</td>
+</tr>
+<tr>
+<td>O(n²)</td>
+<td>pairs of items</td>
+</tr>
+<tr>
+<td>O(2ⁿ)</td>
+<td>enumerating subsets</td>
+</tr>
+</tbody>
+</table>
+<p><strong>P</strong> is the class of problems solvable in polynomial time; <strong>NP</strong> problems can be <em>verified</em> in polynomial time; <strong>NP-complete</strong> problems are the hardest in NP (SAT, scheduling); <strong>#P</strong> counts solutions.</p>
+<h2>Vectors, Matrices and Linear Algebra</h2>
+<p>A <strong>vector</strong> is a list of numbers; a <strong>matrix</strong> is a grid. Basic operations: addition, scaling, the <strong>dot product</strong> (Σ xᵢyᵢ), <strong>matrix multiplication</strong>, <strong>transpose</strong> and <strong>inverse</strong>. The <strong>norm</strong> ‖x‖ measures length. Solving Ax = b, <strong>eigenvalues</strong> and the <strong>singular value decomposition</strong> underlie regression, PCA and many learning algorithms.</p>
+<h2>Probability Distributions</h2>
+<ul>
+<li><strong>Discrete:</strong> Bernoulli (one coin), binomial (counts of successes), categorical, Poisson.</li>
+<li><strong>Continuous:</strong> uniform, <strong>Gaussian (normal)</strong> with mean μ and variance σ², beta, exponential.</li>
+<li><strong>Expectation</strong> E[X] is the probability-weighted average; <strong>variance</strong> is E[(X−μ)²].</li>
+<li>The <strong>law of large numbers</strong> and the <strong>central limit theorem</strong> explain why averages behave well and why Gaussians are everywhere.</li>
+</ul></section><section class="chap" id="c29"><div class="chno">Appendix</div><h1>Notes on Languages and Algorithms</h1><h2>Pseudocode Conventions</h2>
+<p>Algorithms are described in an informal pseudocode: indentation shows blocks, <code>←</code> means assignment, and functions return values. The real implementations in the companion code repositories are in Python, Java and other languages.</p>
+<h2>Defining Problems with Algorithms</h2>
+<p>A typical algorithm description has:</p>
+<ol>
+<li><strong>Input</strong> and <strong>output</strong> (for a function), or the <strong>problem</strong> (initial state, actions, goal test, cost).</li>
+<li><strong>Data structures</strong> used (queues, hash tables, priority queues).</li>
+<li>A <strong>loop</strong> or recursion.</li>
+<li><strong>Properties:</strong> completeness, optimality, time and space complexity.</li>
+</ol>
+<h2>Learning More</h2>
+<p>Good next steps: work through search, probability and learning exercises by writing small programs; read research papers; use frameworks such as PyTorch for deep learning and Gymnasium for reinforcement learning; and join the open-source community.</p></section>
