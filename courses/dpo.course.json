@@ -1,0 +1,3932 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "dpo",
+ "title": "Direct Preference Optimization (DPO)",
+ "subtitle": "From RLHF to a simple preference loss, with Python labs",
+ "author": "Lilith Learning Lab",
+ "description": "DPO (Rafailov et al., NeurIPS 2023) derived step by step: preference data and Bradley-Terry, the KL-regularised objective and its optimal policy, the loss, its gradient, implementation with sequence log-probabilities, choosing beta, and later variants (background). Theory plus Python labs.",
+ "pronounce": {
+  "DPO": "D P O",
+  "RLHF": "R L H F",
+  "PPO": "P P O",
+  "KL": "K L",
+  "IPO": "I P O",
+  "KTO": "K T O",
+  "ORPO": "or poh",
+  "SimPO": "sim P O",
+  "GRPO": "G R P O",
+  "SFT": "S F T",
+  "Rafailov": "rah fye loff",
+  "Bradley-Terry": "bradley terry",
+  "NeurIPS": "neur ips",
+  "Kahneman-Tversky": "kah nuh man ter ski",
+  "sigmoid": "sig moid",
+  "Sigmoid": "Sig moid",
+  "softmax": "soft max",
+  "OpenAI": "open A I",
+  "Z(x)": "Z of x",
+  "pi": "pie",
+  "InstructGPT": "instruct G P T",
+  "log-ratio": "log ratio",
+  "tau": "tau"
+ },
+ "chapters": [
+  {
+   "title": "From RLHF to DPO",
+   "maps": [
+    {
+     "title": "DPO",
+     "links": [
+      "DPO | introduced by | Rafailov et al. 2023",
+      "DPO | replaces | Reward model plus RL",
+      "DPO | uses | Preference pairs",
+      "DPO | is | A classification loss",
+      "Reference model | anchors | The policy",
+      "Beta | controls | Distance from reference",
+      "DPO | appeared at | NeurIPS 2023"
+     ]
+    }
+   ],
+   "summary": [
+    "Direct Preference Optimization, DPO, is a way to align a language model with human preferences using a simple loss on pairs of responses, one preferred and one rejected. It was introduced by Rafael Rafailov and colleagues at Stanford, NeurIPS 2023.",
+    "The usual route, RLHF, trains a reward model and then uses reinforcement learning such as PPO. DPO shows that, under the standard assumptions, the same goal can be reached by training the language model directly with a binary cross-entropy loss.",
+    "No separate reward model and no sampling loop are needed.",
+    "This course derives the loss step by step and builds each part in small Python labs."
+   ],
+   "glossary": [
+    {
+     "term": "Preference pair",
+     "def": "A prompt with a chosen (preferred) response and a rejected one."
+    },
+    {
+     "term": "RLHF",
+     "def": "Reinforcement learning from human feedback."
+    },
+    {
+     "term": "Reference model",
+     "def": "A frozen copy of the starting model."
+    },
+    {
+     "term": "Implicit reward",
+     "def": "The reward that the policy itself defines: beta times the log-ratio to the reference."
+    },
+    {
+     "term": "Beta",
+     "def": "A coefficient controlling how far the policy may move from the reference."
+    },
+    {
+     "term": "Binary cross-entropy",
+     "def": "The loss for a yes-or-no prediction."
+    }
+   ],
+   "keyPoints": [
+    "DPO: Rafailov, Sharma, Mitchell, Ermon, Manning and Finn, NeurIPS 2023.",
+    "Input: triples (x, y_w, y_l) with a winner and a loser.",
+    "Loss: -log sigmoid(beta (log pi/pi_ref (y_w) - log pi/pi_ref (y_l))).",
+    "No reward model, no RL sampling during training.",
+    "It assumes the Bradley-Terry model of preferences.",
+    "It needs log-probabilities from the policy and the frozen reference."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "A language model trained on text can write fluently but does not know what people prefer. To align it, the standard pipeline of RLHF has three stages. Fine-tune on good examples. Train a reward model on human comparisons.",
+      "Then optimise the language model against the reward model with reinforcement learning, with a penalty that keeps it close to the starting model."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "That last stage is heavy. It samples from the model during training, it needs the reward model, a value model and a reference model in memory, and it is sensitive to hyperparameters. The question behind DPO is whether all that is necessary."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The DPO paper's answer is no. Its key observation is that the RL objective used in RLHF has a closed-form optimal policy, and that this relation can be turned around: the reward can be written in terms of the policy.",
+      "Once the reward is expressed through the policy, the preference-learning step for the reward model becomes a loss on the policy itself."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\mathcal{L}_{\\mathrm{DPO}}(\\pi_\\theta;\\pi_{\\mathrm{ref}}) \\;=\\; -\\,\\mathbb{E}_{(x,y_w,y_l)}\\Bigl[\\ \\log \\sigma\\Bigl(\\beta \\log\\frac{\\pi_\\theta(y_w\\mid x)}{\\pi_{\\mathrm{ref}}(y_w\\mid x)} \\;-\\; \\beta \\log\\frac{\\pi_\\theta(y_l\\mid x)}{\\pi_{\\mathrm{ref}}(y_l\\mid x)}\\Bigr)\\Bigr]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is a binary classification loss. For each pair it asks: does the policy, relative to the reference, favour the winner over the loser? Training increases the log-probability ratio of winners and decreases that of losers. That is all.",
+      "It can be implemented in a few lines on top of ordinary supervised fine-tuning code."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A note on sources. This course follows the DPO paper and standard descriptions of it. Later variants and comparisons are marked as background knowledge. The labs use tiny numerical examples, not a real language model."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does DPO remove from RLHF?",
+     "options": [
+      "The separate reward model and RL loop",
+      "The reference model",
+      "The preference data",
+      "The language model"
+     ],
+     "answer": 0,
+     "explain": "It trains with a classification loss."
+    },
+    {
+     "q": "What is one training example?",
+     "options": [
+      "A prompt with a chosen and a rejected response",
+      "A single response",
+      "A reward score",
+      "A token"
+     ],
+     "answer": 0,
+     "explain": "(x, y_w, y_l)."
+    },
+    {
+     "q": "What anchors the policy?",
+     "options": [
+      "The frozen reference model",
+      "The reward model",
+      "The tokenizer",
+      "The batch size"
+     ],
+     "answer": 0,
+     "explain": "Via the log-ratio."
+    },
+    {
+     "q": "Who introduced DPO?",
+     "options": [
+      "Rafailov and colleagues",
+      "Schulman and colleagues",
+      "Vaswani and colleagues",
+      "Silver and colleagues"
+     ],
+     "answer": 0,
+     "explain": "NeurIPS 2023."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does beta do?",
+     "a": "Controls the distance from the reference."
+    },
+    {
+     "q": "What kind of loss is DPO?",
+     "a": "Binary cross-entropy on pairs."
+    },
+    {
+     "q": "What preference model is assumed?",
+     "a": "Bradley-Terry."
+    },
+    {
+     "q": "What must be computed?",
+     "a": "Log-probs under policy and reference."
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "RLHF versus DPO",
+     "intro": "Put the DPO training steps in order.",
+     "items": [
+      "Start from a supervised model and freeze a copy as the reference",
+      "Collect preference pairs",
+      "Compute policy and reference log-probabilities of both responses",
+      "Compute the DPO loss",
+      "Update the policy by gradient descent"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Chosen response",
+       "The preferred answer"
+      ],
+      [
+       "Rejected response",
+       "The less preferred answer"
+      ],
+      [
+       "Reference model",
+       "Frozen starting model"
+      ],
+      [
+       "beta",
+       "Strength of the anchor"
+      ],
+      [
+       "Implicit reward",
+       "Beta times the log-ratio"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Idea",
+     "text": "DPO trains the policy directly on {{preference|preferences}} pairs, with no separate {{reward}} model."
+    }
+   ]
+  },
+  {
+   "title": "Preference data and the Bradley-Terry model",
+   "maps": [
+    {
+     "title": "Preferences",
+     "links": [
+      "Bradley-Terry | models | Pairwise preferences",
+      "Sigmoid | converts | Reward gaps to probabilities",
+      "Reward gap | drives | Preference probability",
+      "Equal rewards | give | One half",
+      "Log-likelihood | trains | The reward",
+      "Annotators | choose | The better response",
+      "Noise | blurs | Labels"
+     ]
+    }
+   ],
+   "summary": [
+    "Human feedback usually comes as comparisons: given two responses, which is better? The Bradley-Terry model turns this into probability. If response A has reward r_A and B has r_B, the chance that A is preferred is the sigmoid of the reward gap.",
+    "A reward model is trained by maximising the log-likelihood of the observed choices. RLHF does this as a separate stage. DPO reuses the same likelihood but with the reward expressed through the policy.",
+    "The labs compute sigmoid, preference probabilities and the log-likelihood of a dataset."
+   ],
+   "glossary": [
+    {
+     "term": "Bradley-Terry model",
+     "def": "p(A beats B) = sigmoid(r_A - r_B)."
+    },
+    {
+     "term": "Sigmoid",
+     "def": "sigma(z) = 1 / (1 + exp(-z)); maps any number into (0, 1)."
+    },
+    {
+     "term": "Log-sigmoid",
+     "def": "log sigma(z): the log-probability of the observed choice."
+    },
+    {
+     "term": "Reward gap",
+     "def": "The difference r_w - r_l between winner and loser."
+    },
+    {
+     "term": "Log-likelihood",
+     "def": "The sum of log-probabilities of the data."
+    },
+    {
+     "term": "Annotator agreement",
+     "def": "How often different people make the same choice."
+    }
+   ],
+   "keyPoints": [
+    "p(y_w beats y_l) = sigmoid(r(y_w) - r(y_l)).",
+    "sigmoid(0) = 0.5; large positive gap gives probability near 1.",
+    "Training a reward model: minimise -log sigmoid(r_w - r_l).",
+    "Only reward differences matter, not absolute values.",
+    "Real labels are noisy; Bradley-Terry treats them as probabilistic.",
+    "The model assumes preferences come from a single underlying score."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Asking people to give a response a score from one to ten is unreliable: different people use the scale differently. Asking which of two responses is better is easier and more consistent. That is why preference data usually takes the form of comparisons."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To learn from comparisons we need a model of how they arise. The Bradley-Terry model, from 1952, supposes each item has a hidden score, and the chance that one beats another depends on the gap between scores. The bigger the gap, the more reliably the higher-scored item wins."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} p(y_w \\succ y_l \\mid x) \\;=\\; \\sigma\\bigl(r(x,y_w) - r(x,y_l)\\bigr), \\\\[0.6em] \\sigma(z) = \\frac{1}{1+e^{-z}} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Look at the shape of the sigmoid. At zero it is one half: equal scores, a coin toss. For a gap of two it is about 0.88. For a gap of five, about 0.99. Because only the difference matters, adding the same number to all rewards changes nothing. This invariance will be important in the derivation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Given a dataset of pairs, the reward model is trained by maximum likelihood: pick the scores that make the observed winners as probable as possible. Equivalently, minimise the negative log-likelihood. This is the classic first stage of RLHF."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\mathcal{L}_R(\\phi) \\;=\\; -\\,\\mathbb{E}_{(x,y_w,y_l)}\\bigl[\\log \\sigma\\bigl(r_\\phi(x,y_w) - r_\\phi(x,y_l)\\bigr)\\bigr]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "DPO keeps exactly this loss. What changes is what plays the role of the reward. The next chapters show that the policy itself can define it."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is sigmoid(0)?",
+     "options": [
+      "0.5",
+      "0",
+      "1",
+      "Undefined"
+     ],
+     "answer": 0,
+     "explain": "Equal scores."
+    },
+    {
+     "q": "What does Bradley-Terry depend on?",
+     "options": [
+      "The reward difference",
+      "The absolute reward",
+      "The length",
+      "The prompt only"
+     ],
+     "answer": 0,
+     "explain": "Only gaps matter."
+    },
+    {
+     "q": "What is trained by -log sigmoid(r_w - r_l)?",
+     "options": [
+      "A reward model",
+      "A tokenizer",
+      "A decoder",
+      "A value head"
+     ],
+     "answer": 0,
+     "explain": "Maximum likelihood."
+    },
+    {
+     "q": "Why comparisons rather than scores?",
+     "options": [
+      "They are more consistent",
+      "They are cheaper to store",
+      "They need no people",
+      "They avoid language"
+     ],
+     "answer": 0,
+     "explain": "People disagree on scales."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Who proposed the model?",
+     "a": "Bradley and Terry, 1952."
+    },
+    {
+     "q": "What happens if rewards shift equally?",
+     "a": "Nothing changes."
+    },
+    {
+     "q": "What does a gap of 5 give?",
+     "a": "About 0.99."
+    },
+    {
+     "q": "What is log sigmoid?",
+     "a": "Log-probability of the observed choice."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Sigmoid",
+     "intro": "Write sigmoid(z): 1 / (1 + exp(-z)), rounded to 9 decimals. Use import math.",
+     "fn": "sigmoid",
+     "starter": "def sigmoid(z):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        2
+       ],
+       "expect": 0.880797078,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -2
+       ],
+       "expect": 0.119202922,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": 0.993307149,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -5
+       ],
+       "expect": 0.006692851,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.5
+       ],
+       "expect": 0.622459331,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "One line.",
+     "solution": "import math\ndef sigmoid(z):\n    return round(1.0 / (1.0 + math.exp(-z)), 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Preference probability",
+     "intro": "Write pref_prob(r_a, r_b): the Bradley-Terry probability that A beats B, rounded to 9 decimals. Use import math.",
+     "fn": "pref_prob",
+     "starter": "def pref_prob(r_a, r_b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1.0,
+        1.0
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        3.0,
+        1.0
+       ],
+       "expect": 0.880797078,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1.0,
+        3.0
+       ],
+       "expect": 0.119202922,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        10.0,
+        5.0
+       ],
+       "expect": 0.993307149,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -1.0,
+        -2.0
+       ],
+       "expect": 0.731058579,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Sigmoid of the gap.",
+     "solution": "import math\ndef pref_prob(r_a, r_b):\n    return round(1.0 / (1.0 + math.exp(-(r_a - r_b))), 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Reward model loss",
+     "intro": "Write rm_loss(pairs): pairs is a list of [r_w, r_l]; return the mean of -ln sigmoid(r_w - r_l), rounded to 9 decimals. Use import math.",
+     "fn": "rm_loss",
+     "starter": "def rm_loss(pairs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1.0,
+          0.0
+         ]
+        ]
+       ],
+       "expect": 0.313261688,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          0.0,
+          0.0
+         ]
+        ]
+       ],
+       "expect": 0.693147181,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          2.0,
+          0.0
+         ],
+         [
+          0.0,
+          2.0
+         ]
+        ]
+       ],
+       "expect": 1.126928011,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          5.0,
+          1.0
+         ],
+         [
+          3.0,
+          2.0
+         ],
+         [
+          1.0,
+          1.5
+         ]
+        ]
+       ],
+       "expect": 0.435162867,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Mean negative log-probability.",
+     "solution": "import math\ndef rm_loss(pairs):\n    s = 0.0\n    for w, l in pairs:\n        s += -math.log(1.0 / (1.0 + math.exp(-(w - l))))\n    return round(s / len(pairs), 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Accuracy",
+     "intro": "Write pref_accuracy(pairs): the fraction of pairs [r_w, r_l] with r_w greater than r_l.",
+     "fn": "pref_accuracy",
+     "starter": "def pref_accuracy(pairs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          2,
+          1
+         ]
+        ]
+       ],
+       "expect": 0.6666666666666666,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          0
+         ],
+         [
+          4,
+          1
+         ]
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          1
+         ],
+         [
+          0,
+          2
+         ]
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Count correct orderings.",
+     "solution": "def pref_accuracy(pairs):\n    n = 0\n    for w, l in pairs:\n        if w > l:\n            n += 1\n    return n / len(pairs)\n"
+    },
+    {
+     "type": "order",
+     "title": "Learning rewards from comparisons",
+     "intro": "Order the steps.",
+     "items": [
+      "Show annotators two responses",
+      "Record the preferred one",
+      "Model the choice with Bradley-Terry",
+      "Maximise the log-likelihood",
+      "Obtain rewards that explain the choices"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Quantities",
+     "intro": "Match each quantity with its value.",
+     "pairs": [
+      [
+       "sigmoid(0)",
+       "0.5"
+      ],
+      [
+       "Gap very large",
+       "Probability near 1"
+      ],
+      [
+       "Gap very negative",
+       "Probability near 0"
+      ],
+      [
+       "Equal rewards",
+       "Coin toss"
+      ],
+      [
+       "Shift all rewards",
+       "No change"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Bradley-Terry",
+     "text": "The chance that A wins is the {{sigmoid}} of the reward {{gap|difference}}."
+    }
+   ]
+  },
+  {
+   "title": "The KL-regularised objective and its optimal policy",
+   "maps": [
+    {
+     "title": "Optimal policy",
+     "links": [
+      "RLHF objective | maximises | Reward minus KL",
+      "KL term | keeps | Policy near reference",
+      "Beta | weights | The KL penalty",
+      "Optimal policy | is | Reference times exp of reward",
+      "Partition function | normalises | The result",
+      "Reward | defines | A tilt of the reference",
+      "High beta | means | Stay close"
+     ]
+    }
+   ],
+   "summary": [
+    "The RL stage of RLHF maximises expected reward while keeping the policy near the reference model: a reward term minus beta times the KL divergence from the reference. This problem has a closed-form solution.",
+    "The optimal policy is the reference policy reweighted by the exponential of reward over beta, then normalised. Responses with high reward get more probability, with beta controlling how strongly.",
+    "The normaliser, called the partition function, is expensive to compute for language models. DPO's trick, in the next chapter, is that it will cancel."
+   ],
+   "glossary": [
+    {
+     "term": "KL-regularised objective",
+     "def": "E[r(x, y)] - beta * KL(pi || pi_ref)."
+    },
+    {
+     "term": "Optimal policy",
+     "def": "pi*(y|x) = pi_ref(y|x) exp(r(x,y)/beta) / Z(x)."
+    },
+    {
+     "term": "Partition function",
+     "def": "Z(x) = sum_y pi_ref(y|x) exp(r(x,y)/beta), the normaliser."
+    },
+    {
+     "term": "Tilting",
+     "def": "Reweighting a distribution by an exponential factor."
+    },
+    {
+     "term": "Temperature",
+     "def": "Here beta plays the role of a temperature on the reward."
+    },
+    {
+     "term": "Support",
+     "def": "The set of responses with nonzero probability."
+    }
+   ],
+   "keyPoints": [
+    "max over pi of E_{y~pi}[r(x,y)] - beta KL(pi(.|x) || pi_ref(.|x)).",
+    "Solution: pi*(y|x) = pi_ref(y|x) exp(r(x,y)/beta) / Z(x).",
+    "beta -> infinity: pi* approaches pi_ref; beta -> 0: pi* concentrates on the highest-reward response.",
+    "Z(x) sums over all possible responses, which is intractable for language models.",
+    "The same form appears in maximum-entropy RL and in statistical physics (Boltzmann).",
+    "The paper derives this as a known result in the appendix."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Here is the optimisation problem of RLHF's last stage. For each prompt we want a policy that earns high reward, but not at the price of drifting far from the reference. So we maximise the expected reward minus beta times the KL divergence from the reference."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\max_{\\pi}\\ \\ \\mathbb{E}_{y\\sim\\pi(\\cdot\\mid x)}\\bigl[r(x,y)\\bigr] \\;-\\; \\beta\\, D_{\\mathrm{KL}}\\bigl[\\pi(\\cdot\\mid x)\\,\\|\\,\\pi_{\\mathrm{ref}}(\\cdot\\mid x)\\bigr]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This can be solved exactly. The solution takes the reference distribution and multiplies each response's probability by an exponential factor in its reward. Then it divides by a constant so that probabilities sum to one.",
+      "A response with high reward is made more likely, but never to the exclusion of the others, because the reference still contributes."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\pi^{*}(y\\mid x) \\;=\\; \\frac{1}{Z(x)}\\,\\pi_{\\mathrm{ref}}(y\\mid x)\\,\\exp\\!\\Bigl(\\frac{1}{\\beta}\\,r(x,y)\\Bigr), \\\\[0.6em] Z(x)=\\sum_{y}\\pi_{\\mathrm{ref}}(y\\mid x)\\exp\\!\\Bigl(\\frac{1}{\\beta}\\,r(x,y)\\Bigr) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Look at the two limits of beta. When beta is very large, the exponent is near zero, the factor is near one for every response, and the optimal policy is the reference. When beta is small, the exponent is huge for the best response, and the policy puts nearly all its probability there.",
+      "So beta sets a dial between caution and greed."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The trouble is Z of x. It is a sum over every possible response, an astronomically large set for a language model. So we cannot evaluate the optimal policy directly, and RLHF falls back on RL sampling to approach it. DPO instead keeps the formula and uses it algebraically."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the KL term do?",
+     "options": [
+      "Keeps the policy near the reference",
+      "Raises the reward",
+      "Trains the reward model",
+      "Adds data"
+     ],
+     "answer": 0,
+     "explain": "Weighted by beta."
+    },
+    {
+     "q": "What is the optimal policy?",
+     "options": [
+      "Reference times exp(reward/beta), normalised",
+      "The highest reward response only",
+      "Uniform",
+      "The reward model"
+     ],
+     "answer": 0,
+     "explain": "A tilt of the reference."
+    },
+    {
+     "q": "What happens as beta goes to infinity?",
+     "options": [
+      "Optimal policy approaches the reference",
+      "It becomes deterministic",
+      "It diverges",
+      "It becomes uniform"
+     ],
+     "answer": 0,
+     "explain": "The tilt vanishes."
+    },
+    {
+     "q": "Why is Z(x) a problem?",
+     "options": [
+      "It sums over all responses",
+      "It is negative",
+      "It depends on beta only",
+      "It is random"
+     ],
+     "answer": 0,
+     "explain": "Intractable."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is Z?",
+     "a": "The partition function."
+    },
+    {
+     "q": "What does small beta do?",
+     "a": "Concentrates on the best response."
+    },
+    {
+     "q": "What is the limit of large beta?",
+     "a": "The reference."
+    },
+    {
+     "q": "Where else does this form occur?",
+     "a": "Statistical physics."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Optimal policy over a few responses",
+     "intro": "Write optimal_policy(pi_ref, rewards, beta): the list pi*_i = pi_ref_i * exp(r_i / beta) / Z, rounded to 9 decimals. Use import math.",
+     "fn": "optimal_policy",
+     "starter": "def optimal_policy(pi_ref, rewards, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.0,
+         0.0
+        ],
+        1.0
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         1.0,
+         0.0
+        ],
+        1.0
+       ],
+       "expect": [
+        0.731058579,
+        0.268941421
+       ]
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         1.0,
+         0.0
+        ],
+        0.1
+       ],
+       "expect": [
+        0.999954602,
+        4.5398e-05
+       ]
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         1.0,
+         0.0
+        ],
+        100.0
+       ],
+       "expect": [
+        0.502499979,
+        0.497500021
+       ]
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.3,
+         0.5
+        ],
+        [
+         0.0,
+         1.0,
+         2.0
+        ],
+        0.5
+       ],
+       "expect": [
+        0.006730428,
+        0.074597266,
+        0.918672306
+       ]
+      }
+     ],
+     "hint": "Weights then normalise.",
+     "solution": "import math\ndef optimal_policy(pi_ref, rewards, beta):\n    w = [p * math.exp(r / beta) for p, r in zip(pi_ref, rewards)]\n    z = sum(w)\n    return [round(x / z, 9) for x in w]\n"
+    },
+    {
+     "type": "python",
+     "title": "Partition function",
+     "intro": "Write partition(pi_ref, rewards, beta): Z = sum of pi_ref_i * exp(r_i / beta), rounded to 9 decimals. Use import math.",
+     "fn": "partition",
+     "starter": "def partition(pi_ref, rewards, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.0,
+         0.0
+        ],
+        1.0
+       ],
+       "expect": 1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         1.0,
+         0.0
+        ],
+        1.0
+       ],
+       "expect": 1.859140914,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        [
+         2.0
+        ],
+        2.0
+       ],
+       "expect": 2.718281828,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.25,
+         0.75
+        ],
+        [
+         4.0,
+         0.0
+        ],
+        2.0
+       ],
+       "expect": 2.597264025,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Sum of tilted weights.",
+     "solution": "import math\ndef partition(pi_ref, rewards, beta):\n    s = 0.0\n    for p, r in zip(pi_ref, rewards):\n        s += p * math.exp(r / beta)\n    return round(s, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "KL divergence",
+     "intro": "Write kl(p, q): sum p_i ln(p_i / q_i) (skip zero p_i), rounded to 9 decimals. Use import math.",
+     "fn": "kl",
+     "starter": "def kl(p, q):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.1
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.368064207,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.693147181,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.3,
+         0.5
+        ],
+        [
+         0.3,
+         0.3,
+         0.4
+        ]
+       ],
+       "expect": 0.030478754,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Standard formula.",
+     "solution": "import math\ndef kl(p, q):\n    s = 0.0\n    for a, b in zip(p, q):\n        if a > 0:\n            s += a * math.log(a / b)\n    return round(s, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "RLHF objective",
+     "intro": "Write rlhf_objective(pi, pi_ref, rewards, beta): sum_i pi_i r_i minus beta times KL(pi || pi_ref), rounded to 9 decimals. Use import math.",
+     "fn": "rlhf_objective",
+     "starter": "def rlhf_objective(pi, pi_ref, rewards, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        [
+         1.0,
+         0.0
+        ],
+        1.0
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.1
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        [
+         1.0,
+         0.0
+        ],
+        1.0
+       ],
+       "expect": 0.531935793,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.1
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        [
+         1.0,
+         0.0
+        ],
+        0.1
+       ],
+       "expect": 0.863193579,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        [
+         1.0,
+         0.0
+        ],
+        0.5
+       ],
+       "expect": 0.65342641,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Expected reward minus the penalty.",
+     "solution": "import math\ndef rlhf_objective(pi, pi_ref, rewards, beta):\n    er = 0.0\n    kl = 0.0\n    for p, q, r in zip(pi, pi_ref, rewards):\n        er += p * r\n        if p > 0:\n            kl += p * math.log(p / q)\n    return round(er - beta * kl, 9)\n"
+    },
+    {
+     "type": "order",
+     "title": "Solving the objective",
+     "intro": "Order the steps.",
+     "items": [
+      "Write reward minus beta times KL",
+      "Find the distribution that maximises it",
+      "Weight the reference by exp(r/beta)",
+      "Divide by the partition function",
+      "Obtain the optimal policy"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Beta",
+     "intro": "Match each setting with its effect.",
+     "pairs": [
+      [
+       "Beta large",
+       "Stay near reference"
+      ],
+      [
+       "Beta small",
+       "Chase reward"
+      ],
+      [
+       "Z",
+       "Normaliser"
+      ],
+      [
+       "exp(r/beta)",
+       "Tilt factor"
+      ],
+      [
+       "KL",
+       "Distance from reference"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Optimal",
+     "text": "The optimal policy tilts the {{reference}} by exp(r over {{beta}}) and normalises."
+    }
+   ]
+  },
+  {
+   "title": "Deriving the DPO loss",
+   "maps": [
+    {
+     "title": "Derivation",
+     "links": [
+      "Optimal policy | implies | Reward from policy",
+      "Reward | equals | Beta log ratio plus log Z",
+      "Log Z | depends on | Prompt only",
+      "Reward gap | cancels | Log Z",
+      "Bradley-Terry | then uses | Policy ratios",
+      "Loss | is | Negative log sigmoid",
+      "Policy | acts as | A reward model"
+     ]
+    }
+   ],
+   "summary": [
+    "Take the optimal policy formula and solve it for the reward: r equals beta times the log of the policy over the reference, plus beta times log Z of x. The reward is expressed through the policy.",
+    "Substitute into the Bradley-Terry model. The reward gap between the winner and the loser contains log Z of x twice, with opposite signs, so it cancels. The preference probability depends only on the policy and reference.",
+    "Maximum likelihood on the observed preferences then gives the DPO loss."
+   ],
+   "glossary": [
+    {
+     "term": "Reward reparameterisation",
+     "def": "r(x,y) = beta log(pi*(y|x)/pi_ref(y|x)) + beta log Z(x)."
+    },
+    {
+     "term": "Cancellation",
+     "def": "log Z(x) appears in both rewards of a pair and drops out of their difference."
+    },
+    {
+     "term": "Implicit reward",
+     "def": "r_hat(x,y) = beta log(pi_theta(y|x)/pi_ref(y|x))."
+    },
+    {
+     "term": "Log-ratio",
+     "def": "log pi_theta(y|x) - log pi_ref(y|x)."
+    },
+    {
+     "term": "Margin",
+     "def": "The implicit reward gap between winner and loser."
+    },
+    {
+     "term": "Closed-form",
+     "def": "Given by a formula, without iterative search."
+    }
+   ],
+   "keyPoints": [
+    "From pi*: r(x,y) = beta log(pi*(y|x)/pi_ref(y|x)) + beta log Z(x).",
+    "Gap: r(x,y_w) - r(x,y_l) = beta log(pi*(y_w)/pi_ref(y_w)) - beta log(pi*(y_l)/pi_ref(y_l)).",
+    "Z(x) cancels because both responses answer the same prompt.",
+    "Replace pi* by the trainable pi_theta and maximise the Bradley-Terry likelihood.",
+    "The result is the DPO loss; the policy network is the reward model.",
+    "The paper states the language model is secretly a reward model."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Start from the closed-form optimal policy of the last chapter. Take logarithms and rearrange. The log of the optimal policy equals the log of the reference, plus the reward over beta, minus log Z. Solve for the reward."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "r(x,y) \\;=\\; \\beta\\,\\log\\frac{\\pi^{*}(y\\mid x)}{\\pi_{\\mathrm{ref}}(y\\mid x)} \\;+\\; \\beta\\,\\log Z(x)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is the key step. It says that any reward function corresponds to an optimal policy, and conversely any policy can be read as defining a reward, up to the term beta log Z of x. That extra term depends on the prompt, not on the response."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now put this reward into the Bradley-Terry model. The probability of preferring the winner depends on the reward gap between winner and loser, for the same prompt. In the gap, the log Z terms are identical, so they subtract away. The intractable partition function disappears."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "p^{*}(y_w\\succ y_l\\mid x) \\;=\\; \\sigma\\Bigl(\\beta\\log\\frac{\\pi^{*}(y_w\\mid x)}{\\pi_{\\mathrm{ref}}(y_w\\mid x)} - \\beta\\log\\frac{\\pi^{*}(y_l\\mid x)}{\\pi_{\\mathrm{ref}}(y_l\\mid x)}\\Bigr)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The last step is to treat the policy as the unknown. Replace the optimal policy by a trainable one, and fit it by maximum likelihood on the observed preferences. Minimising the negative log-likelihood gives the DPO loss from chapter 1.",
+      "The paper summarises this by saying that the language model is secretly a reward model."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "It is worth saying what is assumed. The derivation relies on the Bradley-Terry model being a good description of the preferences, and on the policy class being flexible enough to represent the optimum. Where these fail, DPO and RLHF can differ in practice.",
+      "The labs below compute the implicit reward, the margin and the loss."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What cancels in the derivation?",
+     "options": [
+      "log Z(x)",
+      "beta",
+      "The reference",
+      "The winner"
+     ],
+     "answer": 0,
+     "explain": "It is the same for both responses."
+    },
+    {
+     "q": "What is the implicit reward?",
+     "options": [
+      "beta times the log ratio policy over reference",
+      "The policy probability",
+      "The reference probability",
+      "The KL"
+     ],
+     "answer": 0,
+     "explain": "Up to a prompt term."
+    },
+    {
+     "q": "What is assumed about preferences?",
+     "options": [
+      "Bradley-Terry",
+      "Uniform",
+      "Deterministic",
+      "Independent of prompt"
+     ],
+     "answer": 0,
+     "explain": "Probabilistic from reward gaps."
+    },
+    {
+     "q": "What is the policy network in DPO?",
+     "options": [
+      "Also a reward model, implicitly",
+      "Only a generator",
+      "A critic",
+      "A tokenizer"
+     ],
+     "answer": 0,
+     "explain": "The paper's phrase."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Why does Z cancel?",
+     "a": "Both responses share the prompt."
+    },
+    {
+     "q": "What gets trained?",
+     "a": "The policy parameters."
+    },
+    {
+     "q": "What replaces the reward model?",
+     "a": "The log-ratio to the reference."
+    },
+    {
+     "q": "What is the margin?",
+     "a": "Gap of implicit rewards."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Implicit reward",
+     "intro": "Write implicit_reward(logp, logp_ref, beta): beta * (logp - logp_ref), rounded to 9 decimals.",
+     "fn": "implicit_reward",
+     "starter": "def implicit_reward(logp, logp_ref, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -1.0,
+        -1.0,
+        0.1
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -0.5,
+        -1.0,
+        0.1
+       ],
+       "expect": 0.05,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -2.0,
+        -1.0,
+        0.5
+       ],
+       "expect": -0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -1.0,
+        -3.0,
+        1.0
+       ],
+       "expect": 2.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Beta times the log ratio.",
+     "solution": "def implicit_reward(logp, logp_ref, beta):\n    return round(beta * (logp - logp_ref), 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Margin",
+     "intro": "Write margin(lw, lw_ref, ll, ll_ref, beta): the implicit reward of the winner minus that of the loser, rounded to 9 decimals.",
+     "fn": "margin",
+     "starter": "def margin(lw, lw_ref, ll, ll_ref, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        0.1
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -0.5,
+        -1.0,
+        -2.0,
+        -1.5,
+        0.1
+       ],
+       "expect": 0.1,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -1.0,
+        -0.5,
+        -0.5,
+        -1.0,
+        1.0
+       ],
+       "expect": -1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -2.0,
+        -2.0,
+        -1.0,
+        -3.0,
+        0.5
+       ],
+       "expect": -1.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Difference of two implicit rewards.",
+     "solution": "def margin(lw, lw_ref, ll, ll_ref, beta):\n    return round(beta * (lw - lw_ref) - beta * (ll - ll_ref), 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "DPO loss for one pair",
+     "intro": "Write dpo_loss(lw, lw_ref, ll, ll_ref, beta): -ln sigmoid(margin), rounded to 9 decimals. Use import math.",
+     "fn": "dpo_loss",
+     "starter": "def dpo_loss(lw, lw_ref, ll, ll_ref, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        0.1
+       ],
+       "expect": 0.693147181,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -0.5,
+        -1.0,
+        -2.0,
+        -1.5,
+        0.1
+       ],
+       "expect": 0.64439666,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -2.0,
+        -1.0,
+        -0.5,
+        -1.0,
+        1.0
+       ],
+       "expect": 1.701413278,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -1.0,
+        -2.0,
+        -3.0,
+        -2.0,
+        0.5
+       ],
+       "expect": 0.313261688,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "The loss is ln 2 when the margin is zero.",
+     "solution": "import math\ndef dpo_loss(lw, lw_ref, ll, ll_ref, beta):\n    m = beta * (lw - lw_ref) - beta * (ll - ll_ref)\n    return round(-math.log(1.0 / (1.0 + math.exp(-m))), 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Batch loss and accuracy",
+     "intro": "Write dpo_batch(pairs, beta): pairs is a list of [lw, lw_ref, ll, ll_ref]; return [mean DPO loss, fraction of pairs with a positive margin], both rounded to 9 decimals. Use import math.",
+     "fn": "dpo_batch",
+     "starter": "def dpo_batch(pairs, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          -1.0,
+          -1.0,
+          -1.0,
+          -1.0
+         ]
+        ],
+        0.1
+       ],
+       "expect": [
+        0.693147181,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          -0.5,
+          -1.0,
+          -2.0,
+          -1.5
+         ],
+         [
+          -2.0,
+          -1.0,
+          -0.5,
+          -1.0
+         ]
+        ],
+        0.5
+       ],
+       "expect": [
+        0.805473995,
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          -1.0,
+          -2.0,
+          -3.0,
+          -2.0
+         ],
+         [
+          -1.0,
+          -2.0,
+          -3.0,
+          -2.0
+         ]
+        ],
+        1.0
+       ],
+       "expect": [
+        0.126928011,
+        1.0
+       ]
+      }
+     ],
+     "hint": "Average the per-pair loss.",
+     "solution": "import math\ndef dpo_batch(pairs, beta):\n    tot = 0.0\n    ok = 0\n    for lw, lwr, ll, llr in pairs:\n        m = beta * (lw - lwr) - beta * (ll - llr)\n        tot += -math.log(1.0 / (1.0 + math.exp(-m)))\n        if m > 0:\n            ok += 1\n    n = len(pairs)\n    return [round(tot / n, 9), round(ok / n, 9)]\n"
+    },
+    {
+     "type": "order",
+     "title": "Deriving DPO",
+     "intro": "Order the argument.",
+     "items": [
+      "Start from the KL-regularised objective",
+      "Write its optimal policy",
+      "Solve that formula for the reward",
+      "Put the reward into Bradley-Terry so log Z cancels",
+      "Fit the policy by maximum likelihood"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Pieces",
+     "intro": "Match each piece with its role.",
+     "pairs": [
+      [
+       "log Z",
+       "Cancels in the gap"
+      ],
+      [
+       "Implicit reward",
+       "Beta times log ratio"
+      ],
+      [
+       "Margin",
+       "Winner minus loser reward"
+      ],
+      [
+       "Bradley-Terry",
+       "Preference model"
+      ],
+      [
+       "Policy",
+       "Also the reward model"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Derivation",
+     "text": "The partition function {{cancels|drops out}} because both responses answer the same {{prompt}}."
+    }
+   ]
+  },
+  {
+   "title": "The gradient: who gets updated and how much",
+   "maps": [
+    {
+     "title": "Gradient",
+     "links": [
+      "Gradient | raises | Winner log-prob",
+      "Gradient | lowers | Loser log-prob",
+      "Weight | is | Sigmoid of the wrong ordering",
+      "Wrong pair | gets | Large weight",
+      "Right pair | gets | Small weight",
+      "Beta | scales | The gradient",
+      "Naive unlikelihood | lacks | The weight"
+     ]
+    }
+   ],
+   "summary": [
+    "Differentiating the DPO loss gives a clean result. For each pair, increase the log-probability of the winner and decrease that of the loser, and scale the step by a weight.",
+    "The weight is the sigmoid of the negative margin: large when the implicit reward model ranks the pair wrongly, small when it is already right.",
+    "This dynamic weighting is important. The paper reports that a naive version without it, which simply pushes winners up and losers down, can cause the model to degenerate.",
+    "The labs compute the weight, the gradient with respect to log-probabilities and one update step on a small table-based policy."
+   ],
+   "glossary": [
+    {
+     "term": "Gradient weight",
+     "def": "sigma(r_hat_l - r_hat_w): how wrongly the implicit reward orders the pair."
+    },
+    {
+     "term": "Log-probability gradient",
+     "def": "The direction that raises or lowers log pi_theta of a response."
+    },
+    {
+     "term": "Implicit ranking error",
+     "def": "A pair where the loser has the higher implicit reward."
+    },
+    {
+     "term": "Degeneration",
+     "def": "Output quality collapsing when the loss lacks the weighting."
+    },
+    {
+     "term": "Tabular policy",
+     "def": "A policy stored as a table of logits, used in the labs."
+    },
+    {
+     "term": "Learning rate",
+     "def": "The size of each gradient step."
+    }
+   ],
+   "keyPoints": [
+    "grad L = -beta * w * (grad log pi(y_w) - grad log pi(y_l)), averaged over pairs.",
+    "w = sigmoid(r_hat(y_l) - r_hat(y_w)) = 1 - sigmoid(margin).",
+    "When the margin is large and positive, w is near 0: the pair is already satisfied.",
+    "When the margin is negative, w approaches 1: a strong update.",
+    "Scaling by beta means larger beta takes larger steps in log-probability, for the same learning rate.",
+    "The paper notes the importance of the weight in avoiding degeneration."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "What does a step of DPO do? Differentiate the loss with respect to the policy parameters. The result has a pleasingly interpretable form. It increases the log-probability of the chosen response, it decreases the log-probability of the rejected one, and it multiplies this by a weight."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\nabla_\\theta \\mathcal{L}_{\\mathrm{DPO}} \\;=\\; -\\beta\\ \\mathbb{E}\\Bigl[\\ \\underbrace{\\sigma\\bigl(\\hat r_\\theta(x,y_l) - \\hat r_\\theta(x,y_w)\\bigr)}_{\\text{weight}}\\ \\bigl(\\nabla_\\theta\\log\\pi_\\theta(y_w\\mid x) - \\nabla_\\theta\\log\\pi_\\theta(y_l\\mid x)\\bigr)\\Bigr]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The weight is the interesting part. It equals the sigmoid of the amount by which the implicit reward model gets the pair wrong. If the model already rates the winner far above the loser, the weight is near zero and the example barely matters.",
+      "If the model has the pair backwards, the weight is near one and the example pushes hard."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "This focus on mistakes is why DPO behaves sensibly. Easy pairs stop contributing once learned, so training effort goes where the model disagrees with the labels.",
+      "The paper also points out that a simpler objective, which just raises winners and lowers losers without this weighting, can make the model degenerate, as nothing stops it from lowering probabilities without limit."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The gradient also shows what beta does. It multiplies the whole expression, and it appears inside the weight through the implicit rewards.",
+      "A large beta makes the implicit reward gaps large for a given change in log-probabilities, so the weights fall to zero sooner: the policy stays near the reference. A small beta lets the policy move farther before the pair counts as satisfied."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The labs use a tabular policy, with one logit per response, to see these effects without a neural network. For a softmax over a few candidate responses, the gradient of the log-probability with respect to the logits is the one-hot vector minus the probabilities, as you saw in the PPO course."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the DPO gradient do to the winner?",
+     "options": [
+      "Raises its log-probability",
+      "Lowers it",
+      "Ignores it",
+      "Doubles the reward"
+     ],
+     "answer": 0,
+     "explain": "And lowers the loser's."
+    },
+    {
+     "q": "When is the weight large?",
+     "options": [
+      "When the pair is ranked wrongly",
+      "When the pair is ranked rightly",
+      "When beta is zero",
+      "At the start only"
+     ],
+     "answer": 0,
+     "explain": "sigmoid of the negative margin."
+    },
+    {
+     "q": "What happens to easy pairs?",
+     "options": [
+      "They contribute little",
+      "They dominate",
+      "They are removed",
+      "They flip"
+     ],
+     "answer": 0,
+     "explain": "Weight near zero."
+    },
+    {
+     "q": "Why keep the weight?",
+     "options": [
+      "It prevents degeneration",
+      "It saves memory",
+      "It speeds up reading",
+      "It is optional with no effect"
+     ],
+     "answer": 0,
+     "explain": "As reported by the paper."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is w?",
+     "a": "sigmoid of the negative margin."
+    },
+    {
+     "q": "Bigger beta means?",
+     "a": "Stay closer to the reference."
+    },
+    {
+     "q": "What is updated?",
+     "a": "Winner up, loser down."
+    },
+    {
+     "q": "What are the labs' policy tables?",
+     "a": "One logit per response."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Gradient weight",
+     "intro": "Write dpo_weight(margin): sigmoid(-margin), rounded to 9 decimals. Use import math.",
+     "fn": "dpo_weight",
+     "starter": "def dpo_weight(margin):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.0
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        2.0
+       ],
+       "expect": 0.119202922,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -2.0
+       ],
+       "expect": 0.880797078,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        10.0
+       ],
+       "expect": 4.5398e-05,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -10.0
+       ],
+       "expect": 0.999954602,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Close to 1 for wrong orderings.",
+     "solution": "import math\ndef dpo_weight(margin):\n    return round(1.0 / (1.0 + math.exp(margin)), 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Logit gradient for one pair",
+     "intro": "A tabular policy over k candidate responses has logits theta. For a pair (winner index w, loser index l) the gradient of the loss with respect to theta is -beta * weight * ((onehot(w) - p) - (onehot(l) - p)) = -beta * weight * (onehot(w) - onehot(l)), where p is unaffected. Write pair_grad(k, w, l, beta, weight): that list of length k, each rounded to 9 decimals.",
+     "fn": "pair_grad",
+     "starter": "def pair_grad(k, w, l, beta, weight):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        0,
+        1,
+        0.1,
+        0.5
+       ],
+       "expect": [
+        -0.05,
+        0.05,
+        0.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        2,
+        1,
+        0,
+        1.0,
+        1.0
+       ],
+       "expect": [
+        1.0,
+        -1.0
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        4,
+        3,
+        0,
+        0.5,
+        0.25
+       ],
+       "expect": [
+        0.125,
+        0.0,
+        0.0,
+        -0.125
+       ],
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        3,
+        2,
+        1,
+        0.2,
+        0.0
+       ],
+       "expect": [
+        0.0,
+        0.0,
+        -0.0
+       ],
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Minus beta weight on the winner, plus on the loser.",
+     "solution": "def pair_grad(k, w, l, beta, weight):\n    g = [0.0] * k\n    g[w] = -beta * weight\n    g[l] = beta * weight\n    return [round(x, 9) for x in g]\n"
+    },
+    {
+     "type": "python",
+     "title": "One DPO step on a tabular policy",
+     "intro": "A policy over k responses is softmax(theta); the reference is softmax(theta_ref). Write dpo_step(theta, theta_ref, pairs, beta, lr): for each pair [w, l] compute log pi and log pi_ref (log of the softmax probabilities), margin = beta*((lp_w - ref_w) - (lp_l - ref_l)), weight = sigmoid(-margin); the gradient of the loss with respect to the logits uses the full softmax gradients: -beta*weight*((onehot(w)-p) - (onehot(l)-p)) = -beta*weight*(onehot(w)-onehot(l)). Average over the pairs and return theta minus lr times that average, rounded to 6 decimals. Use import math.",
+     "fn": "dpo_step",
+     "starter": "def dpo_step(theta, theta_ref, pairs, beta, lr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.0,
+         0.0,
+         0.0
+        ],
+        [
+         0.0,
+         0.0,
+         0.0
+        ],
+        [
+         [
+          0,
+          1
+         ]
+        ],
+        0.1,
+        1.0
+       ],
+       "expect": [
+        0.05,
+        -0.05,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         0.0,
+         0.0,
+         0.0
+        ],
+        [
+         0.0,
+         0.0,
+         0.0
+        ],
+        [
+         [
+          0,
+          1
+         ],
+         [
+          0,
+          2
+         ]
+        ],
+        0.5,
+        0.5
+       ],
+       "expect": [
+        0.125,
+        -0.0625,
+        -0.0625
+       ]
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ],
+        [
+         0.0,
+         0.0
+        ],
+        [
+         [
+          0,
+          1
+         ]
+        ],
+        1.0,
+        0.5
+       ],
+       "expect": [
+        1.134471,
+        -0.134471
+       ]
+      },
+      {
+       "args": [
+        [
+         0.0,
+         1.0
+        ],
+        [
+         0.0,
+         0.0
+        ],
+        [
+         [
+          0,
+          1
+         ]
+        ],
+        1.0,
+        0.5
+       ],
+       "expect": [
+        0.365529,
+        0.634471
+       ]
+      }
+     ],
+     "hint": "Raise the winner's logit, lower the loser's, weighted.",
+     "solution": "import math\ndef dpo_step(theta, theta_ref, pairs, beta, lr):\n    def logsm(t):\n        m = max(t)\n        s = sum(math.exp(x - m) for x in t)\n        return [x - m - math.log(s) for x in t]\n    lp = logsm(theta)\n    lr_ref = logsm(theta_ref)\n    k = len(theta)\n    g = [0.0] * k\n    for w, l in pairs:\n        margin = beta * ((lp[w] - lr_ref[w]) - (lp[l] - lr_ref[l]))\n        weight = 1.0 / (1.0 + math.exp(margin))\n        g[w] += -beta * weight\n        g[l] += beta * weight\n    n = len(pairs)\n    return [round(theta[i] - lr * g[i] / n, 6) for i in range(k)]\n"
+    },
+    {
+     "type": "order",
+     "title": "One update",
+     "intro": "Order the steps for one pair.",
+     "items": [
+      "Compute log-probabilities under policy and reference",
+      "Form the implicit reward margin",
+      "Compute the weight sigmoid(-margin)",
+      "Raise the winner and lower the loser by that weight",
+      "Take a gradient step"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Gradient",
+     "intro": "Match each item with its meaning.",
+     "pairs": [
+      [
+       "Weight near 1",
+       "Pair ranked wrongly"
+      ],
+      [
+       "Weight near 0",
+       "Pair already satisfied"
+      ],
+      [
+       "Winner",
+       "Log-prob pushed up"
+      ],
+      [
+       "Loser",
+       "Log-prob pushed down"
+      ],
+      [
+       "Large beta",
+       "Stay near reference"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Weights",
+     "text": "Pairs the model ranks {{wrongly|incorrectly}} get a {{large|big|high}} weight."
+    }
+   ]
+  },
+  {
+   "title": "Implementing DPO: sequences, batches and practicalities",
+   "maps": [
+    {
+     "title": "Implementation",
+     "links": [
+      "Response log-prob | sums | Token log-probs",
+      "Reference log-probs | can be | Precomputed",
+      "Prompt tokens | are | Masked out",
+      "Batch | holds | Chosen and rejected",
+      "Beta | typically | 0.1",
+      "Learning rate | is | Small",
+      "SFT first | is | Usual"
+     ]
+    }
+   ],
+   "summary": [
+    "A response is a sequence of tokens. Its log-probability is the sum of the log-probabilities of its tokens given the prompt and the earlier tokens. DPO needs this sum for the chosen and the rejected response under both the policy and the reference.",
+    "Prompt tokens must be masked, so that only response tokens contribute. Reference log-probabilities do not change, so they can be computed once and stored.",
+    "In the paper's experiments beta of 0.1 was a typical value. Learning rates are small, since the policy starts near the reference. A supervised fine-tuning stage usually comes first."
+   ],
+   "glossary": [
+    {
+     "term": "Sequence log-probability",
+     "def": "The sum over response tokens of log pi(token | context)."
+    },
+    {
+     "term": "Masking",
+     "def": "Excluding prompt (and padding) tokens from the sum."
+    },
+    {
+     "term": "Precomputing",
+     "def": "Calculating reference log-probabilities once before training."
+    },
+    {
+     "term": "SFT",
+     "def": "Supervised fine-tuning, usually done before DPO."
+    },
+    {
+     "term": "Beta",
+     "def": "A typical value is 0.1; chosen by experiment."
+    },
+    {
+     "term": "Length bias",
+     "def": "A tendency for sums of log-probabilities to favour shorter or longer responses."
+    }
+   ],
+   "keyPoints": [
+    "log pi(y|x) = sum over response tokens of log pi(y_t | x, y_<t).",
+    "Only response tokens count; prompt and padding are masked.",
+    "Reference log-probabilities can be precomputed once.",
+    "Common beta about 0.1 (the paper explores 0.1 to 0.5 in places); tuned per task.",
+    "DPO usually starts from a supervised fine-tuned model that also serves as the reference.",
+    "Longer responses have lower total log-probability, which can interact with the loss."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "So far we treated a response as a single item with a probability. A real response is a sequence of tokens. By the chain rule of probability, the probability of the whole response is the product of the token probabilities, each conditioned on the prompt and the tokens before.",
+      "Taking logs turns the product into a sum."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\log \\pi_\\theta(y\\mid x) \\;=\\; \\sum_{t=1}^{|y|}\\ \\log \\pi_\\theta\\bigl(y_t \\mid x,\\, y_{<t}\\bigr)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "In code, run the model on the concatenated prompt and response once. It outputs a distribution over the vocabulary at each position. Pick out the log-probability of the actual next token at each response position.",
+      "Mask out the prompt positions, since the prompt is given, not generated, and padding positions. Sum what remains."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Each training step needs four such sums: the policy and the reference, for the chosen and the rejected response. The reference model is frozen, so its sums never change.",
+      "A common saving is to compute them once before training and store them with the data, so the reference need not be in memory during the updates."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Practical advice from the paper and common implementations: begin from a model already fine-tuned on good responses, and use that same model as the reference. Use a small learning rate, since a large one will quickly leave the neighbourhood where the reference is a sensible anchor.",
+      "Beta of 0.1 is a common starting value. Larger values keep the model closer."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "One known subtlety is length. A longer response has a more negative total log-probability simply because it has more tokens, so the log-ratios can interact with length. Several later methods normalise by length. I come back to this in the chapter on variants.",
+      "The labs compute sequence log-probabilities with masks and build one batch of DPO inputs."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How is a response log-probability computed?",
+     "options": [
+      "Sum of token log-probs",
+      "Product of logits",
+      "Mean of rewards",
+      "Max token"
+     ],
+     "answer": 0,
+     "explain": "Chain rule in logs."
+    },
+    {
+     "q": "Why mask prompt tokens?",
+     "options": [
+      "The prompt is given, not generated",
+      "To save time",
+      "To add noise",
+      "To change beta"
+     ],
+     "answer": 0,
+     "explain": "Only response tokens count."
+    },
+    {
+     "q": "Why precompute reference log-probs?",
+     "options": [
+      "The reference is frozen",
+      "It is faster to read",
+      "Beta is fixed",
+      "It improves accuracy"
+     ],
+     "answer": 0,
+     "explain": "Saves memory."
+    },
+    {
+     "q": "What typical beta is used?",
+     "options": [
+      "About 0.1",
+      "About 100",
+      "Exactly 0",
+      "About 10,000"
+     ],
+     "answer": 0,
+     "explain": "Tuned per task."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What model is the usual reference?",
+     "a": "The SFT model."
+    },
+    {
+     "q": "How many log-prob sums per pair?",
+     "a": "Four."
+    },
+    {
+     "q": "Why a small learning rate?",
+     "a": "Stay near the reference."
+    },
+    {
+     "q": "What is length bias?",
+     "a": "Totals favour short responses."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Sequence log-probability",
+     "intro": "Write seq_logprob(token_logps, mask): the sum of token_logps[i] where mask[i] is 1 (response tokens), rounded to 9 decimals.",
+     "fn": "seq_logprob",
+     "starter": "def seq_logprob(token_logps, mask):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         -1.0,
+         -2.0,
+         -0.5
+        ],
+        [
+         0,
+         1,
+         1
+        ]
+       ],
+       "expect": -2.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         -1.0,
+         -1.0
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": -2.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         -3.0,
+         -0.1,
+         -0.2,
+         -5.0
+        ],
+        [
+         0,
+         0,
+         1,
+         0
+        ]
+       ],
+       "expect": -0.2,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         -1.0
+        ],
+        [
+         0
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Skip masked positions.",
+     "solution": "def seq_logprob(token_logps, mask):\n    s = 0.0\n    for lp, m in zip(token_logps, mask):\n        if m == 1:\n            s += lp\n    return round(s, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Response mask",
+     "intro": "Write response_mask(prompt_len, total_len, pad_from): a list of length total_len with 1 for positions from prompt_len up to (not including) pad_from, 0 elsewhere.",
+     "fn": "response_mask",
+     "starter": "def response_mask(prompt_len, total_len, pad_from):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2,
+        6,
+        5
+       ],
+       "expect": [
+        0,
+        0,
+        1,
+        1,
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        0,
+        3,
+        3
+       ],
+       "expect": [
+        1,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        3,
+        5,
+        5
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        2,
+        4,
+        2
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Between the prompt and the padding.",
+     "solution": "def response_mask(prompt_len, total_len, pad_from):\n    return [1 if (i >= prompt_len and i < pad_from) else 0 for i in range(total_len)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Build a DPO input",
+     "intro": "Write dpo_inputs(chosen_lp, chosen_ref_lp, rejected_lp, rejected_ref_lp, chosen_mask, rejected_mask): return [lw, lw_ref, ll, ll_ref], each the masked sum of the token log-probs, rounded to 9 decimals.",
+     "fn": "dpo_inputs",
+     "starter": "def dpo_inputs(chosen_lp, chosen_ref_lp, rejected_lp, rejected_ref_lp, chosen_mask, rejected_mask):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         -1.0,
+         -1.0
+        ],
+        [
+         -1.1,
+         -1.1
+        ],
+        [
+         -2.0,
+         -2.0
+        ],
+        [
+         -1.9,
+         -1.9
+        ],
+        [
+         1,
+         1
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        -2.0,
+        -2.2,
+        -4.0,
+        -3.8
+       ]
+      },
+      {
+       "args": [
+        [
+         -1.0,
+         -2.0
+        ],
+        [
+         -1.0,
+         -2.0
+        ],
+        [
+         -0.5,
+         -0.5,
+         -0.5
+        ],
+        [
+         -0.6,
+         -0.6,
+         -0.6
+        ],
+        [
+         0,
+         1
+        ],
+        [
+         1,
+         1,
+         0
+        ]
+       ],
+       "expect": [
+        -2.0,
+        -2.0,
+        -1.0,
+        -1.2
+       ]
+      },
+      {
+       "args": [
+        [
+         -0.1
+        ],
+        [
+         -0.2
+        ],
+        [
+         -0.3
+        ],
+        [
+         -0.4
+        ],
+        [
+         1
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": [
+        -0.1,
+        -0.2,
+        -0.3,
+        -0.4
+       ]
+      }
+     ],
+     "hint": "Four masked sums.",
+     "solution": "def dpo_inputs(chosen_lp, chosen_ref_lp, rejected_lp, rejected_ref_lp, chosen_mask, rejected_mask):\n    def msum(a, m):\n        s = 0.0\n        for x, k in zip(a, m):\n            if k == 1:\n                s += x\n        return round(s, 9)\n    return [msum(chosen_lp, chosen_mask), msum(chosen_ref_lp, chosen_mask), msum(rejected_lp, rejected_mask), msum(rejected_ref_lp, rejected_mask)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Per-token length normalisation",
+     "intro": "Write avg_logprob(token_logps, mask): the masked sum divided by the number of unmasked tokens (0 if none), rounded to 9 decimals.",
+     "fn": "avg_logprob",
+     "starter": "def avg_logprob(token_logps, mask):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         -1.0,
+         -2.0,
+         -3.0
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": -2.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         -1.0,
+         -2.0,
+         -3.0
+        ],
+        [
+         0,
+         1,
+         1
+        ]
+       ],
+       "expect": -2.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         -1.0
+        ],
+        [
+         0
+        ]
+       ],
+       "expect": 0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         -0.5,
+         -0.5
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": -0.5,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Divide by the count.",
+     "solution": "def avg_logprob(token_logps, mask):\n    s = 0.0\n    n = 0\n    for lp, m in zip(token_logps, mask):\n        if m == 1:\n            s += lp\n            n += 1\n    if n == 0:\n        return 0\n    return round(s / n, 9)\n"
+    },
+    {
+     "type": "order",
+     "title": "Preparing training data",
+     "intro": "Order the steps.",
+     "items": [
+      "Fine-tune a supervised model and keep a frozen copy",
+      "Tokenise prompt plus chosen and rejected responses",
+      "Build masks that cover only response tokens",
+      "Precompute reference log-probabilities",
+      "Train the policy with the DPO loss"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Details",
+     "intro": "Match each detail with its reason.",
+     "pairs": [
+      [
+       "Mask the prompt",
+       "Only generated tokens count"
+      ],
+      [
+       "Precompute reference",
+       "Frozen, saves memory"
+      ],
+      [
+       "SFT first",
+       "Good starting point"
+      ],
+      [
+       "Small learning rate",
+       "Stay near reference"
+      ],
+      [
+       "Length normalisation",
+       "Reduce length bias"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Code",
+     "text": "A response log-probability is the {{sum}} of token log-probabilities over the {{response|generated}} tokens."
+    }
+   ]
+  },
+  {
+   "title": "Choosing beta and understanding behaviour",
+   "maps": [
+    {
+     "title": "Behaviour",
+     "links": [
+      "Beta | trades | Reward for closeness",
+      "Likelihood displacement | lowers | Chosen probability",
+      "Overfitting | memorises | Pairs",
+      "Reference quality | limits | Results",
+      "Data quality | decides | Alignment",
+      "Off-policy data | can mismatch | The reference",
+      "Evaluation | compares | Win rates"
+     ]
+    }
+   ],
+   "summary": [
+    "Beta is the most important knob. Small beta lets the policy move far from the reference, which can give larger gains and more risk. Large beta keeps it close. The right value depends on the data and the model.",
+    "DPO is trained offline on a fixed set of pairs. If the responses came from another model, the reference may give them very low probability. Many practitioners therefore fine-tune on the preferred responses first.",
+    "A reported effect, sometimes called likelihood displacement, is that DPO can lower the probability of both the chosen and the rejected response, so long as the gap grows. This is background knowledge from later analyses."
+   ],
+   "glossary": [
+    {
+     "term": "Likelihood displacement",
+     "def": "Chosen and rejected log-probabilities both fall while their gap grows."
+    },
+    {
+     "term": "Offline training",
+     "def": "Learning from a fixed dataset without sampling new responses."
+    },
+    {
+     "term": "Distribution shift",
+     "def": "Mismatch between the data and what the model would generate."
+    },
+    {
+     "term": "Win rate",
+     "def": "The share of comparisons in which one model's response is preferred."
+    },
+    {
+     "term": "Overfitting",
+     "def": "Fitting the training pairs too closely; the margin keeps growing."
+    },
+    {
+     "term": "Reward accuracy",
+     "def": "The share of pairs with a positive implicit reward margin."
+    }
+   ],
+   "keyPoints": [
+    "Larger beta keeps the policy closer to the reference.",
+    "Training on pairs not generated by the reference can cause distribution shift.",
+    "Margins can grow without bound; with noisy labels this overfits.",
+    "Both chosen and rejected log-probs may decline (later analyses; background).",
+    "Track: loss, reward accuracy, margin, chosen/rejected rewards, KL to reference.",
+    "Final evaluation uses held-out prompts and win rates against a baseline."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Consider the roles of beta again. In the loss, beta multiplies the log-ratio. In the optimal policy it sets the temperature of the reward tilt. A small beta says: I trust the preference data, and I let the policy drift. A large beta says: stay close.",
+      "The paper's experiments use values such as 0.1 and compare behaviour as the KL to the reference grows."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\hat r_\\theta(x,y) \\;=\\; \\beta \\log\\frac{\\pi_\\theta(y\\mid x)}{\\pi_{\\mathrm{ref}}(y\\mid x)}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "DPO trains offline on a fixed dataset, so the data matters a great deal. Suppose the responses came from a very different model. Then under the reference both may be very unlikely, and the log-ratios behave strangely.",
+      "A common remedy, noted in the paper, is to first fine-tune the reference on the preferred responses."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A further effect has been described in later analyses. The loss only cares about the gap between chosen and rejected. It can be reduced by lowering the rejected probability a lot while lowering the chosen one a little. So both probabilities can fall.",
+      "Some observers call this likelihood displacement. Variants add a term that keeps the chosen likelihood up. I mark this as background knowledge, not a result of the original paper."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Overfitting is another risk. With a clean dataset the margin can be increased without limit by driving the loser's probability toward zero. With noisy labels this memorises noise. Early stopping, a larger beta, a smaller learning rate or label smoothing can all help."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To monitor training, log the loss, the reward accuracy, the average margin, the implicit rewards of the chosen and rejected responses, and an estimate of the KL divergence to the reference.",
+      "For the final judgement use held-out prompts and compare responses against a baseline, by human raters or by a model judge, and report the win rate."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a larger beta do?",
+     "options": [
+      "Keeps the policy closer to the reference",
+      "Lets it drift",
+      "Removes the reference",
+      "Changes the data"
+     ],
+     "answer": 0,
+     "explain": "Smaller steps in log-ratio terms."
+    },
+    {
+     "q": "What is reward accuracy?",
+     "options": [
+      "Share of pairs with positive margin",
+      "Reward model size",
+      "Win rate",
+      "Loss"
+     ],
+     "answer": 0,
+     "explain": "A training diagnostic."
+    },
+    {
+     "q": "Why SFT on preferred responses first?",
+     "options": [
+      "So they are likely under the reference",
+      "To save memory",
+      "To remove beta",
+      "To shorten prompts"
+     ],
+     "answer": 0,
+     "explain": "Reduces distribution shift."
+    },
+    {
+     "q": "What is likelihood displacement?",
+     "options": [
+      "Both chosen and rejected probabilities fall",
+      "Only rejected rises",
+      "Loss goes up",
+      "Beta changes"
+     ],
+     "answer": 0,
+     "explain": "Later analysis, background."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is the final metric?",
+     "a": "Win rate on held-out prompts."
+    },
+    {
+     "q": "What is offline training?",
+     "a": "Fixed dataset, no new samples."
+    },
+    {
+     "q": "How to curb overfitting?",
+     "a": "Early stop, larger beta, smaller lr."
+    },
+    {
+     "q": "What to log?",
+     "a": "Loss, accuracy, margin, KL."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "Optimal policy for a given beta",
+     "intro": "With two responses, reference probabilities p_ref = [0.5, 0.5] and rewards [1.0, 0.0], write prob_best(beta): the optimal policy's probability on the first response, rounded to 9 decimals. Use import math.",
+     "fn": "prob_best",
+     "starter": "def prob_best(beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.1
+       ],
+       "expect": 0.999954602,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0.5
+       ],
+       "expect": 0.880797078,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1.0
+       ],
+       "expect": 0.731058579,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        10.0
+       ],
+       "expect": 0.524979187,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        100.0
+       ],
+       "expect": 0.502499979,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "A two-way tilt.",
+     "solution": "import math\ndef prob_best(beta):\n    a = 0.5 * math.exp(1.0 / beta)\n    b = 0.5\n    return round(a / (a + b), 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Diagnostics",
+     "intro": "Write diagnostics(margins, chosen_rewards, rejected_rewards): return [reward accuracy (fraction of margins above 0), mean margin, mean chosen reward, mean rejected reward], each rounded to 9 decimals.",
+     "fn": "diagnostics",
+     "starter": "def diagnostics(margins, chosen_rewards, rejected_rewards):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         -0.2,
+         1.0
+        ],
+        [
+         0.2,
+         0.1,
+         0.4
+        ],
+        [
+         -0.3,
+         0.3,
+         -0.6
+        ]
+       ],
+       "expect": [
+        0.666666667,
+        0.433333333,
+        0.233333333,
+        -0.2
+       ]
+      },
+      {
+       "args": [
+        [
+         1.0,
+         1.0
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        [
+         -0.5,
+         -0.5
+        ]
+       ],
+       "expect": [
+        1.0,
+        1.0,
+        0.5,
+        -0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         -1.0
+        ],
+        [
+         -0.5
+        ],
+        [
+         0.5
+        ]
+       ],
+       "expect": [
+        0.0,
+        -1.0,
+        -0.5,
+        0.5
+       ]
+      }
+     ],
+     "hint": "Four summary numbers.",
+     "solution": "def diagnostics(margins, chosen_rewards, rejected_rewards):\n    n = len(margins)\n    acc = sum(1 for m in margins if m > 0) / n\n    return [round(acc, 9), round(sum(margins) / n, 9), round(sum(chosen_rewards) / n, 9), round(sum(rejected_rewards) / n, 9)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Displacement check",
+     "intro": "Write displaced(chosen_before, chosen_after, rejected_before, rejected_after): True if the chosen log-prob fell AND the gap (chosen minus rejected) grew.",
+     "fn": "displaced",
+     "starter": "def displaced(chosen_before, chosen_after, rejected_before, rejected_after):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -1.0,
+        -1.5,
+        -2.0,
+        -4.0
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        -1.0,
+        -0.5,
+        -2.0,
+        -3.0
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        -1.0,
+        -1.5,
+        -2.0,
+        -2.0
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        -1.0,
+        -1.0,
+        -2.0,
+        -3.0
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Two conditions.",
+     "solution": "def displaced(chosen_before, chosen_after, rejected_before, rejected_after):\n    gap_before = chosen_before - rejected_before\n    gap_after = chosen_after - rejected_after\n    return chosen_after < chosen_before and gap_after > gap_before\n"
+    },
+    {
+     "type": "python",
+     "title": "Win rate",
+     "intro": "Write win_rate(outcomes): outcomes is a list of 'win', 'loss' or 'tie'; return (wins + 0.5 * ties) / games, or 0 for an empty list.",
+     "fn": "win_rate",
+     "starter": "def win_rate(outcomes):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "win",
+         "loss",
+         "tie",
+         "win"
+        ]
+       ],
+       "expect": 0.625,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": 0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         "loss",
+         "loss"
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-12
+      },
+      {
+       "args": [
+        [
+         "tie",
+         "tie"
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 1e-12
+      }
+     ],
+     "hint": "Ties count half.",
+     "solution": "def win_rate(outcomes):\n    if len(outcomes) == 0:\n        return 0\n    s = 0.0\n    for o in outcomes:\n        if o == 'win':\n            s += 1\n        elif o == 'tie':\n            s += 0.5\n    return s / len(outcomes)\n"
+    },
+    {
+     "type": "order",
+     "title": "Tuning DPO",
+     "intro": "Order a sensible routine.",
+     "items": [
+      "Fine-tune on preferred responses",
+      "Train with beta 0.1",
+      "Watch reward accuracy and KL",
+      "Adjust beta or the learning rate",
+      "Evaluate win rate on held-out prompts"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Effects",
+     "intro": "Match each setting with its likely effect.",
+     "pairs": [
+      [
+       "Large beta",
+       "Policy stays close"
+      ],
+      [
+       "Small beta",
+       "Policy drifts far"
+      ],
+      [
+       "Noisy labels",
+       "Overfitting risk"
+      ],
+      [
+       "Off-policy pairs",
+       "Distribution shift"
+      ],
+      [
+       "Held-out prompts",
+       "Honest evaluation"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Tuning",
+     "text": "A larger {{beta}} keeps the policy {{closer|close|near}} to the reference."
+    }
+   ]
+  },
+  {
+   "title": "Variants, relatives and where DPO fits",
+   "maps": [
+    {
+     "title": "Family",
+     "links": [
+      "IPO | changes | The loss shape",
+      "KTO | uses | Single-response labels",
+      "ORPO | drops | The reference model",
+      "SimPO | uses | Length-normalised reward",
+      "GRPO | uses | Group advantages",
+      "PPO | is | The RL alternative",
+      "Online DPO | samples | Fresh responses"
+     ]
+    }
+   ],
+   "summary": [
+    "DPO started a family. IPO modifies the loss to avoid overfitting. KTO works with thumbs-up or thumbs-down labels on single responses. ORPO combines supervised fine-tuning and preference learning without a reference model. SimPO uses length-normalised log-probabilities.",
+    "Online versions sample fresh responses during training. GRPO keeps the reinforcement learning loop but replaces the value model by group statistics.",
+    "All of these are later work and are background knowledge in this course. Details differ and evidence about which is best is mixed; treat comparisons with some care.",
+    "The labs implement small versions of three of these ideas."
+   ],
+   "glossary": [
+    {
+     "term": "IPO",
+     "def": "Identity Preference Optimization: squared-error loss on the margin, aimed at reducing overfitting."
+    },
+    {
+     "term": "KTO",
+     "def": "Kahneman-Tversky Optimization: learns from labels on single responses."
+    },
+    {
+     "term": "ORPO",
+     "def": "Odds Ratio Preference Optimization: no reference model."
+    },
+    {
+     "term": "SimPO",
+     "def": "Simple Preference Optimization: average log-probability as the reward."
+    },
+    {
+     "term": "Online DPO",
+     "def": "DPO with fresh samples from the current policy, labelled by a judge."
+    },
+    {
+     "term": "GRPO",
+     "def": "Group Relative Policy Optimization: PPO-like with group-normalised advantages."
+    }
+   ],
+   "keyPoints": [
+    "IPO: loss = (margin_in_logratio - 1/(2 tau))^2 style regression to a target gap.",
+    "SimPO: reward = beta / |y| * log pi(y|x), with a target margin gamma.",
+    "KTO: needs only 'good' or 'bad' labels per response.",
+    "ORPO: adds an odds-ratio penalty to the SFT loss; no reference model.",
+    "Online methods reduce distribution shift by sampling from the current policy.",
+    "These variants are later than the DPO paper; evidence on which is best is mixed."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "DPO's simplicity made it popular, and its limits prompted many variants. Here is a map, with the usual warning that this is the fast-moving part of the field."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "IPO changes the loss from log-sigmoid to a squared error pushing the margin toward a fixed target. The aim is to stop the margin from growing without limit when labels are very consistent, which curbs overfitting.",
+      "KTO is designed for data where you only have thumbs-up or thumbs-down on single responses rather than pairs. ORPO folds preference learning into supervised fine-tuning with an odds-ratio term, and does not need a reference model, saving memory.",
+      "SimPO scores a response by its average, not total, log-probability, which treats length more evenly."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\text{SimPO reward: } \\ r(x,y) = \\frac{\\beta}{|y|}\\log \\pi_\\theta(y\\mid x), \\\\[0.6em] \\text{loss} = -\\log\\sigma\\bigl(r(x,y_w) - r(x,y_l) - \\gamma\\bigr) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A different line addresses the offline nature of DPO. Online or iterative DPO samples new responses from the current policy, has a judge rank them, trains on the new pairs, and repeats. This removes the distribution shift, but brings back a sampling loop, which was what DPO aimed to avoid.",
+      "Seen this way, PPO-style RLHF and DPO sit at two ends of a spectrum."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "GRPO keeps online reinforcement learning but drops the value model: for each prompt it samples a group of responses, and the advantage of each is its reward minus the group mean, divided by the group standard deviation. It has been popular for reasoning models trained with verifiable rewards."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How to choose? DPO is a strong default when you have a good preference dataset and limited compute. PPO-like methods give more control when you have a reliable reward signal and can afford sampling. Whatever you pick, evaluate on held-out prompts.",
+      "Where to go next: read the DPO paper, then try the loss on a small open model with a preference dataset, and plot the diagnostics from chapter 7."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which variant needs no reference model?",
+     "options": [
+      "ORPO",
+      "DPO",
+      "IPO",
+      "PPO"
+     ],
+     "answer": 0,
+     "explain": "It adds an odds-ratio term to SFT."
+    },
+    {
+     "q": "What does KTO use?",
+     "options": [
+      "Single-response good or bad labels",
+      "Pairs only",
+      "A reward model",
+      "A tree"
+     ],
+     "answer": 0,
+     "explain": "Not pairs."
+    },
+    {
+     "q": "What does SimPO normalise by?",
+     "options": [
+      "Response length",
+      "Beta",
+      "The reference",
+      "The batch"
+     ],
+     "answer": 0,
+     "explain": "Average log-probability."
+    },
+    {
+     "q": "What does online DPO fix?",
+     "options": [
+      "Distribution shift from offline data",
+      "Memory use",
+      "Tokenization",
+      "The learning rate"
+     ],
+     "answer": 0,
+     "explain": "By sampling from the current policy."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Are variants in the original paper?",
+     "a": "No, they are later work."
+    },
+    {
+     "q": "What does GRPO drop?",
+     "a": "The value model."
+    },
+    {
+     "q": "DPO or PPO default?",
+     "a": "DPO with a good dataset and limited compute."
+    },
+    {
+     "q": "What is IPO's aim?",
+     "a": "Reduce overfitting."
+    }
+   ],
+   "practice": [
+    {
+     "type": "python",
+     "title": "IPO-style loss",
+     "intro": "Write ipo_loss(margin_logratio, tau): the squared error (margin_logratio - 1 / (2 * tau)) ** 2, where margin_logratio is the winner minus loser log-ratio (without beta). Round to 9 decimals.",
+     "fn": "ipo_loss",
+     "starter": "def ipo_loss(margin_logratio, tau):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.0,
+        0.1
+       ],
+       "expect": 25.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        5.0,
+        0.1
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        10.0,
+        0.1
+       ],
+       "expect": 25.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1.0,
+        0.5
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Regress the gap to a target.",
+     "solution": "def ipo_loss(margin_logratio, tau):\n    return round((margin_logratio - 1.0 / (2.0 * tau)) ** 2, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "SimPO reward",
+     "intro": "Write simpo_reward(logp_sum, length, beta): beta * logp_sum / length, rounded to 9 decimals.",
+     "fn": "simpo_reward",
+     "starter": "def simpo_reward(logp_sum, length, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -10.0,
+        10,
+        2.0
+       ],
+       "expect": -2.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -30.0,
+        20,
+        2.0
+       ],
+       "expect": -3.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -5.0,
+        5,
+        1.0
+       ],
+       "expect": -1.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -1.0,
+        2,
+        0.5
+       ],
+       "expect": -0.25,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Length-normalised.",
+     "solution": "def simpo_reward(logp_sum, length, beta):\n    return round(beta * logp_sum / length, 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "SimPO loss",
+     "intro": "Write simpo_loss(lp_w, len_w, lp_l, len_l, beta, gamma): -ln sigmoid(reward_w - reward_l - gamma) using the SimPO reward, rounded to 9 decimals. Use import math.",
+     "fn": "simpo_loss",
+     "starter": "def simpo_loss(lp_w, len_w, lp_l, len_l, beta, gamma):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -10.0,
+        10,
+        -20.0,
+        10,
+        2.0,
+        0.5
+       ],
+       "expect": 0.201413278
+      },
+      {
+       "args": [
+        -10.0,
+        10,
+        -10.0,
+        10,
+        2.0,
+        0.0
+       ],
+       "expect": 0.693147181
+      },
+      {
+       "args": [
+        -30.0,
+        20,
+        -20.0,
+        20,
+        2.0,
+        0.5
+       ],
+       "expect": 1.701413278
+      },
+      {
+       "args": [
+        -5.0,
+        5,
+        -10.0,
+        10,
+        1.0,
+        0.0
+       ],
+       "expect": 0.693147181
+      }
+     ],
+     "hint": "Normalise before comparing.",
+     "solution": "import math\ndef simpo_loss(lp_w, len_w, lp_l, len_l, beta, gamma):\n    m = beta * lp_w / len_w - beta * lp_l / len_l - gamma\n    return round(-math.log(1.0 / (1.0 + math.exp(-m))), 9)\n"
+    },
+    {
+     "type": "python",
+     "title": "Group advantages",
+     "intro": "Write group_advantages(rewards): the GRPO-style advantage of each sampled response, (reward - mean) / (std + 1e-8) with population std, rounded to 6 decimals. Use import math.",
+     "fn": "group_advantages",
+     "starter": "def group_advantages(rewards):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1.0,
+         0.0,
+         0.0,
+         1.0
+        ]
+       ],
+       "expect": [
+        1.0,
+        -1.0,
+        -1.0,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         1.0,
+         1.0,
+         1.0
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         0.0,
+         1.0
+        ]
+       ],
+       "expect": [
+        -1.0,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         0.1,
+         0.5,
+         0.9,
+         0.3
+        ]
+       ],
+       "expect": [
+        -1.183216,
+        0.169031,
+        1.521278,
+        -0.507093
+       ]
+      }
+     ],
+     "hint": "Normalise within the group.",
+     "solution": "import math\ndef group_advantages(rewards):\n    n = len(rewards)\n    mu = sum(rewards) / n\n    var = sum((r - mu) ** 2 for r in rewards) / n\n    s = math.sqrt(var)\n    return [round((r - mu) / (s + 1e-8), 6) for r in rewards]\n"
+    },
+    {
+     "type": "order",
+     "title": "Online preference learning",
+     "intro": "Order the loop.",
+     "items": [
+      "Sample several responses from the current policy",
+      "Have a judge rank them",
+      "Form preference pairs",
+      "Update the policy with a preference loss",
+      "Repeat with the improved policy"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Relatives",
+     "intro": "Match each method with its feature.",
+     "pairs": [
+      [
+       "IPO",
+       "Squared-error margin target"
+      ],
+      [
+       "KTO",
+       "Single-response labels"
+      ],
+      [
+       "ORPO",
+       "No reference model"
+      ],
+      [
+       "SimPO",
+       "Length-normalised reward"
+      ],
+      [
+       "GRPO",
+       "Group-relative advantages"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Family",
+     "text": "{{GRPO}} drops the value model; {{online|iterative}} DPO samples new responses."
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Direct Preference Optimization (DPO)",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "Who introduced DPO?",
+    "options": [
+     "Rafailov and colleagues",
+     "Schulman and colleagues",
+     "Vaswani and colleagues",
+     "Silver and colleagues"
+    ],
+    "answer": 0,
+    "explain": "NeurIPS 2023."
+   },
+   {
+    "q": "What does DPO remove from RLHF?",
+    "options": [
+     "The separate reward model and RL loop",
+     "The preference data",
+     "The reference model",
+     "The language model"
+    ],
+    "answer": 0,
+    "explain": "A classification loss instead."
+   },
+   {
+    "q": "What is one DPO training example?",
+    "options": [
+     "A prompt with a chosen and a rejected response",
+     "A single response",
+     "A reward score",
+     "A token"
+    ],
+    "answer": 0,
+    "explain": "(x, y_w, y_l)."
+   },
+   {
+    "q": "What is the DPO loss form?",
+    "options": [
+     "-log sigmoid of a scaled log-ratio difference",
+     "Squared error to a reward",
+     "Cross-entropy on tokens only",
+     "KL only"
+    ],
+    "answer": 0,
+    "explain": "Binary cross-entropy on pairs."
+   },
+   {
+    "q": "What anchors the policy in DPO?",
+    "options": [
+     "The frozen reference model",
+     "The tokenizer",
+     "The batch size",
+     "The reward model"
+    ],
+    "answer": 0,
+    "explain": "Via the log-ratio."
+   },
+   {
+    "q": "What does the Bradley-Terry model give?",
+    "options": [
+     "Preference probability from a reward gap",
+     "Token probabilities",
+     "KL divergence",
+     "Gradients"
+    ],
+    "answer": 0,
+    "explain": "Sigmoid of the gap."
+   },
+   {
+    "q": "What is sigmoid(0)?",
+    "options": [
+     "0.5",
+     "0",
+     "1",
+     "Undefined"
+    ],
+    "answer": 0,
+    "explain": "Equal rewards."
+   },
+   {
+    "q": "Which reward changes leave Bradley-Terry unchanged?",
+    "options": [
+     "Adding the same constant to all",
+     "Doubling all",
+     "Negating all",
+     "Randomising"
+    ],
+    "answer": 0,
+    "explain": "Only gaps matter."
+   },
+   {
+    "q": "What does the RLHF objective maximise?",
+    "options": [
+     "Expected reward minus beta times KL to the reference",
+     "Reward only",
+     "KL only",
+     "Entropy only"
+    ],
+    "answer": 0,
+    "explain": "A regularised objective."
+   },
+   {
+    "q": "What is the optimal policy of that objective?",
+    "options": [
+     "Reference times exp(r/beta), normalised",
+     "The best response only",
+     "Uniform",
+     "The reward model"
+    ],
+    "answer": 0,
+    "explain": "A tilt."
+   },
+   {
+    "q": "What happens as beta grows large?",
+    "options": [
+     "Optimal policy approaches the reference",
+     "It becomes deterministic",
+     "It diverges",
+     "It becomes uniform"
+    ],
+    "answer": 0,
+    "explain": "The tilt vanishes."
+   },
+   {
+    "q": "What is Z(x)?",
+    "options": [
+     "The partition function",
+     "The reward",
+     "The margin",
+     "The prompt length"
+    ],
+    "answer": 0,
+    "explain": "Sum over all responses."
+   },
+   {
+    "q": "Why is Z(x) hard to compute?",
+    "options": [
+     "It sums over all possible responses",
+     "It is negative",
+     "It is random",
+     "It needs labels"
+    ],
+    "answer": 0,
+    "explain": "Intractable for language models."
+   },
+   {
+    "q": "What cancels in the DPO derivation?",
+    "options": [
+     "log Z(x)",
+     "beta",
+     "The reference",
+     "The winner"
+    ],
+    "answer": 0,
+    "explain": "Both responses share the prompt."
+   },
+   {
+    "q": "What is the implicit reward?",
+    "options": [
+     "beta times the log ratio of policy to reference",
+     "The policy probability",
+     "The KL",
+     "The margin"
+    ],
+    "answer": 0,
+    "explain": "Up to a prompt-dependent term."
+   },
+   {
+    "q": "What is the margin?",
+    "options": [
+     "Winner's implicit reward minus loser's",
+     "Loss minus reward",
+     "Beta times KL",
+     "Policy minus reference"
+    ],
+    "answer": 0,
+    "explain": "Positive when the pair is ranked right."
+   },
+   {
+    "q": "What is the DPO loss when the margin is zero?",
+    "options": [
+     "ln 2",
+     "0",
+     "1",
+     "Infinite"
+    ],
+    "answer": 0,
+    "explain": "-log 0.5."
+   },
+   {
+    "q": "What does the DPO gradient do to the chosen response?",
+    "options": [
+     "Raises its log-probability",
+     "Lowers it",
+     "Ignores it",
+     "Clips it"
+    ],
+    "answer": 0,
+    "explain": "And lowers the rejected one's."
+   },
+   {
+    "q": "When is the gradient weight large?",
+    "options": [
+     "When the pair is ranked wrongly",
+     "When it is ranked rightly",
+     "When beta is 0",
+     "At the end"
+    ],
+    "answer": 0,
+    "explain": "sigmoid(-margin)."
+   },
+   {
+    "q": "Why keep the dynamic weight?",
+    "options": [
+     "Without it the model can degenerate",
+     "It saves memory",
+     "It speeds training only",
+     "It is a rounding step"
+    ],
+    "answer": 0,
+    "explain": "As reported by the paper."
+   },
+   {
+    "q": "How is a response log-probability computed?",
+    "options": [
+     "Sum of token log-probs",
+     "Product of logits",
+     "Mean reward",
+     "Max token"
+    ],
+    "answer": 0,
+    "explain": "Chain rule in logs."
+   },
+   {
+    "q": "Why mask prompt tokens?",
+    "options": [
+     "The prompt is given, not generated",
+     "To save time",
+     "To add noise",
+     "To change beta"
+    ],
+    "answer": 0,
+    "explain": "Only response tokens count."
+   },
+   {
+    "q": "Why can reference log-probs be precomputed?",
+    "options": [
+     "The reference is frozen",
+     "They are small",
+     "Beta is fixed",
+     "They are random"
+    ],
+    "answer": 0,
+    "explain": "They never change."
+   },
+   {
+    "q": "What model usually serves as the reference?",
+    "options": [
+     "The supervised fine-tuned model",
+     "A random model",
+     "The reward model",
+     "The tokenizer"
+    ],
+    "answer": 0,
+    "explain": "Also the starting point."
+   },
+   {
+    "q": "What beta is a common starting value?",
+    "options": [
+     "About 0.1",
+     "About 100",
+     "Exactly 0",
+     "About 10,000"
+    ],
+    "answer": 0,
+    "explain": "Tuned per task."
+   },
+   {
+    "q": "What does a larger beta do?",
+    "options": [
+     "Keeps the policy closer to the reference",
+     "Lets it drift",
+     "Removes the reference",
+     "Changes the data"
+    ],
+    "answer": 0,
+    "explain": "Smaller moves in log-ratio terms."
+   },
+   {
+    "q": "What is reward accuracy?",
+    "options": [
+     "Share of pairs with positive margin",
+     "Reward model size",
+     "Win rate",
+     "Loss"
+    ],
+    "answer": 0,
+    "explain": "A training diagnostic."
+   },
+   {
+    "q": "Why fine-tune on preferred responses first?",
+    "options": [
+     "So they are likely under the reference",
+     "To save memory",
+     "To remove beta",
+     "To shorten prompts"
+    ],
+    "answer": 0,
+    "explain": "Reduces distribution shift."
+   },
+   {
+    "q": "What is likelihood displacement (background)?",
+    "options": [
+     "Both chosen and rejected probabilities fall",
+     "Only rejected rises",
+     "Loss increases",
+     "Beta changes"
+    ],
+    "answer": 0,
+    "explain": "Later analysis."
+   },
+   {
+    "q": "What is DPO's training regime?",
+    "options": [
+     "Offline on a fixed set of pairs",
+     "Online with fresh samples",
+     "Unsupervised",
+     "Reinforcement with a simulator"
+    ],
+    "answer": 0,
+    "explain": "No sampling loop."
+   },
+   {
+    "q": "What is the final evaluation metric?",
+    "options": [
+     "Win rate on held-out prompts",
+     "Training loss",
+     "Beta",
+     "Token count"
+    ],
+    "answer": 0,
+    "explain": "Compared with a baseline."
+   },
+   {
+    "q": "Which variant needs no reference model (background)?",
+    "options": [
+     "ORPO",
+     "DPO",
+     "IPO",
+     "PPO"
+    ],
+    "answer": 0,
+    "explain": "Odds-ratio term added to SFT."
+   },
+   {
+    "q": "What does KTO use (background)?",
+    "options": [
+     "Single-response good or bad labels",
+     "Pairs only",
+     "A reward model",
+     "A tree search"
+    ],
+    "answer": 0,
+    "explain": "Not pairs."
+   },
+   {
+    "q": "What does SimPO normalise by (background)?",
+    "options": [
+     "Response length",
+     "Beta",
+     "The reference",
+     "The batch size"
+    ],
+    "answer": 0,
+    "explain": "Average log-probability."
+   },
+   {
+    "q": "What does GRPO drop (background)?",
+    "options": [
+     "The value model",
+     "The policy",
+     "The reward",
+     "The prompts"
+    ],
+    "answer": 0,
+    "explain": "Group statistics instead."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "DPO lookup",
+  "prompt": "dp>",
+  "intro": "A scripted lookup, not a real trainer. Try: loss, optimal, grad, beta, help",
+  "chips": [
+   "loss",
+   "optimal",
+   "grad",
+   "beta",
+   "variants",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "loss       L = -log sigmoid( beta log(pi(yw)/ref(yw)) - beta log(pi(yl)",
+     "optimal    pi*(y|x) = ref(y|x) exp(r(x,y)/beta) / Z(x)",
+     "grad       weight = sigmoid(r_hat(yl) - r_hat(yw))",
+     "beta       small: policy may drift far; large: stays near the reference",
+     "variants   IPO, KTO, ORPO, SimPO, online DPO, GRPO: later work, backgro"
+    ]
+   },
+   {
+    "re": "^loss$",
+    "out": [
+     "L = -log sigmoid( beta log(pi(yw)/ref(yw)) - beta log(pi(yl)/ref(yl)) )",
+     "Rafailov et al., NeurIPS 2023"
+    ]
+   },
+   {
+    "re": "^optimal$",
+    "out": [
+     "pi*(y|x) = ref(y|x) exp(r(x,y)/beta) / Z(x)",
+     "so r = beta log(pi*/ref) + beta log Z(x); log Z cancels in a pair"
+    ]
+   },
+   {
+    "re": "^grad$",
+    "out": [
+     "weight = sigmoid(r_hat(yl) - r_hat(yw))",
+     "winner log-prob up, loser log-prob down, scaled by beta * weight"
+    ]
+   },
+   {
+    "re": "^beta$",
+    "out": [
+     "small: policy may drift far; large: stays near the reference",
+     "0.1 is a common starting value"
+    ]
+   },
+   {
+    "re": "^variants$",
+    "out": [
+     "IPO, KTO, ORPO, SimPO, online DPO, GRPO: later work, background"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ }
+}
