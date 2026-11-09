@@ -61,6 +61,25 @@ const server = http.createServer((req, res) => {
   assert(course.chapters[0].lesson[0].items[0].startsWith('ELI5.')); assert(/chapter 2 invalid/.test(AI.logText())); assert(logs.includes('Writing chapter 2 of 2') && !logs.some(l => /Searching|Reading|http/.test(l)), 'progress is plain: ' + logs);
   const K = require('../src/course.js'); const v = K.validate(JSON.stringify(course)); assert(v.ok, JSON.stringify(v.errors));
   AI.complete = realChat;
+
+  // uploaded documents: every supported format is read, and the builder uses them as the source
+  require('child_process').execSync('python3 ' + __dirname + '/make_docs.py /tmp/docs');
+  const fs = require('fs'); const rd = async n => AI.readDocument(new File([fs.readFileSync('/tmp/docs/' + n)], n));
+  for (const n of ['notes.txt', 'notes.md', 'notes.html', 'notes.docx', 'deck.pptx', 'notes.pdf']) { const d = await rd(n); assert(/honeybee|Nectar|nectar/.test(d.text) && /queen|water/.test(d.text), n + ' text: ' + d.text.slice(0, 120)); }
+  assert(!/style|<h1>/.test((await rd('notes.html')).text), 'html tags removed'); assert((await rd('deck.pptx')).text.includes('Slide 2'), 'slides numbered');
+  await assert.rejects(() => AI.readDocument(new File([new Uint8Array([0, 1, 2, 0, 0])], 'x.bin')), /cannot read|no text/);
+  const docs = [await rd('notes.docx'), await rd('notes.pdf')], prompts = [];
+  AI.complete = async (m) => {
+    const u = m[m.length - 1].content; prompts.push(u);
+    if (/Design a/.test(u)) return JSON.stringify({ title: 'Bee notes', subtitle: 's', description: 'd', category: 'Science', tags: ['b'], chapters: [{ title: 'Waggle dance', focus: 'how foragers communicate' }, { title: 'Honey', focus: 'making honey' }] });
+    return JSON.stringify({ title: 'Ch', summary: ['s'], lesson: [{ type: 'text', items: ['x'] }], quiz: [{ q: 'q', options: ['a', 'b'], answer: 0, explain: 'e' }] });
+  };
+  let searched = 0; AI.webSearch = async () => { searched++; return []; };
+  const dc = await AI.buildCourse({ topic: '', docs, mode: 'pipeline', chapters: 3 });
+  assert(searched === 0, 'no web search when documents are given'); assert(dc.chapters.length === 3 && dc.chapters[2].title === 'Sources', 'sources chapter lists the documents');
+  assert(prompts.some(p => /waggle dance/.test(p) && /fanning/.test(p) === false || /Base the facts/.test(p) && /direction and distance|direction and the distance/.test(p)), 'document passages reach the chapter prompt');
+  assert(/notes\.docx/.test(JSON.stringify(dc.chapters[2])), 'document named in sources');
+  AI.complete = realChat; AI.webSearch = async q => [{ title: 'Page ' + q, url: 'https://ex.org/' + encodeURIComponent(q), snippet: 'snip' }];
   // chapter checks give actionable problems
   const probs = AI.chapterProblems({ title: 'x', summary: [], lesson: [{ type: 'text' }], quiz: [{ q: 'q', options: ['a', 'b'], answer: 2 }], maps: [{ links: ['A - B'] }], practice: [{ type: 'fill', text: 'no braces' }, { type: 'match', pairs: [['a']] }] });
   ['summary', 'items', 'index (0 to 1)', 'A | relation | B', '{{double braces}}', 'pairs'].forEach(w => assert(probs.some(p => p.includes(w)), 'problem mentions ' + w + ': ' + probs));

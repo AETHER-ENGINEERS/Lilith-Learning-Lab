@@ -267,7 +267,7 @@
       '# Course builder', '',
       'You build a Lilith course in the folder you were given (call it DIR). The learner only sees the finished course.', '',
       '1. Load the format: `skill` name=lilith-course. Follow it exactly.',
-      '2. Read DIR/research.md first: background research on the whole topic was done for you (notes with URLs in DIR/research/notes.md). If it is missing, research the topic yourself (the deep-research steps, quicker): 2-3 searches, 3-5 good pages, notes in DIR/notes.md with URLs.',
+      '2. If DIR/sources exists, the learner uploaded their own documents: they are THE source. `read` them (long ones in parts) and use `search_files` for details; plan chapters that follow their structure, and take every fact from them. Skip web research unless they are clearly incomplete. Otherwise read DIR/research.md first: background research on the whole topic was done for you (notes with URLs in DIR/research/notes.md). If it is missing, research the topic yourself (the deep-research steps, quicker): 2-3 searches, 3-5 good pages, notes in DIR/notes.md with URLs.',
       '3. Plan: `write` DIR/plan.json = {"title","subtitle","description","category","tags":[...],"chapters":[{"title","focus"}]} in teaching order (simple to hard). Add one `tasks` entry per chapter.',
       '4. For each chapter in order: if the research does not cover it well, do 1 search and read 1-2 pages; then `write` DIR/chNN.json (ch01.json, ch02.json, ...), then `check_chapter`. If it reports problems, fix them with `edit` and check again. Mark the task done.',
       '5. Keep DIR/sources.json = [{"title","url"}] of the pages you read.',
@@ -289,14 +289,14 @@
       '   {"type": "fill", "title": "", "text": "A sentence with the {{missing word}} in double braces."},',
       '   {"type": "order", "title": "", "items": ["first step", "second", "third"]},',
       '   {"type": "match", "title": "", "pairs": [["term", "meaning"], ["", ""]]}],',
-      ' "eli5": {"analogy": "a plain-words analogy under 330 characters, for a ten-year-old", "stall": "one question the learner must be able to answer"}}', '',
+      ' "eli5": {"analogy": "an ELI5: a plain-words analogy under 330 characters, as if for a five-year-old"}}', '',
       'Rules: valid JSON (double quotes, no trailing commas, no comments). Spoken text: no Markdown symbols in summary, keyPoints or lesson text.'
     ].join('\n'),
     'office-hours': [
       '# Office hours', '',
       'You are Teacher. Answer the question asked, in plain words first, then add precision.',
       'Ground answers in the course (`search_course`); use the web for things the course does not cover, and cite URLs you read.',
-      'If the learner seems unsure, ask them to explain it back (ELI5) and point to the gap. Check arithmetic with `python`.',
+      'If the learner seems unsure, ask them to explain it back and point to the gap. Check arithmetic with `python`.',
       'Keep replies phone-sized. Say "I am not sure" rather than guess.'
     ].join('\n')
   };
@@ -463,18 +463,116 @@
 
   /* ---------- the teacher's persona and context ---------- */
   AI.teacherSystem = function (ctx) {
-    var s = 'You are Teacher, the friendly tutor inside Lilith Learning Lab. Explain simply first (analogies, plain words), then add precision. Use the ELI5 method (explain like I am five): when the learner is unsure, ask them to explain it back in their own words and point to the gap. Keep replies short enough for a phone screen. If you are not sure, say so. ';
+    var s = 'You are Teacher, the friendly tutor inside Lilith Learning Lab. Explain simply first (analogies, plain words), then add precision. Use ELI5 (explain it like I am five): when the learner is unsure, give a very simple everyday picture first, then ask them to explain it back in their own words and point to the gap. Keep replies short enough for a phone screen. If you are not sure, say so. ';
     s += 'Use search_course to ground answers in the installed courses, and web_search and web_fetch when the course does not cover something or the question is about recent facts; cite the URLs you used. For a question that needs several sources, call deep_research once instead of many searches.';
     if (ctx && ctx.course) s += '\nThe learner is studying "' + ctx.course + '"' + (ctx.chapter ? ', chapter "' + ctx.chapter + '"' : '') + '.';
     if (ctx && ctx.passages) s += '\nRelevant passages from the course:\n' + ctx.passages;
     return s;
   };
 
+
+  /* ---------- reading uploaded documents (txt, md, csv, json, html, docx, pptx, best-effort pdf) ---------- */
+  function ent(t) { return t.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#(\d+);/g, function (m, n) { return String.fromCharCode(+n); }).replace(/&amp;/g, '&'); }
+  async function inflate(bytes, fmt) {
+    if (typeof DecompressionStream === 'undefined') throw new Error('this browser cannot unpack the file; use text, Markdown or HTML instead');
+    var ds = new DecompressionStream(fmt), w = ds.writable.getWriter(); w.write(bytes); w.close();
+    return new Uint8Array(await new Response(ds.readable).arrayBuffer());
+  }
+  /* minimal zip reader: name -> async bytes */
+  function zipEntries(buf) {
+    var u = new Uint8Array(buf), dv = new DataView(buf), end = -1, i;
+    for (i = u.length - 22; i >= Math.max(0, u.length - 70000); i--) if (dv.getUint32(i, true) === 0x06054b50) { end = i; break; }
+    if (end < 0) throw new Error('not a valid zip-based document');
+    var n = dv.getUint16(end + 10, true), p = dv.getUint32(end + 16, true), out = {};
+    for (var k = 0; k < n; k++) {
+      if (dv.getUint32(p, true) !== 0x02014b50) break;
+      var method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true), nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), off = dv.getUint32(p + 42, true);
+      var name = new TextDecoder().decode(u.subarray(p + 46, p + 46 + nl));
+      (function (name, method, csize, off) { out[name] = async function () {
+        var lnl = dv.getUint16(off + 26, true), lel = dv.getUint16(off + 28, true), data = u.subarray(off + 30 + lnl + lel, off + 30 + lnl + lel + csize);
+        return method === 0 ? data : inflate(data, 'deflate-raw');
+      }; })(name, method, csize, off);
+      p += 46 + nl + el + cl;
+    }
+    return out;
+  }
+  function xmlText(x, para) {
+    x = x.replace(new RegExp('</' + para + '>', 'g'), '\n').replace(/<w:tab\/>/g, '\t').replace(/<w:br\/>/g, '\n').replace(/<[^>]+>/g, '');
+    return ent(x).replace(/\n{3,}/g, '\n\n').trim();
+  }
+  function htmlText(h) {
+    h = h.replace(/<(script|style|noscript)[\s\S]*?<\/\1>/gi, ' ').replace(/<\/(p|div|h[1-6]|li|tr|section|article|br)>/gi, '\n').replace(/<br\s*\/?>/gi, '\n').replace(/<h([1-6])[^>]*>/gi, function (m, l) { return '\n' + new Array(+l + 1).join('#') + ' '; }).replace(/<[^>]+>/g, '');
+    return ent(h).replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n\n').trim();
+  }
+  function a85(t) {
+    t = t.replace(/\s+/g, '').replace(/^<~/, ''); var end = t.indexOf('~>'); if (end >= 0) t = t.slice(0, end);
+    var out = [], g = [], i, j;
+    function flush(n) { var v = 0; for (j = 0; j < 5; j++) v = v * 85 + (j < g.length ? g[j] : 84); for (j = 0; j < n - 1; j++) out.push((v >>> (24 - 8 * j)) & 255); }
+    for (i = 0; i < t.length; i++) { var c = t.charCodeAt(i); if (c === 122 && !g.length) { out.push(0, 0, 0, 0); continue; } g.push(c - 33); if (g.length === 5) { flush(5); g = []; } }
+    if (g.length > 1) flush(g.length);
+    return new Uint8Array(out);
+  }
+  function pdfText(buf) {
+    var u = new Uint8Array(buf), s = ''; for (var i = 0; i < u.length; i += 8192) s += String.fromCharCode.apply(null, u.subarray(i, i + 8192));
+    var re = /stream\r?\n/g, m, jobs = [];
+    while ((m = re.exec(s))) { var st = m.index + m[0].length, e = s.indexOf('endstream', st); if (e < 0) break; var head = s.slice(Math.max(0, m.index - 300), m.index); if (/FlateDecode/.test(head)) jobs.push({ raw: s.slice(st, e).replace(/\r?\n$/, ''), a85: /ASCII85Decode/.test(head) }); re.lastIndex = e; }
+    return Promise.all(jobs.map(async function (job) {
+      var raw = job.raw, b;
+      if (job.a85) b = a85(raw); else { b = new Uint8Array(raw.length); for (var i = 0; i < raw.length; i++) b[i] = raw.charCodeAt(i) & 255; }
+      try { return new TextDecoder('latin1').decode(await inflate(b, 'deflate')); } catch (e) { return ''; }
+    })).then(function (streams) {
+      var out = [];
+      streams.forEach(function (t) {
+        if (t.indexOf('BT') < 0) return;
+        var lines = [];
+        t.replace(/\[((?:[^\]\\]|\\.)*)\]\s*TJ|\(((?:[^)\\]|\\.)*)\)\s*Tj|(T\*|Td|TD|ET)\b/g, function (all, arr, one, op) {
+          if (op) { lines.push('\n'); return all; }
+          var str = arr !== undefined ? arr.replace(/\(((?:[^)\\]|\\.)*)\)|(-?\d+\.?\d*)/g, function (q, tx, num) { return tx !== undefined ? tx : (+num < -200 ? ' ' : ''); }) : one;
+          lines.push(str.replace(/\\([nrtbf()\\])/g, function (q, c) { return c === 'n' || c === 'r' ? '\n' : c === 't' ? ' ' : c; }).replace(/\\(\d{1,3})/g, function (q, o) { return String.fromCharCode(parseInt(o, 8)); })); return all;
+        });
+        out.push(lines.join('').replace(/\n{2,}/g, '\n'));
+      });
+      return out.join('\n\n');
+    });
+  }
+  AI.readDocument = async function (file) {
+    var name = file.name || 'document', ext = (name.split('.').pop() || '').toLowerCase(), text = '';
+    if (/^(txt|md|markdown|csv|tsv|json|rst|log|py|js|tex)$/.test(ext) || (file.type || '').indexOf('text/') === 0) text = await file.text();
+    else if (/^(html?|xml)$/.test(ext)) text = htmlText(await file.text());
+    else if (ext === 'docx') { var z = zipEntries(await file.arrayBuffer()); if (!z['word/document.xml']) throw new Error('no text found in ' + name); text = xmlText(new TextDecoder().decode(await z['word/document.xml']()), 'w:p'); }
+    else if (ext === 'pptx') { var zp = zipEntries(await file.arrayBuffer()), names = Object.keys(zp).filter(function (n) { return /^ppt\/slides\/slide\d+\.xml$/.test(n); }).sort(function (a, b) { return parseInt(a.replace(/\D/g, ''), 10) - parseInt(b.replace(/\D/g, ''), 10); }), parts = [];
+      for (var i = 0; i < names.length; i++) parts.push('## Slide ' + (i + 1) + '\n' + xmlText(new TextDecoder().decode(await zp[names[i]]()).replace(/<\/a:p>/g, '</w:p>'), 'w:p')); text = parts.join('\n\n'); }
+    else if (ext === 'pdf') { text = await pdfText(await file.arrayBuffer()); if ((text.match(/[A-Za-z]{3,}/g) || []).length < 30) throw new Error(name + ' has no readable text (a scan or an unusual PDF). Save it as text, or export it as .docx or .html'); }
+    else { try { text = await file.text(); } catch (e) { text = ''; } if (/\u0000/.test(text.slice(0, 2000))) throw new Error('cannot read ' + name + ' (use .txt, .md, .html, .docx, .pptx or .pdf)'); }
+    text = String(text).replace(/\r\n?/g, '\n').replace(/\u0000/g, '').trim();
+    if (text.length < 40) throw new Error('no text found in ' + name);
+    AI.log('info', 'Read document ' + name + ': ' + text.length + ' characters');
+    return { name: name, text: text.slice(0, 400000), chars: text.length };
+  };
+  /* split documents into passages (about 1200 characters, on paragraph breaks) */
+  AI.chunkDocs = function (docs) {
+    var out = [];
+    (docs || []).forEach(function (d) {
+      var paras = String(d.text).split(/\n\s*\n/), cur = '';
+      paras.forEach(function (p) { p = p.trim(); if (!p) return; if (cur && cur.length + p.length > 1200) { out.push({ name: d.name, text: cur }); cur = ''; } while (p.length > 1600) { out.push({ name: d.name, text: p.slice(0, 1200) }); p = p.slice(1200); } cur += (cur ? '\n\n' : '') + p; });
+      if (cur) out.push({ name: d.name, text: cur });
+    });
+    return out;
+  };
+  /* an even sample of the documents for outlining: headings first, then text from across the whole */
+  AI.docOverview = function (docs, max) {
+    var heads = [], body = [];
+    (docs || []).forEach(function (d) { String(d.text).split('\n').forEach(function (l) { l = l.trim(); if (/^#{1,3} /.test(l) || (l.length > 3 && l.length < 70 && /^(chapter|part|section|unit|lesson|module|\d+[.)]?\s)/i.test(l))) heads.push(l); }); });
+    var ch = AI.chunkDocs(docs), per = Math.max(1, Math.floor((max || 7000) / 3 / 400)), step = Math.max(1, Math.floor(ch.length / per));
+    for (var i = 0; i < ch.length; i += step) body.push(ch[i].text.slice(0, 400));
+    return clip((heads.length ? 'Headings found:\n' + heads.slice(0, 120).join('\n') + '\n\n' : '') + 'Samples from across the documents:\n' + body.join('\n---\n'), max || 7000);
+  };
+
   /* ---------- the research-based course builder ---------- */
   var SCHEMA = 'A chapter object: {"title":"", "maps":[{"title":"","links":["A | relation | B", ...]}], "summary":["2-3 short sentences"], "glossary":[{"term":"","def":""}], "keyPoints":["",...], ' +
     '"lesson":[{"type":"text","items":["short paragraphs"]}], "quiz":[{"q":"","options":["","",""],"answer":0,"explain":""}], "cards":[{"q":"","a":""}], ' +
     '"practice":[{"type":"fill","title":"","text":"The word is {{answer}}."},{"type":"order","title":"","items":["first","second","third"]},{"type":"match","title":"","pairs":[["term","meaning"],["",""]]}], ' +
-    '"eli5":{"analogy":"a plain-words analogy of under 330 characters, as if for a ten-year-old","stall":"one question the learner must be able to answer"}}';
+    '"eli5":{"analogy":"an ELI5: a plain-words analogy of under 330 characters, as if for a five-year-old"}}';
   /* progress for the learner: one plain line and a percentage that only moves forward; details go to the log */
   function progress(o) {
     var last = 0;
@@ -489,7 +587,8 @@
      falls back to fixed steps when the model cannot work with tools */
   AI.buildCourse = async function (o) {
     var mode = o.mode || AI.cfg().builder || 'agent', step = o._step = progress(o);
-    AI.log('info', 'Course builder (' + mode + '): ' + o.topic + ', ' + (o.level || 'Beginner') + ', ' + (o.chapters || 6) + ' chapters');
+    if (!String(o.topic || '').trim() && o.docs && o.docs.length) o.topic = o.docs[0].name.replace(/\.[a-z0-9]+$/i, '').replace(/[_-]+/g, ' ');
+    AI.log('info', 'Course builder (' + mode + '): ' + o.topic + (o.docs && o.docs.length ? ' [from ' + o.docs.length + ' document(s)]' : '') + ', ' + (o.level || 'Beginner') + ', ' + (o.chapters || 6) + ' chapters');
     if (!String(o.topic || '').trim()) throw new Error('Say what the course is about.');
     var t0 = Date.now(), course;
     if (mode === 'agent') {
@@ -511,8 +610,14 @@
     try { kit.vfs.rm(dir, true); } catch (e) {}
     kit.vfs.mkdirp(dir);
     var ctx = { sources: [], result: null, topic: topic, level: level, courseIndex: o.courseIndex, signal: o.signal, fetchChars: 5000 };
-    /* 1. background deep research on the whole topic (0-30%) */
-    if (AI.cfg().search) {
+    var hasDocs = !!(o.docs && o.docs.length);
+    if (hasDocs) {
+      kit.vfs.mkdirp(dir + '/sources');
+      o.docs.forEach(function (d, i) { kit.vfs.write(dir + '/sources/' + String(i + 1).padStart(2, '0') + '-' + AI.slug(d.name.replace(/\.[a-z0-9]+$/i, '')) + '.md', d.text); ctx.sources.push({ title: d.name, url: 'the document you uploaded' }); });
+      step('Reading your documents', 5);
+    }
+    /* 1. background deep research on the whole topic (0-30%); skipped when the learner supplied documents */
+    if (AI.cfg().search && !hasDocs) {
       step('Researching the topic', 2);
       var reads = 0;
       try {
@@ -528,7 +633,7 @@
     /* 2. plan, write and check each chapter (30-97%) */
     step('Planning the chapters', 30);
     var sys = 'You are Teacher\'s course-building agent in a private workspace (the learner never sees it; they see only the finished course). First load the course-builder skill with the skill tool, then follow it step by step using your tools. Write files; never paste chapter JSON into replies.';
-    var user = 'Build a ' + n + '-chapter course on "' + topic + '" for ' + level + ' learners. DIR = ' + dir + '.' + (kit.vfs.exists(dir + '/research.md') ? ' Background research is ready in ' + dir + '/research.md.' : '') + (AI.cfg().search ? '' : ' Web search is off: use the installed courses and what you know, and say so in the description.');
+    var user = 'Build a ' + n + '-chapter course on "' + topic + '" for ' + level + ' learners. DIR = ' + dir + '.' + (kit.vfs.exists(dir + '/research.md') ? ' Background research is ready in ' + dir + '/research.md.' : '') + (hasDocs ? ' The learner uploaded ' + o.docs.length + ' document(s): they are in ' + dir + '/sources. Base the course on them (read them with read, find passages with search_files), keep their terms and order, and do not add facts that are not in them.' : '') + (AI.cfg().search ? '' : ' Web search is off: use the installed courses and what you know, and say so in the description.');
     var written = {};
     await AI.agent([{ role: 'system', content: sys }, { role: 'user', content: user }], {
       tools: ['skill', 'search_course', 'web_search', 'web_fetch', 'read', 'write', 'edit', 'search_files', 'tasks', 'python', 'check_chapter', 'finish_course'],
@@ -562,7 +667,9 @@
     }
     /* 1. overview research and the outline */
     if (AI.cfg().search) step('Researching the topic', 5);
-    var overview = AI.cfg().search ? await research([topic + ' overview', topic + ' syllabus course outline'], 2) : '';
+    var hasDocs = !!(o.docs && o.docs.length), dchunks = hasDocs ? AI.chunkDocs(o.docs) : [], didx = hasDocs ? AI.bm25(dchunks.map(function (c) { return { text: c.text }; })) : null;
+    if (hasDocs) { o.docs.forEach(function (d) { addSrc('the document you uploaded (' + d.name + ')', d.name); }); step('Reading your documents', 5); }
+    var overview = hasDocs ? AI.docOverview(o.docs, 7000) : AI.cfg().search ? await research([topic + ' overview', topic + ' syllabus course outline'], 2) : '';
     step('Planning the chapters', 30);
     var outlineTxt = await AI.complete([{ role: 'system', content: 'You design short online courses. Reply with JSON only.' }, { role: 'user', content:
       'Design a ' + n + '-chapter course on "' + topic + '" for ' + level + ' learners, in a logical teaching order. Use these research notes if present.\n\nNotes:\n' + clip(overview, 7000) +
@@ -575,8 +682,8 @@
     for (var ci = 0; ci < plan.chapters.length; ci++) {
       if (sig && sig.aborted) throw new Error('Cancelled');
       var pc = plan.chapters[ci]; step('Writing chapter ' + (ci + 1) + ' of ' + plan.chapters.length, 32 + 63 * ci / plan.chapters.length);
-      var notes = AI.cfg().search ? await research([(pc.queries && pc.queries[0]) || (topic + ' ' + pc.title)], 2) : '';
-      var prompt = 'Write chapter ' + (ci + 1) + ' of the course "' + plan.title + '" (' + level + '): "' + pc.title + '" (' + (pc.focus || '') + '). Base the facts on the notes; do not invent facts or numbers. Plain words, short sentences, no copied passages. ' +
+      var notes = hasDocs ? didx.search(pc.title + ' ' + (pc.focus || ''), 7).map(function (r) { return '[' + dchunks[r.i].name + '] ' + dchunks[r.i].text; }).join('\n\n') : AI.cfg().search ? await research([(pc.queries && pc.queries[0]) || (topic + ' ' + pc.title)], 2) : '';
+      var prompt = 'Write chapter ' + (ci + 1) + ' of the course "' + plan.title + '" (' + level + '): "' + pc.title + '" (' + (pc.focus || '') + '). Base the facts on the notes (they come from' + (hasDocs ? ' the learner\'s own documents; follow them closely' : ' research') + '); do not invent facts or numbers. Plain words, short sentences, no copied passages. ' +
         'Include 5-6 lesson paragraphs, 4 quiz questions with 3-4 options each, 4 flashcards, 4-6 glossary terms, a concept map with 5-7 links, and three practice labs (fill, order, match).\n\nNotes:\n' + clip(notes, 8000) + '\n\nReply with JSON only. ' + SCHEMA;
       var ch = null, lastErr = '';
       for (var attempt = 0; attempt < 3 && !ch; attempt++) {
@@ -616,7 +723,7 @@
     var out = chapters.map(function (c) {
       var ch = {}; for (var k in c) if (k !== 'eli5') ch[k] = c[k];
       ch.lesson = (c.lesson || []).map(function (b) { return typeof b === 'string' ? { type: 'text', items: [b] } : b; });
-      var f = c.eli5 || c.feynman; if (f && f.analogy) ch.lesson.unshift({ type: 'text', items: ['ELI5. ' + String(f.analogy).slice(0, 380), 'Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: ' + (f.stall || 'what is the main idea?')] });
+      var f = c.eli5 || c.feynman; if (f && f.analogy) ch.lesson.unshift({ type: 'text', items: ['ELI5. ' + String(f.analogy).slice(0, 380)] });
       return ch;
     });
     if (sources.length) out.push({ title: 'Sources', summary: ['Where the facts in this course came from. Check them for yourself.'], keyPoints: ['Read the sources, because a summary can be wrong.'], lesson: [{ type: 'text', items: sources.slice(0, 30).map(function (s) { return s.title + ': ' + s.url; }) }],

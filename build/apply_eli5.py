@@ -1,4 +1,4 @@
-"""Insert an ELI5 block ("ELI5" analogy + "Teach it back") at the
+"""Insert an ELI5 ("explain it like I am five") block at the
 start of each chapter's lesson. Data: build/eli5/<course-id>.py defining
 FEY = [ (analogy, stall) or None per chapter ]. Idempotent."""
 import json, glob, os, sys, importlib.util
@@ -6,11 +6,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MARK = "ELI5."
 OLD = ("Explain it simply.",)
 
-def block(analogy, stall):
-    return {"type": "text", "items": [
-        MARK + " " + analogy,
-        "Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. "
-        "If you cannot answer this, reread the lesson at that spot: " + stall]}
+def block(analogy, stall=None):
+    return {"type": "text", "items": [MARK + " " + analogy]}
 
 def apply(path):
     d = json.load(open(path))

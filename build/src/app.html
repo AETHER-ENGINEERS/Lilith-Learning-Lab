@@ -1319,9 +1319,9 @@ function mountOffice(el, S) {
     $('#ofset', el).onclick = () => openAISettings(); return;
   }
   const th = officeThread(S); let busy = null, tb = false;
-  const chips = S.kind === 'lab' ? ['Give me a hint, not the answer', 'Why did my answer fail?', 'ELI5 this', 'Check my teach-back']
-    : S.kind === 'course' ? ['What should I study next?', 'Explain the big picture simply', 'Quiz me on this course', 'Check my teach-back']
-    : ['ELI5 this', 'Give me an example', 'Quiz me on this', 'Check my teach-back'];
+  const chips = S.kind === 'lab' ? ['Give me a hint, not the answer', 'Why did my answer fail?', 'ELI5 this', 'Check my explanation']
+    : S.kind === 'course' ? ['What should I study next?', 'Explain the big picture simply', 'Quiz me on this course', 'Check my explanation']
+    : ['ELI5 this', 'Give me an example', 'Quiz me on this', 'Check my explanation'];
   el.innerHTML = '<div class="ofc"><div class="muted ofl">Office hours: ' + esc(S.label) + '</div><div class="ofm" id="ofm"></div><div class="ofchips" id="ofchips">' + chips.map((t, i) => '<button class="chip" data-c="' + i + '">' + esc(t) + '</button>').join('') + '</div>' +
     '<div class="ofin"><textarea id="ofq" rows="2" placeholder="Ask anything about this' + (S.kind === 'course' ? ' course' : ' section') + '..." autocapitalize="sentences"></textarea>' + '<button class="btn pri" id="ofsend" aria-label="Send">' + ic('arrow_forward') + '</button></div>' +
     '<div class="row" style="margin-top:6px"><button class="btn sm" id="ofclear">' + ic('delete') + '<span>Clear chat</span></button><span class="muted" id="ofmodel" style="margin-left:auto"></span></div></div>';
@@ -1347,13 +1347,13 @@ function mountOffice(el, S) {
         try {
           const d = await AIx.decide({ type: 'score', question: 'Grade how accurate and complete the learner\'s explanation of the material is.', options: ['Misses the main idea', 'Partly right, with gaps', 'Mostly right', 'Clear and correct'], state: 'MATERIAL:\n' + clipS(officeContext(S), 3500) + '\n\nLEARNER EXPLANATION:\n' + text, signal: ctl.signal });
           const lab = typeof d.answer === 'number' ? ['Misses the main idea', 'Partly right, with gaps', 'Mostly right', 'Clear and correct'][d.answer] || String(d.answer) : String(d.answer);
-          verdict = 'Teach-back check: ' + lab + (d.confidence != null ? ' (confidence ' + Math.round(d.confidence * 100) + '%)' : '') + ' via ' + d.via + '.';
+          verdict = 'Explanation check: ' + lab + (d.confidence != null ? ' (confidence ' + Math.round(d.confidence * 100) + '%)' : '') + ' via ' + d.via + '.';
           reply = '**' + verdict + '**\n\n'; bt.innerHTML = mdAI(reply);
         } catch (e) { verdict = ''; }
       }
       const hits = (() => { try { return courseIdx().idx.search(text, 3).map(h => h.doc.head + ': ' + clipS(h.doc.body, 500)).join('\n'); } catch (e) { return ''; } })();
-      const msgs = [{ role: 'system', content: AIx.teacherSystem({ course: CUR.course.title, chapter: S.c && S.c.title, passages: officeContext(S) + (hits ? '\n\nOther related passages:\n' + hits : '') }) + (verdict ? '\nThe learner just gave a teach-back. ' + verdict + ' Give kind, specific feedback: what they got right, the one gap to fix, and one question to try again.' : '') }]
-        .concat(th.slice(-13, -1).map(m => ({ role: m.role, content: m.content })), [{ role: 'user', content: tb === false && verdict ? 'My teach-back: ' + text : text }]);
+      const msgs = [{ role: 'system', content: AIx.teacherSystem({ course: CUR.course.title, chapter: S.c && S.c.title, passages: officeContext(S) + (hits ? '\n\nOther related passages:\n' + hits : '') }) + (verdict ? '\nThe learner just explained the idea in their own words. ' + verdict + ' Give kind, specific feedback: what they got right, the one gap to fix, and one question to try again.' : '') }]
+        .concat(th.slice(-13, -1).map(m => ({ role: m.role, content: m.content })), [{ role: 'user', content: tb === false && verdict ? 'My explanation: ' + text : text }]);
       status(ad, 'Thinking...');
       const out = await AIx.agent(msgs, { tools: ['search_course', 'web_search', 'web_fetch', 'deep_research', 'python'], courseIndex: courseIdx(), signal: ctl.signal,
         onDelta: d => { reply += d; $('.st', ad) && $('.st', ad).remove(); bt.innerHTML = mdAI(reply); box.scrollTop = box.scrollHeight; },
@@ -1372,7 +1372,7 @@ function mountOffice(el, S) {
   q.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); if (!busy) ask(q.value); } };
   $$('[data-c]', el).forEach(b => b.onclick = () => {
     const t = chips[+b.dataset.c];
-    if (t === 'Check my teach-back') { tb = true; q.placeholder = 'Explain this in your own words, as if to a ten-year-old, then send.'; q.focus(); toast('Type your explanation and press send'); }
+    if (t === 'Check my explanation') { tb = true; q.placeholder = 'Explain this in your own words, then send.'; q.focus(); toast('Type your explanation and press send'); }
     else ask(t);
   });
   $('#ofclear', el).onclick = () => { th.length = 0; save(); mountOffice(el, S); };
@@ -1390,10 +1390,10 @@ function openAISettings() {
   const c = AIx.cfg(), isWeb = ENV.kind !== 'android';
   const sw = (k, label, on) => '<div class="set"><span>' + label + '</span><button class="sw ' + (on ? 'on' : '') + '" data-k="' + k + '" aria-label="' + label + '"></button></div>';
   const field = (id, label, val, ph, type) => '<label class="fl">' + label + '<input type="' + (type || 'text') + '" id="' + id + '" value="' + esc(val || '') + '" placeholder="' + esc(ph || '') + '" autocapitalize="off" autocorrect="off" spellcheck="false"></label>';
-  const d = modal('<h3 class="dh">AI settings</h3><div class="muted">Optional. Lets you talk to Teacher (office hours), grade your teach-backs and build courses from web research. Nothing is sent until you set this up.</div>' +
+  const d = modal('<h3 class="dh">AI settings</h3><div class="muted">Optional. Lets you talk to Teacher (office hours), grade your explanations and build courses from web research. Nothing is sent until you set this up.</div>' +
     '<div class="row" style="margin:8px 0" id="aipv">' + [['ollama', 'Ollama (local)'], ['cloud', 'Ollama Cloud'], ['openai', 'OpenAI-compatible']].map(p => '<button class="chip ' + (c.provider === p[0] ? 'on' : '') + '" data-p="' + p[0] + '">' + p[1] + '</button>').join('') + '</div>' +
     '<div id="aif"></div>' +
-    sw('search', 'Web search and fetch', c.search) + sw('decide', 'Decisions API (graded teach-backs)', c.decide) + sw('office', 'Pause for office hours after each lecture section', ST.set.office !== false) + sw('verbose', 'Verbose log (every request and tool call)', c.verbose) +
+    sw('search', 'Web search and fetch', c.search) + sw('decide', 'Decisions API (graded explanations)', c.decide) + sw('office', 'Pause for office hours after each lecture section', ST.set.office !== false) + sw('verbose', 'Verbose log (every request and tool call)', c.verbose) +
     '<label class="fl">Decision model (Ollama; cloud default: clef)<input type="text" id="aidm" list="aidms" value="' + esc(c.decideModel || '') + '" placeholder="clef" autocapitalize="off" spellcheck="false"></label><datalist id="aidms"></datalist>' + (isWeb ? field('aicp', 'CORS proxy (web version: needed for Ollama Cloud)', c.corsProxy, 'https://your-worker.workers.dev/?{url}') + '<div class="muted">Ollama Cloud does not let web pages call it directly. Deploy the small proxy in docs/proxy/cloudflare-worker.js (free) and paste its address, or use the Android app, which needs none.</div>' : '') +
     '<div class="out hide" id="aires"></div><div class="row" style="margin-top:10px">' + btn('ailog', 'format_list_bulleted', 'Log', 'sm') + btn('aiexp', 'share', 'Export settings', 'sm') + btn('aiimp', 'upload_file', 'Import settings', 'sm') + '</div><div class="row end" style="margin-top:8px">' + btn('aitest', 'play_arrow', 'Test', '') + btn('aiok', 'check', 'Save', 'pri') + '</div>');
   let cfg = Object.assign({}, c);
@@ -1436,18 +1436,25 @@ function openAISettings() {
 /* ---- the research-based course builder ---- */
 function openBuilder() {
   if (!AIx.enabled()) { openAISettings(); return; }
-  const d = modal('<h3 class="dh">Build a course with AI</h3><div class="muted">Say what you want to learn. Teacher researches it, writes the chapters (lessons, quizzes, flashcards, practice and a Feynman block), checks its own work and adds the course to your library, with the pages it used in a Sources chapter. Check the facts.</div>' +
+  const d = modal('<h3 class="dh">Build a course with AI</h3><div class="muted">Say what you want to learn. Teacher researches it, writes the chapters (lessons, quizzes, flashcards, practice and an ELI5 block), checks its own work and adds the course to your library, with the pages it used in a Sources chapter. Check the facts.</div>' +
     '<label class="fl">Topic<input type="text" id="bt" placeholder="e.g. How vaccines work" autocapitalize="sentences"></label>' +
+    '<div class="fl">Your documents (optional)<div class="muted" style="font-size:12px">Add notes, a chapter, slides or an article and the course is built from them: .txt .md .html .docx .pptx .pdf</div><div id="bdl" class="muted"></div><div class="row">' + btn('bdoc', 'upload_file', 'Add documents', '') + '</div><input type="file" id="bdf" class="hide" multiple accept=".txt,.md,.markdown,.csv,.json,.html,.htm,.docx,.pptx,.pdf,text/*"></div>' +
     '<label class="fl">Level<select id="bl"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></label>' +
     '<label class="fl">Chapters<select id="bn">' + [3, 4, 5, 6, 8, 10].map(n => '<option ' + (n === 5 ? 'selected' : '') + '>' + n + '</option>').join('') + '</select></label>' +
     '<label class="fl">Method<select id="bm"><option value="agent"' + (AIx.cfg().builder !== 'pipeline' ? ' selected' : '') + '>Thorough (best with large models)</option><option value="pipeline"' + (AIx.cfg().builder === 'pipeline' ? ' selected' : '') + '>Quick (works with small models)</option></select></label>' +
     '<div class="hide" id="bprog" style="margin-top:10px"><div class="pbar"><i id="bpbar" style="width:0%"></i></div><div class="row"><span id="bptxt">Starting</span><span class="muted" id="bptime" style="margin-left:auto"></span></div><div class="muted" style="margin-top:4px">This takes a few minutes. You can keep the app open and wait here.</div></div>' +
     '<div class="out hide" id="berr"></div><div class="row end" style="margin-top:12px">' + btn('bx', 'close', 'Cancel', 'txt') + btn('bgo', 'play_arrow', 'Build', 'pri') + '</div>');
-  let ctl = null;
+  let ctl = null; const docs = [];
+  const showDocs = () => { $('#bdl', d).innerHTML = docs.map((x, i) => esc(x.name) + ' (' + Math.max(1, Math.round(x.chars / 1000)) + 'k characters) <a href="#" data-rm="' + i + '">remove</a>').join('<br>'); $$('[data-rm]', d).forEach(a => a.onclick = e => { e.preventDefault(); docs.splice(+a.dataset.rm, 1); showDocs(); }); };
+  $('#bdoc', d).onclick = () => $('#bdf', d).click();
+  $('#bdf', d).onchange = async e => {
+    for (const f of Array.from(e.target.files || [])) { try { docs.push(await AIx.readDocument(f)); } catch (err) { toast(err.message); AIx.log('warn', 'Document: ' + err.message); } }
+    e.target.value = ''; showDocs(); const t = $('#bt', d); if (!t.value.trim() && docs.length) t.placeholder = 'Optional: ' + docs[0].name.replace(/\.[a-z0-9]+$/i, '');
+  };
   $('#bx', d).onclick = () => { if (ctl) ctl.abort(); closeModal(); };
   d.addEventListener('close', () => { if (ctl) ctl.abort(); }, { once: true });
   $('#bgo', d).onclick = async () => {
-    const topic = $('#bt', d).value.trim(); if (!topic) { toast('Say what the course is about'); return; }
+    const topic = $('#bt', d).value.trim(); if (!topic && !docs.length) { toast('Say what the course is about, or add a document'); return; }
     ctl = new AbortController(); $('#bprog', d).classList.remove('hide'); $('#berr', d).classList.add('hide'); $('#bgo', d).disabled = true;
     ['#bt', '#bl', '#bn', '#bm'].forEach(x => { const e = $(x, d); if (e) e.disabled = true; });
     const t0 = Date.now(), tick = setInterval(() => { const s = Math.round((Date.now() - t0) / 1000); const tt = $('#bptime', d); if (tt) tt.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }, 1000);
@@ -1455,7 +1462,7 @@ function openBuilder() {
     const unlock = () => { clearInterval(tick); $('#bgo', d).disabled = false; ['#bt', '#bl', '#bn', '#bm'].forEach(x => { const e = $(x, d); if (e) e.disabled = false; }); };
     try {
       const mode = $('#bm', d).value; AIx.setCfg({ builder: mode });
-      const course = await AIx.buildCourse({ topic, level: $('#bl', d).value, chapters: +$('#bn', d).value, mode, courseIndex: courseIdx(), onProgress, signal: ctl.signal });
+      const course = await AIx.buildCourse({ topic, docs, level: $('#bl', d).value, chapters: +$('#bn', d).value, mode, courseIndex: courseIdx(), onProgress, signal: ctl.signal });
       clearInterval(tick); closeModal(); importText(JSON.stringify(course), course.title + '.course.json');
     } catch (e) {
       unlock(); $('#bprog', d).classList.add('hide');

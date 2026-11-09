@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """UI test for office hours, AI settings, graded teach-backs and the course builder, with mocked Ollama endpoints.
 Usage: python3 tests/ai_ui_test.py <web dir> <courses dir> [screenshot dir]"""
-import sys, os, json
+import sys, os, json, subprocess
 from playwright.sync_api import sync_playwright
 web, courses = sys.argv[1], sys.argv[2]; shots = sys.argv[3] if len(sys.argv) > 3 else None
 fails, errors, seen = [], [], []
@@ -37,6 +37,7 @@ def route(r):
             plan = {'title': 'Tiny Topic', 'subtitle': 's', 'description': 'd', 'category': 'Science', 'tags': ['t'], 'chapters': [{'title': 'One', 'focus': 'f', 'queries': ['q']}]}
             return r.fulfill(status=200, headers=H, content_type='application/x-ndjson', body=nd({'message': {'content': json.dumps(plan)}}, {'done': True}))
         if 'Write chapter' in last['content']:
+            chapter_prompts.append(last['content'])
             ch = {'title': 'One', 'summary': ['A summary.'], 'lesson': [{'type': 'text', 'items': ['Some lesson text.']}], 'quiz': [{'q': 'Q?', 'options': ['a', 'b'], 'answer': 1, 'explain': 'e'}], 'eli5': {'analogy': 'like a bee', 'stall': 'why?'}}
             return r.fulfill(status=200, headers=H, content_type='application/x-ndjson', body=nd({'message': {'content': json.dumps(ch)}}, {'done': True}))
         return r.fulfill(status=200, headers=H, content_type='application/x-ndjson', body=nd({'message': {'content': 'Think of it '}}, {'message': {'content': 'like a pizza.'}}, {'done': True}))
@@ -44,6 +45,7 @@ def route(r):
     if 'r.jina.ai' in u: return r.fulfill(status=200, headers=H, content_type='text/plain', body='Bees make honey.')
     r.fulfill(status=404, headers=H, body='nf')
 agent_log = []
+chapter_prompts = []
 CH_BAD = {'title': 'Bees', 'summary': ['Bees make honey.'], 'lesson': [{'type': 'text', 'items': ['Bees live in hives.']}], 'quiz': [{'q': 'What do bees make?', 'options': ['honey', 'milk'], 'answer': 9, 'explain': 'Honey.'}],
           'eli5': {'analogy': 'A hive is like a busy kitchen.', 'stall': 'Why do bees visit flowers?'}}
 def call(name, args): return {'message': {'content': '', 'tool_calls': [{'function': {'name': name, 'arguments': args}}]}}
@@ -90,7 +92,7 @@ with sync_playwright() as p:
     pg.fill('#ofq', 'What is a percent?'); pg.click('#ofsend'); pg.wait_for_function("document.querySelectorAll('.ob.a').length>=2 && document.body.innerText.includes('like a pizza')", timeout=8000)
     check('like a pizza' in pg.inner_text('#ofm'), 'streamed answer shown'); shot(pg, 'ai2_office_course')
     # teach-back graded by the decisions API
-    pg.click('[data-c="3"]'); pg.fill('#ofq', 'A percent is a part out of one hundred.'); pg.click('#ofsend'); pg.wait_for_function("document.body.innerText.includes('Teach-back check')", timeout=8000)
+    pg.click('[data-c="3"]'); pg.fill('#ofq', 'A percent is a part out of one hundred.'); pg.click('#ofsend'); pg.wait_for_function("document.body.innerText.includes('Explanation check')", timeout=8000)
     check('Mostly right' in pg.inner_text('#ofm') and '81%' in pg.inner_text('#ofm'), 'decision verdict shown: ' + pg.inner_text('#ofm')[-200:])
     check(any('systemone' in s for s in seen), 'systemone called'); shot(pg, 'ai3_teachback')
     # persisted thread
@@ -132,6 +134,18 @@ with sync_playwright() as p:
     pg.wait_for_function("__app.ST.courses.some(c=>c.id==='tiny-topic-ai')", timeout=30000)
     check('Switching to the step-by-step builder' in pg.evaluate("LilithAI.logText()") or 'step-by-step' in pg.evaluate("LilithAI.logText()"), 'fallback logged')
     pg.wait_for_timeout(500); pg.evaluate("document.getElementById('modal').open && document.getElementById('modal').close()")
+    # a course built from an uploaded document (no topic, no web research)
+    subprocess.run(['python3', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'make_docs.py'), '/tmp/docs'], check=True, capture_output=True)
+    open_lib(pg); pg.click('#bld'); pg.wait_for_selector('#bdoc')
+    web_before = sum(1 for x in seen if 'wikipedia' in x or 'jina' in x)
+    pg.set_input_files('#bdf', ['/tmp/docs/notes.docx', '/tmp/docs/notes.pdf']); pg.wait_for_function("document.querySelector('#bdl').innerText.includes('notes.pdf')", timeout=8000)
+    check('notes.docx' in pg.inner_text('#bdl'), 'uploaded documents listed'); shot(pg, 'ai8_upload')
+    pg.select_option('#bm', 'pipeline'); pg.select_option('#bn', '3'); pg.click('#bgo')
+    pg.wait_for_function("document.querySelector('#bgo') ? !document.querySelector('#bgo').disabled && !document.querySelector('#bprog').classList.contains('hide') === false : true", timeout=30000)
+    pg.wait_for_timeout(1500)
+    check(any('queen' in x or 'nectar' in x.lower() for x in chapter_prompts), 'document text reached the chapter prompt: %s' % [x[:80] for x in chapter_prompts[-1:]])
+    check(sum(1 for x in seen if 'wikipedia' in x or 'jina' in x) == web_before, 'no web research when documents are given')
+    pg.evaluate("document.getElementById('modal').open && document.getElementById('modal').close()")
     # settings export and import
     pg.click('#gear'); pg.wait_for_selector('#sexp'); pg.click('#sexp'); pg.wait_for_selector('#exk')
     with pg.expect_download() as dl: pg.click('#exs')

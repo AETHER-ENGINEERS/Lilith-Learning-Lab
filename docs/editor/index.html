@@ -528,7 +528,7 @@ var DRAFT = 'lilith.editor.draft', HANDOFF = 'lilith.handoff';
 var RAW = 'https://raw.githubusercontent.com/lucky-edgelord/Lilith-Learning-Lab/main/courses/';
 var LABS = ['fill', 'order', 'match', 'python', 'write', 'code', 'terminal', 'webxdc'];
 var BLOCKS = ['text', 'code', 'math', 'figure', 'map'];
-var MARK = 'ELI5.', OLDMARK = 'Explain it simply.', TEACH = 'Teach it back. Explain this chapter out loud to a ten-year-old, with no jargon and no notes. If you cannot answer this, reread the lesson at that spot: ';
+var MARK = 'ELI5.', OLDMARK = 'Explain it simply.', LEGACY = /^Teach it back\./;
 var $ = function (s, r) { return (r || document).querySelector(s); };
 
 /* ---------- state, autosave and undo ---------- */
@@ -703,13 +703,13 @@ function labItem(l) {
 function eli5Of(ch) {
   var b = (ch.lesson || [])[0];
   if (b && typeof b === 'object' && (b.type || 'text') === 'text' && Array.isArray(b.items) && (String(b.items[0] || '').indexOf(MARK) === 0 || String(b.items[0] || '').indexOf(OLDMARK) === 0))
-    return { analogy: b.items[0].slice(String(b.items[0]).indexOf(MARK) === 0 ? MARK.length : OLDMARK.length).trim(), stall: String(b.items[1] || '').replace(TEACH, '').replace(/^Teach it back\.\s*/, '').trim(), has: true };
+    return { analogy: b.items[0].slice(String(b.items[0]).indexOf(MARK) === 0 ? MARK.length : OLDMARK.length).trim(), stall: '', has: true };
   return { analogy: '', stall: '', has: false };
 }
 function setEli5(ch, f) {
   var cur = eli5Of(ch); arrOf(ch, 'lesson');
-  if (!f.analogy.trim() && !f.stall.trim()) { if (cur.has) ch.lesson.shift(); return; }
-  var blk = { type: 'text', items: [MARK + ' ' + f.analogy.trim(), TEACH + f.stall.trim()] };
+  if (!f.analogy.trim()) { if (cur.has) ch.lesson.shift(); return; }
+  var blk = { type: 'text', items: [MARK + ' ' + f.analogy.trim()] };
   if (cur.has) ch.lesson[0] = blk; else ch.lesson.unshift(blk);
 }
 
@@ -740,8 +740,8 @@ function renderChapter(m, i) {
   m.appendChild(field('Title', ch, 'title', { after: function () { renderSide(); } }));
   var f = eli5Of(ch), fo = { analogy: f.analogy, stall: f.stall };
   m.appendChild(sec('ELI5: explain it simply', f.has ? 1 : 0, [
-    h('div', { cls: 'hint', text: 'Shown first in the lesson. A plain-words analogy for a ten-year-old, and the one question the learner must be able to answer when they teach it back.' }),
-    field('Analogy', fo, 'analogy', { rows: 3, after: function () { setEli5(ch, fo); } }), field('Teach-back question', fo, 'stall', { after: function () { setEli5(ch, fo); } })], !f.has));
+    h('div', { cls: 'hint', text: 'Shown first in the lesson. An ELI5: a plain-words analogy, as if for a five-year-old.' }),
+    field('ELI5 explanation', fo, 'analogy', { rows: 3, after: function () { setEli5(ch, fo); } })], !f.has));
   m.appendChild(sec('Summary', arrOf(ch, 'summary').length, [lines('Sentences', ch, 'summary', { rows: 3 })], true));
   m.appendChild(sec('Key points', arrOf(ch, 'keyPoints').length, [lines('Points', ch, 'keyPoints', { rows: 4 })]));
   m.appendChild(sec('Glossary', arrOf(ch, 'glossary').length, [list('Term', ch.glossary, function (g) { return h('div', { cls: 'grid2' }, field('Term', g, 'term'), field('Definition', g, 'def', { rows: 2 })); }, function () { return { term: '', def: '' }; }, { label: function (g) { return g.term || 'Term'; } })]));

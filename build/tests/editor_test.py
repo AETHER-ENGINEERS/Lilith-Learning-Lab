@@ -43,8 +43,8 @@ with sync_playwright() as p:
     # chapter 1
     pg.click('#chlist .nav >> nth=0'); pg.wait_for_selector('h2:has-text("Chapter 1")')
     pg.fill('main > label.f:has-text("Title") >> input', 'The hive')
-    pg.click('summary:has-text("ELI5")') if not pg.is_visible('label.f:has-text("Analogy")') else None
-    pg.fill('label.f:has-text("Analogy") >> textarea', 'A hive is like a busy city where everyone has one job.'); pg.fill('label.f:has-text("Teach-back question") >> input', 'What does a worker bee do?')
+    pg.click('summary:has-text("ELI5")') if not pg.is_visible('label.f:has-text("ELI5 explanation")') else None
+    pg.fill('label.f:has-text("ELI5 explanation") >> textarea', 'A hive is like a busy city where everyone has one job.')
     pg.fill('label.f:has-text("Sentences") >> textarea', 'Bees live in hives.\nA hive has one queen.')
     pg.click('summary:has-text("Lesson")') if not pg.is_visible('label.f:has-text("Paragraphs")') else None
     pg.fill('label.f:has-text("Paragraphs") >> textarea', 'Worker bees collect nectar.\n\nThe queen lays eggs.')
@@ -59,7 +59,7 @@ with sync_playwright() as p:
     pg.fill('label.f:has-text("Text with blanks") >> textarea', 'Bees make {{honey}} from nectar.'); pg.wait_for_timeout(800)
     C = pg.evaluate('__editor.C'); ch = C['chapters'][0]
     check('chapter written', ch['title'] == 'The hive' and ch['summary'] == ['Bees live in hives.', 'A hive has one queen.'] and ch['quiz'][0]['answer'] == 1 and ch['quiz'][0]['options'] == ['Workers', 'The queen', 'Drones'], ch)
-    check('ELI5 block first, in the standard wording', ch['lesson'][0]['items'][0].startswith('ELI5. A hive') and 'What does a worker bee do?' in ch['lesson'][0]['items'][1] and ch['lesson'][1]['items'] == ['Worker bees collect nectar.', 'The queen lays eggs.'], ch['lesson'])
+    check('ELI5 block first, in the standard wording', ch['lesson'][0]['items'][0].startswith('ELI5. A hive') and len(ch['lesson'][0]['items']) == 1 and ch['lesson'][1]['items'] == ['Worker bees collect nectar.', 'The queen lays eggs.'], ch['lesson'])
     check('course is ready', pg.inner_text('#vstat') == 'Ready', pg.inner_text('#vstat') + ' ' + pg.inner_text('#issues'))
     shot(pg, 'editor1_chapter')
     # add, duplicate, reorder, delete chapters; undo
