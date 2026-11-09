@@ -23,17 +23,30 @@ A standalone, offline Android app with a talking, animated Teacher. It comes **e
 |---|---|---|
 | ![Office hours](docs/screenshots/ai2_office_course.png) | ![Teach-back](docs/screenshots/ai3_teachback.png) | ![AI settings](docs/screenshots/ai1_settings.png) |
 
+| Course editor (web) | Course editor on a phone | AI log |
+|---|---|---|
+| ![Course editor](docs/screenshots/editor1_chapter.png) | ![Editor on a phone](docs/screenshots/editor4_phone.png) | ![AI log](docs/screenshots/ai7_log.png) |
+
 Regenerate them with `python3 build/build_web.py --web /tmp/web` then `python3 build/tests/readme_shots.py /tmp/web courses docs/screenshots`.
 
 ## AI features (optional, off until you set them up)
 
-Settings > AI settings (or the Office tab) connects the app to **Ollama on your own computer**, **Ollama Cloud** (API key) or **any OpenAI-compatible endpoint**. Nothing is sent anywhere until you do. The Android app allows cleartext HTTP so a phone can reach Ollama on your LAN; the web version needs the server to allow the site (Ollama: `OLLAMA_ORIGINS`) or an optional CORS proxy URL (setting, `{url}` is replaced by the encoded address).
+Settings > AI settings (or the Office tab) connects the app to **Ollama on your own computer**, **Ollama Cloud** (API key) or **any OpenAI-compatible endpoint**. Nothing is sent anywhere until you do.
 
 * **Office hours**: talk to Teacher about the whole course (Office tab), after every lecture section (an "Ask Teacher" pause after the summary, glossary, key points, lesson and quiz; switch it off in AI settings), on every lab, and from the Read view or the header help button. Each chat knows the section or lab you are on (and your current answer) and keeps its history per chapter.
-* **Tools**: Teacher searches the installed courses with BM25 (Okapi ranking, as in `rank_bm25`, with the Lucene idf) before answering, and can use `web_search` and `web_fetch` (Ollama Cloud web API with a key, otherwise Wikipedia/DuckDuckGo search and the r.jina.ai reader). Replies can be read aloud.
-* **Decisions API**: Ollama's `/v1/systemone` (local and cloud, model `clef` by default on cloud) grades **teach-backs** (the Feynman "Teach it back" step): type your explanation and get a score with a confidence, then feedback. If no decision model is set, the chat model gives the verdict.
-* **Build with AI** (Library): enter a topic, level and chapter count. Teacher researches the web, plans the outline, then writes each chapter (summary, glossary, key points, lesson, quiz, flashcards, concept map, fill/order/match labs and a Feynman block), validates it and imports the course with a **Sources** chapter listing the pages it used. Verify the facts: AI-written courses can be wrong.
-* Code: `build/src/ai.js` (providers, tools, BM25, decisions, builder; tested by `node build/tests/test_ai.js` against mock servers) and the office/settings UI in `build/src/app.html` (tested by `python3 build/tests/ai_ui_test.py <web> courses`).
+* **Tools**: Teacher searches the installed courses with BM25 (Okapi ranking, as in `rank_bm25`, with the Lucene idf), can use `web_search` and `web_fetch` (Ollama Cloud web API with a key, otherwise Wikipedia/DuckDuckGo search and the r.jina.ai reader), checks arithmetic in Python, and for a question that needs several sources runs **deep research** on its own in the background. You only see the answer and its sources.
+* **Decisions API**: Ollama's `/v1/systemone` (local and cloud, model `clef` by default on cloud) grades **teach-backs** (the Feynman "Teach it back" step): type your explanation and get a score with a confidence, then feedback. Scanning lists chat models and decision models separately. If no decision model is set, the chat model gives the verdict.
+* **Build with AI** (Library): enter a topic, level and chapter count; you see one progress bar. In the background Teacher first does deep research on the whole topic, then an agent plans the chapters, writes each one (summary, glossary, key points, lesson, quiz, flashcards, concept map, fill/order/match labs and a Feynman block), checks it against the course format, fixes what fails and assembles the course with a **Sources** chapter. If the model cannot work with tools, the builder switches to a fixed step-by-step method ("Quick", for small models). Verify the facts: AI-written courses can be wrong.
+* **Hidden workspace**: the research and building happen in a private workspace from the [Jade Agent Kit](https://github.com/lucky-edgelord/Jade-agent-kit) (a virtual file system, a BusyBox shell, MicroPython, BM25 file search and a task list), bundled in the app (`kit.js`, loaded only when the AI needs it) so it works offline. The agent follows **skills** (deep-research, course-builder, lilith-course format, office-hours) and keeps notes and drafts in files; the learner never sees them.
+* **Log**: AI settings > Log shows what the AI features did (scans, requests, tool calls, errors; API keys are hidden). Turn on *Verbose log* to record every request and tool call. Copy it when reporting a problem.
+* **Settings file**: Settings > Settings file > Export / Import (also in AI settings) saves the app settings, course source and AI settings as `lilith-settings.json`; API keys are included only if you switch that on. Import checks every value and ignores anything it does not know.
+* **Android**: requests go through the app's native HTTP bridge (streamed), because Ollama Cloud and most APIs do not allow web pages to call them (no CORS). Cleartext HTTP is allowed so a phone can reach Ollama on your LAN.
+* **Web version**: a local Ollama must allow the site (`OLLAMA_ORIGINS="https://lucky-edgelord.github.io"` or `"*"`). Ollama Cloud needs a CORS proxy: deploy [`docs/proxy/cloudflare-worker.js`](docs/proxy/cloudflare-worker.js) (free Cloudflare Worker, limited to a few hosts and to this site) and set *CORS proxy* to `https://<worker>.workers.dev/?{url}`.
+* Code: `build/src/ai.js` (providers, tools, BM25, decisions, skills, agent, research, builder, log, settings import/export), `build/src/net.js` (Android bridge, proxy, the kit's offline files), `build/vendor/jade-agent-kit/` and the UI in `build/src/app.html`.
+
+## Course editor
+
+**https://lucky-edgelord.github.io/Lilith-Learning-Lab/editor/** writes and edits courses by hand in the browser: course details, chapters (add, duplicate, reorder, delete), the Feynman block, summary, key points, glossary, lesson blocks (text, code, math, figures, concept maps), quizzes, flashcards, concept maps, practice labs (forms for fill, order, match and Python; JSON for write, code, terminal and webxdc), the final exam, pronunciation and the raw JSON of a chapter or the whole course. It checks the course with the app's own validator as you type (problems are listed and marked per chapter), autosaves a draft in the browser, has undo, opens files, pasted JSON or any course from the library, downloads `<id>.course.json`, and **Try in the app** opens the course in the web app. In the app, Library > Make your own course > Course editor links to it. Rebuild with `python3 build/build_web.py --editor docs/editor`.
 
 ## Web version
 
@@ -75,7 +88,10 @@ Course format: see the header of `build/src/course.js` or use "Template" and "AI
 
 * `build/make_course.py <out.json>`, `build/make_rl_course.py <out.json>` and `build/make_sample.py <out.json>` regenerate the courses.
 * `python3 build/build_web.py --web <dir>` writes the web app (`index.html` + `avatar/`).
-* `node build/tests/test_course.js`, `python3 build/tests/ui_test.py <web dir> courses [shots]` (Playwright) run the tests.
+* Tests (from `build/`; the Playwright ones use Chrome): `bash tests/run_all.sh` runs them all:
+  `node tests/test_course.js` (course format and labs), `node tests/test_ai.js` (AI engine against mock servers: providers, tools, decisions, builder, settings import/export, log), `node tests/proxy_test.mjs` (the CORS proxy template),
+  `python3 tests/workspace_test.py <web>` (the hidden workspace over http and file://, and the Android bridge with a fake native side), `python3 tests/ai_ui_test.py <web> ../courses [shots]` (office hours, background research, the agent builder and its fallback, settings files, the log),
+  `python3 tests/ui_test.py <web> ../courses [shots]`, `python3 tests/store_test.py <web> ../courses` and `python3 tests/editor_test.py ../courses [shots]` (the course editor, including a lossless round trip of every course).
 * `android/build_apk.sh` builds and signs the APK with the plain Android SDK tools (no Gradle). It creates a local keystore on first run; do not commit it.
 
 ## Jade
