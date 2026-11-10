@@ -1,0 +1,4465 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "decision-models",
+ "title": "Decision Models and Generalised Classifiers",
+ "subtitle": "From BERT-style classifiers to the new System One decision models: typed questions, calibration, evaluation and routing, with Python labs",
+ "author": "Lilith Learning Lab",
+ "description": "A hands-on introduction to generalised classifiers and the new category of decision models, also called System One models. Learn how classifiers, encoders and ModernBERT work; zero-shot and embedding classification; the typed-question interface of boolean, choice and score answers; the masked-option encoder design reported for Laya; the prefill-only decoder design reported for Clef, with joint and pointer heads and KV-cache reuse; calibration with temperature scaling, ECE, Brier score and log loss; evaluation on your own data; and routing, cascades, guardrails and escalation in real systems. The field is only weeks old, so vendor figures are marked as reported and the course stresses durable concepts. Every chapter has Python labs verified in the built-in interpreter, plus a decision playground and a calibration lab.",
+ "pronounce": {
+  "ModernBERT": "modern bert",
+  "BERT": "bert",
+  "Laya": "lie uh",
+  "Clef": "clef",
+  "Jev": "jev",
+  "Kev": "kev",
+  "TypeSafe": "type safe",
+  "Qwen": "chwen",
+  "BANKING77": "banking seventy seven",
+  "RLCD": "R L C D",
+  "NLI": "N L I",
+  "ECE": "E C E",
+  "Brier": "bry er",
+  "Kahneman": "kah nuh man",
+  "FlashAttention": "flash attention",
+  "Unsloth": "un sloth",
+  "Ollama": "oh lah ma",
+  "softmax": "soft max",
+  "logits": "low jits",
+  "prefill": "pre fill",
+  "KV": "K V",
+  "LLM": "L L M",
+  "calibration": "cal ih bray shun",
+  "cascade": "cass kade"
+ },
+ "chapters": [
+  {
+   "title": "From classifiers to decision models",
+   "maps": [
+    {
+     "title": "Decision models",
+     "links": [
+      "Classifier | maps | Text to label",
+      "Decision model | answers | A typed question",
+      "System one | is | Fast and one pass",
+      "System two | is | Slow reasoning",
+      "Probabilities | express | Confidence",
+      "Router | picks | Cheap or costly path",
+      "Escalation | handles | Uncertain cases"
+     ]
+    }
+   ],
+   "summary": [
+    "A classifier reads input and picks a label. A decision model is the newer idea of a small model that answers a typed question about some input, such as yes or no, one of these options, or a score from 0 to 1, in a single forward pass and with calibrated probabilities.",
+    "The pitch is a split of labour. Fast System One models make the many routine decisions cheaply, and slow System Two models, the large reasoning LLMs, handle what is hard or uncertain. The idea is new, so products and numbers change quickly and vendor claims need checking.",
+    "This course starts with the durable concepts: encoders, calibration, evaluation and routing. Vendor details are marked as reported as of late 2026."
+   ],
+   "glossary": [
+    {
+     "term": "Classifier",
+     "def": "A model mapping an input to one of a fixed set of labels."
+    },
+    {
+     "term": "Decision model",
+     "def": "A compact model that answers a typed question about an input in one pass and returns a calibrated probability or score."
+    },
+    {
+     "term": "System one",
+     "def": "Fast, automatic judgement, borrowed from psychology to describe one-pass models."
+    },
+    {
+     "term": "System two",
+     "def": "Slow, deliberate reasoning, here meaning large reasoning models that think step by step."
+    },
+    {
+     "term": "Calibration",
+     "def": "Agreement between stated confidence and how often the answer is right."
+    }
+   ],
+   "keyPoints": [
+    "Typed answer: yes/no, choice, score.",
+    "One forward pass, no chain of thought.",
+    "Probabilities must be calibrated.",
+    "Route easy cases here, hard cases to an LLM.",
+    "Treat vendor numbers as claims to verify."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Many software decisions are small. Is this message spam? Is this ticket about billing or shipping? Does this answer follow the policy? Which of five tools should the agent call? Asking a large language model each time works, but it is slow, costs money, and its text answers must be parsed and can wander. For years, teams trained small classifiers for each such question, which are fast but rigid: every new question needed new labelled data."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Decision models try to combine the two. You pass the input and a typed question: a yes or no question, a choice among options, or a score. The model answers in one forward pass, producing probabilities rather than prose.",
+      "The label comes from the math, not from generating text, so latency is a few milliseconds to tens of milliseconds, the answer type is guaranteed, and the confidence can be used to decide what to do next."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The framing comes from Kahneman's System One and System Two. System One is quick intuition. System Two is slow reasoning. In the architecture proposed, a System One decision model handles the high-volume routine calls and passes the uncertain ones up to a reasoning model.",
+      "Vendors in this area, from late 2026, include Jev from TypeSafe, the open Laya built on ModernBERT, and Clef, built on a Qwen language model by a large infrastructure provider. These are weeks old; treat their reported figures as marketing until you test them on your data."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# the shape of the idea (pseudocode)\nanswer = decision_model.ask(\n    input='My card was charged twice',\n    question={'type': 'choice',\n              'options': ['billing', 'shipping', 'account']},\n)\nprint(answer.probs)   # e.g. {'billing': 0.93, 'shipping': 0.04, 'account': 0.03}\nif max(answer.probs.values()) < 0.8:\n    answer = big_llm(input)   # escalate the uncertain case"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The course has four parts. First the building blocks: encoder models such as ModernBERT, and how a generalised classifier works. Then the typed-question interface and two architectures, a masked-token encoder design and a prefill-only decoder design.",
+      "Then calibration, evaluation and how to build your own test. Last, putting decision models into systems with routing, thresholds, guardrails and cost maths. Each chapter has labs in plain Python that implement the key calculations."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a decision model return?",
+     "options": [
+      "A typed answer with probabilities",
+      "Free-form essays",
+      "Images",
+      "Source code"
+     ],
+     "answer": 0,
+     "explain": "One pass."
+    },
+    {
+     "q": "What is System One here?",
+     "options": [
+      "Fast one-pass judgement",
+      "Slow reasoning",
+      "A database",
+      "A compiler"
+     ],
+     "answer": 0,
+     "explain": "Intuition."
+    },
+    {
+     "q": "Why avoid parsing text answers?",
+     "options": [
+      "Output types are guaranteed by the model head",
+      "Text is illegal",
+      "It is too short",
+      "It is encrypted"
+     ],
+     "answer": 0,
+     "explain": "Typed."
+    },
+    {
+     "q": "What should be escalated to a big LLM?",
+     "options": [
+      "Uncertain or hard cases",
+      "Every case",
+      "Only easy cases",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Low confidence."
+    },
+    {
+     "q": "How should vendor benchmark figures be treated?",
+     "options": [
+      "As claims to verify on your data",
+      "As proven",
+      "As secret",
+      "As irrelevant forever"
+     ],
+     "answer": 0,
+     "explain": "Self-reported."
+    },
+    {
+     "q": "What is calibration?",
+     "options": [
+      "Confidence matches accuracy",
+      "Training speed",
+      "Model size",
+      "Token count"
+     ],
+     "answer": 0,
+     "explain": "Reliable probabilities."
+    }
+   ],
+   "cards": [
+    {
+     "q": "ask(input, question)",
+     "a": "typed query"
+    },
+    {
+     "q": "max(probs) < threshold",
+     "a": "escalate"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each idea with its meaning.",
+     "pairs": [
+      [
+       "System one",
+       "fast one-pass judgement"
+      ],
+      [
+       "System two",
+       "slow step-by-step reasoning"
+      ],
+      [
+       "Typed question",
+       "yes/no, choice or score"
+      ],
+      [
+       "Calibration",
+       "confidence matches accuracy"
+      ],
+      [
+       "Escalation",
+       "send uncertain cases upward"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Softmax to answer",
+     "intro": "Write decide(options, logits): softmax the logits and return [best option, its probability rounded to 3 decimals] (first option on ties).",
+     "fn": "decide",
+     "starter": "def decide(options, logits):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "billing",
+         "shipping",
+         "account"
+        ],
+        [
+         3,
+         1,
+         0
+        ]
+       ],
+       "expect": [
+        "billing",
+        0.844
+       ]
+      },
+      {
+       "args": [
+        [
+         "yes",
+         "no"
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        "yes",
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         -1,
+         2
+        ]
+       ],
+       "expect": [
+        "b",
+        0.953
+       ]
+      }
+     ],
+     "hint": "Largest probability wins.",
+     "solution": "import math\ndef decide(options, logits):\n    m = max(logits)\n    e = [math.exp(v - m) for v in logits]\n    t = sum(e)\n    p = [v / t for v in e]\n    b = 0\n    for i in range(len(p)):\n        if p[i] > p[b] + 1e-12:\n            b = i\n    return [options[b], round(p[b], 3)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Escalate or answer",
+     "intro": "Write route(probs, threshold): return 'answer' if the largest probability is at least threshold, else 'escalate'.",
+     "fn": "route",
+     "starter": "def route(probs, threshold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.9,
+         0.1
+        ],
+        0.8
+       ],
+       "expect": "answer"
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        0.8
+       ],
+       "expect": "escalate"
+      },
+      {
+       "args": [
+        [
+         0.8,
+         0.2
+        ],
+        0.8
+       ],
+       "expect": "answer"
+      }
+     ],
+     "hint": "Compare confidence to the bar.",
+     "solution": "def route(probs, threshold):\n    return 'answer' if max(probs) >= threshold else 'escalate'\n"
+    },
+    {
+     "type": "python",
+     "title": "Share handled cheaply",
+     "intro": "Write handled_share(confidences, threshold): the fraction of confidences at or above threshold, rounded to 3 decimals.",
+     "fn": "handled_share",
+     "starter": "def handled_share(confidences, threshold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.9,
+         0.95,
+         0.6,
+         0.99
+        ],
+        0.9
+       ],
+       "expect": 0.75,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.4
+        ],
+        0.9
+       ],
+       "expect": 0.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        0.5
+       ],
+       "expect": 1.0,
+       "approx": 0.002
+      }
+     ],
+     "hint": "How many stay on the fast path?",
+     "solution": "def handled_share(confidences, threshold):\n    n = len([c for c in confidences if c >= threshold])\n    return round(n / float(len(confidences)), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Expected cost",
+     "intro": "Write expected_cost(share_fast, cost_fast, cost_slow): the average cost per request when share_fast of requests cost cost_fast and the rest, plus the fast attempt, cost cost_slow in addition (every request first pays cost_fast). Round to 4 decimals.",
+     "fn": "expected_cost",
+     "starter": "def expected_cost(share_fast, cost_fast, cost_slow):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.8,
+        0.0001,
+        0.01
+       ],
+       "expect": 0.0021,
+       "approx": 5e-05
+      },
+      {
+       "args": [
+        1.0,
+        0.0002,
+        0.05
+       ],
+       "expect": 0.0002,
+       "approx": 5e-05
+      },
+      {
+       "args": [
+        0.0,
+        0.001,
+        0.02
+       ],
+       "expect": 0.021,
+       "approx": 5e-05
+      }
+     ],
+     "hint": "Everyone pays for the fast model.",
+     "solution": "def expected_cost(share_fast, cost_fast, cost_slow):\n    return round(cost_fast + (1 - share_fast) * cost_slow, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Argmax with abstain",
+     "intro": "Write answer_or_none(options, probs, threshold): the option with the highest probability if that probability is at least threshold, else None.",
+     "fn": "answer_or_none",
+     "starter": "def answer_or_none(options, probs, threshold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         0.7,
+         0.3
+        ],
+        0.6
+       ],
+       "expect": "a"
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         0.55,
+         0.45
+        ],
+        0.6
+       ],
+       "expect": null
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        [
+         1.0
+        ],
+        0.9
+       ],
+       "expect": "x"
+      }
+     ],
+     "hint": "Abstain when unsure.",
+     "solution": "def answer_or_none(options, probs, threshold):\n    b = 0\n    for i in range(len(probs)):\n        if probs[i] > probs[b]:\n            b = i\n    return options[b] if probs[b] >= threshold else None\n"
+    }
+   ]
+  },
+  {
+   "title": "Encoders and generalised classifiers: from BERT to ModernBERT",
+   "maps": [
+    {
+     "title": "Encoders",
+     "links": [
+      "Encoder | reads | Whole text both ways",
+      "Classification head | maps | Vector to label",
+      "NLI | frames | Entailment",
+      "Zero-shot | uses | Label descriptions",
+      "Embedding | feeds | Nearest neighbour",
+      "Cross-encoder | scores | Pair together",
+      "ModernBERT | modernises | The encoder"
+     ]
+    }
+   ],
+   "summary": [
+    "Encoders turn text into contextual vectors. A small head on top turns a vector into a label. Fine-tuned on a few thousand examples, this is the classic classifier and still the efficient choice for many tasks.",
+    "Generalised classifiers avoid retraining per label set: zero-shot natural language inference frames each label as a hypothesis to test, embedding models match text to label descriptions, and cross-encoders score a text and a candidate together.",
+    "ModernBERT, released at the end of 2024, updates the BERT encoder with rotary positions, alternating local and global attention, unpadding, FlashAttention and an eight-thousand-token context. It is the base on which Laya is reported to be built."
+   ],
+   "glossary": [
+    {
+     "term": "Encoder",
+     "def": "A transformer that reads the whole input with attention in both directions and outputs a vector for every token."
+    },
+    {
+     "term": "Classification head",
+     "def": "A small layer on top of an encoder that maps a vector to label scores."
+    },
+    {
+     "term": "Zero-shot classification",
+     "def": "Choosing among labels never seen in training, usually by testing each label as an entailment hypothesis."
+    },
+    {
+     "term": "Cross-encoder",
+     "def": "A model that reads a text and a candidate together and outputs a relevance or match score."
+    },
+    {
+     "term": "ModernBERT",
+     "def": "A 2024 update of BERT with longer context and faster, more modern components."
+    }
+   ],
+   "keyPoints": [
+    "Encoder + head = classifier.",
+    "NLI zero-shot: premise = text, hypothesis = 'This is about X'.",
+    "Bi-encoder is fast, cross-encoder is accurate.",
+    "ModernBERT: long context, RoPE, FlashAttention.",
+    "Fine-tuning needs hundreds to thousands of labels."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "An encoder reads all of a text at once. Every token can attend to every other, left and right, so the vector for each token is informed by the whole sentence.",
+      "Put a head on the vector for the first token or on the average of all tokens, a linear layer producing one score per label, and train on labelled examples with cross-entropy loss. That is a fine-tuned classifier.",
+      "At a few hundred million parameters it runs in milliseconds on a modest GPU or a CPU, and for fixed label sets it remains hard to beat on cost."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Its weakness is the fixed label set. Generalised classifiers address that. The zero-shot trick uses a model trained on natural language inference, which decides whether a premise entails a hypothesis.",
+      "To classify 'My card was charged twice' you ask, for each candidate label, whether the text entails 'This message is about billing', 'about shipping' and so on, and compare the entailment scores.",
+      "An embedding model offers another route: encode the text and the label descriptions separately and pick the nearest. A cross-encoder reads text and label together, slower but sharper."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from transformers import pipeline\nclf = pipeline('zero-shot-classification', model='facebook/bart-large-mnli')\nout = clf('My card was charged twice',\n          candidate_labels=['billing', 'shipping', 'account'])\nprint(out['labels'], out['scores'])"
+    },
+    {
+     "type": "text",
+     "items": [
+      "BERT dates from 2018, and the field learned much since. ModernBERT, published by Answer.AI and LightOn at the end of 2024, brings the encoder up to date: rotary position embeddings, alternating local and global attention layers for efficiency, removal of padding tokens, FlashAttention kernels, a vocabulary trained on code as well as text, and a context of 8,192 tokens instead of 512."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "It comes in a base size near 150 million parameters and a large size near 400 million. It is faster than older encoders, and its long context matters for classifying documents."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why does this matter for decision models? A decision model needs to read an input, understand a question and options, and produce calibrated scores. An encoder reads everything both ways in one pass and is small, so it is a natural base.",
+      "The next chapters show how option markers and typed heads turn an encoder into a general decision maker, and how the same idea carries over to decoder models."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does an encoder read?",
+     "options": [
+      "The whole input in both directions",
+      "Only the left side",
+      "Only the last token",
+      "Only labels"
+     ],
+     "answer": 0,
+     "explain": "Bidirectional."
+    },
+    {
+     "q": "What is added to make a classifier?",
+     "options": [
+      "A head on the vector",
+      "A decoder",
+      "A new tokenizer",
+      "Sound"
+     ],
+     "answer": 0,
+     "explain": "Linear layer."
+    },
+    {
+     "q": "How does NLI zero-shot work?",
+     "options": [
+      "Test each label as a hypothesis",
+      "Retrain on the fly",
+      "Guess randomly",
+      "Count words"
+     ],
+     "answer": 0,
+     "explain": "Entailment."
+    },
+    {
+     "q": "Why is a cross-encoder slower than a bi-encoder?",
+     "options": [
+      "It reads each pair together",
+      "It is bigger by law",
+      "It cannot batch",
+      "It uses images"
+     ],
+     "answer": 0,
+     "explain": "No precomputed vectors."
+    },
+    {
+     "q": "What context length does ModernBERT support?",
+     "options": [
+      "8,192 tokens",
+      "512 only",
+      "50",
+      "One sentence"
+     ],
+     "answer": 0,
+     "explain": "Long context."
+    },
+    {
+     "q": "When is a fine-tuned encoder a good choice?",
+     "options": [
+      "Fixed labels, high volume, low latency",
+      "Open-ended writing",
+      "Image generation",
+      "Long reasoning"
+     ],
+     "answer": 0,
+     "explain": "Cheap and fast."
+    }
+   ],
+   "cards": [
+    {
+     "q": "pipeline('zero-shot-classification')",
+     "a": "NLI zero-shot"
+    },
+    {
+     "q": "AutoModelForSequenceClassification",
+     "a": "encoder plus head"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each classifier idea with its meaning.",
+     "pairs": [
+      [
+       "Head",
+       "maps a vector to labels"
+      ],
+      [
+       "NLI",
+       "does the premise entail the hypothesis"
+      ],
+      [
+       "Bi-encoder",
+       "embed separately then compare"
+      ],
+      [
+       "Cross-encoder",
+       "read the pair together"
+      ],
+      [
+       "ModernBERT",
+       "updated long-context encoder"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Hypotheses for zero-shot",
+     "intro": "Write hypotheses(labels, template): replace '{}' in the template with each label; return the list of hypothesis strings.",
+     "fn": "hypotheses",
+     "starter": "def hypotheses(labels, template):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "billing",
+         "shipping"
+        ],
+        "This message is about {}."
+       ],
+       "expect": [
+        "This message is about billing.",
+        "This message is about shipping."
+       ]
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        "{} is true"
+       ],
+       "expect": [
+        "a is true"
+       ]
+      },
+      {
+       "args": [
+        [],
+        "x {}"
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "One hypothesis per label.",
+     "solution": "def hypotheses(labels, template):\n    return [template.replace('{}', l) for l in labels]\n"
+    },
+    {
+     "type": "python",
+     "title": "Pick by entailment",
+     "intro": "Write zero_shot(labels, entail_scores): the label with the highest entailment score (first on ties); return [label, score].",
+     "fn": "zero_shot",
+     "starter": "def zero_shot(labels, entail_scores):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "billing",
+         "shipping"
+        ],
+        [
+         0.8,
+         0.1
+        ]
+       ],
+       "expect": [
+        "billing",
+        0.8
+       ]
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c"
+        ],
+        [
+         0.2,
+         0.2,
+         0.1
+        ]
+       ],
+       "expect": [
+        "a",
+        0.2
+       ]
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        [
+         0.5
+        ]
+       ],
+       "expect": [
+        "x",
+        0.5
+       ]
+      }
+     ],
+     "hint": "Highest wins.",
+     "solution": "def zero_shot(labels, entail_scores):\n    b = 0\n    for i in range(len(labels)):\n        if entail_scores[i] > entail_scores[b]:\n            b = i\n    return [labels[b], entail_scores[b]]\n"
+    },
+    {
+     "type": "python",
+     "title": "Multi-label threshold",
+     "intro": "Write multi_label(labels, scores, threshold): all labels whose score is at least threshold, in order.",
+     "fn": "multi_label",
+     "starter": "def multi_label(labels, scores, threshold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c"
+        ],
+        [
+         0.9,
+         0.4,
+         0.7
+        ],
+        0.5
+       ],
+       "expect": [
+        "a",
+        "c"
+       ]
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        [
+         0.1
+        ],
+        0.5
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "p",
+         "q"
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        0.5
+       ],
+       "expect": [
+        "p",
+        "q"
+       ]
+      }
+     ],
+     "hint": "Independent yes/no per label.",
+     "solution": "def multi_label(labels, scores, threshold):\n    return [labels[i] for i in range(len(labels)) if scores[i] >= threshold]\n"
+    },
+    {
+     "type": "python",
+     "title": "Mean pooling",
+     "intro": "Write mean_pool(vectors, mask): the average of the vectors where mask is 1, rounded to 3 decimals.",
+     "fn": "mean_pool",
+     "starter": "def mean_pool(vectors, mask):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ],
+         [
+          9,
+          9
+         ]
+        ],
+        [
+         1,
+         1,
+         0
+        ]
+       ],
+       "expect": [
+        2.0,
+        3.0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          2
+         ]
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": [
+        2.0,
+        2.0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          1
+         ],
+         [
+          2,
+          3
+         ]
+        ],
+        [
+         0,
+         1
+        ]
+       ],
+       "expect": [
+        2.0,
+        3.0
+       ]
+      }
+     ],
+     "hint": "Ignore padding.",
+     "solution": "def mean_pool(vectors, mask):\n    dim = len(vectors[0])\n    acc = [0.0] * dim\n    n = 0\n    for v, m in zip(vectors, mask):\n        if m == 1:\n            n = n + 1\n            for j in range(dim):\n                acc[j] = acc[j] + v[j]\n    return [round(a / n, 3) for a in acc]\n"
+    },
+    {
+     "type": "python",
+     "title": "Linear head",
+     "intro": "Write head(vector, W, b): scores for each class = W row dot vector + bias; return the list rounded to 3 decimals.",
+     "fn": "head",
+     "starter": "def head(vector, W, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ],
+        [
+         0,
+         0,
+         0.5
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        3.5
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         [
+          1,
+          1
+         ]
+        ],
+        [
+         2
+        ]
+       ],
+       "expect": [
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         3
+        ],
+        [
+         [
+          2
+         ],
+         [
+          -1
+         ]
+        ],
+        [
+         0,
+         1
+        ]
+       ],
+       "expect": [
+        6,
+        -2
+       ]
+      }
+     ],
+     "hint": "One row per class.",
+     "solution": "def head(vector, W, b):\n    out = []\n    for i in range(len(W)):\n        out.append(round(sum([W[i][j] * vector[j] for j in range(len(vector))]) + b[i], 3))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Cross-entropy loss",
+     "intro": "Write cross_entropy(probs, target_index): negative natural log of the probability of the true class, rounded to 4 decimals.",
+     "fn": "cross_entropy",
+     "starter": "def cross_entropy(probs, target_index):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.7,
+         0.2,
+         0.1
+        ],
+        0
+       ],
+       "expect": 0.3567,
+       "approx": 0.0005
+      },
+      {
+       "args": [
+        [
+         0.7,
+         0.2,
+         0.1
+        ],
+        2
+       ],
+       "expect": 2.3026,
+       "approx": 0.0005
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        1
+       ],
+       "expect": 0.6931,
+       "approx": 0.0005
+      }
+     ],
+     "hint": "Training loss for a classifier.",
+     "solution": "import math\ndef cross_entropy(probs, target_index):\n    return round(-math.log(probs[target_index]), 4)\n"
+    }
+   ]
+  },
+  {
+   "title": "The typed-question interface",
+   "maps": [
+    {
+     "title": "Typed questions",
+     "links": [
+      "Question type | defines | Output shape",
+      "Yes or no | gives | One probability",
+      "Choice | gives | A distribution",
+      "Score | gives | A number",
+      "Criteria | state | What to judge",
+      "State | adds | Context",
+      "Schema | constrains | Valid answers"
+     ]
+    }
+   ],
+   "summary": [
+    "A decision model is queried with a structured request: the input, a context or state, optional criteria, and a typed question. The type fixes the output: a probability for yes or no, a distribution over options for a choice, or a bounded score.",
+    "Because the answer comes from a head rather than generated text, it is always well formed. The caller sets the policy: thresholds, how to treat low confidence and when to escalate.",
+    "Good questions are specific, mutually exclusive and checkable. Designing the question and options is the main job of the person using a decision model."
+   ],
+   "glossary": [
+    {
+     "term": "Typed question",
+     "def": "A request whose answer type is fixed in advance: boolean, one of several options, or a numeric score."
+    },
+    {
+     "term": "Criteria",
+     "def": "A short statement of the rules or standards the decision should follow."
+    },
+    {
+     "term": "State",
+     "def": "Extra context passed with the input, such as user history or the current step of a workflow."
+    },
+    {
+     "term": "Option set",
+     "def": "The list of allowed answers for a choice question."
+    },
+    {
+     "term": "Abstention",
+     "def": "Declining to answer, or flagging low confidence, instead of forcing a choice."
+    }
+   ],
+   "keyPoints": [
+    "Boolean: P(yes).",
+    "Choice: probabilities sum to 1.",
+    "Score: a value in a range, such as 0 to 1.",
+    "Put hard rules in criteria, not in hope.",
+    "Options should not overlap."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Think of a decision model as a function with a strict signature. You give it an input, perhaps a state, perhaps criteria, and a question. Vendors differ in names. A reported API from this field uses three question types: a yes or no kind, a choice among options, and a score.",
+      "Whatever the names, the pattern is the same, and it is worth learning because it determines what you can build."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A boolean question yields one probability that the answer is yes. Is this email a phishing attempt? Does this reply violate the refund policy? "
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A choice question yields a distribution over listed options that sums to one: which department should handle this ticket? A score question yields a number in a range: how urgent is this, from zero to one? All three produce numbers, not prose, so your code can compare them with thresholds, log them, and plot them."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# a typed request, as plain data\nrequest = {\n    'input': 'The customer says the parcel never arrived and wants money back.',\n    'state': {'order_age_days': 12, 'tier': 'gold'},\n    'criteria': 'Refunds over 100 dollars need a human.',\n    'question': {'type': 'choice',\n                 'options': ['refund', 'reship', 'escalate', 'reply']},\n}\nvalid = request['question']['type'] in ('boolean', 'choice', 'score')"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Question design matters more than people expect. Options should be mutually exclusive and cover the cases, with an 'other' or 'escalate' option for the rest. Criteria should state rules plainly. State, such as order age or earlier steps, lets the model use context it cannot see in the text.",
+      "Ask one thing at a time: 'Is this urgent and about billing?' is two questions. A score needs an anchored scale, so say what 0 and 1 mean."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Then you decide what to do with the answer, and that policy belongs to you, not to the model. Typical policies: act automatically above a high threshold, escalate in a grey zone, and reject or defer below.",
+      "Different mistakes cost different amounts, so thresholds should be set from your own data, as a later chapter shows. Keep a log of questions, probabilities and outcomes; it is your evaluation set for tomorrow."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What shape does a choice answer have?",
+     "options": [
+      "A distribution over options",
+      "A paragraph",
+      "A picture",
+      "A file"
+     ],
+     "answer": 0,
+     "explain": "Sums to one."
+    },
+    {
+     "q": "What does a boolean question return?",
+     "options": [
+      "P(yes)",
+      "A list of words",
+      "A table",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "One probability."
+    },
+    {
+     "q": "What is state for?",
+     "options": [
+      "Context outside the text",
+      "Styling",
+      "Speed",
+      "Billing"
+     ],
+     "answer": 0,
+     "explain": "Extra facts."
+    },
+    {
+     "q": "Why should options be mutually exclusive?",
+     "options": [
+      "Overlap makes probabilities ambiguous",
+      "It saves money",
+      "It shortens text",
+      "It is a law"
+     ],
+     "answer": 0,
+     "explain": "Clean choices."
+    },
+    {
+     "q": "Who sets the thresholds?",
+     "options": [
+      "The caller, from their own data",
+      "The vendor only",
+      "Nobody",
+      "The user"
+     ],
+     "answer": 0,
+     "explain": "Policy."
+    },
+    {
+     "q": "What should a score question define?",
+     "options": [
+      "What the ends of the scale mean",
+      "The font",
+      "The author",
+      "The date"
+     ],
+     "answer": 0,
+     "explain": "Anchors."
+    }
+   ],
+   "cards": [
+    {
+     "q": "{'type':'choice','options':[...]}",
+     "a": "choice question"
+    },
+    {
+     "q": "P(yes) >= 0.9",
+     "a": "act automatically"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Decision playground",
+     "intro": "Type a message, pick a question and options, and see probabilities from a toy bag-of-words scorer. Change the temperature and the escalation threshold and watch which cases are answered, escalated or rejected. Try three different messages to complete the lab.",
+     "height": 820,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\ncanvas{display:block;margin:6px auto;background:#0e0820;border-radius:8px;max-width:100%}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}\ninput[type=text]{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0}\n</style></head><body>\n<label>Message <input type=\"text\" id=\"m\" value=\"my card was charged twice and I want a refund\"></label>\n<label>Question <select id=\"q\"><option value=\"0\">Which team? (billing / shipping / account)</option><option value=\"1\">Is it urgent? (yes / no)</option></select></label>\n<label>Temperature: <b id=\"tv\"></b><input id=\"t\" type=\"range\" min=\"3\" max=\"40\" value=\"10\"></label>\n<label>Escalation threshold: <b id=\"hv\"></b><input id=\"h\" type=\"range\" min=\"40\" max=\"99\" value=\"70\"></label>\n<button id=\"go\">Decide</button><div id=\"o\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar Q=[{o:[\"billing\",\"shipping\",\"account\"],w:{billing:\"card charged charge refund payment invoice twice price bill\",shipping:\"parcel package delivery arrived shipping courier tracking late\",account:\"password login account email profile username locked\"}},\n{o:[\"yes\",\"no\"],w:{yes:\"urgent now asap immediately emergency twice locked angry never\",no:\"thanks later whenever question maybe curious\"}}];\nvar seen={};\nfunction run(){var q=Q[+$(\"q\").value],txt=$(\"m\").value.toLowerCase().split(/\\W+/),T=$(\"t\").value/10,th=$(\"h\").value/100;$(\"tv\").textContent=T.toFixed(1);$(\"hv\").textContent=th.toFixed(2);\n var sc=q.o.map(function(o){var ws=q.w[o].split(\" \"),s=0;txt.forEach(function(w){if(ws.indexOf(w)>=0)s+=1.5});return s+(o===\"no\"?0.4:0)}),m=Math.max.apply(null,sc),\n e=sc.map(function(s){return Math.exp((s-m)/T)}),t=e.reduce(function(a,b){return a+b},0),p=e.map(function(x){return x/t}),b=p.indexOf(Math.max.apply(null,p));\n var h=\"\";q.o.forEach(function(o,i){h+='<div style=\"display:flex;align-items:center;gap:6px\"><span style=\"width:6em\">'+o+'</span><div style=\"height:12px;border-radius:6px;background:#b26bff;width:'+Math.round(p[i]*100)+'%\"></div><span class=\"k\">'+p[i].toFixed(2)+'</span></div>'});\n h+=\"<br><b>\"+(p[b]>=th?\"Answer: \"+q.o[b]:\"Escalate to a big model (confidence \"+p[b].toFixed(2)+\" is below \"+th.toFixed(2)+\")\")+\"</b>\";$(\"o\").innerHTML=h;return $(\"m\").value}\n$(\"go\").onclick=function(){var v=run();seen[v.trim().toLowerCase()]=1;var n=Object.keys(seen).length;$(\"p\").textContent=\"Different messages tried: \"+n+\" of 3\";if(n>=3)done()};\n$(\"t\").oninput=run;$(\"h\").oninput=run;$(\"q\").onchange=run;run();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the question type",
+     "intro": "Pair each type with its output.",
+     "pairs": [
+      [
+       "Boolean",
+       "one probability of yes"
+      ],
+      [
+       "Choice",
+       "distribution over options"
+      ],
+      [
+       "Score",
+       "number on a scale"
+      ],
+      [
+       "Criteria",
+       "rules to follow"
+      ],
+      [
+       "State",
+       "context besides the text"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Validate a request",
+     "intro": "Write valid(question): True if question['type'] is 'boolean', or 'choice' with at least two distinct options, or 'score' with lo < hi; else False. Questions are dicts with keys type and options or lo and hi.",
+     "fn": "valid",
+     "starter": "def valid(question):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "type": "boolean"
+        }
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        {
+         "type": "choice",
+         "options": [
+          "a",
+          "b"
+         ]
+        }
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        {
+         "type": "choice",
+         "options": [
+          "a",
+          "a"
+         ]
+        }
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        {
+         "type": "score",
+         "lo": 0,
+         "hi": 1
+        }
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        {
+         "type": "score",
+         "lo": 1,
+         "hi": 1
+        }
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        {
+         "type": "essay"
+        }
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Check each type's requirements.",
+     "solution": "def valid(question):\n    t = question.get('type')\n    if t == 'boolean':\n        return True\n    if t == 'choice':\n        o = question.get('options', [])\n        return len(set(o)) >= 2 and len(set(o)) == len(o)\n    if t == 'score':\n        return question.get('lo', 0) < question.get('hi', 0)\n    return False\n"
+    },
+    {
+     "type": "python",
+     "title": "Normalise a choice",
+     "intro": "Write normalise(scores): divide non-negative scores by their sum so they total 1, rounded to 3 decimals; if the sum is 0 return equal shares.",
+     "fn": "normalise",
+     "starter": "def normalise(scores):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         2,
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.25,
+        0.25
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         5
+        ]
+       ],
+       "expect": [
+        1.0
+       ]
+      }
+     ],
+     "hint": "Make a distribution.",
+     "solution": "def normalise(scores):\n    t = float(sum(scores))\n    if t == 0:\n        return [round(1.0 / len(scores), 3)] * len(scores)\n    return [round(s / t, 3) for s in scores]\n"
+    },
+    {
+     "type": "python",
+     "title": "Rescale a score",
+     "intro": "Write rescale(p, lo, hi): map a probability p in [0, 1] to the range lo..hi, rounded to 3 decimals.",
+     "fn": "rescale",
+     "starter": "def rescale(p, lo, hi):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5,
+        0,
+        10
+       ],
+       "expect": 5.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        1.0,
+        1,
+        5
+       ],
+       "expect": 5.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        0.25,
+        -1,
+        1
+       ],
+       "expect": -0.5,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Linear map.",
+     "solution": "def rescale(p, lo, hi):\n    return round(lo + p * (hi - lo), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Policy bands",
+     "intro": "Write policy(p, act, reject): 'act' if p >= act, 'reject' if p <= reject, otherwise 'review'.",
+     "fn": "policy",
+     "starter": "def policy(p, act, reject):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.95,
+        0.9,
+        0.1
+       ],
+       "expect": "act"
+      },
+      {
+       "args": [
+        0.05,
+        0.9,
+        0.1
+       ],
+       "expect": "reject"
+      },
+      {
+       "args": [
+        0.5,
+        0.9,
+        0.1
+       ],
+       "expect": "review"
+      },
+      {
+       "args": [
+        0.9,
+        0.9,
+        0.1
+       ],
+       "expect": "act"
+      }
+     ],
+     "hint": "Three outcomes, two thresholds.",
+     "solution": "def policy(p, act, reject):\n    if p >= act:\n        return 'act'\n    if p <= reject:\n        return 'reject'\n    return 'review'\n"
+    },
+    {
+     "type": "python",
+     "title": "Entropy of an answer",
+     "intro": "Write entropy(probs): the Shannon entropy in bits of a distribution, rounded to 3 decimals; ignore zero probabilities.",
+     "fn": "entropy",
+     "starter": "def entropy(probs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ]
+       ],
+       "expect": -0.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         0.25,
+         0.25,
+         0.25,
+         0.25
+        ]
+       ],
+       "expect": 2.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.1
+        ]
+       ],
+       "expect": 0.469,
+       "approx": 0.002
+      }
+     ],
+     "hint": "High entropy means unsure.",
+     "solution": "import math\ndef entropy(probs):\n    return round(-sum([p * math.log(p, 2) for p in probs if p > 0]), 3)\n"
+    }
+   ]
+  },
+  {
+   "title": "Masked-option encoder designs (the Laya pattern)",
+   "maps": [
+    {
+     "title": "Laya pattern",
+     "links": [
+      "Input | holds | Text and options",
+      "Option marker | is | A mask slot",
+      "Encoder | reads | All together",
+      "Head | scores | Each marker",
+      "Softmax | normalises | Across options",
+      "Temperature | softens | Probabilities",
+      "Fine-tuning | adapts | To your domain"
+     ]
+    }
+   ],
+   "summary": [
+    "One design for a decision model puts the input and the options into a single encoder prompt, each option followed by a mask token. After one pass, the vector at each mask is scored by a small head, and a softmax across the masks gives the option probabilities.",
+    "Laya is reported to follow this pattern on a ModernBERT base of about 421 million parameters, offered openly. Details come from vendor material and may change; the pattern is what matters.",
+    "Such a design is fast and small but limited by the encoder's context, its pretraining and the amount of adaptation. Specialised domains usually need fine-tuning."
+   ],
+   "glossary": [
+    {
+     "term": "Option marker",
+     "def": "A mask token placed after each candidate option so the encoder produces one vector per option."
+    },
+    {
+     "term": "Joint encoding",
+     "def": "Reading the input and all options together so each option's vector is informed by the others."
+    },
+    {
+     "term": "Scoring head",
+     "def": "A small layer that turns each option vector into a score."
+    },
+    {
+     "term": "Temperature scaling",
+     "def": "Dividing logits by a constant before softmax to soften or sharpen probabilities."
+    },
+    {
+     "term": "Fine-tuning",
+     "def": "Further training on your own labelled decisions."
+    }
+   ],
+   "keyPoints": [
+    "[input] option A [MASK] option B [MASK] ...",
+    "score_i = head(vector at mask i).",
+    "p = softmax(scores / T).",
+    "Reported: ModernBERT base, 421M parameters.",
+    "Fine-tune for domain-specific decisions."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Here is one way to build a decision model out of an encoder, described in material about Laya, an open decision model reported to be based on ModernBERT. Write the input, then each option, and after each option put a special mask token. Feed the whole string to the encoder.",
+      "Because attention runs both ways, the vector at each mask token has seen the input and all the other options. A tiny head scores each of those vectors, and a softmax across the options gives probabilities."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# the idea, in pseudocode\ntext = 'Customer: my card was charged twice'\noptions = ['billing', 'shipping', 'account']\nprompt = text + ' [SEP] ' + ' '.join(o + ' [MASK]' for o in options)\nhidden = encoder(prompt)                 # one forward pass\nscores = [head(hidden[i]) for i in mask_positions]\nprobs = softmax([s / temperature for s in scores])"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The attractions are plain. It is one forward pass over a few hundred tokens, so on suitable hardware it takes milliseconds. The model is small enough to run on your own machine, which helps with privacy and cost.",
+      "The options are inputs, not fixed outputs, so you can change them per request without retraining. The training task, predicting which option is right, matches pretraining on masked tokens, so the encoder transfers well."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The limits are also plain. The encoder's context bounds the length of input plus options, so the 8,192 tokens of ModernBERT are a ceiling. Tasks needing multi-step reasoning, arithmetic, or deep world knowledge are not a good fit; the model is deciding, not thinking.",
+      "Off-the-shelf quality on your domain is unknown until measured, and the reports say that fine-tuning on a few hundred or thousand of your own labelled examples is often what makes it strong. The reported figures from the vendors should be re-tested."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Temperature deserves a note. Raw softmax outputs from a neural network are often overconfident. A single number, the temperature, divides the logits before the softmax. Above one it flattens probabilities, below one it sharpens them. You choose it on held-out data to make confidence match accuracy.",
+      "The calibration chapter makes this precise. Meanwhile, remember that a decision model's probabilities are only useful if they are trustworthy."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What follows each option in the prompt?",
+     "options": [
+      "A mask token",
+      "A full stop only",
+      "An image",
+      "A password"
+     ],
+     "answer": 0,
+     "explain": "One slot per option."
+    },
+    {
+     "q": "What produces the option probabilities?",
+     "options": [
+      "A softmax over mask scores",
+      "Sampling text",
+      "A parser",
+      "A random draw"
+     ],
+     "answer": 0,
+     "explain": "Across options."
+    },
+    {
+     "q": "Why can options change per request?",
+     "options": [
+      "They are inputs, not fixed outputs",
+      "They are ignored",
+      "Models are retrained each time",
+      "They are secret"
+     ],
+     "answer": 0,
+     "explain": "No fixed label set."
+    },
+    {
+     "q": "What limits input plus options length?",
+     "options": [
+      "The encoder context window",
+      "The alphabet",
+      "The temperature",
+      "The head"
+     ],
+     "answer": 0,
+     "explain": "Context."
+    },
+    {
+     "q": "What does temperature above 1 do?",
+     "options": [
+      "Flattens the probabilities",
+      "Sharpens them",
+      "Removes options",
+      "Adds options"
+     ],
+     "answer": 0,
+     "explain": "Softer."
+    },
+    {
+     "q": "What usually makes such a model strong in a niche?",
+     "options": [
+      "Fine-tuning on your own labels",
+      "Bigger prompts",
+      "Deleting options",
+      "Randomness"
+     ],
+     "answer": 0,
+     "explain": "Domain data."
+    }
+   ],
+   "cards": [
+    {
+     "q": "text + options + [MASK]",
+     "a": "joint prompt"
+    },
+    {
+     "q": "softmax(scores / T)",
+     "a": "calibrated probabilities"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the part",
+     "intro": "Pair each part of the masked-option design with its job.",
+     "pairs": [
+      [
+       "Mask after option",
+       "gives a vector per option"
+      ],
+      [
+       "Encoder",
+       "reads input and options together"
+      ],
+      [
+       "Head",
+       "scores each option vector"
+      ],
+      [
+       "Softmax",
+       "turns scores into probabilities"
+      ],
+      [
+       "Temperature",
+       "softens or sharpens"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Build the masked prompt",
+     "intro": "Write build_prompt(text, options): text + ' [SEP] ' + each option followed by ' [MASK]' joined with a single space.",
+     "fn": "build_prompt",
+     "starter": "def build_prompt(text, options):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "hello",
+        [
+         "a",
+         "b"
+        ]
+       ],
+       "expect": "hello [SEP] a [MASK] b [MASK]"
+      },
+      {
+       "args": [
+        "x",
+        [
+         "only"
+        ]
+       ],
+       "expect": "x [SEP] only [MASK]"
+      },
+      {
+       "args": [
+        "t",
+        []
+       ],
+       "expect": "t [SEP] "
+      }
+     ],
+     "hint": "Concatenate with the marker.",
+     "solution": "def build_prompt(text, options):\n    return text + ' [SEP] ' + ' '.join([o + ' [MASK]' for o in options])\n"
+    },
+    {
+     "type": "python",
+     "title": "Mask positions",
+     "intro": "Write mask_positions(tokens): the indexes where the token is '[MASK]'.",
+     "fn": "mask_positions",
+     "starter": "def mask_positions(tokens):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "[SEP]",
+         "x",
+         "[MASK]",
+         "y",
+         "[MASK]"
+        ]
+       ],
+       "expect": [
+        3,
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         "a"
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "[MASK]",
+         "[MASK]"
+        ]
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      }
+     ],
+     "hint": "Where to read the scores.",
+     "solution": "def mask_positions(tokens):\n    return [i for i in range(len(tokens)) if tokens[i] == '[MASK]']\n"
+    },
+    {
+     "type": "python",
+     "title": "Temperature softmax",
+     "intro": "Write probs(scores, T): softmax of scores / T rounded to 4 decimals.",
+     "fn": "probs",
+     "starter": "def probs(scores, T):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         2,
+         1,
+         0
+        ],
+        1
+       ],
+       "expect": [
+        0.6652,
+        0.2447,
+        0.09
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         1,
+         0
+        ],
+        2
+       ],
+       "expect": [
+        0.5065,
+        0.3072,
+        0.1863
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         1,
+         0
+        ],
+        0.5
+       ],
+       "expect": [
+        0.8668,
+        0.1173,
+        0.0159
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0
+        ],
+        1
+       ],
+       "expect": [
+        0.3333,
+        0.3333,
+        0.3333
+       ]
+      }
+     ],
+     "hint": "The calibration knob.",
+     "solution": "import math\ndef probs(scores, T):\n    s = [v / T for v in scores]\n    m = max(s)\n    e = [math.exp(v - m) for v in s]\n    t = sum(e)\n    return [round(v / t, 4) for v in e]\n"
+    },
+    {
+     "type": "python",
+     "title": "Sequence budget",
+     "intro": "Write fits(text_tokens, option_tokens, max_len, overhead): True if text_tokens + the sum of option token counts (option_tokens is a list) + 2 per option (separator and mask) + overhead is at most max_len.",
+     "fn": "fits",
+     "starter": "def fits(text_tokens, option_tokens, max_len, overhead):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        500,
+        [
+         3,
+         4,
+         5
+        ],
+        8192,
+        10
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        8000,
+        [
+         100,
+         100
+        ],
+        8192,
+        10
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        10,
+        [],
+        16,
+        6
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Context budgeting.",
+     "solution": "def fits(text_tokens, option_tokens, max_len, overhead):\n    total = text_tokens + sum(option_tokens) + 2 * len(option_tokens) + overhead\n    return total <= max_len\n"
+    },
+    {
+     "type": "python",
+     "title": "Rank options",
+     "intro": "Write rank(options, scores): options sorted by score descending (ties by original order).",
+     "fn": "rank",
+     "starter": "def rank(options, scores):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c"
+        ],
+        [
+         0.2,
+         0.7,
+         0.1
+        ]
+       ],
+       "expect": [
+        "b",
+        "a",
+        "c"
+       ]
+      },
+      {
+       "args": [
+        [
+         "x",
+         "y"
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        "x",
+        "y"
+       ]
+      },
+      {
+       "args": [
+        [
+         "z"
+        ],
+        [
+         0
+        ]
+       ],
+       "expect": [
+        "z"
+       ]
+      }
+     ],
+     "hint": "Sort by score.",
+     "solution": "def rank(options, scores):\n    idx = sorted(range(len(options)), key=lambda i: (-scores[i], i))\n    return [options[i] for i in idx]\n"
+    },
+    {
+     "type": "python",
+     "title": "Margin",
+     "intro": "Write margin(probs): the gap between the largest and second largest probability, rounded to 3 decimals (0 if one option).",
+     "fn": "margin",
+     "starter": "def margin(probs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.6,
+         0.3,
+         0.1
+        ]
+       ],
+       "expect": 0.3,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         1.0
+        ]
+       ],
+       "expect": 0,
+       "approx": 0.002
+      }
+     ],
+     "hint": "A close call has a small margin.",
+     "solution": "def margin(probs):\n    if len(probs) < 2:\n        return 0\n    s = sorted(probs, reverse=True)\n    return round(s[0] - s[1], 3)\n"
+    }
+   ]
+  },
+  {
+   "title": "Decoder-based decision models (the Clef pattern)",
+   "maps": [
+    {
+     "title": "Clef pattern",
+     "links": [
+      "Decoder LLM | is | The base",
+      "Prefill | reads | The whole prompt",
+      "No generation | saves | Time",
+      "Joint head | scores | Many fields",
+      "Pointer head | picks | An input span",
+      "KV cache | reuses | Shared prefix",
+      "Multimodal | adds | Images"
+     ]
+    }
+   ],
+   "summary": [
+    "The other route builds a decision model on a decoder language model but never generates text. It runs only the prefill pass over the prompt, then reads the final hidden state with small heads.",
+    "That keeps the language model's knowledge and instruction following while skipping slow token-by-token generation.",
+    "Clef, from Cloudflare, is reported to use Qwen-based models of roughly 9 and 27 billion parameters with a joint schema head that fills several typed answers at once, and a pointer head that selects a span or item from the input. A related Kev design is described as a pointer head.",
+    "Reported benefits are speed, typed outputs and shared computation through KV-cache reuse. Reports differ between sources, so verify specifics before relying on them."
+   ],
+   "glossary": [
+    {
+     "term": "Prefill",
+     "def": "The phase where a decoder processes the whole prompt in parallel before generating; a decision model stops here."
+    },
+    {
+     "term": "KV cache",
+     "def": "Stored attention keys and values from earlier tokens, reusable when the prompt shares a prefix."
+    },
+    {
+     "term": "Joint schema head",
+     "def": "A head that outputs several typed fields, such as a boolean, a choice and a score, from one pass."
+    },
+    {
+     "term": "Pointer head",
+     "def": "A head that picks a position or item in the input rather than a label from a fixed set."
+    },
+    {
+     "term": "Multimodal",
+     "def": "Handling more than text, for example images with text."
+    }
+   ],
+   "keyPoints": [
+    "Decoder + heads, no generation.",
+    "Cost = one prefill.",
+    "Pointer: choose among input items.",
+    "Shared prefix: reuse the KV cache.",
+    "Reported sizes: 9B and 27B (Clef)."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "A decoder language model like Llama or Qwen is built to generate: read the prompt, then emit one token at a time. The prompt phase, prefill, is a single parallel pass and is cheap per token. The generation phase is sequential and dominates latency, since each new token needs another pass.",
+      "If you only need a decision, not an essay, you can stop after prefill, read the last hidden state, and feed it to a small head. That turns a language model into a decision model."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "What do you gain over an encoder? A decoder with billions of parameters has more world knowledge, follows instructions and handles long, messy prompts, and can accept images if it is multimodal.",
+      "What do you lose? It is bigger and slower than a 400-million-parameter encoder, though still far faster than a model that writes a chain of thought.",
+      "Clef, announced by Cloudflare in 2026 and built on Qwen models reported at about 27 and 9 billion parameters, is the first well-known example of this pattern."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# prefill-only decision, in pseudocode\nhidden = decoder.prefill(prompt)[-1]        # last token state, no generation\nschema = {'urgent': 'boolean',\n          'team': ['billing', 'tech', 'sales'],\n          'priority': 'score'}\nout = {name: head[name](hidden) for name in schema}\n# one pass fills every field; none can be malformed"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two head ideas recur. A joint schema head answers several typed questions in one pass, so one prefill yields a boolean, a choice and a score together.",
+      "A pointer head selects an item from the input itself, for example which of twenty tool descriptions or which retrieved passage best fits, which suits agent routing where the options are long and different each time. Both guarantee well-formed answers, unlike parsing generated text."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Because many requests share a long prefix, such as the same instructions, tool list or document, serving systems keep the attention keys and values of the shared part in a KV cache, so only the new suffix needs computing.",
+      "For decision models that ask many questions about the same document this can make a large difference. You can run such models yourself: open weights and runtimes such as Unsloth and Ollama-style servers are mentioned in the project documentation.",
+      "Remember the caveat that this category is only weeks old, and sources disagree on details."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a prefill-only model skip?",
+     "options": [
+      "Token-by-token generation",
+      "Reading the prompt",
+      "The head",
+      "The weights"
+     ],
+     "answer": 0,
+     "explain": "No writing."
+    },
+    {
+     "q": "What does a pointer head choose?",
+     "options": [
+      "An item or span from the input",
+      "A random word",
+      "A font",
+      "A file"
+     ],
+     "answer": 0,
+     "explain": "Points into input."
+    },
+    {
+     "q": "What does a joint schema head provide?",
+     "options": [
+      "Several typed answers in one pass",
+      "A longer essay",
+      "Image output",
+      "Slower answers"
+     ],
+     "answer": 0,
+     "explain": "Multi-field."
+    },
+    {
+     "q": "What does a KV cache save?",
+     "options": [
+      "Recomputing a shared prefix",
+      "Disk space only",
+      "Training",
+      "Memory always"
+     ],
+     "answer": 0,
+     "explain": "Reuse."
+    },
+    {
+     "q": "What do decoders add over small encoders?",
+     "options": [
+      "More knowledge and instruction following",
+      "Smaller size",
+      "Less cost",
+      "Fewer parameters"
+     ],
+     "answer": 0,
+     "explain": "Scale."
+    },
+    {
+     "q": "What is the reliable way to treat reported model details?",
+     "options": [
+      "Verify before relying",
+      "Trust fully",
+      "Ignore all",
+      "Copy into papers"
+     ],
+     "answer": 0,
+     "explain": "Young field."
+    }
+   ],
+   "cards": [
+    {
+     "q": "prefill then head",
+     "a": "decision without generation"
+    },
+    {
+     "q": "KV cache reuse",
+     "a": "shared prefix"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the piece",
+     "intro": "Pair each piece with its job.",
+     "pairs": [
+      [
+       "Prefill",
+       "process the prompt once"
+      ],
+      [
+       "Head",
+       "read the final state into an answer"
+      ],
+      [
+       "Pointer head",
+       "choose an input item"
+      ],
+      [
+       "KV cache",
+       "reuse shared prefix work"
+      ],
+      [
+       "Joint head",
+       "fill several fields at once"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Tokens to compute with cache",
+     "intro": "Write tokens_needed(prefix_len, suffix_len, cached): total tokens to process: just the suffix if cached is True, else prefix plus suffix.",
+     "fn": "tokens_needed",
+     "starter": "def tokens_needed(prefix_len, suffix_len, cached):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2000,
+        50,
+        true
+       ],
+       "expect": 50
+      },
+      {
+       "args": [
+        2000,
+        50,
+        false
+       ],
+       "expect": 2050
+      },
+      {
+       "args": [
+        0,
+        10,
+        true
+       ],
+       "expect": 10
+      }
+     ],
+     "hint": "Cache saves the prefix.",
+     "solution": "def tokens_needed(prefix_len, suffix_len, cached):\n    return suffix_len if cached else prefix_len + suffix_len\n"
+    },
+    {
+     "type": "python",
+     "title": "Cache savings",
+     "intro": "Write cache_savings(prefix_len, suffix_len, n_queries): the fraction of tokens saved over n_queries questions on the same prefix if the prefix is processed once (first query) and cached after; rounded to 3 decimals.",
+     "fn": "cache_savings",
+     "starter": "def cache_savings(prefix_len, suffix_len, n_queries):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2000,
+        50,
+        10
+       ],
+       "expect": 0.878,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        1000,
+        100,
+        1
+       ],
+       "expect": 0.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        500,
+        50,
+        100
+       ],
+       "expect": 0.9,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Amortise the prefix.",
+     "solution": "def cache_savings(prefix_len, suffix_len, n_queries):\n    full = n_queries * (prefix_len + suffix_len)\n    cached = prefix_len + n_queries * suffix_len\n    return round(1 - cached / float(full), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Pointer choice",
+     "intro": "Write point(scores): the index of the highest score (first on ties).",
+     "fn": "point",
+     "starter": "def point(scores):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.1,
+         0.9,
+         0.3
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         5
+        ]
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Pick an input item.",
+     "solution": "def point(scores):\n    b = 0\n    for i in range(len(scores)):\n        if scores[i] > scores[b]:\n            b = i\n    return b\n"
+    },
+    {
+     "type": "python",
+     "title": "Joint schema",
+     "intro": "Write fill_schema(heads, hidden): heads is a list of [name, kind, weights] where kind is 'boolean' (sigmoid of weights dot hidden, rounded to 3 decimals) or 'score' (the plain dot product rounded to 3 decimals). Return a list of [name, value] pairs in order.",
+     "fn": "fill_schema",
+     "starter": "def fill_schema(heads, hidden):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "urgent",
+          "boolean",
+          [
+           1,
+           0
+          ]
+         ],
+         [
+          "size",
+          "score",
+          [
+           0,
+           2
+          ]
+         ]
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        [
+         "urgent",
+         0.731
+        ],
+        [
+         "size",
+         2
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "boolean",
+          [
+           0,
+           0
+          ]
+         ]
+        ],
+        [
+         3,
+         4
+        ]
+       ],
+       "expect": [
+        [
+         "a",
+         0.5
+        ]
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         1
+        ]
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Heads on one hidden state.",
+     "solution": "import math\ndef fill_schema(heads, hidden):\n    out = []\n    for name, kind, w in heads:\n        z = sum([w[i] * hidden[i] for i in range(len(hidden))])\n        if kind == 'boolean':\n            out.append([name, round(1 / (1 + math.exp(-z)), 3)])\n        else:\n            out.append([name, round(z, 3)])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Latency estimate",
+     "intro": "Write latency_ms(prefill_tokens, ms_per_prefill_token, gen_tokens, ms_per_gen_token): total milliseconds for prefill plus generation.",
+     "fn": "latency_ms",
+     "starter": "def latency_ms(prefill_tokens, ms_per_prefill_token, gen_tokens, ms_per_gen_token):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        500,
+        0.05,
+        0,
+        20
+       ],
+       "expect": 25.0,
+       "approx": 0.02
+      },
+      {
+       "args": [
+        500,
+        0.05,
+        300,
+        20
+       ],
+       "expect": 6025.0,
+       "approx": 0.02
+      },
+      {
+       "args": [
+        100,
+        0.1,
+        5,
+        30
+       ],
+       "expect": 160.0,
+       "approx": 0.02
+      }
+     ],
+     "hint": "Generation dominates.",
+     "solution": "def latency_ms(prefill_tokens, ms_per_prefill_token, gen_tokens, ms_per_gen_token):\n    return round(prefill_tokens * ms_per_prefill_token + gen_tokens * ms_per_gen_token, 2)\n"
+    }
+   ]
+  },
+  {
+   "title": "Calibration: making probabilities trustworthy",
+   "maps": [
+    {
+     "title": "Calibration",
+     "links": [
+      "Confidence | should match | Accuracy",
+      "Reliability diagram | plots | Bins",
+      "ECE | averages | Gaps",
+      "Brier score | squares | Errors",
+      "Log loss | punishes | Confident mistakes",
+      "Temperature | rescales | Logits",
+      "Threshold | sets | Policy"
+     ]
+    }
+   ],
+   "summary": [
+    "A decision model is only useful if its probabilities mean something: of the cases where it says 90 percent, about 90 percent should be right. Neural networks are often overconfident, so we measure and repair calibration.",
+    "Expected calibration error bins predictions by confidence and averages the gap between confidence and accuracy. Brier score and log loss are proper scoring rules that reward honest probabilities. Temperature scaling fixes much overconfidence with a single parameter fitted on held-out data.",
+    "Some vendors train for calibration directly, with reinforcement learning on calibration objectives; reports describe this as a selling point, which you should test yourself."
+   ],
+   "glossary": [
+    {
+     "term": "Calibration",
+     "def": "The match between predicted probabilities and observed frequencies."
+    },
+    {
+     "term": "Expected calibration error",
+     "def": "The weighted average gap between confidence and accuracy across confidence bins."
+    },
+    {
+     "term": "Brier score",
+     "def": "The mean squared difference between predicted probability and the 0 or 1 outcome."
+    },
+    {
+     "term": "Log loss",
+     "def": "The mean negative log probability assigned to the true outcome."
+    },
+    {
+     "term": "Temperature scaling",
+     "def": "Dividing logits by a fitted constant to repair over- or under-confidence."
+    }
+   ],
+   "keyPoints": [
+    "ECE = sum over bins of (n_bin / n) |acc - conf|.",
+    "Brier = mean (p - y)^2.",
+    "Log loss = -mean log p(true).",
+    "Fit T on a validation set, not the test set.",
+    "Calibrate after fine-tuning."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Suppose a model says 'refund approved, 95 percent' a thousand times. If 95 percent of those were correct, it is calibrated at that level. If only 80 percent were, it is overconfident, and a threshold of 0.9 will let through many mistakes.",
+      "Modern networks tend to be overconfident because they are trained to push the loss down on the training data, which rewards ever larger logits."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To measure calibration, sort predictions into bins by confidence, say 0.5 to 0.6, 0.6 to 0.7 and so on. In each bin compare the average confidence with the fraction correct. Plotting accuracy against confidence gives a reliability diagram: a perfect model lies on the diagonal.",
+      "Expected calibration error is the average of the gaps, weighted by bin size. Two scoring rules summarise both sharpness and calibration. The Brier score is the mean squared error of the probability. Log loss is the mean negative log probability of the truth, and punishes confident mistakes harshly."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import numpy as np\ndef ece(conf, correct, bins=10):\n    conf, correct = np.asarray(conf), np.asarray(correct)\n    edges = np.linspace(0, 1, bins + 1)\n    total = 0.0\n    for lo, hi in zip(edges[:-1], edges[1:]):\n        m = (conf > lo) & (conf <= hi)\n        if m.any():\n            total += m.mean() * abs(correct[m].mean() - conf[m].mean())\n    return total"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The repair that works surprisingly often is temperature scaling. Keep the model fixed, hold out a validation set, and find the single number T that minimises log loss when logits are divided by T.",
+      "When the model is overconfident T comes out above one, which flattens the probabilities without changing which option is top. Accuracy stays the same; only confidence changes. For richer problems there are other methods, such as isotonic regression, but start simple."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Some decision-model vendors describe training with a calibration-aware reinforcement objective, reported under the name RLCD, to make confidence honest from the start.",
+      "Whether that works for your data is an empirical question, and the answer depends on the shift between their training data and your inputs.",
+      "Always check calibration on your own held-out cases, re-check after fine-tuning or changing the question wording, and monitor it in production, because the world changes."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a calibrated 90 percent mean?",
+     "options": [
+      "About 90 percent of such answers are right",
+      "The model is 90 percent big",
+      "Ninety tokens",
+      "Ninety labels"
+     ],
+     "answer": 0,
+     "explain": "Frequency matches."
+    },
+    {
+     "q": "What does temperature above 1 do to probabilities?",
+     "options": [
+      "Flattens them",
+      "Sharpens them",
+      "Reorders options",
+      "Removes options"
+     ],
+     "answer": 0,
+     "explain": "Less confident."
+    },
+    {
+     "q": "Does temperature scaling change accuracy?",
+     "options": [
+      "No, only confidence",
+      "Yes, raises it",
+      "Yes, lowers it",
+      "Only for text"
+     ],
+     "answer": 0,
+     "explain": "Same argmax."
+    },
+    {
+     "q": "What does log loss punish most?",
+     "options": [
+      "Confident wrong answers",
+      "Short answers",
+      "Rare labels",
+      "Slow answers"
+     ],
+     "answer": 0,
+     "explain": "Heavy penalty."
+    },
+    {
+     "q": "What does ECE average?",
+     "options": [
+      "Confidence versus accuracy gaps over bins",
+      "Latencies",
+      "Token counts",
+      "Losses only"
+     ],
+     "answer": 0,
+     "explain": "Per-bin gaps."
+    },
+    {
+     "q": "Where should T be fitted?",
+     "options": [
+      "On a validation set",
+      "On the test set",
+      "On training data only",
+      "Never"
+     ],
+     "answer": 0,
+     "explain": "Held-out."
+    }
+   ],
+   "cards": [
+    {
+     "q": "ECE",
+     "a": "calibration error"
+    },
+    {
+     "q": "T = argmin log loss",
+     "a": "temperature scaling"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Calibration lab",
+     "intro": "A model's confidences and outcomes are plotted as a reliability diagram. Drag the temperature slider to repair the overconfident model and watch ECE fall. Reach an ECE below 0.04 to complete the lab.",
+     "height": 820,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\ncanvas{display:block;margin:6px auto;background:#0e0820;border-radius:8px;max-width:100%}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}\ninput[type=text]{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0}\n</style></head><body>\n<label>Temperature: <b id=\"tv\"></b><input id=\"t\" type=\"range\" min=\"5\" max=\"60\" value=\"10\"></label>\n<canvas id=\"c\" width=\"320\" height=\"320\"></canvas><div id=\"o\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar seed=11;function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff}\nvar Z=[],Y=[],i;for(i=0;i<400;i++){var z=(rnd()-0.5)*8,pt=1/(1+Math.exp(-z/2.4));Z.push(z);Y.push(rnd()<pt?1:0)}\nfunction sg(x){return 1/(1+Math.exp(-x))}\nfunction draw(){var T=$(\"t\").value/10;$(\"tv\").textContent=T.toFixed(1);var B=10,n=[],c=[],a=[],b;for(b=0;b<B;b++){n.push(0);c.push(0);a.push(0)}\n var correctConf=[];Z.forEach(function(z,j){var p=sg(z/T),conf=Math.max(p,1-p),ok=((p>=0.5)?1:0)===Y[j]?1:0,k=Math.min(B-1,Math.floor((conf-0.5)*2*B));n[k]++;c[k]+=conf;a[k]+=ok});\n var e=0,N=Z.length;for(b=0;b<B;b++)if(n[b])e+=n[b]/N*Math.abs(a[b]/n[b]-c[b]/n[b]);\n var g=$(\"c\").getContext(\"2d\");g.clearRect(0,0,320,320);g.strokeStyle=\"#5c4a85\";g.beginPath();g.moveTo(10,310);g.lineTo(310,10);g.stroke();g.fillStyle=\"#b26bff\";\n for(b=0;b<B;b++)if(n[b]){var x=10+(c[b]/n[b]-0.5)*600,y=310-(a[b]/n[b]-0.5)*600;g.beginPath();g.arc(x,y,3+Math.sqrt(n[b])/2.5,0,6.3);g.fill()}\n g.fillStyle=\"#c9b8e8\";g.fillText(\"confidence ->\",230,305);g.fillText(\"accuracy\",14,20);\n $(\"o\").textContent=\"ECE = \"+e.toFixed(3)+(e<0.04?\" (well calibrated)\":\" (points below the diagonal mean overconfident)\");if(e<0.04)done()}\n$(\"t\").oninput=draw;draw();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the metric",
+     "intro": "Pair each metric with its idea.",
+     "pairs": [
+      [
+       "ECE",
+       "average confidence-accuracy gap"
+      ],
+      [
+       "Brier score",
+       "mean squared probability error"
+      ],
+      [
+       "Log loss",
+       "punishes confident mistakes"
+      ],
+      [
+       "Reliability diagram",
+       "accuracy against confidence"
+      ],
+      [
+       "Temperature scaling",
+       "one-parameter repair"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Brier score",
+     "intro": "Write brier(probs, outcomes): the mean of (p - y)^2 where outcomes are 0 or 1; rounded to 4 decimals.",
+     "fn": "brier",
+     "starter": "def brier(probs, outcomes):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.9,
+         0.2,
+         0.8
+        ],
+        [
+         1,
+         0,
+         0
+        ]
+       ],
+       "expect": 0.23,
+       "approx": 0.0003
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ],
+        [
+         1,
+         0
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.0003
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         1,
+         0
+        ]
+       ],
+       "expect": 0.25,
+       "approx": 0.0003
+      }
+     ],
+     "hint": "Squared error of probabilities.",
+     "solution": "def brier(probs, outcomes):\n    return round(sum([(p - y) ** 2 for p, y in zip(probs, outcomes)]) / len(probs), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Log loss",
+     "intro": "Write log_loss(probs, outcomes): the mean of -log(p) when the outcome is 1 and -log(1-p) when it is 0; rounded to 4 decimals.",
+     "fn": "log_loss",
+     "starter": "def log_loss(probs, outcomes):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.9,
+         0.2
+        ],
+        [
+         1,
+         0
+        ]
+       ],
+       "expect": 0.1643,
+       "approx": 0.0005
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         1,
+         0
+        ]
+       ],
+       "expect": 0.6931,
+       "approx": 0.0005
+      },
+      {
+       "args": [
+        [
+         0.99,
+         0.01
+        ],
+        [
+         1,
+         0
+        ]
+       ],
+       "expect": 0.0101,
+       "approx": 0.0005
+      }
+     ],
+     "hint": "Confident mistakes cost a lot.",
+     "solution": "import math\ndef log_loss(probs, outcomes):\n    t = 0.0\n    for p, y in zip(probs, outcomes):\n        t = t - math.log(p if y == 1 else 1 - p)\n    return round(t / len(probs), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Expected calibration error",
+     "intro": "Write ece(conf, correct, bins): split [0, 1] into equal bins (a value belongs to bin min(int(c * bins), bins - 1)); the sum over non-empty bins of (n_bin / n) |mean(correct) - mean(conf)|, rounded to 4 decimals.",
+     "fn": "ece",
+     "starter": "def ece(conf, correct, bins):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.9,
+         0.9,
+         0.9,
+         0.9
+        ],
+        [
+         1,
+         1,
+         1,
+         0
+        ],
+        10
+       ],
+       "expect": 0.15,
+       "approx": 0.0005
+      },
+      {
+       "args": [
+        [
+         0.6,
+         0.6,
+         0.95,
+         0.95
+        ],
+        [
+         1,
+         0,
+         1,
+         1
+        ],
+        5
+       ],
+       "expect": 0.075,
+       "approx": 0.0005
+      },
+      {
+       "args": [
+        [
+         0.5
+        ],
+        [
+         1
+        ],
+        2
+       ],
+       "expect": 0.5,
+       "approx": 0.0005
+      }
+     ],
+     "hint": "Gap per bin.",
+     "solution": "def ece(conf, correct, bins):\n    n = len(conf)\n    total = 0.0\n    for b in range(bins):\n        idx = [i for i in range(n) if min(int(conf[i] * bins), bins - 1) == b]\n        if idx:\n            c = sum([conf[i] for i in idx]) / float(len(idx))\n            a = sum([correct[i] for i in idx]) / float(len(idx))\n            total = total + len(idx) / float(n) * abs(a - c)\n    return round(total, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Reliability bins",
+     "intro": "Write reliability(conf, correct, bins): for each non-empty bin (bin of c is min(int(c * bins), bins - 1)) return [bin index, count, mean confidence, accuracy], with the last two rounded to 3 decimals.",
+     "fn": "reliability",
+     "starter": "def reliability(conf, correct, bins):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.9,
+         0.95,
+         0.2
+        ],
+        [
+         1,
+         0,
+         0
+        ],
+        5
+       ],
+       "expect": [
+        [
+         1,
+         1,
+         0.2,
+         0.0
+        ],
+        [
+         4,
+         2,
+         0.925,
+         0.5
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         1,
+         1
+        ],
+        2
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         0.5,
+         1.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         0.1
+        ],
+        [
+         0
+        ],
+        10
+       ],
+       "expect": [
+        [
+         1,
+         1,
+         0.1,
+         0.0
+        ]
+       ]
+      }
+     ],
+     "hint": "Data for the diagram.",
+     "solution": "def reliability(conf, correct, bins):\n    out = []\n    for b in range(bins):\n        idx = [i for i in range(len(conf)) if min(int(conf[i] * bins), bins - 1) == b]\n        if idx:\n            out.append([b, len(idx), round(sum([conf[i] for i in idx]) / float(len(idx)), 3), round(sum([correct[i] for i in idx]) / float(len(idx)), 3)])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Apply temperature to a pair",
+     "intro": "Write calibrate(logit, T): the sigmoid of logit / T rounded to 4 decimals.",
+     "fn": "calibrate",
+     "starter": "def calibrate(logit, T):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        1
+       ],
+       "expect": 0.9526
+      },
+      {
+       "args": [
+        3,
+        2
+       ],
+       "expect": 0.8176
+      },
+      {
+       "args": [
+        -2,
+        1.5
+       ],
+       "expect": 0.2086
+      },
+      {
+       "args": [
+        0,
+        3
+       ],
+       "expect": 0.5
+      }
+     ],
+     "hint": "Softens overconfident logits.",
+     "solution": "import math\ndef calibrate(logit, T):\n    return round(1 / (1 + math.exp(-logit / T)), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Best temperature",
+     "intro": "Write fit_temperature(logits, outcomes, candidates): the candidate T with the lowest log loss of sigmoid(logit / T) against 0 or 1 outcomes (first on ties).",
+     "fn": "fit_temperature",
+     "starter": "def fit_temperature(logits, outcomes, candidates):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         4,
+         4,
+         4,
+         4
+        ],
+        [
+         1,
+         1,
+         0,
+         0
+        ],
+        [
+         0.5,
+         1,
+         2,
+         4,
+         8
+        ]
+       ],
+       "expect": 8
+      },
+      {
+       "args": [
+        [
+         3,
+         -3
+        ],
+        [
+         1,
+         0
+        ],
+        [
+         0.5,
+         1,
+         2
+        ]
+       ],
+       "expect": 0.5
+      },
+      {
+       "args": [
+        [
+         2,
+         2,
+         -2
+        ],
+        [
+         1,
+         0,
+         0
+        ],
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": 3
+      }
+     ],
+     "hint": "Minimise validation log loss.",
+     "solution": "import math\ndef fit_temperature(logits, outcomes, candidates):\n    best = None\n    bl = None\n    for T in candidates:\n        loss = 0.0\n        for z, y in zip(logits, outcomes):\n            p = 1 / (1 + math.exp(-z / T))\n            loss = loss - math.log(p if y == 1 else 1 - p)\n        loss = round(loss, 9)\n        if bl is None or loss < bl:\n            bl = loss\n            best = T\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Threshold for target precision",
+     "intro": "Write threshold_for_precision(conf, correct, target): the smallest confidence value present in conf such that the precision of all predictions with confidence at or above it is at least target; return None if none.",
+     "fn": "threshold_for_precision",
+     "starter": "def threshold_for_precision(conf, correct, target):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.6,
+         0.7,
+         0.8,
+         0.9,
+         0.95
+        ],
+        [
+         0,
+         1,
+         0,
+         1,
+         1
+        ],
+        0.9
+       ],
+       "expect": 0.9
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.6
+        ],
+        [
+         0,
+         0
+        ],
+        0.5
+       ],
+       "expect": null
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.8
+        ],
+        [
+         1,
+         1
+        ],
+        1.0
+       ],
+       "expect": 0.8
+      }
+     ],
+     "hint": "Pick an operating point.",
+     "solution": "def threshold_for_precision(conf, correct, target):\n    for t in sorted(set(conf)):\n        idx = [i for i in range(len(conf)) if conf[i] >= t]\n        if sum([correct[i] for i in idx]) / float(len(idx)) >= target:\n            return t\n    return None\n"
+    }
+   ]
+  },
+  {
+   "title": "Evaluating decision models",
+   "maps": [
+    {
+     "title": "Evaluation",
+     "links": [
+      "Test set | measures | Your task",
+      "Accuracy | counts | Right answers",
+      "Cost matrix | prices | Mistakes",
+      "Latency | measures | Speed",
+      "Benchmarks | compare | Vendors",
+      "Contamination | inflates | Scores",
+      "Fine-tuning gain | shows | Headroom"
+     ]
+    }
+   ],
+   "summary": [
+    "Do not rely on a vendor's headline numbers. Reports in this field include a Decision Index and results on public tasks such as BANKING77 intent classification, but they are self-reported and may not match your data.",
+    "Build a labelled test set from your own traffic, measure accuracy, calibration, per-class errors, cost-weighted loss and latency at your batch size, and compare against a simple baseline and against a large LLM.",
+    "Check the effect of fine-tuning: a few hundred of your own examples often add the most. Keep a separate untouched test set and watch for leakage."
+   ],
+   "glossary": [
+    {
+     "term": "Test set",
+     "def": "Labelled examples held out from all training and tuning, used to estimate real performance."
+    },
+    {
+     "term": "Cost matrix",
+     "def": "A table giving the cost of each kind of mistake, used to choose thresholds."
+    },
+    {
+     "term": "Baseline",
+     "def": "A simple reference such as the majority class or keyword rules, to show the added value."
+    },
+    {
+     "term": "Contamination",
+     "def": "Test data leaking into training, which inflates scores."
+    },
+    {
+     "term": "Decision Index",
+     "def": "A reported composite benchmark for decision models; treat as a vendor measure until independently checked."
+    }
+   ],
+   "keyPoints": [
+    "Own data first.",
+    "Report accuracy, calibration, latency and cost.",
+    "Compare with a baseline and with an LLM.",
+    "Per-class precision and recall.",
+    "Re-test on every model update."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "When a new model claims to beat everything, your first move is not to read the leaderboard but to build a test. Collect a few hundred real inputs, label them carefully (ideally by two people so you measure disagreement), and set them aside.",
+      "This is the only number that predicts how the system will behave for you."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Public results are context. For the decision models in this chapter's sources, vendors report scores on a composite they call the Decision Index and on well-known tasks like BANKING77, a set of seventy-seven banking intents.",
+      "Such numbers come with the usual caveats: they are self-reported, the prompts and options may be favourable, training data may overlap with test data, and the field changes monthly, with different articles giving different figures. Quote them as 'reported by the vendor, as of date' and verify."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from collections import Counter\ndef report(y_true, y_pred):\n    acc = sum(a == b for a, b in zip(y_true, y_pred)) / len(y_true)\n    errors = Counter((a, b) for a, b in zip(y_true, y_pred) if a != b)\n    return acc, errors.most_common(5)   # which confusions matter most"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Accuracy is not enough. Look at per-class precision and recall, since rare but costly classes can hide behind a good average. Use a cost matrix: wrongly auto-approving a fraud costs far more than sending a good case to review.",
+      "Check calibration, as in the last chapter, and measure latency and throughput on your own hardware with your own batch size, since a vendor's milliseconds assume their setup."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Finally compare options fairly. A keyword baseline tells you what the model adds. A large LLM given the same question is the quality ceiling and the cost reference.",
+      "Fine-tune the decision model on part of your data to see headroom; if a few hundred examples lift accuracy a lot, the base model was not enough alone. Re-run the test whenever the model, the options wording or the input mix changes, and keep sampling live traffic for new labels."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the first step when evaluating a model?",
+     "options": [
+      "Build a test set from your data",
+      "Read the leaderboard",
+      "Buy hardware",
+      "Rename classes"
+     ],
+     "answer": 0,
+     "explain": "Own data."
+    },
+    {
+     "q": "Why use a baseline?",
+     "options": [
+      "To show what the model adds",
+      "To slow things",
+      "To hide errors",
+      "To skip tests"
+     ],
+     "answer": 0,
+     "explain": "Reference."
+    },
+    {
+     "q": "What is contamination?",
+     "options": [
+      "Test data leaking into training",
+      "Dirty hardware",
+      "Noise in audio",
+      "Slow code"
+     ],
+     "answer": 0,
+     "explain": "Inflated score."
+    },
+    {
+     "q": "Why a cost matrix?",
+     "options": [
+      "Mistakes cost different amounts",
+      "To save time",
+      "To shorten labels",
+      "To tokenise"
+     ],
+     "answer": 0,
+     "explain": "Set thresholds."
+    },
+    {
+     "q": "How should vendor figures be quoted?",
+     "options": [
+      "As reported with a date",
+      "As facts",
+      "Not at all, ever",
+      "As official standards"
+     ],
+     "answer": 0,
+     "explain": "Self-reported."
+    },
+    {
+     "q": "What does a big fine-tuning gain suggest?",
+     "options": [
+      "The base model alone was not enough",
+      "The test is wrong",
+      "Latency is low",
+      "Costs are zero"
+     ],
+     "answer": 0,
+     "explain": "Headroom."
+    }
+   ],
+   "cards": [
+    {
+     "q": "classification_report",
+     "a": "per-class metrics"
+    },
+    {
+     "q": "confusion matrix",
+     "a": "which errors happen"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each evaluation idea with its meaning.",
+     "pairs": [
+      [
+       "Baseline",
+       "simple reference method"
+      ],
+      [
+       "Cost matrix",
+       "price of each mistake"
+      ],
+      [
+       "Contamination",
+       "test data leaked into training"
+      ],
+      [
+       "Per-class recall",
+       "found share of each class"
+      ],
+      [
+       "Latency",
+       "time per request"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Accuracy",
+     "intro": "Write accuracy(y_true, y_pred): the fraction correct, rounded to 3 decimals.",
+     "fn": "accuracy",
+     "starter": "def accuracy(y_true, y_pred):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "a"
+        ],
+        [
+         "a",
+         "a",
+         "a"
+        ]
+       ],
+       "expect": 0.667,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        [
+         "x"
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         "p",
+         "q"
+        ],
+        [
+         "q",
+         "p"
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Fraction right.",
+     "solution": "def accuracy(y_true, y_pred):\n    return round(sum([1 for a, b in zip(y_true, y_pred) if a == b]) / float(len(y_true)), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Per-class precision and recall",
+     "intro": "Write prf(y_true, y_pred, label): [precision, recall] for the label, each rounded to 3 decimals (0 when undefined).",
+     "fn": "prf",
+     "starter": "def prf(y_true, y_pred, label):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "a",
+         "b"
+        ],
+        [
+         "a",
+         "a",
+         "a",
+         "b"
+        ],
+        "a"
+       ],
+       "expect": [
+        0.667,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         "x",
+         "y"
+        ],
+        [
+         "y",
+         "y"
+        ],
+        "x"
+       ],
+       "expect": [
+        0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         "p"
+        ],
+        [
+         "p"
+        ],
+        "q"
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Rare classes matter.",
+     "solution": "def prf(y_true, y_pred, label):\n    tp = len([1 for a, b in zip(y_true, y_pred) if a == label and b == label])\n    pp = len([b for b in y_pred if b == label])\n    ap = len([a for a in y_true if a == label])\n    p = tp / float(pp) if pp else 0\n    r = tp / float(ap) if ap else 0\n    return [round(p, 3), round(r, 3)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Confusion pairs",
+     "intro": "Write confusions(y_true, y_pred): [true, predicted, count] triples for every wrong prediction, sorted by count descending then alphabetically.",
+     "fn": "confusions",
+     "starter": "def confusions(y_true, y_pred):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "a",
+         "b",
+         "c"
+        ],
+        [
+         "b",
+         "b",
+         "a",
+         "c"
+        ]
+       ],
+       "expect": [
+        [
+         "a",
+         "b",
+         2
+        ],
+        [
+         "b",
+         "a",
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        [
+         "x"
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "p",
+         "q"
+        ],
+        [
+         "q",
+         "p"
+        ]
+       ],
+       "expect": [
+        [
+         "p",
+         "q",
+         1
+        ],
+        [
+         "q",
+         "p",
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Find the costly confusions.",
+     "solution": "def confusions(y_true, y_pred):\n    d = {}\n    for a, b in zip(y_true, y_pred):\n        if a != b:\n            d[(a, b)] = d.get((a, b), 0) + 1\n    keys = sorted(d.keys(), key=lambda k: (-d[k], k))\n    return [[k[0], k[1], d[k]] for k in keys]\n"
+    },
+    {
+     "type": "python",
+     "title": "Cost-weighted error",
+     "intro": "Write total_cost(y_true, y_pred, cost): cost is a list of [true, predicted, price] triples; wrong predictions not listed cost 1; correct ones cost 0. Return the total.",
+     "fn": "total_cost",
+     "starter": "def total_cost(y_true, y_pred, cost):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "fraud",
+         "ok",
+         "ok"
+        ],
+        [
+         "ok",
+         "fraud",
+         "ok"
+        ],
+        [
+         [
+          "fraud",
+          "ok",
+          100
+         ]
+        ]
+       ],
+       "expect": 101
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        [
+         "a"
+        ],
+        []
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         "b",
+         "a"
+        ],
+        [
+         [
+          "a",
+          "b",
+          5
+         ]
+        ]
+       ],
+       "expect": 6
+      }
+     ],
+     "hint": "Not all errors are equal.",
+     "solution": "def total_cost(y_true, y_pred, cost):\n    table = {}\n    for a, b, c in cost:\n        table[(a, b)] = c\n    t = 0\n    for a, b in zip(y_true, y_pred):\n        if a != b:\n            t = t + table.get((a, b), 1)\n    return t\n"
+    },
+    {
+     "type": "python",
+     "title": "Best threshold by cost",
+     "intro": "Write best_threshold(conf, correct, candidates, c_wrong, c_review): for each candidate t, answered cases (conf >= t) cost c_wrong if wrong; the rest cost c_review each. Return the candidate with the lowest total cost (first on ties).",
+     "fn": "best_threshold",
+     "starter": "def best_threshold(conf, correct, candidates, c_wrong, c_review):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.6,
+         0.7,
+         0.9,
+         0.95
+        ],
+        [
+         0,
+         0,
+         1,
+         1
+        ],
+        [
+         0.5,
+         0.8,
+         0.99
+        ],
+        10,
+        1
+       ],
+       "expect": 0.8
+      },
+      {
+       "args": [
+        [
+         0.9,
+         0.9
+        ],
+        [
+         1,
+         1
+        ],
+        [
+         0.5,
+         0.95
+        ],
+        10,
+        1
+       ],
+       "expect": 0.5
+      },
+      {
+       "args": [
+        [
+         0.55,
+         0.6
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0.5,
+         0.7
+        ],
+        2,
+        1
+       ],
+       "expect": 0.7
+      }
+     ],
+     "hint": "Trade review cost against error cost.",
+     "solution": "def best_threshold(conf, correct, candidates, c_wrong, c_review):\n    best = None\n    bc = None\n    for t in candidates:\n        cost = 0\n        for c, ok in zip(conf, correct):\n            if c >= t:\n                if not ok:\n                    cost = cost + c_wrong\n            else:\n                cost = cost + c_review\n        if bc is None or cost < bc:\n            bc = cost\n            best = t\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Percentile latency",
+     "intro": "Write percentile(values, q): the nearest-rank percentile: sort values and return the element at rank ceil(q / 100 x n) (1-based).",
+     "fn": "percentile",
+     "starter": "def percentile(values, q):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         10,
+         20,
+         30,
+         40,
+         50
+        ],
+        50
+       ],
+       "expect": 30
+      },
+      {
+       "args": [
+        [
+         5,
+         1,
+         9,
+         3
+        ],
+        95
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        [
+         7
+        ],
+        50
+       ],
+       "expect": 7
+      }
+     ],
+     "hint": "Tail latency matters more than the mean.",
+     "solution": "import math\ndef percentile(values, q):\n    s = sorted(values)\n    k = int(math.ceil(q / 100.0 * len(s)))\n    return s[max(k, 1) - 1]\n"
+    }
+   ]
+  },
+  {
+   "title": "Decision models in real systems",
+   "maps": [
+    {
+     "title": "Systems",
+     "links": [
+      "Router | picks | The path",
+      "Cascade | tries | Cheap first",
+      "Guardrail | checks | Outputs",
+      "Escalation | calls | Big model or human",
+      "Logging | feeds | Evaluation",
+      "Local serving | protects | Privacy",
+      "Failure modes | need | Planning"
+     ]
+    }
+   ],
+   "summary": [
+    "The usual home for a decision model is a cascade: the fast model decides most cases, the uncertain ones escalate to a large LLM or a human, and the outcomes feed back into the evaluation data. Cost and latency fall while quality is kept by the thresholds.",
+    "Typical uses are routing support tickets and agent tool calls, content and policy guardrails, verifying that an answer matches its sources, relevance filtering, and workflow gates. Open models can be run locally for privacy.",
+    "Plan for failure: distribution shift, adversarial inputs, over-trust in confidence and silent changes in vendor models. Humans stay responsible for high-stakes decisions."
+   ],
+   "glossary": [
+    {
+     "term": "Cascade",
+     "def": "A chain of models from cheap and fast to expensive and accurate, with each stage answering only when confident."
+    },
+    {
+     "term": "Guardrail",
+     "def": "A check placed before or after a model to enforce policy, safety or format."
+    },
+    {
+     "term": "Router",
+     "def": "A component that sends each request to the best model or tool."
+    },
+    {
+     "term": "Distribution shift",
+     "def": "A change in the inputs over time, so past accuracy no longer holds."
+    },
+    {
+     "term": "Human in the loop",
+     "def": "A person reviews or decides cases the system is unsure about or that carry high risk."
+    }
+   ],
+   "keyPoints": [
+    "Fast model first, escalate when unsure.",
+    "Log every decision and outcome.",
+    "Re-calibrate when inputs drift.",
+    "Local serving for private data.",
+    "Humans own high-stakes calls."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Put the pieces together. A request arrives. A decision model reads it and answers the typed question in a few milliseconds. If its confidence clears the threshold, the system acts. If not, it escalates: to a large reasoning model that thinks step by step, or to a person.",
+      "Suppose eighty percent of traffic clears the bar. Then the expensive path serves a fifth of requests, and average cost and latency drop several-fold, while accuracy on the escalated cases comes from the strong model."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "def handle(request):\n    p = decision_model.ask(request.text, question=request.question)\n    if max(p.values()) >= THRESHOLD:\n        result = ('auto', max(p, key=p.get))\n    else:\n        result = ('escalated', big_llm(request))\n    log(request, p, result)          # becomes tomorrow's test data\n    return result"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Decision models fit several jobs. Routing: which team, which tool, which model. Guardrails: is this input safe, is this output on topic, does it follow the policy. Verification: does the answer follow from the retrieved sources. Gating in agents: should the agent continue, ask the user, or stop.",
+      "Filtering: which of a hundred retrieved passages is relevant, using a pointer head. In all of them the decision is small and frequent, which is where a fast model beats a big one."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where it runs matters. Open weights can be served on your own hardware with common tools, which keeps sensitive text in your own network and removes per-call fees, at the price of operating the system yourself. Hosted APIs are easier to start with but send data out and can change under you.",
+      "Pin the model version, and re-run your evaluation when it updates."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Plan for failure. Inputs drift, so watch accuracy and calibration on a sample of live traffic. Adversarial users will write inputs that fool a classifier, so guardrails need layers and monitoring. Confidence can be misleading outside the training distribution.",
+      "Keep a human path for high-stakes cases, record why decisions were made, and be open with users about automation. This is a young technology: use it where mistakes are cheap and reversible first, measure, and expand carefully."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a cascade?",
+     "options": [
+      "Cheap model first, escalate when unsure",
+      "A river",
+      "Two equal models",
+      "A tokenizer"
+     ],
+     "answer": 0,
+     "explain": "Staged."
+    },
+    {
+     "q": "Why log every decision?",
+     "options": [
+      "It becomes evaluation data",
+      "It wastes space",
+      "It is required to run",
+      "It speeds things"
+     ],
+     "answer": 0,
+     "explain": "Feedback."
+    },
+    {
+     "q": "Why serve locally?",
+     "options": [
+      "Keep private text in your network",
+      "It is always cheaper",
+      "It needs no maintenance",
+      "It is more accurate"
+     ],
+     "answer": 0,
+     "explain": "Privacy."
+    },
+    {
+     "q": "What is distribution shift?",
+     "options": [
+      "Inputs change over time",
+      "Models shrink",
+      "Labels vanish",
+      "Temperature rises"
+     ],
+     "answer": 0,
+     "explain": "Monitor."
+    },
+    {
+     "q": "When should humans decide?",
+     "options": [
+      "High-stakes or uncertain cases",
+      "Never",
+      "Every case always",
+      "Only trivia"
+     ],
+     "answer": 0,
+     "explain": "Responsibility."
+    },
+    {
+     "q": "What does a guardrail do?",
+     "options": [
+      "Enforce policy on inputs or outputs",
+      "Train models",
+      "Compress files",
+      "Index words"
+     ],
+     "answer": 0,
+     "explain": "Checks."
+    }
+   ],
+   "cards": [
+    {
+     "q": "THRESHOLD",
+     "a": "escalation bar"
+    },
+    {
+     "q": "log(request, p, result)",
+     "a": "feedback loop"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the system part",
+     "intro": "Pair each part with its job.",
+     "pairs": [
+      [
+       "Router",
+       "send requests to the right path"
+      ],
+      [
+       "Guardrail",
+       "enforce policy"
+      ],
+      [
+       "Cascade",
+       "cheap model first"
+      ],
+      [
+       "Escalation",
+       "hand uncertain cases up"
+      ],
+      [
+       "Monitoring",
+       "catch drift"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Cascade outcome",
+     "intro": "Write cascade(confidence, threshold, small_cost, big_cost): return [path, cost]: path is 'small' with cost small_cost if confidence >= threshold, else 'big' with cost small_cost + big_cost.",
+     "fn": "cascade",
+     "starter": "def cascade(confidence, threshold, small_cost, big_cost):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.95,
+        0.9,
+        0.0001,
+        0.01
+       ],
+       "expect": [
+        "small",
+        0.0001
+       ],
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        0.5,
+        0.9,
+        0.0001,
+        0.01
+       ],
+       "expect": [
+        "big",
+        0.0101
+       ],
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        0.9,
+        0.9,
+        1,
+        2
+       ],
+       "expect": [
+        "small",
+        1
+       ],
+       "approx": 0.0001
+      }
+     ],
+     "hint": "Escalation still paid for the first try.",
+     "solution": "def cascade(confidence, threshold, small_cost, big_cost):\n    if confidence >= threshold:\n        return ['small', small_cost]\n    return ['big', round(small_cost + big_cost, 6)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Average cascade cost",
+     "intro": "Write avg_cost(confidences, threshold, small_cost, big_cost): the mean cost over all requests using the cascade rule; rounded to 5 decimals.",
+     "fn": "avg_cost",
+     "starter": "def avg_cost(confidences, threshold, small_cost, big_cost):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.95,
+         0.99,
+         0.5,
+         0.97
+        ],
+        0.9,
+        0.0001,
+        0.01
+       ],
+       "expect": 0.0026,
+       "approx": 2e-05
+      },
+      {
+       "args": [
+        [
+         0.1
+        ],
+        0.5,
+        1,
+        3
+       ],
+       "expect": 4.0,
+       "approx": 2e-05
+      },
+      {
+       "args": [
+        [
+         1.0,
+         1.0
+        ],
+        0.5,
+        0.5,
+        9
+       ],
+       "expect": 0.5,
+       "approx": 2e-05
+      }
+     ],
+     "hint": "Mix the paths.",
+     "solution": "def avg_cost(confidences, threshold, small_cost, big_cost):\n    t = 0.0\n    for c in confidences:\n        t = t + small_cost + (0 if c >= threshold else big_cost)\n    return round(t / len(confidences), 5)\n"
+    },
+    {
+     "type": "python",
+     "title": "Route a ticket",
+     "intro": "Write route_ticket(probs, options, threshold, human_option): return the top option if its probability is at least threshold, else human_option.",
+     "fn": "route_ticket",
+     "starter": "def route_ticket(probs, options, threshold, human_option):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.7,
+         0.2,
+         0.1
+        ],
+        [
+         "billing",
+         "tech",
+         "sales"
+        ],
+        0.6,
+        "human"
+       ],
+       "expect": "billing"
+      },
+      {
+       "args": [
+        [
+         0.4,
+         0.35,
+         0.25
+        ],
+        [
+         "billing",
+         "tech",
+         "sales"
+        ],
+        0.6,
+        "human"
+       ],
+       "expect": "human"
+      },
+      {
+       "args": [
+        [
+         1.0
+        ],
+        [
+         "x"
+        ],
+        0.9,
+        "h"
+       ],
+       "expect": "x"
+      }
+     ],
+     "hint": "Fallback to a person.",
+     "solution": "def route_ticket(probs, options, threshold, human_option):\n    b = 0\n    for i in range(len(probs)):\n        if probs[i] > probs[b]:\n            b = i\n    return options[b] if probs[b] >= threshold else human_option\n"
+    },
+    {
+     "type": "python",
+     "title": "Guardrail check",
+     "intro": "Write allowed(label, p, blocked, threshold): False if label is in the blocked list and p is at least threshold, else True.",
+     "fn": "allowed",
+     "starter": "def allowed(label, p, blocked, threshold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "spam",
+        0.9,
+        [
+         "spam",
+         "abuse"
+        ],
+        0.8
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "spam",
+        0.5,
+        [
+         "spam"
+        ],
+        0.8
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "news",
+        0.99,
+        [
+         "spam"
+        ],
+        0.5
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Block only when sure.",
+     "solution": "def allowed(label, p, blocked, threshold):\n    return not (label in blocked and p >= threshold)\n"
+    },
+    {
+     "type": "python",
+     "title": "Drift check",
+     "intro": "Write drifted(old_acc, new_acc, tolerance): True if new_acc is lower than old_acc by more than tolerance.",
+     "fn": "drifted",
+     "starter": "def drifted(old_acc, new_acc, tolerance):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.95,
+        0.85,
+        0.05
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        0.95,
+        0.93,
+        0.05
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        0.9,
+        0.85,
+        0.05
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Monitor live accuracy.",
+     "solution": "def drifted(old_acc, new_acc, tolerance):\n    return (old_acc - new_acc) > tolerance + 1e-12\n"
+    },
+    {
+     "type": "python",
+     "title": "Break-even share",
+     "intro": "Write break_even(small_cost, big_cost): the minimum share of requests the small model must handle alone for a cascade to cost no more than always calling the big model; share = small_cost / big_cost, rounded to 4 decimals, capped at 1.",
+     "fn": "break_even",
+     "starter": "def break_even(small_cost, big_cost):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.0001,
+        0.01
+       ],
+       "expect": 0.01,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        0.5,
+        0.25
+       ],
+       "expect": 1.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        0.002,
+        0.01
+       ],
+       "expect": 0.2,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Everyone pays for the small model, so the savings must exceed it.",
+     "solution": "def break_even(small_cost, big_cost):\n    return round(min(1.0, small_cost / float(big_cost)), 4)\n"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Decision Models and Generalised Classifiers",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What is a decision model?",
+    "options": [
+     "A small model answering typed questions with probabilities",
+     "A text generator",
+     "An image model",
+     "A database"
+    ],
+    "answer": 0,
+    "explain": "One pass."
+   },
+   {
+    "q": "What is System One?",
+    "options": [
+     "Fast one-pass judgement",
+     "Slow reasoning",
+     "A language",
+     "A cache"
+    ],
+    "answer": 0,
+    "explain": "Intuition."
+   },
+   {
+    "q": "What are the three typed question kinds?",
+    "options": [
+     "Boolean, choice, score",
+     "Text, image, sound",
+     "Read, write, run",
+     "Short, long, medium"
+    ],
+    "answer": 0,
+    "explain": "Answer shapes."
+   },
+   {
+    "q": "What does a classification head do?",
+    "options": [
+     "Maps a vector to label scores",
+     "Generates text",
+     "Tokenises",
+     "Stores memory"
+    ],
+    "answer": 0,
+    "explain": "Linear layer."
+   },
+   {
+    "q": "How does zero-shot NLI classification work?",
+    "options": [
+     "Tests each label as a hypothesis",
+     "Retrains each time",
+     "Counts words",
+     "Sorts labels"
+    ],
+    "answer": 0,
+    "explain": "Entailment."
+   },
+   {
+    "q": "What does ModernBERT add over BERT?",
+    "options": [
+     "Long context and modern components",
+     "Fewer layers",
+     "Image input",
+     "Text generation"
+    ],
+    "answer": 0,
+    "explain": "8,192 tokens."
+   },
+   {
+    "q": "What follows each option in a Laya-style prompt?",
+    "options": [
+     "A mask token",
+     "A comma",
+     "A number",
+     "Nothing"
+    ],
+    "answer": 0,
+    "explain": "One slot per option."
+   },
+   {
+    "q": "What turns mask scores into probabilities?",
+    "options": [
+     "Softmax across options",
+     "Sorting",
+     "Sampling text",
+     "Hashing"
+    ],
+    "answer": 0,
+    "explain": "Normalise."
+   },
+   {
+    "q": "What does temperature above 1 do?",
+    "options": [
+     "Flattens probabilities",
+     "Sharpens them",
+     "Adds options",
+     "Removes options"
+    ],
+    "answer": 0,
+    "explain": "Less confident."
+   },
+   {
+    "q": "What does a prefill-only decision model skip?",
+    "options": [
+     "Token generation",
+     "Reading the prompt",
+     "Heads",
+     "Weights"
+    ],
+    "answer": 0,
+    "explain": "No writing."
+   },
+   {
+    "q": "What does a pointer head choose?",
+    "options": [
+     "An item from the input",
+     "A word from nowhere",
+     "A colour",
+     "A file"
+    ],
+    "answer": 0,
+    "explain": "Points."
+   },
+   {
+    "q": "What does a KV cache reuse?",
+    "options": [
+     "Work on a shared prefix",
+     "The answers",
+     "The labels",
+     "The files"
+    ],
+    "answer": 0,
+    "explain": "Prefix."
+   },
+   {
+    "q": "What does a calibrated 80 percent mean?",
+    "options": [
+     "About 80 percent are right",
+     "80 tokens",
+     "80 options",
+     "80 ms"
+    ],
+    "answer": 0,
+    "explain": "Frequency."
+   },
+   {
+    "q": "What does ECE measure?",
+    "options": [
+     "Gaps between confidence and accuracy",
+     "Latency",
+     "Size",
+     "Loss only"
+    ],
+    "answer": 0,
+    "explain": "Binned."
+   },
+   {
+    "q": "What does log loss punish?",
+    "options": [
+     "Confident mistakes",
+     "Short answers",
+     "Slow answers",
+     "Rare words"
+    ],
+    "answer": 0,
+    "explain": "Heavy penalty."
+   },
+   {
+    "q": "Does temperature scaling change which option is top?",
+    "options": [
+     "No",
+     "Yes",
+     "Only for scores",
+     "Only for text"
+    ],
+    "answer": 0,
+    "explain": "Same argmax."
+   },
+   {
+    "q": "Where should the temperature be fitted?",
+    "options": [
+     "On validation data",
+     "On the test set",
+     "Nowhere",
+     "On the training set only"
+    ],
+    "answer": 0,
+    "explain": "Held out."
+   },
+   {
+    "q": "What is the first step in evaluating a vendor model?",
+    "options": [
+     "Build your own test set",
+     "Read the leaderboard",
+     "Buy a license",
+     "Rename labels"
+    ],
+    "answer": 0,
+    "explain": "Own data."
+   },
+   {
+    "q": "What is contamination?",
+    "options": [
+     "Test data in training",
+     "Dirty input",
+     "A slow model",
+     "A long prompt"
+    ],
+    "answer": 0,
+    "explain": "Inflated scores."
+   },
+   {
+    "q": "Why a cost matrix?",
+    "options": [
+     "Errors cost different amounts",
+     "Faster training",
+     "Smaller models",
+     "Better tokens"
+    ],
+    "answer": 0,
+    "explain": "Thresholds."
+   },
+   {
+    "q": "What is a cascade?",
+    "options": [
+     "Fast model first, escalate if unsure",
+     "Two equal models",
+     "A tokenizer",
+     "A cache"
+    ],
+    "answer": 0,
+    "explain": "Staged."
+   },
+   {
+    "q": "Why log every decision?",
+    "options": [
+     "It becomes test data",
+     "To waste space",
+     "To slow serving",
+     "No reason"
+    ],
+    "answer": 0,
+    "explain": "Feedback."
+   },
+   {
+    "q": "Why serve an open model locally?",
+    "options": [
+     "Keep private text in your network",
+     "It is always cheaper",
+     "It never needs upkeep",
+     "It is always better"
+    ],
+    "answer": 0,
+    "explain": "Privacy."
+   },
+   {
+    "q": "What is distribution shift?",
+    "options": [
+     "Inputs change over time",
+     "The model grows",
+     "Labels vanish",
+     "The GPU heats"
+    ],
+    "answer": 0,
+    "explain": "Monitor."
+   },
+   {
+    "q": "Who decides high-stakes cases?",
+    "options": [
+     "Humans, with model help",
+     "Nobody",
+     "Only the model",
+     "A random draw"
+    ],
+    "answer": 0,
+    "explain": "Responsibility."
+   },
+   {
+    "q": "How should vendor numbers be quoted?",
+    "options": [
+     "As reported, with a date",
+     "As proof",
+     "Never",
+     "As laws"
+    ],
+    "answer": 0,
+    "explain": "Self-reported."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Decision model cheat sheet",
+  "prompt": "dm>",
+  "intro": "A scripted lookup. Try: types, laya, clef, softmax, temperature, ece, brier, threshold, cascade, eval, help",
+  "chips": [
+   "types",
+   "laya",
+   "clef",
+   "softmax",
+   "temperature",
+   "ece",
+   "brier",
+   "threshold",
+   "cascade",
+   "eval",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "types      Boolean: P(yes). Choice: distribution over options. Score: n",
+     "laya       Reported: ModernBERT-based, about 421M parameters. Input, th",
+     "clef       Reported: Qwen-based decoder, about 9B and 27B. Prefill only",
+     "softmax    p_i = exp(z_i) / sum exp(z_j). Subtract the maximum for stab",
+     "temperature p = softmax(z / T). T above 1 flattens, below 1 sharpens. Fi",
+     "ece        Bin by confidence. ECE = sum (n_bin/n) |accuracy - confidenc",
+     "brier      Mean (p - y)^2.",
+     "threshold  Act above the high bar, review in the middle, reject below. ",
+     "cascade    Small model first. Escalate if confidence is below the thres",
+     "eval       Own labelled test set, baseline, big-LLM reference, per-clas"
+    ]
+   },
+   {
+    "re": "^types$",
+    "out": [
+     "Boolean: P(yes). Choice: distribution over options. Score: number on a scale."
+    ]
+   },
+   {
+    "re": "^laya$",
+    "out": [
+     "Reported: ModernBERT-based, about 421M parameters. Input, then each option followed by a mask token. Head scores each mask, softmax across options. Verify details."
+    ]
+   },
+   {
+    "re": "^clef$",
+    "out": [
+     "Reported: Qwen-based decoder, about 9B and 27B. Prefill only, no generation. Joint schema head. Verify details."
+    ]
+   },
+   {
+    "re": "^softmax$",
+    "out": [
+     "p_i = exp(z_i) / sum exp(z_j). Subtract the maximum for stability."
+    ]
+   },
+   {
+    "re": "^temperature$",
+    "out": [
+     "p = softmax(z / T). T above 1 flattens, below 1 sharpens. Fit T on a validation set."
+    ]
+   },
+   {
+    "re": "^ece$",
+    "out": [
+     "Bin by confidence. ECE = sum (n_bin/n) |accuracy - confidence|."
+    ]
+   },
+   {
+    "re": "^brier$",
+    "out": [
+     "Mean (p - y)^2."
+    ]
+   },
+   {
+    "re": "^threshold$",
+    "out": [
+     "Act above the high bar, review in the middle, reject below. Choose from your cost matrix."
+    ]
+   },
+   {
+    "re": "^cascade$",
+    "out": [
+     "Small model first. Escalate if confidence is below the threshold. Everyone pays the small cost."
+    ]
+   },
+   {
+    "re": "^eval$",
+    "out": [
+     "Own labelled test set, baseline, big-LLM reference, per-class errors, calibration, latency, cost."
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ }
+}
