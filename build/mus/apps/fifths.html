@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}
+button.s{background:#3a2a5c;color:#f1ebff}.k{color:#c9b8e8}.ok{color:#8fe3a8}.bad{color:#ff9b9b}.grid{display:flex;flex-wrap:wrap}
+canvas{width:100%;max-width:360px;display:block;margin:8px auto;background:#0e0820;border-radius:8px}code{background:#0e0820;padding:2px 6px;border-radius:6px}</style></head><body>
+<canvas id="c" width="360" height="360"></canvas>
+<div id="info" class="k">Tap a key on the circle.</div><div id="prog" class="k" style="margin-top:6px"></div>
+<script>
+var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var MAJ=["C","G","D","A","E","B","F\u266f","D\u266d","A\u266d","E\u266d","B\u266d","F"];
+var MIN=["Am","Em","Bm","F\u266fm","C\u266fm","G\u266fm","D\u266fm","B\u266dm","Fm","Cm","Gm","Dm"];
+var SH=[0,1,2,3,4,5,6,-5,-4,-3,-2,-1];
+var NAMEPC=[0,7,2,9,4,11,6,1,8,3,10,5];
+var SHARPN=["C","C\u266f","D","D\u266f","E","F","F\u266f","G","G\u266f","A","A\u266f","B"],FLATN=["C","D\u266d","D","E\u266d","E","F","G\u266d","G","A\u266d","A","B\u266d","B"];
+var sel=-1,seen={};
+function draw(){var g=$("c").getContext("2d");g.clearRect(0,0,360,360);g.textAlign="center";g.textBaseline="middle";
+ for(var i=0;i<12;i++){var a=-Math.PI/2+i*Math.PI/6,x=180+135*Math.cos(a),y=180+135*Math.sin(a),x2=180+85*Math.cos(a),y2=180+85*Math.sin(a);
+  g.fillStyle=i===sel?"#b26bff":"#2d2046";g.beginPath();g.arc(x,y,24,0,6.3);g.fill();g.fillStyle=i===sel?"#1b0b33":"#f1ebff";g.font="bold 16px sans-serif";g.fillText(MAJ[i],x,y);
+  g.fillStyle="#3a2a5c";g.beginPath();g.arc(x2,y2,17,0,6.3);g.fill();g.fillStyle="#c9b8e8";g.font="12px sans-serif";g.fillText(MIN[i],x2,y2)}}
+function scale(i){var t=NAMEPC[i],st=[0,2,4,5,7,9,11],names=SH[i]<0?FLATN:SHARPN;return st.map(function(s){return names[(t+s)%12]}).join(" ")}
+$("c").onclick=function(e){var r=$("c").getBoundingClientRect(),x=(e.clientX-r.left)*360/r.width-180,y=(e.clientY-r.top)*360/r.height-180;
+ var a=Math.atan2(y,x)+Math.PI/2;if(a<0)a+=2*Math.PI;var i=Math.round(a/(Math.PI/6))%12;sel=i;draw();
+ var n=SH[i];$("info").innerHTML="<b>"+MAJ[i]+" major</b>: "+scale(i)+"<br>"+(n===0?"No sharps or flats":(n>0?n+" sharp"+(n>1?"s":""):(-n)+" flat"+(n<-1?"s":"")))+"<br>Relative minor: "+MIN[i];
+ seen[i]=1;var c=Object.keys(seen).length;$("prog").textContent="Keys visited: "+c+" of 4 needed";if(c>=4)done()};
+draw();
+</script></body></html>

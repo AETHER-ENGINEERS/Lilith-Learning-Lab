@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}
+button.s{background:#3a2a5c;color:#f1ebff}.k{color:#c9b8e8}.ok{color:#8fe3a8}.bad{color:#ff9b9b}.grid{display:flex;flex-wrap:wrap}
+canvas{width:100%;max-width:360px;display:block;margin:8px auto;background:#0e0820;border-radius:8px}code{background:#0e0820;padding:2px 6px;border-radius:6px}</style></head><body>
+<div><button id="play">Play interval</button><button id="again" class="s">Hear again</button></div>
+<div class="k">Which interval did you hear (going up)?</div><div class="grid" id="opts"></div>
+<div id="msg" style="margin-top:8px;min-height:22px"></div><div class="k" id="prog"></div>
+<script>
+var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var N=["unison","minor 2nd","major 2nd","minor 3rd","major 3rd","perfect 4th","tritone","perfect 5th","minor 6th","major 6th","minor 7th","major 7th","octave"];
+var ctx=null,cur=null,base=60,good=0,tried=0;
+function tone(m,t,d){var o=ctx.createOscillator(),g=ctx.createGain();o.type="triangle";o.frequency.value=440*Math.pow(2,(m-69)/12);g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.4,t+0.03);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+d+0.05)}
+function hear(){if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();var t=ctx.currentTime+0.05;tone(base,t,0.7);tone(base+cur,t+0.8,0.9)}
+function next(){cur=1+Math.floor(Math.random()*12);base=55+Math.floor(Math.random()*12);hear()}
+var box=$("opts");for(var i=1;i<=12;i++)(function(i){var b=document.createElement("button");b.className="s";b.textContent=N[i];b.onclick=function(){if(cur===null){$("msg").textContent="Press Play interval first.";return}
+ tried++;if(i===cur){good++;$("msg").innerHTML="<span class='ok'>Correct: "+N[cur]+"</span>";cur=null}else{$("msg").innerHTML="<span class='bad'>Not quite. It was a "+N[cur]+". Press Hear again or Play interval.</span>";cur=null}
+ $("prog").textContent="Correct: "+good+" of 5 needed ("+tried+" tried)";if(good>=5)done()};box.appendChild(b)})(i);
+$("play").onclick=next;$("again").onclick=function(){if(cur!==null)hear()};
+</script></body></html>
