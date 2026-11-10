@@ -1,0 +1,6242 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "jade-vault",
+ "title": "Jade Vault: A Markdown Vault with an AI Agent",
+ "subtitle": "Notes, memory, tools, flows, playbooks and a knowledge graph, explained with small Python models",
+ "author": "Lilith Learning Lab",
+ "description": "Learn how Jade Vault works: an Obsidian-style markdown vault with an AI agent called Jade, as one HTML page and an Android app. You will follow a turn step by step, then study tools and safety, memory and hybrid search, skills, the heartbeat, schedules and curiosity, flows, playbooks, the knowledge graph with Datalog rules, autonomous mode and Gantt plans, the think tool, delegation, Jade Lisp, the HTTP API, backups and the patch-based build. The course follows version 2.28.1. Each chapter has an ELI5 block and Python labs.",
+ "pronounce": {
+  "Jade": "jade",
+  "Ollama": "oh lah mah",
+  "Ollaya": "oh lye uh",
+  "MCP": "M C P",
+  "BM25": "B M twenty five",
+  "RRF": "R R F",
+  "SQLite": "S Q L ite",
+  "FTS5": "F T S five",
+  "webxdc": "web X D C",
+  "Vector": "vector",
+  "Sentry": "sentry",
+  "playbook": "play book",
+  "Playbook": "play book",
+  "playbooks": "play books",
+  "Playbooks": "play books",
+  "Datalog": "data log",
+  "WebGPU": "web G P U",
+  "LiteRT": "lite R T",
+  "ONNX": "onyx",
+  "ELI5": "E L I five",
+  "IndexedDB": "indexed D B",
+  "Obsidian": "obsidian",
+  "Templater": "templater",
+  "Dataview": "data view",
+  "OpenRouter": "open router",
+  "Groq": "grok",
+  "SSH": "S S H",
+  "JSON": "jason",
+  "YAML": "yam ul",
+  "PBKDF2": "P B K D F two",
+  "AES": "A E S",
+  "GCM": "G C M",
+  "WebAssembly": "web assembly",
+  "Rust": "rust",
+  "Lisp": "lisp",
+  "Scheme": "scheme",
+  "Clojure": "clo zhure",
+  "defmacro": "def macro",
+  "quasiquote": "kwazi quote",
+  "Gantt": "gant",
+  "GAE": "G A E",
+  "PUCT": "puct",
+  "Playwright": "play right",
+  "Chromium": "chromium",
+  "BusyBox": "busy box",
+  "cron": "kron",
+  "Ansible": "an sib ul",
+  "n8n": "N eight N",
+  "SHA-256": "S H A two fifty six",
+  "FNV-1a": "F N V one A",
+  "APK": "A P K",
+  "HTTP": "H T T P",
+  "API": "A P I",
+  "URL": "U R L",
+  "CORS": "cors",
+  "Discord": "discord",
+  "Markdown": "mark down",
+  "markdown": "mark down",
+  "JDK": "J D K",
+  "SDK": "S D K",
+  "LLM": "L L M",
+  "AI": "A I",
+  "DSL": "D S L",
+  "STATUS": "status",
+  "HEARTBEAT": "heart beat",
+  "SOUL": "soul",
+  "AGENTS": "agents",
+  "SYSTEM": "system",
+  "jade": "jade",
+  "TensorFlow": "tensor flow",
+  "Fleet": "fleet",
+  "kv": "K V",
+  "jq": "J Q",
+  "sqlite-vec": "S Q L ite vec",
+  "sha256": "S H A two fifty six",
+  "vault": "vault",
+  "Loci": "low sigh",
+  "Link": "link"
+ },
+ "chapters": [
+  {
+   "title": "What Jade Vault is",
+   "maps": [
+    {
+     "title": "Jade Vault",
+     "links": [
+      "Vault | holds | Notes and files",
+      "Jade | is | A model driven loop",
+      "Model | is | Your own endpoint",
+      "Tools | let | Jade act",
+      "Memory | persists | Between chats",
+      "Autonomy | is | Off until you switch it on",
+      "Safety | gates | Risky actions"
+     ]
+    }
+   ],
+   "summary": [
+    "Jade Vault is a markdown vault in the style of Obsidian with an AI agent called Jade built in. It runs as one page in a browser and as an Android app.",
+    "The vault is a virtual file system. Jade is a loop: your message plus a prompt built from her steering files, memory and skills goes to a model, she may call tools, and she answers.",
+    "The model is not part of the app. You point it at Ollama, Ollama Cloud, Groq, OpenRouter, llama.cpp or any OpenAI compatible server."
+   ],
+   "glossary": [
+    {
+     "term": "Vault",
+     "def": "The virtual file system of notes and files that everything shares."
+    },
+    {
+     "term": "Jade",
+     "def": "The agent: a model, a prompt, tools and memory."
+    },
+    {
+     "term": "Turn",
+     "def": "One message from you through to her final reply."
+    },
+    {
+     "term": "Tool",
+     "def": "A function Jade can call, such as reading a note or running a shell command."
+    },
+    {
+     "term": "Provider",
+     "def": "The server that runs the model: Ollama, Groq, OpenRouter and so on."
+    },
+    {
+     "term": "Steering files",
+     "def": "Plain notes such as SOUL.md and AGENTS.md that shape her behaviour."
+    }
+   ],
+   "keyPoints": [
+    "Jade Vault is a markdown vault with a built-in agent, as one browser page or an Android app.",
+    "The vault is the shared ground; Jade is a model driven loop around it.",
+    "You choose the model: local Ollama, Ollama Cloud, Groq, OpenRouter, llama.cpp or any OpenAI style endpoint.",
+    "Around the loop sit memory, autonomy, world tools, integrations and safety.",
+    "Anything that runs on its own is off until you switch it on.",
+    "Her settings and work products are ordinary files in the vault."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Imagine a big box of notes with a helper living inside. You write notes, the helper reads them, remembers them, and can do chores for you when you ask."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine a notebook that can think. You keep notes in it, and a helper called Jade lives inside, reads them, writes new ones, runs small programs, and remembers what you told her last week. That is Jade Vault in one sentence."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "It is built from a few pieces. The vault is a virtual file system, the shared ground. In a browser it is stored in IndexedDB, and in the Android app it is a real folder called JadeVault. Jade is the agent. She is not a program that thinks by herself.",
+      "She is a loop that sends a prompt to a model and runs the tools the model asks for."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "you ──► chat / voice / schedule / heartbeat / API\n          │\n          ▼\n   ┌── Jade's turn ───────────────────────────┐\n   │ prompt = base + SOUL + AGENTS + memory   │\n   │          + skills                         │\n   │ model ◄──► tools ──► vault, shell, node,  │\n   │             python, sqlite, web, MCP ...  │\n   └───────────────────────────────────────────┘\n          │                    ▲\n          ▼                    │\n   vault (notes + files)   memory (Memory.md, journal, vectors)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Because the model lives outside the app, you decide who answers. You can use Ollama on your own computer, Ollama Cloud, Groq, OpenRouter, llama.cpp or any server that speaks the OpenAI format, and you can add a chain of fallbacks.",
+      "On the phone the network is native, so local Ollama needs no special browser setting."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Around the loop sit five kinds of capability. Memory keeps facts, a journal and a search index. Autonomy lets her wake on schedules, a heartbeat or her own curiosity. World tools give her the camera, the phone, the screen, a second browser and SSH on Android.",
+      "Integrations connect MCP servers, an HTTP API, messengers and mini apps. Safety is approvals, secrets and labels on untrusted text."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two rules run through the whole design. First, the vault is the memory and the interface: what steers her is a plain file she can read and mostly write.",
+      "Second, everything risky is gated: secrets are placeholders, calls and texts ask you first, and external text is labelled as data, not instructions. This course follows those ideas one chapter at a time, and each lab rebuilds a small piece in Python."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A note on versions. The course follows the repository at version 2.28.1. The documentation was written across many releases, so some pages name an older version. When a feature has a version, it is mentioned."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the vault?",
+     "options": [
+      "A virtual file system of notes and files",
+      "A password manager",
+      "A database server",
+      "A model"
+     ],
+     "answer": 0,
+     "explain": "The shared ground."
+    },
+    {
+     "q": "Where does the model run?",
+     "options": [
+      "Wherever you point it: Ollama, cloud, Groq and others",
+      "Inside the app only",
+      "Only on Anthropic servers",
+      "On the phone's camera"
+     ],
+     "answer": 0,
+     "explain": "It is not part of the app."
+    },
+    {
+     "q": "What do autonomy features need to run?",
+     "options": [
+      "You switch them on",
+      "Nothing, they start alone",
+      "A paid plan",
+      "A reboot"
+     ],
+     "answer": 0,
+     "explain": "Off by default."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is Jade?",
+     "a": "A model driven loop with tools."
+    },
+    {
+     "q": "Where is the Android vault?",
+     "a": "The JadeVault folder."
+    },
+    {
+     "q": "What shapes her behaviour?",
+     "a": "Plain steering files."
+    },
+    {
+     "q": "What is a turn?",
+     "a": "One message through to her reply."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "The pieces",
+     "intro": "Match each piece with its job.",
+     "pairs": [
+      [
+       "Vault",
+       "Shared notes and files"
+      ],
+      [
+       "Model",
+       "Does the thinking, outside the app"
+      ],
+      [
+       "Tools",
+       "Let Jade act on things"
+      ],
+      [
+       "Memory",
+       "Keeps facts between chats"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Who can start a turn",
+     "intro": "Write active_sources(switches): switches is a dict from a source name (like 'heartbeat', 'curiosity', 'schedules', 'api') to true or false. The chat is always active; every other source is active only when its switch is true. Return the sorted list of active sources including 'chat'.",
+     "fn": "active_sources",
+     "starter": "def active_sources(switches):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {}
+       ],
+       "expect": [
+        "chat"
+       ]
+      },
+      {
+       "args": [
+        {
+         "heartbeat": true,
+         "curiosity": false
+        }
+       ],
+       "expect": [
+        "chat",
+        "heartbeat"
+       ]
+      },
+      {
+       "args": [
+        {
+         "api": true,
+         "schedules": true,
+         "heartbeat": true
+        }
+       ],
+       "expect": [
+        "api",
+        "chat",
+        "heartbeat",
+        "schedules"
+       ]
+      },
+      {
+       "args": [
+        {
+         "chat": false
+        }
+       ],
+       "expect": [
+        "chat"
+       ]
+      }
+     ],
+     "hint": "Start with chat, then add switched-on sources.",
+     "solution": "def active_sources(switches):\n    out = ['chat']\n    for name in switches:\n        if switches[name] and name != 'chat':\n            out.append(name)\n    return sorted(out)\n"
+    }
+   ]
+  },
+  {
+   "title": "Notes and the vault",
+   "maps": [
+    {
+     "title": "Vault",
+     "links": [
+      "Note | has | Links and tags",
+      "Link | looks like | Double brackets",
+      "Backlink | is | Who links here",
+      "Graph | draws | Notes and links",
+      "Embed | uses | Exclamation and brackets",
+      "Templates | live in | Templates",
+      "Jade folder | holds | Her files"
+     ]
+    }
+   ],
+   "summary": [
+    "Notes are markdown files. A link to another note is written in double square brackets, and an embed, such as an image, puts an exclamation mark in front. Tags start with a hash sign.",
+    "The notes screen shows backlinks, a graph, a reader and a split editor. Obsidian style scripts and Templater templates are supported inside a sandbox.",
+    "Her own files live under /Jade. The labs classify files, find links and build backlinks."
+   ],
+   "glossary": [
+    {
+     "term": "Wiki link",
+     "def": "A link to another note, written [[Note name]]."
+    },
+    {
+     "term": "Backlink",
+     "def": "A note that links to this one."
+    },
+    {
+     "term": "Embed",
+     "def": "Showing a note or image inside another with ![[...]]."
+    },
+    {
+     "term": "Frontmatter",
+     "def": "Key value data at the top of a note between --- lines."
+    },
+    {
+     "term": "Tag",
+     "def": "A word starting with # used to group notes."
+    },
+    {
+     "term": "Template",
+     "def": "A note in /Templates that fills in dates and titles when inserted."
+    }
+   ],
+   "keyPoints": [
+    "Links are [[Note]]; an alias is [[Note|text]]; a heading link is [[Note#Heading]].",
+    "Images and notes embed with ![[photo.png|300]].",
+    "Backlinks list the notes that point at the current note.",
+    "Templates use <% tp.date.now() %> style code from Templater.",
+    "Note scripts (dataviewjs) run in a sandbox: they read the vault, with no network and no file changes.",
+    "Jade's files, such as /Jade/SOUL.md and /Jade/Memory.md, are ordinary notes."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A note is a page in a folder. A double-bracket link is a string tied between two pages, so you can walk from one to the other and back."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A vault is a folder of markdown notes that link to each other. Jade Vault shows the notes in a tree, with search, an editor and a reader. The links between notes become a graph you can look at."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A link is two pairs of square brackets around a note name. After a vertical bar you can put the text to display, and after a hash sign a heading in the target.",
+      "A note that has an exclamation mark in front is an embed: it shows the note or image inside the page, for example an image with a width of 300. Tags are words that start with a hash sign."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "markdown",
+     "code": "# Trip planning\n\nSee [[Lisbon]] and [[Maya|my friend Maya]].\nHeading link: [[Budget#Flights]].\n\n![[map.png|300]]\n\nTags: #travel #2027\n- [ ] book flights"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Because links are plain text, a backlink is easy to compute: look through every note and keep those that link to this one. The app does this for you, and a shell command called backlinks does too. The same text files can also be read by scripts and by Jade."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two Obsidian style features are included. Dataview style note scripts, in blocks marked dataviewjs, can query the vault, for example a table of notes with a tag. Templater templates, kept in the Templates folder, insert text such as the date or the current title.",
+      "Both run in a sandbox that reads the vault but cannot use the network or change files."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Jade keeps her own files in a folder named Jade. The file SOUL.md is her persona, AGENTS.md holds your standing instructions, Memory.md holds durable facts, and skills, flows and playbooks have their own folders. Since they are ordinary notes, you can read, edit and back them up like anything else."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How do you write a link to a note?",
+     "options": [
+      "[[Note name]]",
+      "<Note name>",
+      "@Note name",
+      "{Note name}"
+     ],
+     "answer": 0,
+     "explain": "Double brackets."
+    },
+    {
+     "q": "What does ![[photo.png|300]] do?",
+     "options": [
+      "Embeds the image 300 wide",
+      "Links to a note",
+      "Deletes a file",
+      "Adds a tag"
+     ],
+     "answer": 0,
+     "explain": "An embed."
+    },
+    {
+     "q": "What is a backlink?",
+     "options": [
+      "A note that links to this one",
+      "A web link",
+      "A tag",
+      "A template"
+     ],
+     "answer": 0,
+     "explain": "Who links here."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What file holds her persona?",
+     "a": "/Jade/SOUL.md."
+    },
+    {
+     "q": "What do scripts in notes run in?",
+     "a": "A sandbox."
+    },
+    {
+     "q": "Where do templates live?",
+     "a": "/Templates."
+    },
+    {
+     "q": "What starts a tag?",
+     "a": "A hash sign."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Files",
+     "intro": "Match each file with its purpose.",
+     "pairs": [
+      [
+       "/Jade/SOUL.md",
+       "Persona and voice"
+      ],
+      [
+       "/Jade/Memory.md",
+       "Durable facts"
+      ],
+      [
+       "/Jade/HEARTBEAT.md",
+       "The heartbeat checklist"
+      ],
+      [
+       "/Jade/Flows/x.flow.json",
+       "A saved automation"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Name the file",
+     "intro": "Write vault_role(path): return 'persona' for /Jade/SOUL.md, 'instructions' for /AGENTS.md or /Jade/AGENTS.md, 'memory' for /Jade/Memory.md, 'heartbeat' for /Jade/HEARTBEAT.md, 'journal' for files under /Jade/Journal/, 'skill' for a SKILL.md under /Jade/skills/, 'flow' for a .flow.json file under /Jade/Flows/, 'playbook' for a .json file under /Jade/Playbooks/ that is not under /Jade/Playbooks/out/, 'template' for files under /Templates/, and 'note' for everything else.",
+     "fn": "vault_role",
+     "starter": "def vault_role(path):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "/Jade/SOUL.md"
+       ],
+       "expect": "persona"
+      },
+      {
+       "args": [
+        "/AGENTS.md"
+       ],
+       "expect": "instructions"
+      },
+      {
+       "args": [
+        "/Jade/Journal/2026-11-09.md"
+       ],
+       "expect": "journal"
+      },
+      {
+       "args": [
+        "/Jade/skills/daily-review/SKILL.md"
+       ],
+       "expect": "skill"
+      },
+      {
+       "args": [
+        "/Jade/Flows/triage.flow.json"
+       ],
+       "expect": "flow"
+      },
+      {
+       "args": [
+        "/Jade/Playbooks/lamp.json"
+       ],
+       "expect": "playbook"
+      },
+      {
+       "args": [
+        "/Jade/Playbooks/out/lamp.json"
+       ],
+       "expect": "note"
+      },
+      {
+       "args": [
+        "/Templates/Daily.md"
+       ],
+       "expect": "template"
+      },
+      {
+       "args": [
+        "/Inbox.md"
+       ],
+       "expect": "note"
+      }
+     ],
+     "hint": "Check exact paths first, then prefixes.",
+     "solution": "def vault_role(path):\n    if path == '/Jade/SOUL.md':\n        return 'persona'\n    if path == '/AGENTS.md' or path == '/Jade/AGENTS.md':\n        return 'instructions'\n    if path == '/Jade/Memory.md':\n        return 'memory'\n    if path == '/Jade/HEARTBEAT.md':\n        return 'heartbeat'\n    if path.startswith('/Jade/Journal/'):\n        return 'journal'\n    if path.startswith('/Jade/skills/') and path.endswith('/SKILL.md'):\n        return 'skill'\n    if path.startswith('/Jade/Flows/') and path.endswith('.flow.json'):\n        return 'flow'\n    if path.startswith('/Jade/Playbooks/') and path.endswith('.json') and not path.startswith('/Jade/Playbooks/out/'):\n        return 'playbook'\n    if path.startswith('/Templates/'):\n        return 'template'\n    return 'note'\n"
+    },
+    {
+     "type": "python",
+     "title": "Find the links",
+     "intro": "Write extract_links(text): return the sorted list of distinct note names linked with [[...]] in text. Drop any |alias or #heading part, trim spaces, and ignore embeds (links with ! right before [[).",
+     "fn": "extract_links",
+     "starter": "def extract_links(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "See [[Lisbon]] and [[Maya|my friend]]."
+       ],
+       "expect": [
+        "Lisbon",
+        "Maya"
+       ]
+      },
+      {
+       "args": [
+        "![[map.png|300]] and [[Budget#Flights]]"
+       ],
+       "expect": [
+        "Budget"
+       ]
+      },
+      {
+       "args": [
+        "no links"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "[[A]] [[A]] [[ B ]]"
+       ],
+       "expect": [
+        "A",
+        "B"
+       ]
+      },
+      {
+       "args": [
+        "broken [[open"
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Scan for [[ and ]].",
+     "solution": "def extract_links(text):\n    found = set()\n    i = 0\n    while True:\n        j = text.find('[[', i)\n        if j < 0:\n            break\n        k = text.find(']]', j)\n        if k < 0:\n            break\n        if not (j > 0 and text[j - 1] == '!'):\n            target = text[j + 2:k]\n            target = target.split('|')[0].split('#')[0].strip()\n            if target:\n                found.add(target)\n        i = k + 2\n    return sorted(found)\n"
+    },
+    {
+     "type": "python",
+     "title": "Backlinks",
+     "intro": "Write backlinks(notes, target): notes is a list of [name, text]. Return the sorted list of names whose text links to target with [[target]], [[target|alias]] or [[target#heading]] (not as an embed).",
+     "fn": "backlinks",
+     "starter": "def backlinks(notes, target):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "A",
+          "see [[B]]"
+         ],
+         [
+          "C",
+          "![[B]] only"
+         ],
+         [
+          "D",
+          "[[B|bee]] and [[B#h]]"
+         ]
+        ],
+        "B"
+       ],
+       "expect": [
+        "A",
+        "D"
+       ]
+      },
+      {
+       "args": [
+        [],
+        "B"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "A",
+          "[[Z]]"
+         ]
+        ],
+        "B"
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Reuse the link scan for each note.",
+     "solution": "def backlinks(notes, target):\n    out = []\n    for name, text in notes:\n        i = 0\n        hit = False\n        while True:\n            j = text.find('[[', i)\n            if j < 0:\n                break\n            k = text.find(']]', j)\n            if k < 0:\n                break\n            if not (j > 0 and text[j - 1] == '!'):\n                t = text[j + 2:k].split('|')[0].split('#')[0].strip()\n                if t == target:\n                    hit = True\n            i = k + 2\n        if hit:\n            out.append(name)\n    return sorted(out)\n"
+    },
+    {
+     "type": "python",
+     "title": "Tags",
+     "intro": "Write tags(text): return the sorted list of distinct tags: words that start with # followed by a letter (so '# Heading' and '##' are not tags). Strip trailing punctuation . , ; : ! ? from a tag. Return tags without the # sign.",
+     "fn": "tags",
+     "starter": "def tags(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Tags: #travel #2027 and #Food."
+       ],
+       "expect": [
+        "Food",
+        "travel"
+       ]
+      },
+      {
+       "args": [
+        "# Heading\n## Sub\nplain"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "#a #a #b,"
+       ],
+       "expect": [
+        "a",
+        "b"
+       ]
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Split on whitespace.",
+     "solution": "def tags(text):\n    found = set()\n    for tok in text.split():\n        if tok.startswith('#') and len(tok) > 1 and tok[1].isalpha():\n            found.add(tok[1:].rstrip('.,;:!?'))\n    return sorted(found)\n"
+    }
+   ]
+  },
+  {
+   "title": "A turn, step by step",
+   "maps": [
+    {
+     "title": "Turn",
+     "links": [
+      "Message | starts | A turn",
+      "Prompt | is built from | Steering and memory",
+      "Model | asks for | Tool calls",
+      "Tool results | return to | The model",
+      "Loop | repeats | Until a plain reply",
+      "maxTurns | stops | Runaways",
+      "Guard | fits | The context window"
+     ]
+    }
+   ],
+   "summary": [
+    "A turn begins when a message arrives. The harness builds a prompt, calls the model, runs any tools the model asks for, feeds the results back, and repeats until the model answers without a tool call.",
+    "The system prompt is built in a fixed order from the base text, SOUL.md, AGENTS.md, memory and the skill list. Before each call the context guard checks the whole request fits in the model's window.",
+    "A limit on tool rounds stops a runaway loop. She tells you when it stopped, and you can send continue."
+   ],
+   "glossary": [
+    {
+     "term": "Agent loop",
+     "def": "Call the model, run its tools, repeat."
+    },
+    {
+     "term": "System prompt",
+     "def": "The standing instructions placed before the chat."
+    },
+    {
+     "term": "Tool call",
+     "def": "A request from the model to run a named tool with arguments."
+    },
+    {
+     "term": "Tool round",
+     "def": "One model call that asks for tools, plus running them."
+    },
+    {
+     "term": "maxTurns",
+     "def": "The setting that limits tool rounds per message."
+    },
+    {
+     "term": "Context window",
+     "def": "How much text the model can read at once."
+    }
+   ],
+   "keyPoints": [
+    "send(text) records the message with a timestamp, runs any slash command, then runs the agent loop.",
+    "The system prompt joins base or SYSTEM.md, SOUL.md, AGENTS.md files, the memory block, the skill list and tool text.",
+    "Before each call, the harness may prefetch memory hits and matching skills.",
+    "A tool error becomes an Error result that the model can react to.",
+    "The loop ends on a reply with no tool calls, a user abort, or maxTurns rounds.",
+    "Messages you type while she works are queued and added before her next model call."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A turn is like a short conversation round: tidy the desk, read the question, ask the brain, use a tool if needed, and answer."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A turn is everything between your message and her final answer. The harness, which is the code around the model, does the same steps every time. That regularity is what makes an agent debuggable."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Step one is the request. The system prompt is assembled: the built-in intro and guidelines, or your SYSTEM.md instead, then SOUL.md, then your AGENTS.md files, then the memory block, then the list of skills and the text about tools.",
+      "After that comes the chat history, and a summary if old turns were compacted."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "1. record message (timestamp), run slash command\n2. compact old turns if needed\n3. prefetch memory hits and matching skills\n4. build request: system prompt + history + tool schemas\n5. fit the context (compact or trim, learn real limits)\n6. call the model, streaming\n7. run each tool call, add results as tool messages\n8. repeat from 3 until a reply has no tool calls"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Step five is easy to forget. The harness estimates the whole request, not just the chat, and shrinks it if it will not fit. If the server still says the prompt was too long, the guard learns the real limit and remembers it for next time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Failures are part of the loop. If a tool fails, the result is the text Error plus the reason, and the model sees it and can try again. If the provider fails with a network, rate limit or server error and you set fallbacks, the harness switches provider and retries the round."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Finally there are limits. The setting maxTurns caps the tool rounds, and if it is reached she says she stopped after that many rounds and you can send continue.",
+      "Everything fetched from the web or SSH is wrapped with a label saying it is data, not instructions, so that a web page cannot give orders to the agent."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What ends the agent loop?",
+     "options": [
+      "A reply with no tool calls",
+      "Any tool error",
+      "Ten seconds",
+      "A new chat"
+     ],
+     "answer": 0,
+     "explain": "Or an abort or maxTurns."
+    },
+    {
+     "q": "What does a failed tool return?",
+     "options": [
+      "An Error result the model can see",
+      "Nothing",
+      "A crash",
+      "An empty reply"
+     ],
+     "answer": 0,
+     "explain": "The model can recover."
+    },
+    {
+     "q": "Where does SOUL.md go in the prompt?",
+     "options": [
+      "After the base text, before AGENTS.md",
+      "After the chat history",
+      "Nowhere",
+      "Only in memory"
+     ],
+     "answer": 0,
+     "explain": "Fixed order."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does maxTurns limit?",
+     "a": "Tool rounds per message."
+    },
+    {
+     "q": "What is wrapped as data?",
+     "a": "Web, SSH and screen text."
+    },
+    {
+     "q": "What replaces the base intro?",
+     "a": "SYSTEM.md."
+    },
+    {
+     "q": "What do you send after a stop?",
+     "a": "continue."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Steps",
+     "intro": "Match each step with its purpose.",
+     "pairs": [
+      [
+       "Prefetch",
+       "Look up memory and skills first"
+      ],
+      [
+       "Fit the context",
+       "Shrink to the model's window"
+      ],
+      [
+       "Run tools",
+       "Execute what the model asked"
+      ],
+      [
+       "Failover",
+       "Switch provider on error"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Build the prompt",
+     "intro": "Write build_prompt(parts): parts is a list of [name, text] in this order: base, soul, agents, memory, skills. Return the texts joined with a blank line between them (two newlines), skipping empty texts.",
+     "fn": "build_prompt",
+     "starter": "def build_prompt(parts):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "base",
+          "You are Jade."
+         ],
+         [
+          "soul",
+          "Be warm."
+         ],
+         [
+          "agents",
+          ""
+         ],
+         [
+          "memory",
+          "Likes tea."
+         ],
+         [
+          "skills",
+          ""
+         ]
+        ]
+       ],
+       "expect": "You are Jade.\n\nBe warm.\n\nLikes tea."
+      },
+      {
+       "args": [
+        [
+         [
+          "base",
+          "B"
+         ]
+        ]
+       ],
+       "expect": "B"
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": ""
+      }
+     ],
+     "hint": "Skip empty parts.",
+     "solution": "def build_prompt(parts):\n    out = []\n    for name, text in parts:\n        if text:\n            out.append(text)\n    return '\\n\\n'.join(out)\n"
+    },
+    {
+     "type": "python",
+     "title": "Agent loop",
+     "intro": "Write agent_loop(script, max_rounds): script is the list of model replies, each 'tool:NAME' or 'text:ANSWER'. Each tool reply uses one round. Return ['reply', ANSWER, rounds_used] when a text reply arrives. If a tool reply arrives when max_rounds are already used, or the script ends without text, return ['stopped', rounds_used].",
+     "fn": "agent_loop",
+     "starter": "def agent_loop(script, max_rounds):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "tool:read",
+         "tool:write",
+         "text:done"
+        ],
+        5
+       ],
+       "expect": [
+        "reply",
+        "done",
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         "text:hi"
+        ],
+        5
+       ],
+       "expect": [
+        "reply",
+        "hi",
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         "tool:a",
+         "tool:b",
+         "tool:c",
+         "text:late"
+        ],
+        2
+       ],
+       "expect": [
+        "stopped",
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         "tool:a"
+        ],
+        3
+       ],
+       "expect": [
+        "stopped",
+        1
+       ]
+      },
+      {
+       "args": [
+        [],
+        3
+       ],
+       "expect": [
+        "stopped",
+        0
+       ]
+      }
+     ],
+     "hint": "Count rounds as tools arrive.",
+     "solution": "def agent_loop(script, max_rounds):\n    rounds = 0\n    for r in script:\n        if r.startswith('text:'):\n            return ['reply', r[5:], rounds]\n        if rounds >= max_rounds:\n            return ['stopped', rounds]\n        rounds += 1\n    return ['stopped', rounds]\n"
+    }
+   ]
+  },
+  {
+   "title": "Tools, gating and safety",
+   "maps": [
+    {
+     "title": "Tools",
+     "links": [
+      "Tool | has | A schema",
+      "Switch | removes | A pack of tools",
+      "Secrets | are | Placeholders",
+      "Approval | asks | Before risky actions",
+      "Untrusted | labels | External text",
+      "Scope | narrows | Wake-up tools",
+      "Redaction | hides | Secret echoes"
+     ]
+    }
+   ],
+   "summary": [
+    "Jade has about thirty tools: notes, shell, node, Python, SQLite, web, MCP, flows, schedules and more. On Android there are packs for senses, phone, screen, a second browser and SSH.",
+    "A tool exists for the model only if the pack switch allows it and any special condition holds. Each pack shows its context cost, because tool descriptions take room in the prompt.",
+    "Secrets are written as {{NAME}} and filled in outside the model, and risky actions ask you first."
+   ],
+   "glossary": [
+    {
+     "term": "Tool schema",
+     "def": "The description of a tool and its arguments that the model sees."
+    },
+    {
+     "term": "Pack",
+     "def": "A group of tools with one switch, like phone or browser."
+    },
+    {
+     "term": "Secret placeholder",
+     "def": "A {{NAME}} that is replaced by the real value after the model writes it."
+    },
+    {
+     "term": "Approval",
+     "def": "A dialog that asks you before an action runs."
+    },
+    {
+     "term": "Untrusted data",
+     "def": "Text from outside, labelled so it is not read as instructions."
+    },
+    {
+     "term": "MCP",
+     "def": "Model Context Protocol: a way to plug in more tools."
+    }
+   ],
+   "keyPoints": [
+    "Tools are listed to the model only when their switch and conditions allow.",
+    "Each pack in Settings → World shows how much context it costs.",
+    "Secrets are placeholders like {{NAME}}; the real value is added outside the model and echoes are redacted.",
+    "Calls, texts, SSH commands, new playbooks and restore ask you first.",
+    "Web pages, SSH output and screen text are labelled as data, not instructions.",
+    "During a curiosity wake her tools are filtered, so she cannot reach phone or Sentry unless you widen it."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Tools are the helper's hands. You decide which hands she may use, and secret keys are kept in your pocket, never shown to her brain."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A tool is a function with a name and a description of its arguments. The model sees the description and may ask for the tool by name. Everything useful Jade does goes through tools, so the tool layer is also where safety lives."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Not every tool is always offered. A switch in Settings, World, can remove a whole pack, such as the browser or phone tools, from her prompt. A pack that is off costs no context and cannot be used.",
+      "A few tools also need a condition, for example the skill search tool only exists when the skill router is active."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The risky capabilities are guarded in layers. Calls and texts ask you first, and emergency numbers are never dialled. SSH commands ask you, with credentials that she never sees. A new or changed playbook needs your approval before it can run unattended.",
+      "Restoring a backup is something only you can do."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Secrets work in a clever way. When Jade writes an API call, she writes a placeholder such as double braces around a name. The harness replaces it with the real key after the model's output, outside the model.",
+      "If the key later appears in a result, it is redacted back to the placeholder, so it does not leak into chats or logs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Prompt injection is the other big risk. A web page, an SSH output or the text on the screen could contain a sentence like ignore your instructions. Jade Vault wraps all such text with a plain label that says it is data, not instructions, and tools that return it say so every time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Finally, some settings she cannot edit at all: the numbers that a Sentry flow may contact, the hourly limit and the consent switches. If an agent could change its own safety limits, they would not be limits."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a pack switch do?",
+     "options": [
+      "Removes a group of tools from her prompt",
+      "Turns off the vault",
+      "Changes the model",
+      "Deletes files"
+     ],
+     "answer": 0,
+     "explain": "And saves context."
+    },
+    {
+     "q": "How are secrets written?",
+     "options": [
+      "As {{NAME}} placeholders",
+      "As plain text",
+      "In the chat",
+      "In SOUL.md"
+     ],
+     "answer": 0,
+     "explain": "Filled in outside the model."
+    },
+    {
+     "q": "Who can restore a backup?",
+     "options": [
+      "Only you",
+      "Jade",
+      "Any script",
+      "The model router"
+     ],
+     "answer": 0,
+     "explain": "She cannot restore."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is untrusted data?",
+     "a": "Text from the web, SSH or screen."
+    },
+    {
+     "q": "What do approvals guard?",
+     "a": "Calls, texts, SSH, new playbooks."
+    },
+    {
+     "q": "What is redaction?",
+     "a": "Hiding secret values in results."
+    },
+    {
+     "q": "Can she edit her safety limits?",
+     "a": "No."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Defences",
+     "intro": "Match each risk with its defence.",
+     "pairs": [
+      [
+       "Key leaking into chats",
+       "{{NAME}} placeholders and redaction"
+      ],
+      [
+       "Prompt injection from a web page",
+       "Labelled as data, not instructions"
+      ],
+      [
+       "A runaway loop",
+       "Max tool rounds and budgets"
+      ],
+      [
+       "Restoring over your data",
+       "Only you, with a confirmation"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Which tools are offered",
+     "intro": "Write active_tools(tools, switches): tools is a list of [name, pack] where pack is null (None) for a core tool or a pack name like 'phone'. switches is a dict of pack to true or false (a missing pack is off). Return the sorted names of tools that are core or whose pack is on.",
+     "fn": "active_tools",
+     "starter": "def active_tools(tools, switches):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "read",
+          null
+         ],
+         [
+          "phone",
+          "phone"
+         ],
+         [
+          "browser",
+          "browser"
+         ]
+        ],
+        {
+         "phone": true
+        }
+       ],
+       "expect": [
+        "phone",
+        "read"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "read",
+          null
+         ]
+        ],
+        {}
+       ],
+       "expect": [
+        "read"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "x"
+         ],
+         [
+          "b",
+          "x"
+         ],
+         [
+          "c",
+          null
+         ]
+        ],
+        {
+         "x": false
+        }
+       ],
+       "expect": [
+        "c"
+       ]
+      },
+      {
+       "args": [
+        [],
+        {
+         "x": true
+        }
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Core tools are always offered.",
+     "solution": "def active_tools(tools, switches):\n    out = []\n    for name, pack in tools:\n        if pack is None or switches.get(pack, False):\n            out.append(name)\n    return sorted(out)\n"
+    },
+    {
+     "type": "python",
+     "title": "Fill secrets",
+     "intro": "Write fill_secrets(text, secrets): replace each {{NAME}} in text with secrets[NAME]. Leave placeholders with unknown names unchanged.",
+     "fn": "fill_secrets",
+     "starter": "def fill_secrets(text, secrets):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Bearer {{TOKEN}}",
+        {
+         "TOKEN": "abc123"
+        }
+       ],
+       "expect": "Bearer abc123"
+      },
+      {
+       "args": [
+        "{{A}} and {{B}}",
+        {
+         "A": "1"
+        }
+       ],
+       "expect": "1 and {{B}}"
+      },
+      {
+       "args": [
+        "no placeholders",
+        {
+         "A": "1"
+        }
+       ],
+       "expect": "no placeholders"
+      },
+      {
+       "args": [
+        "{{ KEY }}",
+        {
+         "KEY": "k"
+        }
+       ],
+       "expect": "k"
+      }
+     ],
+     "hint": "Scan for double braces.",
+     "solution": "def fill_secrets(text, secrets):\n    out = ''\n    i = 0\n    while i < len(text):\n        if text[i:i + 2] == '{{':\n            j = text.find('}}', i)\n            if j > 0:\n                name = text[i + 2:j].strip()\n                if name in secrets:\n                    out += secrets[name]\n                else:\n                    out += text[i:j + 2]\n                i = j + 2\n                continue\n        out += text[i]\n        i += 1\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Redact echoes",
+     "intro": "Write redact(text, secrets): replace every occurrence of each secret's value in text with {{NAME}}. Replace longer values first. Ignore empty values.",
+     "fn": "redact",
+     "starter": "def redact(text, secrets):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "token abc123 ok",
+        {
+         "TOKEN": "abc123"
+        }
+       ],
+       "expect": "token {{TOKEN}} ok"
+      },
+      {
+       "args": [
+        "abc123456 and abc123",
+        {
+         "A": "abc123",
+         "B": "abc123456"
+        }
+       ],
+       "expect": "{{B}} and {{A}}"
+      },
+      {
+       "args": [
+        "nothing here",
+        {
+         "A": "zzz"
+        }
+       ],
+       "expect": "nothing here"
+      },
+      {
+       "args": [
+        "x",
+        {
+         "A": ""
+        }
+       ],
+       "expect": "x"
+      }
+     ],
+     "hint": "Longest values first.",
+     "solution": "def redact(text, secrets):\n    pairs = []\n    for name in secrets:\n        v = secrets[name]\n        if v:\n            pairs.append([len(v), name, v])\n    pairs.sort(reverse=True)\n    for n, name, v in pairs:\n        text = text.replace(v, '{{' + name + '}}')\n    return text\n"
+    },
+    {
+     "type": "python",
+     "title": "Flag risky tools",
+     "intro": "Write flag_risky(tools): return the sorted list of tool names that are in this risky set: phone, screen, ssh, bash, write, edit, sentry, web_fetch, backup, schedule, flow. (This is the list a playbook approval dialog flags.)",
+     "fn": "flag_risky",
+     "starter": "def flag_risky(tools):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "read",
+         "write",
+         "ssh"
+        ]
+       ],
+       "expect": [
+        "ssh",
+        "write"
+       ]
+      },
+      {
+       "args": [
+        [
+         "notes_search",
+         "memory"
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "bash",
+         "bash",
+         "flow"
+        ]
+       ],
+       "expect": [
+        "bash",
+        "flow"
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Compare each name with the set.",
+     "solution": "def flag_risky(tools):\n    risky = ['phone', 'screen', 'ssh', 'bash', 'write', 'edit', 'sentry', 'web_fetch', 'backup', 'schedule', 'flow']\n    out = []\n    for t in tools:\n        if t in risky and t not in out:\n            out.append(t)\n    return sorted(out)\n"
+    }
+   ]
+  },
+  {
+   "title": "Memory, search and context",
+   "maps": [
+    {
+     "title": "Memory",
+     "links": [
+      "Memory.md | holds | Durable facts",
+      "Journal | records | Each chat",
+      "Vector index | stores | Embeddings",
+      "Hybrid search | fuses | Keywords and meaning",
+      "BM25 | scores | Keyword matches",
+      "RRF | merges | Ranked lists",
+      "Compaction | summarises | Old turns"
+     ]
+    }
+   ],
+   "summary": [
+    "Jade remembers in layers: a Memory file of durable facts that goes into every prompt, a journal entry per chat, your notes, the raw chats, and a vector index that makes all of it searchable.",
+    "Search is hybrid. It runs keywords and meaning at the same time and merges the two ranked lists with reciprocal rank fusion. If the embedder is missing, it falls back to keywords and then BM25.",
+    "When a chat grows too long, old turns are compacted into a summary so the request fits the model's window."
+   ],
+   "glossary": [
+    {
+     "term": "Memory.md",
+     "def": "A file of durable facts, one bullet per line, added to every prompt."
+    },
+    {
+     "term": "Journal",
+     "def": "A short entry for each chat, saved under /Jade/Journal."
+    },
+    {
+     "term": "Embedding",
+     "def": "A list of numbers that represents the meaning of a text."
+    },
+    {
+     "term": "BM25",
+     "def": "A ranking function: term frequency times inverse document frequency, with length normalisation."
+    },
+    {
+     "term": "RRF",
+     "def": "Reciprocal rank fusion: merging ranked lists by adding 1 over (k plus rank)."
+    },
+    {
+     "term": "Compaction",
+     "def": "Replacing old turns with a short summary."
+    }
+   ],
+   "keyPoints": [
+    "Memory layers: Memory.md, journal, notes, raw chats and a vector index.",
+    "The index is /Jade/.index/vectors.db, an ordinary SQLite file that is a cache you can delete.",
+    "A search runs FTS5 keywords and vector nearest neighbours, then fuses them with RRF.",
+    "BM25 rewards rare query words that appear often, and normalises for document length.",
+    "Auto-compaction runs after a number of turns or when the last answer filled too much of the window.",
+    "The /context command shows where the window goes."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Memory is a diary the helper can search two ways: by exact words, and by meaning. Then she blends both lists into one best list."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A language model forgets everything between calls, so the harness builds memory around it. The first layer is a file. Memory.md holds durable facts, one bullet per line, such as the user's name or preferences, and it is injected into every prompt. Because it is a note, you can read and edit it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The second layer is the journal. When you leave a chat or it gets compacted, a short entry is written to a dated note, and any new durable facts are copied to Memory. Raw chats are also stored with timestamps and tool calls, and a tool can read and search them."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Finding things uses an index. Jade Vault keeps a SQLite file with a full text index and a vector index. A search asks both. The keyword side finds the exact words. The vector side finds notes with a similar meaning, using embeddings from a model such as nomic-embed-text through Ollama.",
+      "The two lists are merged by reciprocal rank fusion."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\mathrm{RRF}(d)=\\sum_{\\text{lists}}\\frac{1}{k+\\mathrm{rank}(d)} \\\\[0.6em] \\mathrm{BM25}(d,q)=\\sum_{t\\in q}\\mathrm{IDF}(t)\\,\\frac{f(t,d)\\,(k_1+1)}{f(t,d)+k_1\\,(1-b+b\\,|d|/\\mathrm{avgdl})} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "BM25 is the classic keyword score. A document scores higher when it contains a query word often, when that word is rare across all documents, and when the document is not very long.",
+      "RRF is simpler: each list gives a document points of one over a constant plus its rank, and the points add up, so a document that ranks well in both lists wins."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Context is the other half. The window of a model is limited, and tools alone can take about ten thousand tokens at full load. A guard estimates the size of the whole request, compacts old turns into a summary, then trims bulky tool results, and learns real limits from errors.",
+      "The slash command context shows where the room goes."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does hybrid search combine?",
+     "options": [
+      "Keywords and meaning",
+      "Files and folders",
+      "Chats and tools",
+      "Models and rules"
+     ],
+     "answer": 0,
+     "explain": "Merged by RRF."
+    },
+    {
+     "q": "What is the vector index file?",
+     "options": [
+      "/Jade/.index/vectors.db",
+      "/Jade/Memory.md",
+      "/Welcome.md",
+      "/AGENTS.md"
+     ],
+     "answer": 0,
+     "explain": "A cache you can delete."
+    },
+    {
+     "q": "What does compaction do?",
+     "options": [
+      "Summarises old turns",
+      "Deletes notes",
+      "Encrypts memory",
+      "Restarts the model"
+     ],
+     "answer": 0,
+     "explain": "Frees context."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does BM25 reward?",
+     "a": "Frequent, rare query words."
+    },
+    {
+     "q": "What does RRF add?",
+     "a": "1 over k plus rank."
+    },
+    {
+     "q": "Where are durable facts?",
+     "a": "Memory.md."
+    },
+    {
+     "q": "What are embeddings?",
+     "a": "Meaning as numbers."
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Search",
+     "text": "Hybrid search merges keyword and vector hits with reciprocal rank {{fusion}}, and the keyword score is called {{BM25}}."
+    },
+    {
+     "type": "python",
+     "title": "BM25",
+     "intro": "Write bm25(docs, query, k1, b): docs is a list of texts. Tokens are lowercase words made of letters and digits. For each document return the BM25 score summed over the distinct query words, with idf = ln(1 + (N - n + 0.5) / (n + 0.5)) where N is the number of documents and n the number containing the word, and the term part f*(k1+1) / (f + k1*(1 - b + b*len/avglen)). Return the list of scores rounded to 4 decimals.",
+     "fn": "bm25",
+     "starter": "def bm25(docs, query, k1, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "the cat sat",
+         "the dog barked at the cat",
+         "birds fly"
+        ],
+        "cat",
+        1.2,
+        0.75
+       ],
+       "expect": [
+        0.5078,
+        0.3729,
+        0.0
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         "alpha beta",
+         "beta gamma",
+         "gamma delta"
+        ],
+        "beta gamma",
+        1.2,
+        0.75
+       ],
+       "expect": [
+        0.47,
+        0.94,
+        0.47
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         "a b c"
+        ],
+        "z",
+        1.2,
+        0.75
+       ],
+       "expect": [
+        0.0
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [],
+        "x",
+        1.2,
+        0.75
+       ],
+       "expect": [],
+       "approx": 0.001
+      }
+     ],
+     "hint": "Count n for each word first.",
+     "solution": "def bm25(docs, query, k1, b):\n    import math\n    def words(s):\n        out = []\n        cur = ''\n        for ch in s.lower():\n            if ch.isalpha() or ch.isdigit():\n                cur += ch\n            else:\n                if cur:\n                    out.append(cur)\n                cur = ''\n        if cur:\n            out.append(cur)\n        return out\n    toks = [words(d) for d in docs]\n    n_docs = len(docs)\n    if n_docs == 0:\n        return []\n    avg = sum(len(t) for t in toks) / n_docs\n    terms = []\n    for w in words(query):\n        if w not in terms:\n            terms.append(w)\n    scores = []\n    for t in toks:\n        s = 0.0\n        for w in terms:\n            n = 0\n            for other in toks:\n                if w in other:\n                    n += 1\n            f = t.count(w)\n            if f == 0:\n                continue\n            idf = math.log(1 + (n_docs - n + 0.5) / (n + 0.5))\n            s += idf * f * (k1 + 1) / (f + k1 * (1 - b + b * len(t) / avg))\n        scores.append(round(s, 4))\n    return scores\n"
+    },
+    {
+     "type": "python",
+     "title": "Fuse rankings",
+     "intro": "Write rrf(lists, k): lists is a list of ranked lists of ids (best first). Each id gets 1/(k + rank) from every list that contains it, with rank starting at 1. Return the ids ordered by total score, highest first, breaking ties by id.",
+     "fn": "rrf",
+     "starter": "def rrf(lists, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          "b",
+          "c"
+         ],
+         [
+          "b",
+          "c",
+          "a"
+         ]
+        ],
+        60
+       ],
+       "expect": [
+        "b",
+        "a",
+        "c"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "b"
+         ],
+         [
+          "c",
+          "d"
+         ]
+        ],
+        60
+       ],
+       "expect": [
+        "a",
+        "c",
+        "b",
+        "d"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "x"
+         ]
+        ],
+        60
+       ],
+       "expect": [
+        "x"
+       ]
+      },
+      {
+       "args": [
+        [],
+        60
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Add the points from each list.",
+     "solution": "def rrf(lists, k):\n    score = {}\n    for lst in lists:\n        for i in range(len(lst)):\n            d = lst[i]\n            score[d] = score.get(d, 0.0) + 1.0 / (k + i + 1)\n    items = []\n    for d in score:\n        items.append([-round(score[d], 9), d])\n    items.sort()\n    return [x[1] for x in items]\n"
+    },
+    {
+     "type": "python",
+     "title": "Compaction split",
+     "intro": "Write compact_split(turns, compact_after, keep): turns is a list of finished turns. When there are more than compact_after turns, return [older, newest] where newest is the last keep turns and older is everything before them; otherwise return [[], turns].",
+     "fn": "compact_split",
+     "starter": "def compact_split(turns, compact_after, keep):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5,
+         6
+        ],
+        4,
+        2
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         5,
+         6
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        4,
+        2
+       ],
+       "expect": [
+        [],
+        [
+         1,
+         2,
+         3
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5
+        ],
+        4,
+        2
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5
+        ]
+       ]
+      },
+      {
+       "args": [
+        [],
+        4,
+        2
+       ],
+       "expect": [
+        [],
+        []
+       ]
+      }
+     ],
+     "hint": "Split off the oldest turns.",
+     "solution": "def compact_split(turns, compact_after, keep):\n    if len(turns) > compact_after:\n        cut = len(turns) - keep\n        return [turns[:cut], turns[cut:]]\n    return [[], turns]\n"
+    }
+   ]
+  },
+  {
+   "title": "Skills and the skill router",
+   "maps": [
+    {
+     "title": "Skills",
+     "links": [
+      "Skill | is | A folder with SKILL.md",
+      "Frontmatter | has | Name and description",
+      "Description | decides | When it is used",
+      "Router | picks | The best six",
+      "find_skill | searches | The rest",
+      "skill tool | loads | A skill on demand",
+      "skill-creator | writes | New skills"
+     ]
+    }
+   ],
+   "summary": [
+    "A skill is a folder under /Jade/skills with a SKILL.md file. The file starts with frontmatter that has a name and a description, then the instructions. Jade loads a skill on demand with the skill tool.",
+    "Listing every skill costs context. With fifteen or fewer, all are listed. With more, only the six best for the current message are listed, chosen by meaning and whole word overlap, and a search tool finds the others.",
+    "The description is all the router sees, so write it as when to use the skill, in the words a user would say."
+   ],
+   "glossary": [
+    {
+     "term": "Skill",
+     "def": "A reusable procedure written as a SKILL.md file."
+    },
+    {
+     "term": "Frontmatter",
+     "def": "The block between --- lines with name and description."
+    },
+    {
+     "term": "Router",
+     "def": "Code that picks which skills to list for a message."
+    },
+    {
+     "term": "find_skill",
+     "def": "A tool that searches the skills that were not listed."
+    },
+    {
+     "term": "Strict mode",
+     "def": "Dropping weak matches: far in meaning and no shared words."
+    },
+    {
+     "term": "skill-creator",
+     "def": "A built-in skill that teaches Jade to write new skills."
+    }
+   ],
+   "keyPoints": [
+    "A skill folder is /Jade/skills/kebab-name/ with SKILL.md and optional files.",
+    "Run one with the skill tool or /skill:name.",
+    "Up to 15 skills are all listed; with more, the best 6 are listed.",
+    "Ranking fuses vector meaning with whole word overlap.",
+    "Strict mode drops a match with a vector distance over 0.6 and no word overlap.",
+    "Write a description that says when to use the skill; put the procedure in the body."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A skill is a recipe card. She keeps the best few cards on the table and can look up the rest in the drawer when needed."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A skill is a recipe card. It tells Jade how to do one kind of job, such as filing an invoice or writing an atomic note, in steps. Because it is a plain file, anyone can write one, and you can share it by copying the folder."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "markdown",
+     "code": "---\nname: invoice-filing\ndescription: Use when the user wants an invoice saved, renamed and linked to its project note.\n---\n# Steps\n1. Read the invoice and find the date, supplier and total.\n2. Rename the file to YYYY-MM-DD-supplier.\n3. Link it from the project note."
+    },
+    {
+     "type": "text",
+     "items": [
+      "The trouble is context. Every skill name and description in the prompt costs tokens, and a vault can have dozens of skills. The router solves this. With fifteen or fewer, it lists them all.",
+      "With more, it scores each against the current message, lists only the best six, and gives Jade a find_skill tool for the rest."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The score blends two signals. One is meaning: embeddings of each skill's name and description in a skills collection of the vector index. The other is overlap of whole words. In strict mode a match that is far away in meaning, with a distance over 0.6, and shares no words is dropped.",
+      "Counters keep track of how often each skill was offered, found and used."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is why the description matters so much. It is the only text the router sees. Say when to use the skill in the words a person would say: use when the user wants an invoice saved. Do not put the procedure in the description. One skill should do one job."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Jade can also write skills. A built-in skill called skill-creator teaches her how, and the built-ins include daily review, atomic notes, a literature note, and math notes. Skills are the cheapest way to change her behaviour without changing the app."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the router do with more than 15 skills?",
+     "options": [
+      "Lists the best 6",
+      "Lists none",
+      "Lists all",
+      "Deletes extras"
+     ],
+     "answer": 0,
+     "explain": "And offers find_skill."
+    },
+    {
+     "q": "What is the only text the router sees?",
+     "options": [
+      "Name and description",
+      "The whole body",
+      "The folder size",
+      "The author"
+     ],
+     "answer": 0,
+     "explain": "So write it well."
+    },
+    {
+     "q": "Where do skills live?",
+     "options": [
+      "/Jade/skills/<name>/SKILL.md",
+      "/Jade/Flows",
+      "/Templates",
+      "/Apps"
+     ],
+     "answer": 0,
+     "explain": "A folder per skill."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What goes in the frontmatter?",
+     "a": "name and description."
+    },
+    {
+     "q": "What does find_skill do?",
+     "a": "Searches unlisted skills."
+    },
+    {
+     "q": "What does strict mode drop?",
+     "a": "Weak matches."
+    },
+    {
+     "q": "How do you run one?",
+     "a": "/skill:name."
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Skills",
+     "text": "Each skill is a folder with a {{SKILL.md}} file whose frontmatter has a name and a {{description}}."
+    },
+    {
+     "type": "python",
+     "title": "Read the frontmatter",
+     "intro": "Write parse_skill(text): the text starts with a line --- then lines like name: x and description: y, then another ---. Return [name, description], or an empty list if the frontmatter or either field is missing.",
+     "fn": "parse_skill",
+     "starter": "def parse_skill(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "---\nname: invoice-filing\ndescription: Use when filing invoices.\n---\n# Steps"
+       ],
+       "expect": [
+        "invoice-filing",
+        "Use when filing invoices."
+       ]
+      },
+      {
+       "args": [
+        "no frontmatter"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "---\nname: x\n---\nbody"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "---\nname: a\ndescription: b\n---"
+       ],
+       "expect": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "hint": "Read lines until the closing ---.",
+     "solution": "def parse_skill(text):\n    lines = text.split('\\n')\n    if not lines or lines[0].strip() != '---':\n        return []\n    name = None\n    desc = None\n    for line in lines[1:]:\n        if line.strip() == '---':\n            break\n        if line.startswith('name:'):\n            name = line[5:].strip()\n        elif line.startswith('description:'):\n            desc = line[12:].strip()\n    if not name or not desc:\n        return []\n    return [name, desc]\n"
+    },
+    {
+     "type": "python",
+     "title": "Route skills",
+     "intro": "Write route(skills, message, limit): skills is a list of [name, description]. With at most 15 skills, return all names sorted. With more, score each by the number of distinct whole words (lowercase letters and digits) shared by the message and the name plus description, drop those with score 0, and return the names of the best limit skills, highest score first, ties by name.",
+     "fn": "route",
+     "starter": "def route(skills, message, limit):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          "x"
+         ],
+         [
+          "b",
+          "y"
+         ]
+        ],
+        "anything",
+        6
+       ],
+       "expect": [
+        "a",
+        "b"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "s0",
+          "filler word0"
+         ],
+         [
+          "s1",
+          "filler word1"
+         ],
+         [
+          "s2",
+          "filler word2"
+         ],
+         [
+          "s3",
+          "filler word3"
+         ],
+         [
+          "s4",
+          "filler word4"
+         ],
+         [
+          "s5",
+          "filler word5"
+         ],
+         [
+          "s6",
+          "filler word6"
+         ],
+         [
+          "s7",
+          "filler word7"
+         ],
+         [
+          "s8",
+          "filler word8"
+         ],
+         [
+          "s9",
+          "filler word9"
+         ],
+         [
+          "s10",
+          "filler word10"
+         ],
+         [
+          "s11",
+          "filler word11"
+         ],
+         [
+          "s12",
+          "filler word12"
+         ],
+         [
+          "s13",
+          "filler word13"
+         ],
+         [
+          "s14",
+          "filler word14"
+         ],
+         [
+          "s15",
+          "filler word15"
+         ],
+         [
+          "invoice-filing",
+          "Use when the user wants an invoice saved"
+         ]
+        ],
+        "please save this invoice",
+        6
+       ],
+       "expect": [
+        "invoice-filing"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "s0",
+          "zz0"
+         ],
+         [
+          "s1",
+          "zz1"
+         ],
+         [
+          "s2",
+          "zz2"
+         ],
+         [
+          "s3",
+          "zz3"
+         ],
+         [
+          "s4",
+          "zz4"
+         ],
+         [
+          "s5",
+          "zz5"
+         ],
+         [
+          "s6",
+          "zz6"
+         ],
+         [
+          "s7",
+          "zz7"
+         ],
+         [
+          "s8",
+          "zz8"
+         ],
+         [
+          "s9",
+          "zz9"
+         ],
+         [
+          "s10",
+          "zz10"
+         ],
+         [
+          "s11",
+          "zz11"
+         ],
+         [
+          "s12",
+          "zz12"
+         ],
+         [
+          "s13",
+          "zz13"
+         ],
+         [
+          "s14",
+          "zz14"
+         ],
+         [
+          "s15",
+          "zz15"
+         ]
+        ],
+        "hello",
+        6
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "s10",
+          "report words"
+         ],
+         [
+          "s11",
+          "report words"
+         ],
+         [
+          "s12",
+          "report words"
+         ],
+         [
+          "s13",
+          "report words"
+         ],
+         [
+          "s14",
+          "report words"
+         ],
+         [
+          "s15",
+          "report words"
+         ],
+         [
+          "s16",
+          "report words"
+         ],
+         [
+          "s17",
+          "report words"
+         ],
+         [
+          "s18",
+          "report words"
+         ],
+         [
+          "s19",
+          "report words"
+         ],
+         [
+          "s20",
+          "report words"
+         ],
+         [
+          "s21",
+          "report words"
+         ],
+         [
+          "s22",
+          "report words"
+         ],
+         [
+          "s23",
+          "report words"
+         ],
+         [
+          "s24",
+          "report words"
+         ],
+         [
+          "s25",
+          "report words"
+         ]
+        ],
+        "write a report",
+        3
+       ],
+       "expect": [
+        "s10",
+        "s11",
+        "s12"
+       ]
+      }
+     ],
+     "hint": "Fewer than 16 skills: list them all.",
+     "solution": "def route(skills, message, limit):\n    def words(s):\n        out = set()\n        cur = ''\n        for ch in s.lower():\n            if ch.isalpha() or ch.isdigit():\n                cur += ch\n            else:\n                if cur:\n                    out.add(cur)\n                cur = ''\n        if cur:\n            out.add(cur)\n        return out\n    if len(skills) <= 15:\n        return sorted([s[0] for s in skills])\n    m = words(message)\n    scored = []\n    for name, desc in skills:\n        sc = len(m & words(name + ' ' + desc))\n        if sc > 0:\n            scored.append([-sc, name])\n    scored.sort()\n    return [x[1] for x in scored[:limit]]\n"
+    }
+   ]
+  },
+  {
+   "title": "Running on her own: heartbeat, schedules and curiosity",
+   "maps": [
+    {
+     "title": "Autonomy",
+     "links": [
+      "Heartbeat | reads | HEARTBEAT.md",
+      "HEARTBEAT_OK | means | Nothing to report",
+      "Schedule | runs | Prompt, shell or flow",
+      "cron | is | Five fields",
+      "Curiosity | wakes | At random times",
+      "Progress | beats | Noise",
+      "Reward | is | Measured from the vault"
+     ]
+    }
+   ],
+   "summary": [
+    "Everything that runs without you is off until you switch it on, runs only while the app is alive, and is logged. The heartbeat reads a checklist file every N minutes and answers HEARTBEAT_OK when nothing needs attention.",
+    "Schedules run a prompt, a shell command or a flow, written in plain English or as cron. Command and flow schedules run without the model.",
+    "Curiosity wakes her at random times to explore, reflect, connect notes, practice, anticipate, ask a question or rest. It scores activities by learning progress, so noise earns no bonus."
+   ],
+   "glossary": [
+    {
+     "term": "Heartbeat",
+     "def": "A periodic check driven by HEARTBEAT.md."
+    },
+    {
+     "term": "HEARTBEAT_OK",
+     "def": "The silent answer when nothing needs attention."
+    },
+    {
+     "term": "Schedule",
+     "def": "A job that runs a prompt, a shell command or a flow at a time."
+    },
+    {
+     "term": "Cron",
+     "def": "Five fields: minute, hour, day of month, month, day of week."
+    },
+    {
+     "term": "Learning progress",
+     "def": "How much a forecast error is falling over time."
+    },
+    {
+     "term": "Noisy TV",
+     "def": "A random source that stays unpredictable and so teaches nothing."
+    }
+   ],
+   "keyPoints": [
+    "Heartbeat: every N minutes (default 30) inside active hours; an empty checklist skips the model call.",
+    "Schedules accept plain English like every weekday at 9am, cron, or @daily.",
+    "Command and flow schedules log to /Jade/Logs/cron.log and notify on failure.",
+    "Curiosity: a window (default 08:00 to 22:00), a daily cap (default 5) and a steering file CURIOSITY.md.",
+    "Learning progress is the slow error average minus the fast one, never below zero.",
+    "Reward is measured by diffing the vault; her self-score cannot exceed the measured value by more than 0.2."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Heartbeat is a gentle tap every half hour asking, is anything to do? If the list is empty she goes back to sleep without bothering the brain."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An assistant that only answers when you ask is useful. One that can also check things by itself is more useful, and riskier.",
+      "So the autonomy features share rules: they are off until you turn them on, they run only while the app is open or kept alive in the background on Android, and each run is logged."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The heartbeat is the simplest. Every N minutes inside the hours you allow, Jade reads a note called HEARTBEAT.md, which is your checklist, and follows it. If nothing needs attention she answers HEARTBEAT_OK, and that run is silent and pruned.",
+      "If the file has only comments, headings and empty checkboxes, the run is skipped without even calling the model."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Schedules are time based. You write when in plain English, such as every weekday at 9am, or in cron, or with a shortcut like @daily. A schedule can run a prompt through Jade in a chat, or a shell command, or a flow.",
+      "The last two do not need the model, so they are cheap and run on their own, with output in a log file and a notification on failure."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Curiosity is the unusual one. At random times in a window you choose, Jade wakes in her own chat and picks an activity from a menu: explore, reflect, connect notes, practice a skill, anticipate something you may need, ask you one question, or rest.",
+      "A file called CURIOSITY.md steers her with topics and things to avoid."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\text{score}=1.5\\,p+1.0\\,\\text{prior}+0.25\\,\\text{novelty}\\,(0.4+\\bar r)+\\frac{0.4}{\\sqrt{1+\\text{tries}}}-\\text{repeat}-\\text{cost}\\;(+\\text{wish})"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The suggestion is scored by learning progress, an idea of Schmidhuber's. Each activity has a small forecaster of how rewarding it will be. Progress is the slow average of the forecast error minus the fast average, never below zero.",
+      "An activity whose results stay random keeps a high but flat error and earns no bonus, which avoids the noisy TV trap. The reward itself is measured, not claimed: the harness compares the vault before and after, counting new notes, changed notes, links and memories."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does HEARTBEAT_OK mean?",
+     "options": [
+      "Nothing needs attention",
+      "An error",
+      "The heartbeat stopped",
+      "A new chat"
+     ],
+     "answer": 0,
+     "explain": "A silent run."
+    },
+    {
+     "q": "What do command and flow schedules need?",
+     "options": [
+      "No model",
+      "A paid plan",
+      "A phone call",
+      "A restart"
+     ],
+     "answer": 0,
+     "explain": "They run on their own."
+    },
+    {
+     "q": "What earns no curiosity bonus?",
+     "options": [
+      "An activity whose results stay random",
+      "A new activity",
+      "A cheap activity",
+      "A rest"
+     ],
+     "answer": 0,
+     "explain": "The noisy TV trap."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What file steers curiosity?",
+     "a": "CURIOSITY.md."
+    },
+    {
+     "q": "How is curiosity rewarded?",
+     "a": "By measured vault changes."
+    },
+    {
+     "q": "Where do schedule logs go?",
+     "a": "/Jade/Logs/cron.log."
+    },
+    {
+     "q": "What is learning progress?",
+     "a": "Slow error minus fast error."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Autonomy",
+     "intro": "Match each feature with how it starts.",
+     "pairs": [
+      [
+       "Heartbeat",
+       "Every N minutes within active hours"
+      ],
+      [
+       "Schedule",
+       "At a time in English or cron"
+      ],
+      [
+       "Curiosity",
+       "At random times in a window"
+      ],
+      [
+       "Sentry",
+       "When a phone event matches a rule"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Empty heartbeat",
+     "intro": "Write heartbeat_empty(text): true when the heartbeat file has nothing to act on. Remove <!-- ... --> comments, then ignore blank lines, lines starting with # (headings) and empty checkboxes (a line that is only - [ ] with nothing after). If nothing is left, return true.",
+     "fn": "heartbeat_empty",
+     "starter": "def heartbeat_empty(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "# Heartbeat\n<!-- add tasks -->\n- [ ]\n"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "# Heartbeat\n- [ ] check the inbox"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "<!-- a\nb -->\nhello"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "## Daily\n\n- [ ] \n"
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Strip comments first.",
+     "solution": "def heartbeat_empty(text):\n    while True:\n        a = text.find('<!--')\n        if a < 0:\n            break\n        b = text.find('-->', a)\n        if b < 0:\n            text = text[:a]\n            break\n        text = text[:a] + text[b + 3:]\n    for line in text.split('\\n'):\n        s = line.strip()\n        if not s:\n            continue\n        if s.startswith('#'):\n            continue\n        if s in ('- [ ]', '* [ ]', '- [ ] ', '-[ ]'):\n            continue\n        return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "English to cron",
+     "intro": "Write english_to_cron(s): handle 'every day at 9am', 'every weekday at 6pm', 'every sunday at 6pm' (any weekday name) and 'every hour'. Return the five field cron string: minute 0, the hour in 24 hour form (12am is 0, 12pm is 12), day of month *, month *, and * for every day, 1-5 for weekday, or 0 to 6 for sunday to saturday. 'every hour' is '0 * * * *'. Return an empty string for anything else.",
+     "fn": "english_to_cron",
+     "starter": "def english_to_cron(s):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "every day at 9am"
+       ],
+       "expect": "0 9 * * *"
+      },
+      {
+       "args": [
+        "every weekday at 6pm"
+       ],
+       "expect": "0 18 * * 1-5"
+      },
+      {
+       "args": [
+        "every sunday at 6pm"
+       ],
+       "expect": "0 18 * * 0"
+      },
+      {
+       "args": [
+        "every hour"
+       ],
+       "expect": "0 * * * *"
+      },
+      {
+       "args": [
+        "every day at 12am"
+       ],
+       "expect": "0 0 * * *"
+      },
+      {
+       "args": [
+        "every day at 12pm"
+       ],
+       "expect": "0 12 * * *"
+      },
+      {
+       "args": [
+        "sometimes"
+       ],
+       "expect": ""
+      },
+      {
+       "args": [
+        "every month at 9am"
+       ],
+       "expect": ""
+      }
+     ],
+     "hint": "Split on ' at ' and convert the hour.",
+     "solution": "def english_to_cron(s):\n    s = s.strip().lower()\n    if s == 'every hour':\n        return '0 * * * *'\n    if not s.startswith('every ') or ' at ' not in s:\n        return ''\n    day, at = s[6:].split(' at ', 1)\n    names = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']\n    if day == 'day':\n        dow = '*'\n    elif day == 'weekday':\n        dow = '1-5'\n    elif day in names:\n        dow = str(names.index(day))\n    else:\n        return ''\n    if at.endswith('am') or at.endswith('pm'):\n        num = at[:-2]\n        if not num.isdigit():\n            return ''\n        h = int(num) % 12\n        if at.endswith('pm'):\n            h += 12\n    else:\n        return ''\n    return '0 ' + str(h) + ' * * ' + dow\n"
+    },
+    {
+     "type": "python",
+     "title": "Curiosity score",
+     "intro": "Write curiosity(slow, fast, prior, novelty, avg_reward, tries, repeat, cost, wish): progress is max(0, slow - fast). Return 1.5*progress + 1.0*prior + 0.25*novelty*(0.4 + avg_reward) + 0.4/sqrt(1 + tries) - repeat - cost + wish, rounded to 4 decimals.",
+     "fn": "curiosity",
+     "starter": "def curiosity(slow, fast, prior, novelty, avg_reward, tries, repeat, cost, wish):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5,
+        0.2,
+        0.3,
+        0.8,
+        0.5,
+        3,
+        0.1,
+        0.05,
+        0.0
+       ],
+       "expect": 0.98,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        0.2,
+        0.5,
+        0.3,
+        0.8,
+        0.5,
+        3,
+        0.1,
+        0.05,
+        0.0
+       ],
+       "expect": 0.53,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        0.4,
+        0.4,
+        0.1,
+        0.0,
+        0.0,
+        0,
+        0.0,
+        0.0,
+        0.2
+       ],
+       "expect": 0.7,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        0.9,
+        0.1,
+        0.5,
+        1.0,
+        1.0,
+        8,
+        0.2,
+        0.1,
+        0.0
+       ],
+       "expect": 1.8833,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Progress never goes below zero.",
+     "solution": "def curiosity(slow, fast, prior, novelty, avg_reward, tries, repeat, cost, wish):\n    import math\n    progress = max(0.0, slow - fast)\n    s = 1.5 * progress + 1.0 * prior + 0.25 * novelty * (0.4 + avg_reward) + 0.4 / math.sqrt(1 + tries) - repeat - cost + wish\n    return round(s, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Measured reward",
+     "intro": "Write wake_reward(measured, self_score): the measured reward counts three quarters and her self-score one quarter, but the self-score used can never exceed measured + 0.2. Return 0.75*measured + 0.25*min(self_score, measured + 0.2), clamped to 0..1 and rounded to 4 decimals. (This is one reading of the rule in the documentation.)",
+     "fn": "wake_reward",
+     "starter": "def wake_reward(measured, self_score):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.4,
+        0.9
+       ],
+       "expect": 0.45,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        0.4,
+        0.5
+       ],
+       "expect": 0.425,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        0.0,
+        1.0
+       ],
+       "expect": 0.05,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        1.0,
+        1.0
+       ],
+       "expect": 1.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        0.2,
+        0.0
+       ],
+       "expect": 0.15,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Cap the self-score first.",
+     "solution": "def wake_reward(measured, self_score):\n    s = 0.75 * measured + 0.25 * min(self_score, measured + 0.2)\n    s = max(0.0, min(1.0, s))\n    return round(s, 4)\n"
+    }
+   ]
+  },
+  {
+   "title": "Flows: automations in steps",
+   "maps": [
+    {
+     "title": "Flows",
+     "links": [
+      "Flow | is | A list of steps",
+      "Step output | is | $json for the next",
+      "Expression | sits in | Double braces",
+      "Trigger | starts | A flow",
+      "Retry | repeats | A failing step",
+      "Run log | records | Every step",
+      "Decide | picks | By probability"
+     ]
+    }
+   ],
+   "summary": [
+    "A flow is an n8n style automation kept as JSON in /Jade/Flows. It is a list of steps that run in order, and each step's output becomes $json for the next step.",
+    "Step types include Tool, JavaScript, Shell, Decide, Ask AI, Jade agent, Note, Set fields, If, Switch, For each, Wait, Notify, Run flow and Stop. Text fields may hold double-brace expressions.",
+    "A flow starts by hand, on a schedule, or when a note changes, and each run is logged step by step."
+   ],
+   "glossary": [
+    {
+     "term": "Flow",
+     "def": "A saved list of steps, run in order."
+    },
+    {
+     "term": "$json",
+     "def": "The output of the previous step, available to the next."
+    },
+    {
+     "term": "Trigger",
+     "def": "What starts a flow: by hand, a schedule or a note change."
+    },
+    {
+     "term": "Decide step",
+     "def": "A step that picks one option and returns probabilities."
+    },
+    {
+     "term": "Retry",
+     "def": "Running a failing step again, up to three times."
+    },
+    {
+     "term": "Expression",
+     "def": "JavaScript inside {{ }} in a text field, run in a sandbox without network."
+    }
+   ],
+   "keyPoints": [
+    "Flows are JSON files /Jade/Flows/NAME.flow.json.",
+    "Each step's output is $json for the next; other names are $input, $node[\"Step\"], $vars, $item, $index, $now and $today.",
+    "Steps can retry 0 to 3 times or continue on error.",
+    "Triggers: by hand, a schedule (every weekday at 9am, cron, @daily), or a note or folder change.",
+    "Flows also run from the shell (flow run), scripts (jade.flow), the API and Jade's flow tool.",
+    "Every run is logged with each step's input, output and time."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A flow is a row of boxes joined by pipes. Each box does a job and passes its result to the next, and you can see where it got stuck."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A flow is a small program built from boxes. The first box reads a note, the next decides something, the next writes a result. You can build one in the Flows tab, or ask Jade to build it, and it is saved as a JSON file in the vault."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "json",
+     "code": "{\"name\": \"Inbox triage\", \"trigger\": {\"type\": \"note\", \"path\": \"/Inbox.md\"}, \"steps\": [\n  {\"type\": \"note\", \"name\": \"Inbox\", \"action\": \"read\", \"path\": \"/Inbox.md\"},\n  {\"type\": \"each\", \"items\": \"$json.split('\\n').filter(l => l.startsWith('- '))\", \"steps\": [\n    {\"type\": \"decide\", \"name\": \"Urgent?\", \"state\": \"{{ $item }}\", \"question\": \"Is this urgent?\", \"kind\": \"yesno\"},\n    {\"type\": \"if\", \"condition\": \"$json.result === true\", \"then\": [\n      {\"type\": \"note\", \"action\": \"append\", \"path\": \"/Urgent.md\", \"content\": \"- [ ] {{ $item }}\"}]}]},\n  {\"type\": \"notify\", \"title\": \"Inbox triaged\"}]}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Data moves through the steps like water through pipes. The output of one step is called $json in the next. You reach it inside any text field with double braces, such as {{ $json.name }}.",
+      "Other names are available: the input of the flow, the output of a named step, variables, the loop item and its index, and today's date."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Steps do many things. A Tool step calls any of Jade's tools. A JavaScript step runs code in a sandbox. A Shell step runs a command. A Decide step asks a small decision model and returns the winner with a confidence and probabilities. An Ask AI step gets one answer.",
+      "A Jade agent step runs a full chat turn. There are also If, Switch, For each, Wait, Notify, Run flow and Stop."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Flows can fail, so each step can retry up to three times or continue on error. Every run is logged with the input, output, log and time of each step, so you can see exactly where it went wrong. A flow that fails sends a notification when it ran from a schedule."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Flows start in several ways: by hand, on a schedule, or when a note or folder changes. They can also be called from the shell with flow run, from scripts with jade.flow, over the HTTP API, and by Jade herself with the flow tool.",
+      "Because command and flow schedules need no model, a flow is the right tool for anything that should simply happen the same way each time."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is $json?",
+     "options": [
+      "The previous step's output",
+      "The flow's name",
+      "A secret",
+      "The model"
+     ],
+     "answer": 0,
+     "explain": "It chains the steps."
+    },
+    {
+     "q": "How many retries can a step have?",
+     "options": [
+      "0 to 3",
+      "Unlimited",
+      "Exactly 10",
+      "None"
+     ],
+     "answer": 0,
+     "explain": "Or continue on error."
+    },
+    {
+     "q": "Where are flows stored?",
+     "options": [
+      "/Jade/Flows/NAME.flow.json",
+      "/Templates",
+      "/Apps",
+      "In the model"
+     ],
+     "answer": 0,
+     "explain": "Plain JSON."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does a Decide step return?",
+     "a": "A result, confidence, probabilities."
+    },
+    {
+     "q": "What starts a flow?",
+     "a": "Hand, schedule or note change."
+    },
+    {
+     "q": "Do expressions get the network?",
+     "a": "No."
+    },
+    {
+     "q": "What does For each do?",
+     "a": "Repeats steps per item."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Step types",
+     "intro": "Match each step with what it does.",
+     "pairs": [
+      [
+       "Tool",
+       "Call one of Jade's tools"
+      ],
+      [
+       "Shell",
+       "Run a BusyBox command"
+      ],
+      [
+       "Decide",
+       "Pick an option with probabilities"
+      ],
+      [
+       "Notify me",
+       "Send a notification"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Fill a template",
+     "intro": "Write render(tpl, data): replace each {{ $json }} with str(data) when data is not a dict, and each {{ $json.a.b }} with the value at that path in the dict data (use str of the value). A missing path gives an empty string. Other text is unchanged.",
+     "fn": "render",
+     "starter": "def render(tpl, data):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Hello {{ $json.name }}!",
+        {
+         "name": "Ada"
+        }
+       ],
+       "expect": "Hello Ada!"
+      },
+      {
+       "args": [
+        "{{ $json }} items",
+        5
+       ],
+       "expect": "5 items"
+      },
+      {
+       "args": [
+        "{{ $json.user.city }}",
+        {
+         "user": {
+          "city": "Lisbon"
+         }
+        }
+       ],
+       "expect": "Lisbon"
+      },
+      {
+       "args": [
+        "{{ $json.missing }}.",
+        {
+         "a": 1
+        }
+       ],
+       "expect": "."
+      },
+      {
+       "args": [
+        "plain",
+        {}
+       ],
+       "expect": "plain"
+      }
+     ],
+     "hint": "Walk the path key by key.",
+     "solution": "def render(tpl, data):\n    out = ''\n    i = 0\n    while i < len(tpl):\n        if tpl[i:i + 2] == '{{':\n            j = tpl.find('}}', i)\n            if j > 0:\n                expr = tpl[i + 2:j].strip()\n                val = ''\n                if expr == '$json':\n                    val = '' if isinstance(data, dict) else str(data)\n                elif expr.startswith('$json.'):\n                    cur = data\n                    ok = True\n                    for key in expr[6:].split('.'):\n                        if isinstance(cur, dict) and key in cur:\n                            cur = cur[key]\n                        else:\n                            ok = False\n                            break\n                    val = str(cur) if ok else ''\n                out += val\n                i = j + 2\n                continue\n        out += tpl[i]\n        i += 1\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Retry a step",
+     "intro": "Write run_step(results, retries, continue_on_error): results is a list of booleans, the outcome of each attempt in order (true is success). A step is tried up to retries + 1 times and stops at the first success. Return [status, attempts] where status is 'ok' on success, otherwise 'continued' if continue_on_error is true or 'failed'.",
+     "fn": "run_step",
+     "starter": "def run_step(results, retries, continue_on_error):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         false,
+         false,
+         true
+        ],
+        2,
+        false
+       ],
+       "expect": [
+        "ok",
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         false,
+         false,
+         true
+        ],
+        1,
+        false
+       ],
+       "expect": [
+        "failed",
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         false,
+         false,
+         true
+        ],
+        1,
+        true
+       ],
+       "expect": [
+        "continued",
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         true
+        ],
+        3,
+        false
+       ],
+       "expect": [
+        "ok",
+        1
+       ]
+      },
+      {
+       "args": [
+        [],
+        0,
+        false
+       ],
+       "expect": [
+        "failed",
+        0
+       ]
+      }
+     ],
+     "hint": "Stop at the first success.",
+     "solution": "def run_step(results, retries, continue_on_error):\n    attempts = 0\n    for ok in results[:retries + 1]:\n        attempts += 1\n        if ok:\n            return ['ok', attempts]\n    if continue_on_error:\n        return ['continued', attempts]\n    return ['failed', attempts]\n"
+    },
+    {
+     "type": "python",
+     "title": "Run a flow",
+     "intro": "Write run_flow(steps, data): data is a dict and each step changes it in turn. A step ['set', key, value] sets a key. A step ['if', key, value, 'stop'] ends the flow when data[key] equals value. A step ['stop'] ends the flow. Return [stopped, pairs] where stopped tells whether the flow ended early and pairs is the final data as a sorted list of [key, value] pairs.",
+     "fn": "run_flow",
+     "starter": "def run_flow(steps, data):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "set",
+          "a",
+          1
+         ],
+         [
+          "set",
+          "b",
+          2
+         ]
+        ],
+        {}
+       ],
+       "expect": [
+        false,
+        [
+         [
+          "a",
+          1
+         ],
+         [
+          "b",
+          2
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "set",
+          "x",
+          "ok"
+         ],
+         [
+          "if",
+          "x",
+          "ok",
+          "stop"
+         ],
+         [
+          "set",
+          "y",
+          9
+         ]
+        ],
+        {}
+       ],
+       "expect": [
+        true,
+        [
+         [
+          "x",
+          "ok"
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "stop"
+         ],
+         [
+          "set",
+          "z",
+          1
+         ]
+        ],
+        {
+         "q": 0
+        }
+       ],
+       "expect": [
+        true,
+        [
+         [
+          "q",
+          0
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        [],
+        {
+         "k": 5
+        }
+       ],
+       "expect": [
+        false,
+        [
+         [
+          "k",
+          5
+         ]
+        ]
+       ]
+      }
+     ],
+     "hint": "Copy the data, then apply each step.",
+     "solution": "def run_flow(steps, data):\n    d = {}\n    for k in data:\n        d[k] = data[k]\n    for st in steps:\n        if st[0] == 'set':\n            d[st[1]] = st[2]\n        elif st[0] == 'if':\n            if d.get(st[1]) == st[2]:\n                return [True, [[k, d[k]] for k in sorted(d)]]\n        elif st[0] == 'stop':\n            return [True, [[k, d[k]] for k in sorted(d)]]\n    return [False, [[k, d[k]] for k in sorted(d)]]\n"
+    }
+   ]
+  },
+  {
+   "title": "Playbooks: deterministic automation",
+   "maps": [
+    {
+     "title": "Playbooks",
+     "links": [
+      "Playbook | is | JSON tasks",
+      "Task | has | do and keywords",
+      "when | skips | A task",
+      "loop | repeats | A task",
+      "register | stores | A result",
+      "rescue | handles | Failure",
+      "Approval | binds | A hash of content"
+     ]
+    }
+   ],
+   "summary": [
+    "A playbook is Jade's version of Ansible: a saved JSON list of tasks that call any tool, the browser or built-in actions, in the same order each time, with no model in the loop.",
+    "Tasks have a do action and keywords such as when, loop, register, retries, until, failed_when, ignore_errors, block, rescue and always. Strings may hold double-brace expressions in a small safe language.",
+    "You approve a playbook when it is saved, and again whenever its content changes, so a schedule or flow can run it unattended."
+   ],
+   "glossary": [
+    {
+     "term": "Playbook",
+     "def": "A saved JSON list of tasks run without a model."
+    },
+    {
+     "term": "Task",
+     "def": "One action with arguments and keywords."
+    },
+    {
+     "term": "register",
+     "def": "A keyword that stores a task's result in a variable."
+    },
+    {
+     "term": "rescue",
+     "def": "Tasks that run when a block fails."
+    },
+    {
+     "term": "Approval hash",
+     "def": "A fingerprint of the playbook; a change makes it unapproved."
+    },
+    {
+     "term": "Expression language",
+     "def": "A safe mini language for when, until and templates."
+    }
+   ],
+   "keyPoints": [
+    "Chat is for exploring and deciding; a playbook is for repeating.",
+    "Playbooks live in /Jade/Playbooks/NAME.json and are edited in the Playbooks tab.",
+    "The expression language has no JavaScript: only variables, literals, operators and listed functions.",
+    "An undefined name is an error, not an empty string.",
+    "At most 1000 tasks and 300 seconds per run (maximum 900).",
+    "Only an approved, unchanged playbook runs from a flow or a schedule."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A playbook is a fixed recipe with no thinking: do step one, then two. You sign it, and if anyone changes a word it needs your signature again."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When Jade explores, she reasons. When something must happen the same way every time, reasoning is a risk. A playbook removes the model from the loop. It is a list of tasks, each a tool call with fixed arguments, so the same input gives the same steps."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "json",
+     "code": "{\"description\":\"Price of the lamp\",\"allow_hosts\":[\"shop.example\"],\"vars\":{\"max\":50},\"tasks\":[\n {\"name\":\"Open the shop\",\"do\":\"browser.goto\",\"url\":\"https://shop.example/lamp\"},\n {\"do\":\"browser.extract\",\"css\":\".price\",\"register\":\"price\"},\n {\"do\":\"assert\",\"that\":[\"price | float <= max\"],\"msg\":\"too expensive: {{ price }}\"},\n {\"do\":\"save\",\"path\":\"/Jade/Playbooks/out/lamp.txt\",\"value\":\"{{ today() }} {{ price }}\",\"append\":true}]}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "If you know Ansible, the keywords will look familiar. The keyword when skips a task if its expression is false. Loop repeats over a list. Register stores a result in a variable. Retries and until repeat a failing task. Failed_when turns a success into a failure. Ignore_errors keeps going.",
+      "A block groups tasks, rescue runs on failure and always runs either way."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The expression language is a small safe interpreter. It has numbers, strings, lists, comparison and logic operators, in, is defined, and a list of filters such as float, which strips currency symbols so that the text $12.50 becomes 12.5. It never runs JavaScript.",
+      "A name that is not defined is an error rather than silently empty, which catches typos before they cause damage."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Approval is what makes unattended runs safe. When you save a playbook from the tab, you approve it, and the approval is tied to a hash of its content. If anyone changes the file, the hash changes and the playbook is no longer approved until you approve it again.",
+      "A flow or schedule will refuse to run a playbook that is new or changed."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "More limits protect you. The allow_hosts list limits where the browser may go and which URLs any task may fetch. Run variables are limited to the ones the playbook declares. Saves go only under /Jade/Playbooks/out.",
+      "A failure stops the run at that task unless you wrote ignore_errors or a rescue, and nothing is repaired or guessed."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does when do?",
+     "options": [
+      "Skips the task if false",
+      "Repeats the task",
+      "Stores a result",
+      "Approves it"
+     ],
+     "answer": 0,
+     "explain": "A condition."
+    },
+    {
+     "q": "What happens when you edit an approved playbook?",
+     "options": [
+      "It needs approving again",
+      "It still runs",
+      "It is deleted",
+      "Jade approves it"
+     ],
+     "answer": 0,
+     "explain": "The hash changes."
+    },
+    {
+     "q": "What is an undefined name in an expression?",
+     "options": [
+      "An error",
+      "An empty string",
+      "Zero",
+      "True"
+     ],
+     "answer": 0,
+     "explain": "Typos are caught."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does register do?",
+     "a": "Stores a task result."
+    },
+    {
+     "q": "What is rescue for?",
+     "a": "Handling failure."
+    },
+    {
+     "q": "What does allow_hosts limit?",
+     "a": "Where requests may go."
+    },
+    {
+     "q": "Is a model in the loop?",
+     "a": "No."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Keywords",
+     "intro": "Match each keyword with its job.",
+     "pairs": [
+      [
+       "when",
+       "Skip if the expression is false"
+      ],
+      [
+       "loop",
+       "Repeat over a list"
+      ],
+      [
+       "register",
+       "Store the result in a variable"
+      ],
+      [
+       "rescue",
+       "Run on failure"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Evaluate an expression",
+     "intro": "Write eval_expr(expr, vars): clauses joined by ' or ' (weaker) and ' and '. A clause is 'left OP right' with spaces around OP in == != < <= > >=, or 'x is defined' / 'x is not defined'. An operand is a number, a quoted string, true, false, or a variable name, optionally followed by ' | float' or ' | int' (float strips every character except digits, . and -). Return true or false, or 'error' if a variable used is not defined.",
+     "fn": "eval_expr",
+     "starter": "def eval_expr(expr, vars):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "price | float <= max",
+        {
+         "price": "$12.50",
+         "max": 50
+        }
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "price | float > max",
+        {
+         "price": "$99.00",
+         "max": 50
+        }
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "x == 3 and y == 4",
+        {
+         "x": 3,
+         "y": 4
+        }
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "x == 3 or y == 9",
+        {
+         "x": 1,
+         "y": 9
+        }
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "z == 1",
+        {
+         "x": 1
+        }
+       ],
+       "expect": "error"
+      },
+      {
+       "args": [
+        "z is defined",
+        {
+         "x": 1
+        }
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "z is not defined",
+        {
+         "x": 1
+        }
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "name == 'ana'",
+        {
+         "name": "ana"
+        }
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Split on or, then and, then the operator.",
+     "solution": "def eval_expr(expr, vars):\n    class Undef(Exception):\n        pass\n\n    def val(tok):\n        tok = tok.strip()\n        conv = None\n        if ' | ' in tok:\n            tok, conv = tok.split(' | ', 1)\n            tok = tok.strip()\n            conv = conv.strip()\n        if tok[:1] == '\"' or tok[:1] == \"'\":\n            v = tok[1:-1]\n        elif tok == 'true':\n            v = True\n        elif tok == 'false':\n            v = False\n        else:\n            try:\n                v = float(tok) if '.' in tok else int(tok)\n            except ValueError:\n                if tok not in vars:\n                    raise Undef()\n                v = vars[tok]\n        if conv in ('float', 'int'):\n            if isinstance(v, str):\n                keep = ''\n                for ch in v:\n                    if ch.isdigit() or ch in '.-':\n                        keep += ch\n                v = float(keep)\n            else:\n                v = float(v)\n            if conv == 'int':\n                v = int(v)\n        return v\n\n    def clause(c):\n        c = c.strip()\n        if c.endswith(' is not defined'):\n            return c[:-15].strip() not in vars\n        if c.endswith(' is defined'):\n            return c[:-11].strip() in vars\n        for op in ['==', '!=', '<=', '>=', '<', '>']:\n            parts = c.split(' ' + op + ' ', 1)\n            if len(parts) == 2:\n                a = val(parts[0])\n                b = val(parts[1])\n                if op == '==':\n                    return a == b\n                if op == '!=':\n                    return a != b\n                if op == '<':\n                    return a < b\n                if op == '>':\n                    return a > b\n                if op == '<=':\n                    return a <= b\n                return a >= b\n        return bool(val(c))\n\n    try:\n        for alt in expr.split(' or '):\n            ok = True\n            for c in alt.split(' and '):\n                if not clause(c):\n                    ok = False\n                    break\n            if ok:\n                return True\n        return False\n    except Undef:\n        return 'error'\n"
+    },
+    {
+     "type": "python",
+     "title": "Run tasks",
+     "intro": "Write run_tasks(tasks, vars): each task is a dict with 'do' ('set', 'fail' or 'assert'), and optional 'when' (a variable name that must be truthy), 'ignore_errors' and, for set, 'name' and 'value', for assert 'name' (a variable that must be truthy). Run them in order. A task whose 'when' variable is missing or falsy is skipped. 'set' stores value in vars. 'fail' fails; 'assert' fails when its variable is falsy. A failure is ignored when ignore_errors is true, otherwise it stops the run. Return [ok, ok_count, skipped, failed, ignored] where ok is false if the run stopped.",
+     "fn": "run_tasks",
+     "starter": "def run_tasks(tasks, vars):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         {
+          "do": "set",
+          "name": "a",
+          "value": 1
+         },
+         {
+          "do": "assert",
+          "name": "a"
+         }
+        ],
+        {}
+       ],
+       "expect": [
+        true,
+        2,
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         {
+          "do": "set",
+          "name": "a",
+          "value": 1
+         },
+         {
+          "do": "fail",
+          "when": "b"
+         }
+        ],
+        {}
+       ],
+       "expect": [
+        true,
+        1,
+        1,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         {
+          "do": "fail",
+          "ignore_errors": true
+         },
+         {
+          "do": "set",
+          "name": "x",
+          "value": 2
+         }
+        ],
+        {}
+       ],
+       "expect": [
+        true,
+        1,
+        0,
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         {
+          "do": "set",
+          "name": "a",
+          "value": 1
+         },
+         {
+          "do": "fail"
+         },
+         {
+          "do": "set",
+          "name": "b",
+          "value": 2
+         }
+        ],
+        {}
+       ],
+       "expect": [
+        false,
+        1,
+        0,
+        1,
+        0
+       ]
+      }
+     ],
+     "hint": "A failure that is not ignored stops the run.",
+     "solution": "def run_tasks(tasks, vars):\n    v = {}\n    for k in vars:\n        v[k] = vars[k]\n    ok_n = 0\n    skipped = 0\n    failed = 0\n    ignored = 0\n    for t in tasks:\n        w = t.get('when')\n        if w is not None and not v.get(w):\n            skipped += 1\n            continue\n        do = t['do']\n        bad = False\n        if do == 'set':\n            v[t['name']] = t['value']\n        elif do == 'fail':\n            bad = True\n        elif do == 'assert':\n            bad = not v.get(t['name'])\n        if bad:\n            if t.get('ignore_errors'):\n                ignored += 1\n            else:\n                failed += 1\n                return [False, ok_n, skipped, failed, ignored]\n        else:\n            ok_n += 1\n    return [True, ok_n, skipped, failed, ignored]\n"
+    },
+    {
+     "type": "python",
+     "title": "Approval hash",
+     "intro": "Write fnv1a(text): the 32 bit FNV-1a hash of the characters' code points (all below 256): start with h = 2166136261; for each character, h = (h XOR code) then multiplied by 16777619, keeping only the lowest 32 bits. Return h as an integer.",
+     "fn": "fnv1a",
+     "starter": "def fnv1a(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        ""
+       ],
+       "expect": 2166136261
+      },
+      {
+       "args": [
+        "a"
+       ],
+       "expect": 3826002220
+      },
+      {
+       "args": [
+        "playbook"
+       ],
+       "expect": 165520030
+      },
+      {
+       "args": [
+        "playbook "
+       ],
+       "expect": 1172779290
+      }
+     ],
+     "hint": "Mask to 32 bits at every step.",
+     "solution": "def fnv1a(text):\n    h = 2166136261\n    for ch in text:\n        h ^= ord(ch)\n        h = (h * 16777619) & 0xFFFFFFFF\n    return h\n"
+    }
+   ]
+  },
+  {
+   "title": "The knowledge graph",
+   "maps": [
+    {
+     "title": "Knowledge",
+     "links": [
+      "Fact | is | A relation",
+      "Rule | derives | New facts",
+      "Constraint | forbids | Contradictions",
+      "Reasoner | is | Datalog in Rust",
+      "Verdict | is | Proven, contradicted or unknown",
+      "Open world | means | Missing is not false",
+      "Proposed | waits for | Your confirmation"
+     ]
+    }
+   ],
+   "summary": [
+    "The knowledge graph holds facts such as works_at(alice, acme), rules that derive new facts, and constraints that must never be broken. A Datalog reasoner, written in Rust and run as WebAssembly, checks claims against them.",
+    "Every answer is one of three: proven with its proof, contradicted, or unknown. The graph is open-world: something missing is not false.",
+    "Facts Jade adds are proposed until you confirm them, so you decide what counts."
+   ],
+   "glossary": [
+    {
+     "term": "Fact",
+     "def": "A relation between things, like works_at(alice, acme)."
+    },
+    {
+     "term": "Rule",
+     "def": "A statement that derives new facts: head :- conditions."
+    },
+    {
+     "term": "Constraint",
+     "def": "A pattern that must never match, written with a leading !."
+    },
+    {
+     "term": "Reasoner",
+     "def": "The engine that derives facts and checks claims."
+    },
+    {
+     "term": "Open world",
+     "def": "Assuming unknown things might be true, not false."
+    },
+    {
+     "term": "Proof",
+     "def": "The facts and rules a conclusion rests on."
+    }
+   ],
+   "keyPoints": [
+    "Facts live in /Jade/Knowledge/facts.jsonl and rules in /Jade/Knowledge/rules.dl.",
+    "Rules use variables that start with a capital letter: above(X, Z) :- reports_to(X, Y), above(Y, Z).",
+    "A constraint such as ! one_employer: works_at(P, A), works_at(P, B), A != B. flags any match.",
+    "Verdicts are proven, contradicted (the opposite holds or a constraint would break) or unknown.",
+    "Confirmed facts are yours; proposed ones wait for you; rejected ones can never be added again.",
+    "A graph of 180,000 derived facts took about 0.15 s in the browser's tests."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A knowledge graph is a wall of true little sentences with string between the names. It can tell you yes, no, or I do not know."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A knowledge graph stores knowledge as small statements. A fact says a relation holds between things, for example works_at with alice and acme. Rules let the graph work out more facts. If bob reports to alice and carol reports to bob, then a rule about above can conclude that carol is above alice."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "works_at(alice, acme)\nreports_to(bob, alice)\nreports_to(carol, bob)\n\nabove(X, Y) :- reports_to(X, Y).\nabove(X, Z) :- reports_to(X, Y), above(Y, Z).\n\n! one_employer: works_at(P, A), works_at(P, B), A != B."
+    },
+    {
+     "type": "text",
+     "items": [
+      "Constraints say what must never happen. The line starting with an exclamation mark says that a person may not work at two different places. If two facts match it, the graph reports a contradiction and shows the facts involved.",
+      "Running Check over notes that Jade turned into facts is a way to find where your own notes disagree."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A question gets one of three answers. Proven means the claim follows from the facts and rules, and the proof is shown. Contradicted means its opposite holds, or accepting it would break a constraint. Unknown means nothing says either way.",
+      "That last answer is important: the graph is open-world, so a missing fact is not treated as false."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The reasoner is Datalog, a small logic language that always terminates and is fast. It is written in Rust and compiled to WebAssembly, so it runs in the page.",
+      "Two rules keep it sound: every variable in a rule head or comparison must appear first in an ordinary condition, and a relation cannot depend on its own absence round a loop."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The graph is under your control. Facts you add are confirmed. Facts Jade adds are proposed, and a proof that rests on a proposed fact says so. If you reject a fact, Jade cannot add it again.",
+      "With Verify answers on, she checks the factual claims in her own answers against the graph and marks each with a tick, a cross or a question mark."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does unknown mean?",
+     "options": [
+      "Nothing in the graph says either way",
+      "The claim is false",
+      "The claim is proven",
+      "The graph is broken"
+     ],
+     "answer": 0,
+     "explain": "Open world."
+    },
+    {
+     "q": "What does a constraint do?",
+     "options": [
+      "Flags matches as contradictions",
+      "Adds a fact",
+      "Deletes facts",
+      "Runs a flow"
+     ],
+     "answer": 0,
+     "explain": "It names what must never happen."
+    },
+    {
+     "q": "Who confirms facts Jade adds?",
+     "options": [
+      "You",
+      "The model",
+      "A flow",
+      "Nobody"
+     ],
+     "answer": 0,
+     "explain": "They start as proposed."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a rule head?",
+     "a": "The fact a rule derives."
+    },
+    {
+     "q": "What language is the reasoner?",
+     "a": "Datalog."
+    },
+    {
+     "q": "Where are the facts stored?",
+     "a": "facts.jsonl."
+    },
+    {
+     "q": "What are the three verdicts?",
+     "a": "Proven, contradicted, unknown."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Verdicts",
+     "intro": "Match each verdict with its meaning.",
+     "pairs": [
+      [
+       "Proven",
+       "Follows from facts and rules, with a proof"
+      ],
+      [
+       "Contradicted",
+       "The opposite holds or a constraint breaks"
+      ],
+      [
+       "Unknown",
+       "The graph does not say"
+      ],
+      [
+       "Proposed fact",
+       "Added by Jade, waiting for you"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Parse a fact",
+     "intro": "Write parse_fact(s): turn 'works_at(alice, \"Acme Corp\")' into ['works_at', 'alice', 'Acme Corp']: the relation name, then the arguments split on commas that are outside double quotes, trimmed, with the quotes removed. A number argument stays text. Return an empty list if there are no parentheses.",
+     "fn": "parse_fact",
+     "starter": "def parse_fact(s):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "works_at(alice, acme)"
+       ],
+       "expect": [
+        "works_at",
+        "alice",
+        "acme"
+       ]
+      },
+      {
+       "args": [
+        "works_at(alice, \"Acme Corp\")"
+       ],
+       "expect": [
+        "works_at",
+        "alice",
+        "Acme Corp"
+       ]
+      },
+      {
+       "args": [
+        "team_size(acme, 12)"
+       ],
+       "expect": [
+        "team_size",
+        "acme",
+        "12"
+       ]
+      },
+      {
+       "args": [
+        "nothing"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "f(a)"
+       ],
+       "expect": [
+        "f",
+        "a"
+       ]
+      }
+     ],
+     "hint": "Track whether you are inside quotes.",
+     "solution": "def parse_fact(s):\n    s = s.strip()\n    a = s.find('(')\n    if a < 0 or not s.endswith(')'):\n        return []\n    rel = s[:a].strip()\n    inner = s[a + 1:-1]\n    args = []\n    cur = ''\n    inq = False\n    for ch in inner:\n        if ch == '\"':\n            inq = not inq\n        elif ch == ',' and not inq:\n            args.append(cur.strip())\n            cur = ''\n        else:\n            cur += ch\n    args.append(cur.strip())\n    return [rel] + args\n"
+    },
+    {
+     "type": "python",
+     "title": "Reports to, transitively",
+     "intro": "Write above(pairs): pairs is a list of [x, y] meaning x reports to y. Return the sorted list of every [x, z] derived by the rules above(X,Y) :- reports_to(X,Y) and above(X,Z) :- reports_to(X,Y), above(Y,Z). Cycles must not loop forever.",
+     "fn": "above",
+     "starter": "def above(pairs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "bob",
+          "alice"
+         ],
+         [
+          "carol",
+          "bob"
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         "bob",
+         "alice"
+        ],
+        [
+         "carol",
+         "alice"
+        ],
+        [
+         "carol",
+         "bob"
+        ]
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "b"
+         ],
+         [
+          "b",
+          "a"
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         "a",
+         "a"
+        ],
+        [
+         "a",
+         "b"
+        ],
+        [
+         "b",
+         "a"
+        ],
+        [
+         "b",
+         "b"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "d",
+          "c"
+         ],
+         [
+          "c",
+          "b"
+         ],
+         [
+          "b",
+          "a"
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         "b",
+         "a"
+        ],
+        [
+         "c",
+         "a"
+        ],
+        [
+         "c",
+         "b"
+        ],
+        [
+         "d",
+         "a"
+        ],
+        [
+         "d",
+         "b"
+        ],
+        [
+         "d",
+         "c"
+        ]
+       ]
+      }
+     ],
+     "hint": "Repeat until nothing new is added.",
+     "solution": "def above(pairs):\n    known = set()\n    for x, y in pairs:\n        known.add((x, y))\n    changed = True\n    while changed:\n        changed = False\n        for x, y in pairs:\n            for a, b in list(known):\n                if a == y and (x, b) not in known:\n                    known.add((x, b))\n                    changed = True\n    return sorted([list(p) for p in known])\n"
+    },
+    {
+     "type": "python",
+     "title": "One employer",
+     "intro": "Write one_employer(facts): facts is a list of [relation, subject, object]. For the relation works_at, return the sorted list of subjects that work at two or more different objects (the constraint ! one_employer).",
+     "fn": "one_employer",
+     "starter": "def one_employer(facts):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "works_at",
+          "alice",
+          "acme"
+         ],
+         [
+          "works_at",
+          "alice",
+          "globex"
+         ],
+         [
+          "works_at",
+          "bob",
+          "acme"
+         ]
+        ]
+       ],
+       "expect": [
+        "alice"
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "works_at",
+          "a",
+          "x"
+         ],
+         [
+          "works_at",
+          "a",
+          "x"
+         ]
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "owns",
+          "a",
+          "x"
+         ],
+         [
+          "owns",
+          "a",
+          "y"
+         ]
+        ]
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Collect the set of employers per person.",
+     "solution": "def one_employer(facts):\n    jobs = {}\n    for rel, subj, obj in facts:\n        if rel == 'works_at':\n            if subj not in jobs:\n                jobs[subj] = set()\n            jobs[subj].add(obj)\n    out = []\n    for s in jobs:\n        if len(jobs[s]) > 1:\n            out.append(s)\n    return sorted(out)\n"
+    },
+    {
+     "type": "python",
+     "title": "Verdict",
+     "intro": "Write verdict(facts, claim, single_valued): facts and claim are [relation, subject, object]; single_valued is a list of relations that allow only one object per subject. Return 'proven' when the claim is in facts; 'contradicted' when its relation is single valued and facts hold the same relation and subject with a different object; otherwise 'unknown' (open world).",
+     "fn": "verdict",
+     "starter": "def verdict(facts, claim, single_valued):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "works_at",
+          "alice",
+          "acme"
+         ]
+        ],
+        [
+         "works_at",
+         "alice",
+         "acme"
+        ],
+        [
+         "works_at"
+        ]
+       ],
+       "expect": "proven"
+      },
+      {
+       "args": [
+        [
+         [
+          "works_at",
+          "alice",
+          "acme"
+         ]
+        ],
+        [
+         "works_at",
+         "alice",
+         "globex"
+        ],
+        [
+         "works_at"
+        ]
+       ],
+       "expect": "contradicted"
+      },
+      {
+       "args": [
+        [
+         [
+          "works_at",
+          "alice",
+          "acme"
+         ]
+        ],
+        [
+         "works_at",
+         "bob",
+         "acme"
+        ],
+        [
+         "works_at"
+        ]
+       ],
+       "expect": "unknown"
+      },
+      {
+       "args": [
+        [
+         [
+          "likes",
+          "a",
+          "x"
+         ]
+        ],
+        [
+         "likes",
+         "a",
+         "y"
+        ],
+        [
+         "works_at"
+        ]
+       ],
+       "expect": "unknown"
+      }
+     ],
+     "hint": "Check for the claim, then for a clash.",
+     "solution": "def verdict(facts, claim, single_valued):\n    for f in facts:\n        if f == claim:\n            return 'proven'\n    if claim[0] in single_valued:\n        for f in facts:\n            if f[0] == claim[0] and f[1] == claim[1] and f[2] != claim[2]:\n                return 'contradicted'\n    return 'unknown'\n"
+    }
+   ]
+  },
+  {
+   "title": "Autonomous mode and plans",
+   "maps": [
+    {
+     "title": "Autonomy",
+     "links": [
+      "Queue | holds | Three tiers",
+      "Tier 1 | is | Interrupts",
+      "Tier 2 | is | A priority queue",
+      "Tier 3 | is | Round robin",
+      "Limits | bound | Steps and hours",
+      "Plans | draw | Gantt charts",
+      "Critical path | sets | The finish date"
+     ]
+    }
+   ],
+   "summary": [
+    "In autonomous mode Jade works through a queue on her own, the way an operating system schedules programs: interrupts first, then a priority queue with aging, then round robin with feedback for long goals.",
+    "You set the limits: steps per hour, a daily cap, quiet hours, a pause while you use the app, and approval for tools that reach outside the vault. Everything is logged.",
+    "Plans are Gantt charts for projects with dependencies, milestones and a critical path."
+   ],
+   "glossary": [
+    {
+     "term": "Autonomous mode",
+     "def": "Jade works through her queue without being asked, within your limits."
+    },
+    {
+     "term": "Interrupt",
+     "def": "An urgent item that goes first."
+    },
+    {
+     "term": "Aging",
+     "def": "Raising a waiting task's priority so it is not starved."
+    },
+    {
+     "term": "Round robin",
+     "def": "Giving each long goal short turns in rotation."
+    },
+    {
+     "term": "Gantt chart",
+     "def": "A bar chart of tasks over time."
+    },
+    {
+     "term": "Critical path",
+     "def": "The chain of tasks that sets the finish date."
+    }
+   ],
+   "keyPoints": [
+    "Tier 1 interrupts go first in arrival order; Jade may hold at most 3 of her own.",
+    "Tier 2 orders by priority 0 to 100, plus up to 40 for waiting, plus 10, 30 or 50 for a deadline within a day, an hour or already passed.",
+    "Tier 3 gets slices of 2, 4 or 8 steps; a goal that uses its slice drops a level, one that waits 30 minutes rises one.",
+    "Tier 3 gets every 4th turn when tier 2 also has work.",
+    "Each slice ends with STATUS: done, continue or blocked.",
+    "Defaults: 60 steps an hour, 600 a day, quiet hours 11pm to 7am."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Autonomous mode is a to-do tray with rules: urgent things first, waiting things get bumped up, big jobs get short turns, and she sleeps at night."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "If you have ever waited for a slow computer, you have met a scheduler. An operating system must decide which program runs next. Jade Vault applies the same idea to an agent's to-do list. In Schedule, Queue, a switch called Autonomous lets her work through it without you."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The queue has three tiers. Tier one is interrupts: urgent items that go first, in arrival order, with at most three that Jade herself may hold. Tier two is a priority queue for one-off work. Each task has a priority from 0 to 100, and waiting raises it by up to 40, so nothing waits forever.",
+      "A deadline within a day adds 10, within an hour adds 30, and one that has passed adds 50."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Tier three is round robin for long goals. A goal gets a short slice of 2, 4 or 8 model steps depending on its level. A goal that uses its whole slice drops a level, and one that waited 30 minutes rises one.",
+      "When tiers two and three both have work, tier three gets at least every fourth turn, so long goals never starve. Between slices she keeps only a short note, and each slice ends with a status line: done, continue or blocked."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Limits keep this safe. She stops in quiet hours, which start at 11pm and end at 7am at first, and when the step budget for the hour or day is used. She pauses while you use the app or chat.",
+      "Tools that reach outside the vault, such as phone, SSH, browsers and MCP servers, wait for your Allow button for that one task. Stop turns it all off at once, and every action is logged to /Jade/Autonomy/log.md."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Plans are for work that takes weeks. Under Schedule, Plans shows a project as a Gantt chart with a bar per task, arrows for dependencies, diamonds for milestones and a line for today. The critical path is the chain of dependent tasks that sets the finish date, drawn with a bright edge.",
+      "Dragging a bar moves the tasks that depend on it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Plans and the queue are separate, with one link. With autonomous mode on and the setting to work on her ready plan tasks, each of Jade's tasks whose dependencies are done becomes a tier three goal, and finishing it marks the plan task 100 percent."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does tier 1 hold?",
+     "options": [
+      "Interrupts",
+      "Long goals",
+      "One-off tasks",
+      "Plans"
+     ],
+     "answer": 0,
+     "explain": "They go first."
+    },
+    {
+     "q": "What does aging do?",
+     "options": [
+      "Raises priority while a task waits",
+      "Deletes old tasks",
+      "Slows tools",
+      "Closes the app"
+     ],
+     "answer": 0,
+     "explain": "Prevents starvation."
+    },
+    {
+     "q": "What sets the finish date of a plan?",
+     "options": [
+      "The critical path",
+      "The first task",
+      "The longest name",
+      "Today's date"
+     ],
+     "answer": 0,
+     "explain": "The longest dependent chain."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does STATUS: blocked mean?",
+     "a": "She needs your help."
+    },
+    {
+     "q": "What stops autonomous mode at once?",
+     "a": "Stop."
+    },
+    {
+     "q": "Where is it logged?",
+     "a": "/Jade/Autonomy/log.md."
+    },
+    {
+     "q": "What is a milestone?",
+     "a": "A diamond marker."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Tiers",
+     "intro": "Match each tier with what it is for.",
+     "pairs": [
+      [
+       "Tier 1",
+       "Urgent interrupts"
+      ],
+      [
+       "Tier 2",
+       "One-off work by priority"
+      ],
+      [
+       "Tier 3",
+       "Long goals in turns"
+      ],
+      [
+       "Plans",
+       "Gantt charts for projects"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Effective priority",
+     "intro": "Write effective_priority(base, waiting_bonus, minutes_to_deadline): base is 0 to 100. Add the waiting bonus capped at 40. Add a deadline bonus: none when minutes_to_deadline is None or more than 1440; 10 when at most 1440; 30 when at most 60; 50 when 0 or less (already passed). Return the total.",
+     "fn": "effective_priority",
+     "starter": "def effective_priority(base, waiting_bonus, minutes_to_deadline):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        50,
+        0,
+        null
+       ],
+       "expect": 50
+      },
+      {
+       "args": [
+        50,
+        100,
+        null
+       ],
+       "expect": 90
+      },
+      {
+       "args": [
+        50,
+        10,
+        1000
+       ],
+       "expect": 70
+      },
+      {
+       "args": [
+        50,
+        10,
+        30
+       ],
+       "expect": 90
+      },
+      {
+       "args": [
+        50,
+        10,
+        -5
+       ],
+       "expect": 110
+      },
+      {
+       "args": [
+        20,
+        40,
+        5000
+       ],
+       "expect": 60
+      }
+     ],
+     "hint": "Check the deadline from the tightest case outward.",
+     "solution": "def effective_priority(base, waiting_bonus, minutes_to_deadline):\n    p = base + min(40, waiting_bonus)\n    m = minutes_to_deadline\n    if m is None:\n        return p\n    if m <= 0:\n        return p + 50\n    if m <= 60:\n        return p + 30\n    if m <= 1440:\n        return p + 10\n    return p\n"
+    },
+    {
+     "type": "python",
+     "title": "May she work now?",
+     "intro": "Write may_work(hour, quiet_start, quiet_end, used_hour, max_hour, used_day, max_day, user_active): return the first reason that applies: 'user active' if user_active is true; 'quiet hours' if the hour is in quiet hours (quiet_start to quiet_end, wrapping past midnight when quiet_start is bigger, end exclusive); 'hour budget' if used_hour >= max_hour; 'day budget' if used_day >= max_day; otherwise 'go'.",
+     "fn": "may_work",
+     "starter": "def may_work(hour, quiet_start, quiet_end, used_hour, max_hour, used_day, max_day, user_active):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        12,
+        23,
+        7,
+        10,
+        60,
+        100,
+        600,
+        false
+       ],
+       "expect": "go"
+      },
+      {
+       "args": [
+        23,
+        23,
+        7,
+        0,
+        60,
+        0,
+        600,
+        false
+       ],
+       "expect": "quiet hours"
+      },
+      {
+       "args": [
+        3,
+        23,
+        7,
+        0,
+        60,
+        0,
+        600,
+        false
+       ],
+       "expect": "quiet hours"
+      },
+      {
+       "args": [
+        7,
+        23,
+        7,
+        0,
+        60,
+        0,
+        600,
+        false
+       ],
+       "expect": "go"
+      },
+      {
+       "args": [
+        12,
+        23,
+        7,
+        60,
+        60,
+        100,
+        600,
+        false
+       ],
+       "expect": "hour budget"
+      },
+      {
+       "args": [
+        12,
+        23,
+        7,
+        10,
+        60,
+        600,
+        600,
+        false
+       ],
+       "expect": "day budget"
+      },
+      {
+       "args": [
+        12,
+        23,
+        7,
+        0,
+        60,
+        0,
+        600,
+        true
+       ],
+       "expect": "user active"
+      }
+     ],
+     "hint": "Handle midnight wrap-around.",
+     "solution": "def may_work(hour, quiet_start, quiet_end, used_hour, max_hour, used_day, max_day, user_active):\n    if user_active:\n        return 'user active'\n    if quiet_start > quiet_end:\n        quiet = hour >= quiet_start or hour < quiet_end\n    else:\n        quiet = quiet_start <= hour < quiet_end\n    if quiet:\n        return 'quiet hours'\n    if used_hour >= max_hour:\n        return 'hour budget'\n    if used_day >= max_day:\n        return 'day budget'\n    return 'go'\n"
+    },
+    {
+     "type": "python",
+     "title": "Critical path",
+     "intro": "Write critical_path(tasks): tasks is a list of [name, days, deps] with deps a list of names. A task finishes days after the latest finish of its dependencies. Return [total_days, path] where total_days is the latest finish over all tasks and path is the chain of task names from the first to the last along the longest route. On a tie pick the smallest name.",
+     "fn": "critical_path",
+     "starter": "def critical_path(tasks):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "design",
+          3,
+          []
+         ],
+         [
+          "build",
+          5,
+          [
+           "design"
+          ]
+         ],
+         [
+          "docs",
+          2,
+          [
+           "design"
+          ]
+         ],
+         [
+          "ship",
+          1,
+          [
+           "build",
+           "docs"
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        9,
+        [
+         "design",
+         "build",
+         "ship"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          4,
+          []
+         ]
+        ]
+       ],
+       "expect": [
+        4,
+        [
+         "a"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          2,
+          []
+         ],
+         [
+          "b",
+          2,
+          []
+         ],
+         [
+          "c",
+          1,
+          [
+           "a",
+           "b"
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        3,
+        [
+         "a",
+         "c"
+        ]
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": [
+        0,
+        []
+       ]
+      }
+     ],
+     "hint": "Compute each finish time by recursion.",
+     "solution": "def critical_path(tasks):\n    info = {}\n    for name, days, deps in tasks:\n        info[name] = [days, deps]\n    fin = {}\n\n    def finish(n):\n        if n in fin:\n            return fin[n]\n        days, deps = info[n]\n        best = 0\n        for d in deps:\n            best = max(best, finish(d))\n        fin[n] = days + best\n        return fin[n]\n\n    for n in info:\n        finish(n)\n    if not info:\n        return [0, []]\n    end = sorted(info, key=lambda n: [-fin[n], n])[0]\n    path = [end]\n    cur = end\n    while info[cur][1]:\n        deps = info[cur][1]\n        cur = sorted(deps, key=lambda n: [-fin[n], n])[0]\n        path.append(cur)\n    path.reverse()\n    return [fin[end], path]\n"
+    }
+   ]
+  },
+  {
+   "title": "Think, delegate and the model router",
+   "maps": [
+    {
+     "title": "Think",
+     "links": [
+      "think | builds | A tree of thoughts",
+      "Verifier | can say | No",
+      "Tier 1 | vetoes | Failures",
+      "Beam | keeps | The top few",
+      "delegate | runs | A sub-agent",
+      "Report | returns | One summary",
+      "Router | picks | A model per message"
+     ]
+    }
+   ],
+   "summary": [
+    "The think tool searches a tree of reasoning lines and checks each with something that can say no, such as running code or checking a file. The best verified line is the answer.",
+    "A failed check from a real verifier is a veto, not an average, so a confident judge cannot rescue a solution that fails its test.",
+    "The delegate tool runs a sub-agent with a clean context and returns one report. The model router chooses a quick or strong model for each message."
+   ],
+   "glossary": [
+    {
+     "term": "Tree of thoughts",
+     "def": "Branching several lines of reasoning and keeping the best checked ones."
+    },
+    {
+     "term": "Verifier",
+     "def": "A check, such as running code, that can reject a thought."
+    },
+    {
+     "term": "Veto",
+     "def": "A failure that cannot be averaged away."
+    },
+    {
+     "term": "Beam search",
+     "def": "Keeping only the top few nodes at each depth."
+    },
+    {
+     "term": "Delegate",
+     "def": "A sub-agent that works in its own clean context and reports back."
+    },
+    {
+     "term": "Model router",
+     "def": "A decision model that picks which of your models answers."
+    }
+   ],
+   "keyPoints": [
+    "think verifiers: code (read-only JavaScript), file, rubric and an independent judge.",
+    "Search modes are beam (default), best_first and puct, with budgets in nodes, seconds and tokens.",
+    "Trees are saved after each step and episodes are logged.",
+    "delegate is read-only by default, with 8 steps (max 15) and 120 s (max 300), and its report is capped at 6000 characters.",
+    "A delegate cannot nest or run twice at once.",
+    "The router uses the decision model to send everyday chat to a quick model and hard questions to a strong one."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Think is trying a few ideas and testing each one with something that can say no, like running the code. A failed test cannot be talked around."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Models often answer with confidence and are wrong. The think tool is a cure based on checking.",
+      "Instead of one answer, Jade tries several lines of thought, and each line is checked by something that can say no: a test that runs, a file that must exist, a rubric of yes or no items, or an independent judge."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The design document ranks verifiers in tiers. Tier one is executable ground truth, such as running code and checking the result. It can veto. A solution that fails its test does not get partial credit from a judge that likes it.",
+      "Lower tiers are scored, and the model grading itself is the weakest, with its weight capped."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} s=\\frac{\\sum_i w_i\\,c_i\\,s_i}{\\sum_i w_i\\,c_i} \\\\[0.6em] A_t=\\sum_{k\\ge 0}(\\gamma\\lambda)^k\\,\\delta_{t+k},\\;\\;\\delta_t=r_t+\\gamma V_{t+1}-V_t \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A node's score is the weighted average of its checks, where each weight also counts how reliable that verifier has proved to be. When a line reaches a result, a credit step finds which thought mattered most, using generalised advantage estimation, an idea from reinforcement learning.",
+      "Search is beam by default because a phone can only afford about ten to forty node checks, too few for statistics-heavy methods."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The delegate tool is a different kind of help. It starts a small second agent with a clean context, lets it read, search and fetch for a few steps, and returns one short report. The pages it read never fill Jade's own context. By default it is read-only.",
+      "It cannot call itself, and its report is framed as data."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The model router is a third. Before each message, the decision model, which can be a local model through Ollaya or Ollama, picks which of your models should answer. Everyday chat goes to a quick one and a hard request goes to a strong one.",
+      "This saves time and cost, and you configure it under Decision models."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a tier 1 failure?",
+     "options": [
+      "A veto",
+      "A small penalty",
+      "A warning",
+      "A retry"
+     ],
+     "answer": 0,
+     "explain": "Not averaged away."
+    },
+    {
+     "q": "What does delegate return?",
+     "options": [
+      "One report",
+      "Every page it read",
+      "A new vault",
+      "A model"
+     ],
+     "answer": 0,
+     "explain": "Context stays clean."
+    },
+    {
+     "q": "Which search mode is the default?",
+     "options": [
+      "Beam",
+      "PUCT",
+      "Random",
+      "Depth first"
+     ],
+     "answer": 0,
+     "explain": "Cheap and predictable."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a verifier?",
+     "a": "A check that can say no."
+    },
+    {
+     "q": "Why is beam the default?",
+     "a": "Small budgets."
+    },
+    {
+     "q": "What does the router choose?",
+     "a": "Which model answers."
+    },
+    {
+     "q": "Can a delegate nest?",
+     "a": "No."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Verifier tiers",
+     "intro": "Match each tier with its kind.",
+     "pairs": [
+      [
+       "Tier 1",
+       "Executable ground truth"
+      ],
+      [
+       "Tier 2",
+       "A rubric of structural constraints"
+      ],
+      [
+       "Tier 3",
+       "An independent judge"
+      ],
+      [
+       "Tier 4",
+       "Self-critique"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Score a node",
+     "intro": "Write node_score(evals): evals is a list of [tier, weight, confidence, score] with score from 0 to 1. If any tier 1 evaluation has a score below 0.5 the node is vetoed: return [0.0, True]. Otherwise cap tier 4 weights at 0.25 and return [sum(w*c*s) / sum(w*c) rounded to 4 decimals, False]; with no weight return [0.0, False].",
+     "fn": "node_score",
+     "starter": "def node_score(evals):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          1.0,
+          1.0,
+          1.0
+         ],
+         [
+          3,
+          1.0,
+          0.8,
+          0.6
+         ]
+        ]
+       ],
+       "expect": [
+        0.8222,
+        false
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1.0,
+          1.0,
+          0.0
+         ],
+         [
+          3,
+          1.0,
+          1.0,
+          0.9
+         ]
+        ]
+       ],
+       "expect": [
+        0.0,
+        true
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         [
+          4,
+          1.0,
+          1.0,
+          1.0
+         ],
+         [
+          3,
+          0.5,
+          1.0,
+          0.5
+         ]
+        ]
+       ],
+       "expect": [
+        0.6667,
+        false
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": [
+        0.0,
+        false
+       ],
+       "approx": 0.001
+      }
+     ],
+     "hint": "Check for a veto first.",
+     "solution": "def node_score(evals):\n    num = 0.0\n    den = 0.0\n    for tier, w, c, s in evals:\n        if tier == 1 and s < 0.5:\n            return [0.0, True]\n        if tier == 4:\n            w = min(w, 0.25)\n        num += w * c * s\n        den += w * c\n    if den == 0:\n        return [0.0, False]\n    return [round(num / den, 4), False]\n"
+    },
+    {
+     "type": "python",
+     "title": "Keep the beam",
+     "intro": "Write beam_keep(nodes, width): nodes is a list of [id, score]. Return the ids of the top width nodes, highest score first, ties by id.",
+     "fn": "beam_keep",
+     "starter": "def beam_keep(nodes, width):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          0.5
+         ],
+         [
+          "b",
+          0.9
+         ],
+         [
+          "c",
+          0.9
+         ],
+         [
+          "d",
+          0.1
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        "b",
+        "c"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          1.0
+         ]
+        ],
+        3
+       ],
+       "expect": [
+        "a"
+       ]
+      },
+      {
+       "args": [
+        [],
+        2
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "x",
+          0.2
+         ],
+         [
+          "y",
+          0.2
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        "x"
+       ]
+      }
+     ],
+     "hint": "Sort by score then id.",
+     "solution": "def beam_keep(nodes, width):\n    ordered = sorted(nodes, key=lambda n: [-n[1], n[0]])\n    return [n[0] for n in ordered[:width]]\n"
+    },
+    {
+     "type": "python",
+     "title": "Advantages",
+     "intro": "Write advantages(rewards, values, gamma, lam): for steps t from 0, delta_t = r_t + gamma*V_(t+1) - V_t, where V after the last step is 0. A_t = delta_t + gamma*lam*A_(t+1), with A after the last step 0. Return the list of A_t rounded to 4 decimals.",
+     "fn": "advantages",
+     "starter": "def advantages(rewards, values, gamma, lam):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0,
+         1
+        ],
+        [
+         0.2,
+         0.4,
+         0.8
+        ],
+        0.95,
+        0.9
+       ],
+       "expect": [
+        0.634,
+        0.531,
+        0.2
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        [
+         0.5
+        ],
+        0.95,
+        0.9
+       ],
+       "expect": [
+        0.5
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         0,
+         1
+        ],
+        [
+         0.0,
+         0.0
+        ],
+        0.9,
+        1.0
+       ],
+       "expect": [
+        0.9,
+        1.0
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [],
+        [],
+        0.95,
+        0.9
+       ],
+       "expect": [],
+       "approx": 0.001
+      }
+     ],
+     "hint": "Work backwards from the last step.",
+     "solution": "def advantages(rewards, values, gamma, lam):\n    n = len(rewards)\n    out = [0.0] * n\n    nxt = 0.0\n    for t in range(n - 1, -1, -1):\n        v_next = values[t + 1] if t + 1 < n else 0.0\n        delta = rewards[t] + gamma * v_next - values[t]\n        nxt = delta + gamma * lam * nxt\n        out[t] = round(nxt, 4)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Delegate limits",
+     "intro": "Write delegate_limits(steps, seconds): steps defaults to 8 and seconds to 120 when None. Clamp steps to 1..15 and seconds to 1..300. Return [steps, seconds].",
+     "fn": "delegate_limits",
+     "starter": "def delegate_limits(steps, seconds):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        null,
+        null
+       ],
+       "expect": [
+        8,
+        120
+       ]
+      },
+      {
+       "args": [
+        20,
+        500
+       ],
+       "expect": [
+        15,
+        300
+       ]
+      },
+      {
+       "args": [
+        0,
+        0
+       ],
+       "expect": [
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        10,
+        200
+       ],
+       "expect": [
+        10,
+        200
+       ]
+      }
+     ],
+     "hint": "Apply defaults, then clamp.",
+     "solution": "def delegate_limits(steps, seconds):\n    if steps is None:\n        steps = 8\n    if seconds is None:\n        seconds = 120\n    return [max(1, min(15, steps)), max(1, min(300, seconds))]\n"
+    }
+   ]
+  },
+  {
+   "title": "Jade Lisp and scripting",
+   "maps": [
+    {
+     "title": "Lisp",
+     "links": [
+      "Jade Lisp | is | A small Lisp",
+      "tool/NAME | calls | Any tool",
+      "Macros | build | New words",
+      "Sandbox | runs | Untrusted programs",
+      "Fuel | limits | Steps",
+      "jade.* | scripts | Tools from node",
+      "DSL | is | A small language"
+     ]
+    }
+   ],
+   "summary": [
+    "Jade Lisp is a small Lisp in the style of Scheme and Clojure, part of the base system. It builds small languages for rules and workflows, and scripts that call Jade's tools.",
+    "Programs can run in a sandbox with only the verbs you give them and a step limit called fuel, so a program written by someone else cannot read files, call tools or loop forever.",
+    "Scripts in node can also use a jade object: jade.tool, jade.ask, jade.decide, jade.flow, jade.shell, jade.notify and a key value store."
+   ],
+   "glossary": [
+    {
+     "term": "Lisp",
+     "def": "A language where code is lists, written with parentheses."
+    },
+    {
+     "term": "Macro",
+     "def": "Code that writes code; defmacro with quasiquote."
+    },
+    {
+     "term": "DSL",
+     "def": "A domain specific language: a small language for one job."
+    },
+    {
+     "term": "Fuel",
+     "def": "A limit on evaluation steps that stops runaway programs."
+    },
+    {
+     "term": "Sandbox",
+     "def": "A place where a program can use only the functions you give it."
+    },
+    {
+     "term": "jade.tool",
+     "def": "A script call that runs any of Jade's tools."
+    }
+   ],
+   "keyPoints": [
+    "Data: numbers, strings, symbols, :keywords, lists, maps, nil, #t and #f.",
+    "Forms include define, lambda, let, if, cond, while and defmacro; tail calls run in constant space.",
+    "(tool/NAME :arg value) runs any tool; jade/ask, jade/flow, jade/shell and jade/notify are also available.",
+    "pure=yes runs a whole program without tools, files or JavaScript; fuel=N limits steps.",
+    "Three ways to build a DSL: macros, a sandbox, or parsing the text as data.",
+    "In node: await jade.tool(name, args), jade.ask(prompt), jade.decide({...}), jade.flow(name, input), jade.kv."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Lisp is a tiny language written in nested brackets, small enough for a helper to run safely with a limit on how long it may work."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A Lisp program is a tree written with parentheses. The first item in a list is the function and the rest are its arguments, so adding two numbers is written plus, one, two inside parentheses.",
+      "It looks odd at first, but it has a great advantage: code and data have the same shape, so programs can easily write and inspect other programs."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "lisp",
+     "code": "(define square (lambda (x) (* x x)))\n(square 5)                ; => 25\n\n(define fact\n  (lambda (n) (if (< n 2) 1 (* n (fact (- n 1))))))\n(fact 5)                  ; => 120\n\n;; calling Jade's tools from Lisp\n(tool/notes_search :query \"Lisbon\")\n(jade/notify \"Done\" \"The report is ready\")"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Jade Lisp has the usual forms: define, lambda, let, if, cond and loops with named let, plus macros written with defmacro and quasiquote. It adds maps with keywords, try and catch for errors, and tail calls that run in constant space, so a loop does not grow the stack."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Every tool is callable from Lisp as tool slash name, with keyword arguments. That makes it a good scripting language for chains of tools, and for small languages. There are three ways to build a DSL. With macros, the new language is Lisp with new words.",
+      "In a sandbox, you give the language its verbs as plain functions and run a program written by someone else where only those verbs exist. Or you can parse the text as data and walk the forms yourself."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The sandbox is the safe choice for untrusted programs, such as one from a note or another model. The program cannot read files, call tools or loop forever, because you also give it a step limit called fuel. The option pure=yes runs a whole program with no tools, files or JavaScript at all."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Outside Lisp, the node scripts in the shell, in a flow's JavaScript step and in Jade's own bash, have a jade object.",
+      "A call such as jade.tool with a name and arguments runs a tool, jade.ask gets one model answer without a whole chat, jade.decide asks the decision model, jade.flow runs a flow, and jade.kv keeps small values between runs.",
+      "Files that a script writes are visible to the tools it calls, and the other way round."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does fuel limit?",
+     "options": [
+      "Evaluation steps",
+      "Memory",
+      "Network use",
+      "Output size"
+     ],
+     "answer": 0,
+     "explain": "It stops runaway programs."
+    },
+    {
+     "q": "How do you call a tool from Lisp?",
+     "options": [
+      "(tool/NAME :arg value)",
+      "tool.NAME(arg)",
+      "run NAME",
+      "@NAME"
+     ],
+     "answer": 0,
+     "explain": "Keyword arguments."
+    },
+    {
+     "q": "What does pure=yes do?",
+     "options": [
+      "Runs without tools, files or JavaScript",
+      "Cleans the vault",
+      "Speeds up the model",
+      "Deletes macros"
+     ],
+     "answer": 0,
+     "explain": "A safe mode."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a DSL?",
+     "a": "A small language for one job."
+    },
+    {
+     "q": "What is a macro?",
+     "a": "Code that writes code."
+    },
+    {
+     "q": "What is jade.kv?",
+     "a": "Small stored values."
+    },
+    {
+     "q": "Where is the interpreter?",
+     "a": "/Jade/tools/lisp.js."
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Lisp",
+     "text": "Calling a tool from Lisp is written (tool/{{NAME}} :arg value), and a step limit is called {{fuel}}."
+    },
+    {
+     "type": "python",
+     "title": "Tokenize",
+     "intro": "Write tokens(src): split a Lisp program into tokens: the characters ( and ) are tokens of their own, and everything else is split on whitespace.",
+     "fn": "tokens",
+     "starter": "def tokens(src):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "(+ 1 2)"
+       ],
+       "expect": [
+        "(",
+        "+",
+        "1",
+        "2",
+        ")"
+       ]
+      },
+      {
+       "args": [
+        "(define x (* 2 3))"
+       ],
+       "expect": [
+        "(",
+        "define",
+        "x",
+        "(",
+        "*",
+        "2",
+        "3",
+        ")",
+        ")"
+       ]
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "a b"
+       ],
+       "expect": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "hint": "Pad the parentheses with spaces.",
+     "solution": "def tokens(src):\n    return src.replace('(', ' ( ').replace(')', ' ) ').split()\n"
+    },
+    {
+     "type": "python",
+     "title": "A tiny Lisp",
+     "intro": "Write lisp_eval(src, fuel): evaluate a program of one or more forms and return the value of the last. Support integers and decimals, #t, #f and nil (None), the builtins + - * < > = (with - on one argument negating), if (only #f and nil are false), define, lambda and let with bindings like ((a 1) (b 2)). Every evaluation step uses 1 fuel; return 'out of fuel' when fuel runs out, and 'error' for any other error (such as an unknown name).",
+     "fn": "lisp_eval",
+     "starter": "def lisp_eval(src, fuel):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "(+ 1 2)",
+        1000
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        "(define sq (lambda (x) (* x x))) (sq 5)",
+        1000
+       ],
+       "expect": 25
+      },
+      {
+       "args": [
+        "(define fact (lambda (n) (if (< n 2) 1 (* n (fact (- n 1)))))) (fact 5)",
+        2000
+       ],
+       "expect": 120
+      },
+      {
+       "args": [
+        "(define loop (lambda () (loop))) (loop)",
+        60
+       ],
+       "expect": "out of fuel"
+      },
+      {
+       "args": [
+        "(if #f 1 2)",
+        100
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        "(if 0 1 2)",
+        100
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "(let ((a 2) (b 3)) (* a b))",
+        100
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        "(nothing 1)",
+        100
+       ],
+       "expect": "error"
+      },
+      {
+       "args": [
+        "(- 5)",
+        100
+       ],
+       "expect": -5
+      }
+     ],
+     "hint": "Pass an environment through each evaluation.",
+     "solution": "def lisp_eval(src, fuel):\n    toks = src.replace('(', ' ( ').replace(')', ' ) ').split()\n    pos = [0]\n\n    def parse():\n        t = toks[pos[0]]\n        pos[0] += 1\n        if t == '(':\n            out = []\n            while toks[pos[0]] != ')':\n                out.append(parse())\n            pos[0] += 1\n            return out\n        if t == '#t':\n            return True\n        if t == '#f':\n            return False\n        if t == 'nil':\n            return None\n        try:\n            return int(t)\n        except ValueError:\n            pass\n        try:\n            return float(t)\n        except ValueError:\n            pass\n        return t\n\n    budget = [fuel]\n\n    def lookup(env, name):\n        while env is not None:\n            if name in env[0]:\n                return env[0][name]\n            env = env[1]\n        raise KeyError(name)\n\n    def ev(x, env):\n        budget[0] -= 1\n        if budget[0] < 0:\n            raise RuntimeError('fuel')\n        if x is True or x is False or x is None:\n            return x\n        if isinstance(x, (int, float)):\n            return x\n        if isinstance(x, str):\n            return lookup(env, x)\n        op = x[0]\n        if op == 'if':\n            c = ev(x[1], env)\n            if c is not False and c is not None:\n                return ev(x[2], env)\n            if len(x) > 3:\n                return ev(x[3], env)\n            return None\n        if op == 'define':\n            env[0][x[1]] = ev(x[2], env)\n            return env[0][x[1]]\n        if op == 'lambda':\n            return ['closure', x[1], x[2], env]\n        if op == 'let':\n            scope = [{}, env]\n            for b in x[1]:\n                scope[0][b[0]] = ev(b[1], env)\n            return ev(x[2], scope)\n        fn = ev(op, env)\n        args = [ev(a, env) for a in x[1:]]\n        if isinstance(fn, list):\n            scope = [{}, fn[3]]\n            for i in range(len(fn[1])):\n                scope[0][fn[1][i]] = args[i]\n            return ev(fn[2], scope)\n        return fn(*args)\n\n    def add(*a):\n        t = 0\n        for v in a:\n            t += v\n        return t\n\n    def sub(*a):\n        if len(a) == 1:\n            return -a[0]\n        t = a[0]\n        for v in a[1:]:\n            t -= v\n        return t\n\n    def mul(*a):\n        t = 1\n        for v in a:\n            t *= v\n        return t\n\n    glob = [{'+': add, '-': sub, '*': mul, '<': lambda a, b: a < b, '>': lambda a, b: a > b, '=': lambda a, b: a == b}, None]\n    try:\n        forms = []\n        while pos[0] < len(toks):\n            forms.append(parse())\n        result = None\n        for f in forms:\n            result = ev(f, glob)\n        return result\n    except RuntimeError as e:\n        if str(e) == 'fuel':\n            return 'out of fuel'\n        return 'error'\n    except Exception:\n        return 'error'\n"
+    }
+   ]
+  },
+  {
+   "title": "Connect, back up, secure and build",
+   "maps": [
+    {
+     "title": "Connect",
+     "links": [
+      "HTTP API | answers | JSON over GET",
+      "Token | guards | Every call",
+      "Backup | goes to | Your server",
+      "Encryption | uses | AES-GCM and PBKDF2",
+      "Build | applies | Exact-match patches",
+      "Tests | run in | Playwright",
+      "APK | needs | No Android SDK"
+     ]
+    }
+   ],
+   "summary": [
+    "Jade Vault connects outward in several ways: an HTTP API on the phone, MCP servers, the Vector and Discord messengers, webxdc mini apps, and a fleet broker that shares one vault between devices.",
+    "A scheduled backup uploads a compressed, optionally encrypted file to your own server. Jade can start one but she cannot restore.",
+    "The app is built by applying ordered exact-match patches to a base page; if a patch does not match, the build fails loudly."
+   ],
+   "glossary": [
+    {
+     "term": "HTTP API",
+     "def": "An optional phone-side server that answers GET requests with JSON; off by default."
+    },
+    {
+     "term": "Bearer token",
+     "def": "A secret sent in the Authorization header to prove access."
+    },
+    {
+     "term": "Webxdc",
+     "def": "Sandboxed offline mini apps in a zip with index.html."
+    },
+    {
+     "term": "Vector, Discord",
+     "def": "Messengers where Jade can be a bot, through small bridge servers."
+    },
+    {
+     "term": "Fleet",
+     "def": "One shared vault on a small server used by phones and browsers."
+    },
+    {
+     "term": "Exact-match patch",
+     "def": "A replacement whose old text must occur exactly once, or the build stops."
+    }
+   ],
+   "keyPoints": [
+    "The API is off by default; every call except /v1/health needs the token.",
+    "/v1/chat?message=TEXT sends a message that also appears in the app; errors are JSON with HTTP 400, 401, 404, 409, 502 or 504.",
+    "A backup is JSON, gzip, then optionally AES-GCM with a PBKDF2 key of 210,000 rounds; the server checks a SHA-256 header.",
+    "Backup names use only letters, digits, dot, dash and underscore and end in .json or .json.gz.",
+    "Webxdc apps are sandboxed with no vault access and no network.",
+    "npm run build makes dist/jade-vault.html; npm test runs dozens of Playwright suites; the APK needs a JDK, not the Android SDK."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. You can reach the helper from outside by a door with a key, keep spare copies of the box locked on your own shelf, and the app is built by careful find-and-replace."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A personal agent is more useful when it can be reached. Jade Vault has several doors, and each is a switch that is off until you turn it on. The HTTP API lives in the Android app. When enabled, it listens on your chosen port and answers GET requests with JSON.",
+      "A message sent to the chat endpoint goes through the normal chat and appears in the app."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "bash",
+     "code": "curl -H \"Authorization: Bearer $TOKEN\" \\\n  \"http://PHONE:8787/v1/chat?message=What%20notes%20mention%20Lisbon%3F\"\n\n# errors are JSON too: {\"ok\":false,\"error\":{\"code\":\"busy\",\"message\":\"...\"}}\n# 400 bad request  401 token  404 unknown chat  409 busy  502 model error  504 still working"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Other doors include MCP servers, configured in a file, that plug in more tools. The Vector and Discord bridges let Jade act as a bot, with roles: the owner gets the full Jade, admins get extra powers, and everyone else gets friendly chat.",
+      "Webxdc apps, such as the built-in Jade Link messenger, are small sandboxed apps that can exchange updates with her but cannot see your vault or the network."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Backups protect your data. A scheduled backup uploads to a server you run. The file is JSON, compressed with gzip, and optionally encrypted with AES-GCM using a key derived with PBKDF2 at 210,000 rounds.",
+      "The server checks a checksum header, stores the file atomically with strict permissions, and keeps the newest few of each kind. Jade has a backup tool with status, now and list, but she cannot restore. If you lose the passphrase there is no recovery."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The build is unusual. There is no bundler. A base page is patched by many replacements, and each one's old text must occur exactly once. Zero matches stops the build with MISSING and more than one stops it with AMBIGUOUS, so it never produces a half-patched page.",
+      "Feature modules are then injected in a fixed order, and the result is one HTML file."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Testing uses Playwright with headless Chromium plus engine tests, and every feature gets a test. The Android app is built without the Android SDK, using stubs, a dex step, a packaging tool and signing. The repository also states honestly what has not run on a real phone.",
+      "That habit of saying what was and was not tested is a good one to copy. You now have the map: use the vault, let Jade work within limits, and extend it with skills, flows and playbooks."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does every API call except /v1/health need?",
+     "options": [
+      "The token",
+      "A password",
+      "Wi-Fi only",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Bearer token."
+    },
+    {
+     "q": "What does HTTP 409 mean here?",
+     "options": [
+      "Jade is busy",
+      "Bad token",
+      "Unknown chat",
+      "Model error"
+     ],
+     "answer": 0,
+     "explain": "One message at a time."
+    },
+    {
+     "q": "What does a patch that matches twice cause?",
+     "options": [
+      "The build fails with AMBIGUOUS",
+      "It applies twice",
+      "It is skipped",
+      "A warning"
+     ],
+     "answer": 0,
+     "explain": "Exactly once is required."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Can Jade restore a backup?",
+     "a": "No."
+    },
+    {
+     "q": "What encrypts backups?",
+     "a": "AES-GCM with PBKDF2."
+    },
+    {
+     "q": "Is the API on by default?",
+     "a": "No."
+    },
+    {
+     "q": "What do webxdc apps lack?",
+     "a": "Vault and network access."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Doors",
+     "intro": "Match each connection with what it is.",
+     "pairs": [
+      [
+       "HTTP API",
+       "GET requests answered with JSON"
+      ],
+      [
+       "MCP server",
+       "Extra tools plugged in"
+      ],
+      [
+       "Vector bridge",
+       "Jade as a messenger bot"
+      ],
+      [
+       "Webxdc app",
+       "A sandboxed offline mini app"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Exact-match patch",
+     "intro": "Write rep(text, old, new): replace old with new in text when old occurs exactly once. Return the new text; return 'MISSING' if old does not occur and 'AMBIGUOUS' if it occurs more than once (counting non-overlapping occurrences).",
+     "fn": "rep",
+     "starter": "def rep(text, old, new):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "a b c",
+        "b",
+        "X"
+       ],
+       "expect": "a X c"
+      },
+      {
+       "args": [
+        "a b c",
+        "z",
+        "X"
+       ],
+       "expect": "MISSING"
+      },
+      {
+       "args": [
+        "a b b",
+        "b",
+        "X"
+       ],
+       "expect": "AMBIGUOUS"
+      },
+      {
+       "args": [
+        "abc",
+        "abc",
+        ""
+       ],
+       "expect": ""
+      }
+     ],
+     "hint": "Count the occurrences first.",
+     "solution": "def rep(text, old, new):\n    n = text.count(old)\n    if n == 0:\n        return 'MISSING'\n    if n > 1:\n        return 'AMBIGUOUS'\n    return text.replace(old, new)\n"
+    },
+    {
+     "type": "python",
+     "title": "Backup file names",
+     "intro": "Write valid_backup_name(name): true when the name is not empty, uses only letters, digits, dot, dash and underscore, and ends with .json or .json.gz.",
+     "fn": "valid_backup_name",
+     "starter": "def valid_backup_name(name):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "jade-vault-full-20261109.json.gz"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "jade-vault-config-1.enc.json"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "../etc/passwd"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "backup.zip"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "a b.json"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Check every character, then the ending.",
+     "solution": "def valid_backup_name(name):\n    if not name:\n        return False\n    for ch in name:\n        if not (ch.isalpha() or ch.isdigit() or ch in '.-_'):\n            return False\n    return name.endswith('.json') or name.endswith('.json.gz')\n"
+    },
+    {
+     "type": "python",
+     "title": "Error status",
+     "intro": "Write api_status(kind): map the error kind to the HTTP status: 'bad_request' 400, 'token' 401, 'unknown_chat' 404, 'busy' 409, 'model_error' 502, 'timeout' 504. Any other kind is 500.",
+     "fn": "api_status",
+     "starter": "def api_status(kind):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "bad_request"
+       ],
+       "expect": 400
+      },
+      {
+       "args": [
+        "token"
+       ],
+       "expect": 401
+      },
+      {
+       "args": [
+        "unknown_chat"
+       ],
+       "expect": 404
+      },
+      {
+       "args": [
+        "busy"
+       ],
+       "expect": 409
+      },
+      {
+       "args": [
+        "model_error"
+       ],
+       "expect": 502
+      },
+      {
+       "args": [
+        "timeout"
+       ],
+       "expect": 504
+      },
+      {
+       "args": [
+        "other"
+       ],
+       "expect": 500
+      }
+     ],
+     "hint": "A small lookup table.",
+     "solution": "def api_status(kind):\n    table = {'bad_request': 400, 'token': 401, 'unknown_chat': 404, 'busy': 409, 'model_error': 502, 'timeout': 504}\n    return table.get(kind, 500)\n"
+    },
+    {
+     "type": "python",
+     "title": "Keep the newest",
+     "intro": "Write keep_newest(names, keep): names look like 'jade-vault-KIND-TIMESTAMP.json.gz' where KIND has no dashes and timestamps sort in time order. For each kind keep the newest keep files. Return the sorted list of names to delete.",
+     "fn": "keep_newest",
+     "starter": "def keep_newest(names, keep):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "jade-vault-full-1.json.gz",
+         "jade-vault-full-2.json.gz",
+         "jade-vault-full-3.json.gz",
+         "jade-vault-config-1.json.gz"
+        ],
+        2
+       ],
+       "expect": [
+        "jade-vault-full-1.json.gz"
+       ]
+      },
+      {
+       "args": [
+        [
+         "jade-vault-full-1.json.gz"
+        ],
+        1
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [],
+        3
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "jade-vault-full-1.json.gz",
+         "jade-vault-config-1.json.gz",
+         "jade-vault-config-2.json.gz"
+        ],
+        1
+       ],
+       "expect": [
+        "jade-vault-config-1.json.gz"
+       ]
+      }
+     ],
+     "hint": "Group by kind, sort, drop the oldest.",
+     "solution": "def keep_newest(names, keep):\n    groups = {}\n    for n in names:\n        kind = n.split('-')[2] if n.count('-') >= 3 else ''\n        if kind not in groups:\n            groups[kind] = []\n        groups[kind].append(n)\n    out = []\n    for kind in groups:\n        files = sorted(groups[kind])\n        cut = len(files) - keep\n        if cut > 0:\n            out.extend(files[:cut])\n    return sorted(out)\n"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Jade Vault: A Markdown Vault with an AI Agent",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What is Jade Vault, in short?",
+    "options": [
+     "A markdown vault with an AI agent",
+     "A password manager",
+     "A web browser",
+     "A game engine"
+    ],
+    "answer": 0,
+    "explain": "Notes plus an agent."
+   },
+   {
+    "q": "Where does the browser version keep the vault?",
+    "options": [
+     "IndexedDB",
+     "A cloud drive",
+     "A USB stick",
+     "The model"
+    ],
+    "answer": 0,
+    "explain": "A virtual file system."
+   },
+   {
+    "q": "Where does the Android app keep it?",
+    "options": [
+     "The JadeVault folder",
+     "Only in RAM",
+     "A server",
+     "The cache"
+    ],
+    "answer": 0,
+    "explain": "Real files."
+   },
+   {
+    "q": "Is the model part of the app?",
+    "options": [
+     "No, you connect one",
+     "Yes, built in",
+     "Only on Android",
+     "Only offline"
+    ],
+    "answer": 0,
+    "explain": "Ollama, Groq and others."
+   },
+   {
+    "q": "What do [[double brackets]] make?",
+    "options": [
+     "A link between notes",
+     "A tag",
+     "A secret",
+     "A heading"
+    ],
+    "answer": 0,
+    "explain": "Backlinks follow."
+   },
+   {
+    "q": "What is the first step of a turn?",
+    "options": [
+     "Compact old turns",
+     "Call the model",
+     "Run tools",
+     "Save memory"
+    ],
+    "answer": 0,
+    "explain": "Make room first."
+   },
+   {
+    "q": "What does maxTurns limit?",
+    "options": [
+     "Tool rounds in a reply",
+     "Chats",
+     "Notes",
+     "Model size"
+    ],
+    "answer": 0,
+    "explain": "Then you say continue."
+   },
+   {
+    "q": "How is external text treated?",
+    "options": [
+     "Labelled as data",
+     "As instructions",
+     "Deleted",
+     "Trusted"
+    ],
+    "answer": 0,
+    "explain": "Against injection."
+   },
+   {
+    "q": "How do secrets reach a tool?",
+    "options": [
+     "As {{NAME}} placeholders filled outside the model",
+     "Pasted into the prompt",
+     "Spoken aloud",
+     "Stored in notes"
+    ],
+    "answer": 0,
+    "explain": "The model never sees them."
+   },
+   {
+    "q": "Who may restore a backup?",
+    "options": [
+     "Only you",
+     "Jade",
+     "A flow",
+     "A schedule"
+    ],
+    "answer": 0,
+    "explain": "She cannot."
+   },
+   {
+    "q": "Which file holds long-term memory?",
+    "options": [
+     "/Jade/Memory.md",
+     "/Jade/SOUL.md",
+     "/Jade/Flows",
+     "/Jade/Logs"
+    ],
+    "answer": 0,
+    "explain": "Plain markdown."
+   },
+   {
+    "q": "What is the vector index?",
+    "options": [
+     "A cache that can be rebuilt",
+     "The source of truth",
+     "A backup",
+     "A skill"
+    ],
+    "answer": 0,
+    "explain": "Markdown is the truth."
+   },
+   {
+    "q": "What does reciprocal rank fusion do?",
+    "options": [
+     "Merges ranked lists",
+     "Encrypts notes",
+     "Counts tokens",
+     "Runs tools"
+    ],
+    "answer": 0,
+    "explain": "Keywords plus vectors."
+   },
+   {
+    "q": "What is BM25?",
+    "options": [
+     "A keyword ranking formula",
+     "A model",
+     "A tool",
+     "A key"
+    ],
+    "answer": 0,
+    "explain": "The fallback search."
+   },
+   {
+    "q": "What does a skill file need in its frontmatter?",
+    "options": [
+     "name and description",
+     "A password",
+     "A date",
+     "Nothing"
+    ],
+    "answer": 0,
+    "explain": "SKILL.md."
+   },
+   {
+    "q": "How many skills are all listed in the prompt?",
+    "options": [
+     "15 or fewer",
+     "Exactly 6",
+     "Always 100",
+     "None"
+    ],
+    "answer": 0,
+    "explain": "More are routed."
+   },
+   {
+    "q": "What does find_skill do?",
+    "options": [
+     "Searches the skills not listed",
+     "Deletes skills",
+     "Runs a flow",
+     "Backs up"
+    ],
+    "answer": 0,
+    "explain": "The rest."
+   },
+   {
+    "q": "What does an empty HEARTBEAT.md do?",
+    "options": [
+     "Skips the model call",
+     "Crashes",
+     "Calls the model twice",
+     "Deletes memory"
+    ],
+    "answer": 0,
+    "explain": "Nothing to do."
+   },
+   {
+    "q": "What does the heartbeat answer when nothing needs doing?",
+    "options": [
+     "HEARTBEAT_OK",
+     "STOP",
+     "DONE",
+     "Nothing"
+    ],
+    "answer": 0,
+    "explain": "A quiet reply."
+   },
+   {
+    "q": "What limits curiosity?",
+    "options": [
+     "A window of hours and a daily cap",
+     "Nothing",
+     "Only the model",
+     "Only the phone"
+    ],
+    "answer": 0,
+    "explain": "08:00 to 22:00, 5 a day."
+   },
+   {
+    "q": "How much does the self-score count in curiosity?",
+    "options": [
+     "A quarter, capped near the measured value",
+     "All of it",
+     "Nothing",
+     "Double"
+    ],
+    "answer": 0,
+    "explain": "Measured results win."
+   },
+   {
+    "q": "What starts a flow?",
+    "options": [
+     "Hand, schedule or note change",
+     "Only a button",
+     "Only Jade",
+     "Only cron"
+    ],
+    "answer": 0,
+    "explain": "Also shell and API."
+   },
+   {
+    "q": "What is $json in a flow?",
+    "options": [
+     "The previous step's output",
+     "A secret",
+     "The flow name",
+     "The model"
+    ],
+    "answer": 0,
+    "explain": "Chaining."
+   },
+   {
+    "q": "How many retries can a flow step have?",
+    "options": [
+     "0 to 3",
+     "Unlimited",
+     "Exactly 1",
+     "10"
+    ],
+    "answer": 0,
+    "explain": "Or continue on error."
+   },
+   {
+    "q": "Is a model in the loop of a playbook?",
+    "options": [
+     "No",
+     "Always",
+     "Sometimes",
+     "Only on Android"
+    ],
+    "answer": 0,
+    "explain": "Deterministic."
+   },
+   {
+    "q": "What does a playbook's approval depend on?",
+    "options": [
+     "A hash of its content",
+     "Its name",
+     "Its date",
+     "Its size"
+    ],
+    "answer": 0,
+    "explain": "Changes need re-approval."
+   },
+   {
+    "q": "What does an undefined name do in a playbook expression?",
+    "options": [
+     "It is an error",
+     "Is empty",
+     "Is zero",
+     "Is true"
+    ],
+    "answer": 0,
+    "explain": "Catches typos."
+   },
+   {
+    "q": "What does allow_hosts limit?",
+    "options": [
+     "Where requests may go",
+     "Who may log in",
+     "Disk size",
+     "Model choice"
+    ],
+    "answer": 0,
+    "explain": "Network safety."
+   },
+   {
+    "q": "What is a knowledge graph fact?",
+    "options": [
+     "A relation like works_at(alice, acme)",
+     "A heading",
+     "A tag",
+     "A skill"
+    ],
+    "answer": 0,
+    "explain": "Subject and object."
+   },
+   {
+    "q": "What does unknown mean in the graph?",
+    "options": [
+     "Nothing says either way",
+     "False",
+     "True",
+     "Broken"
+    ],
+    "answer": 0,
+    "explain": "Open world."
+   },
+   {
+    "q": "Who confirms facts Jade adds?",
+    "options": [
+     "You",
+     "The model",
+     "A flow",
+     "Nobody"
+    ],
+    "answer": 0,
+    "explain": "They start as proposed."
+   },
+   {
+    "q": "What goes first in autonomous mode?",
+    "options": [
+     "Tier 1 interrupts",
+     "Long goals",
+     "Plans",
+     "Schedules"
+    ],
+    "answer": 0,
+    "explain": "In arrival order."
+   },
+   {
+    "q": "What sets a plan's finish date?",
+    "options": [
+     "The critical path",
+     "The first task",
+     "Today",
+     "The model"
+    ],
+    "answer": 0,
+    "explain": "Longest chain."
+   },
+   {
+    "q": "What does a failed tier 1 check do in think?",
+    "options": [
+     "Vetoes the node",
+     "Lowers the score a bit",
+     "Nothing",
+     "Retries"
+    ],
+    "answer": 0,
+    "explain": "Ground truth."
+   },
+   {
+    "q": "What does the delegate tool return?",
+    "options": [
+     "One report",
+     "Every page it read",
+     "A vault",
+     "A model"
+    ],
+    "answer": 0,
+    "explain": "Context stays clean."
+   },
+   {
+    "q": "How do you call a tool from Jade Lisp?",
+    "options": [
+     "(tool/NAME :arg value)",
+     "run NAME",
+     "tool.NAME()",
+     "@NAME"
+    ],
+    "answer": 0,
+    "explain": "Keyword arguments."
+   },
+   {
+    "q": "What does fuel limit?",
+    "options": [
+     "Evaluation steps",
+     "Disk",
+     "Network",
+     "Memory"
+    ],
+    "answer": 0,
+    "explain": "Runaway loops."
+   },
+   {
+    "q": "What does the HTTP API need on every call but health?",
+    "options": [
+     "The bearer token",
+     "A cookie",
+     "Nothing",
+     "A password"
+    ],
+    "answer": 0,
+    "explain": "Off by default."
+   },
+   {
+    "q": "What encrypts backups?",
+    "options": [
+     "AES-GCM with a PBKDF2 key",
+     "ROT13",
+     "Nothing",
+     "MD5"
+    ],
+    "answer": 0,
+    "explain": "210,000 rounds."
+   },
+   {
+    "q": "What happens when a build patch matches twice?",
+    "options": [
+     "The build fails with AMBIGUOUS",
+     "It applies twice",
+     "It is skipped",
+     "A warning only"
+    ],
+    "answer": 0,
+    "explain": "Exactly once."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Jade cheat sheet",
+  "prompt": "jade>",
+  "intro": "A scripted lookup, not a real program. Try: vault, turn, tools, memory, skills, flows, playbook, knowledge, lisp, backup, help",
+  "chips": [
+   "vault",
+   "turn",
+   "tools",
+   "memory",
+   "skills",
+   "flows",
+   "playbook",
+   "knowledge",
+   "lisp",
+   "backup",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "vault      Notes are markdown files; [[links]] and #tags connect them",
+     "turn       compact, prefetch, build request, fit context, call model, r",
+     "tools      Switches decide which tools the model sees",
+     "memory     /Jade/Memory.md and a journal per day",
+     "skills     /Jade/skills/NAME/SKILL.md with name and description",
+     "flows      /Jade/Flows/NAME.flow.json; each step's output is $json",
+     "playbook   JSON tasks, no model; when, loop, register, rescue",
+     "knowledge  Facts, Datalog rules, constraints",
+     "lisp       (tool/NAME :arg value) calls any tool",
+     "backup     JSON, gzip, optional AES-GCM with PBKDF2"
+    ]
+   },
+   {
+    "re": "^vault$",
+    "out": [
+     "Notes are markdown files; [[links]] and #tags connect them",
+     "Browser: IndexedDB. Android: the JadeVault folder"
+    ]
+   },
+   {
+    "re": "^turn$",
+    "out": [
+     "compact, prefetch, build request, fit context, call model, run tools, repeat",
+     "maxTurns limits tool rounds; send continue to go on"
+    ]
+   },
+   {
+    "re": "^tools$",
+    "out": [
+     "Switches decide which tools the model sees",
+     "Secrets are {{NAME}} placeholders filled outside the model"
+    ]
+   },
+   {
+    "re": "^memory$",
+    "out": [
+     "/Jade/Memory.md and a journal per day",
+     "Hybrid search: keywords plus vectors, merged by reciprocal rank fusion"
+    ]
+   },
+   {
+    "re": "^skills$",
+    "out": [
+     "/Jade/skills/NAME/SKILL.md with name and description",
+     "15 or fewer are all listed; more are routed to the best few"
+    ]
+   },
+   {
+    "re": "^flows$",
+    "out": [
+     "/Jade/Flows/NAME.flow.json; each step's output is $json",
+     "Retries 0 to 3, or continue on error"
+    ]
+   },
+   {
+    "re": "^playbook$",
+    "out": [
+     "JSON tasks, no model; when, loop, register, rescue",
+     "Approved by hash; a change needs approving again"
+    ]
+   },
+   {
+    "re": "^knowledge$",
+    "out": [
+     "Facts, Datalog rules, constraints",
+     "Proven, contradicted or unknown (open world)"
+    ]
+   },
+   {
+    "re": "^lisp$",
+    "out": [
+     "(tool/NAME :arg value) calls any tool",
+     "fuel=N limits steps; pure=yes runs with no tools"
+    ]
+   },
+   {
+    "re": "^backup$",
+    "out": [
+     "JSON, gzip, optional AES-GCM with PBKDF2",
+     "Jade can start a backup but never restore one"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Artificial Intelligence",
+ "level": "Intermediate",
+ "tags": [
+  "agents",
+  "jade",
+  "markdown",
+  "memory",
+  "flows",
+  "playbooks",
+  "knowledge-graph",
+  "lisp",
+  "android",
+  "python"
+ ]
+}

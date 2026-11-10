@@ -1,0 +1,16 @@
+FEY = [
+ ("Imagine a big box of notes with a helper living inside. You write notes, the helper reads them, remembers them, and can do chores for you when you ask.", None),
+ ("A note is a page in a folder. A double-bracket link is a string tied between two pages, so you can walk from one to the other and back.", None),
+ ("A turn is like a short conversation round: tidy the desk, read the question, ask the brain, use a tool if needed, and answer.", None),
+ ("Tools are the helper's hands. You decide which hands she may use, and secret keys are kept in your pocket, never shown to her brain.", None),
+ ("Memory is a diary the helper can search two ways: by exact words, and by meaning. Then she blends both lists into one best list.", None),
+ ("A skill is a recipe card. She keeps the best few cards on the table and can look up the rest in the drawer when needed.", None),
+ ("Heartbeat is a gentle tap every half hour asking, is anything to do? If the list is empty she goes back to sleep without bothering the brain.", None),
+ ("A flow is a row of boxes joined by pipes. Each box does a job and passes its result to the next, and you can see where it got stuck.", None),
+ ("A playbook is a fixed recipe with no thinking: do step one, then two. You sign it, and if anyone changes a word it needs your signature again.", None),
+ ("A knowledge graph is a wall of true little sentences with string between the names. It can tell you yes, no, or I do not know.", None),
+ ("Autonomous mode is a to-do tray with rules: urgent things first, waiting things get bumped up, big jobs get short turns, and she sleeps at night.", None),
+ ("Think is trying a few ideas and testing each one with something that can say no, like running the code. A failed test cannot be talked around.", None),
+ ("Lisp is a tiny language written in nested brackets, small enough for a helper to run safely with a limit on how long it may work.", None),
+ ("You can reach the helper from outside by a door with a key, keep spare copies of the box locked on your own shelf, and the app is built by careful find-and-replace.", None),
+]
