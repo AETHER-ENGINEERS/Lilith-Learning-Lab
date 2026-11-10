@@ -1,0 +1,4816 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "game-theory",
+ "title": "Game Theory",
+ "subtitle": "Strategy, equilibrium, cooperation and auctions, with runnable Python labs and live simulations",
+ "author": "Lilith Learning Lab",
+ "description": "A hands-on introduction to game theory: players, strategies and payoffs; dominance and Nash equilibrium; mixed strategies and the minimax theorem; the classic games of dilemma, trust, chicken and coordination; sequential games with backward induction and credible threats; repeated games and the evolution of cooperation; evolutionary game theory with replicator dynamics; auctions, bargaining and mechanism design; and cooperative games with the Shapley value and social choice with Arrow's theorem. Every chapter has Python labs verified in the built-in interpreter, a tournament of repeated-game strategies and a replicator dynamics lab.",
+ "pronounce": {
+  "Nash": "nash",
+  "Neumann": "noy mun",
+  "Vickrey": "vick ree",
+  "Axelrod": "ax el rod",
+  "Rapoport": "rap uh port",
+  "Shapley": "shap lee",
+  "Condorcet": "con dor say",
+  "Arrow": "arrow",
+  "Gibbard": "gib erd",
+  "Satterthwaite": "sat er thwayt",
+  "Maynard": "may nerd",
+  "Stackelberg": "shtack el berg",
+  "Rubinstein": "roo bin stine",
+  "Clarke": "clark",
+  "Groves": "groves",
+  "minimax": "min ih max",
+  "maximin": "max ih min",
+  "Pareto": "pa ray toe",
+  "ESS": "E S S",
+  "subgame": "sub game",
+  "Bayesian": "bay zee un",
+  "replicator": "rep lih kay ter",
+  "equilibria": "ee kwih lib ree uh",
+  "ELI5": "E L I five"
+ },
+ "chapters": [
+  {
+   "title": "Games, players and payoffs",
+   "maps": [
+    {
+     "title": "Basics",
+     "links": [
+      "Game | has | Players",
+      "Player | chooses | A strategy",
+      "Payoff | measures | Outcome value",
+      "Utility | encodes | Preferences",
+      "Normal form | is | A payoff matrix",
+      "Rational | means | Maximising payoff",
+      "Common knowledge | is | Known by all"
+     ]
+    }
+   ],
+   "summary": [
+    "Game theory studies strategic situations where each person's best choice depends on what the others choose. A game lists the players, the strategies each can pick, and the payoff each gets for every combination.",
+    "A two-player game with few strategies is shown as a payoff matrix: rows for one player, columns for the other, and each cell holds a pair of payoffs.",
+    "Players are assumed rational: they pick strategies to maximise their own utility, and they know the others do the same. Games can be simultaneous or sequential, one-shot or repeated, competitive or cooperative."
+   ],
+   "glossary": [
+    {
+     "term": "Game",
+     "def": "A model of strategic interaction: players, strategies and payoffs."
+    },
+    {
+     "term": "Strategy",
+     "def": "A complete plan of action for a player."
+    },
+    {
+     "term": "Payoff",
+     "def": "The number a player receives for an outcome, expressing how much they like it."
+    },
+    {
+     "term": "Normal form",
+     "def": "A game described by a matrix of payoffs for every combination of strategies."
+    },
+    {
+     "term": "Zero-sum game",
+     "def": "A game in which one player's gain is exactly the other's loss."
+    }
+   ],
+   "keyPoints": [
+    "Players, strategies, payoffs.",
+    "Cell (row, column) = (payoff of row, payoff of column).",
+    "Rationality: maximise your own payoff.",
+    "Payoff numbers express preference, not money alone.",
+    "Zero-sum: payoffs add to a constant."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A game is anything where what is best for you depends on what the other person does, like deciding whether to share a toy or grab it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two shopkeepers on the same street must each decide whether to cut prices. If both cut, profits fall. If only one cuts, that shop takes the customers. If neither cuts, both do fine. Each shopkeeper's best move depends on the other's choice. That is a game."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To write a game down, list three things. The players. For each player, the strategies available. And the payoffs: for every combination of strategies, a number for each player saying how good the result is for them.",
+      "The payoff numbers are utilities, which capture preferences, including risk and values, not only money."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "For two players with a few strategies, the payoffs go in a matrix. The row player chooses a row, the column player chooses a column, and the cell shows two numbers, first the row player's payoff and then the column player's. Reading the matrix is the first skill of the subject."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Some games are purely competitive. In a zero-sum game, such as poker without the house cut, one player's gain is exactly the other's loss. Most real situations are mixed: there are gains from cooperation and also conflicts, and understanding the tension between them is the heart of the matter."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The assumptions matter. We say players are rational, meaning each tries to get the highest payoff, and that rationality is common knowledge: I know you are rational, you know that I know, and so on. Later chapters relax this, with evolution and learning, but we begin with the clean case."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a game list?",
+     "options": [
+      "Players, strategies and payoffs",
+      "Only winners",
+      "Only money",
+      "Only rules of chess"
+     ],
+     "answer": 0,
+     "explain": "Three ingredients."
+    },
+    {
+     "q": "What is in a payoff matrix cell?",
+     "options": [
+      "A payoff for each player",
+      "A strategy name",
+      "A probability",
+      "The winner"
+     ],
+     "answer": 0,
+     "explain": "A pair."
+    },
+    {
+     "q": "What is a zero-sum game?",
+     "options": [
+      "One player's gain equals the other's loss",
+      "Everyone wins",
+      "Nobody plays",
+      "Payoffs are zero for all"
+     ],
+     "answer": 0,
+     "explain": "Fixed total."
+    },
+    {
+     "q": "What does rational mean here?",
+     "options": [
+      "Maximising your own payoff",
+      "Being kind",
+      "Being random",
+      "Being slow"
+     ],
+     "answer": 0,
+     "explain": "Self-interested."
+    },
+    {
+     "q": "What are payoffs?",
+     "options": [
+      "Numbers expressing preferences",
+      "Only cash",
+      "Only probabilities",
+      "Names"
+     ],
+     "answer": 0,
+     "explain": "Utility."
+    },
+    {
+     "q": "What does common knowledge mean?",
+     "options": [
+      "Everyone knows, and knows that everyone knows",
+      "Public gossip",
+      "Only the referee knows",
+      "Nobody knows"
+     ],
+     "answer": 0,
+     "explain": "Nested knowledge."
+    }
+   ],
+   "cards": [
+    {
+     "q": "(a, b)",
+     "a": "row payoff, column payoff"
+    },
+    {
+     "q": "zero-sum",
+     "a": "payoffs add to a constant"
+    },
+    {
+     "q": "u(x)",
+     "a": "utility of x"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Player",
+       "decision maker"
+      ],
+      [
+       "Strategy",
+       "complete plan of action"
+      ],
+      [
+       "Payoff",
+       "value of an outcome"
+      ],
+      [
+       "Normal form",
+       "payoff matrix"
+      ],
+      [
+       "Zero-sum",
+       "gains equal losses"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Read a cell",
+     "intro": "Write payoffs(game, r, c): the pair of payoffs [row payoff, column payoff] at row index r and column index c of a game given as a list of rows of [a, b] pairs.",
+     "fn": "payoffs",
+     "starter": "def payoffs(game, r, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           3,
+           3
+          ],
+          [
+           0,
+           5
+          ]
+         ],
+         [
+          [
+           5,
+           0
+          ],
+          [
+           1,
+           1
+          ]
+         ]
+        ],
+        0,
+        1
+       ],
+       "expect": [
+        0,
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           3,
+           3
+          ],
+          [
+           0,
+           5
+          ]
+         ],
+         [
+          [
+           5,
+           0
+          ],
+          [
+           1,
+           1
+          ]
+         ]
+        ],
+        1,
+        1
+       ],
+       "expect": [
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           1,
+           -1
+          ],
+          [
+           -1,
+           1
+          ]
+         ],
+         [
+          [
+           -1,
+           1
+          ],
+          [
+           1,
+           -1
+          ]
+         ]
+        ],
+        1,
+        0
+       ],
+       "expect": [
+        -1,
+        1
+       ]
+      }
+     ],
+     "hint": "Index the row then the column.",
+     "solution": "def payoffs(game, r, c):\n    return game[r][c]\n"
+    },
+    {
+     "type": "python",
+     "title": "Is it zero-sum?",
+     "intro": "Write zero_sum(game): True if every cell's two payoffs add to the same constant (the sum is the same in all cells), otherwise False.",
+     "fn": "zero_sum",
+     "starter": "def zero_sum(game):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           1,
+           -1
+          ],
+          [
+           -1,
+           1
+          ]
+         ],
+         [
+          [
+           -1,
+           1
+          ],
+          [
+           1,
+           -1
+          ]
+         ]
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           3,
+           3
+          ],
+          [
+           0,
+           5
+          ]
+         ],
+         [
+          [
+           5,
+           0
+          ],
+          [
+           1,
+           1
+          ]
+         ]
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           2,
+           3
+          ],
+          [
+           4,
+           1
+          ]
+         ],
+         [
+          [
+           0,
+           5
+          ],
+          [
+           5,
+           0
+          ]
+         ]
+        ]
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Compare each cell's sum with the first.",
+     "solution": "def zero_sum(game):\n    total = None\n    for row in game:\n        for cell in row:\n            s = cell[0] + cell[1]\n            if total is None:\n                total = s\n            elif s != total:\n                return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Expected payoff",
+     "intro": "Write expected(payoffs, probs): the expected value of a list of payoffs under a list of probabilities, rounded to 4 decimals.",
+     "fn": "expected",
+     "starter": "def expected(payoffs, probs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         3,
+         0
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 1.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         10,
+         0,
+         5
+        ],
+        [
+         0.2,
+         0.3,
+         0.5
+        ]
+       ],
+       "expect": 4.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         1,
+         0,
+         0
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Multiply and add.",
+     "solution": "def expected(payoffs, probs):\n    s = 0.0\n    for i in range(len(payoffs)):\n        s = s + payoffs[i] * probs[i]\n    return round(s, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Best response",
+     "intro": "Write best_response(game, col): the row index with the highest row payoff when the column player plays column index col. If several rows tie return the smallest index.",
+     "fn": "best_response",
+     "starter": "def best_response(game, col):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           3,
+           3
+          ],
+          [
+           0,
+           5
+          ]
+         ],
+         [
+          [
+           5,
+           0
+          ],
+          [
+           1,
+           1
+          ]
+         ]
+        ],
+        0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           3,
+           3
+          ],
+          [
+           0,
+           5
+          ]
+         ],
+         [
+          [
+           5,
+           0
+          ],
+          [
+           1,
+           1
+          ]
+         ]
+        ],
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           2,
+           2
+          ],
+          [
+           2,
+           0
+          ]
+         ],
+         [
+          [
+           2,
+           1
+          ],
+          [
+           2,
+           1
+          ]
+         ]
+        ],
+        0
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Compare the first payoff in each row of that column.",
+     "solution": "def best_response(game, col):\n    best = 0\n    for r in range(len(game)):\n        if game[r][col][0] > game[best][col][0]:\n            best = r\n    return best\n"
+    }
+   ]
+  },
+  {
+   "title": "Dominance and Nash equilibrium",
+   "maps": [
+    {
+     "title": "Equilibrium",
+     "links": [
+      "Dominant strategy | beats | All others",
+      "Dominated | is never | Best",
+      "Best response | is | Top reply",
+      "Nash equilibrium | is | Mutual best replies",
+      "Pure strategy | is | Single choice",
+      "Iterated elimination | removes | Dominated strategies",
+      "Multiple equilibria | need | Selection"
+     ]
+    }
+   ],
+   "summary": [
+    "A strategy strictly dominates another if it gives a higher payoff whatever the opponent does. A rational player never plays a dominated strategy, and removing dominated strategies can simplify a game, sometimes solving it.",
+    "A best response is the strategy that maximises your payoff given what the others do. A Nash equilibrium is a combination of strategies where each player's strategy is a best response to the others, so no one gains by changing alone.",
+    "To find pure Nash equilibria in a matrix, check every cell: is the row payoff the best in its column, and the column payoff the best in its row?"
+   ],
+   "glossary": [
+    {
+     "term": "Dominant strategy",
+     "def": "A strategy that is at least as good as all alternatives whatever the others do, and better in some case."
+    },
+    {
+     "term": "Best response",
+     "def": "The strategy that maximises a player's payoff given the others' choices."
+    },
+    {
+     "term": "Nash equilibrium",
+     "def": "A profile of strategies in which each is a best response to the others."
+    },
+    {
+     "term": "Pure strategy",
+     "def": "A strategy chosen with certainty, without randomisation."
+    },
+    {
+     "term": "Iterated elimination",
+     "def": "Repeatedly deleting strictly dominated strategies."
+    }
+   ],
+   "keyPoints": [
+    "Nash: no one can gain by switching alone.",
+    "Check each cell: row best in column and column best in row.",
+    "Dominated strategies are never Nash strategies.",
+    "A game may have none, one or several pure equilibria.",
+    "Nash proved mixed equilibria always exist."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A choice is steady when nobody wants to change their own move once they see everyone else's. That steady spot is called an equilibrium."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two drivers approach a narrow bridge from opposite ends. If both stay, they crash. If one yields, the other passes. The question is what happens if each assumes the other is also thinking carefully. We need a solution concept, a rule that picks out the sensible outcomes of a game.",
+      "The most famous is the Nash equilibrium."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Start with the easy case, dominance. If one of my strategies pays more than another whatever you do, I would never play the lower one. Remove it. Then check whether your strategies have become dominated in the smaller game. Repeat.",
+      "If the process leaves one cell, the game is solved by iterated elimination."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Often nothing is dominated, so we use the best response idea. Given what you do, what is my best reply? A Nash equilibrium is a cell where my strategy is a best reply to yours and yours is a best reply to mine. Neither of us can do better by changing our own choice, so the outcome is stable."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To find the equilibria in a matrix, mark with a star the best payoff for the row player in each column, and the best payoff for the column player in each row. Any cell where both payoffs are starred is a pure Nash equilibrium. Some games have none, some have exactly one, and some have several."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "John Nash proved in 1950 that every finite game has at least one equilibrium if mixed strategies are allowed, which the next chapter explains. He won the Nobel Prize in 1994 for it.",
+      "A stable outcome is not the same as a good one: in the prisoner's dilemma, the unique equilibrium is worse for both than another outcome."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a dominated strategy?",
+     "options": [
+      "One that is worse whatever the opponent does",
+      "One that wins sometimes",
+      "A random one",
+      "The best one"
+     ],
+     "answer": 0,
+     "explain": "Never optimal."
+    },
+    {
+     "q": "What is a Nash equilibrium?",
+     "options": [
+      "Everyone is best-responding to the others",
+      "Everyone is happy",
+      "A tie",
+      "The highest sum"
+     ],
+     "answer": 0,
+     "explain": "No unilateral gain."
+    },
+    {
+     "q": "How can you find pure equilibria in a matrix?",
+     "options": [
+      "Mark best replies and find cells with both marked",
+      "Add all payoffs",
+      "Pick the largest cell",
+      "Pick the first cell"
+     ],
+     "answer": 0,
+     "explain": "Star method."
+    },
+    {
+     "q": "Is a Nash equilibrium always efficient?",
+     "options": [
+      "No",
+      "Yes",
+      "Only in zero-sum",
+      "Only with two players"
+     ],
+     "answer": 0,
+     "explain": "Prisoner's dilemma."
+    },
+    {
+     "q": "What did Nash prove?",
+     "options": [
+      "Every finite game has an equilibrium in mixed strategies",
+      "Every game is zero-sum",
+      "Games have no solutions",
+      "Dominance always exists"
+     ],
+     "answer": 0,
+     "explain": "1950."
+    },
+    {
+     "q": "Can a game have several equilibria?",
+     "options": [
+      "Yes",
+      "No",
+      "Only zero",
+      "Only one"
+     ],
+     "answer": 0,
+     "explain": "Coordination games."
+    }
+   ],
+   "cards": [
+    {
+     "q": "BR(s)",
+     "a": "best response"
+    },
+    {
+     "q": "(s1*, s2*)",
+     "a": "equilibrium profile"
+    },
+    {
+     "q": "u_i(s*) >= u_i(s_i, s*_-i)",
+     "a": "Nash condition"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Dominant strategy",
+       "best whatever others do"
+      ],
+      [
+       "Best response",
+       "best given others' choice"
+      ],
+      [
+       "Nash equilibrium",
+       "mutual best responses"
+      ],
+      [
+       "Pure strategy",
+       "chosen with certainty"
+      ],
+      [
+       "Iterated elimination",
+       "remove dominated strategies repeatedly"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Pure Nash equilibria",
+     "intro": "Write nash(game): all cells (r, c) of a two-player game (list of rows of [a, b] pairs) where the row payoff is the maximum in its column and the column payoff is the maximum in its row (ties count as best). Return the list of [r, c] pairs sorted.",
+     "fn": "nash",
+     "starter": "def nash(game):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           3,
+           3
+          ],
+          [
+           0,
+           5
+          ]
+         ],
+         [
+          [
+           5,
+           0
+          ],
+          [
+           1,
+           1
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           2,
+           2
+          ],
+          [
+           0,
+           0
+          ]
+         ],
+         [
+          [
+           0,
+           0
+          ],
+          [
+           1,
+           1
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           1,
+           -1
+          ],
+          [
+           -1,
+           1
+          ]
+         ],
+         [
+          [
+           -1,
+           1
+          ],
+          [
+           1,
+           -1
+          ]
+         ]
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           4,
+           4
+          ],
+          [
+           1,
+           3
+          ]
+         ],
+         [
+          [
+           3,
+           1
+          ],
+          [
+           2,
+           2
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Check all rows in the column and all columns in the row.",
+     "solution": "def nash(game):\n    out = []\n    nr = len(game)\n    nc = len(game[0])\n    for r in range(nr):\n        for c in range(nc):\n            a = game[r][c][0]\n            b = game[r][c][1]\n            ok = True\n            for r2 in range(nr):\n                if game[r2][c][0] > a:\n                    ok = False\n            for c2 in range(nc):\n                if game[r][c2][1] > b:\n                    ok = False\n            if ok:\n                out.append([r, c])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Row dominant strategy",
+     "intro": "Write row_dominant(game): the index of a row that strictly dominates all other rows (payoff greater in every column against every other row), or -1 if there is none.",
+     "fn": "row_dominant",
+     "starter": "def row_dominant(game):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           3,
+           3
+          ],
+          [
+           0,
+           5
+          ]
+         ],
+         [
+          [
+           5,
+           0
+          ],
+          [
+           1,
+           1
+          ]
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           2,
+           2
+          ],
+          [
+           0,
+           0
+          ]
+         ],
+         [
+          [
+           0,
+           0
+          ],
+          [
+           1,
+           1
+          ]
+         ]
+        ]
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           1,
+           0
+          ],
+          [
+           1,
+           0
+          ]
+         ],
+         [
+          [
+           0,
+           1
+          ],
+          [
+           0,
+           1
+          ]
+         ]
+        ]
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Compare row r with every other row in every column.",
+     "solution": "def row_dominant(game):\n    nr = len(game)\n    nc = len(game[0])\n    for r in range(nr):\n        good = True\n        for r2 in range(nr):\n            if r2 == r:\n                continue\n            for c in range(nc):\n                if not game[r][c][0] > game[r2][c][0]:\n                    good = False\n        if good:\n            return r\n    return -1\n"
+    },
+    {
+     "type": "python",
+     "title": "Eliminate dominated rows",
+     "intro": "Write eliminate_rows(game): repeatedly delete any row strictly dominated by another row (all of its row payoffs are lower in every column), considering only rows. Return the list of remaining row indexes (original numbering) in order.",
+     "fn": "eliminate_rows",
+     "starter": "def eliminate_rows(game):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           1,
+           1
+          ],
+          [
+           1,
+           1
+          ]
+         ],
+         [
+          [
+           2,
+           2
+          ],
+          [
+           2,
+           2
+          ]
+         ],
+         [
+          [
+           3,
+           0
+          ],
+          [
+           0,
+           3
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           3,
+           3
+          ],
+          [
+           0,
+           5
+          ]
+         ],
+         [
+          [
+           5,
+           0
+          ],
+          [
+           1,
+           1
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           1,
+           0
+          ],
+          [
+           1,
+           0
+          ]
+         ],
+         [
+          [
+           0,
+           1
+          ],
+          [
+           0,
+           1
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        0
+       ]
+      }
+     ],
+     "hint": "Stop when no row is dominated.",
+     "solution": "def eliminate_rows(game):\n    alive = list(range(len(game)))\n    nc = len(game[0])\n    changed = True\n    while changed:\n        changed = False\n        for r in alive:\n            for r2 in alive:\n                if r2 == r:\n                    continue\n                dom = True\n                for c in range(nc):\n                    if not game[r2][c][0] > game[r][c][0]:\n                        dom = False\n                if dom:\n                    alive.remove(r)\n                    changed = True\n                    break\n            if changed:\n                break\n    return alive\n"
+    },
+    {
+     "type": "python",
+     "title": "Social welfare",
+     "intro": "Write welfare(game, r, c): the sum of both players' payoffs in cell (r, c). Then return the pair [best cell sum over the whole game, sum at cell (r, c)].",
+     "fn": "welfare",
+     "starter": "def welfare(game, r, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           3,
+           3
+          ],
+          [
+           0,
+           5
+          ]
+         ],
+         [
+          [
+           5,
+           0
+          ],
+          [
+           1,
+           1
+          ]
+         ]
+        ],
+        1,
+        1
+       ],
+       "expect": [
+        6,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           3,
+           3
+          ],
+          [
+           0,
+           5
+          ]
+         ],
+         [
+          [
+           5,
+           0
+          ],
+          [
+           1,
+           1
+          ]
+         ]
+        ],
+        0,
+        0
+       ],
+       "expect": [
+        6,
+        6
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           2,
+           2
+          ],
+          [
+           0,
+           0
+          ]
+         ],
+         [
+          [
+           0,
+           0
+          ],
+          [
+           1,
+           1
+          ]
+         ]
+        ],
+        1,
+        1
+       ],
+       "expect": [
+        4,
+        2
+       ]
+      }
+     ],
+     "hint": "Search all cells for the best total.",
+     "solution": "def welfare(game, r, c):\n    best = None\n    for row in game:\n        for cell in row:\n            s = cell[0] + cell[1]\n            if best is None or s > best:\n                best = s\n    return [best, game[r][c][0] + game[r][c][1]]\n"
+    }
+   ]
+  },
+  {
+   "title": "Mixed strategies and zero-sum games",
+   "maps": [
+    {
+     "title": "Mixed strategies",
+     "links": [
+      "Mixed strategy | randomises | Choices",
+      "Indifference | makes | Opponent unreadable",
+      "Expected payoff | averages | Over chances",
+      "Minimax | limits | Worst case",
+      "Value of game | is | Guaranteed payoff",
+      "Saddle point | is | Pure solution",
+      "Von Neumann | proved | Minimax theorem"
+     ]
+    }
+   ],
+   "summary": [
+    "In matching pennies there is no pure equilibrium: whichever side you pick, the opponent wants to switch. The solution is to randomise, a mixed strategy, so the opponent cannot exploit a pattern.",
+    "In a mixed equilibrium each player chooses probabilities that make the other player indifferent between their strategies. For a 2x2 game this gives a simple formula.",
+    "In a zero-sum game, von Neumann's minimax theorem says the maximin value (the best guaranteed payoff) equals the minimax value (what the opponent can hold you to). This common number is the value of the game."
+   ],
+   "glossary": [
+    {
+     "term": "Mixed strategy",
+     "def": "A probability distribution over pure strategies."
+    },
+    {
+     "term": "Indifference principle",
+     "def": "In a mixed equilibrium each player's mixing makes the other indifferent among the strategies they use."
+    },
+    {
+     "term": "Maximin",
+     "def": "The strategy that maximises the worst-case payoff."
+    },
+    {
+     "term": "Value of a game",
+     "def": "The payoff both players can guarantee in a zero-sum game under optimal play."
+    },
+    {
+     "term": "Saddle point",
+     "def": "A cell that is the minimum in its row and maximum in its column, giving a pure solution."
+    }
+   ],
+   "keyPoints": [
+    "2x2 mixing: choose p to make the opponent indifferent.",
+    "Matching pennies: 50-50.",
+    "Zero-sum: maximin = minimax.",
+    "Saddle point: pure equilibrium exists.",
+    "Mixed Nash always exists in finite games."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. In rock paper scissors, if you always pick rock you lose. The safest thing is to be a little bit random so nobody can guess you."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In rock paper scissors, any pattern gets punished. If you always choose rock, your opponent chooses paper. The only unexploitable play is to mix evenly. The probabilities are chosen not to make you win, but to leave the opponent with no better reply than any other."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Here is the indifference idea in a 2 by 2 game. Suppose the column player plays the first column with probability q. The row player's expected payoffs from the two rows are linear in q.",
+      "Choosing q so that those two are equal makes the row player indifferent, and then the row player can randomise in any way without loss. The row player's mixing is found by the same trick on the other side."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Mixed strategies can be seen as real randomisation, as in penalty kicks and poker bluffs, or as uncertainty about what the other will do. Studies of penalty kicks in football show that professionals mix almost exactly as the theory predicts, since a predictable kicker is a lost kicker."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Zero-sum games have a lovely extra property. One player wants to maximise, the other to minimise.",
+      "If I choose to guarantee my best worst-case, called maximin, and you choose to hold me to the lowest, called minimax, von Neumann proved in 1928 that the two numbers agree when mixed strategies are allowed. That number is the value of the game."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "If a cell is both the smallest in its row and the largest in its column, it is a saddle point and the game is solved with pure strategies. Otherwise the solution mixes, and for bigger games it is found by linear programming, one of the great practical algorithms."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Why mix strategies?",
+     "options": [
+      "To avoid being exploited",
+      "To confuse yourself",
+      "To save time",
+      "To win every time"
+     ],
+     "answer": 0,
+     "explain": "Unpredictability."
+    },
+    {
+     "q": "What does the indifference principle say?",
+     "options": [
+      "Mix so the opponent is indifferent",
+      "Be indifferent to losing",
+      "Ignore the opponent",
+      "Pick the highest payoff"
+     ],
+     "answer": 0,
+     "explain": "Equal expected payoffs."
+    },
+    {
+     "q": "What is the value of a zero-sum game?",
+     "options": [
+      "The guaranteed payoff under optimal play",
+      "The highest cell",
+      "The average cell",
+      "Zero always"
+     ],
+     "answer": 0,
+     "explain": "Maximin = minimax."
+    },
+    {
+     "q": "Who proved the minimax theorem?",
+     "options": [
+      "John von Neumann",
+      "John Nash",
+      "Alan Turing",
+      "Isaac Newton"
+     ],
+     "answer": 0,
+     "explain": "1928."
+    },
+    {
+     "q": "Matching pennies has what equilibrium?",
+     "options": [
+      "Both mix 50-50",
+      "Both play heads",
+      "Both play tails",
+      "Pure only"
+     ],
+     "answer": 0,
+     "explain": "Symmetric."
+    },
+    {
+     "q": "What is a saddle point?",
+     "options": [
+      "Min of its row and max of its column",
+      "A tie",
+      "A mixed strategy",
+      "A loss"
+     ],
+     "answer": 0,
+     "explain": "Pure solution."
+    }
+   ],
+   "cards": [
+    {
+     "q": "p = (d - b) / (a - b - c + d)",
+     "a": "2x2 mixing ratio"
+    },
+    {
+     "q": "max min = min max",
+     "a": "minimax theorem"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Mixed strategy",
+       "random choice with probabilities"
+      ],
+      [
+       "Indifference",
+       "equal expected payoffs"
+      ],
+      [
+       "Maximin",
+       "best worst case"
+      ],
+      [
+       "Saddle point",
+       "pure solution of a zero-sum game"
+      ],
+      [
+       "Value",
+       "guaranteed zero-sum payoff"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Matching pennies mix",
+     "intro": "For a zero-sum 2x2 game with row payoffs [[a, b], [c, d]], the row player's probability of the first row that makes the column player indifferent is p = (d - c) / (a - b - c + d). Write mix_row(a, b, c, d), rounded to 4 decimals (assume the denominator is not zero).",
+     "fn": "mix_row",
+     "starter": "def mix_row(a, b, c, d):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        -1,
+        -1,
+        1
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        2,
+        0,
+        0,
+        1
+       ],
+       "expect": 0.3333,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        3,
+        1,
+        0,
+        2
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        0,
+        1,
+        1,
+        0
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Solve p a + (1-p) c = p b + (1-p) d.",
+     "solution": "def mix_row(a, b, c, d):\n    return round((d - c) / float(a - b - c + d), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Value of 2x2 game",
+     "intro": "Write game_value(a, b, c, d): the value of the zero-sum game with row payoffs [[a, b], [c, d]] when there is no saddle point: (a d - b c) / (a - b - c + d), rounded to 4 decimals.",
+     "fn": "game_value",
+     "starter": "def game_value(a, b, c, d):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        -1,
+        -1,
+        1
+       ],
+       "expect": 0.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        2,
+        0,
+        0,
+        1
+       ],
+       "expect": 0.6667,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        3,
+        1,
+        0,
+        2
+       ],
+       "expect": 1.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        4,
+        1,
+        2,
+        3
+       ],
+       "expect": 2.5,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Use the standard formula.",
+     "solution": "def game_value(a, b, c, d):\n    return round((a * d - b * c) / float(a - b - c + d), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Maximin and minimax",
+     "intro": "Write maximin_minimax(M): for a zero-sum game with row player's payoff matrix M (list of rows), return the list [maximin, minimax] using pure strategies only: the maximum over rows of the row minimum, and the minimum over columns of the column maximum.",
+     "fn": "maximin_minimax",
+     "starter": "def maximin_minimax(M):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          3,
+          1
+         ],
+         [
+          2,
+          4
+         ]
+        ]
+       ],
+       "expect": [
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          -1
+         ],
+         [
+          -1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        -1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          3
+         ],
+         [
+          1,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        2,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5,
+          5
+         ],
+         [
+          5,
+          5
+         ]
+        ]
+       ],
+       "expect": [
+        5,
+        5
+       ]
+      }
+     ],
+     "hint": "Row minima then column maxima.",
+     "solution": "def maximin_minimax(M):\n    mm = None\n    for row in M:\n        lo = min(row)\n        if mm is None or lo > mm:\n            mm = lo\n    mx = None\n    for c in range(len(M[0])):\n        hi = M[0][c]\n        for r in range(len(M)):\n            if M[r][c] > hi:\n                hi = M[r][c]\n        if mx is None or hi < mx:\n            mx = hi\n    return [mm, mx]\n"
+    },
+    {
+     "type": "python",
+     "title": "Has a saddle point?",
+     "intro": "Write has_saddle(M): True if the pure maximin equals the pure minimax of the zero-sum matrix M, otherwise False.",
+     "fn": "has_saddle",
+     "starter": "def has_saddle(M):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          3,
+          1
+         ],
+         [
+          2,
+          4
+         ]
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          -1
+         ],
+         [
+          -1,
+          1
+         ]
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          3
+         ],
+         [
+          1,
+          0
+         ]
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         [
+          5,
+          5
+         ],
+         [
+          5,
+          5
+         ]
+        ]
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "They agree exactly when a saddle exists.",
+     "solution": "def has_saddle(M):\n    mm = max([min(row) for row in M])\n    cols = []\n    for c in range(len(M[0])):\n        cols.append(max([M[r][c] for r in range(len(M))]))\n    return mm == min(cols)\n"
+    }
+   ]
+  },
+  {
+   "title": "Classic games: dilemmas, coordination and conflict",
+   "maps": [
+    {
+     "title": "Classic games",
+     "links": [
+      "Prisoner's dilemma | pits | Self against group",
+      "Stag hunt | rewards | Trust",
+      "Chicken | rewards | Nerve",
+      "Battle of the sexes | needs | Coordination",
+      "Public goods | invite | Free riding",
+      "Tragedy of the commons | overuses | Shared resource",
+      "Pareto optimal | means | No free improvement"
+     ]
+    }
+   ],
+   "summary": [
+    "A handful of small games capture whole families of social situations. The prisoner's dilemma: defecting is dominant yet mutual cooperation is better for both. The stag hunt: two equilibria, one safe, one rewarding.",
+    "Chicken (or hawk-dove) rewards the one who does not swerve but ruins both if neither swerves. The battle of the sexes: two people prefer to be together but disagree on where.",
+    "The tension between individual incentive and group benefit appears in arms races, climate, overfishing, vaccination and team projects."
+   ],
+   "glossary": [
+    {
+     "term": "Prisoner's dilemma",
+     "def": "A game where defection is a dominant strategy but mutual cooperation gives both a better payoff."
+    },
+    {
+     "term": "Stag hunt",
+     "def": "A coordination game with a risky high-payoff equilibrium and a safe low-payoff one."
+    },
+    {
+     "term": "Chicken",
+     "def": "An anti-coordination game where each prefers to go straight if the other swerves."
+    },
+    {
+     "term": "Pareto optimal",
+     "def": "An outcome where no player can be made better off without making another worse off."
+    },
+    {
+     "term": "Tragedy of the commons",
+     "def": "Overuse of a shared resource because each user bears only a share of the cost."
+    }
+   ],
+   "keyPoints": [
+    "PD: T > R > P > S.",
+    "Stag hunt: trust gives R, safe gives P.",
+    "Chicken: two asymmetric equilibria.",
+    "Coordination games: several equilibria.",
+    "Nash does not imply Pareto optimal."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Two friends can each take all the sweets or share. Taking all is tempting, but if both do, they get less than if both share. That puzzle is called the prisoner's dilemma."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two suspects are held apart. Each can stay silent or betray the other. If both stay silent, they each get a short sentence. If one betrays, the betrayer goes free and the other gets a long sentence. If both betray, both get a medium sentence. Whatever the other does, betraying is better for me.",
+      "So both betray, and both end up worse than if they had stayed silent. That is the prisoner's dilemma."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The numbers have a standard ordering. Temptation to defect T beats reward for mutual cooperation R, which beats punishment for mutual defection P, which beats the sucker's payoff S. With T above R above P above S, defection dominates.",
+      "Many real problems share this shape: arms races, price wars, polluting, doping in sport, and overfishing."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The stag hunt changes the incentives. Two hunters can hunt a stag together, which pays well, or each hunt a hare alone, which pays modestly but surely. Both stag and both hare are equilibria. The question is trust: if I doubt you, I take the hare.",
+      "Many cooperation problems are stag hunts rather than dilemmas, and fix themselves with communication and reputation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Chicken is the game of two cars driving at each other. Going straight while the other swerves is best, swerving while the other goes straight is bad but survivable, and neither swerving is a catastrophe.",
+      "The equilibria are the two asymmetric ones, and each side tries to look committed, by throwing away the steering wheel, for example. Brinkmanship has this structure."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the battle of the sexes, a couple wants to spend the evening together but one prefers the opera and the other the football. Both would rather go together to either than apart. This is a pure coordination game with two good equilibria and a fight about which.",
+      "Conventions such as driving on the right solve this on a large scale."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "In the prisoner's dilemma, what is dominant?",
+     "options": [
+      "Defect",
+      "Cooperate",
+      "Mix",
+      "Wait"
+     ],
+     "answer": 0,
+     "explain": "Whatever the other does."
+    },
+    {
+     "q": "What is the PD payoff ordering?",
+     "options": [
+      "T > R > P > S",
+      "R > T > S > P",
+      "S > P > R > T",
+      "P > R > T > S"
+     ],
+     "answer": 0,
+     "explain": "Temptation first."
+    },
+    {
+     "q": "How many pure equilibria does the stag hunt have?",
+     "options": [
+      "Two",
+      "One",
+      "Zero",
+      "Four"
+     ],
+     "answer": 0,
+     "explain": "Stag and hare."
+    },
+    {
+     "q": "What does Chicken reward?",
+     "options": [
+      "Not swerving when the other does",
+      "Always swerving",
+      "Cooperation only",
+      "Random play"
+     ],
+     "answer": 0,
+     "explain": "Nerve."
+    },
+    {
+     "q": "What is the tragedy of the commons?",
+     "options": [
+      "Overuse of a shared resource",
+      "A lost game",
+      "A Greek play",
+      "A tie"
+     ],
+     "answer": 0,
+     "explain": "Free riding."
+    },
+    {
+     "q": "Is the PD equilibrium Pareto optimal?",
+     "options": [
+      "No",
+      "Yes",
+      "Only for two players",
+      "Only when repeated"
+     ],
+     "answer": 0,
+     "explain": "Both could do better."
+    }
+   ],
+   "cards": [
+    {
+     "q": "T > R > P > S",
+     "a": "prisoner's dilemma ordering"
+    },
+    {
+     "q": "2R > T + S",
+     "a": "stops alternating exploitation"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the game",
+     "intro": "Pair each game with its feature.",
+     "pairs": [
+      [
+       "Prisoner's dilemma",
+       "defection dominates"
+      ],
+      [
+       "Stag hunt",
+       "trust versus safety"
+      ],
+      [
+       "Chicken",
+       "do not swerve if the other does"
+      ],
+      [
+       "Battle of the sexes",
+       "coordinate on which event"
+      ],
+      [
+       "Public goods",
+       "tempting to free ride"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Is it a prisoner's dilemma?",
+     "intro": "Write is_pd(T, R, P, S): True if T > R > P > S and 2R > T + S, otherwise False.",
+     "fn": "is_pd",
+     "starter": "def is_pd(T, R, P, S):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        3,
+        1,
+        0
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        4,
+        3,
+        2,
+        1
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        5,
+        3,
+        1,
+        2
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        10,
+        3,
+        1,
+        0
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        6,
+        4,
+        2,
+        0
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Check all the inequalities.",
+     "solution": "def is_pd(T, R, P, S):\n    return T > R and R > P and P > S and 2 * R > T + S\n"
+    },
+    {
+     "type": "python",
+     "title": "Build the PD",
+     "intro": "Write make_pd(T, R, P, S): the symmetric game as a list of rows of [row, col] pairs, with strategies ordered cooperate, defect: [[[R, R], [S, T]], [[T, S], [P, P]]].",
+     "fn": "make_pd",
+     "starter": "def make_pd(T, R, P, S):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        3,
+        1,
+        0
+       ],
+       "expect": [
+        [
+         [
+          3,
+          3
+         ],
+         [
+          0,
+          5
+         ]
+        ],
+        [
+         [
+          5,
+          0
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        4,
+        3,
+        2,
+        1
+       ],
+       "expect": [
+        [
+         [
+          3,
+          3
+         ],
+         [
+          1,
+          4
+         ]
+        ],
+        [
+         [
+          4,
+          1
+         ],
+         [
+          2,
+          2
+         ]
+        ]
+       ]
+      }
+     ],
+     "hint": "Fill the matrix carefully.",
+     "solution": "def make_pd(T, R, P, S):\n    return [[[R, R], [S, T]], [[T, S], [P, P]]]\n"
+    },
+    {
+     "type": "python",
+     "title": "Classify a 2x2 symmetric game",
+     "intro": "For a symmetric 2x2 game with row payoffs a (both play first), b (I play first, other second), c (I play second, other first), d (both play second) write classify(a, b, c, d): return 'dilemma' if c > a and d > b (second strategy dominant) and a > d; 'coordination' if a > c and d > b; 'chicken' if c > a and b > d; otherwise 'other'.",
+     "fn": "classify",
+     "starter": "def classify(a, b, c, d):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        0,
+        5,
+        1
+       ],
+       "expect": "dilemma"
+      },
+      {
+       "args": [
+        4,
+        0,
+        3,
+        2
+       ],
+       "expect": "coordination"
+      },
+      {
+       "args": [
+        3,
+        1,
+        4,
+        0
+       ],
+       "expect": "chicken"
+      },
+      {
+       "args": [
+        1,
+        1,
+        1,
+        1
+       ],
+       "expect": "other"
+      }
+     ],
+     "hint": "Check the three patterns in order.",
+     "solution": "def classify(a, b, c, d):\n    if c > a and d > b and a > d:\n        return 'dilemma'\n    if a > c and d > b:\n        return 'coordination'\n    if c > a and b > d:\n        return 'chicken'\n    return 'other'\n"
+    },
+    {
+     "type": "python",
+     "title": "Common pool",
+     "intro": "Each of n players chooses to harvest h units; the pool yields total harvest T = n x h and each unit sells for max(0, 10 - T). Write profit(n, h): one player's profit h x max(0, 10 - n x h).",
+     "fn": "profit",
+     "starter": "def profit(n, h):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2,
+        1
+       ],
+       "expect": 8
+      },
+      {
+       "args": [
+        2,
+        3
+       ],
+       "expect": 12
+      },
+      {
+       "args": [
+        4,
+        2
+       ],
+       "expect": 4
+      },
+      {
+       "args": [
+        4,
+        3
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        1,
+        5
+       ],
+       "expect": 25
+      }
+     ],
+     "hint": "More harvest by everyone lowers the price.",
+     "solution": "def profit(n, h):\n    return h * max(0, 10 - n * h)\n"
+    }
+   ]
+  },
+  {
+   "title": "Sequential games and backward induction",
+   "maps": [
+    {
+     "title": "Sequential games",
+     "links": [
+      "Extensive form | is | A game tree",
+      "Information set | hides | Earlier moves",
+      "Backward induction | solves | From the end",
+      "Subgame perfect | rules out | Empty threats",
+      "First-mover advantage | is | Commitment value",
+      "Stackelberg | has | A leader",
+      "Ultimatum game | tests | Fairness"
+     ]
+    }
+   ],
+   "summary": [
+    "When players move in turn and see earlier moves, the game is drawn as a tree. Backward induction solves it by starting at the last decisions and working back to the root.",
+    "A subgame perfect equilibrium is a Nash equilibrium that is also an equilibrium in every subgame. It rules out empty threats, plans nobody would carry out when the time came.",
+    "Moving first can be an advantage when it commits you, as in Stackelberg competition, but can be a disadvantage when it reveals information."
+   ],
+   "glossary": [
+    {
+     "term": "Extensive form",
+     "def": "A game represented as a tree of decisions in order, with payoffs at the leaves."
+    },
+    {
+     "term": "Backward induction",
+     "def": "Solving a finite sequential game by reasoning from the last move to the first."
+    },
+    {
+     "term": "Subgame perfect equilibrium",
+     "def": "A strategy profile that is a Nash equilibrium in every subgame."
+    },
+    {
+     "term": "Empty threat",
+     "def": "A threat that would not be in the threatener's interest to carry out."
+    },
+    {
+     "term": "Commitment",
+     "def": "Limiting your own future options in order to change others' behaviour."
+    }
+   ],
+   "keyPoints": [
+    "Solve from the leaves upward.",
+    "At each node, the mover picks the best payoff for themselves.",
+    "Subgame perfect = backward induction in finite perfect-information games.",
+    "Commitment can create value.",
+    "Ultimatum game: theory vs people."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. In chess you think backwards: if I do this, you do that, then I do this. Starting from the end and working back helps you choose the first move."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Chess is a sequential game: each player sees the board before moving. We draw such a game as a tree. Each node belongs to one player, each branch is a move, and each leaf shows the payoffs. To solve it, imagine yourself at the last decision. The mover there simply takes the best option.",
+      "Replace that node by its outcome, and move one step up."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is backward induction. At each step, the player on move picks the branch giving them the highest payoff, given the already-solved continuations. When you reach the root you know the whole path. In a finite game with perfect information, this gives a clear prediction.",
+      "It also shows that chess has a best result under perfect play, though it is too large to compute."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Consider an entrant deciding whether to enter a market with a monopolist. The monopolist threatens a price war if the entrant enters. But if the entrant does enter, a price war hurts the monopolist too, so it would rather accommodate. The threat is empty.",
+      "Backward induction predicts entry and accommodation, a subgame perfect equilibrium. Threats must be credible to count."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Because commitment can make a threat credible, giving up options can be powerful. A general who burns the bridges behind the army shows there is no retreat. A company that builds extra capacity makes a price war credible.",
+      "In Stackelberg competition, the firm that moves first and commits to a large output forces the follower to adjust, and earns more than in the simultaneous game."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The ultimatum game tests the theory. One person proposes how to split ten pounds, and the other accepts or rejects, in which case both get nothing. Theory says offer the smallest amount and the other accepts.",
+      "In experiments people often offer nearly half and reject offers under about thirty percent. Fairness and emotion are part of the payoffs."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How is a sequential game drawn?",
+     "options": [
+      "As a tree",
+      "As a matrix only",
+      "As a line",
+      "As a table of words"
+     ],
+     "answer": 0,
+     "explain": "Extensive form."
+    },
+    {
+     "q": "How does backward induction work?",
+     "options": [
+      "Solve the last moves first",
+      "Solve the first move first",
+      "Guess",
+      "Randomise"
+     ],
+     "answer": 0,
+     "explain": "From the leaves."
+    },
+    {
+     "q": "What is an empty threat?",
+     "options": [
+      "One not worth carrying out",
+      "A loud threat",
+      "A tie",
+      "A mixed strategy"
+     ],
+     "answer": 0,
+     "explain": "Not credible."
+    },
+    {
+     "q": "What does subgame perfection rule out?",
+     "options": [
+      "Non-credible threats",
+      "All equilibria",
+      "Mixing",
+      "First moves"
+     ],
+     "answer": 0,
+     "explain": "Empty threats."
+    },
+    {
+     "q": "Why can commitment help?",
+     "options": [
+      "It makes threats credible",
+      "It removes payoffs",
+      "It adds players",
+      "It lowers cost"
+     ],
+     "answer": 0,
+     "explain": "Burn the bridges."
+    },
+    {
+     "q": "What do people do in the ultimatum game?",
+     "options": [
+      "Offer near half and reject low offers",
+      "Always offer zero",
+      "Always reject",
+      "Always accept"
+     ],
+     "answer": 0,
+     "explain": "Fairness."
+    }
+   ],
+   "cards": [
+    {
+     "q": "backward induction",
+     "a": "solve from the end"
+    },
+    {
+     "q": "SPE",
+     "a": "subgame perfect equilibrium"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Extensive form",
+       "game tree"
+      ],
+      [
+       "Backward induction",
+       "solve from the last move"
+      ],
+      [
+       "Empty threat",
+       "not credible"
+      ],
+      [
+       "Subgame perfect",
+       "equilibrium in every subgame"
+      ],
+      [
+       "Commitment",
+       "limits own options"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Solve a game tree",
+     "intro": "A tree is either a leaf [payoff_player0, payoff_player1] (a list of two numbers) or a node ['player', child1, child2, ...] where player is 0 or 1. Write solve(tree): the payoff pair reached by backward induction (the mover picks the child whose payoff for them is highest; ties go to the first such child).",
+     "fn": "solve",
+     "starter": "def solve(tree):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "n",
+         0,
+         [
+          2,
+          1
+         ],
+         [
+          1,
+          3
+         ]
+        ]
+       ],
+       "expect": [
+        2,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         "n",
+         0,
+         [
+          "n",
+          1,
+          [
+           3,
+           1
+          ],
+          [
+           0,
+           0
+          ]
+         ],
+         [
+          2,
+          2
+         ]
+        ]
+       ],
+       "expect": [
+        3,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         "n",
+         1,
+         [
+          "n",
+          0,
+          [
+           1,
+           5
+          ],
+          [
+           2,
+           2
+          ]
+         ],
+         [
+          "n",
+          0,
+          [
+           4,
+           4
+          ],
+          [
+           0,
+           0
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        4,
+        4
+       ]
+      }
+     ],
+     "hint": "Recursion: solve children, then choose for the mover.",
+     "solution": "def solve(tree):\n    return _solve(tree)\n\ndef _solve(tree):\n    if not isinstance(tree[0], str):\n        return tree\n    p = tree[1]\n    best = None\n    for child in tree[2:]:\n        v = _solve(child)\n        if best is None or v[p] > best[p]:\n            best = v\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Entry game",
+     "intro": "An entrant chooses In or Out. If Out, payoffs (0, 4) (entrant, incumbent). If In, the incumbent chooses Fight (payoffs -1, -1) or Accommodate (payoffs 2, 2). Write entry(fight_payoff_inc, accommodate_payoff_inc): by backward induction return 'in' if the entrant enters and 'out' if not, where the entrant gets -1 after Fight and 2 after Accommodate, and the incumbent's payoffs are the arguments.",
+     "fn": "entry",
+     "starter": "def entry(fight_payoff_inc, accommodate_payoff_inc):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -1,
+        2
+       ],
+       "expect": "in"
+      },
+      {
+       "args": [
+        3,
+        2
+       ],
+       "expect": "out"
+      },
+      {
+       "args": [
+        2,
+        2
+       ],
+       "expect": "in"
+      },
+      {
+       "args": [
+        0,
+        1
+       ],
+       "expect": "in"
+      }
+     ],
+     "hint": "Find the incumbent's choice first.",
+     "solution": "def entry(fight_payoff_inc, accommodate_payoff_inc):\n    if fight_payoff_inc > accommodate_payoff_inc:\n        entrant_gets = -1\n    else:\n        entrant_gets = 2\n    if entrant_gets > 0:\n        return 'in'\n    return 'out'\n"
+    },
+    {
+     "type": "python",
+     "title": "Stackelberg leader",
+     "intro": "Two firms with demand price = 100 - (q1 + q2), zero cost. The follower best-responds q2 = (100 - q1) / 2. Write leader_profit(q1): the leader's profit q1 x (100 - q1 - q2), rounded to 2 decimals.",
+     "fn": "leader_profit",
+     "starter": "def leader_profit(q1):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        50
+       ],
+       "expect": 1250.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        40
+       ],
+       "expect": 1200.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        20
+       ],
+       "expect": 800.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        100
+       ],
+       "expect": 0.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        60
+       ],
+       "expect": 1200.0,
+       "approx": 0.01
+      }
+     ],
+     "hint": "Plug the follower's reply into the leader's profit.",
+     "solution": "def leader_profit(q1):\n    q2 = (100 - q1) / 2.0\n    return round(q1 * (100 - q1 - q2), 2)\n"
+    },
+    {
+     "type": "python",
+     "title": "Ultimatum acceptance",
+     "intro": "Write ultimatum(offer, total, threshold): the responder accepts when offer / total >= threshold. Return the list [accepted (True/False), proposer's share] where the proposer's share is total - offer if accepted, otherwise 0.",
+     "fn": "ultimatum",
+     "starter": "def ultimatum(offer, total, threshold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        10,
+        0.3
+       ],
+       "expect": [
+        true,
+        7
+       ]
+      },
+      {
+       "args": [
+        2,
+        10,
+        0.3
+       ],
+       "expect": [
+        false,
+        0
+       ]
+      },
+      {
+       "args": [
+        5,
+        10,
+        0.5
+       ],
+       "expect": [
+        true,
+        5
+       ]
+      },
+      {
+       "args": [
+        0,
+        10,
+        0.1
+       ],
+       "expect": [
+        false,
+        0
+       ]
+      }
+     ],
+     "hint": "A rejection leaves nothing.",
+     "solution": "def ultimatum(offer, total, threshold):\n    if offer / float(total) >= threshold:\n        return [True, total - offer]\n    return [False, 0]\n"
+    }
+   ]
+  },
+  {
+   "title": "Repeated games and the evolution of cooperation",
+   "maps": [
+    {
+     "title": "Repeated games",
+     "links": [
+      "Repeated game | has | Many rounds",
+      "Shadow of the future | encourages | Cooperation",
+      "Tit for tat | copies | Last move",
+      "Trigger strategy | punishes | Defection",
+      "Discount factor | weighs | The future",
+      "Folk theorem | allows | Many equilibria",
+      "Reputation | sustains | Trust"
+     ]
+    }
+   ],
+   "summary": [
+    "If the prisoner's dilemma is played once, defection wins. If it is played repeatedly with no known end, the future can discipline the present: cooperating may be worth it to keep the other cooperating.",
+    "Robert Axelrod's tournaments found that a simple strategy, tit for tat (cooperate first, then copy the opponent's last move), outscored far more elaborate ones. It is nice, retaliatory, forgiving and clear.",
+    "The folk theorem says that when players value the future enough, almost any feasible outcome better than the minimum can be sustained as an equilibrium of the repeated game."
+   ],
+   "glossary": [
+    {
+     "term": "Repeated game",
+     "def": "A game in which the same stage game is played many times."
+    },
+    {
+     "term": "Tit for tat",
+     "def": "Cooperate on the first round, then do whatever the opponent did last round."
+    },
+    {
+     "term": "Grim trigger",
+     "def": "Cooperate until the opponent defects once, then defect forever."
+    },
+    {
+     "term": "Discount factor",
+     "def": "The weight delta between 0 and 1 on payoffs one round later."
+    },
+    {
+     "term": "Folk theorem",
+     "def": "In infinitely repeated games with patient players, many outcomes can be sustained in equilibrium."
+    }
+   ],
+   "keyPoints": [
+    "Grim trigger sustains cooperation if delta >= (T - R) / (T - P).",
+    "Sum of delta^t = 1 / (1 - delta).",
+    "Last-round unravelling: known end means defect.",
+    "Tit for tat: nice, retaliating, forgiving, clear.",
+    "Reputation and repeat business support cooperation."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. If you play with the same friends every day, being nice pays off, because they will remember. Copying what they did last time is a good rule."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Shopkeepers who sell to the same neighbours every day tend to be honest. A one-time tourist trap can cheat. The difference is the future. In a repeated game, a player who defects today may lose cooperation tomorrow. The shadow of the future turns a dilemma into a problem that can be solved."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Grim trigger is a simple example: cooperate until the other defects once, then defect forever. Is cooperation worth it? Cooperating forever pays R each round, worth R over one minus delta in total, where delta is how much you value tomorrow compared with today.",
+      "Defecting pays T once and then P forever. Cooperation wins when delta is at least T minus R over T minus P."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "If the number of rounds is known, the logic unravels. On the last round, defection is dominant. So on the second-to-last, the future gives no reward for cooperating, and so on back to the first round.",
+      "In practice people do cooperate in finite games, and uncertainty about the end or about the opponent's type restores cooperation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the 1980s, Robert Axelrod invited experts to submit programs for a computer tournament of the repeated prisoner's dilemma. The winner was the shortest, tit for tat, submitted by Anatol Rapoport. It starts by cooperating and then copies the opponent's previous move.",
+      "Axelrod noted that successful strategies were nice, never defecting first, yet retaliatory, forgiving and clear."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The folk theorem is the general result. When players are patient enough, any outcome that gives each player more than their worst-case payoff can be an equilibrium of the repeated game. Cooperation is possible, but so are many other outcomes.",
+      "Which one emerges depends on norms, history and institutions. The lab lets you run a tournament of strategies yourself."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Why can cooperation survive in repeated games?",
+     "options": [
+      "Future punishment and reward",
+      "Players are kind",
+      "Payoffs change",
+      "The rules forbid defection"
+     ],
+     "answer": 0,
+     "explain": "Shadow of the future."
+    },
+    {
+     "q": "What does tit for tat do?",
+     "options": [
+      "Cooperates first, then copies",
+      "Always defects",
+      "Always cooperates",
+      "Plays randomly"
+     ],
+     "answer": 0,
+     "explain": "Rapoport."
+    },
+    {
+     "q": "What is grim trigger?",
+     "options": [
+      "Defect forever after one defection",
+      "Forgive at once",
+      "Copy the last move",
+      "Randomise"
+     ],
+     "answer": 0,
+     "explain": "Permanent punishment."
+    },
+    {
+     "q": "What does a high discount factor mean?",
+     "options": [
+      "The future matters a lot",
+      "The future is ignored",
+      "Payoffs are halved",
+      "The game ends"
+     ],
+     "answer": 0,
+     "explain": "Patience."
+    },
+    {
+     "q": "What does a known last round cause?",
+     "options": [
+      "Unravelling of cooperation",
+      "More cooperation",
+      "Mixed strategies",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Backward induction."
+    },
+    {
+     "q": "What does the folk theorem say?",
+     "options": [
+      "Many outcomes are equilibria for patient players",
+      "Only defection is possible",
+      "All games are zero-sum",
+      "Mixing is impossible"
+     ],
+     "answer": 0,
+     "explain": "Many equilibria."
+    }
+   ],
+   "cards": [
+    {
+     "q": "1 / (1 - delta)",
+     "a": "sum of discounted rounds"
+    },
+    {
+     "q": "delta >= (T - R) / (T - P)",
+     "a": "grim trigger condition"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Strategy tournament",
+     "intro": "Play a round-robin tournament of the repeated prisoner's dilemma between classic strategies and one you control by choosing a rule. Run the tournament with at least four strategies and see who wins.",
+     "height": 780,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\ncanvas{width:100%;display:block;margin:6px 0;background:#0e0820;border-radius:8px}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}\ntable{border-collapse:collapse;width:100%}td,th{padding:4px 6px;border-bottom:1px solid #3a2a5c;text-align:left}\n</style></head><body>\n<div class=\"k\">Payoffs: both cooperate 3 each, both defect 1 each, defector 5 vs cooperator 0. 50 rounds per match.</div>\n<div id=\"list\"></div>\n<label>Your rule: <select id=\"mine\"><option value=\"tft\">Tit for tat</option><option value=\"tf2t\">Tit for two tats (forgiving)</option><option value=\"grim\">Grim trigger</option><option value=\"alld\">Always defect</option><option value=\"allc\">Always cooperate</option><option value=\"rand\">Random</option><option value=\"pavlov\">Pavlov (win-stay, lose-shift)</option></select></label>\n<div><button id=\"run\">Run tournament</button></div>\n<div id=\"out\"></div><div id=\"g\" class=\"k\"></div>\n<script>\nvar $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar NAMES={tft:\"Tit for tat\",tf2t:\"Tit for two tats\",grim:\"Grim trigger\",alld:\"Always defect\",allc:\"Always cooperate\",rand:\"Random\",pavlov:\"Pavlov\"};\nvar seed=3;function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff}\nfunction move(k,my,th,st){var n=my.length;\n if(k===\"tft\")return n==0?\"C\":th[n-1];\n if(k===\"tf2t\")return (n>=2&&th[n-1]===\"D\"&&th[n-2]===\"D\")?\"D\":\"C\";\n if(k===\"grim\")return th.indexOf(\"D\")>=0?\"D\":\"C\";\n if(k===\"alld\")return \"D\";if(k===\"allc\")return \"C\";if(k===\"rand\")return rnd()<0.5?\"C\":\"D\";\n if(k===\"pavlov\"){if(n==0)return \"C\";var m=my[n-1],t=th[n-1];return (m===t)?\"C\":\"D\"}}\nfunction pay(a,b){return a===\"C\"?(b===\"C\"?3:0):(b===\"C\"?5:1)}\nfunction match(a,b){var ma=[],mb=[],sa=0,sb=0;for(var i=0;i<50;i++){var x=move(a,ma,mb),y=move(b,mb,ma);sa+=pay(x,y);sb+=pay(y,x);ma.push(x);mb.push(y)}return[sa,sb]}\nvar ks=Object.keys(NAMES);\n$(\"run\").onclick=function(){var tot={};ks.forEach(function(k){tot[k]=0});\n for(var i=0;i<ks.length;i++)for(var j=i+1;j<ks.length;j++){var r=match(ks[i],ks[j]);tot[ks[i]]+=r[0];tot[ks[j]]+=r[1]}\n var arr=ks.slice().sort(function(a,b){return tot[b]-tot[a]}),h=\"<table><tr><th>#</th><th>Strategy</th><th>Score</th></tr>\";\n var mine=$(\"mine\").value;arr.forEach(function(k,i){h+=\"<tr\"+(k===mine?' style=\"color:#ffd36b\"':\"\")+\"><td>\"+(i+1)+\"</td><td>\"+NAMES[k]+(k===mine?\" (yours)\":\"\")+\"</td><td>\"+tot[k]+\"</td></tr>\"});\n $(\"out\").innerHTML=h+\"</table>\";\n $(\"g\").textContent=\"Winner: \"+NAMES[arr[0]]+\". Nice, retaliating and forgiving strategies usually do well; always-defect wins single matches but loses the tournament.\";done()};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the strategy",
+     "intro": "Pair each strategy with its behaviour.",
+     "pairs": [
+      [
+       "Tit for tat",
+       "copy the last move"
+      ],
+      [
+       "Grim trigger",
+       "defect forever after a defection"
+      ],
+      [
+       "Always defect",
+       "never cooperate"
+      ],
+      [
+       "Always cooperate",
+       "never defect"
+      ],
+      [
+       "Random",
+       "coin flip"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Tit for tat match",
+     "intro": "Write tft_vs(opp_moves): given the list of opponent moves ('C' or 'D'), return tit for tat's own moves: 'C' first, then the opponent's previous move each round (same length as opp_moves).",
+     "fn": "tft_vs",
+     "starter": "def tft_vs(opp_moves):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "C",
+         "C",
+         "D",
+         "C"
+        ]
+       ],
+       "expect": [
+        "C",
+        "C",
+        "C",
+        "D"
+       ]
+      },
+      {
+       "args": [
+        [
+         "D",
+         "D",
+         "D"
+        ]
+       ],
+       "expect": [
+        "C",
+        "D",
+        "D"
+       ]
+      },
+      {
+       "args": [
+        [
+         "C"
+        ]
+       ],
+       "expect": [
+        "C"
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Look at the previous opponent move.",
+     "solution": "def tft_vs(opp_moves):\n    out = []\n    for i in range(len(opp_moves)):\n        if i == 0:\n            out.append('C')\n        else:\n            out.append(opp_moves[i - 1])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Score a match",
+     "intro": "Write score(a_moves, b_moves, T, R, P, S): the total payoff of player A over the rounds, where each pair of moves earns R for CC, S for A=C vs B=D, T for A=D vs B=C, and P for DD. Return A's total as an integer.",
+     "fn": "score",
+     "starter": "def score(a_moves, b_moves, T, R, P, S):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "C",
+         "C",
+         "C"
+        ],
+        [
+         "C",
+         "C",
+         "C"
+        ],
+        5,
+        3,
+        1,
+        0
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        [
+         "D",
+         "D"
+        ],
+        [
+         "C",
+         "D"
+        ],
+        5,
+        3,
+        1,
+        0
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        [
+         "C",
+         "D",
+         "C"
+        ],
+        [
+         "D",
+         "D",
+         "C"
+        ],
+        5,
+        3,
+        1,
+        0
+       ],
+       "expect": 4
+      }
+     ],
+     "hint": "Add the right payoff for each round.",
+     "solution": "def score(a_moves, b_moves, T, R, P, S):\n    total = 0\n    for i in range(len(a_moves)):\n        a = a_moves[i]\n        b = b_moves[i]\n        if a == 'C' and b == 'C':\n            total = total + R\n        elif a == 'C' and b == 'D':\n            total = total + S\n        elif a == 'D' and b == 'C':\n            total = total + T\n        else:\n            total = total + P\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "Discounted value",
+     "intro": "Write discounted(payoff, delta, rounds): the sum of payoff x delta^t for t = 0 to rounds-1, rounded to 4 decimals.",
+     "fn": "discounted",
+     "starter": "def discounted(payoff, delta, rounds):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        0.9,
+        5
+       ],
+       "expect": 12.2853,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        1,
+        0.5,
+        10
+       ],
+       "expect": 1.998,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        2,
+        1,
+        4
+       ],
+       "expect": 8.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        4,
+        0,
+        3
+       ],
+       "expect": 4.0,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Weight round t by delta to the t.",
+     "solution": "def discounted(payoff, delta, rounds):\n    s = 0.0\n    for t in range(rounds):\n        s = s + payoff * delta ** t\n    return round(s, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Minimum patience",
+     "intro": "Write min_delta(T, R, P): the smallest discount factor for which grim trigger sustains cooperation, (T - R) / (T - P), rounded to 4 decimals.",
+     "fn": "min_delta",
+     "starter": "def min_delta(T, R, P):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        3,
+        1
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        4,
+        3,
+        1
+       ],
+       "expect": 0.3333,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        10,
+        6,
+        2
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        6,
+        5,
+        2
+       ],
+       "expect": 0.25,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Compare cooperating forever with defecting once.",
+     "solution": "def min_delta(T, R, P):\n    return round((T - R) / float(T - P), 4)\n"
+    }
+   ]
+  },
+  {
+   "title": "Evolutionary game theory",
+   "maps": [
+    {
+     "title": "Evolution",
+     "links": [
+      "Population | plays | Strategies",
+      "Fitness | is | Payoff",
+      "ESS | resists | Invaders",
+      "Replicator dynamics | grows | Fitter strategies",
+      "Hawk-dove | has | Mixed ESS",
+      "Frequency | is | Population share",
+      "Mutation | tests | Stability"
+     ]
+    }
+   ],
+   "summary": [
+    "Evolutionary game theory replaces rational thought by selection: strategies that earn more payoff spread in the population, those that earn less shrink. No one needs to be clever.",
+    "An evolutionarily stable strategy (ESS) is one that, once common, cannot be invaded by a small group using a different strategy. Every strict Nash equilibrium is an ESS.",
+    "Replicator dynamics describe how the share of each strategy changes: x' = x (f - average fitness). In hawk-dove the population settles at a mix of hawks and doves."
+   ],
+   "glossary": [
+    {
+     "term": "Evolutionarily stable strategy",
+     "def": "A strategy that, if adopted by most of a population, cannot be displaced by a rare mutant."
+    },
+    {
+     "term": "Replicator dynamics",
+     "def": "Equations in which a strategy's share grows when its payoff is above the population average."
+    },
+    {
+     "term": "Hawk-dove game",
+     "def": "A contest over a resource in which hawks fight and doves share or retreat."
+    },
+    {
+     "term": "Fitness",
+     "def": "The payoff a strategy earns against the current population, interpreted as reproductive success."
+    },
+    {
+     "term": "Frequency dependence",
+     "def": "A strategy's success depends on how common each strategy is."
+    }
+   ],
+   "keyPoints": [
+    "x' = x (f(x) - average).",
+    "Hawk-dove ESS: share of hawks = V / C when C > V.",
+    "ESS: resists a small invasion.",
+    "Stable fixed point of the dynamics.",
+    "Payoffs become offspring."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Animals do not think about games, but the ones whose habits work well have more babies, so good habits spread."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Biologists noticed that animals seldom fight to the death over territory, even though fighting is natural. John Maynard Smith and George Price explained this in 1973 with game theory. Evolution is a game where strategies are inherited and payoffs are offspring."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the hawk-dove game, hawks always escalate and doves display and retreat. The resource is worth V. A fight costs C to the loser, sharing the cost. Two doves split V. A hawk beats a dove and takes all. Two hawks fight, getting V minus C over two each on average.",
+      "If C exceeds V, hawks can't take over: a population of all hawks is invaded by doves, and all doves is invaded by hawks."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The balance is a mixed equilibrium in which a fraction V over C of the population are hawks. At that mix, hawks and doves earn the same. Any drift toward more hawks makes hawks do worse, and the population returns. This fixed point is an evolutionarily stable state."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The replicator equation formalises this. The growth rate of strategy i's share is its share times the amount by which its fitness exceeds the average. Strategies above the average spread. Fixed points are where all present strategies earn the same.",
+      "The same maths describes the spread of ideas, habits and behaviours in cultures, where success is copied."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Evolutionary game theory explains the persistence of altruism, signalling and conventions. It also reveals that cooperation in the prisoner's dilemma dies out in a well-mixed population but can survive when like meets like, through kinship, reputation or local neighbourhoods.",
+      "The lab shows the dynamics for several games."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What replaces rationality in evolutionary game theory?",
+     "options": [
+      "Selection",
+      "Planning",
+      "Luck only",
+      "Communication"
+     ],
+     "answer": 0,
+     "explain": "Fitter spreads."
+    },
+    {
+     "q": "What is an ESS?",
+     "options": [
+      "A strategy that resists invaders",
+      "The best strategy always",
+      "A mixed strategy only",
+      "A random choice"
+     ],
+     "answer": 0,
+     "explain": "Maynard Smith."
+    },
+    {
+     "q": "In hawk-dove with C > V, what is the hawk share?",
+     "options": [
+      "V / C",
+      "C / V",
+      "1",
+      "0"
+     ],
+     "answer": 0,
+     "explain": "Mixed ESS."
+    },
+    {
+     "q": "When does a strategy grow in replicator dynamics?",
+     "options": [
+      "Its fitness is above average",
+      "It is rare",
+      "It is nice",
+      "It is old"
+     ],
+     "answer": 0,
+     "explain": "x (f - avg)."
+    },
+    {
+     "q": "Is a strict Nash equilibrium an ESS?",
+     "options": [
+      "Yes",
+      "No",
+      "Only in zero-sum",
+      "Only with mixing"
+     ],
+     "answer": 0,
+     "explain": "It resists mutants."
+    },
+    {
+     "q": "What can sustain cooperation in a population?",
+     "options": [
+      "Kinship or reputation",
+      "Nothing",
+      "Speed",
+      "Random mixing only"
+     ],
+     "answer": 0,
+     "explain": "Like meets like."
+    }
+   ],
+   "cards": [
+    {
+     "q": "x_i' = x_i (f_i - f_avg)",
+     "a": "replicator equation"
+    },
+    {
+     "q": "V / C",
+     "a": "hawk fraction in the ESS"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Replicator dynamics lab",
+     "intro": "Choose a game (prisoner's dilemma, hawk-dove, stag hunt) and a starting share, then watch the population evolve. Try all three games to complete the lab.",
+     "height": 760,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\ncanvas{width:100%;display:block;margin:6px 0;background:#0e0820;border-radius:8px}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}\ntable{border-collapse:collapse;width:100%}td,th{padding:4px 6px;border-bottom:1px solid #3a2a5c;text-align:left}\n</style></head><body>\n<label>Game: <select id=\"gm\"><option value=\"pd\">Prisoner's dilemma</option><option value=\"hd\">Hawk-dove</option><option value=\"sh\">Stag hunt</option></select></label>\n<label>Starting share of strategy 1: <b id=\"vx\"></b><input id=\"x0\" type=\"range\" min=\"1\" max=\"99\" value=\"50\"></label>\n<div><button id=\"go\">Evolve</button></div>\n<canvas id=\"c\" width=\"400\" height=\"200\"></canvas><div id=\"o\" class=\"k\"></div><div id=\"p\" class=\"k\"></div>\n<script>\nvar $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar G={pd:{a:[[3,0],[5,1]],n:[\"Cooperate\",\"Defect\"],d:\"Defect takes over: it is dominant.\"},\n hd:{a:[[-1,2],[0,1]],n:[\"Hawk\",\"Dove\"],d:\"A stable mix of hawks and doves (here half and half).\"},\n sh:{a:[[4,0],[3,2]],n:[\"Stag\",\"Hare\"],d:\"Two stable outcomes; the start decides which one.\"}};\nvar seen={};\nfunction draw(){var g=$(\"gm\").value,A=G[g].a,x=$(\"x0\").value/100;$(\"vx\").textContent=Math.round(x*100)+\"%\";\n var c=$(\"c\").getContext(\"2d\");c.clearRect(0,0,400,200);c.strokeStyle=\"#5c4a85\";c.beginPath();c.moveTo(0,100);c.lineTo(400,100);c.stroke();c.strokeStyle=\"#b26bff\";c.beginPath();\n var dt=0.05;for(var i=0;i<=400;i++){var Y=190-x*180;if(i==0)c.moveTo(i,Y);else c.lineTo(i,Y);\n  var f1=A[0][0]*x+A[0][1]*(1-x),f2=A[1][0]*x+A[1][1]*(1-x),av=x*f1+(1-x)*f2;x+=dt*x*(f1-av);if(x<0.0001)x=0.0001;if(x>0.9999)x=0.9999}\n c.fillStyle=\"#c9b8e8\";c.fillText(\"share of \"+G[g].n[0]+\" over time (top = 100%)\",6,12);\n $(\"o\").textContent=\"Final share of \"+G[g].n[0]+\": \"+Math.round(x*100)+\"%. \"+G[g].d;seen[g]=1;\n var n=Object.keys(seen).length;$(\"p\").textContent=\"Games tried: \"+n+\" of 3\";if(n>=3)done()}\n$(\"go\").onclick=draw;$(\"x0\").oninput=draw;$(\"gm\").onchange=draw;draw();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "ESS",
+       "resists small invasions"
+      ],
+      [
+       "Fitness",
+       "payoff against the population"
+      ],
+      [
+       "Replicator dynamics",
+       "shares follow fitness"
+      ],
+      [
+       "Hawk-dove",
+       "fight or retreat"
+      ],
+      [
+       "Frequency dependence",
+       "success depends on how common others are"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Hawk-dove payoffs",
+     "intro": "Write hd_payoffs(V, C): the symmetric payoff matrix as [[hawk vs hawk, hawk vs dove], [dove vs hawk, dove vs dove]] = [[(V - C) / 2, V], [0, V / 2]], each rounded to 3 decimals.",
+     "fn": "hd_payoffs",
+     "starter": "def hd_payoffs(V, C):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2,
+        4
+       ],
+       "expect": [
+        [
+         -1.0,
+         2.0
+        ],
+        [
+         0,
+         1.0
+        ]
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        4,
+        2
+       ],
+       "expect": [
+        [
+         1.0,
+         4.0
+        ],
+        [
+         0,
+         2.0
+        ]
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        6,
+        10
+       ],
+       "expect": [
+        [
+         -2.0,
+         6.0
+        ],
+        [
+         0,
+         3.0
+        ]
+       ],
+       "approx": 0.002
+      }
+     ],
+     "hint": "Build the four entries.",
+     "solution": "def hd_payoffs(V, C):\n    return [[round((V - C) / 2.0, 3), round(float(V), 3)], [0, round(V / 2.0, 3)]]\n"
+    },
+    {
+     "type": "python",
+     "title": "Hawk fraction at the ESS",
+     "intro": "Write hawk_ess(V, C): the hawk share of the mixed ESS: 1 if V >= C, otherwise V / C. Round to 4 decimals.",
+     "fn": "hawk_ess",
+     "starter": "def hawk_ess(V, C):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2,
+        4
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        4,
+        2
+       ],
+       "expect": 1,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        3,
+        3
+       ],
+       "expect": 1,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        1,
+        10
+       ],
+       "expect": 0.1,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Pure hawk when the prize beats the cost.",
+     "solution": "def hawk_ess(V, C):\n    if V >= C:\n        return 1\n    return round(V / float(C), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Replicator step",
+     "intro": "For a two-strategy population with share x of strategy 1, matrix A (payoffs [[a, b], [c, d]]) and a time step dt, write replicator(x, A, dt): f1 = a x + b (1-x), f2 = c x + d (1-x), average = x f1 + (1-x) f2, new x = x + dt x (f1 - average). Round to 4 decimals.",
+     "fn": "replicator",
+     "starter": "def replicator(x, A, dt):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5,
+        [
+         [
+          3,
+          0
+         ],
+         [
+          5,
+          1
+         ]
+        ],
+        0.1
+       ],
+       "expect": 0.4625,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        0.5,
+        [
+         [
+          -1,
+          2
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        0.1
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        0.2,
+        [
+         [
+          4,
+          0
+         ],
+         [
+          3,
+          2
+         ]
+        ],
+        0.1
+       ],
+       "expect": 0.1776,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        0.9,
+        [
+         [
+          4,
+          0
+         ],
+         [
+          3,
+          2
+         ]
+        ],
+        0.1
+       ],
+       "expect": 0.9063,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Compute both fitnesses and the average.",
+     "solution": "def replicator(x, A, dt):\n    f1 = A[0][0] * x + A[0][1] * (1 - x)\n    f2 = A[1][0] * x + A[1][1] * (1 - x)\n    avg = x * f1 + (1 - x) * f2\n    return round(x + dt * x * (f1 - avg), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Run the dynamics",
+     "intro": "Write evolve(x0, A, dt, steps): apply the replicator step repeatedly and return the final share rounded to 3 decimals.",
+     "fn": "evolve",
+     "starter": "def evolve(x0, A, dt, steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5,
+        [
+         [
+          3,
+          0
+         ],
+         [
+          5,
+          1
+         ]
+        ],
+        0.1,
+        50
+       ],
+       "expect": 0.0,
+       "approx": 0.02
+      },
+      {
+       "args": [
+        0.5,
+        [
+         [
+          -1,
+          2
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        0.1,
+        100
+       ],
+       "expect": 0.5,
+       "approx": 0.02
+      },
+      {
+       "args": [
+        0.4,
+        [
+         [
+          4,
+          0
+         ],
+         [
+          3,
+          2
+         ]
+        ],
+        0.1,
+        100
+       ],
+       "expect": 0.0,
+       "approx": 0.02
+      },
+      {
+       "args": [
+        0.6,
+        [
+         [
+          4,
+          0
+         ],
+         [
+          3,
+          2
+         ]
+        ],
+        0.1,
+        100
+       ],
+       "expect": 0.0,
+       "approx": 0.02
+      }
+     ],
+     "hint": "Repeat the step.",
+     "solution": "def evolve(x0, A, dt, steps):\n    x = float(x0)\n    for i in range(steps):\n        f1 = A[0][0] * x + A[0][1] * (1 - x)\n        f2 = A[1][0] * x + A[1][1] * (1 - x)\n        avg = x * f1 + (1 - x) * f2\n        x = x + dt * x * (f1 - avg)\n    return round(x, 2)\n"
+    }
+   ]
+  },
+  {
+   "title": "Auctions, bargaining and mechanism design",
+   "maps": [
+    {
+     "title": "Mechanism design",
+     "links": [
+      "Auction | allocates | By bids",
+      "Second-price | rewards | Honest bids",
+      "First-price | invites | Shading",
+      "Winner's curse | punishes | Overbidding",
+      "Mechanism design | engineers | Rules",
+      "Incentive compatible | means | Truth is best",
+      "Nash bargaining | splits | The surplus"
+     ]
+    }
+   ],
+   "summary": [
+    "Auctions are games with money. In a sealed-bid second-price (Vickrey) auction the highest bidder wins but pays the second-highest bid, and bidding your true value is a dominant strategy.",
+    "In a first-price auction you pay what you bid, so you shade your bid below your value. Under standard assumptions both formats give the seller the same expected revenue, the revenue equivalence theorem.",
+    "Mechanism design runs game theory backward: choose the rules so that selfish play produces the outcome you want. Vickrey, Clarke and Groves showed how truthful reporting can be made optimal."
+   ],
+   "glossary": [
+    {
+     "term": "Vickrey auction",
+     "def": "A sealed-bid auction in which the highest bidder wins and pays the second-highest bid."
+    },
+    {
+     "term": "Bid shading",
+     "def": "Bidding less than your true value in a first-price auction."
+    },
+    {
+     "term": "Winner's curse",
+     "def": "In common-value auctions the winner tends to have overestimated the value."
+    },
+    {
+     "term": "Mechanism design",
+     "def": "Designing rules of a game so that self-interested behaviour achieves a desired goal."
+    },
+    {
+     "term": "Nash bargaining solution",
+     "def": "The split that maximises the product of the players' gains over their disagreement payoffs."
+    }
+   ],
+   "keyPoints": [
+    "Vickrey: bid your value.",
+    "First price, 2 bidders uniform: bid v / 2.",
+    "Revenue equivalence: same expected revenue.",
+    "Nash bargaining: maximise (u1 - d1)(u2 - d2).",
+    "Incentive compatible: truth-telling is optimal."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. In an auction, the best way to be honest is to pay the price of the second-best bidder, so there is nothing to gain from fibbing."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Auctions price art, spectrum licences, oil fields and the ads you see online. They are games where the rules decide who wins and what is paid. The sealed-bid second-price auction has a lovely property.",
+      "The winner pays the second-highest bid, so your own bid only decides whether you win, not what you pay. Therefore bid your true value."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why is truth best? If you bid higher than your value you may win at a price above your value and lose money. If you bid lower you may lose an auction you'd have profited from. Bidding exactly your value is never worse and sometimes better, so it is a dominant strategy.",
+      "Search engines use a variation of this to sell ad slots."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In a first-price auction the winner pays their own bid, so honest bidding earns zero profit. You bid below your value, trading a lower chance of winning against a higher profit if you win. With two bidders whose values are uniform between zero and one, the optimal bid is half your value.",
+      "Surprisingly, the seller's expected revenue is the same as in the Vickrey auction."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When the item has the same value to everyone but each bidder has only a noisy estimate, the winner is the one with the most optimistic estimate and likely overpaid. This is the winner's curse. Wise bidders shade their bids to correct for it. Oil companies learned this the hard way."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Mechanism design asks: what rules make people reveal what we need to know? Besides auctions, it covers matching students to schools, kidneys to patients and the design of voting rules.",
+      "Bargaining theory covers the two-person case: Nash's solution splits the surplus to maximise the product of gains, and Rubinstein's alternating offers model shows that patience gives bargaining power."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the winner pay in a Vickrey auction?",
+     "options": [
+      "The second-highest bid",
+      "Their own bid",
+      "Nothing",
+      "The average bid"
+     ],
+     "answer": 0,
+     "explain": "Second price."
+    },
+    {
+     "q": "What is the best bid in a Vickrey auction?",
+     "options": [
+      "Your true value",
+      "Zero",
+      "Double your value",
+      "Half your value"
+     ],
+     "answer": 0,
+     "explain": "Dominant."
+    },
+    {
+     "q": "What is bid shading?",
+     "options": [
+      "Bidding below value in a first-price auction",
+      "Hiding the bid",
+      "Bidding in secret",
+      "Bidding twice"
+     ],
+     "answer": 0,
+     "explain": "Trade-off."
+    },
+    {
+     "q": "What is the winner's curse?",
+     "options": [
+      "The winner tends to overpay",
+      "The winner is cursed",
+      "Losers pay",
+      "Bids are void"
+     ],
+     "answer": 0,
+     "explain": "Optimistic estimates."
+    },
+    {
+     "q": "What is mechanism design?",
+     "options": [
+      "Designing rules for desired outcomes",
+      "Building machines",
+      "Solving matrices",
+      "Drawing trees"
+     ],
+     "answer": 0,
+     "explain": "Reverse game theory."
+    },
+    {
+     "q": "What does Nash bargaining maximise?",
+     "options": [
+      "The product of gains",
+      "The sum of payoffs",
+      "One player's gain",
+      "Time"
+     ],
+     "answer": 0,
+     "explain": "(u1-d1)(u2-d2)."
+    }
+   ],
+   "cards": [
+    {
+     "q": "b = v / 2",
+     "a": "first-price bid, uniform, 2 bidders"
+    },
+    {
+     "q": "max (u1-d1)(u2-d2)",
+     "a": "Nash bargaining"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Vickrey auction",
+       "winner pays second price"
+      ],
+      [
+       "First-price auction",
+       "winner pays own bid"
+      ],
+      [
+       "Winner's curse",
+       "winner overpays"
+      ],
+      [
+       "Mechanism design",
+       "design rules for goals"
+      ],
+      [
+       "Nash bargaining",
+       "maximise product of gains"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Second-price auction",
+     "intro": "Write vickrey(bids): the list [winner index, price] where the highest bidder (the first one if tied) wins and pays the second-highest bid (equal to the highest if tied; 0 if there is only one bid).",
+     "fn": "vickrey",
+     "starter": "def vickrey(bids):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         10,
+         8,
+         5
+        ]
+       ],
+       "expect": [
+        0,
+        8
+       ]
+      },
+      {
+       "args": [
+        [
+         3,
+         9,
+         9
+        ]
+       ],
+       "expect": [
+        1,
+        9
+       ]
+      },
+      {
+       "args": [
+        [
+         7
+        ]
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ]
+       ],
+       "expect": [
+        3,
+        3
+       ]
+      }
+     ],
+     "hint": "The winner pays the best of the others.",
+     "solution": "def vickrey(bids):\n    w = 0\n    for i in range(len(bids)):\n        if bids[i] > bids[w]:\n            w = i\n    others = []\n    for i in range(len(bids)):\n        if i != w:\n            others.append(bids[i])\n    price = max(others) if others else 0\n    return [w, price]\n"
+    },
+    {
+     "type": "python",
+     "title": "First-price auction profit",
+     "intro": "Write fp_profit(value, bid, rival_bid): the winner's profit in a first-price auction: value - bid if bid > rival_bid, 0 otherwise.",
+     "fn": "fp_profit",
+     "starter": "def fp_profit(value, bid, rival_bid):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        6,
+        4
+       ],
+       "expect": 4
+      },
+      {
+       "args": [
+        10,
+        6,
+        8
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        10,
+        10,
+        5
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        5,
+        5,
+        5
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Pay your own bid when you win.",
+     "solution": "def fp_profit(value, bid, rival_bid):\n    if bid > rival_bid:\n        return value - bid\n    return 0\n"
+    },
+    {
+     "type": "python",
+     "title": "Expected profit with shading",
+     "intro": "With one rival whose bid is uniformly random between 0 and 1, the probability of winning with bid b is b (for 0 <= b <= 1). Write exp_profit(value, b): (value - b) x b, rounded to 4 decimals.",
+     "fn": "exp_profit",
+     "starter": "def exp_profit(value, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        0.5
+       ],
+       "expect": 0.25,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        1,
+        0.3
+       ],
+       "expect": 0.21,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        0.8,
+        0.4
+       ],
+       "expect": 0.16,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        0.6,
+        0.6
+       ],
+       "expect": 0.0,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Profit times win probability.",
+     "solution": "def exp_profit(value, b):\n    return round((value - b) * b, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Nash bargaining split",
+     "intro": "Two players split a surplus S with disagreement payoffs d1 and d2 (utility is linear in money). The Nash solution gives player 1: d1 + (S - d1 - d2) / 2. Write nash_split(S, d1, d2): the list [player 1 payoff, player 2 payoff] rounded to 3 decimals.",
+     "fn": "nash_split",
+     "starter": "def nash_split(S, d1, d2):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        0,
+        0
+       ],
+       "expect": [
+        5.0,
+        5.0
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        10,
+        2,
+        0
+       ],
+       "expect": [
+        6.0,
+        4.0
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        10,
+        3,
+        1
+       ],
+       "expect": [
+        6.0,
+        4.0
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        100,
+        20,
+        40
+       ],
+       "expect": [
+        40.0,
+        60.0
+       ],
+       "approx": 0.002
+      }
+     ],
+     "hint": "Share the surplus above disagreement equally.",
+     "solution": "def nash_split(S, d1, d2):\n    gain = (S - d1 - d2) / 2.0\n    return [round(d1 + gain, 3), round(d2 + gain, 3)]\n"
+    }
+   ]
+  },
+  {
+   "title": "Cooperative games and social choice",
+   "maps": [
+    {
+     "title": "Cooperative games",
+     "links": [
+      "Coalition | is | A group of players",
+      "Characteristic function | gives | Coalition value",
+      "Shapley value | is | Fair share",
+      "Core | is | Stable allocations",
+      "Voting | aggregates | Preferences",
+      "Arrow | proves | Impossibility",
+      "Condorcet | finds | Cycles"
+     ]
+    }
+   ],
+   "summary": [
+    "Cooperative game theory asks how a group that can bind its members should split the gains. A characteristic function says what each coalition can achieve alone.",
+    "The Shapley value gives each player their average marginal contribution over all orders in which the coalition could form. It is the unique allocation satisfying fairness axioms. The core is the set of allocations no coalition could improve on by leaving.",
+    "Social choice asks how to combine individual rankings into a group decision. Condorcet's paradox shows majorities can cycle, and Arrow's impossibility theorem shows that no ranking method satisfies a short list of fairness conditions."
+   ],
+   "glossary": [
+    {
+     "term": "Coalition",
+     "def": "A subset of players who agree to act together."
+    },
+    {
+     "term": "Characteristic function",
+     "def": "A function v(S) giving the value a coalition S can secure."
+    },
+    {
+     "term": "Shapley value",
+     "def": "A player's average marginal contribution across all orders of joining the coalition."
+    },
+    {
+     "term": "Core",
+     "def": "The allocations that no coalition can improve upon by breaking away."
+    },
+    {
+     "term": "Condorcet paradox",
+     "def": "A situation where majority preferences form a cycle: A beats B, B beats C, C beats A."
+    }
+   ],
+   "keyPoints": [
+    "phi_i = average of v(S + i) - v(S) over orders.",
+    "Efficient: Shapley values add to v(all).",
+    "Core: no coalition gets less than v(S).",
+    "Condorcet winner beats every other option.",
+    "Arrow: no perfect ranking rule."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. When a group wins together, who deserves how much? You can imagine people joining one at a time and give each what they add. Voting can go in circles too."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Three friends each bring something to a business. One has money, one skill and one a customer list. Alone, none can earn much, but together they earn a lot.",
+      "How should the profit be split? The characteristic function lists what every possible group, called a coalition, can earn, and the question is what each member deserves."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Lloyd Shapley's answer is to imagine the group forming one member at a time, in random order, and to pay each member what they add to the groups already there, their marginal contribution. Averaging over all orders gives the Shapley value.",
+      "It adds up to the total, treats equal players equally, and gives nothing to someone who adds nothing. It is used to explain machine learning predictions and to share costs among airlines using one runway."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The core takes a different view: an allocation is stable if no subgroup could do better by leaving. Some games have a core, others have none, and in some it contains many allocations. The Shapley value is always defined and is sometimes outside the core."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Voting is social choice. Suppose three voters rank candidates A, B and C as A over B over C, B over C over A, and C over A over B. A majority prefers A to B, a majority prefers B to C, and a majority prefers C to A. The majority preference runs in a circle.",
+      "This is the Condorcet paradox, found in 1785."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Kenneth Arrow proved in 1951 that no voting method that ranks three or more options can satisfy a short list of reasonable conditions: unanimity, independence of irrelevant options, and no dictator.",
+      "Gibbard and Satterthwaite later showed that any reasonable method can be manipulated by insincere voting. Every voting system has trade-offs, and choosing one means choosing which flaws to accept."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the characteristic function give?",
+     "options": [
+      "The value of each coalition",
+      "The winner",
+      "A strategy",
+      "A probability"
+     ],
+     "answer": 0,
+     "explain": "v(S)."
+    },
+    {
+     "q": "What is the Shapley value?",
+     "options": [
+      "Average marginal contribution",
+      "Largest payoff",
+      "A fixed share",
+      "The core"
+     ],
+     "answer": 0,
+     "explain": "Over all orders."
+    },
+    {
+     "q": "What does the core ensure?",
+     "options": [
+      "No coalition wants to break away",
+      "Equal shares",
+      "Maximum profit",
+      "Fair voting"
+     ],
+     "answer": 0,
+     "explain": "Stability."
+    },
+    {
+     "q": "What is Condorcet's paradox?",
+     "options": [
+      "Majority preference can cycle",
+      "Majorities always agree",
+      "Voting is impossible",
+      "Ties are rare"
+     ],
+     "answer": 0,
+     "explain": "A over B over C over A."
+    },
+    {
+     "q": "What did Arrow prove?",
+     "options": [
+      "No ranking rule meets all fairness conditions",
+      "All voting works",
+      "Majority is best",
+      "Dictators are fair"
+     ],
+     "answer": 0,
+     "explain": "1951."
+    },
+    {
+     "q": "What do Gibbard and Satterthwaite show?",
+     "options": [
+      "Reasonable voting rules can be manipulated",
+      "Voting is honest",
+      "Ties are impossible",
+      "Ranking is easy"
+     ],
+     "answer": 0,
+     "explain": "Strategic voting."
+    }
+   ],
+   "cards": [
+    {
+     "q": "v(S)",
+     "a": "worth of coalition S"
+    },
+    {
+     "q": "phi_i",
+     "a": "Shapley value of player i"
+    },
+    {
+     "q": "A > B > C > A",
+     "a": "Condorcet cycle"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Coalition",
+       "group acting together"
+      ],
+      [
+       "Shapley value",
+       "average marginal contribution"
+      ],
+      [
+       "Core",
+       "no group wants to leave"
+      ],
+      [
+       "Condorcet paradox",
+       "majority cycle"
+      ],
+      [
+       "Arrow's theorem",
+       "no perfect ranking rule"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Shapley value for 3 players",
+     "intro": "Write shapley(v): v is a dict-free list of 8 values giving the worth of coalitions indexed by bitmask (bit 0 = player 0, bit 1 = player 1, bit 2 = player 2), so v[0] = 0 and v[7] is the grand coalition. Return the list of Shapley values for players 0, 1, 2 (averaging over all 6 orders), rounded to 3 decimals.",
+     "fn": "shapley",
+     "starter": "def shapley(v):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         10,
+         0,
+         10,
+         10,
+         20
+        ]
+       ],
+       "expect": [
+        6.667,
+        6.667,
+        6.667
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         6,
+         6,
+         6,
+         6,
+         6,
+         6,
+         6
+        ]
+       ],
+       "expect": [
+        2.0,
+        2.0,
+        2.0
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         12
+        ]
+       ],
+       "expect": [
+        4.0,
+        4.0,
+        4.0
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         1,
+         2,
+         4,
+         3,
+         5,
+         6,
+         9
+        ]
+       ],
+       "expect": [
+        2.0,
+        3.0,
+        4.0
+       ]
+      }
+     ],
+     "hint": "Add each player's marginal contribution in every order.",
+     "solution": "def shapley(v):\n    orders = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]]\n    phi = [0.0, 0.0, 0.0]\n    for o in orders:\n        mask = 0\n        for p in o:\n            phi[p] = phi[p] + v[mask | (1 << p)] - v[mask]\n            mask = mask | (1 << p)\n    return [round(x / 6.0, 3) for x in phi]\n"
+    },
+    {
+     "type": "python",
+     "title": "Efficiency check",
+     "intro": "Write efficient(v, alloc): True if the allocation list alloc adds up to v[7], the grand coalition's worth (compare with a tolerance of 0.001).",
+     "fn": "efficient",
+     "starter": "def efficient(v, alloc):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         10,
+         0,
+         10,
+         10,
+         20
+        ],
+        [
+         10,
+         5,
+         5
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         10,
+         0,
+         10,
+         10,
+         20
+        ],
+        [
+         10,
+         5,
+         4
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         12
+        ],
+        [
+         4,
+         4,
+         4
+        ]
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Sum the allocation.",
+     "solution": "def efficient(v, alloc):\n    return abs(sum(alloc) - v[7]) < 0.001\n"
+    },
+    {
+     "type": "python",
+     "title": "In the core?",
+     "intro": "Write in_core(v, alloc): True if for every coalition mask from 1 to 7 the sum of alloc over its members is at least v[mask], and the total equals v[7] (tolerance 0.001).",
+     "fn": "in_core",
+     "starter": "def in_core(v, alloc):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         10,
+         0,
+         10,
+         10,
+         20
+        ],
+        [
+         8,
+         6,
+         6
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         10,
+         0,
+         10,
+         10,
+         20
+        ],
+        [
+         20,
+         0,
+         0
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         12
+        ],
+        [
+         4,
+         4,
+         4
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         10,
+         0,
+         10,
+         10,
+         12
+        ],
+        [
+         4,
+         4,
+         4
+        ]
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Test each of the seven coalitions.",
+     "solution": "def in_core(v, alloc):\n    if abs(sum(alloc) - v[7]) > 0.001:\n        return False\n    for mask in range(1, 8):\n        s = 0\n        for p in range(3):\n            if mask & (1 << p):\n                s = s + alloc[p]\n        if s < v[mask] - 0.001:\n            return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Pairwise majority",
+     "intro": "Write majority(ballots, a, b): ballots is a list of rankings (each a list of candidate names, best first). Return the candidate preferred by more voters, between a and b, or 'tie' if equal.",
+     "fn": "majority",
+     "starter": "def majority(ballots, a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "A",
+          "B",
+          "C"
+         ],
+         [
+          "B",
+          "C",
+          "A"
+         ],
+         [
+          "C",
+          "A",
+          "B"
+         ]
+        ],
+        "A",
+        "B"
+       ],
+       "expect": "A"
+      },
+      {
+       "args": [
+        [
+         [
+          "A",
+          "B",
+          "C"
+         ],
+         [
+          "B",
+          "C",
+          "A"
+         ],
+         [
+          "C",
+          "A",
+          "B"
+         ]
+        ],
+        "B",
+        "C"
+       ],
+       "expect": "B"
+      },
+      {
+       "args": [
+        [
+         [
+          "A",
+          "B",
+          "C"
+         ],
+         [
+          "B",
+          "C",
+          "A"
+         ],
+         [
+          "C",
+          "A",
+          "B"
+         ]
+        ],
+        "C",
+        "A"
+       ],
+       "expect": "C"
+      },
+      {
+       "args": [
+        [
+         [
+          "A",
+          "B"
+         ],
+         [
+          "B",
+          "A"
+         ]
+        ],
+        "A",
+        "B"
+       ],
+       "expect": "tie"
+      }
+     ],
+     "hint": "Count which comes earlier on each ballot.",
+     "solution": "def majority(ballots, a, b):\n    na = 0\n    nb = 0\n    for r in ballots:\n        if r.index(a) < r.index(b):\n            na = na + 1\n        else:\n            nb = nb + 1\n    if na > nb:\n        return a\n    if nb > na:\n        return b\n    return 'tie'\n"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Game Theory",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What three things define a game?",
+    "options": [
+     "Players, strategies and payoffs",
+     "Rules, referee and prizes",
+     "Cards, dice and boards",
+     "Time, money and luck"
+    ],
+    "answer": 0,
+    "explain": "The ingredients."
+   },
+   {
+    "q": "What is a zero-sum game?",
+    "options": [
+     "One player's gain equals the other's loss",
+     "All players win",
+     "Payoffs are zero for everyone",
+     "There is no strategy"
+    ],
+    "answer": 0,
+    "explain": "Fixed total."
+   },
+   {
+    "q": "What is a dominant strategy?",
+    "options": [
+     "Best whatever the others do",
+     "The most common move",
+     "A mixed strategy",
+     "A threat"
+    ],
+    "answer": 0,
+    "explain": "No regret."
+   },
+   {
+    "q": "What is a Nash equilibrium?",
+    "options": [
+     "Everyone best-responds to the others",
+     "The fairest outcome",
+     "The highest sum",
+     "A tie"
+    ],
+    "answer": 0,
+    "explain": "No unilateral gain."
+   },
+   {
+    "q": "How do you find pure equilibria in a matrix?",
+    "options": [
+     "Cells where both payoffs are best replies",
+     "Add rows",
+     "Pick the biggest cell",
+     "Pick the first cell"
+    ],
+    "answer": 0,
+    "explain": "Star method."
+   },
+   {
+    "q": "Why do players mix strategies?",
+    "options": [
+     "To avoid being exploited",
+     "To save effort",
+     "To please the audience",
+     "To end the game"
+    ],
+    "answer": 0,
+    "explain": "Unpredictability."
+   },
+   {
+    "q": "What does the minimax theorem say?",
+    "options": [
+     "In zero-sum games maximin equals minimax",
+     "Every game is zero-sum",
+     "Pure strategies always exist",
+     "Mixing never helps"
+    ],
+    "answer": 0,
+    "explain": "Von Neumann."
+   },
+   {
+    "q": "What is the prisoner's dilemma ordering?",
+    "options": [
+     "T > R > P > S",
+     "R > T > S > P",
+     "S > P > T > R",
+     "P > S > R > T"
+    ],
+    "answer": 0,
+    "explain": "Temptation first."
+   },
+   {
+    "q": "What does the PD equilibrium look like?",
+    "options": [
+     "Both defect, worse than mutual cooperation",
+     "Both cooperate",
+     "One defects",
+     "Nobody plays"
+    ],
+    "answer": 0,
+    "explain": "Inefficient."
+   },
+   {
+    "q": "How many pure equilibria does the stag hunt have?",
+    "options": [
+     "Two",
+     "One",
+     "Zero",
+     "Three"
+    ],
+    "answer": 0,
+    "explain": "Stag and hare."
+   },
+   {
+    "q": "How does backward induction proceed?",
+    "options": [
+     "From the last moves to the first",
+     "From the first move onward",
+     "Randomly",
+     "By voting"
+    ],
+    "answer": 0,
+    "explain": "Leaves to root."
+   },
+   {
+    "q": "What is an empty threat?",
+    "options": [
+     "A threat not worth carrying out",
+     "A loud threat",
+     "A silent move",
+     "A tie"
+    ],
+    "answer": 0,
+    "explain": "Not credible."
+   },
+   {
+    "q": "What is subgame perfection?",
+    "options": [
+     "Equilibrium in every subgame",
+     "Perfect payoffs",
+     "A mixed equilibrium",
+     "A fair split"
+    ],
+    "answer": 0,
+    "explain": "Rules out empty threats."
+   },
+   {
+    "q": "What do people do in the ultimatum game?",
+    "options": [
+     "Reject low offers",
+     "Offer zero",
+     "Accept anything",
+     "Refuse to play"
+    ],
+    "answer": 0,
+    "explain": "Fairness matters."
+   },
+   {
+    "q": "What is tit for tat?",
+    "options": [
+     "Cooperate first, then copy the opponent",
+     "Always defect",
+     "Always cooperate",
+     "Randomise"
+    ],
+    "answer": 0,
+    "explain": "Rapoport."
+   },
+   {
+    "q": "Why can cooperation survive in repeated games?",
+    "options": [
+     "The future carries rewards and punishments",
+     "Payoffs change",
+     "Rules forbid defection",
+     "Players are kind"
+    ],
+    "answer": 0,
+    "explain": "Shadow of the future."
+   },
+   {
+    "q": "What does a known last round do?",
+    "options": [
+     "Unravels cooperation",
+     "Improves cooperation",
+     "Makes all mix",
+     "Nothing"
+    ],
+    "answer": 0,
+    "explain": "Backward induction."
+   },
+   {
+    "q": "What is an ESS?",
+    "options": [
+     "A strategy that resists small invasions",
+     "The highest-paying strategy",
+     "A random mixture",
+     "A threat"
+    ],
+    "answer": 0,
+    "explain": "Maynard Smith."
+   },
+   {
+    "q": "In replicator dynamics, when does a strategy spread?",
+    "options": [
+     "Its fitness exceeds the average",
+     "It is rare",
+     "It is old",
+     "It is nice"
+    ],
+    "answer": 0,
+    "explain": "x (f - average)."
+   },
+   {
+    "q": "In hawk-dove with C > V, hawk share at the ESS is:",
+    "options": [
+     "V / C",
+     "C / V",
+     "1",
+     "0"
+    ],
+    "answer": 0,
+    "explain": "Mixed."
+   },
+   {
+    "q": "What does the winner pay in a Vickrey auction?",
+    "options": [
+     "The second-highest bid",
+     "Their own bid",
+     "Nothing",
+     "The average"
+    ],
+    "answer": 0,
+    "explain": "Second price."
+   },
+   {
+    "q": "What is the best bid in a Vickrey auction?",
+    "options": [
+     "Your true value",
+     "Half your value",
+     "Double",
+     "Zero"
+    ],
+    "answer": 0,
+    "explain": "Dominant."
+   },
+   {
+    "q": "What is the winner's curse?",
+    "options": [
+     "The winner tends to overpay",
+     "Losers pay",
+     "The auction fails",
+     "Bids are void"
+    ],
+    "answer": 0,
+    "explain": "Optimistic estimates."
+   },
+   {
+    "q": "What is the Shapley value?",
+    "options": [
+     "Average marginal contribution",
+     "The largest payoff",
+     "A fixed share",
+     "The core"
+    ],
+    "answer": 0,
+    "explain": "Over all orders."
+   },
+   {
+    "q": "What is the core?",
+    "options": [
+     "Allocations no coalition wants to leave",
+     "The largest coalition",
+     "The Shapley value",
+     "A voting rule"
+    ],
+    "answer": 0,
+    "explain": "Stability."
+   },
+   {
+    "q": "What does the Condorcet paradox show?",
+    "options": [
+     "Majority preferences can cycle",
+     "Majorities always agree",
+     "Voting is impossible",
+     "Ties are rare"
+    ],
+    "answer": 0,
+    "explain": "A, B, C cycle."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Game theory cheat sheet",
+  "prompt": "game>",
+  "intro": "A scripted lookup. Try: nash, dominance, mixed, pd, backward, repeated, ess, vickrey, shapley, help",
+  "chips": [
+   "nash",
+   "dominance",
+   "mixed",
+   "pd",
+   "backward",
+   "repeated",
+   "ess",
+   "vickrey",
+   "shapley",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "nash       Nash equilibrium: each strategy is a best response to the ot",
+     "dominance  A dominated strategy is worse whatever the opponent does. El",
+     "mixed      Mix so the opponent is indifferent. 2x2: p = (d - c) / (a - ",
+     "pd         Prisoner's dilemma: T > R > P > S. Defection dominates, mutu",
+     "backward   Backward induction: solve the last decision first and work t",
+     "repeated   Grim trigger sustains cooperation when delta >= (T - R) / (T",
+     "ess        ESS: resists small invasions. Hawk-dove with C > V: hawk sha",
+     "vickrey    Second-price auction: bid your true value; the winner pays t",
+     "shapley    Shapley value: average marginal contribution over all orders"
+    ]
+   },
+   {
+    "re": "^nash$",
+    "out": [
+     "Nash equilibrium: each strategy is a best response to the others. Check each cell of the matrix."
+    ]
+   },
+   {
+    "re": "^dominance$",
+    "out": [
+     "A dominated strategy is worse whatever the opponent does. Eliminate it, then repeat."
+    ]
+   },
+   {
+    "re": "^mixed$",
+    "out": [
+     "Mix so the opponent is indifferent. 2x2: p = (d - c) / (a - b - c + d)."
+    ]
+   },
+   {
+    "re": "^pd$",
+    "out": [
+     "Prisoner's dilemma: T > R > P > S. Defection dominates, mutual cooperation is better."
+    ]
+   },
+   {
+    "re": "^backward$",
+    "out": [
+     "Backward induction: solve the last decision first and work toward the root."
+    ]
+   },
+   {
+    "re": "^repeated$",
+    "out": [
+     "Grim trigger sustains cooperation when delta >= (T - R) / (T - P)."
+    ]
+   },
+   {
+    "re": "^ess$",
+    "out": [
+     "ESS: resists small invasions. Hawk-dove with C > V: hawk share V / C."
+    ]
+   },
+   {
+    "re": "^vickrey$",
+    "out": [
+     "Second-price auction: bid your true value; the winner pays the second-highest bid."
+    ]
+   },
+   {
+    "re": "^shapley$",
+    "out": [
+     "Shapley value: average marginal contribution over all orders of joining."
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Mathematics",
+ "level": "Intermediate",
+ "tags": [
+  "strategy",
+  "nash",
+  "cooperation",
+  "auctions",
+  "python"
+ ]
+}
