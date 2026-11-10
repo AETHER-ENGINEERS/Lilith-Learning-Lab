@@ -5,9 +5,9 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "dsp"))
-import cmk, d1, d2, make_apps  # noqa: E402
+import cmk, dsp_a, dsp_b, make_apps  # noqa: E402
 make_apps.main()
-CHS = d1.CHS + d2.CHS
+CHS = dsp_a.CHS + dsp_b.CHS
 PRONOUNCE = {"Nyquist": "nye kwist", "Shannon": "shan un", "Fourier": "foor ee ay", "Cooley": "koo lee", "Tukey": "too kee", "DFT": "D F T", "FFT": "F F T", "FIR": "F I R", "IIR": "I I R",
     "LTI": "L T I", "biquad": "bye kwod", "biquads": "bye kwods", "Hann": "han", "Hamming": "ham ing", "sinc": "sink", "quantisation": "kwon tih zay shun", "decimation": "dess ih may shun",
     "autocorrelation": "aw toe kor uh lay shun", "spectrogram": "spek truh gram", "JPEG": "jay peg", "DCT": "D C T", "hertz": "hurts", "Hz": "hertz", "kHz": "kilohertz", "dB": "decibels"}
