@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}
+canvas{display:block;margin:6px auto;background:#0e0820;border-radius:8px;touch-action:none;max-width:100%}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}
+input.n{width:3.4em;background:#2a1b48;color:#f1ebff;border:1px solid #5c4a85;border-radius:6px;padding:4px;margin:1px;text-align:center}
+</style></head><body>
+<div class="k">1) Drag the orange box over the purple one to see IoU.</div>
+<canvas id="a" width="400" height="200"></canvas><div id="i" class="k"></div>
+<div class="k" style="margin-top:10px">2) Non-maximum suppression on five detections of two objects.</div>
+<label>IoU threshold: <b id="tv"></b><input id="th" type="range" min="5" max="95" value="50"></label>
+<canvas id="n" width="400" height="200"></canvas><div id="o" class="k"></div><div id="p" class="k"></div>
+<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var A=[60,50,180,150],B=[140,80,260,180],drag=null;
+function iou(a,b){var x1=Math.max(a[0],b[0]),y1=Math.max(a[1],b[1]),x2=Math.min(a[2],b[2]),y2=Math.min(a[3],b[3]),w=x2-x1,h=y2-y1;if(w<=0||h<=0)return 0;var i=w*h,u=(a[2]-a[0])*(a[3]-a[1])+(b[2]-b[0])*(b[3]-b[1])-i;return i/u}
+function rect(g,b,col,w){g.strokeStyle=col;g.lineWidth=w||2;g.strokeRect(b[0],b[1],b[2]-b[0],b[3]-b[1])}
+function d1(){var g=$("a").getContext("2d");g.clearRect(0,0,400,200);g.fillStyle="rgba(178,107,255,0.25)";g.fillRect(A[0],A[1],A[2]-A[0],A[3]-A[1]);g.fillStyle="rgba(255,160,60,0.25)";g.fillRect(B[0],B[1],B[2]-B[0],B[3]-B[1]);rect(g,A,"#b26bff");rect(g,B,"#ff9f3c");
+ $("i").textContent="IoU = "+iou(A,B).toFixed(3)}
+$("a").onpointerdown=function(e){var r=this.getBoundingClientRect();var x=(e.clientX-r.left)*400/r.width,y=(e.clientY-r.top)*200/r.height;if(x>B[0]&&x<B[2]&&y>B[1]&&y<B[3])drag=[x-B[0],y-B[1]]};
+$("a").onpointermove=function(e){if(!drag)return;var r=this.getBoundingClientRect();var x=(e.clientX-r.left)*400/r.width-drag[0],y=(e.clientY-r.top)*200/r.height-drag[1],w=B[2]-B[0],h=B[3]-B[1];B=[x,y,x+w,y+h];d1()};
+window.addEventListener("pointerup",function(){drag=null});
+var DET=[[40,40,140,140,0.95],[48,46,150,146,0.9],[35,50,135,150,0.6],[230,70,350,170,0.85],[242,64,356,176,0.7]];
+var seen={};
+function nms(thr){var o=DET.map(function(d,i){return i}).sort(function(a,b){return DET[b][4]-DET[a][4]}),keep=[];o.forEach(function(i){var ok=true;keep.forEach(function(j){if(iou(DET[i],DET[j])>thr)ok=false});if(ok)keep.push(i)});return keep}
+function d2(){var thr=$("th").value/100;$("tv").textContent=thr.toFixed(2);var keep=nms(thr),g=$("n").getContext("2d");g.clearRect(0,0,400,200);
+ DET.forEach(function(d,i){var k=keep.indexOf(i)>=0;g.setLineDash(k?[]:[4,4]);rect(g,d,k?"#8fe3a8":"#7a6a9a",k?3:1);g.fillStyle="#c9b8e8";g.fillText(d[4].toFixed(2),d[0]+3,d[1]+12)});g.setLineDash([]);
+ $("o").textContent="Kept "+keep.length+" of 5 boxes (solid green). Lower thresholds suppress more.";seen[keep.length]=1;var n=Object.keys(seen).length;$("p").textContent="Distinct outcomes seen: "+n+" of 3";if(n>=3)done()}
+$("th").oninput=d2;d1();d2();
+</script></body></html>

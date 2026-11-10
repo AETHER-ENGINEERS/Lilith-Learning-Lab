@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}
+canvas{display:block;margin:6px auto;background:#0e0820;border-radius:8px;touch-action:none;max-width:100%}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}
+input.n{width:3.4em;background:#2a1b48;color:#f1ebff;border:1px solid #5c4a85;border-radius:6px;padding:4px;margin:1px;text-align:center}
+</style></head><body>
+<label>Image <select id="im"><option value="shapes">Shapes</option><option value="grad">Gradient + square</option><option value="noise">Noisy square</option></select>
+Preset <select id="pr"><option value="id">Identity</option><option value="blur">Box blur</option><option value="gauss">Gaussian blur</option><option value="sharp">Sharpen</option><option value="edge">Edge (Laplacian)</option><option value="sobx">Sobel X</option><option value="soby">Sobel Y</option><option value="emb">Emboss</option></select></label>
+<div id="kg"></div>
+<div style="display:flex;gap:8px;justify-content:center"><canvas id="a" width="160" height="160"></canvas><canvas id="b" width="160" height="160"></canvas></div>
+<div class="k" style="text-align:center">Original and filtered</div><div id="o" class="k"></div>
+<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var N=32,K=[[0,0,0],[0,1,0],[0,0,0]],seed=5;function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff}
+var PR={id:[[0,0,0],[0,1,0],[0,0,0]],blur:[[1,1,1],[1,1,1],[1,1,1]].map(function(r){return r.map(function(v){return +(v/9).toFixed(3)})}),
+ gauss:[[1,2,1],[2,4,2],[1,2,1]].map(function(r){return r.map(function(v){return +(v/16).toFixed(3)})}),sharp:[[0,-1,0],[-1,5,-1],[0,-1,0]],edge:[[0,1,0],[1,-4,1],[0,1,0]],
+ sobx:[[-1,0,1],[-2,0,2],[-1,0,1]],soby:[[-1,-2,-1],[0,0,0],[1,2,1]],emb:[[-2,-1,0],[-1,1,1],[0,1,2]]};
+function mk(kind){var I=[],r,c;for(r=0;r<N;r++){I.push([]);for(c=0;c<N;c++){var v=30;
+  if(kind==="shapes"){if(r>5&&r<16&&c>5&&c<16)v=220;var dx=c-23,dy=r-22;if(dx*dx+dy*dy<30)v=140}
+  else if(kind==="grad"){v=c*4;if(r>10&&r<22&&c>10&&c<22)v=250}
+  else{if(r>8&&r<24&&c>8&&c<24)v=200;v+=(rnd()-0.5)*90}
+  I[r].push(Math.max(0,Math.min(255,v)))}}return I}
+var img=mk("shapes"),used={};
+function conv(I){var O=[],r,c,i,j;for(r=0;r<N;r++){O.push([]);for(c=0;c<N;c++){var s=0;for(i=-1;i<=1;i++)for(j=-1;j<=1;j++){var rr=Math.max(0,Math.min(N-1,r+i)),cc=Math.max(0,Math.min(N-1,c+j));s+=K[i+1][j+1]*I[rr][cc]}O[r].push(s)}}return O}
+function show(cv,I,off){var g=document.getElementById(cv).getContext("2d"),s=160/N;for(var r=0;r<N;r++)for(var c=0;c<N;c++){var v=Math.max(0,Math.min(255,I[r][c]+off));g.fillStyle="rgb("+v+","+v+","+v+")";g.fillRect(c*s,r*s,s+0.5,s+0.5)}}
+function grid(){var h="",i,j;for(i=0;i<3;i++){for(j=0;j<3;j++)h+='<input class="n" data-i="'+i+'" data-j="'+j+'" value="'+K[i][j]+'">';h+="<br>"}$("kg").innerHTML=h;
+ var ins=document.querySelectorAll("#kg input");for(var q=0;q<ins.length;q++)ins[q].onchange=function(){K[+this.dataset.i][+this.dataset.j]=parseFloat(this.value)||0;run(true)}}
+function run(custom){var s=0;K.forEach(function(r){r.forEach(function(v){s+=v})});var out=conv(img);var off=(s===0)?128:0;show("a",img,0);show("b",out,off);
+ var key=K.join(";");used[key]=1;var n=Object.keys(used).length;$("o").textContent="Kernel sum = "+s.toFixed(2)+(s===0?" (edge-type kernel: result shown with +128 offset)":"")+". Kernels tried: "+n+" of 4";if(n>=4)done()}
+$("pr").onchange=function(){K=PR[this.value].map(function(r){return r.slice()});grid();run()};
+$("im").onchange=function(){seed=5;img=mk(this.value);run()};
+grid();run();
+</script></body></html>

@@ -1,0 +1,7355 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "computer-vision",
+ "title": "Computer Vision",
+ "subtitle": "From pixels and filters to CNNs, detectors and vision transformers, classical and modern, with Python labs and playgrounds",
+ "author": "Lilith Learning Lab",
+ "description": "A hands-on course in computer vision covering both classical and modern techniques: images as data and colour spaces; convolution, blurring and the median filter; Sobel, Canny and Hough; keypoints, descriptors, RANSAC and homographies; thresholding, morphology and connected components; camera geometry, calibration and stereo depth; HOG, Haar cascades, bags of visual words and SVMs; convolutional networks, ResNet and transfer learning; detection with IoU and non-maximum suppression, YOLO and Mask R-CNN, and segmentation with U-Net; and vision transformers, CLIP, SAM and diffusion with a look at bias and responsible use. Every chapter has Python labs verified in the built-in interpreter, plus a convolution playground and an IoU and NMS lab.",
+ "pronounce": {
+  "OpenCV": "open C V",
+  "Sobel": "so bul",
+  "Canny": "can nee",
+  "Hough": "huff",
+  "Harris": "har iss",
+  "SIFT": "sift",
+  "ORB": "orb",
+  "RANSAC": "ran sack",
+  "Otsu": "oat sue",
+  "HOG": "hog",
+  "Haar": "har",
+  "Viola": "vee oh luh",
+  "Jones": "jones",
+  "Dalal": "dah lahl",
+  "Triggs": "triggs",
+  "YOLO": "yo low",
+  "SSD": "S S D",
+  "U-Net": "you net",
+  "ResNet": "res net",
+  "AlexNet": "alex net",
+  "ImageNet": "image net",
+  "CLIP": "clip",
+  "SAM": "sam",
+  "DINO": "dye no",
+  "LiDAR": "lie dar",
+  "SLAM": "slam",
+  "SVM": "S V M",
+  "HSV": "H S V",
+  "RGB": "R G B",
+  "homography": "ho mog ruh fee",
+  "epipolar": "epp ih po lar",
+  "dilation": "dye lay shun",
+  "morphology": "mor fol uh jee",
+  "Gaussian": "gow see un",
+  "Laplacian": "la plah see un",
+  "mAP": "M A P",
+  "IoU": "I O U",
+  "NMS": "N M S",
+  "ViT": "V I T",
+  "kernel": "ker nul",
+  "Lowe": "low",
+  "Cooley": "koo lee",
+  "ELI5": "E L I five"
+ },
+ "chapters": [
+  {
+   "title": "Images as data",
+   "maps": [
+    {
+     "title": "Images",
+     "links": [
+      "Image | is | A grid of pixels",
+      "Pixel | holds | Intensity or colour",
+      "Channel | is | One colour plane",
+      "Grayscale | has | One channel",
+      "Histogram | counts | Intensities",
+      "Colour space | organises | Colour",
+      "Resolution | is | Width by height"
+     ]
+    }
+   ],
+   "summary": [
+    "A digital image is a grid of pixels. A grayscale pixel is one number, usually 0 to 255; a colour pixel has three channels, red, green and blue. In code, an image is an array with a shape such as height by width by 3.",
+    "Computer vision asks a machine to extract meaning from such arrays: what is in the picture, where, how far, how it moves. It splits into classical methods, built from hand-designed filters and geometry, and modern methods that learn their filters from data.",
+    "Simple operations already do useful work: converting to gray, adjusting brightness, flipping, resizing and counting intensities in a histogram."
+   ],
+   "glossary": [
+    {
+     "term": "Pixel",
+     "def": "One element of an image: a number for gray, or several for colour."
+    },
+    {
+     "term": "Channel",
+     "def": "One plane of an image, such as the red channel."
+    },
+    {
+     "term": "Histogram",
+     "def": "A count of how many pixels have each intensity."
+    },
+    {
+     "term": "HSV",
+     "def": "A colour space with hue, saturation and value, closer to how people describe colour."
+    },
+    {
+     "term": "Resolution",
+     "def": "The number of pixels in the image, width by height."
+    }
+   ],
+   "keyPoints": [
+    "Image = array of shape (H, W) or (H, W, 3).",
+    "Gray = 0.299 R + 0.587 G + 0.114 B.",
+    "Histogram: count per intensity.",
+    "Brightness: add and clip to 0..255.",
+    "Index as img[row][col]."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A picture on a screen is a huge grid of tiny coloured dots, and each dot is just a number. The computer only ever sees the numbers."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A camera sensor counts light at millions of little sites. Each site becomes a pixel, a number. Lay them in rows and columns and you have an image. To a program, a photograph is nothing but a big table of numbers, and every vision algorithm is a calculation on that table."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A grayscale image has one number per pixel, from zero for black to 255 for white. A colour image has three, one each for red, green and blue. We write its shape as height, width, channels. Rows come first, so pixel (r, c) is at row r down and column c across."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import numpy as np\nimport cv2                     # OpenCV\n\nimg = cv2.imread('cat.jpg')     # BGR order in OpenCV!\ngray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)\nprint(img.shape, gray.shape)    # (480, 640, 3) (480, 640)\nhist = cv2.calcHist([gray], [0], None, [256], [0, 256])\nbright = np.clip(gray.astype(int) + 40, 0, 255).astype('uint8')"
+    },
+    {
+     "type": "text",
+     "items": [
+      "To turn colour into gray you average the channels, but not equally: the eye is most sensitive to green, so the standard weights are about 0.299 red, 0.587 green and 0.114 blue. Other colour spaces help other tasks.",
+      "HSV separates the hue, the actual colour, from how pale and how bright it is, which makes tasks like finding red objects easier."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A histogram counts how many pixels have each brightness. A dark, low-contrast photo has all its counts bunched at the left. Stretching the histogram, or equalising it, spreads the values and boosts contrast.",
+      "Brightness adjustment is addition with clipping to the range 0 to 255, so values do not wrap around."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "This course follows the history of the field. First the classical toolkit of filters, edges, corners, segmentation and geometry, which still powers phones, factories and robots. Then convolutional networks, detection and segmentation, vision transformers and foundation models.",
+      "The labs build the main ideas in plain Python on small images, so you see every step."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a pixel?",
+     "options": [
+      "One element of an image grid",
+      "A kind of camera",
+      "A file type",
+      "A filter"
+     ],
+     "answer": 0,
+     "explain": "A number or three."
+    },
+    {
+     "q": "What is the shape of a colour image?",
+     "options": [
+      "(height, width, 3)",
+      "(3, 3)",
+      "(width, height)",
+      "(1, 1)"
+     ],
+     "answer": 0,
+     "explain": "Rows first."
+    },
+    {
+     "q": "Why weight green most in gray conversion?",
+     "options": [
+      "The eye is most sensitive to green",
+      "Green is brightest on screens",
+      "It is easiest",
+      "Cameras prefer green"
+     ],
+     "answer": 0,
+     "explain": "Perception."
+    },
+    {
+     "q": "What does a histogram count?",
+     "options": [
+      "Pixels at each intensity",
+      "Edges",
+      "Faces",
+      "Channels"
+     ],
+     "answer": 0,
+     "explain": "Intensity distribution."
+    },
+    {
+     "q": "Why clip after adding brightness?",
+     "options": [
+      "To stay within 0..255",
+      "To blur",
+      "To sharpen",
+      "To rotate"
+     ],
+     "answer": 0,
+     "explain": "Avoid overflow."
+    },
+    {
+     "q": "What does HSV separate?",
+     "options": [
+      "Hue from saturation and brightness",
+      "Rows from columns",
+      "Gray from colour",
+      "Noise from signal"
+     ],
+     "answer": 0,
+     "explain": "Colour space."
+    }
+   ],
+   "cards": [
+    {
+     "q": "img[r][c]",
+     "a": "pixel at row r, column c"
+    },
+    {
+     "q": "gray = .299R + .587G + .114B",
+     "a": "luminance"
+    },
+    {
+     "q": "np.clip(x, 0, 255)",
+     "a": "keep valid range"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Convolution playground",
+     "intro": "Pick a small test image and a 3x3 kernel (blur, sharpen, edge, emboss or your own numbers) and see the result. Try at least four different kernels to complete this lab.",
+     "height": 800,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\ncanvas{display:block;margin:6px auto;background:#0e0820;border-radius:8px;touch-action:none;max-width:100%}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}\ninput.n{width:3.4em;background:#2a1b48;color:#f1ebff;border:1px solid #5c4a85;border-radius:6px;padding:4px;margin:1px;text-align:center}\n</style></head><body>\n<label>Image <select id=\"im\"><option value=\"shapes\">Shapes</option><option value=\"grad\">Gradient + square</option><option value=\"noise\">Noisy square</option></select>\nPreset <select id=\"pr\"><option value=\"id\">Identity</option><option value=\"blur\">Box blur</option><option value=\"gauss\">Gaussian blur</option><option value=\"sharp\">Sharpen</option><option value=\"edge\">Edge (Laplacian)</option><option value=\"sobx\">Sobel X</option><option value=\"soby\">Sobel Y</option><option value=\"emb\">Emboss</option></select></label>\n<div id=\"kg\"></div>\n<div style=\"display:flex;gap:8px;justify-content:center\"><canvas id=\"a\" width=\"160\" height=\"160\"></canvas><canvas id=\"b\" width=\"160\" height=\"160\"></canvas></div>\n<div class=\"k\" style=\"text-align:center\">Original and filtered</div><div id=\"o\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar N=32,K=[[0,0,0],[0,1,0],[0,0,0]],seed=5;function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff}\nvar PR={id:[[0,0,0],[0,1,0],[0,0,0]],blur:[[1,1,1],[1,1,1],[1,1,1]].map(function(r){return r.map(function(v){return +(v/9).toFixed(3)})}),\n gauss:[[1,2,1],[2,4,2],[1,2,1]].map(function(r){return r.map(function(v){return +(v/16).toFixed(3)})}),sharp:[[0,-1,0],[-1,5,-1],[0,-1,0]],edge:[[0,1,0],[1,-4,1],[0,1,0]],\n sobx:[[-1,0,1],[-2,0,2],[-1,0,1]],soby:[[-1,-2,-1],[0,0,0],[1,2,1]],emb:[[-2,-1,0],[-1,1,1],[0,1,2]]};\nfunction mk(kind){var I=[],r,c;for(r=0;r<N;r++){I.push([]);for(c=0;c<N;c++){var v=30;\n  if(kind===\"shapes\"){if(r>5&&r<16&&c>5&&c<16)v=220;var dx=c-23,dy=r-22;if(dx*dx+dy*dy<30)v=140}\n  else if(kind===\"grad\"){v=c*4;if(r>10&&r<22&&c>10&&c<22)v=250}\n  else{if(r>8&&r<24&&c>8&&c<24)v=200;v+=(rnd()-0.5)*90}\n  I[r].push(Math.max(0,Math.min(255,v)))}}return I}\nvar img=mk(\"shapes\"),used={};\nfunction conv(I){var O=[],r,c,i,j;for(r=0;r<N;r++){O.push([]);for(c=0;c<N;c++){var s=0;for(i=-1;i<=1;i++)for(j=-1;j<=1;j++){var rr=Math.max(0,Math.min(N-1,r+i)),cc=Math.max(0,Math.min(N-1,c+j));s+=K[i+1][j+1]*I[rr][cc]}O[r].push(s)}}return O}\nfunction show(cv,I,off){var g=document.getElementById(cv).getContext(\"2d\"),s=160/N;for(var r=0;r<N;r++)for(var c=0;c<N;c++){var v=Math.max(0,Math.min(255,I[r][c]+off));g.fillStyle=\"rgb(\"+v+\",\"+v+\",\"+v+\")\";g.fillRect(c*s,r*s,s+0.5,s+0.5)}}\nfunction grid(){var h=\"\",i,j;for(i=0;i<3;i++){for(j=0;j<3;j++)h+='<input class=\"n\" data-i=\"'+i+'\" data-j=\"'+j+'\" value=\"'+K[i][j]+'\">';h+=\"<br>\"}$(\"kg\").innerHTML=h;\n var ins=document.querySelectorAll(\"#kg input\");for(var q=0;q<ins.length;q++)ins[q].onchange=function(){K[+this.dataset.i][+this.dataset.j]=parseFloat(this.value)||0;run(true)}}\nfunction run(custom){var s=0;K.forEach(function(r){r.forEach(function(v){s+=v})});var out=conv(img);var off=(s===0)?128:0;show(\"a\",img,0);show(\"b\",out,off);\n var key=K.join(\";\");used[key]=1;var n=Object.keys(used).length;$(\"o\").textContent=\"Kernel sum = \"+s.toFixed(2)+(s===0?\" (edge-type kernel: result shown with +128 offset)\":\"\")+\". Kernels tried: \"+n+\" of 4\";if(n>=4)done()}\n$(\"pr\").onchange=function(){K=PR[this.value].map(function(r){return r.slice()});grid();run()};\n$(\"im\").onchange=function(){seed=5;img=mk(this.value);run()};\ngrid();run();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Pixel",
+       "one image element"
+      ],
+      [
+       "Channel",
+       "one colour plane"
+      ],
+      [
+       "Histogram",
+       "count per intensity"
+      ],
+      [
+       "HSV",
+       "hue, saturation, value"
+      ],
+      [
+       "Grayscale",
+       "one number per pixel"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "RGB to gray",
+     "intro": "Write to_gray(img): img is a list of rows of [r, g, b] pixels. Return a list of rows with the gray value round(0.299 r + 0.587 g + 0.114 b) as an integer.",
+     "fn": "to_gray",
+     "starter": "def to_gray(img):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           255,
+           0,
+           0
+          ],
+          [
+           0,
+           255,
+           0
+          ]
+         ],
+         [
+          [
+           0,
+           0,
+           255
+          ],
+          [
+           255,
+           255,
+           255
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         76,
+         150
+        ],
+        [
+         29,
+         255
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           10,
+           20,
+           30
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         18
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           100,
+           100,
+           100
+          ],
+          [
+           0,
+           0,
+           0
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         100,
+         0
+        ]
+       ]
+      }
+     ],
+     "hint": "Apply the weights to each pixel.",
+     "solution": "def to_gray(img):\n    out = []\n    for row in img:\n        out.append([int(round(0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2])) for p in row])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Intensity histogram",
+     "intro": "Write histogram(img, bins): the counts of pixel values 0..255 falling into bins equal-width bins (width 256 / bins) for a gray image (list of rows).",
+     "fn": "histogram",
+     "starter": "def histogram(img, bins):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          10,
+          200
+         ],
+         [
+          255,
+          128,
+          64
+         ]
+        ],
+        4
+       ],
+       "expect": [
+        2,
+        1,
+        1,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          0
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        3,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          100,
+          150
+         ],
+         [
+          200,
+          250
+         ]
+        ],
+        8
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1
+       ]
+      }
+     ],
+     "hint": "Integer divide by the bin width.",
+     "solution": "def histogram(img, bins):\n    counts = [0] * bins\n    w = 256 // bins\n    for row in img:\n        for v in row:\n            i = v // w\n            if i >= bins:\n                i = bins - 1\n            counts[i] = counts[i] + 1\n    return counts\n"
+    },
+    {
+     "type": "python",
+     "title": "Brightness",
+     "intro": "Write brighten(img, delta): add delta to every pixel of a gray image and clip each result to 0..255.",
+     "fn": "brighten",
+     "starter": "def brighten(img, delta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          100,
+          250
+         ]
+        ],
+        20
+       ],
+       "expect": [
+        [
+         20,
+         120,
+         255
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          100,
+          250
+         ]
+        ],
+        -50
+       ],
+       "expect": [
+        [
+         0,
+         50,
+         200
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          10
+         ],
+         [
+          20
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        [
+         10
+        ],
+        [
+         20
+        ]
+       ]
+      }
+     ],
+     "hint": "Clip with min and max.",
+     "solution": "def brighten(img, delta):\n    return [[max(0, min(255, v + delta)) for v in row] for row in img]\n"
+    },
+    {
+     "type": "python",
+     "title": "Flip and rotate",
+     "intro": "Write rot90(img): rotate a gray image (list of rows) 90 degrees clockwise.",
+     "fn": "rot90",
+     "starter": "def rot90(img):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3
+         ],
+         [
+          4,
+          5,
+          6
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         4,
+         1
+        ],
+        [
+         5,
+         2
+        ],
+        [
+         6,
+         3
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         3,
+         1
+        ],
+        [
+         4,
+         2
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          7
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         7
+        ]
+       ]
+      }
+     ],
+     "hint": "Column c of the result is column c read bottom to top.",
+     "solution": "def rot90(img):\n    h = len(img)\n    w = len(img[0])\n    out = []\n    for c in range(w):\n        out.append([img[h - 1 - r][c] for r in range(h)])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Resize (nearest neighbour)",
+     "intro": "Write resize(img, new_h, new_w): nearest-neighbour resize: output pixel (r, c) takes img[r * h // new_h][c * w // new_w] where h, w are the original sizes.",
+     "fn": "resize",
+     "starter": "def resize(img, new_h, new_w):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        4,
+        4
+       ],
+       "expect": [
+        [
+         1,
+         1,
+         2,
+         2
+        ],
+        [
+         1,
+         1,
+         2,
+         2
+        ],
+        [
+         3,
+         3,
+         4,
+         4
+        ],
+        [
+         3,
+         3,
+         4,
+         4
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3,
+          4
+         ],
+         [
+          5,
+          6,
+          7,
+          8
+         ]
+        ],
+        1,
+        2
+       ],
+       "expect": [
+        [
+         1,
+         3
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          9
+         ]
+        ],
+        2,
+        3
+       ],
+       "expect": [
+        [
+         9,
+         9,
+         9
+        ],
+        [
+         9,
+         9,
+         9
+        ]
+       ]
+      }
+     ],
+     "hint": "Map each output pixel back to the source.",
+     "solution": "def resize(img, new_h, new_w):\n    h = len(img)\n    w = len(img[0])\n    return [[img[r * h // new_h][c * w // new_w] for c in range(new_w)] for r in range(new_h)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Value channel (HSV)",
+     "intro": "Write rgb_to_hsv(r, g, b) for 0..255 channels: return [hue in degrees 0..360 rounded to 1 decimal, saturation 0..1 rounded to 3, value 0..1 rounded to 3]. Hue is 0 when max equals min.",
+     "fn": "rgb_to_hsv",
+     "starter": "def rgb_to_hsv(r, g, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        255,
+        0,
+        0
+       ],
+       "expect": [
+        0.0,
+        1.0,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        0,
+        255,
+        0
+       ],
+       "expect": [
+        120.0,
+        1.0,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        0,
+        0,
+        255
+       ],
+       "expect": [
+        240.0,
+        1.0,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        128,
+        128,
+        128
+       ],
+       "expect": [
+        0.0,
+        0.0,
+        0.502
+       ]
+      },
+      {
+       "args": [
+        255,
+        255,
+        0
+       ],
+       "expect": [
+        60.0,
+        1.0,
+        1.0
+       ]
+      }
+     ],
+     "hint": "Use the max channel to pick the hue branch.",
+     "solution": "def rgb_to_hsv(r, g, b):\n    r1 = r / 255.0\n    g1 = g / 255.0\n    b1 = b / 255.0\n    mx = max(r1, g1, b1)\n    mn = min(r1, g1, b1)\n    d = mx - mn\n    if d == 0:\n        h = 0.0\n    elif mx == r1:\n        h = 60.0 * (((g1 - b1) / d) % 6)\n    elif mx == g1:\n        h = 60.0 * ((b1 - r1) / d + 2)\n    else:\n        h = 60.0 * ((r1 - g1) / d + 4)\n    s = 0.0 if mx == 0 else d / mx\n    return [round(h, 1), round(s, 3), round(mx, 3)]\n"
+    }
+   ]
+  },
+  {
+   "title": "Filtering and convolution",
+   "maps": [
+    {
+     "title": "Filtering",
+     "links": [
+      "Kernel | is | A small weight grid",
+      "Convolution | slides | The kernel",
+      "Box blur | averages | Neighbours",
+      "Gaussian | blurs | Smoothly",
+      "Sharpen | boosts | Detail",
+      "Median filter | removes | Salt and pepper",
+      "Separable | splits | Into two 1D passes"
+     ]
+    }
+   ],
+   "summary": [
+    "A filter replaces each pixel by a weighted sum of its neighbours. The weights form a small grid called a kernel, and sliding it over the image is convolution (or its twin, correlation).",
+    "A box blur averages; a Gaussian blur weights nearer pixels more and blurs without blocky artefacts; sharpening subtracts a blur from the original to boost detail. A median filter, which is not linear, removes isolated speckles without smearing edges.",
+    "Many kernels are separable: a 2D Gaussian is the product of two 1D ones, which cuts the work from k squared to 2k per pixel."
+   ],
+   "glossary": [
+    {
+     "term": "Kernel",
+     "def": "A small grid of weights applied around each pixel."
+    },
+    {
+     "term": "Convolution",
+     "def": "Sliding a (flipped) kernel over an image and summing products at each position."
+    },
+    {
+     "term": "Gaussian blur",
+     "def": "A smoothing filter whose weights follow a bell curve."
+    },
+    {
+     "term": "Median filter",
+     "def": "Replaces each pixel with the median of its neighbourhood."
+    },
+    {
+     "term": "Separable filter",
+     "def": "A 2D kernel that is the outer product of two 1D kernels."
+    }
+   ],
+   "keyPoints": [
+    "out[r][c] = sum k[i][j] img[r+i][c+j].",
+    "Blur kernels sum to 1.",
+    "Edge kernels sum to 0.",
+    "Gaussian sigma sets the blur size.",
+    "Median removes salt and pepper noise."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. To blur a photo, every dot is mixed with its neighbours. The recipe for mixing is a little table of numbers called a kernel."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To blur a photo, replace each pixel by the average of itself and its eight neighbours. To sharpen it, push each pixel away from the average of its neighbours. Both are the same operation with different numbers.",
+      "The numbers form a kernel, a little 3 by 3 table, and the operation is called convolution."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Strictly, convolution flips the kernel before sliding, while correlation does not. Deep learning libraries actually compute correlation and call it convolution. For symmetric kernels, such as blurs, there is no difference.",
+      "The output is a new image, smaller by the kernel's border unless the edges are padded with zeros or copies."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import cv2, numpy as np\nblur = cv2.GaussianBlur(img, (5, 5), sigmaX=1.2)\nk = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]], dtype=np.float32)\nsharp = cv2.filter2D(img, -1, k)\nclean = cv2.medianBlur(noisy, 3)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Gaussian kernel is the natural blur. Its weights fall off like a bell curve with distance, with a parameter sigma that sets how wide it is. A larger sigma gives a stronger blur.",
+      "Because the 2D Gaussian equals a product of two 1D bell curves, you can blur rows then columns, which is much cheaper for big kernels."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Noise comes in kinds. Gaussian noise is small random variation everywhere, and blurring reduces it, at the cost of detail. Salt-and-pepper noise is isolated white and black dots.",
+      "Blurring merely smears them, but a median filter, taking the middle value of the neighbourhood, removes them cleanly and keeps edges sharp. The playground lets you try kernels on a test image."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a kernel?",
+     "options": [
+      "A small grid of weights",
+      "A kind of image",
+      "A colour",
+      "An operating system"
+     ],
+     "answer": 0,
+     "explain": "Filter weights."
+    },
+    {
+     "q": "What should a blur kernel sum to?",
+     "options": [
+      "1",
+      "0",
+      "-1",
+      "255"
+     ],
+     "answer": 0,
+     "explain": "Preserve brightness."
+    },
+    {
+     "q": "Which filter removes salt-and-pepper noise?",
+     "options": [
+      "Median",
+      "Box blur",
+      "Sharpen",
+      "Sobel"
+     ],
+     "answer": 0,
+     "explain": "Not linear."
+    },
+    {
+     "q": "Why are separable kernels useful?",
+     "options": [
+      "Cheaper to compute",
+      "They sharpen",
+      "They remove colour",
+      "They rotate"
+     ],
+     "answer": 0,
+     "explain": "Two 1D passes."
+    },
+    {
+     "q": "What does sigma control in a Gaussian?",
+     "options": [
+      "The width of the blur",
+      "The colour",
+      "The rotation",
+      "The size of the image"
+     ],
+     "answer": 0,
+     "explain": "Bell width."
+    },
+    {
+     "q": "What do deep learning libraries really compute?",
+     "options": [
+      "Correlation",
+      "Fourier transforms",
+      "Medians",
+      "Histograms"
+     ],
+     "answer": 0,
+     "explain": "No kernel flip."
+    }
+   ],
+   "cards": [
+    {
+     "q": "cv2.GaussianBlur",
+     "a": "smooth with a Gaussian"
+    },
+    {
+     "q": "cv2.filter2D",
+     "a": "apply any kernel"
+    },
+    {
+     "q": "cv2.medianBlur",
+     "a": "median filter"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the filter",
+     "intro": "Pair each filter with its effect.",
+     "pairs": [
+      [
+       "Box blur",
+       "average of neighbours"
+      ],
+      [
+       "Gaussian",
+       "smooth bell-shaped blur"
+      ],
+      [
+       "Sharpen",
+       "boost detail"
+      ],
+      [
+       "Median",
+       "remove speckle"
+      ],
+      [
+       "Edge kernel",
+       "responds to changes"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Valid convolution (correlation)",
+     "intro": "Write conv2d(img, k): slide the kernel k over img without padding (no flip). Output size (H - kh + 1) by (W - kw + 1); each value is the sum of kernel times covered pixels.",
+     "fn": "conv2d",
+     "starter": "def conv2d(img, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3
+         ],
+         [
+          4,
+          5,
+          6
+         ],
+         [
+          7,
+          8,
+          9
+         ]
+        ],
+        [
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         6,
+         8
+        ],
+        [
+         12,
+         14
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          0,
+          0
+         ],
+         [
+          0,
+          9,
+          9,
+          0
+         ],
+         [
+          0,
+          9,
+          9,
+          0
+         ],
+         [
+          0,
+          0,
+          0,
+          0
+         ]
+        ],
+        [
+         [
+          1,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         9,
+         18,
+         9
+        ],
+        [
+         18,
+         36,
+         18
+        ],
+        [
+         9,
+         18,
+         9
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3,
+          4
+         ]
+        ],
+        [
+         [
+          1,
+          -1
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         -1,
+         -1,
+         -1
+        ]
+       ]
+      }
+     ],
+     "hint": "Four nested loops.",
+     "solution": "def conv2d(img, k):\n    h = len(img)\n    w = len(img[0])\n    kh = len(k)\n    kw = len(k[0])\n    out = []\n    for r in range(h - kh + 1):\n        row = []\n        for c in range(w - kw + 1):\n            s = 0\n            for i in range(kh):\n                for j in range(kw):\n                    s = s + k[i][j] * img[r + i][c + j]\n            row.append(s)\n        out.append(row)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Pad with zeros",
+     "intro": "Write pad(img, p): surround the image with p rows and columns of zeros on every side.",
+     "fn": "pad",
+     "starter": "def pad(img, p):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        [
+         0,
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         1,
+         2,
+         0
+        ],
+        [
+         0,
+         3,
+         4,
+         0
+        ],
+        [
+         0,
+         0,
+         0,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        [
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         0,
+         5,
+         0,
+         0
+        ],
+        [
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         0,
+         0,
+         0,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         3
+        ]
+       ]
+      }
+     ],
+     "hint": "Add zeros around.",
+     "solution": "def pad(img, p):\n    w = len(img[0])\n    out = []\n    for i in range(p):\n        out.append([0] * (w + 2 * p))\n    for row in img:\n        out.append([0] * p + list(row) + [0] * p)\n    for i in range(p):\n        out.append([0] * (w + 2 * p))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Box blur",
+     "intro": "Write box_blur(img): the 3x3 mean filter over the valid region, each value rounded to 2 decimals.",
+     "fn": "box_blur",
+     "starter": "def box_blur(img):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          0,
+          0
+         ],
+         [
+          0,
+          9,
+          9,
+          0
+         ],
+         [
+          0,
+          9,
+          9,
+          0
+         ],
+         [
+          0,
+          0,
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         4.0,
+         4.0
+        ],
+        [
+         4.0,
+         4.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3
+         ],
+         [
+          4,
+          5,
+          6
+         ],
+         [
+          7,
+          8,
+          9
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         5.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          9,
+          9,
+          9
+         ],
+         [
+          9,
+          9,
+          9
+         ],
+         [
+          9,
+          9,
+          9
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         9.0
+        ]
+       ]
+      }
+     ],
+     "hint": "Average nine values.",
+     "solution": "def box_blur(img):\n    h = len(img)\n    w = len(img[0])\n    out = []\n    for r in range(h - 2):\n        row = []\n        for c in range(w - 2):\n            s = 0\n            for i in range(3):\n                for j in range(3):\n                    s = s + img[r + i][c + j]\n            row.append(round(s / 9.0, 2))\n        out.append(row)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Gaussian kernel",
+     "intro": "Write gaussian_kernel(size, sigma): a size x size kernel (size odd) with weights exp(-(x^2 + y^2) / (2 sigma^2)) where x, y are offsets from the centre, normalised to sum to 1, rounded to 4 decimals.",
+     "fn": "gaussian_kernel",
+     "starter": "def gaussian_kernel(size, sigma):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        1.0
+       ],
+       "expect": [
+        [
+         0.0751,
+         0.1238,
+         0.0751
+        ],
+        [
+         0.1238,
+         0.2042,
+         0.1238
+        ],
+        [
+         0.0751,
+         0.1238,
+         0.0751
+        ]
+       ]
+      },
+      {
+       "args": [
+        3,
+        0.5
+       ],
+       "expect": [
+        [
+         0.0113,
+         0.0838,
+         0.0113
+        ],
+        [
+         0.0838,
+         0.6193,
+         0.0838
+        ],
+        [
+         0.0113,
+         0.0838,
+         0.0113
+        ]
+       ]
+      },
+      {
+       "args": [
+        5,
+        1.0
+       ],
+       "expect": [
+        [
+         0.003,
+         0.0133,
+         0.0219,
+         0.0133,
+         0.003
+        ],
+        [
+         0.0133,
+         0.0596,
+         0.0983,
+         0.0596,
+         0.0133
+        ],
+        [
+         0.0219,
+         0.0983,
+         0.1621,
+         0.0983,
+         0.0219
+        ],
+        [
+         0.0133,
+         0.0596,
+         0.0983,
+         0.0596,
+         0.0133
+        ],
+        [
+         0.003,
+         0.0133,
+         0.0219,
+         0.0133,
+         0.003
+        ]
+       ]
+      }
+     ],
+     "hint": "Compute then normalise.",
+     "solution": "import math\ndef gaussian_kernel(size, sigma):\n    c = size // 2\n    k = []\n    total = 0.0\n    for i in range(size):\n        row = []\n        for j in range(size):\n            v = math.exp(-((i - c) ** 2 + (j - c) ** 2) / (2.0 * sigma * sigma))\n            row.append(v)\n            total = total + v\n        k.append(row)\n    return [[round(v / total, 4) for v in row] for row in k]\n"
+    },
+    {
+     "type": "python",
+     "title": "Median filter",
+     "intro": "Write median3x3(img): the 3x3 median filter over the valid region.",
+     "fn": "median3x3",
+     "starter": "def median3x3(img):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          1,
+          1,
+          1
+         ],
+         [
+          1,
+          99,
+          1,
+          1
+         ],
+         [
+          1,
+          1,
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3
+         ],
+         [
+          4,
+          5,
+          6
+         ],
+         [
+          7,
+          8,
+          9
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         5
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          0
+         ],
+         [
+          0,
+          255,
+          0
+         ],
+         [
+          0,
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0
+        ]
+       ]
+      }
+     ],
+     "hint": "Sort nine values and take the fifth.",
+     "solution": "def median3x3(img):\n    h = len(img)\n    w = len(img[0])\n    out = []\n    for r in range(h - 2):\n        row = []\n        for c in range(w - 2):\n            vals = []\n            for i in range(3):\n                for j in range(3):\n                    vals.append(img[r + i][c + j])\n            vals.sort()\n            row.append(vals[4])\n        out.append(row)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Is it separable?",
+     "intro": "Write outer(a, b): the 2D kernel that is the outer product of 1D vectors a (column) and b (row): result[i][j] = a[i] x b[j].",
+     "fn": "outer",
+     "starter": "def outer(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         1
+        ],
+        [
+         1,
+         2,
+         1
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         1
+        ],
+        [
+         2,
+         4,
+         2
+        ],
+        [
+         1,
+         2,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         -1
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         -1,
+         -1,
+         -1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         2
+        ],
+        [
+         3,
+         4
+        ]
+       ],
+       "expect": [
+        [
+         6,
+         8
+        ]
+       ]
+      }
+     ],
+     "hint": "Multiply every pair.",
+     "solution": "def outer(a, b):\n    return [[x * y for y in b] for x in a]\n"
+    }
+   ]
+  },
+  {
+   "title": "Edges, gradients and lines",
+   "maps": [
+    {
+     "title": "Edges",
+     "links": [
+      "Edge | is | Sharp change",
+      "Gradient | points | Uphill",
+      "Sobel | estimates | Gradient",
+      "Magnitude | gives | Edge strength",
+      "Canny | thins | And links edges",
+      "Hough | votes for | Lines",
+      "Noise | confuses | Derivatives"
+     ]
+    }
+   ],
+   "summary": [
+    "An edge is a place where brightness changes quickly. The gradient of an image points in the direction of fastest increase and its length measures how fast; edges are where the gradient magnitude is large.",
+    "The Sobel kernels estimate the horizontal and vertical derivatives. The Canny detector smooths, finds the gradient, thins edges to one pixel by non-maximum suppression and links them with two thresholds.",
+    "The Hough transform finds lines by letting every edge pixel vote for all the lines that could pass through it; real lines collect many votes."
+   ],
+   "glossary": [
+    {
+     "term": "Gradient",
+     "def": "A vector of partial derivatives (dI/dx, dI/dy) pointing to the steepest increase."
+    },
+    {
+     "term": "Sobel operator",
+     "def": "A pair of 3x3 kernels that approximate the x and y derivatives with some smoothing."
+    },
+    {
+     "term": "Non-maximum suppression",
+     "def": "Keeping only pixels that are local maxima along the gradient direction, to thin edges."
+    },
+    {
+     "term": "Hysteresis thresholding",
+     "def": "Keeping strong edges and weak edges only if connected to strong ones."
+    },
+    {
+     "term": "Hough transform",
+     "def": "A voting method that detects shapes, such as lines, in a parameter space."
+    }
+   ],
+   "keyPoints": [
+    "Magnitude = sqrt(Gx^2 + Gy^2).",
+    "Direction = atan2(Gy, Gx).",
+    "Canny: blur, gradient, thin, threshold.",
+    "Line: rho = x cos(theta) + y sin(theta).",
+    "Smooth first or noise explodes."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. An edge is where the picture changes suddenly, like the outline of a cup against a table. We find it by looking for big jumps between neighbours."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where does one object end and another begin? Often at an edge: a sudden jump in brightness. In calculus a jump is a large derivative, so edge detection is derivative estimation. For an image we have two derivatives, left to right and top to bottom, and together they make the gradient."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A derivative is a difference between neighbours. The Sobel kernels do this over a 3 by 3 patch and also smooth a little, which tames noise. One kernel responds to vertical edges, the other to horizontal.",
+      "Combine their outputs as the square root of the sum of squares to get the strength of the edge in any direction, and take the arctangent to get its orientation."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "gx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)\ngy = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)\nmag = np.hypot(gx, gy)\nedges = cv2.Canny(gray, 100, 200)\nlines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=80,\n                        minLineLength=50, maxLineGap=10)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A thick band of strong gradient is not yet an edge map. John Canny's 1986 detector adds three ideas. Blur first to resist noise. Thin the band to a single pixel line by keeping only local maxima across the edge.",
+      "Then use two thresholds: strong pixels are certainly edges, weak ones count only if they connect to a strong one. This gives clean continuous contours and the method is still widely used."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Edges are fragments; we often want lines, circles or other shapes. The Hough transform turns detection into voting. A line through the origin at angle theta is described by its distance rho. Each edge pixel votes for every pair of values rho and theta consistent with a line through it.",
+      "Votes pile up for the true lines. The method tolerates gaps and noise, and the lab runs it on a handful of points."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is an edge?",
+     "options": [
+      "A place of rapid brightness change",
+      "A border of the file",
+      "A colour",
+      "A filter"
+     ],
+     "answer": 0,
+     "explain": "Large gradient."
+    },
+    {
+     "q": "What does the gradient magnitude measure?",
+     "options": [
+      "Edge strength",
+      "Colour",
+      "Image size",
+      "Noise only"
+     ],
+     "answer": 0,
+     "explain": "sqrt(Gx^2 + Gy^2)."
+    },
+    {
+     "q": "What does Canny's non-maximum suppression do?",
+     "options": [
+      "Thins edges to one pixel",
+      "Blurs",
+      "Adds colour",
+      "Resizes"
+     ],
+     "answer": 0,
+     "explain": "Local maxima."
+    },
+    {
+     "q": "What is hysteresis thresholding?",
+     "options": [
+      "Weak edges kept if linked to strong",
+      "Using one threshold",
+      "Blurring twice",
+      "Sorting"
+     ],
+     "answer": 0,
+     "explain": "Two thresholds."
+    },
+    {
+     "q": "How does the Hough transform find lines?",
+     "options": [
+      "Edge pixels vote in parameter space",
+      "By blurring",
+      "By sorting pixels",
+      "By colour"
+     ],
+     "answer": 0,
+     "explain": "Voting."
+    },
+    {
+     "q": "Why smooth before differentiating?",
+     "options": [
+      "Derivatives amplify noise",
+      "To brighten",
+      "To resize",
+      "To invert"
+     ],
+     "answer": 0,
+     "explain": "Noise explodes."
+    }
+   ],
+   "cards": [
+    {
+     "q": "cv2.Canny(img, lo, hi)",
+     "a": "edge detector"
+    },
+    {
+     "q": "rho = x cos t + y sin t",
+     "a": "line parameters"
+    },
+    {
+     "q": "atan2(gy, gx)",
+     "a": "edge direction"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Gradient",
+       "direction of steepest increase"
+      ],
+      [
+       "Sobel",
+       "derivative kernels"
+      ],
+      [
+       "NMS",
+       "thin edges"
+      ],
+      [
+       "Hysteresis",
+       "two-threshold linking"
+      ],
+      [
+       "Hough",
+       "voting for lines"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Sobel gradients",
+     "intro": "Write sobel(img): for the valid 3x3 positions return [Gx, Gy] where Gx is the sum of the kernel [[-1,0,1],[-2,0,2],[-1,0,1]] times the patch and Gy the same with the transposed kernel [[-1,-2,-1],[0,0,0],[1,2,1]]. Return two images (lists of rows): [Gx_image, Gy_image].",
+     "fn": "sobel",
+     "starter": "def sobel(img):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          9,
+          9
+         ],
+         [
+          0,
+          0,
+          9,
+          9
+         ],
+         [
+          0,
+          0,
+          9,
+          9
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         [
+          36,
+          36
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          0
+         ],
+         [
+          0,
+          0,
+          0
+         ],
+         [
+          9,
+          9,
+          9
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         [
+          0
+         ]
+        ],
+        [
+         [
+          36
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3
+         ],
+         [
+          4,
+          5,
+          6
+         ],
+         [
+          7,
+          8,
+          9
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         [
+          8
+         ]
+        ],
+        [
+         [
+          24
+         ]
+        ]
+       ]
+      }
+     ],
+     "hint": "Two kernels, one patch.",
+     "solution": "def sobel(img):\n    kx = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]]\n    ky = [[-1, -2, -1], [0, 0, 0], [1, 2, 1]]\n    h = len(img)\n    w = len(img[0])\n    gx = []\n    gy = []\n    for r in range(h - 2):\n        rx = []\n        ry = []\n        for c in range(w - 2):\n            sx = 0\n            sy = 0\n            for i in range(3):\n                for j in range(3):\n                    sx = sx + kx[i][j] * img[r + i][c + j]\n                    sy = sy + ky[i][j] * img[r + i][c + j]\n            rx.append(sx)\n            ry.append(sy)\n        gx.append(rx)\n        gy.append(ry)\n    return [gx, gy]\n"
+    },
+    {
+     "type": "python",
+     "title": "Gradient magnitude",
+     "intro": "Write magnitude(gx, gy): the element-wise sqrt(gx^2 + gy^2) of two equal-sized images, each rounded to 2 decimals.",
+     "fn": "magnitude",
+     "starter": "def magnitude(gx, gy):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          3,
+          0
+         ]
+        ],
+        [
+         [
+          4,
+          5
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         5.0,
+         5.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0
+         ]
+        ],
+        [
+         [
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          6,
+          -8
+         ]
+        ],
+        [
+         [
+          8,
+          6
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         10.0,
+         10.0
+        ]
+       ]
+      }
+     ],
+     "hint": "Pythagoras per pixel.",
+     "solution": "import math\ndef magnitude(gx, gy):\n    out = []\n    for r in range(len(gx)):\n        out.append([round(math.sqrt(gx[r][c] ** 2 + gy[r][c] ** 2), 2) for c in range(len(gx[0]))])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Edge direction",
+     "intro": "Write direction(gx, gy): the gradient angle atan2(gy, gx) in degrees rounded to the nearest integer.",
+     "fn": "direction",
+     "starter": "def direction(gx, gy):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        0,
+        1
+       ],
+       "expect": 90
+      },
+      {
+       "args": [
+        -1,
+        0
+       ],
+       "expect": 180
+      },
+      {
+       "args": [
+        1,
+        1
+       ],
+       "expect": 45
+      },
+      {
+       "args": [
+        0,
+        -1
+       ],
+       "expect": -90
+      }
+     ],
+     "hint": "Use atan2.",
+     "solution": "import math\ndef direction(gx, gy):\n    return int(round(math.degrees(math.atan2(gy, gx))))\n"
+    },
+    {
+     "type": "python",
+     "title": "Threshold edges",
+     "intro": "Write edge_map(mag, t): a binary image with 1 where mag >= t, else 0.",
+     "fn": "edge_map",
+     "starter": "def edge_map(mag, t):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          5,
+          9
+         ],
+         [
+          3,
+          7,
+          2
+         ]
+        ],
+        5
+       ],
+       "expect": [
+        [
+         0,
+         1,
+         1
+        ],
+        [
+         0,
+         1,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          4
+         ]
+        ],
+        4
+       ],
+       "expect": [
+        [
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Compare each value.",
+     "solution": "def edge_map(mag, t):\n    return [[1 if v >= t else 0 for v in row] for row in mag]\n"
+    },
+    {
+     "type": "python",
+     "title": "Hysteresis",
+     "intro": "Write hysteresis(mag, lo, hi): a row of strengths is processed in one dimension: a value >= hi is an edge; a value >= lo is an edge only if an adjacent value (left or right) is an edge after propagation. Take a 1D list mag and return the 0/1 list. Propagate repeatedly until nothing changes.",
+     "fn": "hysteresis",
+     "starter": "def hysteresis(mag, lo, hi):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         5,
+         9,
+         5,
+         1
+        ],
+        4,
+        8
+       ],
+       "expect": [
+        0,
+        1,
+        1,
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         5,
+         5,
+         9
+        ],
+        4,
+        8
+       ],
+       "expect": [
+        1,
+        1,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         1,
+         5
+        ],
+        4,
+        8
+       ],
+       "expect": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         9,
+         5,
+         5,
+         5,
+         1
+        ],
+        4,
+        8
+       ],
+       "expect": [
+        1,
+        1,
+        1,
+        1,
+        0
+       ]
+      }
+     ],
+     "hint": "Grow from strong edges.",
+     "solution": "def hysteresis(mag, lo, hi):\n    n = len(mag)\n    e = [1 if v >= hi else 0 for v in mag]\n    changed = True\n    while changed:\n        changed = False\n        for i in range(n):\n            if e[i] == 0 and mag[i] >= lo:\n                if (i > 0 and e[i - 1] == 1) or (i < n - 1 and e[i + 1] == 1):\n                    e[i] = 1\n                    changed = True\n    return e\n"
+    },
+    {
+     "type": "python",
+     "title": "Hough accumulator",
+     "intro": "Write hough(points, thetas): points is a list of [x, y]; thetas a list of angles in degrees. For each point and angle compute rho = round(x cos(theta) + y sin(theta)) and count votes. Return [theta, rho, votes] for the cell with the most votes (ties: smallest theta, then smallest rho).",
+     "fn": "hough",
+     "starter": "def hough(points, thetas):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          3
+         ],
+         [
+          1,
+          3
+         ],
+         [
+          2,
+          3
+         ],
+         [
+          5,
+          3
+         ]
+        ],
+        [
+         0,
+         45,
+         90,
+         135
+        ]
+       ],
+       "expect": [
+        90,
+        3,
+        4
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          0
+         ],
+         [
+          2,
+          1
+         ],
+         [
+          2,
+          4
+         ]
+        ],
+        [
+         0,
+         90
+        ]
+       ],
+       "expect": [
+        0,
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          2,
+          2
+         ],
+         [
+          3,
+          3
+         ]
+        ],
+        [
+         0,
+         45,
+         90,
+         135
+        ]
+       ],
+       "expect": [
+        135,
+        0,
+        4
+       ]
+      }
+     ],
+     "hint": "Each point votes once per angle.",
+     "solution": "import math\ndef hough(points, thetas):\n    votes = {}\n    for p in points:\n        for t in thetas:\n            a = math.radians(t)\n            rho = int(round(p[0] * math.cos(a) + p[1] * math.sin(a)))\n            key = (t, rho)\n            votes[key] = votes.get(key, 0) + 1\n    best = None\n    for key in sorted(votes.keys()):\n        if best is None or votes[key] > votes[best]:\n            best = key\n    return [best[0], best[1], votes[best]]\n"
+    }
+   ]
+  },
+  {
+   "title": "Features, matching and geometry of images",
+   "maps": [
+    {
+     "title": "Features",
+     "links": [
+      "Corner | is | Distinct feature",
+      "Keypoint | is | A stable location",
+      "Descriptor | summarises | A patch",
+      "SIFT ORB | are | Feature methods",
+      "Matching | compares | Descriptors",
+      "RANSAC | rejects | Outliers",
+      "Homography | maps | Plane views"
+     ]
+    }
+   ],
+   "summary": [
+    "To recognise a place or stitch photos we need points that can be found again from another view. Corners are good: the image changes in every direction around them. The Harris detector scores this with the structure tensor.",
+    "A descriptor summarises the patch around a keypoint as a vector. SIFT uses gradient histograms; ORB uses a binary string compared with Hamming distance. Matching finds nearest descriptors and a ratio test removes ambiguous ones.",
+    "RANSAC fits a model, such as a homography, to many noisy matches by repeatedly fitting to random minimal sets and keeping the model with the most inliers."
+   ],
+   "glossary": [
+    {
+     "term": "Keypoint",
+     "def": "A distinctive, repeatable image location such as a corner."
+    },
+    {
+     "term": "Descriptor",
+     "def": "A vector describing the appearance around a keypoint, used for matching."
+    },
+    {
+     "term": "Ratio test",
+     "def": "Accepting a match only if the best distance is much smaller than the second-best."
+    },
+    {
+     "term": "RANSAC",
+     "def": "Random sample consensus: fit models to random subsets and keep the one agreeing with most data."
+    },
+    {
+     "term": "Homography",
+     "def": "A 3x3 matrix mapping points between two views of a plane."
+    }
+   ],
+   "keyPoints": [
+    "Harris: R = det(M) - k trace(M)^2.",
+    "ORB descriptor: bits; compare with Hamming distance.",
+    "Ratio test: d1 < 0.75 d2.",
+    "RANSAC: sample, fit, count inliers, repeat.",
+    "Homography: (x, y, 1) -> H (x, y, 1)."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Some spots in a picture, like corners, are easy to recognise again from another angle, like the corner of a window. We pick those spots to match two photos."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Stand in front of a blank wall and you cannot tell where you are looking. Stand in front of a window frame and you can. Corners and blobs are distinctive: shift a small window around them and the picture changes in every direction. The Harris detector measures exactly that.",
+      "From the image gradients in a window it forms a small 2 by 2 matrix; a corner makes both of its eigenvalues large, an edge only one, and a flat patch none."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Finding a keypoint is half the job. To match it in another photo we describe its neighbourhood with a vector that survives changes in rotation, scale and lighting. SIFT, from David Lowe, builds histograms of gradient directions.",
+      "ORB makes a string of brightness comparisons between pixel pairs, a binary descriptor that can be compared with the Hamming distance, the count of differing bits, extremely fast."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "orb = cv2.ORB_create(1000)\nk1, d1 = orb.detectAndCompute(img1, None)\nk2, d2 = orb.detectAndCompute(img2, None)\nbf = cv2.BFMatcher(cv2.NORM_HAMMING)\nmatches = bf.knnMatch(d1, d2, k=2)\ngood = [m for m, n in matches if m.distance < 0.75 * n.distance]\npts1 = np.float32([k1[m.queryIdx].pt for m in good])\npts2 = np.float32([k2[m.trainIdx].pt for m in good])\nH, mask = cv2.findHomography(pts1, pts2, cv2.RANSAC, 5.0)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Matching is never perfect: repeated windows and textures create ambiguous matches. Lowe's ratio test keeps a match only when the best candidate is clearly closer than the second best.",
+      "Some wrong matches still remain, and a method that fits a line or homography by least squares would be dragged away by them. RANSAC is the cure."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "RANSAC picks the minimum number of matches needed for the model, two for a line, four for a homography, fits it, and counts how many other matches agree within a tolerance, the inliers. After many random trials, it keeps the model with the most inliers and refits on them.",
+      "A homography is the 3 by 3 matrix describing how a flat surface looks from two viewpoints, which is the basis of panorama stitching, document scanning and augmented reality."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What makes a good keypoint?",
+     "options": [
+      "The image changes in every direction around it",
+      "It is in the centre",
+      "It is bright",
+      "It is gray"
+     ],
+     "answer": 0,
+     "explain": "Corner."
+    },
+    {
+     "q": "What does ORB compare with?",
+     "options": [
+      "Hamming distance",
+      "Euclidean only",
+      "Edit distance",
+      "Colour"
+     ],
+     "answer": 0,
+     "explain": "Binary string."
+    },
+    {
+     "q": "What does the ratio test do?",
+     "options": [
+      "Removes ambiguous matches",
+      "Blurs",
+      "Detects corners",
+      "Scales"
+     ],
+     "answer": 0,
+     "explain": "Best vs second best."
+    },
+    {
+     "q": "What does RANSAC do?",
+     "options": [
+      "Fits a model robustly to noisy data",
+      "Detects edges",
+      "Sorts pixels",
+      "Reduces colour"
+     ],
+     "answer": 0,
+     "explain": "Inliers."
+    },
+    {
+     "q": "How many matches does a homography need?",
+     "options": [
+      "Four",
+      "Two",
+      "One",
+      "Eight"
+     ],
+     "answer": 0,
+     "explain": "Four point pairs."
+    },
+    {
+     "q": "What is a homography used for?",
+     "options": [
+      "Mapping between views of a plane",
+      "Blurring",
+      "Counting pixels",
+      "Compressing"
+     ],
+     "answer": 0,
+     "explain": "Panoramas."
+    }
+   ],
+   "cards": [
+    {
+     "q": "R = det(M) - k tr(M)^2",
+     "a": "Harris response"
+    },
+    {
+     "q": "cv2.findHomography",
+     "a": "estimate homography"
+    },
+    {
+     "q": "d1 < 0.75 d2",
+     "a": "ratio test"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Harris",
+       "corner detector"
+      ],
+      [
+       "ORB",
+       "binary descriptor"
+      ],
+      [
+       "Hamming distance",
+       "count of different bits"
+      ],
+      [
+       "RANSAC",
+       "robust model fitting"
+      ],
+      [
+       "Homography",
+       "plane-to-plane mapping"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Harris response",
+     "intro": "Write harris(sxx, syy, sxy, k): the Harris corner response det(M) - k trace(M)^2 for M = [[sxx, sxy], [sxy, syy]], rounded to 3 decimals.",
+     "fn": "harris",
+     "starter": "def harris(sxx, syy, sxy, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        10,
+        0,
+        0.04
+       ],
+       "expect": 84.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        10,
+        0,
+        0,
+        0.04
+       ],
+       "expect": -4.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        0,
+        0,
+        0,
+        0.04
+       ],
+       "expect": 0.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        5,
+        8,
+        2,
+        0.05
+       ],
+       "expect": 27.55,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Determinant minus k trace squared.",
+     "solution": "def harris(sxx, syy, sxy, k):\n    det = sxx * syy - sxy * sxy\n    tr = sxx + syy\n    return round(det - k * tr * tr, 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Hamming distance",
+     "intro": "Write hamming(a, b): the number of differing bits between two integers.",
+     "fn": "hamming",
+     "starter": "def hamming(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        5,
+        3
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        255,
+        0
+       ],
+       "expect": 8
+      },
+      {
+       "args": [
+        170,
+        85
+       ],
+       "expect": 8
+      },
+      {
+       "args": [
+        12,
+        12
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "XOR then count ones.",
+     "solution": "def hamming(a, b):\n    x = a ^ b\n    n = 0\n    while x:\n        n = n + (x & 1)\n        x = x >> 1\n    return n\n"
+    },
+    {
+     "type": "python",
+     "title": "Nearest descriptor",
+     "intro": "Write match(desc, candidates): the index of the candidate (list of numbers) with the smallest squared Euclidean distance to the descriptor desc (lowest index on ties).",
+     "fn": "match",
+     "starter": "def match(desc, candidates):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         [
+          5,
+          5
+         ],
+         [
+          1,
+          2
+         ],
+         [
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         [
+          1,
+          1,
+          1
+         ],
+         [
+          1,
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         9
+        ],
+        [
+         [
+          1
+         ],
+         [
+          8
+         ],
+         [
+          10
+         ]
+        ]
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Compare distances.",
+     "solution": "def match(desc, candidates):\n    best = 0\n    bd = None\n    for i in range(len(candidates)):\n        d = 0\n        for j in range(len(desc)):\n            d = d + (desc[j] - candidates[i][j]) ** 2\n        if bd is None or d < bd:\n            bd = d\n            best = i\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Ratio test",
+     "intro": "Write ratio_test(dists, ratio): given the distances to a keypoint's candidates, return True if the smallest distance is below ratio times the second smallest (False if fewer than two candidates).",
+     "fn": "ratio_test",
+     "starter": "def ratio_test(dists, ratio):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         10,
+         20
+        ],
+        0.75
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         5,
+         6
+        ],
+        0.75
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         3
+        ],
+        0.75
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         2,
+         2.5,
+         9
+        ],
+        0.8
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Compare best with second best.",
+     "solution": "def ratio_test(dists, ratio):\n    if len(dists) < 2:\n        return False\n    s = sorted(dists)\n    return s[0] < ratio * s[1]\n"
+    },
+    {
+     "type": "python",
+     "title": "Apply a homography",
+     "intro": "Write apply_h(H, x, y): map the point (x, y) by the 3x3 matrix H using homogeneous coordinates: (u, v, w) = H (x, y, 1); return [u / w, v / w] rounded to 3 decimals.",
+     "fn": "apply_h",
+     "starter": "def apply_h(H, x, y):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          0,
+          5
+         ],
+         [
+          0,
+          1,
+          3
+         ],
+         [
+          0,
+          0,
+          1
+         ]
+        ],
+        2,
+        2
+       ],
+       "expect": [
+        7.0,
+        5.0
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          0,
+          0
+         ],
+         [
+          0,
+          2,
+          0
+         ],
+         [
+          0,
+          0,
+          1
+         ]
+        ],
+        1,
+        1
+       ],
+       "expect": [
+        2.0,
+        2.0
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0,
+          0
+         ],
+         [
+          0,
+          1,
+          0
+         ],
+         [
+          0.1,
+          0,
+          1
+         ]
+        ],
+        10,
+        5
+       ],
+       "expect": [
+        5.0,
+        2.5
+       ],
+       "approx": 0.002
+      }
+     ],
+     "hint": "Divide by w at the end.",
+     "solution": "def apply_h(H, x, y):\n    u = H[0][0] * x + H[0][1] * y + H[0][2]\n    v = H[1][0] * x + H[1][1] * y + H[1][2]\n    w = H[2][0] * x + H[2][1] * y + H[2][2]\n    return [round(u / w, 3), round(v / w, 3)]\n"
+    },
+    {
+     "type": "python",
+     "title": "RANSAC inliers",
+     "intro": "Write inliers(points, a, b, c, tol): count the [x, y] points whose distance to the line a x + b y + c = 0 is at most tol (distance |a x + b y + c| / sqrt(a^2 + b^2)).",
+     "fn": "inliers",
+     "starter": "def inliers(points, a, b, c, tol):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          2,
+          2
+         ],
+         [
+          3,
+          10
+         ]
+        ],
+        1,
+        -1,
+        0,
+        0.1
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          1
+         ],
+         [
+          5,
+          1
+         ],
+         [
+          9,
+          3
+         ]
+        ],
+        0,
+        1,
+        -1,
+        0.5
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1
+         ]
+        ],
+        1,
+        1,
+        0,
+        0.5
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Count points close to the line.",
+     "solution": "import math\ndef inliers(points, a, b, c, tol):\n    n = 0\n    d = math.sqrt(a * a + b * b)\n    for p in points:\n        if abs(a * p[0] + b * p[1] + c) / d <= tol:\n            n = n + 1\n    return n\n"
+    }
+   ]
+  },
+  {
+   "title": "Segmentation, morphology and regions",
+   "maps": [
+    {
+     "title": "Segmentation",
+     "links": [
+      "Segmentation | splits | Image into regions",
+      "Threshold | separates | Light from dark",
+      "Otsu | picks | Best threshold",
+      "Morphology | reshapes | Binary masks",
+      "Connected components | label | Blobs",
+      "Watershed | floods | From markers",
+      "Clustering | groups | Pixel colours"
+     ]
+    }
+   ],
+   "summary": [
+    "Segmentation divides an image into meaningful regions. The simplest method is thresholding: pixels above a value are foreground. Otsu's method picks the threshold that best separates the two groups of the histogram.",
+    "Morphological operations clean up binary masks: erosion shrinks shapes and removes specks, dilation grows them and fills holes, and opening and closing combine the two.",
+    "Connected component labelling counts and measures blobs. Clustering colours with k-means and the watershed algorithm are other classical ways to segment."
+   ],
+   "glossary": [
+    {
+     "term": "Thresholding",
+     "def": "Splitting pixels into two classes by comparing intensity with a value."
+    },
+    {
+     "term": "Otsu's method",
+     "def": "A way to choose a threshold by maximising the variance between the two resulting classes."
+    },
+    {
+     "term": "Erosion",
+     "def": "Shrinking foreground shapes: a pixel stays only if all its neighbours are foreground."
+    },
+    {
+     "term": "Dilation",
+     "def": "Growing foreground shapes: a pixel turns on if any neighbour is foreground."
+    },
+    {
+     "term": "Connected components",
+     "def": "Maximal sets of foreground pixels connected to each other."
+    }
+   ],
+   "keyPoints": [
+    "mask = img > t.",
+    "Opening = erode then dilate (removes specks).",
+    "Closing = dilate then erode (fills holes).",
+    "Connectivity: 4 or 8 neighbours.",
+    "Otsu: maximise between-class variance."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. To count coins, turn the picture into black and white, tidy up the specks, and count the white blobs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Count the coins on a table, find the tumour in a scan, cut a person out of a photo. All start with segmentation: deciding which pixels belong together. The simplest idea is a threshold. If coins are bright and the table is dark, mark every pixel above some value as coin."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "But which value? Look at the histogram. If there are two humps, one for the dark background and one for the bright objects, the best threshold sits in the valley.",
+      "Otsu's method finds it automatically by trying every threshold and keeping the one that makes the two groups most different from each other, measured by the variance between the classes."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "_, mask = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)\nkernel = np.ones((3, 3), np.uint8)\nclean = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)\nn, labels, stats, centroids = cv2.connectedComponentsWithStats(clean)\nprint('objects:', n - 1)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Thresholding leaves noisy masks: stray dots and little holes. Morphological operations use a small shape, the structuring element, to tidy up. Erosion keeps a pixel only if the whole neighbourhood is foreground, so it removes specks and shrinks shapes.",
+      "Dilation turns a pixel on if any neighbour is on, so it grows shapes and closes gaps. Erosion followed by dilation, called opening, removes specks without changing big shapes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Then label the blobs. Connected component analysis scans the mask and gives each group of touching foreground pixels its own number, by flood filling from each unvisited pixel. The count gives the number of coins and the statistics give each one's area and centre.",
+      "Touching coins merge into one blob, which is where the watershed algorithm, treating the image as a landscape to flood from markers, can split them."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does thresholding do?",
+     "options": [
+      "Splits pixels into two classes by intensity",
+      "Blurs",
+      "Rotates",
+      "Adds colour"
+     ],
+     "answer": 0,
+     "explain": "Foreground and background."
+    },
+    {
+     "q": "What does Otsu's method choose?",
+     "options": [
+      "The threshold that best separates two classes",
+      "The brightest pixel",
+      "The kernel",
+      "The colour"
+     ],
+     "answer": 0,
+     "explain": "Between-class variance."
+    },
+    {
+     "q": "What does erosion do?",
+     "options": [
+      "Shrinks foreground shapes",
+      "Grows shapes",
+      "Blurs",
+      "Sharpens"
+     ],
+     "answer": 0,
+     "explain": "Removes specks."
+    },
+    {
+     "q": "What is opening?",
+     "options": [
+      "Erosion then dilation",
+      "Dilation then erosion",
+      "Two dilations",
+      "A threshold"
+     ],
+     "answer": 0,
+     "explain": "Cleans noise."
+    },
+    {
+     "q": "What do connected components give?",
+     "options": [
+      "Labelled blobs",
+      "Edges",
+      "Corners",
+      "Histograms"
+     ],
+     "answer": 0,
+     "explain": "Count objects."
+    },
+    {
+     "q": "What is watershed useful for?",
+     "options": [
+      "Splitting touching objects",
+      "Blurring",
+      "Colour correcting",
+      "Resizing"
+     ],
+     "answer": 0,
+     "explain": "Flooding."
+    }
+   ],
+   "cards": [
+    {
+     "q": "cv2.THRESH_OTSU",
+     "a": "automatic threshold"
+    },
+    {
+     "q": "cv2.morphologyEx",
+     "a": "morphological ops"
+    },
+    {
+     "q": "connectedComponents",
+     "a": "label blobs"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Threshold",
+       "split by intensity"
+      ],
+      [
+       "Erosion",
+       "shrink shapes"
+      ],
+      [
+       "Dilation",
+       "grow shapes"
+      ],
+      [
+       "Opening",
+       "remove specks"
+      ],
+      [
+       "Connected component",
+       "touching foreground group"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Threshold",
+     "intro": "Write threshold(img, t): 1 where the pixel is greater than t, else 0.",
+     "fn": "threshold",
+     "starter": "def threshold(img, t):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          10,
+          200
+         ],
+         [
+          90,
+          130
+         ]
+        ],
+        100
+       ],
+       "expect": [
+        [
+         0,
+         1
+        ],
+        [
+         0,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5
+         ]
+        ],
+        4
+       ],
+       "expect": [
+        [
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Compare each pixel.",
+     "solution": "def threshold(img, t):\n    return [[1 if v > t else 0 for v in row] for row in img]\n"
+    },
+    {
+     "type": "python",
+     "title": "Otsu threshold",
+     "intro": "Write otsu(hist): for a histogram (list of counts per intensity level, at least 2 levels), return the threshold t (levels 0..t are background) that maximises the between-class variance w0 w1 (m0 - m1)^2. The first t wins ties.",
+     "fn": "otsu",
+     "starter": "def otsu(hist):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         5,
+         10,
+         2,
+         0,
+         0,
+         3,
+         9,
+         6
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         10,
+         0,
+         0,
+         10
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         1,
+         8,
+         1,
+         0,
+         0,
+         1,
+         8,
+         1
+        ]
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "Try every threshold.",
+     "solution": "def otsu(hist):\n    total = float(sum(hist))\n    best = 0\n    bv = -1.0\n    for t in range(len(hist) - 1):\n        w0 = sum(hist[:t + 1]) / total\n        w1 = 1 - w0\n        if w0 == 0 or w1 == 0:\n            continue\n        m0 = sum([i * hist[i] for i in range(t + 1)]) / (w0 * total)\n        m1 = sum([i * hist[i] for i in range(t + 1, len(hist))]) / (w1 * total)\n        v = w0 * w1 * (m0 - m1) ** 2\n        if v > bv + 1e-9:\n            bv = v\n            best = t\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Erode",
+     "intro": "Write erode(mask): a pixel stays 1 only if it and all of its 4-neighbours (up, down, left, right) are 1 and inside the image; otherwise 0.",
+     "fn": "erode",
+     "starter": "def erode(mask):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          1,
+          1
+         ],
+         [
+          1,
+          1,
+          1
+         ],
+         [
+          1,
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         1,
+         0
+        ],
+        [
+         0,
+         0,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          1,
+          0
+         ],
+         [
+          1,
+          1,
+          1
+         ],
+         [
+          0,
+          1,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         1,
+         0
+        ],
+        [
+         0,
+         0,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "hint": "Check the four neighbours.",
+     "solution": "def erode(mask):\n    h = len(mask)\n    w = len(mask[0])\n    out = []\n    for r in range(h):\n        row = []\n        for c in range(w):\n            ok = mask[r][c] == 1\n            for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                rr = r + dr\n                cc = c + dc\n                if rr < 0 or rr >= h or cc < 0 or cc >= w or mask[rr][cc] != 1:\n                    ok = False\n            row.append(1 if ok else 0)\n        out.append(row)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Dilate",
+     "intro": "Write dilate(mask): a pixel becomes 1 if it or any of its 4-neighbours is 1.",
+     "fn": "dilate",
+     "starter": "def dilate(mask):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          0
+         ],
+         [
+          0,
+          1,
+          0
+         ],
+         [
+          0,
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         1,
+         0
+        ],
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         0,
+         1,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         1
+        ],
+        [
+         1,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "hint": "Any neighbour on.",
+     "solution": "def dilate(mask):\n    h = len(mask)\n    w = len(mask[0])\n    out = []\n    for r in range(h):\n        row = []\n        for c in range(w):\n            on = mask[r][c] == 1\n            for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                rr = r + dr\n                cc = c + dc\n                if 0 <= rr < h and 0 <= cc < w and mask[rr][cc] == 1:\n                    on = True\n            row.append(1 if on else 0)\n        out.append(row)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Count blobs",
+     "intro": "Write count_blobs(mask): the number of 4-connected components of 1s.",
+     "fn": "count_blobs",
+     "starter": "def count_blobs(mask):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          0,
+          1
+         ],
+         [
+          0,
+          0,
+          0
+         ],
+         [
+          1,
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Flood fill from each unseen 1.",
+     "solution": "def count_blobs(mask):\n    h = len(mask)\n    w = len(mask[0])\n    seen = [[False] * w for _ in range(h)]\n    n = 0\n    for r in range(h):\n        for c in range(w):\n            if mask[r][c] == 1 and not seen[r][c]:\n                n = n + 1\n                stack = [(r, c)]\n                seen[r][c] = True\n                while stack:\n                    y, x = stack.pop()\n                    for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                        yy = y + dy\n                        xx = x + dx\n                        if 0 <= yy < h and 0 <= xx < w and mask[yy][xx] == 1 and not seen[yy][xx]:\n                            seen[yy][xx] = True\n                            stack.append((yy, xx))\n    return n\n"
+    },
+    {
+     "type": "python",
+     "title": "Blob areas",
+     "intro": "Write blob_areas(mask): the sorted list of areas (pixel counts) of the 4-connected components.",
+     "fn": "blob_areas",
+     "starter": "def blob_areas(mask):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          0,
+          1
+         ],
+         [
+          0,
+          0,
+          0
+         ],
+         [
+          1,
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        1,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1,
+          0
+         ],
+         [
+          1,
+          0,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0
+         ]
+        ]
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Count pixels while flooding.",
+     "solution": "def blob_areas(mask):\n    h = len(mask)\n    w = len(mask[0])\n    seen = [[False] * w for _ in range(h)]\n    areas = []\n    for r in range(h):\n        for c in range(w):\n            if mask[r][c] == 1 and not seen[r][c]:\n                a = 0\n                stack = [(r, c)]\n                seen[r][c] = True\n                while stack:\n                    y, x = stack.pop()\n                    a = a + 1\n                    for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                        yy = y + dy\n                        xx = x + dx\n                        if 0 <= yy < h and 0 <= xx < w and mask[yy][xx] == 1 and not seen[yy][xx]:\n                            seen[yy][xx] = True\n                            stack.append((yy, xx))\n                areas.append(a)\n    return sorted(areas)\n"
+    }
+   ]
+  },
+  {
+   "title": "Cameras, geometry and depth",
+   "maps": [
+    {
+     "title": "Geometry",
+     "links": [
+      "Pinhole camera | projects | 3D to 2D",
+      "Focal length | scales | The image",
+      "Intrinsics | describe | The camera",
+      "Extrinsics | describe | Its pose",
+      "Distortion | bends | Straight lines",
+      "Stereo | gives | Depth",
+      "Disparity | is | Pixel shift"
+     ]
+    }
+   ],
+   "summary": [
+    "The pinhole model projects a 3D point (X, Y, Z) to the image at (f X / Z, f Y / Z): farther things appear smaller. Intrinsic parameters (focal length, principal point) describe the camera; extrinsics give its position and rotation.",
+    "Real lenses distort straight lines; calibration with a checkerboard estimates the parameters so we can undo it.",
+    "Two cameras a baseline B apart see the same point shifted by a disparity d; depth is Z = f B / d. Closer objects have larger disparity."
+   ],
+   "glossary": [
+    {
+     "term": "Pinhole camera model",
+     "def": "An idealised camera in which light passes through a single point, projecting 3D points to the image plane."
+    },
+    {
+     "term": "Focal length",
+     "def": "The distance from the pinhole to the image plane, here in pixels, setting the field of view."
+    },
+    {
+     "term": "Camera calibration",
+     "def": "Estimating a camera's intrinsic parameters and lens distortion, often from images of a checkerboard."
+    },
+    {
+     "term": "Disparity",
+     "def": "The horizontal shift of a point between the left and right images of a stereo pair."
+    },
+    {
+     "term": "Epipolar geometry",
+     "def": "The geometry relating two views: a point in one image lies on a known line in the other."
+    }
+   ],
+   "keyPoints": [
+    "u = f X / Z + cx; v = f Y / Z + cy.",
+    "Depth Z = f B / d.",
+    "Field of view = 2 atan(W / (2 f)).",
+    "Calibrate with a checkerboard.",
+    "Homogeneous coordinates make projection a matrix product."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A camera squashes the 3D world flat. Things far away look small, and two eyes, or two cameras, can tell how far by how much things shift."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Hold a coin at arm's length and it covers a mountain. Distant things look small; the camera loses the third dimension and keeps a perspective view. The pinhole model captures this simply: a point at depth Z, X sideways, lands on the image at f times X over Z, where f is the focal length.",
+      "Double the distance and the image halves."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To use the model in practice we need the camera's numbers. Intrinsic parameters are the focal length in pixels and the principal point, where the optical axis meets the sensor. Extrinsic parameters say where the camera is and which way it points. Together they form the camera matrix.",
+      "Lenses also bend straight lines, so calibration images of a checkerboard let software estimate the distortion and correct it."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "ok, K, dist, rvecs, tvecs = cv2.calibrateCamera(obj_points, img_points, gray.shape[::-1], None, None)\nundistorted = cv2.undistort(img, K, dist)\n\nstereo = cv2.StereoSGBM_create(minDisparity=0, numDisparities=64, blockSize=7)\ndisp = stereo.compute(left_gray, right_gray).astype('float32') / 16.0\ndepth = f * baseline / np.maximum(disp, 0.1)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Depth comes from two views. Hold a finger in front of you and close one eye then the other: the finger jumps against the background. That jump, the disparity, is large for close things and small for far ones.",
+      "With two cameras a baseline B apart and focal length f, a point with disparity d lies at depth Z equal to f B over d. Finding the matching pixel in the other image, stereo matching, is a search along one row after rectification."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Modern systems also estimate depth from a single image with learned models, or measure it directly with LiDAR and time-of-flight sensors. Structure from motion and SLAM combine many views, solving for camera poses and 3D points together, which is how phones and robots build maps.",
+      "The labs project points, triangulate depth and apply transforms."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the pinhole model say?",
+     "options": [
+      "Image position is f X / Z",
+      "Image position is X + Z",
+      "Depth is f X",
+      "Light bends"
+     ],
+     "answer": 0,
+     "explain": "Farther is smaller."
+    },
+    {
+     "q": "What is disparity?",
+     "options": [
+      "The pixel shift between stereo views",
+      "A colour difference",
+      "A kernel",
+      "A threshold"
+     ],
+     "answer": 0,
+     "explain": "Left-right offset."
+    },
+    {
+     "q": "What is depth from disparity?",
+     "options": [
+      "f B / d",
+      "d / (f B)",
+      "f + B + d",
+      "B / f"
+     ],
+     "answer": 0,
+     "explain": "Larger disparity, closer."
+    },
+    {
+     "q": "What does calibration estimate?",
+     "options": [
+      "Camera parameters and distortion",
+      "Object classes",
+      "Edges",
+      "Colours"
+     ],
+     "answer": 0,
+     "explain": "Checkerboard."
+    },
+    {
+     "q": "What are extrinsics?",
+     "options": [
+      "The camera's pose",
+      "The focal length",
+      "The lens",
+      "The sensor size"
+     ],
+     "answer": 0,
+     "explain": "Rotation and translation."
+    },
+    {
+     "q": "What does SLAM do?",
+     "options": [
+      "Maps and localises together",
+      "Blurs images",
+      "Detects faces",
+      "Classifies colours"
+     ],
+     "answer": 0,
+     "explain": "Robots."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Z = f B / d",
+     "a": "stereo depth"
+    },
+    {
+     "q": "u = f X / Z",
+     "a": "perspective projection"
+    },
+    {
+     "q": "cv2.undistort",
+     "a": "remove lens distortion"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Intrinsics",
+       "focal length and principal point"
+      ],
+      [
+       "Extrinsics",
+       "camera pose"
+      ],
+      [
+       "Disparity",
+       "stereo pixel shift"
+      ],
+      [
+       "Calibration",
+       "estimate camera parameters"
+      ],
+      [
+       "Homography",
+       "plane-to-plane map"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Project a point",
+     "intro": "Write project(X, Y, Z, f, cx, cy): the pixel [u, v] = [f X / Z + cx, f Y / Z + cy], rounded to 2 decimals.",
+     "fn": "project",
+     "starter": "def project(X, Y, Z, f, cx, cy):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        2,
+        10,
+        500,
+        320,
+        240
+       ],
+       "expect": [
+        370.0,
+        340.0
+       ]
+      },
+      {
+       "args": [
+        0,
+        0,
+        5,
+        800,
+        400,
+        300
+       ],
+       "expect": [
+        400.0,
+        300.0
+       ]
+      },
+      {
+       "args": [
+        -2,
+        1,
+        4,
+        100,
+        50,
+        50
+       ],
+       "expect": [
+        0.0,
+        75.0
+       ]
+      }
+     ],
+     "hint": "Divide by depth.",
+     "solution": "def project(X, Y, Z, f, cx, cy):\n    return [round(f * X / Z + cx, 2), round(f * Y / Z + cy, 2)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Stereo depth",
+     "intro": "Write depth(f, baseline, disparity): f x baseline / disparity rounded to 3 decimals; return None if disparity is not positive.",
+     "fn": "depth",
+     "starter": "def depth(f, baseline, disparity):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        700,
+        0.12,
+        10
+       ],
+       "expect": 8.4,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        700,
+        0.12,
+        40
+       ],
+       "expect": 2.1,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        500,
+        0.5,
+        0
+       ],
+       "expect": null,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        800,
+        0.1,
+        5
+       ],
+       "expect": 16.0,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Larger disparity means closer.",
+     "solution": "def depth(f, baseline, disparity):\n    if disparity <= 0:\n        return None\n    return round(f * baseline / float(disparity), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Field of view",
+     "intro": "Write fov(width_px, f): the horizontal field of view in degrees, 2 atan(width / (2 f)), rounded to 1 decimal.",
+     "fn": "fov",
+     "starter": "def fov(width_px, f):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        640,
+        500
+       ],
+       "expect": 65.2,
+       "approx": 0.1
+      },
+      {
+       "args": [
+        1920,
+        1000
+       ],
+       "expect": 87.7,
+       "approx": 0.1
+      },
+      {
+       "args": [
+        100,
+        50
+       ],
+       "expect": 90.0,
+       "approx": 0.1
+      }
+     ],
+     "hint": "Use atan.",
+     "solution": "import math\ndef fov(width_px, f):\n    return round(math.degrees(2 * math.atan(width_px / (2.0 * f))), 1)\n"
+    },
+    {
+     "type": "python",
+     "title": "Rotate a point",
+     "intro": "Write rotate(x, y, angle_deg): rotate (x, y) anticlockwise about the origin and return [x', y'] rounded to 3 decimals.",
+     "fn": "rotate",
+     "starter": "def rotate(x, y, angle_deg):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        0,
+        90
+       ],
+       "expect": [
+        0.0,
+        1.0
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        1,
+        1,
+        45
+       ],
+       "expect": [
+        0.0,
+        1.414
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        2,
+        3,
+        180
+       ],
+       "expect": [
+        -2.0,
+        -3.0
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        0,
+        5,
+        0
+       ],
+       "expect": [
+        0.0,
+        5.0
+       ],
+       "approx": 0.002
+      }
+     ],
+     "hint": "Standard rotation matrix.",
+     "solution": "import math\ndef rotate(x, y, angle_deg):\n    a = math.radians(angle_deg)\n    return [round(x * math.cos(a) - y * math.sin(a), 3), round(x * math.sin(a) + y * math.cos(a), 3)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Affine transform",
+     "intro": "Write affine(points, A): apply the 2x3 affine matrix A = [[a, b, tx], [c, d, ty]] to each [x, y]: [a x + b y + tx, c x + d y + ty].",
+     "fn": "affine",
+     "starter": "def affine(points, A):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ]
+        ],
+        [
+         [
+          1,
+          0,
+          5
+         ],
+         [
+          0,
+          1,
+          3
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         5,
+         3
+        ],
+        [
+         6,
+         4
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ]
+        ],
+        [
+         [
+          0,
+          -1,
+          0
+         ],
+         [
+          1,
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          2
+         ]
+        ],
+        [
+         [
+          2,
+          0,
+          0
+         ],
+         [
+          0,
+          2,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         4,
+         4
+        ]
+       ]
+      }
+     ],
+     "hint": "Matrix times vector plus translation.",
+     "solution": "def affine(points, A):\n    return [[A[0][0] * p[0] + A[0][1] * p[1] + A[0][2], A[1][0] * p[0] + A[1][1] * p[1] + A[1][2]] for p in points]\n"
+    },
+    {
+     "type": "python",
+     "title": "Radial distortion",
+     "intro": "Write distort(x, y, k1): the barrel distortion of normalised coordinates, [x (1 + k1 r^2), y (1 + k1 r^2)] with r^2 = x^2 + y^2, rounded to 4 decimals.",
+     "fn": "distort",
+     "starter": "def distort(x, y, k1):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5,
+        0.5,
+        -0.2
+       ],
+       "expect": [
+        0.45,
+        0.45
+       ],
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        0,
+        0,
+        0.3
+       ],
+       "expect": [
+        0.0,
+        0.0
+       ],
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        1,
+        0,
+        0.1
+       ],
+       "expect": [
+        1.1,
+        0.0
+       ],
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Scale by 1 + k1 r squared.",
+     "solution": "def distort(x, y, k1):\n    r2 = x * x + y * y\n    s = 1 + k1 * r2\n    return [round(x * s, 4), round(y * s, 4)]\n"
+    }
+   ]
+  },
+  {
+   "title": "Classical recognition: HOG, Haar and bags of features",
+   "maps": [
+    {
+     "title": "Recognition",
+     "links": [
+      "HOG | describes | Shape by gradients",
+      "Haar feature | compares | Rectangles",
+      "Integral image | speeds | Rectangle sums",
+      "Viola-Jones | detects | Faces fast",
+      "Bag of words | counts | Visual words",
+      "SVM | separates | With a margin",
+      "Sliding window | scans | Positions"
+     ]
+    }
+   ],
+   "summary": [
+    "Before deep learning, recognition was a pipeline: extract hand-designed features, then train a classifier. HOG (histogram of oriented gradients) describes shape by local gradient directions and, with a linear SVM, detected pedestrians.",
+    "Viola and Jones detected faces in real time using Haar features (differences of rectangle sums) computed instantly from an integral image, and a cascade that rejects most windows early.",
+    "Bag of visual words clusters local descriptors into a vocabulary and describes an image by the histogram of words, then classifies the histogram."
+   ],
+   "glossary": [
+    {
+     "term": "HOG",
+     "def": "Histogram of oriented gradients: a descriptor built from gradient-direction histograms in cells."
+    },
+    {
+     "term": "Integral image",
+     "def": "An image where each entry holds the sum of all pixels above and to the left, allowing any rectangle sum in four lookups."
+    },
+    {
+     "term": "Haar-like feature",
+     "def": "The difference between the sums of pixels in adjacent rectangles."
+    },
+    {
+     "term": "Cascade",
+     "def": "A sequence of classifiers in which early cheap stages reject most non-objects."
+    },
+    {
+     "term": "Support vector machine",
+     "def": "A classifier that finds the separating boundary with the widest margin."
+    }
+   ],
+   "keyPoints": [
+    "Rectangle sum = I(D) - I(B) - I(C) + I(A).",
+    "HOG: cells of 8x8, 9 orientation bins.",
+    "Sliding window x image pyramid = detector.",
+    "SVM: sign(w.x + b).",
+    "Bag of words: histogram of cluster ids."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Before computers could learn, people wrote rules like 'faces have two dark eyes above a lighter cheek band' and checked millions of little windows quickly."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Early face detectors seemed impossible in real time. Paul Viola and Michael Jones solved it in 2001 with three ideas. First, simple features: Haar-like rectangles, such as a dark band across the eyes above a lighter band on the cheeks.",
+      "Second, the integral image, which lets you add up any rectangle with just four array lookups. Third, a cascade of classifiers, so that most windows are rejected by the first cheap tests."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The integral image is a lovely trick. Make a table where each entry is the sum of all pixels above and to the left of it. The sum over any rectangle is then the bottom-right entry, minus the entries to the left and above, plus the corner that was subtracted twice. Constant time, whatever the size.",
+      "The feature value is a difference of two or three such sums."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Another classic, HOG by Navneet Dalal and Bill Triggs, describes an object by its edges. Divide the window into cells of 8 by 8 pixels. In each cell, build a histogram of gradient directions weighted by gradient strength. Normalise over blocks of cells for lighting invariance.",
+      "A linear support vector machine trained on these long vectors detects pedestrians well, and the whole pipeline slides across the image at many scales."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from skimage.feature import hog\nfrom sklearn.svm import LinearSVC\n\nfeat = hog(gray, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(2, 2))\nclf = LinearSVC(C=0.01).fit(train_features, train_labels)\n\nface = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')\nboxes = face.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "For whole-image categories such as 'beach' or 'forest', the bag of visual words treats local descriptors like words in a document. Cluster thousands of SIFT descriptors with k-means; each centre is a visual word.",
+      "Describe an image by the histogram of words it contains and train an SVM on histograms. These pipelines dominated until 2012, when learned features overtook them, but their ideas, sliding windows, multiscale pyramids and normalisation, live on in modern detectors."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How many lookups give a rectangle sum in an integral image?",
+     "options": [
+      "Four",
+      "One",
+      "Rectangle area",
+      "Eight"
+     ],
+     "answer": 0,
+     "explain": "Corners."
+    },
+    {
+     "q": "What does Viola-Jones use to be fast?",
+     "options": [
+      "Integral image and a cascade",
+      "A huge network",
+      "Colour only",
+      "Random guesses"
+     ],
+     "answer": 0,
+     "explain": "Reject early."
+    },
+    {
+     "q": "What does HOG describe?",
+     "options": [
+      "Shape through gradient directions",
+      "Colour",
+      "Depth",
+      "Texture only"
+     ],
+     "answer": 0,
+     "explain": "Cells of histograms."
+    },
+    {
+     "q": "What is a visual word?",
+     "options": [
+      "A cluster centre of local descriptors",
+      "A letter",
+      "A label",
+      "A pixel"
+     ],
+     "answer": 0,
+     "explain": "k-means."
+    },
+    {
+     "q": "What does an SVM maximise?",
+     "options": [
+      "The margin",
+      "The error",
+      "The number of features",
+      "The image size"
+     ],
+     "answer": 0,
+     "explain": "Widest gap."
+    },
+    {
+     "q": "Why a sliding window?",
+     "options": [
+      "To search every position",
+      "To blur",
+      "To save memory",
+      "To rotate"
+     ],
+     "answer": 0,
+     "explain": "Detect anywhere."
+    }
+   ],
+   "cards": [
+    {
+     "q": "hog(img)",
+     "a": "HOG features"
+    },
+    {
+     "q": "CascadeClassifier",
+     "a": "Viola-Jones in OpenCV"
+    },
+    {
+     "q": "sign(w.x + b)",
+     "a": "linear SVM decision"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each classical idea with its job.",
+     "pairs": [
+      [
+       "Integral image",
+       "fast rectangle sums"
+      ],
+      [
+       "Haar feature",
+       "difference of rectangles"
+      ],
+      [
+       "Cascade",
+       "reject non-faces early"
+      ],
+      [
+       "HOG",
+       "gradient-direction histograms"
+      ],
+      [
+       "Bag of words",
+       "histogram of visual words"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Integral image",
+     "intro": "Write integral(img): the integral image I where I[r][c] is the sum of img[0..r][0..c].",
+     "fn": "integral",
+     "starter": "def integral(img):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         3
+        ],
+        [
+         4,
+         10
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1,
+          1
+         ],
+         [
+          1,
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         2,
+         4,
+         6
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         5
+        ]
+       ]
+      }
+     ],
+     "hint": "Add above and left, subtract the overlap.",
+     "solution": "def integral(img):\n    h = len(img)\n    w = len(img[0])\n    I = [[0] * w for _ in range(h)]\n    for r in range(h):\n        for c in range(w):\n            s = img[r][c]\n            if r > 0:\n                s = s + I[r - 1][c]\n            if c > 0:\n                s = s + I[r][c - 1]\n            if r > 0 and c > 0:\n                s = s - I[r - 1][c - 1]\n            I[r][c] = s\n    return I\n"
+    },
+    {
+     "type": "python",
+     "title": "Rectangle sum",
+     "intro": "Write rect_sum(I, r0, c0, r1, c1): the sum of the original image over rows r0..r1 and columns c0..c1 (inclusive) using the integral image I.",
+     "fn": "rect_sum",
+     "starter": "def rect_sum(I, r0, c0, r1, c1):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          3,
+          6
+         ],
+         [
+          5,
+          12,
+          21
+         ],
+         [
+          12,
+          27,
+          45
+         ]
+        ],
+        1,
+        1,
+        2,
+        2
+       ],
+       "expect": 28
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          3
+         ],
+         [
+          4,
+          10
+         ]
+        ],
+        0,
+        0,
+        1,
+        1
+       ],
+       "expect": 10
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          3
+         ],
+         [
+          4,
+          10
+         ]
+        ],
+        1,
+        0,
+        1,
+        1
+       ],
+       "expect": 7
+      }
+     ],
+     "hint": "Four lookups.",
+     "solution": "def rect_sum(I, r0, c0, r1, c1):\n    s = I[r1][c1]\n    if r0 > 0:\n        s = s - I[r0 - 1][c1]\n    if c0 > 0:\n        s = s - I[r1][c0 - 1]\n    if r0 > 0 and c0 > 0:\n        s = s + I[r0 - 1][c0 - 1]\n    return s\n"
+    },
+    {
+     "type": "python",
+     "title": "Haar feature",
+     "intro": "Write haar_two(img, r, c, h, w): the value of a two-rectangle Haar feature: the sum of the left h x w rectangle minus the sum of the right h x w rectangle next to it, with the top-left corner at (r, c). Use plain sums.",
+     "fn": "haar_two",
+     "starter": "def haar_two(img, r, c, h, w):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          9,
+          9,
+          1,
+          1
+         ],
+         [
+          9,
+          9,
+          1,
+          1
+         ]
+        ],
+        0,
+        0,
+        2,
+        2
+       ],
+       "expect": 32
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3,
+          4
+         ]
+        ],
+        0,
+        0,
+        1,
+        2
+       ],
+       "expect": -4
+      },
+      {
+       "args": [
+        [
+         [
+          5,
+          5
+         ],
+         [
+          5,
+          5
+         ]
+        ],
+        0,
+        0,
+        2,
+        1
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Two adjacent rectangles.",
+     "solution": "def haar_two(img, r, c, h, w):\n    left = 0\n    right = 0\n    for i in range(h):\n        for j in range(w):\n            left = left + img[r + i][c + j]\n            right = right + img[r + i][c + w + j]\n    return left - right\n"
+    },
+    {
+     "type": "python",
+     "title": "HOG cell histogram",
+     "intro": "Write hog_cell(gx, gy, bins): for equal-length lists of gradient components of a cell, build an unsigned-orientation histogram: orientation = atan2(gy, gx) in degrees folded into [0, 180), bin width 180 / bins, each pixel adds its magnitude sqrt(gx^2 + gy^2) to its bin. Return the histogram rounded to 2 decimals.",
+     "fn": "hog_cell",
+     "starter": "def hog_cell(gx, gy, bins):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0,
+         3
+        ],
+        [
+         0,
+         1,
+         4
+        ],
+        4
+       ],
+       "expect": [
+        1.0,
+        5.0,
+        1.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         2
+        ],
+        [
+         2,
+         -2
+        ],
+        2
+       ],
+       "expect": [
+        2.83,
+        2.83
+       ]
+      },
+      {
+       "args": [
+        [
+         0
+        ],
+        [
+         0
+        ],
+        3
+       ],
+       "expect": [
+        0.0,
+        0.0,
+        0.0
+       ]
+      }
+     ],
+     "hint": "Magnitude into the orientation bin.",
+     "solution": "import math\ndef hog_cell(gx, gy, bins):\n    hist = [0.0] * bins\n    w = 180.0 / bins\n    for i in range(len(gx)):\n        ang = math.degrees(math.atan2(gy[i], gx[i])) % 180.0\n        mag = math.sqrt(gx[i] ** 2 + gy[i] ** 2)\n        b = int(ang // w)\n        if b >= bins:\n            b = bins - 1\n        hist[b] = hist[b] + mag\n    return [round(v, 2) for v in hist]\n"
+    },
+    {
+     "type": "python",
+     "title": "Visual word histogram",
+     "intro": "Write bow(descriptors, words): assign each descriptor (list of numbers) to the nearest word (squared distance, lowest index on ties) and return the histogram of counts over the words.",
+     "fn": "bow",
+     "starter": "def bow(descriptors, words):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          9,
+          9
+         ],
+         [
+          8,
+          8
+         ],
+         [
+          9,
+          8
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          9,
+          9
+         ]
+        ]
+       ],
+       "expect": [
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5
+         ]
+        ],
+        [
+         [
+          0
+         ],
+         [
+          10
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         [
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0
+       ]
+      }
+     ],
+     "hint": "Count assignments.",
+     "solution": "def bow(descriptors, words):\n    hist = [0] * len(words)\n    for d in descriptors:\n        best = 0\n        bd = None\n        for i in range(len(words)):\n            s = 0\n            for j in range(len(d)):\n                s = s + (d[j] - words[i][j]) ** 2\n            if bd is None or s < bd:\n                bd = s\n                best = i\n        hist[best] = hist[best] + 1\n    return hist\n"
+    },
+    {
+     "type": "python",
+     "title": "Linear SVM",
+     "intro": "Write svm_predict(w, b, X): for each feature vector return 1 if w.x + b >= 0 else -1.",
+     "fn": "svm_predict",
+     "starter": "def svm_predict(w, b, X):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        -3,
+        [
+         [
+          1,
+          1
+         ],
+         [
+          2,
+          2
+         ],
+         [
+          3,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        -1,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         -1
+        ],
+        0,
+        [
+         [
+          1
+         ],
+         [
+          -1
+         ],
+         [
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        -1,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         0.5,
+         -0.5
+        ],
+        0,
+        [
+         [
+          2,
+          1
+         ],
+         [
+          1,
+          2
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        -1
+       ]
+      }
+     ],
+     "hint": "Sign of the linear score.",
+     "solution": "def svm_predict(w, b, X):\n    out = []\n    for x in X:\n        s = b\n        for j in range(len(w)):\n            s = s + w[j] * x[j]\n        out.append(1 if s >= 0 else -1)\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Convolutional neural networks",
+   "maps": [
+    {
+     "title": "CNNs",
+     "links": [
+      "CNN | learns | Its own filters",
+      "Convolution layer | detects | Local patterns",
+      "Pooling | shrinks | Feature maps",
+      "ReLU | adds | Non-linearity",
+      "Receptive field | grows | With depth",
+      "ResNet | adds | Skip connections",
+      "Transfer learning | reuses | Pretrained features"
+     ]
+    }
+   ],
+   "summary": [
+    "A convolutional neural network stacks learned convolution layers with non-linearities and pooling. Early layers learn edges, middle layers textures and parts, late layers whole objects.",
+    "AlexNet's win in the 2012 ImageNet contest started the deep learning era. VGG, Inception and ResNet followed; ResNet's skip connections made very deep networks trainable.",
+    "Instead of training from scratch, you usually start from a network pretrained on ImageNet and fine-tune it on your own data: transfer learning."
+   ],
+   "glossary": [
+    {
+     "term": "Convolutional layer",
+     "def": "A layer applying many learned small kernels across the image, sharing weights across positions."
+    },
+    {
+     "term": "Pooling",
+     "def": "Downsampling feature maps, for example by taking the maximum of each 2x2 block."
+    },
+    {
+     "term": "Receptive field",
+     "def": "The region of the input image that influences a given unit."
+    },
+    {
+     "term": "Skip connection",
+     "def": "A shortcut that adds a layer's input to its output, as in ResNet."
+    },
+    {
+     "term": "Transfer learning",
+     "def": "Starting from a model trained on a large dataset and adapting it to a new task."
+    }
+   ],
+   "keyPoints": [
+    "Output size = (W - K + 2P) / S + 1.",
+    "Params per conv layer = K*K*Cin*Cout + Cout.",
+    "Max pool 2x2 halves width and height.",
+    "ResNet: y = F(x) + x.",
+    "Fine-tune: freeze early layers, train the head."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A neural network for pictures learns its own little tables, first for edges, then for shapes, then for whole animals."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In classical vision, experts designed the filters. A convolutional network lets the data decide. It stacks layers in which many small kernels slide over the image, exactly the convolution of Chapter 2, but with the numbers in each kernel learned by gradient descent.",
+      "Sharing each kernel across all positions makes the network efficient and gives it translation equivariance: a cat is a cat wherever it sits."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A typical block is convolution, a non-linearity such as ReLU, and pooling. Pooling shrinks the maps, say taking the biggest value in each 2 by 2 block, so deeper layers see wider regions of the image: the receptive field grows.",
+      "Peering inside trained networks shows early layers responding to edges and colours, middle layers to textures and parts like eyes and wheels, and the last layers to whole objects."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from tensorflow import keras\nfrom tensorflow.keras import layers\n\nmodel = keras.Sequential([\n    layers.Input((64, 64, 3)),\n    layers.Conv2D(32, 3, activation='relu'), layers.MaxPooling2D(),\n    layers.Conv2D(64, 3, activation='relu'), layers.MaxPooling2D(),\n    layers.Flatten(), layers.Dense(64, activation='relu'),\n    layers.Dense(10, activation='softmax'),\n])\nbase = keras.applications.ResNet50(weights='imagenet', include_top=False)\nbase.trainable = False   # transfer learning: train only a new head"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The ImageNet contest asked programs to classify a million photographs into a thousand categories. In 2012, AlexNet, a deep CNN trained on graphics cards, cut the error from twenty-six to sixteen percent, and the field changed.",
+      "Deeper networks followed, but stacking layers eventually made training harder. ResNet's fix in 2015 was the skip connection: each block learns a residual, a correction added to its input, so the signal and gradient pass straight through. Networks with over a hundred layers trained well."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Training a large CNN from scratch needs millions of images. Transfer learning avoids that. Take a network pretrained on ImageNet, replace its last layer with one for your classes, and train just that layer, or fine-tune the whole network gently. A few hundred examples can be enough.",
+      "Data augmentation, random flips, crops and colour changes, stretches small datasets further. Count the sizes and parameters in the labs; it shows why convolution is so economical."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a conv layer share across positions?",
+     "options": [
+      "Its kernel weights",
+      "Its output",
+      "Its input",
+      "Its bias only"
+     ],
+     "answer": 0,
+     "explain": "Weight sharing."
+    },
+    {
+     "q": "What does max pooling do?",
+     "options": [
+      "Downsamples by taking the maximum",
+      "Adds colour",
+      "Rotates",
+      "Sharpens"
+     ],
+     "answer": 0,
+     "explain": "Shrinks maps."
+    },
+    {
+     "q": "What did ResNet introduce?",
+     "options": [
+      "Skip connections",
+      "Pooling",
+      "ReLU",
+      "Kernels"
+     ],
+     "answer": 0,
+     "explain": "y = F(x) + x."
+    },
+    {
+     "q": "Why use transfer learning?",
+     "options": [
+      "Little data is needed",
+      "It is slower",
+      "It avoids GPUs",
+      "It removes labels"
+     ],
+     "answer": 0,
+     "explain": "Reuse features."
+    },
+    {
+     "q": "What do early CNN layers detect?",
+     "options": [
+      "Edges and colours",
+      "Whole objects",
+      "Faces only",
+      "Text"
+     ],
+     "answer": 0,
+     "explain": "Low-level."
+    },
+    {
+     "q": "What started the deep learning era in vision?",
+     "options": [
+      "AlexNet in 2012",
+      "Canny in 1986",
+      "SIFT in 1999",
+      "HOG in 2005"
+     ],
+     "answer": 0,
+     "explain": "ImageNet."
+    }
+   ],
+   "cards": [
+    {
+     "q": "(W - K + 2P)/S + 1",
+     "a": "conv output size"
+    },
+    {
+     "q": "K*K*Cin*Cout",
+     "a": "conv weights"
+    },
+    {
+     "q": "y = F(x) + x",
+     "a": "residual block"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each CNN idea with its meaning.",
+     "pairs": [
+      [
+       "Convolution layer",
+       "learned sliding kernels"
+      ],
+      [
+       "Pooling",
+       "downsample"
+      ],
+      [
+       "Receptive field",
+       "input region seen by a unit"
+      ],
+      [
+       "Skip connection",
+       "add input to output"
+      ],
+      [
+       "Fine-tuning",
+       "adapt a pretrained network"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Output size",
+     "intro": "Write conv_out(w, k, p, s): the output width (W - K + 2P) // S + 1 of a convolution.",
+     "fn": "conv_out",
+     "starter": "def conv_out(w, k, p, s):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        28,
+        3,
+        0,
+        1
+       ],
+       "expect": 26
+      },
+      {
+       "args": [
+        28,
+        3,
+        1,
+        1
+       ],
+       "expect": 28
+      },
+      {
+       "args": [
+        224,
+        7,
+        3,
+        2
+       ],
+       "expect": 112
+      },
+      {
+       "args": [
+        32,
+        5,
+        0,
+        2
+       ],
+       "expect": 14
+      }
+     ],
+     "hint": "Integer arithmetic.",
+     "solution": "def conv_out(w, k, p, s):\n    return (w - k + 2 * p) // s + 1\n"
+    },
+    {
+     "type": "python",
+     "title": "Parameter count",
+     "intro": "Write conv_params(k, cin, cout): the number of weights plus biases in a conv layer, k x k x cin x cout + cout.",
+     "fn": "conv_params",
+     "starter": "def conv_params(k, cin, cout):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        3,
+        32
+       ],
+       "expect": 896
+      },
+      {
+       "args": [
+        3,
+        32,
+        64
+       ],
+       "expect": 18496
+      },
+      {
+       "args": [
+        1,
+        64,
+        128
+       ],
+       "expect": 8320
+      },
+      {
+       "args": [
+        7,
+        3,
+        64
+       ],
+       "expect": 9472
+      }
+     ],
+     "hint": "Weights per filter times filters, plus biases.",
+     "solution": "def conv_params(k, cin, cout):\n    return k * k * cin * cout + cout\n"
+    },
+    {
+     "type": "python",
+     "title": "Max pool",
+     "intro": "Write max_pool(img, size): non-overlapping size x size max pooling (stride = size); incomplete blocks at the edges are ignored.",
+     "fn": "max_pool",
+     "starter": "def max_pool(img, size):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          3,
+          2,
+          1
+         ],
+         [
+          4,
+          2,
+          0,
+          5
+         ],
+         [
+          1,
+          1,
+          9,
+          8
+         ],
+         [
+          0,
+          2,
+          7,
+          6
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        [
+         4,
+         5
+        ],
+        [
+         2,
+         9
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3
+         ],
+         [
+          4,
+          5,
+          6
+         ],
+         [
+          7,
+          8,
+          9
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        [
+         5
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        [
+         5
+        ]
+       ]
+      }
+     ],
+     "hint": "Maximum of each block.",
+     "solution": "def max_pool(img, size):\n    h = len(img) // size\n    w = len(img[0]) // size\n    out = []\n    for r in range(h):\n        row = []\n        for c in range(w):\n            m = img[r * size][c * size]\n            for i in range(size):\n                for j in range(size):\n                    if img[r * size + i][c * size + j] > m:\n                        m = img[r * size + i][c * size + j]\n            row.append(m)\n        out.append(row)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Strided convolution",
+     "intro": "Write conv_stride(img, k, stride, pad): zero-pad the image by pad on all sides, then slide the kernel k with the given stride (no flip) and return the output image.",
+     "fn": "conv_stride",
+     "starter": "def conv_stride(img, k, stride, pad):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3
+         ],
+         [
+          4,
+          5,
+          6
+         ],
+         [
+          7,
+          8,
+          9
+         ]
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        1,
+        0
+       ],
+       "expect": [
+        [
+         6,
+         8
+        ],
+        [
+         12,
+         14
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3
+         ],
+         [
+          4,
+          5,
+          6
+         ],
+         [
+          7,
+          8,
+          9
+         ]
+        ],
+        [
+         [
+          1,
+          1,
+          1
+         ],
+         [
+          1,
+          1,
+          1
+         ],
+         [
+          1,
+          1,
+          1
+         ]
+        ],
+        1,
+        1
+       ],
+       "expect": [
+        [
+         12,
+         21,
+         16
+        ],
+        [
+         27,
+         45,
+         33
+        ],
+        [
+         24,
+         39,
+         28
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3,
+          4
+         ],
+         [
+          5,
+          6,
+          7,
+          8
+         ],
+         [
+          9,
+          10,
+          11,
+          12
+         ],
+         [
+          13,
+          14,
+          15,
+          16
+         ]
+        ],
+        [
+         [
+          1,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ],
+        2,
+        0
+       ],
+       "expect": [
+        [
+         14,
+         22
+        ],
+        [
+         46,
+         54
+        ]
+       ]
+      }
+     ],
+     "hint": "Pad, then step by the stride.",
+     "solution": "def conv_stride(img, k, stride, pad):\n    h = len(img)\n    w = len(img[0])\n    P = [[0] * (w + 2 * pad) for _ in range(h + 2 * pad)]\n    for r in range(h):\n        for c in range(w):\n            P[r + pad][c + pad] = img[r][c]\n    kh = len(k)\n    kw = len(k[0])\n    out = []\n    r = 0\n    while r + kh <= len(P):\n        row = []\n        c = 0\n        while c + kw <= len(P[0]):\n            s = 0\n            for i in range(kh):\n                for j in range(kw):\n                    s = s + k[i][j] * P[r + i][c + j]\n            row.append(s)\n            c = c + stride\n        out.append(row)\n        r = r + stride\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Receptive field",
+     "intro": "Write receptive_field(layers): layers is a list of [kernel, stride]; return the receptive field of one unit in the last layer using rf = 1, jump = 1; for each layer rf += (k - 1) x jump, jump *= stride.",
+     "fn": "receptive_field",
+     "starter": "def receptive_field(layers):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          3,
+          1
+         ],
+         [
+          3,
+          1
+         ],
+         [
+          3,
+          1
+         ]
+        ]
+       ],
+       "expect": 7
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          1
+         ],
+         [
+          2,
+          2
+         ],
+         [
+          3,
+          1
+         ],
+         [
+          2,
+          2
+         ]
+        ]
+       ],
+       "expect": 10
+      },
+      {
+       "args": [
+        [
+         [
+          7,
+          2
+         ]
+        ]
+       ],
+       "expect": 7
+      }
+     ],
+     "hint": "Track the jump.",
+     "solution": "def receptive_field(layers):\n    rf = 1\n    jump = 1\n    for k, s in layers:\n        rf = rf + (k - 1) * jump\n        jump = jump * s\n    return rf\n"
+    },
+    {
+     "type": "python",
+     "title": "Residual block",
+     "intro": "Write residual(x, f_out): the elementwise sum x + f_out of the input vector and the layer's output (equal lengths); then return the ReLU of the sum.",
+     "fn": "residual",
+     "starter": "def residual(x, f_out):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         -2,
+         3
+        ],
+        [
+         0,
+         1,
+         -5
+        ]
+       ],
+       "expect": [
+        1,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         -1
+        ]
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        [
+         -3
+        ]
+       ],
+       "expect": [
+        2
+       ]
+      }
+     ],
+     "hint": "Add the shortcut, then ReLU.",
+     "solution": "def residual(x, f_out):\n    return [max(0, x[i] + f_out[i]) for i in range(len(x))]\n"
+    }
+   ]
+  },
+  {
+   "title": "Detection, segmentation and tracking",
+   "maps": [
+    {
+     "title": "Detection",
+     "links": [
+      "Detection | finds | Objects and boxes",
+      "IoU | measures | Box overlap",
+      "NMS | removes | Duplicates",
+      "Anchor | seeds | Box proposals",
+      "YOLO | detects | In one pass",
+      "Segmentation | labels | Every pixel",
+      "U-Net | restores | Resolution"
+     ]
+    }
+   ],
+   "summary": [
+    "Detection finds what and where: a box and a class for every object. Intersection over union (IoU) measures how well two boxes overlap, and non-maximum suppression removes duplicate detections of the same object.",
+    "R-CNN families propose regions then classify them; YOLO and SSD predict boxes in a single pass and run in real time. Mask R-CNN adds a mask per object (instance segmentation).",
+    "Semantic segmentation labels every pixel; encoder-decoder networks such as U-Net downsample to understand and upsample to localise."
+   ],
+   "glossary": [
+    {
+     "term": "Bounding box",
+     "def": "A rectangle that encloses an object, given by its corners or by centre, width and height."
+    },
+    {
+     "term": "Intersection over union (IoU)",
+     "def": "The area of overlap of two boxes divided by the area of their union."
+    },
+    {
+     "term": "Non-maximum suppression",
+     "def": "Discarding boxes that overlap a higher-scoring box of the same class too much."
+    },
+    {
+     "term": "Instance segmentation",
+     "def": "Finding each object and giving it a pixel mask."
+    },
+    {
+     "term": "Mean average precision (mAP)",
+     "def": "A standard detection score averaging precision over recall levels and classes."
+    }
+   ],
+   "keyPoints": [
+    "IoU = intersection / (A + B - intersection).",
+    "NMS: sort by score, keep, drop IoU > threshold.",
+    "Match if IoU >= 0.5.",
+    "YOLO: grid cells predict boxes.",
+    "U-Net: encoder, decoder, skip links."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. To find all the cars in a photo, the computer draws boxes, scores them, and throws away boxes that sit on top of better ones."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Classifying a photograph as 'street' is one thing; finding every car, pedestrian and traffic light in it, with boxes, is detection, and self-driving cars depend on it. A detector outputs, for each object, a box, a class and a confidence score."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To judge a box we need a measure of overlap. Intersection over union divides the area the predicted and true boxes share by the area they cover together. One is a perfect match, zero is no overlap, and a detection is usually counted correct if its IoU with a true box is at least one half.",
+      "Detectors often fire many overlapping boxes on one object, so non-maximum suppression sorts boxes by score, keeps the best, and deletes any other box that overlaps it too much."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from ultralytics import YOLO\nmodel = YOLO('yolov8n.pt')\nresults = model('street.jpg')\nfor box in results[0].boxes:\n    print(box.cls, box.conf, box.xyxy)\n\nimport torchvision\nmask_rcnn = torchvision.models.detection.maskrcnn_resnet50_fpn(weights='DEFAULT').eval()"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two families of detector dominate. The R-CNN family first proposes regions that might contain objects, then classifies and refines each; Faster R-CNN made proposals part of the network.",
+      "YOLO, short for you only look once, and SSD divide the image into a grid and predict boxes and classes for every cell in one forward pass, fast enough for video. Mask R-CNN extends Faster R-CNN with a mask for each detected object."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sometimes boxes are not enough and we need a label for every pixel: road, sky, person. That is semantic segmentation. U-Net, shaped like the letter U, downsamples through convolutions to capture context and then upsamples back to full size, with skip connections carrying fine detail across.",
+      "It became the standard for medical images. Add tracking across video frames, linking boxes by IoU and appearance, and you have the core of modern perception systems. The playground lets you drag boxes and see IoU and suppression."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does IoU measure?",
+     "options": [
+      "Overlap of two boxes",
+      "Image brightness",
+      "Box colour",
+      "Speed"
+     ],
+     "answer": 0,
+     "explain": "Intersection over union."
+    },
+    {
+     "q": "What is IoU of identical boxes?",
+     "options": [
+      "1",
+      "0",
+      "0.5",
+      "2"
+     ],
+     "answer": 0,
+     "explain": "Perfect overlap."
+    },
+    {
+     "q": "What does NMS do?",
+     "options": [
+      "Removes overlapping duplicates",
+      "Adds boxes",
+      "Blurs",
+      "Resizes"
+     ],
+     "answer": 0,
+     "explain": "Keep the best."
+    },
+    {
+     "q": "What does YOLO stand for?",
+     "options": [
+      "You only look once",
+      "Your object looks odd",
+      "Yet another layer of objects",
+      "You obtain labels often"
+     ],
+     "answer": 0,
+     "explain": "Single pass."
+    },
+    {
+     "q": "What does U-Net output?",
+     "options": [
+      "A label per pixel",
+      "One class",
+      "A box",
+      "A caption"
+     ],
+     "answer": 0,
+     "explain": "Semantic segmentation."
+    },
+    {
+     "q": "What does Mask R-CNN add to Faster R-CNN?",
+     "options": [
+      "A mask per object",
+      "Colour",
+      "Depth",
+      "Sound"
+     ],
+     "answer": 0,
+     "explain": "Instance masks."
+    }
+   ],
+   "cards": [
+    {
+     "q": "IoU = inter / union",
+     "a": "box overlap"
+    },
+    {
+     "q": "model(img)",
+     "a": "run a detector"
+    },
+    {
+     "q": "mAP@0.5",
+     "a": "detection score"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Boxes, IoU and NMS",
+     "intro": "Drag the two boxes to see IoU, then add a few candidate detections and move the NMS threshold to see which boxes survive. Try the NMS demo at three different thresholds to complete the lab.",
+     "height": 820,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\ncanvas{display:block;margin:6px auto;background:#0e0820;border-radius:8px;touch-action:none;max-width:100%}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}\ninput.n{width:3.4em;background:#2a1b48;color:#f1ebff;border:1px solid #5c4a85;border-radius:6px;padding:4px;margin:1px;text-align:center}\n</style></head><body>\n<div class=\"k\">1) Drag the orange box over the purple one to see IoU.</div>\n<canvas id=\"a\" width=\"400\" height=\"200\"></canvas><div id=\"i\" class=\"k\"></div>\n<div class=\"k\" style=\"margin-top:10px\">2) Non-maximum suppression on five detections of two objects.</div>\n<label>IoU threshold: <b id=\"tv\"></b><input id=\"th\" type=\"range\" min=\"5\" max=\"95\" value=\"50\"></label>\n<canvas id=\"n\" width=\"400\" height=\"200\"></canvas><div id=\"o\" class=\"k\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar A=[60,50,180,150],B=[140,80,260,180],drag=null;\nfunction iou(a,b){var x1=Math.max(a[0],b[0]),y1=Math.max(a[1],b[1]),x2=Math.min(a[2],b[2]),y2=Math.min(a[3],b[3]),w=x2-x1,h=y2-y1;if(w<=0||h<=0)return 0;var i=w*h,u=(a[2]-a[0])*(a[3]-a[1])+(b[2]-b[0])*(b[3]-b[1])-i;return i/u}\nfunction rect(g,b,col,w){g.strokeStyle=col;g.lineWidth=w||2;g.strokeRect(b[0],b[1],b[2]-b[0],b[3]-b[1])}\nfunction d1(){var g=$(\"a\").getContext(\"2d\");g.clearRect(0,0,400,200);g.fillStyle=\"rgba(178,107,255,0.25)\";g.fillRect(A[0],A[1],A[2]-A[0],A[3]-A[1]);g.fillStyle=\"rgba(255,160,60,0.25)\";g.fillRect(B[0],B[1],B[2]-B[0],B[3]-B[1]);rect(g,A,\"#b26bff\");rect(g,B,\"#ff9f3c\");\n $(\"i\").textContent=\"IoU = \"+iou(A,B).toFixed(3)}\n$(\"a\").onpointerdown=function(e){var r=this.getBoundingClientRect();var x=(e.clientX-r.left)*400/r.width,y=(e.clientY-r.top)*200/r.height;if(x>B[0]&&x<B[2]&&y>B[1]&&y<B[3])drag=[x-B[0],y-B[1]]};\n$(\"a\").onpointermove=function(e){if(!drag)return;var r=this.getBoundingClientRect();var x=(e.clientX-r.left)*400/r.width-drag[0],y=(e.clientY-r.top)*200/r.height-drag[1],w=B[2]-B[0],h=B[3]-B[1];B=[x,y,x+w,y+h];d1()};\nwindow.addEventListener(\"pointerup\",function(){drag=null});\nvar DET=[[40,40,140,140,0.95],[48,46,150,146,0.9],[35,50,135,150,0.6],[230,70,350,170,0.85],[242,64,356,176,0.7]];\nvar seen={};\nfunction nms(thr){var o=DET.map(function(d,i){return i}).sort(function(a,b){return DET[b][4]-DET[a][4]}),keep=[];o.forEach(function(i){var ok=true;keep.forEach(function(j){if(iou(DET[i],DET[j])>thr)ok=false});if(ok)keep.push(i)});return keep}\nfunction d2(){var thr=$(\"th\").value/100;$(\"tv\").textContent=thr.toFixed(2);var keep=nms(thr),g=$(\"n\").getContext(\"2d\");g.clearRect(0,0,400,200);\n DET.forEach(function(d,i){var k=keep.indexOf(i)>=0;g.setLineDash(k?[]:[4,4]);rect(g,d,k?\"#8fe3a8\":\"#7a6a9a\",k?3:1);g.fillStyle=\"#c9b8e8\";g.fillText(d[4].toFixed(2),d[0]+3,d[1]+12)});g.setLineDash([]);\n $(\"o\").textContent=\"Kept \"+keep.length+\" of 5 boxes (solid green). Lower thresholds suppress more.\";seen[keep.length]=1;var n=Object.keys(seen).length;$(\"p\").textContent=\"Distinct outcomes seen: \"+n+\" of 3\";if(n>=3)done()}\n$(\"th\").oninput=d2;d1();d2();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each detection idea with its meaning.",
+     "pairs": [
+      [
+       "IoU",
+       "box overlap score"
+      ],
+      [
+       "NMS",
+       "drop duplicate boxes"
+      ],
+      [
+       "YOLO",
+       "single-pass detector"
+      ],
+      [
+       "Mask R-CNN",
+       "instance segmentation"
+      ],
+      [
+       "U-Net",
+       "encoder-decoder for pixels"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "IoU",
+     "intro": "Write iou(a, b): the IoU of two boxes [x1, y1, x2, y2] (x1 < x2, y1 < y2), rounded to 4 decimals; 0 if they do not overlap.",
+     "fn": "iou",
+     "starter": "def iou(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0,
+         2,
+         2
+        ],
+        [
+         1,
+         1,
+         3,
+         3
+        ]
+       ],
+       "expect": 0.1429,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         2,
+         2
+        ],
+        [
+         0,
+         0,
+         2,
+         2
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         1,
+         1
+        ],
+        [
+         2,
+         2,
+         3,
+         3
+        ]
+       ],
+       "expect": 0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         4,
+         4
+        ],
+        [
+         1,
+         1,
+         3,
+         3
+        ]
+       ],
+       "expect": 0.25,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Overlap over union.",
+     "solution": "def iou(a, b):\n    x1 = max(a[0], b[0])\n    y1 = max(a[1], b[1])\n    x2 = min(a[2], b[2])\n    y2 = min(a[3], b[3])\n    w = x2 - x1\n    h = y2 - y1\n    if w <= 0 or h <= 0:\n        return 0\n    inter = w * h\n    ua = (a[2] - a[0]) * (a[3] - a[1]) + (b[2] - b[0]) * (b[3] - b[1]) - inter\n    return round(inter / float(ua), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Non-maximum suppression",
+     "intro": "Write nms(boxes, scores, thr): sort boxes by score descending (stable), keep a box if its IoU with every already kept box is at most thr; return the list of kept indexes in the order kept.",
+     "fn": "nms",
+     "starter": "def nms(boxes, scores, thr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          10,
+          10
+         ],
+         [
+          1,
+          1,
+          11,
+          11
+         ],
+         [
+          50,
+          50,
+          60,
+          60
+         ]
+        ],
+        [
+         0.9,
+         0.8,
+         0.7
+        ],
+        0.5
+       ],
+       "expect": [
+        0,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          10,
+          10
+         ],
+         [
+          0,
+          0,
+          10,
+          10
+         ]
+        ],
+        [
+         0.5,
+         0.9
+        ],
+        0.5
+       ],
+       "expect": [
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          4,
+          4
+         ],
+         [
+          2,
+          2,
+          6,
+          6
+         ]
+        ],
+        [
+         0.6,
+         0.7
+        ],
+        0.9
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      }
+     ],
+     "hint": "Greedy keep-the-best.",
+     "solution": "def nms(boxes, scores, thr):\n    def iou(a, b):\n        x1 = max(a[0], b[0])\n        y1 = max(a[1], b[1])\n        x2 = min(a[2], b[2])\n        y2 = min(a[3], b[3])\n        w = x2 - x1\n        h = y2 - y1\n        if w <= 0 or h <= 0:\n            return 0\n        inter = w * h\n        ua = (a[2] - a[0]) * (a[3] - a[1]) + (b[2] - b[0]) * (b[3] - b[1]) - inter\n        return inter / float(ua)\n    order = sorted(range(len(boxes)), key=lambda i: -scores[i])\n    keep = []\n    for i in order:\n        ok = True\n        for j in keep:\n            if iou(boxes[i], boxes[j]) > thr:\n                ok = False\n        if ok:\n            keep.append(i)\n    return keep\n"
+    },
+    {
+     "type": "python",
+     "title": "Precision and recall of detections",
+     "intro": "Write det_pr(pred_boxes, true_boxes, thr): match each predicted box (in the given order) to an unmatched true box with IoU >= thr (take the first matching true box); return [true positives, false positives, false negatives].",
+     "fn": "det_pr",
+     "starter": "def det_pr(pred_boxes, true_boxes, thr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          10,
+          10
+         ],
+         [
+          50,
+          50,
+          60,
+          60
+         ]
+        ],
+        [
+         [
+          1,
+          1,
+          10,
+          10
+         ],
+         [
+          100,
+          100,
+          110,
+          110
+         ]
+        ],
+        0.5
+       ],
+       "expect": [
+        1,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         [
+          0,
+          0,
+          1,
+          1
+         ]
+        ],
+        0.5
+       ],
+       "expect": [
+        0,
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          2,
+          2
+         ]
+        ],
+        [
+         [
+          0,
+          0,
+          2,
+          2
+         ]
+        ],
+        0.5
+       ],
+       "expect": [
+        1,
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Match greedily.",
+     "solution": "def det_pr(pred_boxes, true_boxes, thr):\n    def iou(a, b):\n        x1 = max(a[0], b[0])\n        y1 = max(a[1], b[1])\n        x2 = min(a[2], b[2])\n        y2 = min(a[3], b[3])\n        w = x2 - x1\n        h = y2 - y1\n        if w <= 0 or h <= 0:\n            return 0\n        inter = w * h\n        ua = (a[2] - a[0]) * (a[3] - a[1]) + (b[2] - b[0]) * (b[3] - b[1]) - inter\n        return inter / float(ua)\n    used = [False] * len(true_boxes)\n    tp = 0\n    fp = 0\n    for p in pred_boxes:\n        hit = False\n        for j in range(len(true_boxes)):\n            if not used[j] and iou(p, true_boxes[j]) >= thr:\n                used[j] = True\n                hit = True\n                break\n        if hit:\n            tp = tp + 1\n        else:\n            fp = fp + 1\n    return [tp, fp, len(true_boxes) - tp]\n"
+    },
+    {
+     "type": "python",
+     "title": "Dice coefficient",
+     "intro": "Write dice(a, b): the Dice score 2 |A and B| / (|A| + |B|) of two binary masks (lists of rows of 0/1), rounded to 4 decimals; 1.0 if both are empty.",
+     "fn": "dice",
+     "starter": "def dice(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          1
+         ],
+         [
+          0,
+          0
+         ]
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": 0.6667,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1,
+          1
+         ]
+        ],
+        [
+         [
+          1,
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Overlap relative to sizes.",
+     "solution": "def dice(a, b):\n    inter = 0\n    sa = 0\n    sb = 0\n    for r in range(len(a)):\n        for c in range(len(a[0])):\n            inter = inter + a[r][c] * b[r][c]\n            sa = sa + a[r][c]\n            sb = sb + b[r][c]\n    if sa + sb == 0:\n        return 1.0\n    return round(2.0 * inter / (sa + sb), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Upsample",
+     "intro": "Write upsample(img, factor): nearest-neighbour upsampling in which each pixel is repeated factor times in both directions (as in a U-Net decoder).",
+     "fn": "upsample",
+     "starter": "def upsample(img, factor):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        [
+         1,
+         1,
+         2,
+         2
+        ],
+        [
+         1,
+         1,
+         2,
+         2
+        ],
+        [
+         3,
+         3,
+         4,
+         4
+        ],
+        [
+         3,
+         3,
+         4,
+         4
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5
+         ]
+        ],
+        3
+       ],
+       "expect": [
+        [
+         5,
+         5,
+         5
+        ],
+        [
+         5,
+         5,
+         5
+        ],
+        [
+         5,
+         5,
+         5
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        [
+         1,
+         2
+        ]
+       ]
+      }
+     ],
+     "hint": "Repeat across and down.",
+     "solution": "def upsample(img, factor):\n    out = []\n    for row in img:\n        wide = []\n        for v in row:\n            wide = wide + [v] * factor\n        for i in range(factor):\n            out.append(list(wide))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Box encoding",
+     "intro": "Write encode(box, anchor): the regression targets used by detectors for a box and an anchor, both [cx, cy, w, h]: [(cx - acx) / aw, (cy - acy) / ah, ln(w / aw), ln(h / ah)], rounded to 4 decimals.",
+     "fn": "encode",
+     "starter": "def encode(box, anchor):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         12,
+         10,
+         20,
+         20
+        ],
+        [
+         10,
+         10,
+         10,
+         10
+        ]
+       ],
+       "expect": [
+        0.2,
+        0.0,
+        0.6931,
+        0.6931
+       ],
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         5,
+         5,
+         5,
+         5
+        ],
+        [
+         5,
+         5,
+         5,
+         5
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+       ],
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         2,
+         8
+        ],
+        [
+         1,
+         2,
+         4,
+         4
+        ]
+       ],
+       "expect": [
+        -0.25,
+        -0.5,
+        -0.6931,
+        0.6931
+       ],
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Offsets scaled by anchor size.",
+     "solution": "import math\ndef encode(box, anchor):\n    return [round((box[0] - anchor[0]) / anchor[2], 4), round((box[1] - anchor[1]) / anchor[3], 4),\n            round(math.log(box[2] / anchor[2]), 4), round(math.log(box[3] / anchor[3]), 4)]\n"
+    }
+   ]
+  },
+  {
+   "title": "Vision transformers, foundation models and responsible vision",
+   "maps": [
+    {
+     "title": "Modern vision",
+     "links": [
+      "Patches | become | Tokens",
+      "ViT | applies | Transformers to images",
+      "Attention | relates | All patches",
+      "CLIP | links | Images and text",
+      "SAM | segments | Anything",
+      "Diffusion | generates | Images",
+      "Bias | needs | Auditing"
+     ]
+    }
+   ],
+   "summary": [
+    "The Vision Transformer (ViT) cuts an image into patches, treats each as a token, adds position information and applies self-attention so every patch can relate to every other. With enough data it matches or beats CNNs.",
+    "Foundation models are trained on huge data and reused for many tasks. CLIP learns to match images with captions, enabling zero-shot classification by comparing an image with text prompts. SAM segments any object from a click or a box.",
+    "Diffusion models generate images by learning to remove noise step by step. These powerful tools also raise issues of bias, privacy, surveillance and misinformation."
+   ],
+   "glossary": [
+    {
+     "term": "Vision Transformer",
+     "def": "A model that splits an image into patches and processes them as a sequence with a transformer."
+    },
+    {
+     "term": "Self-attention",
+     "def": "A mechanism in which each token computes a weighted average of all tokens' values, with weights from query-key similarity."
+    },
+    {
+     "term": "CLIP",
+     "def": "A model trained to place images and their captions near each other in a shared embedding space."
+    },
+    {
+     "term": "Zero-shot classification",
+     "def": "Classifying into categories never trained on, by comparing the image with text descriptions of the classes."
+    },
+    {
+     "term": "Diffusion model",
+     "def": "A generative model that learns to reverse a gradual noising process."
+    }
+   ],
+   "keyPoints": [
+    "Patches: (H/P) x (W/P) tokens.",
+    "Attention = softmax(Q K^T / sqrt(d)) V.",
+    "CLIP: cosine similarity of image and text embeddings.",
+    "Diffusion: x_t = sqrt(a) x_0 + sqrt(1 - a) noise.",
+    "Audit performance across groups."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. New models cut a photo into small squares and let every square look at every other, and some learn pictures and words together so they can name things they were never taught."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "For a decade convolutional networks ruled vision. Then in 2020 researchers at Google showed that a plain transformer, the architecture behind language models, could classify images just as well.",
+      "The trick is to chop the image into patches, say 16 by 16 pixels, flatten each into a vector and treat the patches as the words of a sentence. A 224 by 224 image becomes 196 tokens."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The transformer's key operation is self-attention. Every patch asks a question, a query, and every patch offers a key; the match between a query and a key decides how much that patch's value contributes to the answer.",
+      "The result is that any patch can directly draw on any other, even far away, while a convolution only sees its small neighbourhood. Positional embeddings tell the model where each patch sat."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from transformers import CLIPModel, CLIPProcessor\nfrom PIL import Image\n\nmodel = CLIPModel.from_pretrained('openai/clip-vit-base-patch32')\nproc = CLIPProcessor.from_pretrained('openai/clip-vit-base-patch32')\nimage = Image.open('photo.jpg')\ntexts = ['a photo of a dog', 'a photo of a cat', 'a photo of a bicycle']\ninputs = proc(text=texts, images=image, return_tensors='pt', padding=True)\nprobs = model(**inputs).logits_per_image.softmax(dim=1)\nprint(probs)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Large pretrained 'foundation' models changed practice. CLIP was trained on hundreds of millions of image and caption pairs to place matching pairs close together.",
+      "To classify with no extra training, you write a sentence for each class, embed them, and pick the one nearest the image: zero-shot classification. The Segment Anything Model segments any object you point at. DINO-style self-supervised models learn useful features from images alone."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Generation, too, is learned. Diffusion models gradually add noise to training images until nothing remains, and train a network to undo one step of that noise. To create a picture, begin with pure noise and repeatedly denoise, optionally guided by a text prompt.",
+      "The same power raises serious questions: face recognition and surveillance, bias when training data under-represents groups, deepfakes and consent. Audit models across groups, document their limits, and ask whether a system should be built at all."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does ViT feed into the transformer?",
+     "options": [
+      "Image patches as tokens",
+      "Whole pixels one at a time",
+      "Colour histograms",
+      "Edges only"
+     ],
+     "answer": 0,
+     "explain": "16x16 patches."
+    },
+    {
+     "q": "How many tokens for a 224 image with 16 patches?",
+     "options": [
+      "196",
+      "224",
+      "16",
+      "49"
+     ],
+     "answer": 0,
+     "explain": "14 x 14."
+    },
+    {
+     "q": "What is CLIP trained on?",
+     "options": [
+      "Images paired with captions",
+      "Only labels",
+      "Only text",
+      "Depth maps"
+     ],
+     "answer": 0,
+     "explain": "Contrastive."
+    },
+    {
+     "q": "What is zero-shot classification?",
+     "options": [
+      "Classifying new classes using text descriptions",
+      "Classifying with no model",
+      "Training from scratch",
+      "Using zero images"
+     ],
+     "answer": 0,
+     "explain": "Compare with prompts."
+    },
+    {
+     "q": "How does diffusion generate images?",
+     "options": [
+      "By repeatedly removing noise",
+      "By copying a photo",
+      "By drawing edges",
+      "By thresholding"
+     ],
+     "answer": 0,
+     "explain": "Reverse process."
+    },
+    {
+     "q": "Why audit vision systems by group?",
+     "options": [
+      "Errors may differ across groups",
+      "To speed up",
+      "To reduce size",
+      "To save data"
+     ],
+     "answer": 0,
+     "explain": "Fairness."
+    }
+   ],
+   "cards": [
+    {
+     "q": "(H/P) x (W/P)",
+     "a": "number of patches"
+    },
+    {
+     "q": "softmax(QK^T/sqrt d) V",
+     "a": "attention"
+    },
+    {
+     "q": "cos(image, text)",
+     "a": "CLIP similarity"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each modern vision idea with its meaning.",
+     "pairs": [
+      [
+       "ViT",
+       "transformer on patches"
+      ],
+      [
+       "CLIP",
+       "image and text in one space"
+      ],
+      [
+       "SAM",
+       "segment anything from prompts"
+      ],
+      [
+       "Diffusion",
+       "generate by denoising"
+      ],
+      [
+       "Foundation model",
+       "large pretrained model reused widely"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Patchify",
+     "intro": "Write patchify(img, p): cut a square gray image (list of rows, size divisible by p) into p x p patches in row-major order, each flattened row by row into a list. Return the list of patches.",
+     "fn": "patchify",
+     "starter": "def patchify(img, p):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3,
+          4
+         ],
+         [
+          5,
+          6,
+          7,
+          8
+         ],
+         [
+          9,
+          10,
+          11,
+          12
+         ],
+         [
+          13,
+          14,
+          15,
+          16
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         5,
+         6
+        ],
+        [
+         3,
+         4,
+         7,
+         8
+        ],
+        [
+         9,
+         10,
+         13,
+         14
+        ],
+        [
+         11,
+         12,
+         15,
+         16
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        [
+         1
+        ],
+        [
+         2
+        ],
+        [
+         3
+        ],
+        [
+         4
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         3,
+         4
+        ]
+       ]
+      }
+     ],
+     "hint": "Walk the grid in steps of p.",
+     "solution": "def patchify(img, p):\n    h = len(img)\n    w = len(img[0])\n    out = []\n    for r in range(0, h, p):\n        for c in range(0, w, p):\n            patch = []\n            for i in range(p):\n                for j in range(p):\n                    patch.append(img[r + i][c + j])\n            out.append(patch)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Number of tokens",
+     "intro": "Write num_tokens(h, w, p): how many patches an h x w image gives with patch size p, assuming divisibility.",
+     "fn": "num_tokens",
+     "starter": "def num_tokens(h, w, p):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        224,
+        224,
+        16
+       ],
+       "expect": 196
+      },
+      {
+       "args": [
+        384,
+        384,
+        16
+       ],
+       "expect": 576
+      },
+      {
+       "args": [
+        32,
+        64,
+        8
+       ],
+       "expect": 32
+      }
+     ],
+     "hint": "Count patches per row and column.",
+     "solution": "def num_tokens(h, w, p):\n    return (h // p) * (w // p)\n"
+    },
+    {
+     "type": "python",
+     "title": "Attention weights",
+     "intro": "Write attention(q, keys): the softmax over keys of the scaled dot product q.k / sqrt(d), where d is the length of q. Return the weights rounded to 4 decimals.",
+     "fn": "attention",
+     "starter": "def attention(q, keys):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0.4011,
+        0.1978,
+        0.4011
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         2,
+         2,
+         2
+        ],
+        [
+         [
+          1,
+          1,
+          1,
+          1
+         ],
+         [
+          0,
+          0,
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        0.982,
+        0.018
+       ]
+      }
+     ],
+     "hint": "Softmax of scaled scores.",
+     "solution": "import math\ndef attention(q, keys):\n    d = len(q)\n    scores = []\n    for k in keys:\n        s = 0.0\n        for j in range(d):\n            s = s + q[j] * k[j]\n        scores.append(s / math.sqrt(d))\n    m = max(scores)\n    e = [math.exp(s - m) for s in scores]\n    t = sum(e)\n    return [round(v / t, 4) for v in e]\n"
+    },
+    {
+     "type": "python",
+     "title": "Cosine similarity",
+     "intro": "Write cosine(a, b): the cosine similarity of two vectors, rounded to 4 decimals.",
+     "fn": "cosine",
+     "starter": "def cosine(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0
+        ],
+        [
+         0,
+         1
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         2,
+         4,
+         6
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         -1,
+         -1
+        ]
+       ],
+       "expect": -1.0,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Dot product over the norms.",
+     "solution": "import math\ndef cosine(a, b):\n    dot = sum([a[i] * b[i] for i in range(len(a))])\n    na = math.sqrt(sum([v * v for v in a]))\n    nb = math.sqrt(sum([v * v for v in b]))\n    return round(dot / (na * nb), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Zero-shot classify",
+     "intro": "Write zero_shot(image_vec, text_vecs, names): return the name whose text embedding has the highest cosine similarity with the image embedding (first on ties).",
+     "fn": "zero_shot",
+     "starter": "def zero_shot(image_vec, text_vecs, names):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0.1
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        [
+         "dog",
+         "cat"
+        ]
+       ],
+       "expect": "dog"
+      },
+      {
+       "args": [
+        [
+         0,
+         1
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ],
+        [
+         "a",
+         "b",
+         "c"
+        ]
+       ],
+       "expect": "b"
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ],
+        [
+         "a",
+         "b",
+         "c"
+        ]
+       ],
+       "expect": "c"
+      }
+     ],
+     "hint": "Pick the closest text.",
+     "solution": "import math\ndef zero_shot(image_vec, text_vecs, names):\n    def cos(a, b):\n        dot = sum([a[i] * b[i] for i in range(len(a))])\n        return dot / (math.sqrt(sum([v * v for v in a])) * math.sqrt(sum([v * v for v in b])))\n    best = 0\n    bv = None\n    for i in range(len(text_vecs)):\n        v = cos(image_vec, text_vecs[i])\n        if bv is None or v > bv + 1e-12:\n            bv = v\n            best = i\n    return names[best]\n"
+    },
+    {
+     "type": "python",
+     "title": "Forward diffusion step",
+     "intro": "Write noisy(x0, noise, alpha_bar): the noised sample x_t = sqrt(alpha_bar) x x0 + sqrt(1 - alpha_bar) x noise, elementwise on equal-length lists, rounded to 4 decimals.",
+     "fn": "noisy",
+     "starter": "def noisy(x0, noise, alpha_bar):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0.5
+        ],
+        [
+         0,
+         1
+        ],
+        1.0
+       ],
+       "expect": [
+        1.0,
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         0.5
+        ],
+        [
+         0.2,
+         -0.3
+        ],
+        0.5
+       ],
+       "expect": [
+        0.8485,
+        0.1414
+       ]
+      },
+      {
+       "args": [
+        [
+         2
+        ],
+        [
+         1
+        ],
+        0.0
+       ],
+       "expect": [
+        1.0
+       ]
+      }
+     ],
+     "hint": "Blend signal and noise.",
+     "solution": "import math\ndef noisy(x0, noise, alpha_bar):\n    a = math.sqrt(alpha_bar)\n    b = math.sqrt(1 - alpha_bar)\n    return [round(a * x0[i] + b * noise[i], 4) for i in range(len(x0))]\n"
+    },
+    {
+     "type": "python",
+     "title": "Accuracy by group",
+     "intro": "Write group_accuracy(groups, y_true, y_pred): the accuracy per group as a list of [group, accuracy] sorted by group, rounded to 3 decimals.",
+     "fn": "group_accuracy",
+     "starter": "def group_accuracy(groups, y_true, y_pred):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "a",
+         "b",
+         "b"
+        ],
+        [
+         1,
+         0,
+         1,
+         1
+        ],
+        [
+         1,
+         0,
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        [
+         "a",
+         1.0
+        ],
+        [
+         "b",
+         0.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        [
+         1
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": [
+        [
+         "x",
+         1.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "p",
+         "q"
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         0
+        ]
+       ],
+       "expect": [
+        [
+         "p",
+         0.0
+        ],
+        [
+         "q",
+         1.0
+        ]
+       ]
+      }
+     ],
+     "hint": "Compare per group.",
+     "solution": "def group_accuracy(groups, y_true, y_pred):\n    tot = {}\n    ok = {}\n    for i in range(len(groups)):\n        g = groups[i]\n        tot[g] = tot.get(g, 0) + 1\n        if y_true[i] == y_pred[i]:\n            ok[g] = ok.get(g, 0) + 1\n    return [[g, round(ok.get(g, 0) / float(tot[g]), 3)] for g in sorted(tot.keys())]\n"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Computer Vision",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What is a pixel?",
+    "options": [
+     "One element of an image grid",
+     "A kind of filter",
+     "A camera lens",
+     "A colour space"
+    ],
+    "answer": 0,
+    "explain": "A number or three."
+   },
+   {
+    "q": "What does a colour image's shape look like?",
+    "options": [
+     "(height, width, 3)",
+     "(3, 3)",
+     "(width, 1)",
+     "(1, 1)"
+    ],
+    "answer": 0,
+    "explain": "Channels last."
+   },
+   {
+    "q": "Why weight green most in gray conversion?",
+    "options": [
+     "The eye is most sensitive to green",
+     "It is brightest",
+     "It is cheapest",
+     "Sensors need it"
+    ],
+    "answer": 0,
+    "explain": "Perception."
+   },
+   {
+    "q": "What should a blur kernel sum to?",
+    "options": [
+     "1",
+     "0",
+     "-1",
+     "255"
+    ],
+    "answer": 0,
+    "explain": "Keep brightness."
+   },
+   {
+    "q": "Which filter removes salt-and-pepper noise?",
+    "options": [
+     "Median",
+     "Box blur",
+     "Sobel",
+     "Sharpen"
+    ],
+    "answer": 0,
+    "explain": "Nonlinear."
+   },
+   {
+    "q": "What does the Sobel operator estimate?",
+    "options": [
+     "Image derivatives",
+     "Colour",
+     "Depth",
+     "Noise"
+    ],
+    "answer": 0,
+    "explain": "Gradients."
+   },
+   {
+    "q": "What does Canny's non-maximum suppression do?",
+    "options": [
+     "Thins edges",
+     "Blurs",
+     "Sharpens",
+     "Resizes"
+    ],
+    "answer": 0,
+    "explain": "One pixel wide."
+   },
+   {
+    "q": "How does the Hough transform detect lines?",
+    "options": [
+     "Pixels vote in parameter space",
+     "By colour",
+     "By blurring",
+     "By sorting"
+    ],
+    "answer": 0,
+    "explain": "Voting."
+   },
+   {
+    "q": "What makes a good keypoint?",
+    "options": [
+     "The image changes in all directions around it",
+     "It is bright",
+     "It is in the centre",
+     "It is gray"
+    ],
+    "answer": 0,
+    "explain": "Corner."
+   },
+   {
+    "q": "What does RANSAC do?",
+    "options": [
+     "Fits a model robustly to noisy matches",
+     "Detects edges",
+     "Blurs",
+     "Resizes"
+    ],
+    "answer": 0,
+    "explain": "Inliers."
+   },
+   {
+    "q": "How many point pairs define a homography?",
+    "options": [
+     "Four",
+     "Two",
+     "One",
+     "Eight"
+    ],
+    "answer": 0,
+    "explain": "Four correspondences."
+   },
+   {
+    "q": "What does Otsu's method choose?",
+    "options": [
+     "A threshold maximising between-class variance",
+     "A kernel",
+     "A colour",
+     "A filter size"
+    ],
+    "answer": 0,
+    "explain": "Automatic."
+   },
+   {
+    "q": "What does erosion do?",
+    "options": [
+     "Shrinks foreground shapes",
+     "Grows them",
+     "Blurs",
+     "Sharpens"
+    ],
+    "answer": 0,
+    "explain": "Removes specks."
+   },
+   {
+    "q": "In the pinhole model, image position is:",
+    "options": [
+     "f X / Z",
+     "X + Z",
+     "f Z / X",
+     "X / f"
+    ],
+    "answer": 0,
+    "explain": "Farther is smaller."
+   },
+   {
+    "q": "Stereo depth is:",
+    "options": [
+     "f B / d",
+     "d / (f B)",
+     "f + B",
+     "B d"
+    ],
+    "answer": 0,
+    "explain": "Disparity inverse."
+   },
+   {
+    "q": "How many lookups give a rectangle sum in an integral image?",
+    "options": [
+     "Four",
+     "One",
+     "Area",
+     "Eight"
+    ],
+    "answer": 0,
+    "explain": "Corners."
+   },
+   {
+    "q": "What does HOG describe?",
+    "options": [
+     "Shape by gradient directions",
+     "Colour",
+     "Depth",
+     "Noise"
+    ],
+    "answer": 0,
+    "explain": "Cells of histograms."
+   },
+   {
+    "q": "What does a convolutional layer share across positions?",
+    "options": [
+     "Kernel weights",
+     "Outputs",
+     "Inputs",
+     "Biases only"
+    ],
+    "answer": 0,
+    "explain": "Weight sharing."
+   },
+   {
+    "q": "What did ResNet introduce?",
+    "options": [
+     "Skip connections",
+     "Pooling",
+     "ReLU",
+     "Kernels"
+    ],
+    "answer": 0,
+    "explain": "y = F(x) + x."
+   },
+   {
+    "q": "Why use transfer learning?",
+    "options": [
+     "It needs little data",
+     "It is slower",
+     "It avoids labels",
+     "It avoids GPUs"
+    ],
+    "answer": 0,
+    "explain": "Reuse features."
+   },
+   {
+    "q": "What does IoU measure?",
+    "options": [
+     "Overlap of two boxes",
+     "Brightness",
+     "Box colour",
+     "Speed"
+    ],
+    "answer": 0,
+    "explain": "Intersection over union."
+   },
+   {
+    "q": "What does NMS do?",
+    "options": [
+     "Removes duplicate overlapping boxes",
+     "Adds boxes",
+     "Blurs",
+     "Rotates"
+    ],
+    "answer": 0,
+    "explain": "Keep the best."
+   },
+   {
+    "q": "What does U-Net output?",
+    "options": [
+     "A label per pixel",
+     "One class",
+     "A single box",
+     "A caption"
+    ],
+    "answer": 0,
+    "explain": "Semantic segmentation."
+   },
+   {
+    "q": "What does ViT feed the transformer?",
+    "options": [
+     "Image patches as tokens",
+     "Single pixels",
+     "Histograms",
+     "Edges"
+    ],
+    "answer": 0,
+    "explain": "16x16 patches."
+   },
+   {
+    "q": "What is CLIP trained on?",
+    "options": [
+     "Images paired with captions",
+     "Only labels",
+     "Only text",
+     "Depth maps"
+    ],
+    "answer": 0,
+    "explain": "Shared space."
+   },
+   {
+    "q": "What is zero-shot classification?",
+    "options": [
+     "Classifying with text descriptions of classes",
+     "Using no model",
+     "Training from scratch",
+     "Using zero data"
+    ],
+    "answer": 0,
+    "explain": "Compare with prompts."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Vision cheat sheet",
+  "prompt": "cv>",
+  "intro": "A scripted lookup. Try: gray, conv, sobel, canny, hough, harris, ransac, otsu, iou, nms, resnet, vit, clip, help",
+  "chips": [
+   "gray",
+   "conv",
+   "sobel",
+   "canny",
+   "hough",
+   "harris",
+   "ransac",
+   "otsu",
+   "iou",
+   "nms",
+   "resnet",
+   "vit",
+   "clip",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "gray       gray = 0.299 R + 0.587 G + 0.114 B.",
+     "conv       out[r][c] = sum k[i][j] img[r+i][c+j]. Blur kernels sum to 1",
+     "sobel      Gx = [[-1,0,1],[-2,0,2],[-1,0,1]], Gy is its transpose. Magn",
+     "canny      Blur, gradient, non-maximum suppression, two thresholds with",
+     "hough      Each edge pixel votes for rho = x cos t + y sin t.",
+     "harris     R = det(M) - k trace(M)^2, large at corners.",
+     "ransac     Sample minimal set, fit, count inliers, repeat, keep the bes",
+     "otsu       Pick the threshold that maximises between-class variance.",
+     "iou        Intersection over union of two boxes. Match if IoU >= 0.5.",
+     "nms        Sort by score, keep the best, drop boxes with IoU above the ",
+     "resnet     y = F(x) + x. Skip connections let very deep networks train.",
+     "vit        Cut the image into patches, treat them as tokens, apply self",
+     "clip       Image and text embeddings in one space; zero-shot by cosine "
+    ]
+   },
+   {
+    "re": "^gray$",
+    "out": [
+     "gray = 0.299 R + 0.587 G + 0.114 B."
+    ]
+   },
+   {
+    "re": "^conv$",
+    "out": [
+     "out[r][c] = sum k[i][j] img[r+i][c+j]. Blur kernels sum to 1, edge kernels sum to 0."
+    ]
+   },
+   {
+    "re": "^sobel$",
+    "out": [
+     "Gx = [[-1,0,1],[-2,0,2],[-1,0,1]], Gy is its transpose. Magnitude = sqrt(Gx^2 + Gy^2)."
+    ]
+   },
+   {
+    "re": "^canny$",
+    "out": [
+     "Blur, gradient, non-maximum suppression, two thresholds with linking."
+    ]
+   },
+   {
+    "re": "^hough$",
+    "out": [
+     "Each edge pixel votes for rho = x cos t + y sin t."
+    ]
+   },
+   {
+    "re": "^harris$",
+    "out": [
+     "R = det(M) - k trace(M)^2, large at corners."
+    ]
+   },
+   {
+    "re": "^ransac$",
+    "out": [
+     "Sample minimal set, fit, count inliers, repeat, keep the best."
+    ]
+   },
+   {
+    "re": "^otsu$",
+    "out": [
+     "Pick the threshold that maximises between-class variance."
+    ]
+   },
+   {
+    "re": "^iou$",
+    "out": [
+     "Intersection over union of two boxes. Match if IoU >= 0.5."
+    ]
+   },
+   {
+    "re": "^nms$",
+    "out": [
+     "Sort by score, keep the best, drop boxes with IoU above the threshold."
+    ]
+   },
+   {
+    "re": "^resnet$",
+    "out": [
+     "y = F(x) + x. Skip connections let very deep networks train."
+    ]
+   },
+   {
+    "re": "^vit$",
+    "out": [
+     "Cut the image into patches, treat them as tokens, apply self-attention."
+    ]
+   },
+   {
+    "re": "^clip$",
+    "out": [
+     "Image and text embeddings in one space; zero-shot by cosine similarity."
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Computer Science",
+ "level": "Intermediate",
+ "tags": [
+  "vision",
+  "images",
+  "cnn",
+  "opencv",
+  "detection",
+  "transformers",
+  "python"
+ ]
+}
