@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}
+button.s{background:#3a2a5c;color:#f1ebff}.k{color:#c9b8e8}.ok{color:#8fe3a8}input[type=range]{width:100%}
+canvas{width:100%;max-width:380px;display:block;margin:8px auto;background:#0e0820;border-radius:8px;touch-action:none}.sw{display:flex;flex-wrap:wrap;gap:6px}.sw div{width:84px;height:64px;border-radius:8px;font-size:11px;padding:4px;display:flex;align-items:flex-end}</style></head><body>
+<div class="k">Base hue: <b id="hv">0</b>&deg;</div><input id="h" type="range" min="0" max="359" value="0">
+<div><button class="s" data-k="complementary">complementary</button><button class="s" data-k="analogous">analogous</button><button class="s" data-k="triadic">triadic</button><button class="s" data-k="split">split-complementary</button></div>
+<canvas id="c" width="260" height="260" style="max-width:260px"></canvas>
+<div id="sw" class="sw"></div><div class="k" id="prog" style="margin-top:8px"></div>
+<script>
+var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var kind="complementary",seen={};
+function hsl(h,s,l){h=((h%360)+360)%360;s/=100;l/=100;var a=s*Math.min(l,1-l);function f(n){var k=(n+h/30)%12;var c=l-a*Math.max(-1,Math.min(k-3,9-k,1));return Math.round(255*c)}return[f(0),f(8),f(4)]}
+function hex(c){return"#"+c.map(function(v){return(v<16?"0":"")+v.toString(16)}).join("").toUpperCase()}
+var OFF={complementary:[0,180],analogous:[-30,0,30],triadic:[0,120,240],split:[0,150,210]};
+function draw(){var base=+$("h").value;$("hv").textContent=base;var g=$("c").getContext("2d");g.clearRect(0,0,260,260);
+ for(var a=0;a<360;a++){g.strokeStyle="hsl("+a+",80%,55%)";g.lineWidth=14;g.beginPath();var r=Math.PI*(a-90)/180;g.arc(130,130,100,r,r+0.03);g.stroke()}
+ var hs=OFF[kind].map(function(o){return base+o}),sw=$("sw");sw.innerHTML="";
+ hs.forEach(function(h){var hh=((h%360)+360)%360,r=Math.PI*(hh-90)/180;g.fillStyle="#fff";g.beginPath();g.arc(130+100*Math.cos(r),130+100*Math.sin(r),9,0,6.3);g.fill();
+  var c=hsl(hh,75,50),d=document.createElement("div");d.style.background=hex(c);d.style.color="#111";d.textContent=Math.round(hh)+"\u00b0 "+hex(c);sw.appendChild(d)});
+ seen[kind]=1;var n=Object.keys(seen).length;$("prog").textContent="Harmonies tried: "+n+" of 4 needed";if(n>=4)done()}
+$("h").oninput=draw;Array.prototype.forEach.call(document.querySelectorAll("button[data-k]"),function(b){b.onclick=function(){kind=b.getAttribute("data-k");draw()}});draw();
+</script></body></html>
