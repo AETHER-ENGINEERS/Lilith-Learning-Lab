@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}
+canvas{width:100%;display:block;margin:6px 0;background:#0e0820;border-radius:8px;touch-action:none}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}
+.ok{color:#8fe3a8;font-weight:600}
+</style></head><body>
+<label>Dataset <select id="ds"><option value="house">House area vs price</option><option value="study">Study hours vs exam score</option><option value="ice">Temperature vs ice-cream sales</option><option value="noise">Unrelated noise (with outliers)</option></select>
+Chart <select id="ch"><option value="scatter">Scatter</option><option value="hist">Histogram of y</option><option value="line">Line (in order)</option></select></label>
+<canvas id="c" width="400" height="260"></canvas><div id="o" class="k"></div><div id="p" class="k"></div>
+<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var _s=11;function rnd(){_s=(_s*1103515245+12345)&0x7fffffff;return _s/0x7fffffff}function gauss(){var u=rnd()+1e-9,v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+var D={};(function(){var x=[],y=[],i;for(i=0;i<40;i++){var a=40+rnd()*160;x.push(a);y.push(a*1.8+20+gauss()*25)}D.house={x:x,y:y,xl:"area (m2)",yl:"price (k)"};
+ x=[];y=[];for(i=0;i<40;i++){var h=rnd()*10;x.push(h);y.push(Math.min(100,45+h*5+gauss()*7))}D.study={x:x,y:y,xl:"hours studied",yl:"exam score"};
+ x=[];y=[];for(i=0;i<40;i++){var t=5+rnd()*30;x.push(t);y.push(20+t*4+gauss()*12)}D.ice={x:x,y:y,xl:"temperature (C)",yl:"sales"};
+ x=[];y=[];for(i=0;i<40;i++){x.push(rnd()*10);y.push(50+gauss()*8)}x.push(5);y.push(120);x.push(8);y.push(-10);D.noise={x:x,y:y,xl:"x",yl:"y"}})();
+function mean(a){return a.reduce(function(s,v){return s+v},0)/a.length}
+function sd(a){var m=mean(a);return Math.sqrt(mean(a.map(function(v){return (v-m)*(v-m)})))}
+function corr(x,y){var mx=mean(x),my=mean(y),s=0;for(var i=0;i<x.length;i++)s+=(x[i]-mx)*(y[i]-my);return s/x.length/(sd(x)*sd(y))}
+function q(a,p){var s=a.slice().sort(function(u,v){return u-v}),pos=p*(s.length-1),lo=Math.floor(pos);return lo+1>=s.length?s[lo]:s[lo]+(pos-lo)*(s[lo+1]-s[lo])}
+var seen={};
+function draw(){var d=D[$("ds").value],kind=$("ch").value,c=$("c").getContext("2d");c.clearRect(0,0,400,260);var x=d.x,y=d.y;
+ var xmin=Math.min.apply(null,x),xmax=Math.max.apply(null,x),ymin=Math.min.apply(null,y),ymax=Math.max.apply(null,y);
+ function X(v){return 40+(v-xmin)/(xmax-xmin||1)*340}function Y(v){return 230-(v-ymin)/(ymax-ymin||1)*210}
+ c.strokeStyle="#5c4a85";c.beginPath();c.moveTo(40,10);c.lineTo(40,230);c.lineTo(390,230);c.stroke();c.fillStyle="#c9b8e8";c.fillText(d.xl,180,252);c.fillText(d.yl,2,12);
+ if(kind==="scatter"){c.fillStyle="#b26bff";for(var i=0;i<x.length;i++){c.beginPath();c.arc(X(x[i]),Y(y[i]),3.5,0,7);c.fill()}}
+ else if(kind==="line"){var o=x.map(function(_,i){return i}).sort(function(a,b){return x[a]-x[b]});c.strokeStyle="#b26bff";c.beginPath();o.forEach(function(i,j){if(j==0)c.moveTo(X(x[i]),Y(y[i]));else c.lineTo(X(x[i]),Y(y[i]))});c.stroke()}
+ else{var nb=10,cnt=[],i;for(i=0;i<nb;i++)cnt.push(0);y.forEach(function(v){var b=Math.min(nb-1,Math.floor((v-ymin)/(ymax-ymin||1)*nb));cnt[b]++});var mx=Math.max.apply(null,cnt);c.fillStyle="#b26bff";cnt.forEach(function(n,b){var h=n/mx*200;c.fillRect(42+b*34,230-h,31,h)})}
+ var r=corr(x,y),q1=q(y,0.25),q3=q(y,0.75),iq=q3-q1,out=y.filter(function(v){return v<q1-1.5*iq||v>q3+1.5*iq}).length;
+ $("o").textContent="n="+x.length+"  mean y="+mean(y).toFixed(1)+"  std y="+sd(y).toFixed(1)+"  correlation r="+r.toFixed(2)+"  outliers (IQR rule): "+out;
+ seen[$("ds").value]=1;var n=Object.keys(seen).length;$("p").textContent="Datasets viewed: "+n+" of 3 needed";if(n>=3)done()}
+$("ds").onchange=draw;$("ch").onchange=draw;draw();
+</script></body></html>

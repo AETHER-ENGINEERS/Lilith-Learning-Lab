@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}
+canvas{width:100%;display:block;margin:6px 0;background:#0e0820;border-radius:8px;touch-action:none}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}
+.ok{color:#8fe3a8;font-weight:600}
+</style></head><body>
+<div><button id="fit">Fit line</button><button id="out" class="s">Add outlier</button><button id="clr" class="s">Clear</button></div>
+<canvas id="c" width="400" height="280"></canvas><div id="o" class="k">Tap the plot to add points.</div>
+<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var _s=11;function rnd(){_s=(_s*1103515245+12345)&0x7fffffff;return _s/0x7fffffff}function gauss(){var u=rnd()+1e-9,v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+var P=[],line=null,fitted=false;
+function draw(){var c=$("c").getContext("2d");c.clearRect(0,0,400,280);c.strokeStyle="#5c4a85";c.beginPath();c.moveTo(0,140);c.lineTo(400,140);c.moveTo(200,0);c.lineTo(200,280);c.stroke();
+ c.fillStyle="#b26bff";P.forEach(function(p){c.beginPath();c.arc(p[0],p[1],4.5,0,7);c.fill()});
+ if(line){c.strokeStyle="#ffd36b";c.lineWidth=2;c.beginPath();c.moveTo(0,line[1]);c.lineTo(400,line[0]*400+line[1]);c.stroke();c.lineWidth=1}}
+function fit(){var n=P.length;if(n<2)return;var mx=0,my=0;P.forEach(function(p){mx+=p[0];my+=p[1]});mx/=n;my/=n;var num=0,den=0;P.forEach(function(p){num+=(p[0]-mx)*(p[1]-my);den+=(p[0]-mx)*(p[0]-mx)});
+ if(den<1e-9)return;var m=num/den,b=my-m*mx;line=[m,b];var sse=0,sst=0;P.forEach(function(p){var e=p[1]-(m*p[0]+b);sse+=e*e;sst+=(p[1]-my)*(p[1]-my)});
+ $("o").textContent="slope "+(-m).toFixed(3)+" (screen up is positive), MSE "+(sse/n/100).toFixed(2)+", R squared "+(sst>0?(1-sse/sst).toFixed(3):"n/a")+", points "+n;
+ fitted=true;if(n>=6)done();draw()}
+$("c").onpointerdown=function(e){var r=$("c").getBoundingClientRect();P.push([(e.clientX-r.left)*400/r.width,(e.clientY-r.top)*280/r.height]);line=null;draw()};
+$("fit").onclick=fit;$("out").onclick=function(){P.push([350,250]);line=null;draw()};$("clr").onclick=function(){P=[];line=null;$("o").textContent="Tap the plot to add points.";draw()};draw();
+</script></body></html>

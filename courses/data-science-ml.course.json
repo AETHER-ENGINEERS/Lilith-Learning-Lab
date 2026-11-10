@@ -1,0 +1,7313 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "data-science-ml",
+ "title": "Data Science and Machine Learning",
+ "subtitle": "NumPy, pandas, Matplotlib, scikit-learn and Keras from first principles, with Python labs and four interactive playgrounds",
+ "author": "Lilith Learning Lab",
+ "description": "A first course in data science and machine learning in the order you meet the tools: the data science workflow; NumPy arrays and vectorised thinking; pandas tables, filtering, groupby, missing data and merging; Matplotlib and exploratory data analysis; preparing data with encoding, scaling and train-test splits; linear regression and the scikit-learn estimator pattern; classification with logistic regression, k-nearest neighbours, decision trees and precision and recall; overfitting, cross-validation and tuning; clustering with k-means and PCA; neural networks and Keras; and a project workflow with fairness checks. Lessons show real library code; the Python labs rebuild each idea in plain Python so you understand what the libraries do. Four live labs let you explore plots, regression, k-NN boundaries and train a small neural network.",
+ "pronounce": {
+  "NumPy": "num pie",
+  "pandas": "pandas",
+  "Matplotlib": "mat plot lib",
+  "scikit-learn": "sigh kit learn",
+  "sklearn": "sigh kit learn",
+  "Keras": "keh rass",
+  "TensorFlow": "tensor flow",
+  "DataFrame": "data frame",
+  "DataFrames": "data frames",
+  "Series": "series",
+  "NaN": "nan",
+  "ndarray": "en d array",
+  "ReLU": "rel you",
+  "softmax": "soft max",
+  "sigmoid": "sig moid",
+  "logistic": "low jis tik",
+  "k-NN": "K N N",
+  "k-means": "K means",
+  "PCA": "P C A",
+  "EDA": "E D A",
+  "MSE": "M S E",
+  "F1": "F one",
+  "Gini": "jee nee",
+  "hyperparameter": "hyper parameter",
+  "hyperparameters": "hyper parameters",
+  "Adam": "adam",
+  "tanh": "tanch",
+  "XOR": "ex or",
+  "epoch": "ee pock",
+  "epochs": "ee pocks",
+  "overfitting": "over fitting",
+  "underfitting": "under fitting",
+  "numpy": "num pie",
+  "np": "N P",
+  "plt": "P L T",
+  "pd": "P D",
+  "csv": "C S V",
+  "CSV": "C S V",
+  "ELI5": "E L I five"
+ },
+ "chapters": [
+  {
+   "title": "What data science is, and the tools",
+   "maps": [
+    {
+     "title": "Data science",
+     "links": [
+      "Data science | turns | Data into decisions",
+      "Workflow | starts with | A question",
+      "Pandas | handles | Tables",
+      "NumPy | handles | Arrays",
+      "Matplotlib | draws | Plots",
+      "Scikit-learn | builds | Models",
+      "Keras | builds | Neural networks"
+     ]
+    }
+   ],
+   "summary": [
+    "Data science is the practice of asking questions of data and answering them with statistics, programming and judgement. Machine learning is the part where a program learns a pattern from examples instead of being given rules.",
+    "A typical project follows a loop: ask a question, collect data, clean it, explore it, build a model, evaluate it honestly, and communicate. Most of the time goes into data, not models.",
+    "Python's toolkit is layered. NumPy gives fast arrays, pandas gives tables, Matplotlib draws charts, scikit-learn gives classic machine learning, and Keras gives neural networks."
+   ],
+   "glossary": [
+    {
+     "term": "Machine learning",
+     "def": "Methods in which a program improves at a task by learning patterns from data."
+    },
+    {
+     "term": "Feature",
+     "def": "An input variable used to make a prediction, such as age or price."
+    },
+    {
+     "term": "Label (target)",
+     "def": "The value we want to predict."
+    },
+    {
+     "term": "Supervised learning",
+     "def": "Learning from examples that include the correct answer (regression and classification)."
+    },
+    {
+     "term": "Unsupervised learning",
+     "def": "Finding structure in data without labels, such as clusters."
+    }
+   ],
+   "keyPoints": [
+    "Question, data, clean, explore, model, evaluate, communicate.",
+    "Supervised: features X and labels y.",
+    "Regression predicts numbers; classification predicts categories.",
+    "Unsupervised: clustering, dimension reduction.",
+    "The tools: NumPy, pandas, Matplotlib, scikit-learn, Keras."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Data science is being a detective with numbers: you ask a question, gather clues, tidy them up, and look for a pattern that answers it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A shop owner wonders which customers will return next month. A doctor wants to spot a disease early on scans. A city wants to forecast bus demand. Each starts with a question and some data. Data science is the craft of connecting the two honestly."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Machine learning is a way to build programs from examples. Instead of writing the rule 'if the email says free money, it is spam', you show a model thousands of labelled emails and it finds the pattern itself. The examples are rows.",
+      "The input columns are called features, and the answer column is the label or target."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There are three big families. In supervised learning, every training example comes with the right answer. If the answer is a number, such as a house price, the task is regression. If it is a category, such as spam or not spam, it is classification.",
+      "In unsupervised learning there are no answers, and the goal is to find structure, for example groups of similar customers. A third family, reinforcement learning, learns by trial and reward."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Python ecosystem is built in layers. NumPy provides fast multi-dimensional arrays. pandas builds tables, called DataFrames, on top. Matplotlib draws charts. scikit-learn offers dozens of machine learning methods with one consistent interface. Keras, part of TensorFlow, builds neural networks.",
+      "You will meet them in this order."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom sklearn.linear_model import LinearRegression\nfrom tensorflow import keras\n\ndf = pd.read_csv('houses.csv')\nprint(df.head())"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A note about this course. The labs here run on the app's built-in Python, which does not include these libraries.",
+      "So the lessons show you real library code to read and copy into your own notebook, while each lab rebuilds the core idea in plain Python: a dot product, a small table, a nearest-neighbour classifier, a neural neuron. Knowing how the machinery works makes you far better at using the libraries."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a feature?",
+     "options": [
+      "An input variable used for prediction",
+      "The answer to predict",
+      "A chart type",
+      "A file"
+     ],
+     "answer": 0,
+     "explain": "A column of X."
+    },
+    {
+     "q": "What is a label?",
+     "options": [
+      "The value we want to predict",
+      "An input",
+      "A plot",
+      "A library"
+     ],
+     "answer": 0,
+     "explain": "The target y."
+    },
+    {
+     "q": "Which task predicts a number?",
+     "options": [
+      "Regression",
+      "Classification",
+      "Clustering",
+      "Sorting"
+     ],
+     "answer": 0,
+     "explain": "House price."
+    },
+    {
+     "q": "What is unsupervised learning?",
+     "options": [
+      "Finding structure without labels",
+      "Learning with answers",
+      "Learning by reward",
+      "Copying"
+     ],
+     "answer": 0,
+     "explain": "Clusters."
+    },
+    {
+     "q": "Which library gives DataFrames?",
+     "options": [
+      "pandas",
+      "Matplotlib",
+      "Keras",
+      "NumPy"
+     ],
+     "answer": 0,
+     "explain": "Tables."
+    },
+    {
+     "q": "Where does most project time go?",
+     "options": [
+      "Preparing data",
+      "Choosing the model",
+      "Drawing logos",
+      "Waiting"
+     ],
+     "answer": 0,
+     "explain": "Cleaning."
+    }
+   ],
+   "cards": [
+    {
+     "q": "X, y",
+     "a": "features and target"
+    },
+    {
+     "q": "df.head()",
+     "a": "first rows of a table"
+    },
+    {
+     "q": "import numpy as np",
+     "a": "standard import"
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "The data science workflow",
+     "intro": "Put the steps of a typical project in order.",
+     "items": [
+      "Ask a question",
+      "Collect data",
+      "Clean the data",
+      "Explore and plot",
+      "Build a model",
+      "Evaluate honestly",
+      "Communicate results"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Match the tool",
+     "intro": "Pair each library with its role.",
+     "pairs": [
+      [
+       "NumPy",
+       "fast arrays"
+      ],
+      [
+       "pandas",
+       "tables of data"
+      ],
+      [
+       "Matplotlib",
+       "charts"
+      ],
+      [
+       "scikit-learn",
+       "classic machine learning"
+      ],
+      [
+       "Keras",
+       "neural networks"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Summary statistics",
+     "intro": "Write summary(x): the list [mean, median, minimum, maximum] of a non-empty list of numbers, each rounded to 3 decimals.",
+     "fn": "summary",
+     "starter": "def summary(x):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5
+        ]
+       ],
+       "expect": [
+        3.0,
+        3,
+        1,
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         10,
+         20
+        ]
+       ],
+       "expect": [
+        15.0,
+        15.0,
+        10,
+        20
+       ]
+      },
+      {
+       "args": [
+        [
+         3,
+         1,
+         2
+        ]
+       ],
+       "expect": [
+        2.0,
+        2,
+        1,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         7
+        ]
+       ],
+       "expect": [
+        7.0,
+        7,
+        7,
+        7
+       ]
+      },
+      {
+       "args": [
+        [
+         1.5,
+         2.5,
+         10
+        ]
+       ],
+       "expect": [
+        4.667,
+        2.5,
+        1.5,
+        10
+       ]
+      }
+     ],
+     "hint": "Sort for the median.",
+     "solution": "def summary(x):\n    s = sorted(x)\n    n = len(s)\n    if n % 2 == 1:\n        med = s[n // 2]\n    else:\n        med = (s[n // 2 - 1] + s[n // 2]) / 2.0\n    return [round(sum(x) / float(n), 3), round(med, 3), round(s[0], 3), round(s[-1], 3)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Count categories",
+     "intro": "Write counts(values): how many times each value appears, as a list of [value, count] pairs sorted by value.",
+     "fn": "counts",
+     "starter": "def counts(values):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "a",
+         "c",
+         "a"
+        ]
+       ],
+       "expect": [
+        [
+         "a",
+         3
+        ],
+        [
+         "b",
+         1
+        ],
+        [
+         "c",
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         3,
+         1,
+         3,
+         1,
+         2
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         2
+        ],
+        [
+         2,
+         1
+        ],
+        [
+         3,
+         2
+        ]
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Use a dictionary then sort the keys.",
+     "solution": "def counts(values):\n    d = {}\n    for v in values:\n        d[v] = d.get(v, 0) + 1\n    out = []\n    for k in sorted(d.keys()):\n        out.append([k, d[k]])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Task type",
+     "intro": "Write task_type(target_values): return 'classification' if every target value is a string or a bool, otherwise 'regression'.",
+     "fn": "task_type",
+     "starter": "def task_type(target_values):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "spam",
+         "ham"
+        ]
+       ],
+       "expect": "classification"
+      },
+      {
+       "args": [
+        [
+         1.5,
+         2.5
+        ]
+       ],
+       "expect": "regression"
+      },
+      {
+       "args": [
+        [
+         true,
+         false
+        ]
+       ],
+       "expect": "classification"
+      },
+      {
+       "args": [
+        [
+         10,
+         20,
+         30
+        ]
+       ],
+       "expect": "regression"
+      }
+     ],
+     "hint": "Strings and booleans are categories.",
+     "solution": "def task_type(target_values):\n    for v in target_values:\n        if not (isinstance(v, str) or isinstance(v, bool)):\n            return 'regression'\n    return 'classification'\n"
+    },
+    {
+     "type": "python",
+     "title": "Features and target",
+     "intro": "Write split_xy(rows, target): rows is a list of dicts; return [X, y] where X is the list of lists of the other columns' values in sorted column-name order and y the list of target values.",
+     "fn": "split_xy",
+     "starter": "def split_xy(rows, target):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         {
+          "a": 1,
+          "b": 2,
+          "p": 10
+         },
+         {
+          "a": 3,
+          "b": 4,
+          "p": 20
+         }
+        ],
+        "p"
+       ],
+       "expect": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        [
+         10,
+         20
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         {
+          "x": 5,
+          "label": "u"
+         }
+        ],
+        "label"
+       ],
+       "expect": [
+        [
+         [
+          5
+         ]
+        ],
+        [
+         "u"
+        ]
+       ]
+      }
+     ],
+     "hint": "Split each row.",
+     "solution": "def split_xy(rows, target):\n    X = []\n    y = []\n    for r in rows:\n        cols = sorted([k for k in r.keys() if k != target])\n        X.append([r[k] for k in cols])\n        y.append(r[target])\n    return [X, y]\n"
+    }
+   ]
+  },
+  {
+   "title": "NumPy: arrays and vectorised thinking",
+   "maps": [
+    {
+     "title": "NumPy",
+     "links": [
+      "ndarray | holds | Numbers of one type",
+      "Shape | gives | Dimensions",
+      "Vectorisation | replaces | Loops",
+      "Broadcasting | stretches | Small arrays",
+      "Dot product | multiplies | And sums",
+      "Axis | selects | Rows or columns",
+      "Boolean mask | filters | Elements"
+     ]
+    }
+   ],
+   "summary": [
+    "A NumPy array stores numbers of one type in a compact block, so operations on whole arrays run in fast compiled code. Its shape tells how many rows, columns and so on.",
+    "Vectorisation means writing a * 2 or a + b instead of a loop. Broadcasting lets arrays of different shapes combine, for example adding a row of column means to every row.",
+    "Reductions such as sum, mean and std collapse an axis. Boolean masks select elements that meet a condition."
+   ],
+   "glossary": [
+    {
+     "term": "Array",
+     "def": "A grid of numbers of one type, indexed by position."
+    },
+    {
+     "term": "Shape",
+     "def": "The tuple of dimension sizes, such as (3, 4) for 3 rows and 4 columns."
+    },
+    {
+     "term": "Vectorisation",
+     "def": "Applying an operation to a whole array at once instead of with a Python loop."
+    },
+    {
+     "term": "Broadcasting",
+     "def": "The rule that lets arrays of different shapes be combined by stretching the smaller one."
+    },
+    {
+     "term": "Axis",
+     "def": "A dimension of an array; axis 0 runs down the rows, axis 1 across the columns."
+    }
+   ],
+   "keyPoints": [
+    "np.array([1, 2, 3]).",
+    "a.shape, a.reshape(2, 3).",
+    "a + b, a * 2, a ** 2 act element by element.",
+    "a.mean(axis=0) averages each column.",
+    "a[a > 0] keeps positive entries."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A big box of numbers lined up in rows and columns can be added, stretched and squashed all at once. That is what NumPy does, very fast."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Python lists are flexible but slow for maths, because each number is a separate object. A NumPy array is a tight block of numbers of one type. Adding two arrays of a million numbers takes a few milliseconds. The same loop in plain Python takes a second or more."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import numpy as np\na = np.array([[1, 2, 3], [4, 5, 6]])\nprint(a.shape)        # (2, 3)\nprint(a * 10)         # every element times 10\nprint(a.sum(axis=0))  # column sums: [5 7 9]\nprint(a.mean())       # 3.5"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The shape of that array is two rows by three columns. Arithmetic works element by element, which we call vectorised. You write what you want for the whole array and let NumPy do the looping."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Broadcasting extends this to arrays of different sizes. If you subtract the column means, a row of three numbers, from a matrix with two rows and three columns, NumPy stretches the row down to fit.",
+      "This is how data is centred and scaled in a single line: subtract the mean and divide by the standard deviation."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "X = np.array([[1., 200.], [2., 300.], [3., 400.]])\nX_scaled = (X - X.mean(axis=0)) / X.std(axis=0)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The dot product is the heart of machine learning. Multiply two vectors element by element and add: that is one neuron, one linear model prediction. The matrix product does many of these at once, and is how a whole layer of a neural network is computed."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Boolean masks pick elements by condition. The expression a greater than 3 gives an array of true and false, and using it as an index keeps only the true entries. The labs build these operations by hand so you see what the array library does for you."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Why are NumPy arrays fast?",
+     "options": [
+      "Compact data and compiled loops",
+      "They use less memory only",
+      "They avoid maths",
+      "They are shorter"
+     ],
+     "answer": 0,
+     "explain": "No Python loop."
+    },
+    {
+     "q": "What is the shape of a 2-row, 3-column array?",
+     "options": [
+      "(2, 3)",
+      "(3, 2)",
+      "(6,)",
+      "(1, 6)"
+     ],
+     "answer": 0,
+     "explain": "Rows first."
+    },
+    {
+     "q": "What does a.mean(axis=0) give?",
+     "options": [
+      "The mean of each column",
+      "The mean of each row",
+      "One overall mean",
+      "The shape"
+     ],
+     "answer": 0,
+     "explain": "Down the rows."
+    },
+    {
+     "q": "What is broadcasting?",
+     "options": [
+      "Stretching small arrays to fit",
+      "Printing arrays",
+      "Sorting",
+      "Copying files"
+     ],
+     "answer": 0,
+     "explain": "Shape rules."
+    },
+    {
+     "q": "What does a[a > 0] return?",
+     "options": [
+      "The positive elements",
+      "True and false values",
+      "The count",
+      "The mean"
+     ],
+     "answer": 0,
+     "explain": "A mask."
+    },
+    {
+     "q": "What does the dot product compute?",
+     "options": [
+      "Multiply elementwise and sum",
+      "Add all elements",
+      "The largest element",
+      "The shape"
+     ],
+     "answer": 0,
+     "explain": "One neuron."
+    }
+   ],
+   "cards": [
+    {
+     "q": "a @ b",
+     "a": "matrix product"
+    },
+    {
+     "q": "a.mean(axis=0)",
+     "a": "column means"
+    },
+    {
+     "q": "(X - mu) / sigma",
+     "a": "standardise"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each NumPy idea with its meaning.",
+     "pairs": [
+      [
+       "Shape",
+       "dimension sizes"
+      ],
+      [
+       "Vectorisation",
+       "whole-array operations"
+      ],
+      [
+       "Broadcasting",
+       "stretching to fit"
+      ],
+      [
+       "Axis",
+       "a direction in the array"
+      ],
+      [
+       "Mask",
+       "true and false filter"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Dot product",
+     "intro": "Write dot(a, b): the dot product of two equal-length lists.",
+     "fn": "dot",
+     "starter": "def dot(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5,
+         6
+        ]
+       ],
+       "expect": 32
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         5,
+         7
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         2
+        ],
+        [
+         3
+        ]
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        [
+         1,
+         -1
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Multiply and add.",
+     "solution": "def dot(a, b):\n    s = 0\n    for i in range(len(a)):\n        s = s + a[i] * b[i]\n    return s\n"
+    },
+    {
+     "type": "python",
+     "title": "Matrix product",
+     "intro": "Write matmul(A, B): the product of matrix A (rows of lists) and matrix B.",
+     "fn": "matmul",
+     "starter": "def matmul(A, B):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        [
+         [
+          5,
+          6
+         ],
+         [
+          7,
+          8
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         19,
+         22
+        ],
+        [
+         43,
+         50
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        [
+         [
+          9,
+          8
+         ],
+         [
+          7,
+          6
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         9,
+         8
+        ],
+        [
+         7,
+         6
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3
+         ]
+        ],
+        [
+         [
+          1
+         ],
+         [
+          2
+         ],
+         [
+          3
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         14
+        ]
+       ]
+      }
+     ],
+     "hint": "Row of A times column of B.",
+     "solution": "def matmul(A, B):\n    out = []\n    for i in range(len(A)):\n        row = []\n        for j in range(len(B[0])):\n            s = 0\n            for k in range(len(B)):\n                s = s + A[i][k] * B[k][j]\n            row.append(s)\n        out.append(row)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Column means",
+     "intro": "Write col_means(X): the mean of each column of the matrix X, rounded to 3 decimals.",
+     "fn": "col_means",
+     "starter": "def col_means(X):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ]
+       ],
+       "expect": [
+        2.0,
+        3.0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          200
+         ],
+         [
+          2,
+          300
+         ],
+         [
+          3,
+          400
+         ]
+        ]
+       ],
+       "expect": [
+        2.0,
+        300.0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5
+         ]
+        ]
+       ],
+       "expect": [
+        5.0
+       ]
+      }
+     ],
+     "hint": "Sum down each column.",
+     "solution": "def col_means(X):\n    out = []\n    for j in range(len(X[0])):\n        s = 0.0\n        for i in range(len(X)):\n            s = s + X[i][j]\n        out.append(round(s / len(X), 3))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Standardise columns",
+     "intro": "Write standardise(X): subtract each column's mean and divide by its population standard deviation (if the standard deviation is 0 leave the column centred). Round to 3 decimals.",
+     "fn": "standardise",
+     "starter": "def standardise(X):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          200
+         ],
+         [
+          2,
+          300
+         ],
+         [
+          3,
+          400
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         -1.225,
+         -1.225
+        ],
+        [
+         0.0,
+         0.0
+        ],
+        [
+         1.225,
+         1.225
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          5
+         ],
+         [
+          1,
+          7
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0.0,
+         -1.0
+        ],
+        [
+         0.0,
+         1.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          10,
+          0
+         ],
+         [
+          20,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         -1.0,
+         0.0
+        ],
+        [
+         1.0,
+         0.0
+        ]
+       ]
+      }
+     ],
+     "hint": "Centre, then scale.",
+     "solution": "import math\ndef standardise(X):\n    n = len(X)\n    m = len(X[0])\n    out = []\n    for i in range(n):\n        out.append([0] * m)\n    for j in range(m):\n        mu = sum([X[i][j] for i in range(n)]) / float(n)\n        var = sum([(X[i][j] - mu) ** 2 for i in range(n)]) / float(n)\n        sd = math.sqrt(var)\n        for i in range(n):\n            v = X[i][j] - mu\n            if sd > 0:\n                v = v / sd\n            out[i][j] = round(v, 3)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Add a row (broadcast)",
+     "intro": "Write broadcast_add(X, row): add the list row to every row of the matrix X.",
+     "fn": "broadcast_add",
+     "starter": "def broadcast_add(X, row):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        [
+         10,
+         20
+        ]
+       ],
+       "expect": [
+        [
+         11,
+         22
+        ],
+        [
+         13,
+         24
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          0
+         ]
+        ],
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         3
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5
+         ],
+         [
+          6
+         ]
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": [
+        [
+         6
+        ],
+        [
+         7
+        ]
+       ]
+      }
+     ],
+     "hint": "Match columns.",
+     "solution": "def broadcast_add(X, row):\n    out = []\n    for r in X:\n        out.append([r[j] + row[j] for j in range(len(row))])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Boolean mask",
+     "intro": "Write keep_above(a, t): the elements of a that are greater than t, in order.",
+     "fn": "keep_above",
+     "starter": "def keep_above(a, t):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         5,
+         2,
+         8
+        ],
+        2
+       ],
+       "expect": [
+        5,
+        8
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        5
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         -1,
+         0,
+         1
+        ],
+        -1
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      }
+     ],
+     "hint": "Filter by condition.",
+     "solution": "def keep_above(a, t):\n    return [v for v in a if v > t]\n"
+    },
+    {
+     "type": "python",
+     "title": "Reshape",
+     "intro": "Write reshape(flat, rows, cols): turn a flat list of rows x cols numbers into a list of rows lists, filling row by row.",
+     "fn": "reshape",
+     "starter": "def reshape(flat, rows, cols):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5,
+         6
+        ],
+        2,
+        3
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5,
+         6
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5,
+         6
+        ],
+        3,
+        2
+       ],
+       "expect": [
+        [
+         1,
+         2
+        ],
+        [
+         3,
+         4
+        ],
+        [
+         5,
+         6
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        1,
+        2
+       ],
+       "expect": [
+        [
+         1,
+         2
+        ]
+       ]
+      }
+     ],
+     "hint": "Slice a row at a time.",
+     "solution": "def reshape(flat, rows, cols):\n    out = []\n    for i in range(rows):\n        out.append(flat[i * cols:(i + 1) * cols])\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "pandas: tables of data",
+   "maps": [
+    {
+     "title": "pandas",
+     "links": [
+      "DataFrame | is | A table",
+      "Series | is | A column",
+      "Index | labels | Rows",
+      "Filtering | selects | Rows by condition",
+      "Groupby | summarises | Per category",
+      "Missing values | are | NaN",
+      "Merge | joins | Tables on a key"
+     ]
+    }
+   ],
+   "summary": [
+    "A pandas DataFrame is a table with named columns, and a Series is a single column. You load data with read_csv, look with head and info, and select with square brackets.",
+    "Filtering uses conditions such as df[df.age > 30]. Groupby splits the table by a category, applies a summary such as mean to each group, and combines the answer.",
+    "Real data has missing values, shown as NaN. You can drop rows, or fill the gaps with a mean, a median or a constant. Merge joins two tables on a shared key column."
+   ],
+   "glossary": [
+    {
+     "term": "DataFrame",
+     "def": "A two-dimensional labelled table of data with columns of possibly different types."
+    },
+    {
+     "term": "Series",
+     "def": "A one-dimensional labelled array, such as one column of a DataFrame."
+    },
+    {
+     "term": "groupby",
+     "def": "Splitting rows into groups by a key, applying a function to each, and combining the results."
+    },
+    {
+     "term": "NaN",
+     "def": "Not a number; the marker for a missing value."
+    },
+    {
+     "term": "merge",
+     "def": "Combining two tables by matching values in a key column."
+    }
+   ],
+   "keyPoints": [
+    "df['col'] is a Series; df[['a', 'b']] a DataFrame.",
+    "df[df.price > 100] filters rows.",
+    "df.groupby('city')['price'].mean().",
+    "df.isna().sum() counts missing values.",
+    "pd.merge(a, b, on='id')."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A table of data is like a school register: each row is one child, each column is one fact. pandas is the helper that sorts, filters and counts it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A spreadsheet has rows and columns; a pandas DataFrame is the programmer's version. Each column has a name and a type, each row an index. It is the workhorse of data science because real data nearly always arrives as a table."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import pandas as pd\ndf = pd.DataFrame({\n    'city': ['Paris', 'Rome', 'Paris', 'Rome'],\n    'price': [300, 250, 340, None],\n})\nprint(df.describe())\nprint(df[df['price'] > 260])\nprint(df.groupby('city')['price'].mean())"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Selecting a single column gives a Series. Selecting with a condition gives the rows where it is true. The command groupby city and then mean price splits the table into a Paris group and a Rome group and averages each. This split, apply, combine pattern answers most business questions."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Look at that table again: one price is missing. Missing values appear everywhere, from broken sensors to skipped survey questions. pandas shows them as NaN and most summaries skip them, but models usually cannot cope.",
+      "You must decide: drop the rows, fill with the column mean or median, or fill with a typical value for that group. Each choice has consequences, so note it."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "df['price'] = df['price'].fillna(df['price'].median())\nrent = pd.DataFrame({'city': ['Paris', 'Rome'], 'country': ['FR', 'IT']})\nfull = pd.merge(df, rent, on='city')"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Merge joins two tables that share a key, like a customers table and an orders table. An inner join keeps only matching keys. The labs here use a list of dictionaries as a tiny DataFrame, one dictionary per row, so you can build selection, groupby, filling and merge yourself."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a Series?",
+     "options": [
+      "One column of a table",
+      "A whole table",
+      "A chart",
+      "A model"
+     ],
+     "answer": 0,
+     "explain": "1D labelled."
+    },
+    {
+     "q": "What does groupby do?",
+     "options": [
+      "Split, apply, combine",
+      "Sort a list",
+      "Draw a plot",
+      "Delete rows"
+     ],
+     "answer": 0,
+     "explain": "Per-category summary."
+    },
+    {
+     "q": "How is a missing value shown?",
+     "options": [
+      "NaN",
+      "-1",
+      "Zero",
+      "Blank text only"
+     ],
+     "answer": 0,
+     "explain": "Not a number."
+    },
+    {
+     "q": "How do you keep rows with price above 100?",
+     "options": [
+      "df[df.price > 100]",
+      "df.price > 100 = True",
+      "df.keep(100)",
+      "df.drop(100)"
+     ],
+     "answer": 0,
+     "explain": "Boolean mask."
+    },
+    {
+     "q": "What does merge do?",
+     "options": [
+      "Joins tables on a key",
+      "Sorts a table",
+      "Fits a model",
+      "Scales columns"
+     ],
+     "answer": 0,
+     "explain": "Like SQL join."
+    },
+    {
+     "q": "Name one way to handle missing data.",
+     "options": [
+      "Fill with the median",
+      "Delete the column header",
+      "Add more NaN",
+      "Ignore it silently"
+     ],
+     "answer": 0,
+     "explain": "Impute."
+    }
+   ],
+   "cards": [
+    {
+     "q": "df.head()",
+     "a": "first rows"
+    },
+    {
+     "q": "df.describe()",
+     "a": "summary statistics"
+    },
+    {
+     "q": "df.groupby(k)[c].mean()",
+     "a": "group means"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each pandas idea with its meaning.",
+     "pairs": [
+      [
+       "DataFrame",
+       "table"
+      ],
+      [
+       "Series",
+       "column"
+      ],
+      [
+       "groupby",
+       "split, apply, combine"
+      ],
+      [
+       "NaN",
+       "missing value"
+      ],
+      [
+       "merge",
+       "join on a key"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Select columns",
+     "intro": "Write select(rows, cols): rows is a list of dicts; return a list of dicts containing only the listed columns.",
+     "fn": "select",
+     "starter": "def select(rows, cols):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         {
+          "a": 1,
+          "b": 2,
+          "c": 3
+         },
+         {
+          "a": 4,
+          "b": 5,
+          "c": 6
+         }
+        ],
+        [
+         "a",
+         "c"
+        ]
+       ],
+       "expect": [
+        {
+         "a": 1,
+         "c": 3
+        },
+        {
+         "a": 4,
+         "c": 6
+        }
+       ]
+      },
+      {
+       "args": [
+        [
+         {
+          "x": 1
+         }
+        ],
+        [
+         "x"
+        ]
+       ],
+       "expect": [
+        {
+         "x": 1
+        }
+       ]
+      }
+     ],
+     "hint": "Build a smaller dict.",
+     "solution": "def select(rows, cols):\n    out = []\n    for r in rows:\n        out.append({c: r[c] for c in cols})\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Filter rows",
+     "intro": "Write filter_rows(rows, col, minimum): rows is a list of dicts; return the list of row indexes whose value in col is at least minimum.",
+     "fn": "filter_rows",
+     "starter": "def filter_rows(rows, col, minimum):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         {
+          "n": "a",
+          "v": 3
+         },
+         {
+          "n": "b",
+          "v": 10
+         }
+        ],
+        "v",
+        5
+       ],
+       "expect": [
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         {
+          "v": 1
+         }
+        ],
+        "v",
+        1
+       ],
+       "expect": [
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         {
+          "v": 1
+         }
+        ],
+        "v",
+        2
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Collect the indexes that pass.",
+     "solution": "def filter_rows(rows, col, minimum):\n    return [i for i in range(len(rows)) if rows[i][col] >= minimum]\n"
+    },
+    {
+     "type": "python",
+     "title": "Group mean",
+     "intro": "Write group_mean(rows, key, col): the mean of col for each distinct key, as a list of [key, mean] pairs sorted by key, means rounded to 2 decimals.",
+     "fn": "group_mean",
+     "starter": "def group_mean(rows, key, col):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         {
+          "c": "P",
+          "p": 300
+         },
+         {
+          "c": "R",
+          "p": 250
+         },
+         {
+          "c": "P",
+          "p": 340
+         }
+        ],
+        "c",
+        "p"
+       ],
+       "expect": [
+        [
+         "P",
+         320.0
+        ],
+        [
+         "R",
+         250.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         {
+          "c": "A",
+          "p": 1
+         }
+        ],
+        "c",
+        "p"
+       ],
+       "expect": [
+        [
+         "A",
+         1.0
+        ]
+       ]
+      }
+     ],
+     "hint": "Sum and count per key.",
+     "solution": "def group_mean(rows, key, col):\n    sums = {}\n    cnt = {}\n    for r in rows:\n        k = r[key]\n        sums[k] = sums.get(k, 0) + r[col]\n        cnt[k] = cnt.get(k, 0) + 1\n    out = []\n    for k in sorted(sums.keys()):\n        out.append([k, round(sums[k] / float(cnt[k]), 2)])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Fill missing",
+     "intro": "Write fill_mean(rows, col): replace None values of col with the mean of the non-missing values (rounded to 2 decimals). Return the new list of dicts.",
+     "fn": "fill_mean",
+     "starter": "def fill_mean(rows, col):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         {
+          "p": 300
+         },
+         {
+          "p": null
+         },
+         {
+          "p": 340
+         }
+        ],
+        "p"
+       ],
+       "expect": [
+        {
+         "p": 300
+        },
+        {
+         "p": 320.0
+        },
+        {
+         "p": 340
+        }
+       ]
+      },
+      {
+       "args": [
+        [
+         {
+          "p": 1
+         },
+         {
+          "p": 2
+         },
+         {
+          "p": null
+         },
+         {
+          "p": null
+         }
+        ],
+        "p"
+       ],
+       "expect": [
+        {
+         "p": 1
+        },
+        {
+         "p": 2
+        },
+        {
+         "p": 1.5
+        },
+        {
+         "p": 1.5
+        }
+       ]
+      }
+     ],
+     "hint": "Average the known values first.",
+     "solution": "def fill_mean(rows, col):\n    vals = [r[col] for r in rows if r[col] is not None]\n    m = round(sum(vals) / float(len(vals)), 2)\n    out = []\n    for r in rows:\n        d = dict(r)\n        if d[col] is None:\n            d[col] = m\n        out.append(d)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Inner merge",
+     "intro": "Write merge(left, right): inner join of two small tables where every row is a [key, value] pair. For each left row, for each right row with the same key, output [key, left_value, right_value], in left then right order.",
+     "fn": "merge",
+     "starter": "def merge(left, right):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "P",
+          1
+         ],
+         [
+          "R",
+          2
+         ],
+         [
+          "X",
+          3
+         ]
+        ],
+        [
+         [
+          "P",
+          "FR"
+         ],
+         [
+          "R",
+          "IT"
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         "P",
+         1,
+         "FR"
+        ],
+        [
+         "R",
+         2,
+         "IT"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "A",
+          1
+         ]
+        ],
+        [
+         [
+          "B",
+          2
+         ]
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "P",
+          1
+         ],
+         [
+          "P",
+          2
+         ]
+        ],
+        [
+         [
+          "P",
+          "x"
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         "P",
+         1,
+         "x"
+        ],
+        [
+         "P",
+         2,
+         "x"
+        ]
+       ]
+      }
+     ],
+     "hint": "Nested loops matching the key.",
+     "solution": "def merge(left, right):\n    out = []\n    for a in left:\n        for b in right:\n            if a[0] == b[0]:\n                out.append([a[0], a[1], b[1]])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Sort by column",
+     "intro": "Write sort_by(rows, col, descending): the values of col sorted; if descending is True largest first.",
+     "fn": "sort_by",
+     "starter": "def sort_by(rows, col, descending):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         {
+          "v": 2
+         },
+         {
+          "v": 1
+         },
+         {
+          "v": 3
+         }
+        ],
+        "v",
+        false
+       ],
+       "expect": [
+        1,
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         {
+          "v": 2
+         },
+         {
+          "v": 1
+         },
+         {
+          "v": 3
+         }
+        ],
+        "v",
+        true
+       ],
+       "expect": [
+        3,
+        2,
+        1
+       ]
+      }
+     ],
+     "hint": "Use sorted with a key function.",
+     "solution": "def sort_by(rows, col, descending):\n    return sorted([r[col] for r in rows], reverse=descending)\n"
+    }
+   ]
+  },
+  {
+   "title": "Matplotlib and exploring data",
+   "maps": [
+    {
+     "title": "Exploration",
+     "links": [
+      "Histogram | shows | Distribution",
+      "Scatter plot | shows | Relationship",
+      "Line plot | shows | Trend",
+      "Correlation | measures | Linear link",
+      "Outlier | is | Unusual value",
+      "Quartile | splits | Sorted data",
+      "EDA | comes | Before modelling"
+     ]
+    }
+   ],
+   "summary": [
+    "Exploratory data analysis (EDA) means looking at the data before modelling. Matplotlib draws the basic charts: line plots for trends, scatter plots for relationships between two variables, histograms for distributions and bar charts for categories.",
+    "Summary numbers complement plots: the mean and median, the standard deviation, quartiles and the correlation coefficient between two variables.",
+    "Outliers, skewed distributions and surprises found now save trouble later. Always plot before you model."
+   ],
+   "glossary": [
+    {
+     "term": "EDA",
+     "def": "Exploratory data analysis: summarising and visualising data to understand it."
+    },
+    {
+     "term": "Histogram",
+     "def": "A chart that counts how many values fall in each bin."
+    },
+    {
+     "term": "Correlation",
+     "def": "A number from -1 to 1 measuring how closely two variables move together in a straight line."
+    },
+    {
+     "term": "Quartile",
+     "def": "A value that splits sorted data into quarters; Q1 is the 25th percentile, Q3 the 75th."
+    },
+    {
+     "term": "Outlier",
+     "def": "A value far from the rest, often defined as beyond 1.5 times the interquartile range from the quartiles."
+    }
+   ],
+   "keyPoints": [
+    "plt.plot(x, y); plt.scatter(x, y); plt.hist(x, bins=10).",
+    "Always label axes and add a title.",
+    "r = covariance / (sd_x sd_y).",
+    "IQR = Q3 - Q1.",
+    "Correlation is not causation."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Drawing a picture of the numbers often shows what the numbers hide: a straight line, a clump, or one strange dot far away."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Before building any model, look at the data. A table of numbers hides patterns that a chart shows at once. Matplotlib is Python's drawing library. The pyplot interface works like a sketchpad: make a figure, plot, label, show."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import matplotlib.pyplot as plt\nplt.figure(figsize=(6, 4))\nplt.scatter(df['area'], df['price'], alpha=0.6)\nplt.xlabel('Area (m2)')\nplt.ylabel('Price (k)')\nplt.title('Price against area')\nplt.show()\n\nplt.hist(df['price'], bins=20)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Choose the chart for the question. Is there a trend over time? Line plot. Do two numbers move together? Scatter plot. How are the values of one variable spread? Histogram or box plot. How do categories compare? Bar chart. Good charts have labelled axes, units and a title that says what to notice."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The correlation coefficient puts a number on the straight-line link between two variables. It runs from minus one, perfect opposite movement, through zero, no linear link, to plus one, perfect together movement.",
+      "It misses curved relationships, and it says nothing about cause: ice cream sales and drownings both rise in summer."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Outliers can be mistakes, such as an age of 999, or real rare events. A common rule flags values more than one and a half interquartile ranges beyond the quartiles. Decide case by case whether to fix, remove or keep them, and write down why.",
+      "In the plot explorer you can look at several datasets and see correlation and outliers directly."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which chart shows a distribution?",
+     "options": [
+      "Histogram",
+      "Line plot",
+      "Pie chart of two numbers",
+      "Table"
+     ],
+     "answer": 0,
+     "explain": "Counts per bin."
+    },
+    {
+     "q": "Which chart shows a relationship between two numbers?",
+     "options": [
+      "Scatter plot",
+      "Histogram",
+      "Bar chart",
+      "Pie chart"
+     ],
+     "answer": 0,
+     "explain": "Points."
+    },
+    {
+     "q": "What does a correlation of -1 mean?",
+     "options": [
+      "Perfect opposite linear movement",
+      "No link",
+      "Perfect same movement",
+      "An error"
+     ],
+     "answer": 0,
+     "explain": "Straight downhill."
+    },
+    {
+     "q": "What does correlation not show?",
+     "options": [
+      "Causation",
+      "Direction",
+      "Strength",
+      "Sign"
+     ],
+     "answer": 0,
+     "explain": "Confounders."
+    },
+    {
+     "q": "What is the IQR?",
+     "options": [
+      "Q3 minus Q1",
+      "Max minus min",
+      "Mean minus median",
+      "Q1 plus Q3"
+     ],
+     "answer": 0,
+     "explain": "Middle half."
+    },
+    {
+     "q": "What is EDA?",
+     "options": [
+      "Looking at data before modelling",
+      "Deleting data",
+      "A model type",
+      "A chart type"
+     ],
+     "answer": 0,
+     "explain": "Exploration."
+    }
+   ],
+   "cards": [
+    {
+     "q": "plt.scatter(x, y)",
+     "a": "scatter plot"
+    },
+    {
+     "q": "IQR = Q3 - Q1",
+     "a": "spread of the middle half"
+    },
+    {
+     "q": "r in [-1, 1]",
+     "a": "correlation range"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Plot explorer",
+     "intro": "Choose a dataset and a chart, and read the summary numbers. Look at at least three different datasets and the correlation and outlier readout for each to complete the lab.",
+     "height": 780,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\ncanvas{width:100%;display:block;margin:6px 0;background:#0e0820;border-radius:8px;touch-action:none}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}\n.ok{color:#8fe3a8;font-weight:600}\n</style></head><body>\n<label>Dataset <select id=\"ds\"><option value=\"house\">House area vs price</option><option value=\"study\">Study hours vs exam score</option><option value=\"ice\">Temperature vs ice-cream sales</option><option value=\"noise\">Unrelated noise (with outliers)</option></select>\nChart <select id=\"ch\"><option value=\"scatter\">Scatter</option><option value=\"hist\">Histogram of y</option><option value=\"line\">Line (in order)</option></select></label>\n<canvas id=\"c\" width=\"400\" height=\"260\"></canvas><div id=\"o\" class=\"k\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar _s=11;function rnd(){_s=(_s*1103515245+12345)&0x7fffffff;return _s/0x7fffffff}function gauss(){var u=rnd()+1e-9,v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}\nvar D={};(function(){var x=[],y=[],i;for(i=0;i<40;i++){var a=40+rnd()*160;x.push(a);y.push(a*1.8+20+gauss()*25)}D.house={x:x,y:y,xl:\"area (m2)\",yl:\"price (k)\"};\n x=[];y=[];for(i=0;i<40;i++){var h=rnd()*10;x.push(h);y.push(Math.min(100,45+h*5+gauss()*7))}D.study={x:x,y:y,xl:\"hours studied\",yl:\"exam score\"};\n x=[];y=[];for(i=0;i<40;i++){var t=5+rnd()*30;x.push(t);y.push(20+t*4+gauss()*12)}D.ice={x:x,y:y,xl:\"temperature (C)\",yl:\"sales\"};\n x=[];y=[];for(i=0;i<40;i++){x.push(rnd()*10);y.push(50+gauss()*8)}x.push(5);y.push(120);x.push(8);y.push(-10);D.noise={x:x,y:y,xl:\"x\",yl:\"y\"}})();\nfunction mean(a){return a.reduce(function(s,v){return s+v},0)/a.length}\nfunction sd(a){var m=mean(a);return Math.sqrt(mean(a.map(function(v){return (v-m)*(v-m)})))}\nfunction corr(x,y){var mx=mean(x),my=mean(y),s=0;for(var i=0;i<x.length;i++)s+=(x[i]-mx)*(y[i]-my);return s/x.length/(sd(x)*sd(y))}\nfunction q(a,p){var s=a.slice().sort(function(u,v){return u-v}),pos=p*(s.length-1),lo=Math.floor(pos);return lo+1>=s.length?s[lo]:s[lo]+(pos-lo)*(s[lo+1]-s[lo])}\nvar seen={};\nfunction draw(){var d=D[$(\"ds\").value],kind=$(\"ch\").value,c=$(\"c\").getContext(\"2d\");c.clearRect(0,0,400,260);var x=d.x,y=d.y;\n var xmin=Math.min.apply(null,x),xmax=Math.max.apply(null,x),ymin=Math.min.apply(null,y),ymax=Math.max.apply(null,y);\n function X(v){return 40+(v-xmin)/(xmax-xmin||1)*340}function Y(v){return 230-(v-ymin)/(ymax-ymin||1)*210}\n c.strokeStyle=\"#5c4a85\";c.beginPath();c.moveTo(40,10);c.lineTo(40,230);c.lineTo(390,230);c.stroke();c.fillStyle=\"#c9b8e8\";c.fillText(d.xl,180,252);c.fillText(d.yl,2,12);\n if(kind===\"scatter\"){c.fillStyle=\"#b26bff\";for(var i=0;i<x.length;i++){c.beginPath();c.arc(X(x[i]),Y(y[i]),3.5,0,7);c.fill()}}\n else if(kind===\"line\"){var o=x.map(function(_,i){return i}).sort(function(a,b){return x[a]-x[b]});c.strokeStyle=\"#b26bff\";c.beginPath();o.forEach(function(i,j){if(j==0)c.moveTo(X(x[i]),Y(y[i]));else c.lineTo(X(x[i]),Y(y[i]))});c.stroke()}\n else{var nb=10,cnt=[],i;for(i=0;i<nb;i++)cnt.push(0);y.forEach(function(v){var b=Math.min(nb-1,Math.floor((v-ymin)/(ymax-ymin||1)*nb));cnt[b]++});var mx=Math.max.apply(null,cnt);c.fillStyle=\"#b26bff\";cnt.forEach(function(n,b){var h=n/mx*200;c.fillRect(42+b*34,230-h,31,h)})}\n var r=corr(x,y),q1=q(y,0.25),q3=q(y,0.75),iq=q3-q1,out=y.filter(function(v){return v<q1-1.5*iq||v>q3+1.5*iq}).length;\n $(\"o\").textContent=\"n=\"+x.length+\"  mean y=\"+mean(y).toFixed(1)+\"  std y=\"+sd(y).toFixed(1)+\"  correlation r=\"+r.toFixed(2)+\"  outliers (IQR rule): \"+out;\n seen[$(\"ds\").value]=1;var n=Object.keys(seen).length;$(\"p\").textContent=\"Datasets viewed: \"+n+\" of 3 needed\";if(n>=3)done()}\n$(\"ds\").onchange=draw;$(\"ch\").onchange=draw;draw();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the chart",
+     "intro": "Pair each chart with its question.",
+     "pairs": [
+      [
+       "Line plot",
+       "trend over time"
+      ],
+      [
+       "Scatter plot",
+       "relationship of two numbers"
+      ],
+      [
+       "Histogram",
+       "distribution of one number"
+      ],
+      [
+       "Bar chart",
+       "compare categories"
+      ],
+      [
+       "Box plot",
+       "median and spread"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Histogram counts",
+     "intro": "Write hist(x, lo, hi, nbins): split the range lo..hi into nbins equal bins and count how many values fall in each (a value equal to hi goes in the last bin; values outside the range are ignored). Return the list of counts.",
+     "fn": "hist",
+     "starter": "def hist(x, lo, hi, nbins):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         2,
+         3,
+         9,
+         10
+        ],
+        0,
+        10,
+        5
+       ],
+       "expect": [
+        1,
+        3,
+        0,
+        0,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         5,
+         10
+        ],
+        0,
+        10,
+        2
+       ],
+       "expect": [
+        1,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        0,
+        4,
+        4
+       ],
+       "expect": [
+        0,
+        3,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         -5,
+         15
+        ],
+        0,
+        10,
+        2
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Compute the bin index with the bin width.",
+     "solution": "def hist(x, lo, hi, nbins):\n    counts = [0] * nbins\n    w = (hi - lo) / float(nbins)\n    for v in x:\n        if v < lo or v > hi:\n            continue\n        i = int((v - lo) / w)\n        if i >= nbins:\n            i = nbins - 1\n        counts[i] = counts[i] + 1\n    return counts\n"
+    },
+    {
+     "type": "python",
+     "title": "Correlation",
+     "intro": "Write corr(x, y): the Pearson correlation coefficient of two equal-length lists, rounded to 3 decimals.",
+     "fn": "corr",
+     "starter": "def corr(x, y):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         2,
+         4,
+         6,
+         8
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         8,
+         6,
+         4,
+         2
+        ]
+       ],
+       "expect": -1.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5
+        ],
+        [
+         2,
+         1,
+         4,
+         3,
+         5
+        ]
+       ],
+       "expect": 0.8,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         5,
+         5.5,
+         5.2
+        ]
+       ],
+       "expect": 0.397,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Covariance over the product of spreads.",
+     "solution": "import math\ndef corr(x, y):\n    n = len(x)\n    mx = sum(x) / float(n)\n    my = sum(y) / float(n)\n    sxy = 0.0\n    sxx = 0.0\n    syy = 0.0\n    for i in range(n):\n        sxy = sxy + (x[i] - mx) * (y[i] - my)\n        sxx = sxx + (x[i] - mx) ** 2\n        syy = syy + (y[i] - my) ** 2\n    return round(sxy / math.sqrt(sxx * syy), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Quantile",
+     "intro": "Write quantile(x, q): the q-quantile (0 to 1) of x with linear interpolation: sort, position = q x (n - 1), interpolate between the neighbouring values. Round to 3 decimals.",
+     "fn": "quantile",
+     "starter": "def quantile(x, q):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5
+        ],
+        0.5
+       ],
+       "expect": 3.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        0.25
+       ],
+       "expect": 1.75,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         10,
+         20,
+         30,
+         40
+        ],
+        0.75
+       ],
+       "expect": 32.5,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        0.9
+       ],
+       "expect": 5.0,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Interpolate between sorted neighbours.",
+     "solution": "def quantile(x, q):\n    s = sorted(x)\n    pos = q * (len(s) - 1)\n    lo = int(pos)\n    hi = lo + 1\n    if hi >= len(s):\n        return round(float(s[lo]), 3)\n    frac = pos - lo\n    return round(s[lo] + frac * (s[hi] - s[lo]), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Outliers by IQR",
+     "intro": "Write outliers(x): the values more than 1.5 x IQR below Q1 or above Q3 (quartiles by linear interpolation as in quantile), in original order.",
+     "fn": "outliers",
+     "starter": "def outliers(x):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5,
+         100
+        ]
+       ],
+       "expect": [
+        100
+       ]
+      },
+      {
+       "args": [
+        [
+         10,
+         12,
+         11,
+         13,
+         12
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         -50,
+         1,
+         2,
+         3,
+         4
+        ]
+       ],
+       "expect": [
+        -50
+       ]
+      }
+     ],
+     "hint": "Compute the fences, then filter.",
+     "solution": "def outliers(x):\n    s = sorted(x)\n    def q(p):\n        pos = p * (len(s) - 1)\n        lo = int(pos)\n        if lo + 1 >= len(s):\n            return float(s[lo])\n        return s[lo] + (pos - lo) * (s[lo + 1] - s[lo])\n    q1 = q(0.25)\n    q3 = q(0.75)\n    iqr = q3 - q1\n    lo = q1 - 1.5 * iqr\n    hi = q3 + 1.5 * iqr\n    return [v for v in x if v < lo or v > hi]\n"
+    },
+    {
+     "type": "python",
+     "title": "Describe",
+     "intro": "Write describe(x): the list [count, mean, population std, min, max] of a non-empty list, each rounded to 3 decimals.",
+     "fn": "describe",
+     "starter": "def describe(x):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ]
+       ],
+       "expect": [
+        4,
+        2.5,
+        1.118,
+        1,
+        4
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         5
+        ]
+       ],
+       "expect": [
+        1,
+        5.0,
+        0.0,
+        5,
+        5
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         2,
+         4,
+         4,
+         4,
+         5,
+         5,
+         7,
+         9
+        ]
+       ],
+       "expect": [
+        8,
+        5.0,
+        2.0,
+        2,
+        9
+       ],
+       "approx": 0.002
+      }
+     ],
+     "hint": "Population standard deviation divides by n.",
+     "solution": "import math\ndef describe(x):\n    n = len(x)\n    m = sum(x) / float(n)\n    var = sum([(v - m) ** 2 for v in x]) / float(n)\n    return [n, round(m, 3), round(math.sqrt(var), 3), round(min(x), 3), round(max(x), 3)]\n"
+    }
+   ]
+  },
+  {
+   "title": "Preparing data for models",
+   "maps": [
+    {
+     "title": "Preparation",
+     "links": [
+      "Cleaning | fixes | Errors and gaps",
+      "Encoding | turns | Categories into numbers",
+      "One-hot | makes | Indicator columns",
+      "Scaling | equalises | Feature ranges",
+      "Train-test split | holds out | Honest data",
+      "Leakage | spoils | Evaluation",
+      "Pipeline | chains | Steps"
+     ]
+    }
+   ],
+   "summary": [
+    "Models need numbers, in sensible ranges, with no gaps. Preparation fills or removes missing values, converts categories to numbers (one-hot encoding), and scales features so large-valued columns do not dominate.",
+    "Before anything is fitted, split the data into a training set to learn from and a test set held back for an honest score.",
+    "Data leakage is when information from outside the training data sneaks in, such as scaling with statistics from the test set. It gives scores that are too good to be true. Pipelines keep every step inside training."
+   ],
+   "glossary": [
+    {
+     "term": "One-hot encoding",
+     "def": "Turning a categorical column into several 0/1 columns, one per category."
+    },
+    {
+     "term": "Scaling",
+     "def": "Rescaling a feature, for example to mean 0 and standard deviation 1, or to the range 0 to 1."
+    },
+    {
+     "term": "Training set",
+     "def": "The data a model learns from."
+    },
+    {
+     "term": "Test set",
+     "def": "Held-out data used once at the end to estimate performance on new data."
+    },
+    {
+     "term": "Data leakage",
+     "def": "Using information in training that would not be available at prediction time."
+    }
+   ],
+   "keyPoints": [
+    "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0).",
+    "Fit the scaler on training data only.",
+    "One-hot: one column per category.",
+    "Impute with the training median.",
+    "Pipeline = preprocessing + model."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Before a computer can learn, the data has to be tidy: turn words into numbers, bring big and small numbers to the same size, and keep some data hidden for the test."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Raw data is rarely ready for a model. A column of cities cannot be multiplied by a weight. A salary in thousands dwarfs an age in tens. A missing value stops many algorithms. Preparation fixes these before learning starts, and it affects results as much as the model choice."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Categories become numbers by one-hot encoding. A column city with values Paris, Rome and Oslo becomes three columns, is_Paris, is_Rome and is_Oslo, each zero or one. This avoids implying that Rome is somehow twice Paris. Scaling puts features on similar ranges.",
+      "Standardising subtracts the mean and divides by the standard deviation. Min-max scaling squeezes the values to between zero and one."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from sklearn.model_selection import train_test_split\nfrom sklearn.preprocessing import StandardScaler, OneHotEncoder\nfrom sklearn.impute import SimpleImputer\n\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, random_state=42)\nscaler = StandardScaler().fit(X_train)   # learn mean and std from training only\nX_train_s = scaler.transform(X_train)\nX_test_s = scaler.transform(X_test)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Here comes the most important rule of the course. The test set stands for the future, data your model has never seen. If anything about the test set influences training, including its mean used for scaling, your score is no longer honest. That is data leakage.",
+      "Fit scalers, imputers and encoders on the training data only, and then apply them to the test data."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A pipeline chains the steps and the model into one object, so that fitting happens in the right order and, with cross-validation, in every fold. It also makes your work repeatable. The labs implement encoders, scalers, a seeded shuffle and a split, so you can see that they are only a few lines each."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does one-hot encoding do?",
+     "options": [
+      "Makes a 0/1 column per category",
+      "Scales a column",
+      "Fills gaps",
+      "Sorts rows"
+     ],
+     "answer": 0,
+     "explain": "Indicators."
+    },
+    {
+     "q": "Why scale features?",
+     "options": [
+      "So large ranges do not dominate",
+      "To remove labels",
+      "To add noise",
+      "To sort"
+     ],
+     "answer": 0,
+     "explain": "Fair comparison."
+    },
+    {
+     "q": "What is the test set for?",
+     "options": [
+      "An honest final estimate",
+      "Training",
+      "Tuning every time",
+      "Plotting"
+     ],
+     "answer": 0,
+     "explain": "Unseen data."
+    },
+    {
+     "q": "What is data leakage?",
+     "options": [
+      "Test information influencing training",
+      "Losing a file",
+      "A slow model",
+      "Too many columns"
+     ],
+     "answer": 0,
+     "explain": "Too-good scores."
+    },
+    {
+     "q": "Where should a scaler be fitted?",
+     "options": [
+      "On training data only",
+      "On all data",
+      "On test data",
+      "Nowhere"
+     ],
+     "answer": 0,
+     "explain": "No peeking."
+    },
+    {
+     "q": "What is a pipeline for?",
+     "options": [
+      "Chaining preprocessing and model safely",
+      "Drawing plots",
+      "Storing data",
+      "Sorting"
+     ],
+     "answer": 0,
+     "explain": "Order and repeatability."
+    }
+   ],
+   "cards": [
+    {
+     "q": "(x - mean) / std",
+     "a": "standardise"
+    },
+    {
+     "q": "(x - min) / (max - min)",
+     "a": "min-max"
+    },
+    {
+     "q": "fit on train, transform both",
+     "a": "leak-free scaling"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each step with its job.",
+     "pairs": [
+      [
+       "Imputation",
+       "fill missing values"
+      ],
+      [
+       "One-hot encoding",
+       "categories to indicator columns"
+      ],
+      [
+       "Scaling",
+       "similar feature ranges"
+      ],
+      [
+       "Train-test split",
+       "hold back honest data"
+      ],
+      [
+       "Pipeline",
+       "chained steps"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "One-hot encode",
+     "intro": "Write one_hot(values, categories): for each value return a list of 0/1 with a 1 at the position of the value in categories.",
+     "fn": "one_hot",
+     "starter": "def one_hot(values, categories):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "Paris",
+         "Rome",
+         "Paris"
+        ],
+        [
+         "Oslo",
+         "Paris",
+         "Rome"
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         1,
+         0
+        ],
+        [
+         0,
+         0,
+         1
+        ],
+        [
+         0,
+         1,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        [
+         "a",
+         "b"
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         "a"
+        ]
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "One column per category.",
+     "solution": "def one_hot(values, categories):\n    out = []\n    for v in values:\n        out.append([1 if v == c else 0 for c in categories])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Min-max scale",
+     "intro": "Write min_max(x): rescale a list to the range 0 to 1 using (v - min) / (max - min), rounded to 3 decimals. If all values are equal return zeros.",
+     "fn": "min_max",
+     "starter": "def min_max(x):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         5
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.25,
+        0.5,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         10,
+         10
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         -1,
+         0,
+         1
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.5,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         100,
+         200
+        ]
+       ],
+       "expect": [
+        0.0,
+        1.0
+       ]
+      }
+     ],
+     "hint": "Shift then divide by the range.",
+     "solution": "def min_max(x):\n    lo = min(x)\n    hi = max(x)\n    if hi == lo:\n        return [0.0] * len(x)\n    return [round((v - lo) / float(hi - lo), 3) for v in x]\n"
+    },
+    {
+     "type": "python",
+     "title": "Leak-free scaling",
+     "intro": "Write scale_split(train, test): standardise both lists using the mean and population standard deviation of train only. Return [scaled_train, scaled_test], each value rounded to 3 decimals.",
+     "fn": "scale_split",
+     "starter": "def scale_split(train, test):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5
+        ]
+       ],
+       "expect": [
+        [
+         -1.225,
+         0.0,
+         1.225
+        ],
+        [
+         2.449,
+         3.674
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         10,
+         20,
+         30,
+         40
+        ],
+        [
+         25
+        ]
+       ],
+       "expect": [
+        [
+         -1.342,
+         -0.447,
+         0.447,
+         1.342
+        ],
+        [
+         0.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         2
+        ],
+        [
+         1,
+         3
+        ]
+       ],
+       "expect": [
+        [
+         -1.0,
+         1.0
+        ],
+        [
+         0.0,
+         2.0
+        ]
+       ]
+      }
+     ],
+     "hint": "Use the training mean and std for the test values too.",
+     "solution": "import math\ndef scale_split(train, test):\n    m = sum(train) / float(len(train))\n    sd = math.sqrt(sum([(v - m) ** 2 for v in train]) / float(len(train)))\n    a = [round((v - m) / sd, 3) for v in train]\n    b = [round((v - m) / sd, 3) for v in test]\n    return [a, b]\n"
+    },
+    {
+     "type": "python",
+     "title": "Seeded shuffle",
+     "intro": "Write shuffled(n, seed): the list 0..n-1 shuffled by this procedure: state = seed; for i from n-1 down to 1: state = (state x 1103515245 + 12345) mod 2147483648; j = state mod (i + 1); swap items i and j.",
+     "fn": "shuffled",
+     "starter": "def shuffled(n, seed):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        1
+       ],
+       "expect": [
+        4,
+        2,
+        1,
+        3,
+        0
+       ]
+      },
+      {
+       "args": [
+        8,
+        42
+       ],
+       "expect": [
+        2,
+        4,
+        6,
+        7,
+        1,
+        5,
+        0,
+        3
+       ]
+      },
+      {
+       "args": [
+        3,
+        0
+       ],
+       "expect": [
+        1,
+        2,
+        0
+       ]
+      },
+      {
+       "args": [
+        1,
+        7
+       ],
+       "expect": [
+        0
+       ]
+      }
+     ],
+     "hint": "Fisher-Yates with a simple generator.",
+     "solution": "def shuffled(n, seed):\n    a = list(range(n))\n    state = seed\n    for i in range(n - 1, 0, -1):\n        state = (state * 1103515245 + 12345) % 2147483648\n        j = state % (i + 1)\n        t = a[i]\n        a[i] = a[j]\n        a[j] = t\n    return a\n"
+    },
+    {
+     "type": "python",
+     "title": "Train-test split",
+     "intro": "Write split(rows, test_fraction, seed): shuffle the indexes 0..n-1 with the seeded shuffle above, take the first int(n x test_fraction) shuffled indexes as the test set and the rest as training. Return [train_rows, test_rows] keeping each group's rows in the shuffled order.",
+     "fn": "split",
+     "starter": "def split(rows, test_fraction, seed):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         10,
+         20,
+         30,
+         40,
+         50
+        ],
+        0.4,
+        3
+       ],
+       "expect": [
+        [
+         50,
+         20,
+         30
+        ],
+        [
+         10,
+         40
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c",
+         "d"
+        ],
+        0.25,
+        9
+       ],
+       "expect": [
+        [
+         "d",
+         "a",
+         "c"
+        ],
+        [
+         "b"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        0.0,
+        1
+       ],
+       "expect": [
+        [
+         3,
+         2,
+         1
+        ],
+        []
+       ]
+      }
+     ],
+     "hint": "Reuse the shuffle, then slice.",
+     "solution": "def split(rows, test_fraction, seed):\n    n = len(rows)\n    a = list(range(n))\n    state = seed\n    for i in range(n - 1, 0, -1):\n        state = (state * 1103515245 + 12345) % 2147483648\n        j = state % (i + 1)\n        t = a[i]\n        a[i] = a[j]\n        a[j] = t\n    k = int(n * test_fraction)\n    test = [rows[i] for i in a[:k]]\n    train = [rows[i] for i in a[k:]]\n    return [train, test]\n"
+    },
+    {
+     "type": "python",
+     "title": "Median imputation",
+     "intro": "Write impute_median(x): replace None entries by the median of the non-missing values (for an even count take the mean of the middle two). Return the new list.",
+     "fn": "impute_median",
+     "starter": "def impute_median(x):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         null,
+         3,
+         10
+        ]
+       ],
+       "expect": [
+        1,
+        3,
+        3,
+        10
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         5,
+         null
+        ]
+       ],
+       "expect": [
+        5,
+        5,
+        5.0
+       ]
+      },
+      {
+       "args": [
+        [
+         null,
+         2,
+         4
+        ]
+       ],
+       "expect": [
+        3.0,
+        2,
+        4
+       ]
+      }
+     ],
+     "hint": "Median of the known values.",
+     "solution": "def impute_median(x):\n    v = sorted([a for a in x if a is not None])\n    n = len(v)\n    if n % 2 == 1:\n        m = v[n // 2]\n    else:\n        m = (v[n // 2 - 1] + v[n // 2]) / 2.0\n    return [m if a is None else a for a in x]\n"
+    }
+   ]
+  },
+  {
+   "title": "Linear regression and the scikit-learn way",
+   "maps": [
+    {
+     "title": "Regression",
+     "links": [
+      "Regression | predicts | A number",
+      "Linear model | uses | Weights",
+      "Least squares | minimises | Squared error",
+      "Gradient descent | follows | The slope",
+      "R squared | measures | Fit quality",
+      "fit | learns | From data",
+      "predict | applies | The model"
+     ]
+    }
+   ],
+   "summary": [
+    "Linear regression predicts a number as a weighted sum of features plus an intercept. Least squares picks the weights that minimise the sum of squared errors between predictions and true values.",
+    "Every scikit-learn model follows the same pattern: create the model, call fit on training data, call predict on new data, and call score to evaluate.",
+    "The quality of a regression is measured by mean squared error (average squared mistake) and R squared (the fraction of variation explained, up to 1)."
+   ],
+   "glossary": [
+    {
+     "term": "Linear regression",
+     "def": "A model predicting y = w x + b, fitted by minimising squared error."
+    },
+    {
+     "term": "Mean squared error (MSE)",
+     "def": "The average of the squared differences between predictions and truth."
+    },
+    {
+     "term": "R squared",
+     "def": "One minus the ratio of the model's squared error to that of always predicting the mean; 1 is perfect, 0 is no better than the mean."
+    },
+    {
+     "term": "Gradient descent",
+     "def": "Repeatedly nudging the parameters opposite to the gradient of the loss to reduce it."
+    },
+    {
+     "term": "Estimator",
+     "def": "A scikit-learn object with fit and predict methods."
+    }
+   ],
+   "keyPoints": [
+    "model = LinearRegression(); model.fit(X_train, y_train).",
+    "y_pred = model.predict(X_test).",
+    "slope = cov(x, y) / var(x); intercept = mean_y - slope mean_x.",
+    "MSE = mean((y - y_pred)^2).",
+    "R2 = 1 - SSE / SST."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Learning a straight line is like putting a stick through a cloud of dots so that it stays as close to all of them as possible."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Suppose house price rises with floor area. The simplest model draws the best straight line through the points: price equals slope times area plus intercept. But 'best' needs a definition. Least squares says: choose the line whose total squared vertical distances to the points are smallest."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "For one feature the answer has a neat formula. The slope is the covariance of x and y divided by the variance of x, and the intercept makes the line pass through the mean point.",
+      "With many features it is still a linear algebra problem, solved by the normal equations or by gradient descent, which is also how neural networks learn."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from sklearn.linear_model import LinearRegression\nfrom sklearn.metrics import mean_squared_error, r2_score\n\nmodel = LinearRegression()\nmodel.fit(X_train, y_train)\nprint(model.coef_, model.intercept_)\ny_pred = model.predict(X_test)\nprint(mean_squared_error(y_test, y_pred), r2_score(y_test, y_pred))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This shows the scikit-learn way. Every estimator has the same methods: fit to learn from X and y, predict to use what was learned. Swap LinearRegression for another model and the rest of your code stays the same. That uniform interface is why scikit-learn is so pleasant."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Gradient descent deserves a picture: stand on a hillside in fog and take small steps downhill. The loss as a function of the slope and intercept is a bowl, and each step moves along the steepest descent, scaled by the learning rate. Too small a rate is slow, too large overshoots.",
+      "The regression lab lets you click points and watch the line settle, and the labs have you compute every step by hand."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does least squares minimise?",
+     "options": [
+      "The sum of squared errors",
+      "The sum of errors",
+      "The number of features",
+      "The slope"
+     ],
+     "answer": 0,
+     "explain": "Squared."
+    },
+    {
+     "q": "What is R squared of 1?",
+     "options": [
+      "A perfect fit",
+      "No fit",
+      "A negative fit",
+      "An error"
+     ],
+     "answer": 0,
+     "explain": "All variation explained."
+    },
+    {
+     "q": "What does fit do?",
+     "options": [
+      "Learns from data",
+      "Draws a plot",
+      "Predicts on new data",
+      "Loads a file"
+     ],
+     "answer": 0,
+     "explain": "Training."
+    },
+    {
+     "q": "What is the learning rate?",
+     "options": [
+      "The step size of gradient descent",
+      "The accuracy",
+      "The number of rows",
+      "The intercept"
+     ],
+     "answer": 0,
+     "explain": "Too big overshoots."
+    },
+    {
+     "q": "What is the slope formula for one feature?",
+     "options": [
+      "cov(x, y) / var(x)",
+      "mean(x) / mean(y)",
+      "var(y)",
+      "max(y) - min(y)"
+     ],
+     "answer": 0,
+     "explain": "Covariance over variance."
+    },
+    {
+     "q": "What is MSE?",
+     "options": [
+      "Average squared error",
+      "Average error",
+      "Largest error",
+      "Sum of features"
+     ],
+     "answer": 0,
+     "explain": "Penalises big mistakes."
+    }
+   ],
+   "cards": [
+    {
+     "q": "y = w x + b",
+     "a": "linear model"
+    },
+    {
+     "q": "w = w - lr x dL/dw",
+     "a": "gradient step"
+    },
+    {
+     "q": "R2 = 1 - SSE/SST",
+     "a": "R squared"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Regression playground",
+     "intro": "Click to add points, then press Fit to see the least-squares line, MSE and R squared. Add at least six points and fit the line to complete this lab; try an outlier to see its pull.",
+     "height": 780,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\ncanvas{width:100%;display:block;margin:6px 0;background:#0e0820;border-radius:8px;touch-action:none}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}\n.ok{color:#8fe3a8;font-weight:600}\n</style></head><body>\n<div><button id=\"fit\">Fit line</button><button id=\"out\" class=\"s\">Add outlier</button><button id=\"clr\" class=\"s\">Clear</button></div>\n<canvas id=\"c\" width=\"400\" height=\"280\"></canvas><div id=\"o\" class=\"k\">Tap the plot to add points.</div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar _s=11;function rnd(){_s=(_s*1103515245+12345)&0x7fffffff;return _s/0x7fffffff}function gauss(){var u=rnd()+1e-9,v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}\nvar P=[],line=null,fitted=false;\nfunction draw(){var c=$(\"c\").getContext(\"2d\");c.clearRect(0,0,400,280);c.strokeStyle=\"#5c4a85\";c.beginPath();c.moveTo(0,140);c.lineTo(400,140);c.moveTo(200,0);c.lineTo(200,280);c.stroke();\n c.fillStyle=\"#b26bff\";P.forEach(function(p){c.beginPath();c.arc(p[0],p[1],4.5,0,7);c.fill()});\n if(line){c.strokeStyle=\"#ffd36b\";c.lineWidth=2;c.beginPath();c.moveTo(0,line[1]);c.lineTo(400,line[0]*400+line[1]);c.stroke();c.lineWidth=1}}\nfunction fit(){var n=P.length;if(n<2)return;var mx=0,my=0;P.forEach(function(p){mx+=p[0];my+=p[1]});mx/=n;my/=n;var num=0,den=0;P.forEach(function(p){num+=(p[0]-mx)*(p[1]-my);den+=(p[0]-mx)*(p[0]-mx)});\n if(den<1e-9)return;var m=num/den,b=my-m*mx;line=[m,b];var sse=0,sst=0;P.forEach(function(p){var e=p[1]-(m*p[0]+b);sse+=e*e;sst+=(p[1]-my)*(p[1]-my)});\n $(\"o\").textContent=\"slope \"+(-m).toFixed(3)+\" (screen up is positive), MSE \"+(sse/n/100).toFixed(2)+\", R squared \"+(sst>0?(1-sse/sst).toFixed(3):\"n/a\")+\", points \"+n;\n fitted=true;if(n>=6)done();draw()}\n$(\"c\").onpointerdown=function(e){var r=$(\"c\").getBoundingClientRect();P.push([(e.clientX-r.left)*400/r.width,(e.clientY-r.top)*280/r.height]);line=null;draw()};\n$(\"fit\").onclick=fit;$(\"out\").onclick=function(){P.push([350,250]);line=null;draw()};$(\"clr\").onclick=function(){P=[];line=null;$(\"o\").textContent=\"Tap the plot to add points.\";draw()};draw();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "fit",
+       "learn from training data"
+      ],
+      [
+       "predict",
+       "apply to new data"
+      ],
+      [
+       "MSE",
+       "average squared error"
+      ],
+      [
+       "R squared",
+       "fraction of variation explained"
+      ],
+      [
+       "Gradient descent",
+       "step downhill on the loss"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Fit a line",
+     "intro": "Write fit_line(x, y): the least-squares [slope, intercept] for one feature, rounded to 4 decimals.",
+     "fn": "fit_line",
+     "starter": "def fit_line(x, y):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         2,
+         4,
+         6,
+         8
+        ]
+       ],
+       "expect": [
+        2.0,
+        0.0
+       ],
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         3,
+         5,
+         4
+        ]
+       ],
+       "expect": [
+        0.5,
+        3.0
+       ],
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         0,
+         10
+        ],
+        [
+         5,
+         25
+        ]
+       ],
+       "expect": [
+        2.0,
+        5.0
+       ],
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5
+        ],
+        [
+         10,
+         8,
+         6,
+         4,
+         2
+        ]
+       ],
+       "expect": [
+        -2.0,
+        12.0
+       ],
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Covariance over variance.",
+     "solution": "def fit_line(x, y):\n    n = len(x)\n    mx = sum(x) / float(n)\n    my = sum(y) / float(n)\n    num = 0.0\n    den = 0.0\n    for i in range(n):\n        num = num + (x[i] - mx) * (y[i] - my)\n        den = den + (x[i] - mx) ** 2\n    slope = num / den\n    return [round(slope, 4), round(my - slope * mx, 4)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Predict",
+     "intro": "Write predict(x, slope, intercept): the predictions slope x v + intercept for each v in x, rounded to 3 decimals.",
+     "fn": "predict",
+     "starter": "def predict(x, slope, intercept):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        2,
+        1
+       ],
+       "expect": [
+        3,
+        5,
+        7
+       ]
+      },
+      {
+       "args": [
+        [
+         0
+        ],
+        0.5,
+        4
+       ],
+       "expect": [
+        4.0
+       ]
+      },
+      {
+       "args": [
+        [
+         -1,
+         1
+        ],
+        3,
+        0
+       ],
+       "expect": [
+        -3,
+        3
+       ]
+      }
+     ],
+     "hint": "Apply the line.",
+     "solution": "def predict(x, slope, intercept):\n    return [round(slope * v + intercept, 3) for v in x]\n"
+    },
+    {
+     "type": "python",
+     "title": "Mean squared error",
+     "intro": "Write mse(y, y_pred): the mean of the squared differences, rounded to 4 decimals.",
+     "fn": "mse",
+     "starter": "def mse(y, y_pred):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         1,
+         2,
+         4
+        ]
+       ],
+       "expect": 0.3333,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         -1
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        [
+         5
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Square, add, divide.",
+     "solution": "def mse(y, y_pred):\n    s = 0.0\n    for i in range(len(y)):\n        s = s + (y[i] - y_pred[i]) ** 2\n    return round(s / len(y), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "R squared",
+     "intro": "Write r2(y, y_pred): 1 - SSE / SST, where SSE is the sum of squared errors of the predictions and SST the sum of squared differences of y from its mean. Round to 4 decimals.",
+     "fn": "r2",
+     "starter": "def r2(y, y_pred):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         1,
+         2,
+         3,
+         4
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         2.5,
+         2.5,
+         2.5,
+         2.5
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         3,
+         5,
+         4
+        ],
+        [
+         3.5,
+         4.5,
+         4
+        ]
+       ],
+       "expect": 0.75,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Compare with predicting the mean.",
+     "solution": "def r2(y, y_pred):\n    m = sum(y) / float(len(y))\n    sse = sum([(y[i] - y_pred[i]) ** 2 for i in range(len(y))])\n    sst = sum([(v - m) ** 2 for v in y])\n    return round(1 - sse / sst, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Gradient descent",
+     "intro": "Fit y = w x with gradient descent on the mean squared error: start w = 0; for each of steps iterations, gradient = mean of -2 x (y - w x) over the data, then w = w - lr x gradient. Write grad_descent(x, y, lr, steps) returning w rounded to 3 decimals.",
+     "fn": "grad_descent",
+     "starter": "def grad_descent(x, y, lr, steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         2,
+         4,
+         6
+        ],
+        0.05,
+        100
+       ],
+       "expect": 2.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         3,
+         6
+        ],
+        0.1,
+        50
+       ],
+       "expect": 3.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         1,
+         2,
+         3
+        ],
+        0.01,
+        10
+       ],
+       "expect": 0.625,
+       "approx": 0.01
+      }
+     ],
+     "hint": "Compute the average gradient, then step.",
+     "solution": "def grad_descent(x, y, lr, steps):\n    w = 0.0\n    n = len(x)\n    for s in range(steps):\n        g = 0.0\n        for i in range(n):\n            g = g + (-2.0 * x[i] * (y[i] - w * x[i]))\n        g = g / n\n        w = w - lr * g\n    return round(w, 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Multi-feature prediction",
+     "intro": "Write predict_multi(X, weights, bias): for each row of features, the dot product with weights plus bias, rounded to 3 decimals.",
+     "fn": "predict_multi",
+     "starter": "def predict_multi(X, weights, bias):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        [
+         0.5,
+         1.5
+        ],
+        2
+       ],
+       "expect": [
+        5.5,
+        9.5
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          10
+         ]
+        ],
+        [
+         0.1
+        ],
+        0
+       ],
+       "expect": [
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          0
+         ]
+        ],
+        [
+         1,
+         2,
+         3
+        ],
+        7
+       ],
+       "expect": [
+        7
+       ]
+      }
+     ],
+     "hint": "Weighted sum plus intercept.",
+     "solution": "def predict_multi(X, weights, bias):\n    out = []\n    for row in X:\n        s = bias\n        for j in range(len(weights)):\n            s = s + weights[j] * row[j]\n        out.append(round(s, 3))\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Classification: logistic regression, k-NN and trees",
+   "maps": [
+    {
+     "title": "Classification",
+     "links": [
+      "Classifier | predicts | A category",
+      "Logistic regression | outputs | A probability",
+      "Sigmoid | squashes | To 0..1",
+      "k-NN | votes | Among neighbours",
+      "Decision tree | asks | Yes/no questions",
+      "Confusion matrix | counts | Hits and misses",
+      "Precision recall | trade off | Errors"
+     ]
+    }
+   ],
+   "summary": [
+    "A classifier predicts a category. Logistic regression computes a weighted sum, passes it through the sigmoid function to get a probability between 0 and 1, and predicts the class if that exceeds a threshold.",
+    "k-nearest neighbours predicts by letting the k closest training points vote. Decision trees ask a sequence of yes/no questions about features, choosing questions that best separate the classes.",
+    "Accuracy is not enough. The confusion matrix and the measures precision, recall and F1 show what kinds of mistakes a model makes, which matters when classes are imbalanced."
+   ],
+   "glossary": [
+    {
+     "term": "Sigmoid",
+     "def": "The function 1 / (1 + e^(-z)) that squashes any number into the range 0 to 1."
+    },
+    {
+     "term": "k-nearest neighbours",
+     "def": "A method that classifies a point by majority vote among the k closest training points."
+    },
+    {
+     "term": "Decision tree",
+     "def": "A model of nested yes/no questions on features that ends in a prediction."
+    },
+    {
+     "term": "Precision",
+     "def": "Of the items predicted positive, the fraction that truly are positive."
+    },
+    {
+     "term": "Recall",
+     "def": "Of the truly positive items, the fraction the model found."
+    }
+   ],
+   "keyPoints": [
+    "LogisticRegression().fit(X, y).",
+    "p = 1 / (1 + exp(-(w.x + b))).",
+    "precision = TP / (TP + FP).",
+    "recall = TP / (TP + FN).",
+    "F1 = 2 P R / (P + R)."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. To guess what something is, look at the few things nearest to it and see what most of them are. That is the nearest-neighbour idea."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Is this email spam? Will this customer leave? Is this tumour malignant? These are classification questions, and the answer is a category. The simplest case has two classes, called positive and negative."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Logistic regression is a linear model with a twist. It forms the weighted sum of the features, then squeezes it through the sigmoid, an S-shaped curve that turns any number into a probability. Large positive sums give probabilities near one, large negative sums near zero.",
+      "The decision boundary is where the probability is one half, a straight line in feature space."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from sklearn.linear_model import LogisticRegression\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.metrics import classification_report\n\nfor model in [LogisticRegression(), KNeighborsClassifier(n_neighbors=5), DecisionTreeClassifier(max_depth=3)]:\n    model.fit(X_train, y_train)\n    print(model.__class__.__name__, model.score(X_test, y_test))\nprint(classification_report(y_test, model.predict(X_test)))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "k-nearest neighbours needs no training at all. To classify a new point, find the k closest points in the training data and take a vote. A small k follows the data closely and can chase noise. A large k smooths and can blur real boundaries.",
+      "A decision tree instead learns questions such as 'is income above 40?', choosing at each step the question that makes the groups purest, measured by Gini impurity or entropy."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Do not trust accuracy alone. Imagine a disease that affects one patient in a hundred. A model that always says healthy is ninety-nine percent accurate and completely useless. The confusion matrix counts true positives, false positives, false negatives and true negatives.",
+      "Precision asks how many alarms were right. Recall asks how many real cases were caught. F1 combines the two."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Which matters more depends on the cost. In cancer screening a missed case is far worse than a false alarm, so we want high recall. For a spam filter, losing a real email is worse than seeing some spam, so we want high precision. Move the decision threshold and you trade one for the other.",
+      "The k-NN lab lets you see boundaries change with k."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the sigmoid output?",
+     "options": [
+      "A number between 0 and 1",
+      "Any number",
+      "A category name",
+      "A distance"
+     ],
+     "answer": 0,
+     "explain": "A probability."
+    },
+    {
+     "q": "How does k-NN classify?",
+     "options": [
+      "By vote of the nearest points",
+      "By a formula",
+      "By random choice",
+      "By sorting"
+     ],
+     "answer": 0,
+     "explain": "Neighbours."
+    },
+    {
+     "q": "What does a small k risk?",
+     "options": [
+      "Chasing noise",
+      "Over-smoothing",
+      "Nothing",
+      "Slow training"
+     ],
+     "answer": 0,
+     "explain": "Overfitting."
+    },
+    {
+     "q": "What is recall?",
+     "options": [
+      "Fraction of true positives found",
+      "Fraction of alarms that were right",
+      "Overall accuracy",
+      "The threshold"
+     ],
+     "answer": 0,
+     "explain": "TP / (TP + FN)."
+    },
+    {
+     "q": "Why is accuracy misleading?",
+     "options": [
+      "With imbalanced classes",
+      "It is always wrong",
+      "It is slow",
+      "It needs labels"
+     ],
+     "answer": 0,
+     "explain": "Always say healthy."
+    },
+    {
+     "q": "What does a decision tree choose at each split?",
+     "options": [
+      "The purest separation",
+      "A random question",
+      "The first column",
+      "The longest word"
+     ],
+     "answer": 0,
+     "explain": "Gini or entropy."
+    }
+   ],
+   "cards": [
+    {
+     "q": "1 / (1 + e^-z)",
+     "a": "sigmoid"
+    },
+    {
+     "q": "TP, FP, FN, TN",
+     "a": "confusion matrix counts"
+    },
+    {
+     "q": "Gini = 1 - sum p^2",
+     "a": "impurity"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "k-NN boundary explorer",
+     "intro": "Pick a dataset and a value of k, and see how the decision regions change. Try a very small k, a very large k and a middle value to complete the lab.",
+     "height": 780,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\ncanvas{width:100%;display:block;margin:6px 0;background:#0e0820;border-radius:8px;touch-action:none}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}\n.ok{color:#8fe3a8;font-weight:600}\n</style></head><body>\n<label>Dataset <select id=\"ds\"><option value=\"blobs\">Two blobs</option><option value=\"moons\">Two moons</option><option value=\"rings\">Rings</option></select></label>\n<label>k = <b id=\"kv\"></b><input id=\"k\" type=\"range\" min=\"1\" max=\"25\" value=\"5\"></label>\n<canvas id=\"c\" width=\"400\" height=\"300\"></canvas><div id=\"o\" class=\"k\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar _s=11;function rnd(){_s=(_s*1103515245+12345)&0x7fffffff;return _s/0x7fffffff}function gauss(){var u=rnd()+1e-9,v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}\nvar D={};(function(){var b=[],i;for(i=0;i<40;i++){b.push([-1+gauss()*0.8,-1+gauss()*0.8,0]);b.push([1+gauss()*0.8,1+gauss()*0.8,1])}D.blobs=b;\n var m=[];for(i=0;i<40;i++){var t=rnd()*Math.PI;m.push([Math.cos(t)*1.2-0.6+gauss()*0.18,Math.sin(t)*1.2-0.3+gauss()*0.18,0]);var u=rnd()*Math.PI;m.push([0.6-Math.cos(u)*1.2+gauss()*0.18,-Math.sin(u)*1.2+0.3+gauss()*0.18,1])}D.moons=m;\n var r=[];for(i=0;i<50;i++){var a=rnd()*6.28;r.push([Math.cos(a)*0.7+gauss()*0.1,Math.sin(a)*0.7+gauss()*0.1,0]);a=rnd()*6.28;r.push([Math.cos(a)*1.6+gauss()*0.12,Math.sin(a)*1.6+gauss()*0.12,1])}D.rings=r})();\nvar seen={};\nfunction pred(P,x,y,k){var d=P.map(function(p){return[(p[0]-x)*(p[0]-x)+(p[1]-y)*(p[1]-y),p[2]]}).sort(function(a,b){return a[0]-b[0]}),v=0;for(var i=0;i<k;i++)v+=d[i][1];return v*2>k?1:0}\nfunction draw(){var P=D[$(\"ds\").value],k=+$(\"k\").value;$(\"kv\").textContent=k;var c=$(\"c\").getContext(\"2d\");c.clearRect(0,0,400,300);\n var g=40,w=400/g,h=300/g;for(var i=0;i<g;i++)for(var j=0;j<g;j++){var x=-2.6+(i+0.5)/g*5.2,y=2.2-(j+0.5)/g*4.4;c.fillStyle=pred(P,x,y,k)?\"rgba(255,211,107,0.25)\":\"rgba(178,107,255,0.25)\";c.fillRect(i*w,j*h,w+1,h+1)}\n P.forEach(function(p){c.fillStyle=p[2]?\"#ffd36b\":\"#b26bff\";c.beginPath();c.arc((p[0]+2.6)/5.2*400,(2.2-p[1])/4.4*300,3.5,0,7);c.fill()});\n var ok=0;P.forEach(function(p,ix){var Q=P.filter(function(_,j){return j!==ix});if(pred(Q,p[0],p[1],Math.min(k,Q.length))===p[2])ok++});\n $(\"o\").textContent=\"Leave-one-out accuracy at k=\"+k+\": \"+(ok/P.length*100).toFixed(0)+\"%\";\n seen[k<=2?\"small\":(k>=15?\"large\":\"mid\")]=1;var n=Object.keys(seen).length;$(\"p\").textContent=\"Settings tried: \"+n+\" of 3 (small, middle, large k)\";if(n>=3)done()}\n$(\"ds\").onchange=draw;$(\"k\").oninput=draw;draw();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the metric",
+     "intro": "Pair each metric with its meaning.",
+     "pairs": [
+      [
+       "Accuracy",
+       "fraction of all predictions right"
+      ],
+      [
+       "Precision",
+       "alarms that were right"
+      ],
+      [
+       "Recall",
+       "real cases that were caught"
+      ],
+      [
+       "F1",
+       "balance of precision and recall"
+      ],
+      [
+       "Confusion matrix",
+       "table of hits and misses"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Sigmoid",
+     "intro": "Write sigmoid(z): 1 / (1 + e^(-z)), rounded to 4 decimals.",
+     "fn": "sigmoid",
+     "starter": "def sigmoid(z):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        2
+       ],
+       "expect": 0.8808,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        -2
+       ],
+       "expect": 0.1192,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        10
+       ],
+       "expect": 1.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        -10
+       ],
+       "expect": 0.0,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Use math.exp.",
+     "solution": "import math\ndef sigmoid(z):\n    return round(1.0 / (1.0 + math.exp(-z)), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Logistic prediction",
+     "intro": "Write predict_proba(x, w, b): the probability sigmoid(w.x + b) of the positive class, rounded to 4 decimals.",
+     "fn": "predict_proba",
+     "starter": "def predict_proba(x, w, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         0.5,
+         -0.25
+        ],
+        0
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         1
+        ],
+        0
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         3
+        ],
+        [
+         2
+        ],
+        -6
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        [
+         4
+        ],
+        1
+       ],
+       "expect": 0.9933,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Weighted sum first.",
+     "solution": "import math\ndef predict_proba(x, w, b):\n    z = b\n    for i in range(len(w)):\n        z = z + w[i] * x[i]\n    return round(1.0 / (1.0 + math.exp(-z)), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "k-NN classify",
+     "intro": "Write knn(train_X, train_y, point, k): the majority label among the k training points closest to point (squared Euclidean distance; ties in distance broken by earlier index; ties in votes go to the label that appears first among the neighbours).",
+     "fn": "knn",
+     "starter": "def knn(train_X, train_y, point, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          5,
+          5
+         ],
+         [
+          5,
+          6
+         ]
+        ],
+        [
+         "a",
+         "a",
+         "b",
+         "b"
+        ],
+        [
+         1,
+         1
+        ],
+        3
+       ],
+       "expect": "a"
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          5,
+          5
+         ],
+         [
+          5,
+          6
+         ]
+        ],
+        [
+         "a",
+         "a",
+         "b",
+         "b"
+        ],
+        [
+         4,
+         5
+        ],
+        1
+       ],
+       "expect": "b"
+      },
+      {
+       "args": [
+        [
+         [
+          1
+         ],
+         [
+          2
+         ],
+         [
+          3
+         ],
+         [
+          10
+         ]
+        ],
+        [
+         0,
+         0,
+         1,
+         1
+        ],
+        [
+         9
+        ],
+        3
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Sort by distance, then count votes.",
+     "solution": "def knn(train_X, train_y, point, k):\n    d = []\n    for i in range(len(train_X)):\n        s = 0\n        for j in range(len(point)):\n            s = s + (train_X[i][j] - point[j]) ** 2\n        d.append([s, i])\n    d.sort()\n    labels = [train_y[p[1]] for p in d[:k]]\n    best = labels[0]\n    bc = 0\n    for l in labels:\n        c = labels.count(l)\n        if c > bc:\n            bc = c\n            best = l\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Confusion counts",
+     "intro": "Write confusion(y_true, y_pred): the list [TP, FP, FN, TN] treating label 1 as positive.",
+     "fn": "confusion",
+     "starter": "def confusion(y_true, y_pred):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0,
+         1,
+         1,
+         0
+        ],
+        [
+         1,
+         0,
+         0,
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        2,
+        1,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        0,
+        0,
+        2,
+        0
+       ]
+      }
+     ],
+     "hint": "Four cases.",
+     "solution": "def confusion(y_true, y_pred):\n    tp = 0\n    fp = 0\n    fn = 0\n    tn = 0\n    for i in range(len(y_true)):\n        if y_pred[i] == 1 and y_true[i] == 1:\n            tp = tp + 1\n        elif y_pred[i] == 1 and y_true[i] == 0:\n            fp = fp + 1\n        elif y_pred[i] == 0 and y_true[i] == 1:\n            fn = fn + 1\n        else:\n            tn = tn + 1\n    return [tp, fp, fn, tn]\n"
+    },
+    {
+     "type": "python",
+     "title": "Precision, recall, F1",
+     "intro": "Write prf(tp, fp, fn): the list [precision, recall, f1], each rounded to 3 decimals; a ratio with zero denominator counts as 0.",
+     "fn": "prf",
+     "starter": "def prf(tp, fp, fn):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2,
+        1,
+        1
+       ],
+       "expect": [
+        0.667,
+        0.667,
+        0.667
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        0,
+        0,
+        5
+       ],
+       "expect": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        10,
+        0,
+        0
+       ],
+       "expect": [
+        1.0,
+        1.0,
+        1.0
+       ],
+       "approx": 0.002
+      },
+      {
+       "args": [
+        3,
+        3,
+        3
+       ],
+       "expect": [
+        0.5,
+        0.5,
+        0.5
+       ],
+       "approx": 0.002
+      }
+     ],
+     "hint": "Guard against dividing by zero.",
+     "solution": "def prf(tp, fp, fn):\n    p = tp / float(tp + fp) if tp + fp > 0 else 0.0\n    r = tp / float(tp + fn) if tp + fn > 0 else 0.0\n    f = 2 * p * r / (p + r) if p + r > 0 else 0.0\n    return [round(p, 3), round(r, 3), round(f, 3)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Gini impurity",
+     "intro": "Write gini(labels): 1 minus the sum over classes of (fraction of that class) squared, rounded to 4 decimals. An empty list gives 0.",
+     "fn": "gini",
+     "starter": "def gini(labels):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "a",
+         "a",
+         "a"
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         "a",
+         "a",
+         "b",
+         "c"
+        ]
+       ],
+       "expect": 0.625,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": 0,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Pure groups score 0.",
+     "solution": "def gini(labels):\n    n = len(labels)\n    if n == 0:\n        return 0\n    d = {}\n    for l in labels:\n        d[l] = d.get(l, 0) + 1\n    s = 0.0\n    for k in d:\n        s = s + (d[k] / float(n)) ** 2\n    return round(1 - s, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Best split",
+     "intro": "Write best_threshold(values, labels): try thresholds halfway between consecutive distinct sorted values; for each, split into left (<= t) and right (> t) and compute the weighted Gini impurity; return the threshold with the lowest weighted Gini (the first one if tied), rounded to 3 decimals.",
+     "fn": "best_threshold",
+     "starter": "def best_threshold(values, labels):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         10,
+         11
+        ],
+        [
+         "a",
+         "a",
+         "a",
+         "b",
+         "b"
+        ]
+       ],
+       "expect": 6.5,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         "a",
+         "b",
+         "b",
+         "b"
+        ]
+       ],
+       "expect": 1.5,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         5,
+         1,
+         9,
+         2
+        ],
+        [
+         1,
+         0,
+         1,
+         0
+        ]
+       ],
+       "expect": 3.5,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Scan candidate thresholds.",
+     "solution": "def best_threshold(values, labels):\n    def g(ls):\n        n = len(ls)\n        if n == 0:\n            return 0.0\n        s = 0.0\n        for k in set(ls):\n            s = s + (ls.count(k) / float(n)) ** 2\n        return 1 - s\n    vs = sorted(set(values))\n    best = None\n    bt = None\n    for i in range(len(vs) - 1):\n        t = (vs[i] + vs[i + 1]) / 2.0\n        left = [labels[j] for j in range(len(values)) if values[j] <= t]\n        right = [labels[j] for j in range(len(values)) if values[j] > t]\n        w = (len(left) * g(left) + len(right) * g(right)) / float(len(values))\n        if best is None or w < best - 1e-9:\n            best = w\n            bt = t\n    return round(bt, 3)\n"
+    }
+   ]
+  },
+  {
+   "title": "Overfitting, validation and tuning",
+   "maps": [
+    {
+     "title": "Validation",
+     "links": [
+      "Overfitting | memorises | Noise",
+      "Underfitting | misses | Pattern",
+      "Validation set | tunes | Settings",
+      "Cross-validation | averages | Several splits",
+      "Hyperparameter | is | A setting you choose",
+      "Grid search | tries | Combinations",
+      "Baseline | sets | A bar to beat"
+     ]
+    }
+   ],
+   "summary": [
+    "A model that scores perfectly on its training data may just have memorised it. Overfitting means fitting the noise, so performance on new data is poor. Underfitting means the model is too simple to capture the pattern.",
+    "To choose settings (hyperparameters) such as k in k-NN, use cross-validation: split the training data into folds, train on all but one, score on the held-out fold, and average. Keep the test set untouched until the end.",
+    "Always compare against a baseline, such as predicting the mean or the most common class. A fancy model that barely beats the baseline is not worth deploying."
+   ],
+   "glossary": [
+    {
+     "term": "Overfitting",
+     "def": "When a model learns the training data too closely, including noise, and generalises poorly."
+    },
+    {
+     "term": "Underfitting",
+     "def": "When a model is too simple to capture the real pattern."
+    },
+    {
+     "term": "Cross-validation",
+     "def": "Estimating performance by training and scoring on several different splits and averaging."
+    },
+    {
+     "term": "Hyperparameter",
+     "def": "A setting chosen before training, such as k or tree depth, rather than learned from data."
+    },
+    {
+     "term": "Baseline",
+     "def": "A simple reference model that any useful model should beat."
+    }
+   ],
+   "keyPoints": [
+    "Training score high, validation low = overfit.",
+    "Both low = underfit.",
+    "cross_val_score(model, X, y, cv=5).",
+    "GridSearchCV tries parameter combinations.",
+    "Touch the test set once."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. If you memorise last year's exam answers you ace last year's exam but fail this year's. A model can memorise too, so we test it on new questions."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A student who memorises last year's exam answers scores perfectly on that paper and badly on this year's. A model can do the same. Give a flexible model enough freedom, say a decision tree with no depth limit, and it will carve out a region for every training point, including the freak ones.",
+      "Training accuracy hits one hundred percent, while new data tells the truth."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The telltale sign is a gap. Plot training and validation scores as complexity grows. At first both rise. Then the training score keeps rising while the validation score peaks and falls.",
+      "The peak marks the sweet spot between underfitting, where the model is too rigid to see the pattern, and overfitting, where it sees patterns that are not there. This is the bias-variance trade-off."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How do we pick settings, such as the number of neighbours or the depth of a tree, without cheating? Not by looking at the test set. Instead use cross-validation. Split the training data into, say, five folds. Train on four, score on the fifth, rotate five times and average the scores.",
+      "You get a more stable estimate than a single split, and the test set stays clean."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from sklearn.model_selection import cross_val_score, GridSearchCV\nfrom sklearn.neighbors import KNeighborsClassifier\n\nscores = cross_val_score(KNeighborsClassifier(5), X_train, y_train, cv=5)\nprint(scores.mean(), scores.std())\n\ngrid = GridSearchCV(KNeighborsClassifier(), {'n_neighbors': [1, 3, 5, 7, 9]}, cv=5)\ngrid.fit(X_train, y_train)\nprint(grid.best_params_, grid.score(X_test, y_test))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Last, always set a baseline. For regression, predict the training mean; for classification, predict the most common class. If your model scores barely above, the features probably carry little information, or the pipeline has a bug.",
+      "Regularisation, simpler models and more data are the main cures for overfitting."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is overfitting?",
+     "options": [
+      "Learning noise in the training data",
+      "A model that is too simple",
+      "A slow model",
+      "Too much test data"
+     ],
+     "answer": 0,
+     "explain": "Memorising."
+    },
+    {
+     "q": "What does a big train-validation gap suggest?",
+     "options": [
+      "Overfitting",
+      "Underfitting",
+      "A perfect model",
+      "A bug in plotting"
+     ],
+     "answer": 0,
+     "explain": "Memorised."
+    },
+    {
+     "q": "What is cross-validation?",
+     "options": [
+      "Averaging scores over several splits",
+      "Scoring on the training set",
+      "Using the test set many times",
+      "Shuffling labels"
+     ],
+     "answer": 0,
+     "explain": "Folds."
+    },
+    {
+     "q": "What is a hyperparameter?",
+     "options": [
+      "A setting chosen before training",
+      "A learned weight",
+      "A feature",
+      "A label"
+     ],
+     "answer": 0,
+     "explain": "Like k."
+    },
+    {
+     "q": "Why a baseline?",
+     "options": [
+      "To check that the model adds value",
+      "To slow training",
+      "To pick features",
+      "To plot"
+     ],
+     "answer": 0,
+     "explain": "A bar to beat."
+    },
+    {
+     "q": "When may you use the test set?",
+     "options": [
+      "Once, at the end",
+      "For every tuning step",
+      "Never",
+      "During training"
+     ],
+     "answer": 0,
+     "explain": "Keep it clean."
+    }
+   ],
+   "cards": [
+    {
+     "q": "cv=5",
+     "a": "five folds"
+    },
+    {
+     "q": "train score - val score",
+     "a": "overfitting gap"
+    },
+    {
+     "q": "best_params_",
+     "a": "tuned settings"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Overfitting",
+       "memorising noise"
+      ],
+      [
+       "Underfitting",
+       "too simple"
+      ],
+      [
+       "Cross-validation",
+       "average over folds"
+      ],
+      [
+       "Hyperparameter",
+       "setting chosen before training"
+      ],
+      [
+       "Baseline",
+       "simple model to beat"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "K-fold indices",
+     "intro": "Write kfold(n, k): split indexes 0..n-1 into k consecutive folds (the first n % k folds get one extra index); return the list of folds, each a list of indexes.",
+     "fn": "kfold",
+     "starter": "def kfold(n, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        5
+       ],
+       "expect": [
+        [
+         0,
+         1
+        ],
+        [
+         2,
+         3
+        ],
+        [
+         4,
+         5
+        ],
+        [
+         6,
+         7
+        ],
+        [
+         8,
+         9
+        ]
+       ]
+      },
+      {
+       "args": [
+        7,
+        3
+       ],
+       "expect": [
+        [
+         0,
+         1,
+         2
+        ],
+        [
+         3,
+         4
+        ],
+        [
+         5,
+         6
+        ]
+       ]
+      },
+      {
+       "args": [
+        4,
+        4
+       ],
+       "expect": [
+        [
+         0
+        ],
+        [
+         1
+        ],
+        [
+         2
+        ],
+        [
+         3
+        ]
+       ]
+      },
+      {
+       "args": [
+        5,
+        2
+       ],
+       "expect": [
+        [
+         0,
+         1,
+         2
+        ],
+        [
+         3,
+         4
+        ]
+       ]
+      }
+     ],
+     "hint": "Spread the remainder over the first folds.",
+     "solution": "def kfold(n, k):\n    size = n // k\n    extra = n % k\n    folds = []\n    start = 0\n    for i in range(k):\n        end = start + size + (1 if i < extra else 0)\n        folds.append(list(range(start, end)))\n        start = end\n    return folds\n"
+    },
+    {
+     "type": "python",
+     "title": "Train and validation of fold",
+     "intro": "Write fold_split(n, k, i): return [train_indexes, validation_indexes] where validation is fold i of kfold(n, k) and train is every other index in order.",
+     "fn": "fold_split",
+     "starter": "def fold_split(n, k, i):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        6,
+        3,
+        0
+       ],
+       "expect": [
+        [
+         2,
+         3,
+         4,
+         5
+        ],
+        [
+         0,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        6,
+        3,
+        2
+       ],
+       "expect": [
+        [
+         0,
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5
+        ]
+       ]
+      },
+      {
+       "args": [
+        5,
+        2,
+        0
+       ],
+       "expect": [
+        [
+         3,
+         4
+        ],
+        [
+         0,
+         1,
+         2
+        ]
+       ]
+      },
+      {
+       "args": [
+        7,
+        3,
+        1
+       ],
+       "expect": [
+        [
+         0,
+         1,
+         2,
+         5,
+         6
+        ],
+        [
+         3,
+         4
+        ]
+       ]
+      }
+     ],
+     "hint": "Everything not in the fold is training.",
+     "solution": "def fold_split(n, k, i):\n    size = n // k\n    extra = n % k\n    folds = []\n    start = 0\n    for f in range(k):\n        end = start + size + (1 if f < extra else 0)\n        folds.append(list(range(start, end)))\n        start = end\n    val = folds[i]\n    train = [j for j in range(n) if j not in val]\n    return [train, val]\n"
+    },
+    {
+     "type": "python",
+     "title": "Majority baseline",
+     "intro": "Write majority_baseline(y_train, y_test): the accuracy (rounded to 3 decimals) of always predicting the most common training label (first seen wins ties) on y_test.",
+     "fn": "majority_baseline",
+     "starter": "def majority_baseline(y_train, y_test):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0,
+         1
+        ],
+        [
+         0,
+         1,
+         1,
+         0
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "b"
+        ],
+        [
+         "b",
+         "b",
+         "a",
+         "a"
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Predict the commonest label.",
+     "solution": "def majority_baseline(y_train, y_test):\n    best = y_train[0]\n    bc = 0\n    for l in y_train:\n        c = y_train.count(l)\n        if c > bc:\n            bc = c\n            best = l\n    hit = len([v for v in y_test if v == best])\n    return round(hit / float(len(y_test)), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Diagnose fit",
+     "intro": "Write diagnose(train_score, val_score): return 'overfit' if train_score - val_score > 0.1; otherwise 'underfit' if train_score < 0.7; otherwise 'good'.",
+     "fn": "diagnose",
+     "starter": "def diagnose(train_score, val_score):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1.0,
+        0.7
+       ],
+       "expect": "overfit"
+      },
+      {
+       "args": [
+        0.6,
+        0.58
+       ],
+       "expect": "underfit"
+      },
+      {
+       "args": [
+        0.9,
+        0.86
+       ],
+       "expect": "good"
+      },
+      {
+       "args": [
+        0.75,
+        0.5
+       ],
+       "expect": "overfit"
+      }
+     ],
+     "hint": "A simple rule of thumb.",
+     "solution": "def diagnose(train_score, val_score):\n    if train_score - val_score > 0.1:\n        return 'overfit'\n    if train_score < 0.7:\n        return 'underfit'\n    return 'good'\n"
+    },
+    {
+     "type": "python",
+     "title": "Grid search",
+     "intro": "Write best_k(scores): scores is a list of [k, mean_cv_score] pairs; return the k with the highest score (the smallest k if tied).",
+     "fn": "best_k",
+     "starter": "def best_k(scores):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          0.8
+         ],
+         [
+          3,
+          0.85
+         ],
+         [
+          5,
+          0.9
+         ],
+         [
+          7,
+          0.88
+         ]
+        ]
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0.9
+         ],
+         [
+          3,
+          0.9
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          9,
+          0.5
+         ]
+        ]
+       ],
+       "expect": 9
+      }
+     ],
+     "hint": "Prefer simpler (smaller) k on ties.",
+     "solution": "def best_k(scores):\n    best = None\n    bk = None\n    for pair in scores:\n        k = pair[0]\n        s = pair[1]\n        if best is None or s > best or (s == best and k < bk):\n            best = s\n            bk = k\n    return bk\n"
+    },
+    {
+     "type": "python",
+     "title": "Polynomial features",
+     "intro": "Write poly_features(x, degree): for each value v return [v, v^2, ..., v^degree] (powers 1 to degree).",
+     "fn": "poly_features",
+     "starter": "def poly_features(x, degree):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        3
+       ],
+       "expect": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         2,
+         4,
+         8
+        ],
+        [
+         3,
+         9,
+         27
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         2
+        ],
+        1
+       ],
+       "expect": [
+        [
+         2
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         1
+        ],
+        2
+       ],
+       "expect": [
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "More powers give a more flexible model.",
+     "solution": "def poly_features(x, degree):\n    out = []\n    for v in x:\n        out.append([v ** p for p in range(1, degree + 1)])\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Unsupervised learning: clustering and PCA",
+   "maps": [
+    {
+     "title": "Unsupervised",
+     "links": [
+      "Clustering | groups | Similar points",
+      "k-means | moves | Centres",
+      "Centroid | is | Cluster mean",
+      "Inertia | sums | Squared distances",
+      "PCA | finds | Main directions",
+      "Variance | is | Spread",
+      "Dimension reduction | simplifies | Features"
+     ]
+    }
+   ],
+   "summary": [
+    "Unsupervised learning looks for structure without labels. Clustering groups similar items: customers, documents, genes. k-means alternates between assigning each point to its nearest centre and moving each centre to the mean of its points.",
+    "Principal component analysis (PCA) finds the directions along which the data varies most and re-expresses the data in those directions, so that a few components may capture most of the information.",
+    "Without labels, judging results is harder. Use inertia, the elbow method, and above all look at the clusters and ask whether they make sense."
+   ],
+   "glossary": [
+    {
+     "term": "Clustering",
+     "def": "Grouping items so that those in a group are more similar to each other than to those in other groups."
+    },
+    {
+     "term": "k-means",
+     "def": "A clustering algorithm that alternates assigning points to the nearest centroid and recomputing centroids."
+    },
+    {
+     "term": "Inertia",
+     "def": "The sum of squared distances from each point to its cluster centre."
+    },
+    {
+     "term": "PCA",
+     "def": "Principal component analysis: a rotation of the data to directions of greatest variance."
+    },
+    {
+     "term": "Explained variance ratio",
+     "def": "The fraction of total variance captured by a principal component."
+    }
+   ],
+   "keyPoints": [
+    "KMeans(n_clusters=3).fit(X).",
+    "Assign, update, repeat until stable.",
+    "Scale features first.",
+    "PCA(n_components=2).fit_transform(X).",
+    "Elbow: plot inertia against k."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Sometimes nobody tells the computer the right answers, and it must find groups that look alike by itself, like sorting a pile of socks."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A shop has data on thousands of customers but no labels. Are there natural groups: bargain hunters, loyal regulars, big spenders? Clustering looks for them. It finds groups, but it cannot name them. That is your job."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "k-means is the classic algorithm. Pick k, the number of clusters, and place k centres at random. Then repeat two steps. First, assign every point to its nearest centre. Second, move each centre to the mean of the points assigned to it. Stop when nothing changes.",
+      "Each round reduces the inertia, the total squared distance of points to their centres."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from sklearn.cluster import KMeans\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.decomposition import PCA\n\nXs = StandardScaler().fit_transform(X)\nfor k in range(1, 8):\n    print(k, KMeans(n_clusters=k, n_init=10).fit(Xs).inertia_)\nkm = KMeans(n_clusters=3, n_init=10).fit(Xs)\nlabels = km.labels_\nXp = PCA(n_components=2).fit_transform(Xs)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "How many clusters? Plot the inertia for different k. It always falls as k grows, but where the drop slows sharply, the elbow, is a reasonable choice. Distances drive k-means, so scale the features first, or a column in large units will decide everything.",
+      "It also assumes roundish clusters of similar size and can land in poor local optima, so run it several times."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Many datasets have dozens of features, but the interesting variation lies along a few directions. PCA finds the direction of greatest spread, then the next, perpendicular to it, and so on. Keeping the first two or three gives a picture you can plot and a compact input for other models.",
+      "The ratio of variance each component explains tells you how much you lose."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does k-means alternate between?",
+     "options": [
+      "Assigning points and moving centres",
+      "Sorting and merging",
+      "Fitting and predicting",
+      "Scaling and encoding"
+     ],
+     "answer": 0,
+     "explain": "Two steps."
+    },
+    {
+     "q": "What is a centroid?",
+     "options": [
+      "The mean of a cluster's points",
+      "The first point",
+      "The largest point",
+      "A label"
+     ],
+     "answer": 0,
+     "explain": "Cluster centre."
+    },
+    {
+     "q": "What is the elbow method?",
+     "options": [
+      "Choose k where inertia falls slowly",
+      "Choose k = 2",
+      "Pick the smallest inertia",
+      "Use a plot of labels"
+     ],
+     "answer": 0,
+     "explain": "Diminishing returns."
+    },
+    {
+     "q": "Why scale before k-means?",
+     "options": [
+      "Distances depend on units",
+      "To add labels",
+      "To add noise",
+      "To sort"
+     ],
+     "answer": 0,
+     "explain": "Large units dominate."
+    },
+    {
+     "q": "What does PCA find?",
+     "options": [
+      "Directions of greatest variance",
+      "Clusters",
+      "Labels",
+      "Outliers only"
+     ],
+     "answer": 0,
+     "explain": "Principal components."
+    },
+    {
+     "q": "Do clusters come with names?",
+     "options": [
+      "No, you interpret them",
+      "Yes",
+      "Only in k-means",
+      "Only in PCA"
+     ],
+     "answer": 0,
+     "explain": "Unsupervised."
+    }
+   ],
+   "cards": [
+    {
+     "q": "inertia = sum |x - c|^2",
+     "a": "k-means objective"
+    },
+    {
+     "q": "PCA(n_components=2)",
+     "a": "reduce to 2 dims"
+    },
+    {
+     "q": "explained_variance_ratio_",
+     "a": "information kept"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "k-means",
+       "assign then recentre"
+      ],
+      [
+       "Centroid",
+       "mean of a cluster"
+      ],
+      [
+       "Inertia",
+       "sum of squared distances"
+      ],
+      [
+       "PCA",
+       "directions of greatest variance"
+      ],
+      [
+       "Elbow",
+       "where improvement slows"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Assign to nearest",
+     "intro": "Write assign(points, centres): for each point (a list of numbers) the index of the nearest centre by squared distance (the lowest index on ties).",
+     "fn": "assign",
+     "starter": "def assign(points, centres):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          9,
+          9
+         ],
+         [
+          10,
+          10
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          10,
+          10
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        0,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5,
+          5
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          10,
+          10
+         ]
+        ]
+       ],
+       "expect": [
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1
+         ],
+         [
+          4
+         ],
+         [
+          6
+         ]
+        ],
+        [
+         [
+          2
+         ],
+         [
+          5
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        1,
+        1
+       ]
+      }
+     ],
+     "hint": "Compare squared distances.",
+     "solution": "def assign(points, centres):\n    out = []\n    for p in points:\n        best = 0\n        bd = None\n        for i in range(len(centres)):\n            d = 0\n            for j in range(len(p)):\n                d = d + (p[j] - centres[i][j]) ** 2\n            if bd is None or d < bd:\n                bd = d\n                best = i\n        out.append(best)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Update centres",
+     "intro": "Write update(points, labels, k): the mean of the points of each cluster 0..k-1 as lists, rounded to 2 decimals; a cluster with no points gets the list of zeros.",
+     "fn": "update",
+     "starter": "def update(points, labels, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          2,
+          2
+         ],
+         [
+          10,
+          10
+         ],
+         [
+          12,
+          14
+         ]
+        ],
+        [
+         0,
+         0,
+         1,
+         1
+        ],
+        2
+       ],
+       "expect": [
+        [
+         1.0,
+         1.0
+        ],
+        [
+         11.0,
+         12.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1
+         ],
+         [
+          3
+         ]
+        ],
+        [
+         0,
+         0
+        ],
+        2
+       ],
+       "expect": [
+        [
+         2.0
+        ],
+        [
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1
+         ]
+        ],
+        [
+         0
+        ],
+        1
+       ],
+       "expect": [
+        [
+         1.0,
+         1.0
+        ]
+       ]
+      }
+     ],
+     "hint": "Average the members.",
+     "solution": "def update(points, labels, k):\n    d = len(points[0])\n    out = []\n    for c in range(k):\n        members = [points[i] for i in range(len(points)) if labels[i] == c]\n        if len(members) == 0:\n            out.append([0] * d)\n        else:\n            out.append([round(sum([m[j] for m in members]) / float(len(members)), 2) for j in range(d)])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Inertia",
+     "intro": "Write inertia(points, centres, labels): the sum of squared distances from each point to the centre of its label, rounded to 2 decimals.",
+     "fn": "inertia",
+     "starter": "def inertia(points, centres, labels):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          2,
+          2
+         ],
+         [
+          10,
+          10
+         ]
+        ],
+        [
+         [
+          1,
+          1
+         ],
+         [
+          10,
+          10
+         ]
+        ],
+        [
+         0,
+         0,
+         1
+        ]
+       ],
+       "expect": 4.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        [
+         [
+          1
+         ],
+         [
+          3
+         ]
+        ],
+        [
+         [
+          2
+         ]
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "expect": 2.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        [
+         [
+          5
+         ]
+        ],
+        [
+         [
+          5
+         ]
+        ],
+        [
+         0
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.01
+      }
+     ],
+     "hint": "Sum squared distances.",
+     "solution": "def inertia(points, centres, labels):\n    s = 0.0\n    for i in range(len(points)):\n        c = centres[labels[i]]\n        for j in range(len(c)):\n            s = s + (points[i][j] - c[j]) ** 2\n    return round(s, 2)\n"
+    },
+    {
+     "type": "python",
+     "title": "k-means",
+     "intro": "Write kmeans(points, centres, iterations): run the assign and update steps iterations times starting from the given centres (an empty cluster keeps its old centre) and return [labels, centres] with centres rounded to 2 decimals.",
+     "fn": "kmeans",
+     "starter": "def kmeans(points, centres, iterations):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          0
+         ],
+         [
+          9,
+          9
+         ],
+         [
+          10,
+          9
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          5,
+          5
+         ]
+        ],
+        3
+       ],
+       "expect": [
+        [
+         0,
+         0,
+         1,
+         1
+        ],
+        [
+         [
+          0.5,
+          0.0
+         ],
+         [
+          9.5,
+          9.0
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1
+         ],
+         [
+          2
+         ],
+         [
+          8
+         ],
+         [
+          9
+         ],
+         [
+          10
+         ]
+        ],
+        [
+         [
+          1
+         ],
+         [
+          2
+         ]
+        ],
+        4
+       ],
+       "expect": [
+        [
+         0,
+         0,
+         1,
+         1,
+         1
+        ],
+        [
+         [
+          1.5
+         ],
+         [
+          9.0
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ],
+         [
+          4,
+          4
+         ]
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          4,
+          4
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        [
+         0,
+         1
+        ],
+        [
+         [
+          0.0,
+          0.0
+         ],
+         [
+          4.0,
+          4.0
+         ]
+        ]
+       ]
+      }
+     ],
+     "hint": "Alternate until the iterations end.",
+     "solution": "def kmeans(points, centres, iterations):\n    centres = [list(c) for c in centres]\n    labels = []\n    for it in range(iterations):\n        labels = []\n        for p in points:\n            best = 0\n            bd = None\n            for i in range(len(centres)):\n                d = 0\n                for j in range(len(p)):\n                    d = d + (p[j] - centres[i][j]) ** 2\n                if bd is None or d < bd:\n                    bd = d\n                    best = i\n            labels.append(best)\n        new = []\n        for c in range(len(centres)):\n            members = [points[i] for i in range(len(points)) if labels[i] == c]\n            if len(members) == 0:\n                new.append(centres[c])\n            else:\n                new.append([round(sum([m[j] for m in members]) / float(len(members)), 2) for j in range(len(centres[c]))])\n        centres = new\n    return [labels, centres]\n"
+    },
+    {
+     "type": "python",
+     "title": "Variance explained",
+     "intro": "Write var_explained(x, y): for 2D data given as two equal-length lists, return the fraction of total variance along the x axis: var(x) / (var(x) + var(y)), rounded to 3 decimals (population variance).",
+     "fn": "var_explained",
+     "starter": "def var_explained(x, y):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         5,
+         5,
+         5,
+         5
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         0,
+         10
+        ],
+        [
+         0,
+         1
+        ]
+       ],
+       "expect": 0.99,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Compare the two variances.",
+     "solution": "def var_explained(x, y):\n    def v(a):\n        m = sum(a) / float(len(a))\n        return sum([(t - m) ** 2 for t in a]) / float(len(a))\n    return round(v(x) / (v(x) + v(y)), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Covariance",
+     "intro": "Write covariance(x, y): the population covariance of two lists, rounded to 3 decimals (this is the off-diagonal entry that PCA uses).",
+     "fn": "covariance",
+     "starter": "def covariance(x, y):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         2,
+         4,
+         6
+        ]
+       ],
+       "expect": 1.333,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         3,
+         2,
+         1
+        ]
+       ],
+       "expect": -0.667,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         5,
+         5
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Average product of deviations.",
+     "solution": "def covariance(x, y):\n    n = len(x)\n    mx = sum(x) / float(n)\n    my = sum(y) / float(n)\n    return round(sum([(x[i] - mx) * (y[i] - my) for i in range(n)]) / n, 3)\n"
+    }
+   ]
+  },
+  {
+   "title": "Neural networks and Keras",
+   "maps": [
+    {
+     "title": "Neural networks",
+     "links": [
+      "Neuron | computes | Weighted sum",
+      "Activation | adds | Non-linearity",
+      "Layer | holds | Many neurons",
+      "Loss | measures | Error",
+      "Backpropagation | computes | Gradients",
+      "Epoch | is | One pass of data",
+      "Keras | builds | Networks easily"
+     ]
+    }
+   ],
+   "summary": [
+    "A neuron computes a weighted sum of its inputs plus a bias and passes it through an activation function. A layer is many neurons side by side, and a network stacks layers. Without non-linear activations such as ReLU, a stack of layers would collapse into one linear model.",
+    "Training adjusts the weights to reduce a loss, using gradient descent. Backpropagation applies the chain rule to find how the loss changes with every weight. One full pass over the training data is an epoch.",
+    "Keras lets you describe a network in a few lines: a Sequential model of Dense layers, compile with a loss and optimiser, then fit. The key risk is overfitting, so watch validation loss."
+   ],
+   "glossary": [
+    {
+     "term": "Neuron",
+     "def": "A unit that computes activation(w . x + b)."
+    },
+    {
+     "term": "Activation function",
+     "def": "A non-linear function applied to a neuron's sum, such as ReLU, sigmoid or softmax."
+    },
+    {
+     "term": "Loss function",
+     "def": "A number measuring how wrong the predictions are, which training tries to minimise."
+    },
+    {
+     "term": "Backpropagation",
+     "def": "An algorithm that computes the gradient of the loss with respect to every weight using the chain rule."
+    },
+    {
+     "term": "Epoch",
+     "def": "One complete pass through the training data."
+    }
+   ],
+   "keyPoints": [
+    "Dense(16, activation='relu').",
+    "model.compile(optimizer='adam', loss='...').",
+    "model.fit(X, y, epochs=20, validation_split=0.2).",
+    "ReLU(z) = max(0, z).",
+    "Softmax turns scores into probabilities."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A neural network is lots of tiny deciders in layers. Each one adds up clues, and the layers together can learn very curvy answers."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A neural network is a stack of layers of simple units. Each neuron takes its inputs, multiplies each by a weight, adds them with a bias and applies an activation function. A single neuron with a sigmoid activation is exactly logistic regression. The power comes from stacking."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why do we need the activation? Stacking linear steps gives just another linear step, so depth would add nothing. A non-linear activation such as the rectified linear unit, ReLU, which outputs zero for negative inputs and the input itself otherwise, lets the network bend.",
+      "The classic example is XOR, which no single linear boundary can separate, but a layer of two hidden neurons can."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from tensorflow import keras\nfrom tensorflow.keras import layers\n\nmodel = keras.Sequential([\n    layers.Input(shape=(4,)),\n    layers.Dense(16, activation='relu'),\n    layers.Dense(8, activation='relu'),\n    layers.Dense(3, activation='softmax'),\n])\nmodel.compile(optimizer='adam',\n              loss='sparse_categorical_crossentropy',\n              metrics=['accuracy'])\nhistory = model.fit(X_train, y_train, epochs=30, batch_size=32,\n                    validation_split=0.2)\nmodel.evaluate(X_test, y_test)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Read that code as a recipe. Sequential stacks layers. Dense means every neuron connects to every input. The last layer has one neuron per class with softmax, which turns raw scores into probabilities that sum to one.",
+      "Compile chooses a loss, here cross-entropy, which punishes confident wrong answers, and an optimiser, Adam, a clever gradient descent. Fit then loops over the data for a number of epochs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where do the gradients come from? Backpropagation. The forward pass computes predictions and the loss. The backward pass uses the chain rule to push the error back through each layer, giving the gradient of the loss with respect to every weight.",
+      "Libraries do this automatically, so you only describe the forward computation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Neural networks shine on images, text and audio, where there are huge datasets and no good hand-made features. For small tables, simpler models such as gradient-boosted trees often win.",
+      "Use the playground to train a tiny network on a spiral, change the hidden units and the learning rate, and watch the boundary bend into shape."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a neuron compute?",
+     "options": [
+      "Activation of weighted sum plus bias",
+      "A random number",
+      "The mean of a column",
+      "A distance"
+     ],
+     "answer": 0,
+     "explain": "w.x + b."
+    },
+    {
+     "q": "Why use activation functions?",
+     "options": [
+      "To add non-linearity",
+      "To save memory",
+      "To sort data",
+      "To scale labels"
+     ],
+     "answer": 0,
+     "explain": "Otherwise linear."
+    },
+    {
+     "q": "What does softmax produce?",
+     "options": [
+      "Probabilities that sum to 1",
+      "A single number",
+      "A label",
+      "A distance"
+     ],
+     "answer": 0,
+     "explain": "Last layer."
+    },
+    {
+     "q": "What is an epoch?",
+     "options": [
+      "One pass through the training data",
+      "One neuron",
+      "One layer",
+      "One batch"
+     ],
+     "answer": 0,
+     "explain": "Training loop."
+    },
+    {
+     "q": "What does backpropagation compute?",
+     "options": [
+      "Gradients of the loss",
+      "Predictions",
+      "Labels",
+      "Features"
+     ],
+     "answer": 0,
+     "explain": "Chain rule."
+    },
+    {
+     "q": "What does compile choose?",
+     "options": [
+      "Loss and optimiser",
+      "The data",
+      "The weights",
+      "The labels"
+     ],
+     "answer": 0,
+     "explain": "Before fit."
+    }
+   ],
+   "cards": [
+    {
+     "q": "ReLU(z) = max(0, z)",
+     "a": "rectified linear unit"
+    },
+    {
+     "q": "softmax(z)_i = e^z_i / sum e^z",
+     "a": "class probabilities"
+    },
+    {
+     "q": "w = w - lr x grad",
+     "a": "weight update"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Neural network playground",
+     "intro": "Train a small network on 2D data. Choose a dataset (circle, XOR or spiral), the hidden units and the learning rate, press Train, and watch the loss fall and the boundary bend. Reach 95 percent accuracy on any dataset to complete the lab.",
+     "height": 820,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\ncanvas{width:100%;display:block;margin:6px 0;background:#0e0820;border-radius:8px;touch-action:none}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}\n.ok{color:#8fe3a8;font-weight:600}\n</style></head><body>\n<label>Dataset <select id=\"ds\"><option value=\"circle\">Circle</option><option value=\"xor\">XOR</option><option value=\"spiral\">Spiral</option></select>\nHidden units <select id=\"hu\"><option>2</option><option>4</option><option selected>8</option><option>16</option></select>\nLearning rate <select id=\"lr\"><option>0.03</option><option>0.1</option><option selected>0.3</option><option>1</option></select></label>\n<div><button id=\"tr\">Train 300 epochs</button><button id=\"rs\" class=\"s\">Reset</button></div>\n<canvas id=\"c\" width=\"400\" height=\"300\"></canvas><div id=\"o\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar _s=11;function rnd(){_s=(_s*1103515245+12345)&0x7fffffff;return _s/0x7fffffff}function gauss(){var u=rnd()+1e-9,v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}\nvar P=[],W1,b1,W2,b2,H,ep=0,busy=false;\nfunction data(){P=[];var i,n=100;var k=$(\"ds\").value;\n if(k===\"circle\"){for(i=0;i<n;i++){var x=rnd()*4-2,y=rnd()*4-2;P.push([x,y,x*x+y*y<1.6?1:0])}}\n else if(k===\"xor\"){for(i=0;i<n;i++){var x2=rnd()*4-2,y2=rnd()*4-2;P.push([x2,y2,(x2>0)!==(y2>0)?1:0])}}\n else{for(i=0;i<n/2;i++){var t=i/(n/2)*3.2+0.3,r=t*0.5;P.push([r*Math.cos(t*2)+gauss()*0.05,r*Math.sin(t*2)+gauss()*0.05,0]);P.push([-r*Math.cos(t*2)+gauss()*0.05,-r*Math.sin(t*2)+gauss()*0.05,1])}}}\nfunction init(){H=+$(\"hu\").value;W1=[];b1=[];W2=[];b2=0;for(var j=0;j<H;j++){W1.push([gauss()*0.8,gauss()*0.8]);b1.push(0);W2.push(gauss()*0.5)}ep=0}\nfunction fwd(x,y){var h=[],z=b2;for(var j=0;j<H;j++){var a=Math.tanh(W1[j][0]*x+W1[j][1]*y+b1[j]);h.push(a);z+=W2[j]*a}return{h:h,p:1/(1+Math.exp(-z))}}\nfunction step(lr){var gW1=[],gb1=[],gW2=[],gb2=0,j;for(j=0;j<H;j++){gW1.push([0,0]);gb1.push(0);gW2.push(0)}var loss=0;\n P.forEach(function(s){var f=fwd(s[0],s[1]),d=f.p-s[2];loss+=-(s[2]*Math.log(f.p+1e-9)+(1-s[2])*Math.log(1-f.p+1e-9));gb2+=d;\n  for(j=0;j<H;j++){gW2[j]+=d*f.h[j];var dh=d*W2[j]*(1-f.h[j]*f.h[j]);gW1[j][0]+=dh*s[0];gW1[j][1]+=dh*s[1];gb1[j]+=dh}});\n var n=P.length;b2-=lr*gb2/n;for(j=0;j<H;j++){W2[j]-=lr*gW2[j]/n;W1[j][0]-=lr*gW1[j][0]/n;W1[j][1]-=lr*gW1[j][1]/n;b1[j]-=lr*gb1[j]/n}ep++;return loss/n}\nfunction draw(loss){var c=$(\"c\").getContext(\"2d\");c.clearRect(0,0,400,300);var g=40,w=400/g,h=300/g,i,j;\n for(i=0;i<g;i++)for(j=0;j<g;j++){var x=-2.6+(i+0.5)/g*5.2,y=2.2-(j+0.5)/g*4.4,p=fwd(x,y).p;c.fillStyle=p>0.5?\"rgba(255,211,107,\"+(0.1+0.3*(p-0.5)*2)+\")\":\"rgba(178,107,255,\"+(0.1+0.3*(0.5-p)*2)+\")\";c.fillRect(i*w,j*h,w+1,h+1)}\n var ok=0;P.forEach(function(s){c.fillStyle=s[2]?\"#ffd36b\":\"#b26bff\";c.beginPath();c.arc((s[0]+2.6)/5.2*400,(2.2-s[1])/4.4*300,3.5,0,7);c.fill();if((fwd(s[0],s[1]).p>0.5?1:0)===s[2])ok++});\n var acc=ok/P.length*100;$(\"o\").innerHTML=\"Epochs: \"+ep+\" | loss \"+(loss===undefined?\"-\":loss.toFixed(3))+\" | accuracy \"+acc.toFixed(0)+\"%\"+(acc>=95?' <span class=\"ok\">Target reached!</span>':\"\");if(acc>=95&&ep>0)done()}\nfunction train(){if(busy)return;busy=true;var lr=+$(\"lr\").value,n=0,loss;var iv=setInterval(function(){for(var i=0;i<10;i++){loss=step(lr);n++}draw(loss);if(n>=300){clearInterval(iv);busy=false}},20)}\n$(\"tr\").onclick=train;$(\"rs\").onclick=function(){if(busy)return;_s=11;data();init();draw()};$(\"ds\").onchange=function(){if(busy)return;_s=11;data();init();draw()};$(\"hu\").onchange=function(){if(busy)return;init();draw()};\ndata();init();draw();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Neuron",
+       "weighted sum then activation"
+      ],
+      [
+       "ReLU",
+       "max of zero and input"
+      ],
+      [
+       "Softmax",
+       "scores to probabilities"
+      ],
+      [
+       "Loss",
+       "number to minimise"
+      ],
+      [
+       "Epoch",
+       "one pass over the data"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "ReLU",
+     "intro": "Write relu_list(x): apply max(0, v) to each element of a list.",
+     "fn": "relu_list",
+     "starter": "def relu_list(x):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         -1,
+         0,
+         2,
+         -3.5,
+         4
+        ]
+       ],
+       "expect": [
+        0,
+        0,
+        2,
+        0,
+        4
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ]
+       ],
+       "expect": [
+        1,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         -5
+        ]
+       ],
+       "expect": [
+        0
+       ]
+      }
+     ],
+     "hint": "Zero for negatives.",
+     "solution": "def relu_list(x):\n    return [v if v > 0 else 0 for v in x]\n"
+    },
+    {
+     "type": "python",
+     "title": "Softmax",
+     "intro": "Write softmax(z): the softmax of a list, e^z_i / sum of e^z_j, each rounded to 4 decimals.",
+     "fn": "softmax",
+     "starter": "def softmax(z):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        0.09,
+        0.2447,
+        0.6652
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         10,
+         0
+        ]
+       ],
+       "expect": [
+        1.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         -1,
+         1
+        ]
+       ],
+       "expect": [
+        0.1192,
+        0.8808
+       ]
+      }
+     ],
+     "hint": "Subtract the max for stability.",
+     "solution": "import math\ndef softmax(z):\n    m = max(z)\n    e = [math.exp(v - m) for v in z]\n    s = sum(e)\n    return [round(v / s, 4) for v in e]\n"
+    },
+    {
+     "type": "python",
+     "title": "One neuron",
+     "intro": "Write neuron(x, w, b, act): activation of w.x + b where act is 'relu', 'sigmoid' or 'linear'. Round to 4 decimals.",
+     "fn": "neuron",
+     "starter": "def neuron(x, w, b, act):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         0.5,
+         -1
+        ],
+        0.5,
+        "relu"
+       ],
+       "expect": 0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         0.5,
+         -1
+        ],
+        0.5,
+        "sigmoid"
+       ],
+       "expect": 0.2689,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         3
+        ],
+        [
+         2
+        ],
+        1,
+        "linear"
+       ],
+       "expect": 7,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         1
+        ],
+        -1,
+        "relu"
+       ],
+       "expect": 0,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Weighted sum then activation.",
+     "solution": "import math\ndef neuron(x, w, b, act):\n    z = b\n    for i in range(len(w)):\n        z = z + w[i] * x[i]\n    if act == 'relu':\n        z = max(0, z)\n    elif act == 'sigmoid':\n        z = 1.0 / (1.0 + math.exp(-z))\n    return round(z, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Solve XOR",
+     "intro": "XOR needs a hidden layer. Write xor_net(a, b) for a, b in {0, 1}: hidden neurons h1 = relu(a + b) and h2 = relu(a + b - 1), output = h1 - 2 x h2. Return the output as an integer.",
+     "fn": "xor_net",
+     "starter": "def xor_net(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        0,
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        1,
+        0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        1,
+        1
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Two ReLU units can make the fold.",
+     "solution": "def xor_net(a, b):\n    h1 = max(0, a + b)\n    h2 = max(0, a + b - 1)\n    return h1 - 2 * h2\n"
+    },
+    {
+     "type": "python",
+     "title": "Forward pass",
+     "intro": "Write forward(x, layers): layers is a list of [W, b] where W is a list of rows (one per neuron) and b a list of biases; every layer uses ReLU except the last, which is linear. Return the final output list rounded to 3 decimals.",
+     "fn": "forward",
+     "starter": "def forward(x, layers):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         [
+          [
+           [
+            1,
+            1
+           ],
+           [
+            1,
+            -1
+           ]
+          ],
+          [
+           0,
+           0
+          ]
+         ],
+         [
+          [
+           [
+            1,
+            1
+           ]
+          ],
+          [
+           0
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         [
+          [
+           [
+            1,
+            1
+           ],
+           [
+            1,
+            -1
+           ]
+          ],
+          [
+           0,
+           1
+          ]
+         ],
+         [
+          [
+           [
+            2,
+            3
+           ]
+          ],
+          [
+           0.5
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        3.5
+       ]
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        [
+         [
+          [
+           [
+            2
+           ]
+          ],
+          [
+           -1
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        1
+       ]
+      }
+     ],
+     "hint": "Loop over layers; skip ReLU on the last.",
+     "solution": "def forward(x, layers):\n    a = list(x)\n    for li in range(len(layers)):\n        W = layers[li][0]\n        b = layers[li][1]\n        out = []\n        for i in range(len(W)):\n            s = b[i]\n            for j in range(len(a)):\n                s = s + W[i][j] * a[j]\n            if li < len(layers) - 1:\n                s = max(0, s)\n            out.append(s)\n        a = out\n    return [round(v, 3) for v in a]\n"
+    },
+    {
+     "type": "python",
+     "title": "Cross-entropy",
+     "intro": "Write cross_entropy(probs, true_index): the loss -ln(probs[true_index]), rounded to 4 decimals.",
+     "fn": "cross_entropy",
+     "starter": "def cross_entropy(probs, true_index):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.7,
+         0.2,
+         0.1
+        ],
+        0
+       ],
+       "expect": 0.3567,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         0.7,
+         0.2,
+         0.1
+        ],
+        2
+       ],
+       "expect": 2.3026,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        1
+       ],
+       "expect": 0.6931,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.0
+        ],
+        0
+       ],
+       "expect": -0.0,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Confident wrong answers cost a lot.",
+     "solution": "import math\ndef cross_entropy(probs, true_index):\n    return round(-math.log(probs[true_index]), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "One training step",
+     "intro": "Train a single sigmoid neuron on one example with squared error: p = sigmoid(w x + b); error = p - y; w_new = w - lr x error x p x (1 - p) x x; b_new = b - lr x error x p x (1 - p). Write step(w, b, x, y, lr) returning [w_new, b_new] rounded to 4 decimals.",
+     "fn": "step",
+     "starter": "def step(w, b, x, y, lr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        0,
+        1,
+        1,
+        1
+       ],
+       "expect": [
+        0.125,
+        0.125
+       ]
+      },
+      {
+       "args": [
+        1,
+        0,
+        2,
+        0,
+        0.5
+       ],
+       "expect": [
+        0.9075,
+        -0.0462
+       ]
+      },
+      {
+       "args": [
+        -1,
+        1,
+        1,
+        1,
+        2
+       ],
+       "expect": [
+        -0.75,
+        1.25
+       ]
+      }
+     ],
+     "hint": "Chain rule through the sigmoid.",
+     "solution": "import math\ndef step(w, b, x, y, lr):\n    p = 1.0 / (1.0 + math.exp(-(w * x + b)))\n    g = (p - y) * p * (1 - p)\n    return [round(w - lr * g * x, 4), round(b - lr * g, 4)]\n"
+    }
+   ]
+  },
+  {
+   "title": "Putting it together: projects, ethics and next steps",
+   "maps": [
+    {
+     "title": "Practice",
+     "links": [
+      "Project | follows | The workflow",
+      "Baseline | comes | First",
+      "Leakage | must be | Avoided",
+      "Bias | can enter | Through data",
+      "Fairness | needs | Group checks",
+      "Reproducibility | needs | Seeds and versions",
+      "Communication | closes | The loop"
+     ]
+    }
+   ],
+   "summary": [
+    "A good project starts with a clear question and a baseline, builds a simple model, adds complexity only when validation shows it helps, and reports results with honest uncertainty. Keep random seeds and package versions so others can repeat the work.",
+    "Models learn from the data they are given, including its biases. Check performance for different groups, ask who might be harmed by errors, and be open about limits.",
+    "From here: practise on real datasets, learn more statistics, try gradient boosting, deep learning for images and text, and deploy a small model."
+   ],
+   "glossary": [
+    {
+     "term": "Reproducibility",
+     "def": "Being able to rerun an analysis and get the same results, using fixed seeds, recorded versions and clean code."
+    },
+    {
+     "term": "Bias (fairness sense)",
+     "def": "Systematic unfairness in data or model outputs that disadvantages some groups."
+    },
+    {
+     "term": "Selection rate",
+     "def": "The fraction of a group that receives a positive prediction."
+    },
+    {
+     "term": "Model card",
+     "def": "A short document describing a model's purpose, data, performance and limits."
+    },
+    {
+     "term": "Deployment",
+     "def": "Putting a trained model to work on new data in a real system."
+    }
+   ],
+   "keyPoints": [
+    "Question, baseline, simple model, validate, improve.",
+    "Split before anything else.",
+    "Check subgroups, not only the average.",
+    "Set random_state; record versions.",
+    "Explain results to non-experts."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A good project guesses first with something simple, checks honestly, and asks whether it is fair to everybody before telling the world."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Let us rehearse a whole project in prose. A clinic wants to predict missed appointments. First the question: who is likely to miss, so that we can send a reminder? Then the data: past appointments with date, age group, distance, previous misses and whether the patient came.",
+      "Split off a test set immediately and lock it away."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Explore with pandas and Matplotlib: how many appointments are missed overall, how it varies by weekday, by distance. Fix or flag odd values. Build a baseline that always predicts attend: it is right about eighty percent of the time.",
+      "Any model must beat that on recall of the missed class, because that is what the clinic cares about."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from sklearn.pipeline import Pipeline\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\nfrom sklearn.ensemble import RandomForestClassifier\n\nprep = ColumnTransformer([\n    ('num', StandardScaler(), ['age', 'distance', 'prev_missed']),\n    ('cat', OneHotEncoder(handle_unknown='ignore'), ['weekday']),\n])\nclf = Pipeline([('prep', prep), ('model', RandomForestClassifier(random_state=0))])\nclf.fit(X_train, y_train)\nprint(clf.score(X_test, y_test))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Next, fairness. Suppose the model flags patients from one neighbourhood twice as often as others. Is that because they really miss more, perhaps from poor bus links, or because the training data under-represents them? Compare the selection rate and the error rates by group.",
+      "A model can have good average accuracy and still treat a group badly. Decide in advance which disparities you will accept, and explain."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Finally, reproducibility and communication. Set random seeds, record library versions, keep the code in version control and write a short model card: what the model is for, what data it saw, how well it works, where it fails. Present results with plain words and honest uncertainty.",
+      "A model nobody trusts or understands will not be used."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What should come right after defining the question?",
+     "options": [
+      "Collecting data and a split",
+      "Deploying",
+      "Tuning hyperparameters",
+      "Writing the report"
+     ],
+     "answer": 0,
+     "explain": "Lock away the test set."
+    },
+    {
+     "q": "Why use a baseline?",
+     "options": [
+      "To check the model adds value",
+      "To look professional",
+      "To avoid data",
+      "To speed training"
+     ],
+     "answer": 0,
+     "explain": "A bar to beat."
+    },
+    {
+     "q": "What is a selection rate?",
+     "options": [
+      "Fraction of a group predicted positive",
+      "Fraction of accurate predictions",
+      "A random seed",
+      "A score"
+     ],
+     "answer": 0,
+     "explain": "Per group."
+    },
+    {
+     "q": "Why set random seeds?",
+     "options": [
+      "For reproducibility",
+      "To make the model smarter",
+      "To speed training",
+      "To hide errors"
+     ],
+     "answer": 0,
+     "explain": "Same results."
+    },
+    {
+     "q": "What is a model card?",
+     "options": [
+      "A short description of purpose and limits",
+      "A credit card",
+      "A plot",
+      "A data table"
+     ],
+     "answer": 0,
+     "explain": "Transparency."
+    },
+    {
+     "q": "Can average accuracy hide unfair results?",
+     "options": [
+      "Yes",
+      "No",
+      "Only for trees",
+      "Only for neural nets"
+     ],
+     "answer": 0,
+     "explain": "Check subgroups."
+    }
+   ],
+   "cards": [
+    {
+     "q": "random_state=0",
+     "a": "reproducible split or model"
+    },
+    {
+     "q": "selection rate",
+     "a": "positives per group"
+    },
+    {
+     "q": "model card",
+     "a": "documentation of a model"
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "A sound project order",
+     "intro": "Put these project steps in a sensible order.",
+     "items": [
+      "Define the question",
+      "Split off the test set",
+      "Explore and clean the training data",
+      "Build a baseline",
+      "Train and tune models with cross-validation",
+      "Evaluate once on the test set",
+      "Report with limits and fairness checks"
+     ]
+    },
+    {
+     "type": "match",
+     "title": "Match the practice",
+     "intro": "Pair each practice with its aim.",
+     "pairs": [
+      [
+       "Baseline",
+       "check the model adds value"
+      ],
+      [
+       "Seeds and versions",
+       "reproducibility"
+      ],
+      [
+       "Group metrics",
+       "spot unfair errors"
+      ],
+      [
+       "Model card",
+       "explain purpose and limits"
+      ],
+      [
+       "Held-out test set",
+       "honest final score"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Group selection rates",
+     "intro": "Write selection_rates(groups, preds): the fraction of predictions equal to 1 for each distinct group, as a list of [group, rate] pairs sorted by group, rates rounded to 3 decimals.",
+     "fn": "selection_rates",
+     "starter": "def selection_rates(groups, preds):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "a",
+         "b",
+         "b",
+         "b"
+        ],
+        [
+         1,
+         0,
+         1,
+         1,
+         0
+        ]
+       ],
+       "expect": [
+        [
+         "a",
+         0.5
+        ],
+        [
+         "b",
+         0.667
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "x",
+         "x"
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        [
+         "x",
+         0.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "p",
+         "q"
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        [
+         "p",
+         1.0
+        ],
+        [
+         "q",
+         1.0
+        ]
+       ]
+      }
+     ],
+     "hint": "Count positives and totals per group.",
+     "solution": "def selection_rates(groups, preds):\n    tot = {}\n    pos = {}\n    for i in range(len(groups)):\n        g = groups[i]\n        tot[g] = tot.get(g, 0) + 1\n        if preds[i] == 1:\n            pos[g] = pos.get(g, 0) + 1\n    out = []\n    for g in sorted(tot.keys()):\n        out.append([g, round(pos.get(g, 0) / float(tot[g]), 3)])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Disparity ratio",
+     "intro": "Write disparity(rates): rates is a list of [group, rate]; return the ratio of the lowest rate to the highest, rounded to 3 decimals (1.0 if the highest is 0).",
+     "fn": "disparity",
+     "starter": "def disparity(rates):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          0.5
+         ],
+         [
+          "b",
+          0.25
+         ]
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          0.4
+         ],
+         [
+          "b",
+          0.4
+         ]
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          0
+         ],
+         [
+          "b",
+          0
+         ]
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Lowest over highest.",
+     "solution": "def disparity(rates):\n    vals = [r[1] for r in rates]\n    hi = max(vals)\n    if hi == 0:\n        return 1.0\n    return round(min(vals) / hi, 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Leakage check",
+     "intro": "Write leakage(train_ids, test_ids): the sorted list of ids that appear in both lists (a sign of leakage).",
+     "fn": "leakage",
+     "starter": "def leakage(train_ids, test_ids):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         3,
+         4,
+         5
+        ]
+       ],
+       "expect": [
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         3,
+         4
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         7,
+         7,
+         8
+        ],
+        [
+         7
+        ]
+       ],
+       "expect": [
+        7
+       ]
+      }
+     ],
+     "hint": "Intersect the sets.",
+     "solution": "def leakage(train_ids, test_ids):\n    return sorted(list(set(train_ids) & set(test_ids)))\n"
+    },
+    {
+     "type": "python",
+     "title": "Recall for the missed class",
+     "intro": "Write recall_for(y_true, y_pred, label): of the cases whose true label equals label, the fraction predicted as label, rounded to 3 decimals (0 if there are none).",
+     "fn": "recall_for",
+     "starter": "def recall_for(y_true, y_pred, label):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "miss",
+         "ok",
+         "miss",
+         "ok"
+        ],
+        [
+         "ok",
+         "ok",
+         "miss",
+         "ok"
+        ],
+        "miss"
+       ],
+       "expect": 0.5,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         "ok",
+         "ok"
+        ],
+        [
+         "ok",
+         "ok"
+        ],
+        "miss"
+       ],
+       "expect": 0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         "a",
+         "a"
+        ],
+        [
+         "a",
+         "a"
+        ],
+        "a"
+       ],
+       "expect": 1.0,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Only look at cases of that label.",
+     "solution": "def recall_for(y_true, y_pred, label):\n    n = 0\n    hit = 0\n    for i in range(len(y_true)):\n        if y_true[i] == label:\n            n = n + 1\n            if y_pred[i] == label:\n                hit = hit + 1\n    if n == 0:\n        return 0\n    return round(hit / float(n), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Model summary",
+     "intro": "Write summarise(name, train_score, test_score, baseline): return a one-line string 'NAME: train T, test S, baseline B, beats baseline: yes/no' with scores shown with exactly 2 decimals (format with '%.2f'), yes if test_score > baseline.",
+     "fn": "summarise",
+     "starter": "def summarise(name, train_score, test_score, baseline):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "knn",
+        0.9,
+        0.85,
+        0.8
+       ],
+       "expect": "knn: train 0.90, test 0.85, baseline 0.80, beats baseline: yes"
+      },
+      {
+       "args": [
+        "tree",
+        1.0,
+        0.7,
+        0.8
+       ],
+       "expect": "tree: train 1.00, test 0.70, baseline 0.80, beats baseline: no"
+      },
+      {
+       "args": [
+        "reg",
+        0.5,
+        0.5,
+        0.45
+       ],
+       "expect": "reg: train 0.50, test 0.50, baseline 0.45, beats baseline: yes"
+      }
+     ],
+     "hint": "Build the string piece by piece.",
+     "solution": "def summarise(name, train_score, test_score, baseline):\n    def f(v):\n        return '%.2f' % v\n    verdict = 'yes' if test_score > baseline else 'no'\n    return name + ': train ' + f(train_score) + ', test ' + f(test_score) + ', baseline ' + f(baseline) + ', beats baseline: ' + verdict\n"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Data Science and Machine Learning",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What is a feature?",
+    "options": [
+     "An input variable used for prediction",
+     "The thing predicted",
+     "A plot",
+     "A file"
+    ],
+    "answer": 0,
+    "explain": "A column of X."
+   },
+   {
+    "q": "Which task predicts a number?",
+    "options": [
+     "Regression",
+     "Classification",
+     "Clustering",
+     "Encoding"
+    ],
+    "answer": 0,
+    "explain": "House price."
+   },
+   {
+    "q": "What is unsupervised learning?",
+    "options": [
+     "Finding structure without labels",
+     "Learning with answers",
+     "Learning by reward",
+     "Memorising"
+    ],
+    "answer": 0,
+    "explain": "Clusters."
+   },
+   {
+    "q": "What does NumPy provide?",
+    "options": [
+     "Fast arrays",
+     "Tables with labels",
+     "Neural networks",
+     "Charts"
+    ],
+    "answer": 0,
+    "explain": "ndarray."
+   },
+   {
+    "q": "What does a.mean(axis=0) return?",
+    "options": [
+     "The mean of each column",
+     "The mean of each row",
+     "One overall mean",
+     "The shape"
+    ],
+    "answer": 0,
+    "explain": "Down the rows."
+   },
+   {
+    "q": "What is broadcasting?",
+    "options": [
+     "Stretching small arrays to fit larger ones",
+     "Printing arrays",
+     "Sorting arrays",
+     "Copying arrays"
+    ],
+    "answer": 0,
+    "explain": "Shape rules."
+   },
+   {
+    "q": "What is a pandas Series?",
+    "options": [
+     "One labelled column",
+     "A whole table",
+     "A model",
+     "A chart"
+    ],
+    "answer": 0,
+    "explain": "1D."
+   },
+   {
+    "q": "What does groupby do?",
+    "options": [
+     "Split, apply, combine",
+     "Sort a list",
+     "Delete rows",
+     "Plot"
+    ],
+    "answer": 0,
+    "explain": "Per group."
+   },
+   {
+    "q": "Which chart shows a distribution?",
+    "options": [
+     "Histogram",
+     "Line plot",
+     "Scatter plot",
+     "Table"
+    ],
+    "answer": 0,
+    "explain": "Counts per bin."
+   },
+   {
+    "q": "What does correlation of -1 mean?",
+    "options": [
+     "Perfect opposite linear movement",
+     "No link",
+     "Perfect together",
+     "Error"
+    ],
+    "answer": 0,
+    "explain": "Straight downhill."
+   },
+   {
+    "q": "What does one-hot encoding do?",
+    "options": [
+     "A 0/1 column per category",
+     "Scales a column",
+     "Fills gaps",
+     "Splits data"
+    ],
+    "answer": 0,
+    "explain": "Indicators."
+   },
+   {
+    "q": "Where must a scaler be fitted?",
+    "options": [
+     "On training data only",
+     "On all data",
+     "On the test set",
+     "Nowhere"
+    ],
+    "answer": 0,
+    "explain": "Avoid leakage."
+   },
+   {
+    "q": "What is data leakage?",
+    "options": [
+     "Test information influencing training",
+     "Losing a file",
+     "A slow model",
+     "Too many columns"
+    ],
+    "answer": 0,
+    "explain": "Too-good scores."
+   },
+   {
+    "q": "What does least squares minimise?",
+    "options": [
+     "The sum of squared errors",
+     "The sum of errors",
+     "The slope",
+     "The intercept"
+    ],
+    "answer": 0,
+    "explain": "Squared."
+   },
+   {
+    "q": "What does R squared of 1 mean?",
+    "options": [
+     "A perfect fit",
+     "No fit",
+     "An error",
+     "A baseline"
+    ],
+    "answer": 0,
+    "explain": "All variation explained."
+   },
+   {
+    "q": "What does sigmoid output?",
+    "options": [
+     "A number between 0 and 1",
+     "Any number",
+     "A label",
+     "A distance"
+    ],
+    "answer": 0,
+    "explain": "Probability."
+   },
+   {
+    "q": "How does k-NN classify?",
+    "options": [
+     "Vote of the nearest points",
+     "A formula",
+     "Random choice",
+     "Sorting"
+    ],
+    "answer": 0,
+    "explain": "Neighbours."
+   },
+   {
+    "q": "What is recall?",
+    "options": [
+     "Fraction of real positives found",
+     "Fraction of alarms right",
+     "Accuracy",
+     "Threshold"
+    ],
+    "answer": 0,
+    "explain": "TP / (TP + FN)."
+   },
+   {
+    "q": "Why is accuracy misleading?",
+    "options": [
+     "With imbalanced classes",
+     "It is slow",
+     "It needs labels",
+     "It is always wrong"
+    ],
+    "answer": 0,
+    "explain": "Always say healthy."
+   },
+   {
+    "q": "What is overfitting?",
+    "options": [
+     "Learning noise in the training data",
+     "A too-simple model",
+     "A slow model",
+     "Too much test data"
+    ],
+    "answer": 0,
+    "explain": "Memorising."
+   },
+   {
+    "q": "What is cross-validation?",
+    "options": [
+     "Averaging scores over several splits",
+     "Scoring on training data",
+     "Using the test set repeatedly",
+     "Shuffling labels"
+    ],
+    "answer": 0,
+    "explain": "Folds."
+   },
+   {
+    "q": "What is a hyperparameter?",
+    "options": [
+     "A setting chosen before training",
+     "A learned weight",
+     "A label",
+     "A feature"
+    ],
+    "answer": 0,
+    "explain": "Like k."
+   },
+   {
+    "q": "What does k-means alternate between?",
+    "options": [
+     "Assigning points and moving centres",
+     "Sorting and merging",
+     "Fitting and predicting",
+     "Scaling and encoding"
+    ],
+    "answer": 0,
+    "explain": "Two steps."
+   },
+   {
+    "q": "What does PCA find?",
+    "options": [
+     "Directions of greatest variance",
+     "Clusters",
+     "Labels",
+     "Outliers"
+    ],
+    "answer": 0,
+    "explain": "Principal components."
+   },
+   {
+    "q": "Why use an activation function?",
+    "options": [
+     "To add non-linearity",
+     "To save memory",
+     "To sort data",
+     "To scale labels"
+    ],
+    "answer": 0,
+    "explain": "Otherwise just linear."
+   },
+   {
+    "q": "What does softmax produce?",
+    "options": [
+     "Probabilities that sum to 1",
+     "One number",
+     "A label",
+     "A distance"
+    ],
+    "answer": 0,
+    "explain": "Last layer."
+   },
+   {
+    "q": "What does model.compile choose in Keras?",
+    "options": [
+     "Loss and optimiser",
+     "The data",
+     "The labels",
+     "The weights"
+    ],
+    "answer": 0,
+    "explain": "Before fit."
+   },
+   {
+    "q": "What is an epoch?",
+    "options": [
+     "One pass through the training data",
+     "One neuron",
+     "One layer",
+     "One batch"
+    ],
+    "answer": 0,
+    "explain": "Training loop."
+   },
+   {
+    "q": "Why check groups separately?",
+    "options": [
+     "Average accuracy can hide unfair errors",
+     "To slow training",
+     "To add features",
+     "To plot more"
+    ],
+    "answer": 0,
+    "explain": "Fairness."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Data science cheat sheet",
+  "prompt": "ds>",
+  "intro": "A scripted lookup. Try: numpy, pandas, plot, split, fit, metrics, cv, kmeans, keras, help",
+  "chips": [
+   "numpy",
+   "pandas",
+   "plot",
+   "split",
+   "fit",
+   "metrics",
+   "cv",
+   "kmeans",
+   "keras",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "numpy      a = np.array([...]); a.shape; a.mean(axis=0); a @ b; a[a > 0",
+     "pandas     df = pd.read_csv(f); df.head(); df[df.x > 1]; df.groupby('k'",
+     "plot       plt.scatter(x, y); plt.hist(x, bins=20); plt.xlabel('...'); ",
+     "split      X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.",
+     "fit        model = LinearRegression().fit(X_tr, y_tr); model.predict(X_",
+     "metrics    precision = TP/(TP+FP); recall = TP/(TP+FN); F1 = 2PR/(P+R);",
+     "cv         cross_val_score(model, X, y, cv=5); GridSearchCV(model, para",
+     "kmeans     KMeans(n_clusters=3, n_init=10).fit(X_scaled); inertia_ and ",
+     "keras      Sequential([Dense(16, 'relu'), Dense(3, 'softmax')]); compil"
+    ]
+   },
+   {
+    "re": "^numpy$",
+    "out": [
+     "a = np.array([...]); a.shape; a.mean(axis=0); a @ b; a[a > 0]."
+    ]
+   },
+   {
+    "re": "^pandas$",
+    "out": [
+     "df = pd.read_csv(f); df.head(); df[df.x > 1]; df.groupby('k')['v'].mean(); df.fillna(df.median())."
+    ]
+   },
+   {
+    "re": "^plot$",
+    "out": [
+     "plt.scatter(x, y); plt.hist(x, bins=20); plt.xlabel('...'); plt.show()."
+    ]
+   },
+   {
+    "re": "^split$",
+    "out": [
+     "X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=0). Fit scalers on train only."
+    ]
+   },
+   {
+    "re": "^fit$",
+    "out": [
+     "model = LinearRegression().fit(X_tr, y_tr); model.predict(X_te); model.score(X_te, y_te)."
+    ]
+   },
+   {
+    "re": "^metrics$",
+    "out": [
+     "precision = TP/(TP+FP); recall = TP/(TP+FN); F1 = 2PR/(P+R); MSE = mean((y - y_hat)^2)."
+    ]
+   },
+   {
+    "re": "^cv$",
+    "out": [
+     "cross_val_score(model, X, y, cv=5); GridSearchCV(model, params, cv=5)."
+    ]
+   },
+   {
+    "re": "^kmeans$",
+    "out": [
+     "KMeans(n_clusters=3, n_init=10).fit(X_scaled); inertia_ and the elbow method."
+    ]
+   },
+   {
+    "re": "^keras$",
+    "out": [
+     "Sequential([Dense(16, 'relu'), Dense(3, 'softmax')]); compile(optimizer='adam', loss=...); fit(X, y, epochs=30)."
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Computer Science",
+ "level": "Beginner",
+ "tags": [
+  "data science",
+  "machine learning",
+  "numpy",
+  "pandas",
+  "scikit-learn",
+  "keras",
+  "matplotlib",
+  "python"
+ ]
+}

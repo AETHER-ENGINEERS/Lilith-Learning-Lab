@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}
+canvas{width:100%;display:block;margin:6px 0;background:#0e0820;border-radius:8px;touch-action:none}.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}
+.ok{color:#8fe3a8;font-weight:600}
+</style></head><body>
+<label>Dataset <select id="ds"><option value="circle">Circle</option><option value="xor">XOR</option><option value="spiral">Spiral</option></select>
+Hidden units <select id="hu"><option>2</option><option>4</option><option selected>8</option><option>16</option></select>
+Learning rate <select id="lr"><option>0.03</option><option>0.1</option><option selected>0.3</option><option>1</option></select></label>
+<div><button id="tr">Train 300 epochs</button><button id="rs" class="s">Reset</button></div>
+<canvas id="c" width="400" height="300"></canvas><div id="o" class="k"></div>
+<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var _s=11;function rnd(){_s=(_s*1103515245+12345)&0x7fffffff;return _s/0x7fffffff}function gauss(){var u=rnd()+1e-9,v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+var P=[],W1,b1,W2,b2,H,ep=0,busy=false;
+function data(){P=[];var i,n=100;var k=$("ds").value;
+ if(k==="circle"){for(i=0;i<n;i++){var x=rnd()*4-2,y=rnd()*4-2;P.push([x,y,x*x+y*y<1.6?1:0])}}
+ else if(k==="xor"){for(i=0;i<n;i++){var x2=rnd()*4-2,y2=rnd()*4-2;P.push([x2,y2,(x2>0)!==(y2>0)?1:0])}}
+ else{for(i=0;i<n/2;i++){var t=i/(n/2)*3.2+0.3,r=t*0.5;P.push([r*Math.cos(t*2)+gauss()*0.05,r*Math.sin(t*2)+gauss()*0.05,0]);P.push([-r*Math.cos(t*2)+gauss()*0.05,-r*Math.sin(t*2)+gauss()*0.05,1])}}}
+function init(){H=+$("hu").value;W1=[];b1=[];W2=[];b2=0;for(var j=0;j<H;j++){W1.push([gauss()*0.8,gauss()*0.8]);b1.push(0);W2.push(gauss()*0.5)}ep=0}
+function fwd(x,y){var h=[],z=b2;for(var j=0;j<H;j++){var a=Math.tanh(W1[j][0]*x+W1[j][1]*y+b1[j]);h.push(a);z+=W2[j]*a}return{h:h,p:1/(1+Math.exp(-z))}}
+function step(lr){var gW1=[],gb1=[],gW2=[],gb2=0,j;for(j=0;j<H;j++){gW1.push([0,0]);gb1.push(0);gW2.push(0)}var loss=0;
+ P.forEach(function(s){var f=fwd(s[0],s[1]),d=f.p-s[2];loss+=-(s[2]*Math.log(f.p+1e-9)+(1-s[2])*Math.log(1-f.p+1e-9));gb2+=d;
+  for(j=0;j<H;j++){gW2[j]+=d*f.h[j];var dh=d*W2[j]*(1-f.h[j]*f.h[j]);gW1[j][0]+=dh*s[0];gW1[j][1]+=dh*s[1];gb1[j]+=dh}});
+ var n=P.length;b2-=lr*gb2/n;for(j=0;j<H;j++){W2[j]-=lr*gW2[j]/n;W1[j][0]-=lr*gW1[j][0]/n;W1[j][1]-=lr*gW1[j][1]/n;b1[j]-=lr*gb1[j]/n}ep++;return loss/n}
+function draw(loss){var c=$("c").getContext("2d");c.clearRect(0,0,400,300);var g=40,w=400/g,h=300/g,i,j;
+ for(i=0;i<g;i++)for(j=0;j<g;j++){var x=-2.6+(i+0.5)/g*5.2,y=2.2-(j+0.5)/g*4.4,p=fwd(x,y).p;c.fillStyle=p>0.5?"rgba(255,211,107,"+(0.1+0.3*(p-0.5)*2)+")":"rgba(178,107,255,"+(0.1+0.3*(0.5-p)*2)+")";c.fillRect(i*w,j*h,w+1,h+1)}
+ var ok=0;P.forEach(function(s){c.fillStyle=s[2]?"#ffd36b":"#b26bff";c.beginPath();c.arc((s[0]+2.6)/5.2*400,(2.2-s[1])/4.4*300,3.5,0,7);c.fill();if((fwd(s[0],s[1]).p>0.5?1:0)===s[2])ok++});
+ var acc=ok/P.length*100;$("o").innerHTML="Epochs: "+ep+" | loss "+(loss===undefined?"-":loss.toFixed(3))+" | accuracy "+acc.toFixed(0)+"%"+(acc>=95?' <span class="ok">Target reached!</span>':"");if(acc>=95&&ep>0)done()}
+function train(){if(busy)return;busy=true;var lr=+$("lr").value,n=0,loss;var iv=setInterval(function(){for(var i=0;i<10;i++){loss=step(lr);n++}draw(loss);if(n>=300){clearInterval(iv);busy=false}},20)}
+$("tr").onclick=train;$("rs").onclick=function(){if(busy)return;_s=11;data();init();draw()};$("ds").onchange=function(){if(busy)return;_s=11;data();init();draw()};$("hu").onchange=function(){if(busy)return;init();draw()};
+data();init();draw();
+</script></body></html>
