@@ -1,0 +1,5172 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "electronics-from-scratch",
+ "title": "Electronics from Scratch: Components, Circuits and Logic",
+ "subtitle": "From electric charge to op-amps and logic gates, with small Python models of each idea",
+ "author": "Lilith Learning Lab",
+ "description": "An original beginner course in electronics, covering the same ground as a classic introductory handbook. You will learn electricity and Ohm's law, resistors, capacitors, coils and transformers, diodes and LEDs, transistors, thyristors and light detectors, waves and signals, digital logic and memory, linear ICs such as the op-amp and the 555 timer, and how to build, solder and measure real circuits safely. Each chapter has an ELI5 block, a quiz and Python labs that calculate the circuits.",
+ "pronounce": {
+  "Ohm": "ohm",
+  "ohm": "ohm",
+  "ohms": "ohms",
+  "Ohm's": "ohms",
+  "ampere": "am pair",
+  "amperes": "am pairs",
+  "milliamperes": "mil ee am pairs",
+  "hertz": "hurts",
+  "henry": "hen ree",
+  "henries": "hen reez",
+  "farad": "far ad",
+  "farads": "far ads",
+  "microfarads": "my kro far ads",
+  "microfarad": "my kro far ad",
+  "millihenries": "mil ee hen reez",
+  "kilohm": "kill ohm",
+  "hFE": "H F E",
+  "hfe": "H F E",
+  "NPN": "N P N",
+  "PNP": "P N P",
+  "MOSFET": "moss fet",
+  "FET": "F E T",
+  "SCR": "S C R",
+  "LED": "L E D",
+  "LEDs": "L E Ds",
+  "IC": "I C",
+  "ICs": "I Cs",
+  "TTL": "T T L",
+  "CMOS": "sea moss",
+  "AC": "A C",
+  "DC": "D C",
+  "RMS": "R M S",
+  "NAND": "nand",
+  "NOR": "nor",
+  "XOR": "ex or",
+  "UJT": "U J T",
+  "triac": "try ack",
+  "Triac": "try ack",
+  "triacs": "try acks",
+  "thyristor": "thigh ris tor",
+  "Thyristor": "thigh ris tor",
+  "thyristors": "thigh ris tors",
+  "Zener": "zee ner",
+  "zener": "zee ner",
+  "photodiode": "foto die ode",
+  "photodiodes": "foto die odes",
+  "phototransistor": "foto transistor",
+  "photoresistor": "foto resistor",
+  "photoresistors": "foto resistors",
+  "photonic": "foh ton ik",
+  "oscilloscope": "oss ill oh scope",
+  "multimeter": "multi meter",
+  "datasheet": "data sheet",
+  "datasheets": "data sheets",
+  "op-amp": "op amp",
+  "Op-amp": "op amp",
+  "op-amps": "op amps",
+  "astable": "ay stable",
+  "monostable": "mono stable",
+  "decibels": "dess ih bels",
+  "decibel": "dess ih bel",
+  "dB": "decibel",
+  "dBs": "decibels",
+  "7805": "seventy eight oh five",
+  "555": "five five five",
+  "pF": "pico farad",
+  "uF": "micro farad",
+  "kHz": "kilohertz",
+  "MHz": "megahertz",
+  "mA": "milliamps",
+  "mAh": "milliamp hours",
+  "ELI5": "E L I five",
+  "Vbe": "V B E",
+  "Ic": "I C",
+  "Ib": "I B",
+  "silicon": "silicon",
+  "bipolar": "by polar",
+  "unijunction": "you nee junction",
+  "ripple": "ripple",
+  "solder": "sodder",
+  "soldering": "sodder ing",
+  "Georg": "gay org",
+  "Faraday": "fair uh day",
+  "sqrt": "square root",
+  "log10": "log ten",
+  "coulomb": "coo lomb",
+  "coulombs": "coo lombs",
+  "Vs": "V S",
+  "E12": "E twelve",
+  "PN": "P N",
+  "NTC": "N T C"
+ },
+ "chapters": [
+  {
+   "title": "Charge, current and voltage",
+   "maps": [
+    {
+     "title": "Electricity",
+     "links": [
+      "Charge | flows as | Current",
+      "Voltage | pushes | Charge",
+      "Conductor | lets | Current pass",
+      "Insulator | blocks | Current",
+      "DC | flows | One way",
+      "AC | reverses | Direction",
+      "Circuit | is | A closed loop"
+     ]
+    }
+   ],
+   "summary": [
+    "Everything is made of atoms, and atoms hold electrons that carry negative charge. Electricity is what happens when charge moves or builds up.",
+    "Current is the flow of charge, measured in amperes. Voltage is the push behind it, measured in volts.",
+    "Direct current flows one way, like from a battery. Alternating current keeps reversing, like from a wall outlet."
+   ],
+   "glossary": [
+    {
+     "term": "Charge",
+     "def": "A property of matter; electrons are negative."
+    },
+    {
+     "term": "Current",
+     "def": "The rate of flow of charge, in amperes (A)."
+    },
+    {
+     "term": "Voltage",
+     "def": "The push that moves charge, in volts (V)."
+    },
+    {
+     "term": "Conductor",
+     "def": "A material that lets current flow easily, like copper."
+    },
+    {
+     "term": "Insulator",
+     "def": "A material that blocks current, like rubber."
+    },
+    {
+     "term": "Circuit",
+     "def": "A closed path that current can follow."
+    }
+   ],
+   "keyPoints": [
+    "One ampere is one coulomb of charge per second.",
+    "Voltage is measured between two points.",
+    "Metals conduct; glass, plastic and dry air insulate.",
+    "Static electricity is charge that sits still until it jumps.",
+    "DC has a fixed direction; AC reverses many times a second.",
+    "Current needs a complete loop to flow."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Charge is like water in a pipe. Voltage is how hard the pump pushes, and current is how much water flows past each second."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Rub a balloon on your hair and it sticks to the wall. You moved electrons from one thing to another, and the extra charge stays put. That is static electricity. When it finds a path, it jumps as a spark."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Current is charge on the move. If one coulomb passes a point each second, the current is one ampere. Voltage is the push that makes it move. A battery has voltage between its two ends, and when you connect a path between them, the push drives current around."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "I=\\frac{Q}{t}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Materials differ in how easily charge moves. Metals such as copper are conductors, because their outer electrons are free to wander. Plastic, rubber and glass are insulators. Semiconductors, such as silicon, sit in between, and they are the base of modern electronics."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A battery gives direct current, or DC, which flows one way. The outlet in a wall gives alternating current, or AC, which swings back and forth, often 50 or 60 times a second. Wall power can be dangerous. Learn on batteries, and treat mains with great respect."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does an ampere measure?",
+     "options": [
+      "Current",
+      "Voltage",
+      "Resistance",
+      "Power"
+     ],
+     "answer": 0,
+     "explain": "Charge per second."
+    },
+    {
+     "q": "Which is an insulator?",
+     "options": [
+      "Rubber",
+      "Copper",
+      "Silver",
+      "Iron"
+     ],
+     "answer": 0,
+     "explain": "It blocks current."
+    },
+    {
+     "q": "Which current changes direction?",
+     "options": [
+      "AC",
+      "DC",
+      "Static",
+      "None"
+     ],
+     "answer": 0,
+     "explain": "Alternating."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is voltage?",
+     "a": "The push on charge."
+    },
+    {
+     "q": "What is a circuit?",
+     "a": "A closed loop."
+    },
+    {
+     "q": "DC or AC from a battery?",
+     "a": "DC."
+    },
+    {
+     "q": "What is a semiconductor?",
+     "a": "Between conductor and insulator."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Units",
+     "intro": "Match each quantity with its unit.",
+     "pairs": [
+      [
+       "Current",
+       "ampere"
+      ],
+      [
+       "Voltage",
+       "volt"
+      ],
+      [
+       "Resistance",
+       "ohm"
+      ],
+      [
+       "Frequency",
+       "hertz"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Current from charge",
+     "intro": "Write current(charge, seconds): the current in amperes.",
+     "fn": "current",
+     "starter": "def current(charge, seconds):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        5
+       ],
+       "expect": 2.0,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        1,
+        2
+       ],
+       "expect": 0.5,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        0.5,
+        0.25
+       ],
+       "expect": 2.0,
+       "approx": 1e-06
+      }
+     ],
+     "hint": "I = Q / t.",
+     "solution": "def current(charge, seconds):\n    return charge / seconds\n"
+    },
+    {
+     "type": "python",
+     "title": "Unit prefixes",
+     "intro": "Write convert(value, src, dst): convert between the prefixes 'p' (1e-12), 'n' (1e-9), 'u' (1e-6), 'm' (1e-3), '' (1), 'k' (1e3) and 'M' (1e6). Round to 6 decimals.",
+     "fn": "convert",
+     "starter": "def convert(value, src, dst):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2200,
+        "",
+        "k"
+       ],
+       "expect": 2.2,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        4.7,
+        "u",
+        "n"
+       ],
+       "expect": 4700.0,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        10,
+        "k",
+        ""
+       ],
+       "expect": 10000.0,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        500,
+        "m",
+        ""
+       ],
+       "expect": 0.5,
+       "approx": 1e-06
+      }
+     ],
+     "hint": "Go through the base unit.",
+     "solution": "def convert(value, src, dst):\n    f = {'p': 1e-12, 'n': 1e-9, 'u': 1e-6, 'm': 1e-3, '': 1.0, 'k': 1e3, 'M': 1e6}\n    return round(value * f[src] / f[dst], 6)\n"
+    },
+    {
+     "type": "python",
+     "title": "Battery pack",
+     "intro": "Write pack(volts, mah, series, parallel): cells in series add voltage; cells in parallel add capacity. Return [total_volts, total_mah].",
+     "fn": "pack",
+     "starter": "def pack(volts, mah, series, parallel):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1.5,
+        2000,
+        4,
+        1
+       ],
+       "expect": [
+        6.0,
+        2000
+       ],
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        3.7,
+        3000,
+        1,
+        2
+       ],
+       "expect": [
+        3.7,
+        6000
+       ],
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        1.2,
+        800,
+        2,
+        3
+       ],
+       "expect": [
+        2.4,
+        2400
+       ],
+       "approx": 1e-06
+      }
+     ],
+     "hint": "Series adds volts.",
+     "solution": "def pack(volts, mah, series, parallel):\n    return [volts * series, mah * parallel]\n"
+    }
+   ]
+  },
+  {
+   "title": "Ohm's law, power and simple circuits",
+   "maps": [
+    {
+     "title": "Ohm",
+     "links": [
+      "Ohm's law | links | V, I and R",
+      "Resistance | limits | Current",
+      "Power | is | V times I",
+      "Series | shares | Voltage",
+      "Parallel | shares | Current",
+      "Load | uses | Power",
+      "Watt | measures | Power"
+     ]
+    }
+   ],
+   "summary": [
+    "Ohm's law says voltage equals current times resistance. If you know two, you can find the third.",
+    "Electrical power is voltage times current, measured in watts. A part that gets too much power gets hot.",
+    "Resistors in series add up. In parallel, the total is smaller than the smallest one."
+   ],
+   "glossary": [
+    {
+     "term": "Ohm's law",
+     "def": "V = I x R."
+    },
+    {
+     "term": "Resistance",
+     "def": "How strongly a part opposes current, in ohms."
+    },
+    {
+     "term": "Power",
+     "def": "Rate of energy use: P = V x I, in watts."
+    },
+    {
+     "term": "Series",
+     "def": "Parts joined end to end, with the same current."
+    },
+    {
+     "term": "Parallel",
+     "def": "Parts joined side by side, with the same voltage."
+    },
+    {
+     "term": "Load",
+     "def": "The part that uses the electrical power."
+    }
+   ],
+   "keyPoints": [
+    "V = I x R, so I = V / R and R = V / I.",
+    "P = V x I = I squared x R = V squared / R.",
+    "Series resistors add: R = R1 + R2 + ...",
+    "Parallel: 1 / R = 1 / R1 + 1 / R2 + ...",
+    "In series, voltages add up to the supply.",
+    "In parallel, currents add up."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Ohm's law says a skinny pipe lets less water through. More push or a wider pipe means more flow, and power is how hard the water works."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Georg Ohm found that for many materials the current is proportional to the voltage. Double the voltage and the current doubles. The constant is the resistance. This one rule solves most beginner circuit problems."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} V=I\\,R \\\\[0.6em] P=V\\,I=I^{2}R=\\frac{V^{2}}{R} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A 9 volt battery across a 900 ohm resistor gives 0.01 amperes, which is 10 milliamperes. The power is 9 times 0.01, which is 0.09 watts. A small resistor rated for a quarter watt can handle that."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In a series circuit, there is only one path. The same current runs through every part, and the voltages add up to the supply. In a parallel circuit, each branch gets the full voltage, and the branch currents add up. Home wiring is parallel so each device gets the full voltage."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} R_{\\text{series}}=R_1+R_2+\\cdots \\\\[0.6em] \\frac{1}{R_{\\text{par}}}=\\frac{1}{R_1}+\\frac{1}{R_2}+\\cdots \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Always check the power. A resistor that dissipates more than its rating overheats and may burn. A common habit is to choose a rating at least twice the power you calculate."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the current for 9 V across 900 ohms?",
+     "options": [
+      "10 mA",
+      "1 A",
+      "100 mA",
+      "81 A"
+     ],
+     "answer": 0,
+     "explain": "9 / 900."
+    },
+    {
+     "q": "What happens to resistance in parallel?",
+     "options": [
+      "Total is smaller",
+      "Total is larger",
+      "No change",
+      "Zero"
+     ],
+     "answer": 0,
+     "explain": "More paths."
+    },
+    {
+     "q": "What is P with 2 A and 5 V?",
+     "options": [
+      "10 W",
+      "7 W",
+      "2.5 W",
+      "0.4 W"
+     ],
+     "answer": 0,
+     "explain": "P = V x I."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is Ohm's law?",
+     "a": "V = I R."
+    },
+    {
+     "q": "What is P?",
+     "a": "V times I."
+    },
+    {
+     "q": "Series resistors do what?",
+     "a": "Add."
+    },
+    {
+     "q": "Parallel voltage?",
+     "a": "The same on each branch."
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Ohm",
+     "text": "Voltage equals current times {{resistance}}, and power is voltage times {{current}}."
+    },
+    {
+     "type": "python",
+     "title": "Ohm solver",
+     "intro": "Write ohm(v, i, r): exactly one of the three is None. Return the missing one, rounded to 4 decimals.",
+     "fn": "ohm",
+     "starter": "def ohm(v, i, r):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        9,
+        null,
+        900
+       ],
+       "expect": 0.01,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        null,
+        0.02,
+        100
+       ],
+       "expect": 2.0,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        12,
+        0.5,
+        null
+       ],
+       "expect": 24.0,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        5,
+        null,
+        220
+       ],
+       "expect": 0.0227,
+       "approx": 0.0001
+      }
+     ],
+     "hint": "Pick the right form.",
+     "solution": "def ohm(v, i, r):\n    if v is None:\n        return round(i * r, 4)\n    if i is None:\n        return round(v / r, 4)\n    return round(v / i, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Series and parallel",
+     "intro": "Write combine(values, mode): mode is 'series' or 'parallel'. Return the total resistance rounded to 4 decimals.",
+     "fn": "combine",
+     "starter": "def combine(values, mode):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         100,
+         200,
+         300
+        ],
+        "series"
+       ],
+       "expect": 600,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        [
+         100,
+         100
+        ],
+        "parallel"
+       ],
+       "expect": 50.0,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        [
+         10,
+         20,
+         40
+        ],
+        "parallel"
+       ],
+       "expect": 5.7143,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        [
+         47
+        ],
+        "parallel"
+       ],
+       "expect": 47.0,
+       "approx": 0.0001
+      }
+     ],
+     "hint": "Add inverses in parallel.",
+     "solution": "def combine(values, mode):\n    if mode == 'series':\n        return round(sum(values), 4)\n    inv = 0.0\n    for r in values:\n        inv += 1.0 / r\n    return round(1.0 / inv, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Resistor power",
+     "intro": "Write rating(v, r): return the power in watts across the resistor, rounded to 4 decimals, and the smallest standard rating from [0.125, 0.25, 0.5, 1, 2, 5] that is at least double that power (or 0 if none). Return [power, rating].",
+     "fn": "rating",
+     "starter": "def rating(v, r):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        9,
+        900
+       ],
+       "expect": [
+        0.09,
+        0.25
+       ],
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        12,
+        100
+       ],
+       "expect": [
+        1.44,
+        5
+       ],
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        5,
+        1000
+       ],
+       "expect": [
+        0.025,
+        0.125
+       ],
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        50,
+        10
+       ],
+       "expect": [
+        250.0,
+        0
+       ],
+       "approx": 0.0001
+      }
+     ],
+     "hint": "Compare double the power.",
+     "solution": "def rating(v, r):\n    p = v * v / r\n    for s in [0.125, 0.25, 0.5, 1, 2, 5]:\n        if s >= 2 * p:\n            return [round(p, 4), s]\n    return [round(p, 4), 0]\n"
+    }
+   ]
+  },
+  {
+   "title": "Resistors",
+   "maps": [
+    {
+     "title": "Resistors",
+     "links": [
+      "Resistor | limits | Current",
+      "Color code | tells | Value",
+      "Tolerance | is | Accuracy",
+      "Divider | makes | A smaller voltage",
+      "Pot | varies | Resistance",
+      "Wattage | is | Power rating",
+      "Preferred values | are | Standard steps"
+     ]
+    }
+   ],
+   "summary": [
+    "A resistor limits current. Small ones carry colored bands that give their value, and a final band gives tolerance.",
+    "Two resistors in series form a voltage divider, which outputs a fraction of the input voltage.",
+    "A potentiometer is a resistor with a sliding contact, so you can adjust it."
+   ],
+   "glossary": [
+    {
+     "term": "Resistor",
+     "def": "A part that opposes current by a set amount."
+    },
+    {
+     "term": "Tolerance",
+     "def": "How far the real value may differ, such as 5 percent."
+    },
+    {
+     "term": "Voltage divider",
+     "def": "Two resistors in series that give a fraction of the voltage."
+    },
+    {
+     "term": "Potentiometer",
+     "def": "A variable resistor with a wiper."
+    },
+    {
+     "term": "Rating",
+     "def": "The most power a resistor can handle safely."
+    },
+    {
+     "term": "E12 series",
+     "def": "A set of 12 preferred values per decade."
+    }
+   ],
+   "keyPoints": [
+    "Bands: digit, digit, multiplier, tolerance.",
+    "Colors: black 0, brown 1, red 2, orange 3, yellow 4, green 5, blue 6, violet 7, gray 8, white 9.",
+    "Gold tolerance is 5 percent, silver 10 percent.",
+    "Vout = Vin x R2 / (R1 + R2).",
+    "A divider only holds when the load draws little current.",
+    "Common ratings are 1/8, 1/4 and 1/2 watt."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A resistor is a narrow spot in the pipe. The stripes on it are a secret code that tells you how narrow it is."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The simplest job for a resistor is to limit current. Put one in series with an LED so the LED does not burn out. Resistors also set bias for transistors, divide voltages and pull inputs up or down."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Small resistors are too tiny for printed numbers, so they use colored bands. Read from the end that has the bands closest together. The first two bands are digits. The third is how many zeros to add. The last shows tolerance."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# brown black red gold\ndigits = [1, 0]\nmultiplier = 10 ** 2\nvalue = (digits[0] * 10 + digits[1]) * multiplier\nprint(value)   # 1000 ohms, 5 percent"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two resistors in series from the supply to ground make a voltage divider. The voltage at the joint is a fraction of the supply set by their ratio. It is the base of many sensors, such as a light-dependent resistor in series with a fixed one."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "V_{\\text{out}}=V_{\\text{in}}\\,\\frac{R_2}{R_1+R_2}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A potentiometer, or pot, is a resistor with a third terminal that slides along it. Turn the knob and the divider ratio changes. Volume controls use this idea. Remember that a divider falls apart if you connect a heavy load to its output."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the third band mean?",
+     "options": [
+      "Multiplier",
+      "Tolerance",
+      "Power",
+      "Voltage"
+     ],
+     "answer": 0,
+     "explain": "How many zeros."
+    },
+    {
+     "q": "What color is 2?",
+     "options": [
+      "Red",
+      "Brown",
+      "Orange",
+      "Green"
+     ],
+     "answer": 0,
+     "explain": "Brown 1, red 2."
+    },
+    {
+     "q": "What does a divider produce?",
+     "options": [
+      "A fraction of the input voltage",
+      "More current",
+      "AC",
+      "Heat only"
+     ],
+     "answer": 0,
+     "explain": "R2 over the sum."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does gold mean?",
+     "a": "5 percent tolerance."
+    },
+    {
+     "q": "What is a pot?",
+     "a": "A variable resistor."
+    },
+    {
+     "q": "What is a divider?",
+     "a": "Two resistors giving a fraction."
+    },
+    {
+     "q": "What is the E12 series?",
+     "a": "Preferred values."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Colors",
+     "intro": "Match each color with its digit.",
+     "pairs": [
+      [
+       "brown",
+       "1"
+      ],
+      [
+       "red",
+       "2"
+      ],
+      [
+       "yellow",
+       "4"
+      ],
+      [
+       "violet",
+       "7"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Color code",
+     "intro": "Write color_code(bands): bands is a list of four color names (digit, digit, multiplier, tolerance). Return [ohms, tolerance_percent]. Colors: black 0, brown 1, red 2, orange 3, yellow 4, green 5, blue 6, violet 7, gray 8, white 9. Tolerance: gold 5, silver 10.",
+     "fn": "color_code",
+     "starter": "def color_code(bands):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "brown",
+         "black",
+         "red",
+         "gold"
+        ]
+       ],
+       "expect": [
+        1000,
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         "yellow",
+         "violet",
+         "orange",
+         "silver"
+        ]
+       ],
+       "expect": [
+        47000,
+        10
+       ]
+      },
+      {
+       "args": [
+        [
+         "green",
+         "blue",
+         "brown",
+         "gold"
+        ]
+       ],
+       "expect": [
+        560,
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         "orange",
+         "orange",
+         "black",
+         "gold"
+        ]
+       ],
+       "expect": [
+        33,
+        5
+       ]
+      }
+     ],
+     "hint": "Use the index in the color list.",
+     "solution": "def color_code(bands):\n    c = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'gray', 'white']\n    ohms = (c.index(bands[0]) * 10 + c.index(bands[1])) * 10 ** c.index(bands[2])\n    tol = 5 if bands[3] == 'gold' else 10\n    return [ohms, tol]\n"
+    },
+    {
+     "type": "python",
+     "title": "Divider",
+     "intro": "Write divider(vin, r1, r2): the output voltage rounded to 4 decimals.",
+     "fn": "divider",
+     "starter": "def divider(vin, r1, r2):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        9,
+        1000,
+        2000
+       ],
+       "expect": 6.0,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        5,
+        10000,
+        10000
+       ],
+       "expect": 2.5,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        12,
+        330,
+        470
+       ],
+       "expect": 7.05,
+       "approx": 0.0001
+      }
+     ],
+     "hint": "R2 over the sum.",
+     "solution": "def divider(vin, r1, r2):\n    return round(vin * r2 / (r1 + r2), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Tolerance range",
+     "intro": "Write limits(value, percent): the lowest and highest actual resistance as [low, high], rounded to 4 decimals.",
+     "fn": "limits",
+     "starter": "def limits(value, percent):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1000,
+        5
+       ],
+       "expect": [
+        950.0,
+        1050.0
+       ],
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        4700,
+        10
+       ],
+       "expect": [
+        4230.0,
+        5170.0
+       ],
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        220,
+        1
+       ],
+       "expect": [
+        217.8,
+        222.2
+       ],
+       "approx": 0.0001
+      }
+     ],
+     "hint": "Add and subtract the tolerance.",
+     "solution": "def limits(value, percent):\n    d = value * percent / 100.0\n    return [round(value - d, 4), round(value + d, 4)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Nearest E12",
+     "intro": "Write nearest_e12(value): the closest standard E12 value (use the table 1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2 times a power of ten). Compare ratios, and on a tie pick the lower. Return it rounded to 2 decimals.",
+     "fn": "nearest_e12",
+     "starter": "def nearest_e12(value):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1000
+       ],
+       "expect": 1000.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        2000
+       ],
+       "expect": 2200.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        470
+       ],
+       "expect": 470.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        3000
+       ],
+       "expect": 3300.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        68
+       ],
+       "expect": 68.0,
+       "approx": 0.01
+      }
+     ],
+     "hint": "Compare on a log scale.",
+     "solution": "def nearest_e12(value):\n    import math\n    base = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2]\n    p = math.floor(math.log10(value))\n    best = None\n    bd = None\n    for q in [p - 1, p, p + 1]:\n        for b in base + [10.0]:\n            c = b * 10 ** q\n            d = abs(math.log(c / value))\n            if bd is None or d < bd - 1e-12:\n                bd = d\n                best = c\n    return round(best, 2)\n"
+    }
+   ]
+  },
+  {
+   "title": "Capacitors and timing",
+   "maps": [
+    {
+     "title": "Capacitors",
+     "links": [
+      "Capacitor | stores | Charge",
+      "Farad | measures | Capacitance",
+      "RC | sets | A time",
+      "Charging | follows | A curve",
+      "Series | lowers | Capacitance",
+      "Parallel | adds | Capacitance",
+      "Coupling | passes | AC, blocks DC"
+     ]
+    }
+   ],
+   "summary": [
+    "A capacitor stores charge on two plates separated by an insulator. Capacitance is measured in farads, though real parts are microfarads and smaller.",
+    "With a resistor, a capacitor makes a timer. The time constant is R times C, in seconds.",
+    "A capacitor blocks steady DC but lets changing signals through, which makes it useful for filtering and coupling."
+   ],
+   "glossary": [
+    {
+     "term": "Capacitor",
+     "def": "A part that stores energy in an electric field."
+    },
+    {
+     "term": "Farad",
+     "def": "The unit of capacitance."
+    },
+    {
+     "term": "Time constant",
+     "def": "R x C; the time to reach about 63 percent."
+    },
+    {
+     "term": "Electrolytic",
+     "def": "A large capacitor with a polarity; wrong way round can fail."
+    },
+    {
+     "term": "Coupling",
+     "def": "Passing AC while blocking DC."
+    },
+    {
+     "term": "Decoupling",
+     "def": "Smoothing the supply close to a chip."
+    }
+   ],
+   "keyPoints": [
+    "Q = C x V.",
+    "Energy stored is one half C V squared.",
+    "Parallel capacitors add; series capacitors combine like parallel resistors.",
+    "Charging: V(t) = Vs x (1 - e to the minus t over RC).",
+    "After 5 time constants it is about 99 percent charged.",
+    "Electrolytic capacitors have a plus and a minus side."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A capacitor is a small tank beside the pipe. It fills slowly through a narrow pipe, and that filling time is how timers work."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two metal plates with a gap between them hold charge. Put a voltage across them and they charge up. Take the voltage away and they keep the charge for a while. More plate area and a smaller gap give more capacitance."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} Q=C\\,V \\\\[0.6em] E=\\tfrac12 C V^{2} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "When you charge a capacitor through a resistor, it does not fill instantly. It starts fast and slows down. The product of R and C is the time constant. After one time constant it has reached about 63 percent of the supply, and after five it is nearly full."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "V(t)=V_s\\left(1-e^{-t/RC}\\right)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Capacitors do many jobs. They smooth the ripple in a power supply. They pass audio between stages while blocking the DC bias. They set delays and oscillator speeds. Electrolytic types have a polarity mark, so check it, or the part may fail."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the unit of capacitance?",
+     "options": [
+      "Farad",
+      "Henry",
+      "Ohm",
+      "Volt"
+     ],
+     "answer": 0,
+     "explain": "Named after Faraday."
+    },
+    {
+     "q": "What does the time constant equal?",
+     "options": [
+      "R x C",
+      "R + C",
+      "R / C",
+      "V x I"
+     ],
+     "answer": 0,
+     "explain": "In seconds."
+    },
+    {
+     "q": "What do parallel capacitors do?",
+     "options": [
+      "Add up",
+      "Cancel",
+      "Halve",
+      "Block AC"
+     ],
+     "answer": 0,
+     "explain": "More plate area."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does a capacitor store?",
+     "a": "Charge."
+    },
+    {
+     "q": "When is it about 63 percent charged?",
+     "a": "After one time constant."
+    },
+    {
+     "q": "What do electrolytics need?",
+     "a": "Correct polarity."
+    },
+    {
+     "q": "What does coupling do?",
+     "a": "Passes AC, blocks DC."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Roles",
+     "intro": "Match each use with its job.",
+     "pairs": [
+      [
+       "Smoothing",
+       "Reduce ripple in a supply"
+      ],
+      [
+       "Coupling",
+       "Pass AC, block DC"
+      ],
+      [
+       "Timing",
+       "Set a delay with a resistor"
+      ],
+      [
+       "Decoupling",
+       "Steady the supply near a chip"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Time constant",
+     "intro": "Write tau(r, c): R times C in seconds, rounded to 6 decimals.",
+     "fn": "tau",
+     "starter": "def tau(r, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10000,
+        0.0001
+       ],
+       "expect": 1.0,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        1000,
+        1e-06
+       ],
+       "expect": 0.001,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        4700,
+        0.00047
+       ],
+       "expect": 2.209,
+       "approx": 1e-06
+      }
+     ],
+     "hint": "R x C.",
+     "solution": "def tau(r, c):\n    return round(r * c, 6)\n"
+    },
+    {
+     "type": "python",
+     "title": "Capacitor voltage",
+     "intro": "Write vcap(vs, r, c, t): the voltage on a capacitor t seconds after charging starts, rounded to 4 decimals.",
+     "fn": "vcap",
+     "starter": "def vcap(vs, r, c, t):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        9,
+        10000,
+        0.0001,
+        1.0
+       ],
+       "expect": 5.6891,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        5,
+        1000,
+        1e-06,
+        0.001
+       ],
+       "expect": 3.1606,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        12,
+        1000,
+        0.001,
+        5.0
+       ],
+       "expect": 11.9191,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        9,
+        1000,
+        0.001,
+        0
+       ],
+       "expect": 0.0,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Use exp.",
+     "solution": "def vcap(vs, r, c, t):\n    import math\n    return round(vs * (1 - math.exp(-t / (r * c))), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Combine capacitors",
+     "intro": "Write cap_total(values, mode): 'parallel' adds; 'series' combines as 1 / sum(1 / c). Rounded to 6 decimals.",
+     "fn": "cap_total",
+     "starter": "def cap_total(values, mode):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1e-06,
+         2e-06
+        ],
+        "parallel"
+       ],
+       "expect": 3e-06,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        [
+         1e-06,
+         1e-06
+        ],
+        "series"
+       ],
+       "expect": 0.0,
+       "approx": 1e-06
+      },
+      {
+       "args": [
+        [
+         10,
+         40
+        ],
+        "series"
+       ],
+       "expect": 8.0,
+       "approx": 1e-06
+      }
+     ],
+     "hint": "Opposite to resistors.",
+     "solution": "def cap_total(values, mode):\n    if mode == 'parallel':\n        return round(sum(values), 6)\n    inv = 0.0\n    for c in values:\n        inv += 1.0 / c\n    return round(1.0 / inv, 6)\n"
+    },
+    {
+     "type": "python",
+     "title": "Time to reach",
+     "intro": "Write time_to(vs, r, c, v): how many seconds a capacitor takes to charge to v (v is less than vs), rounded to 4 decimals.",
+     "fn": "time_to",
+     "starter": "def time_to(vs, r, c, v):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        9,
+        10000,
+        0.0001,
+        5.7
+       ],
+       "expect": 1.0033,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        5,
+        1000,
+        1e-06,
+        2.5
+       ],
+       "expect": 0.0007,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        12,
+        1000,
+        0.001,
+        6
+       ],
+       "expect": 0.6931,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Solve for t with a log.",
+     "solution": "def time_to(vs, r, c, v):\n    import math\n    return round(-r * c * math.log(1 - v / vs), 4)\n"
+    }
+   ]
+  },
+  {
+   "title": "Coils, transformers, switches and relays",
+   "maps": [
+    {
+     "title": "Magnetic parts",
+     "links": [
+      "Coil | stores | Magnetic energy",
+      "Henry | measures | Inductance",
+      "Reactance | resists | AC",
+      "Resonance | picks | One frequency",
+      "Transformer | changes | AC voltage",
+      "Relay | switches | With a coil",
+      "Switch | opens | A path"
+     ]
+    }
+   ],
+   "summary": [
+    "Current through a coil makes a magnetic field. A coil resists changes in current, and that property is called inductance.",
+    "Capacitors and coils oppose AC in a way that depends on frequency, called reactance. A coil and capacitor together resonate at one frequency.",
+    "A transformer changes AC voltage using two coils, and a relay lets a small current switch a bigger one."
+   ],
+   "glossary": [
+    {
+     "term": "Inductor",
+     "def": "A coil that stores energy in a magnetic field."
+    },
+    {
+     "term": "Henry",
+     "def": "The unit of inductance."
+    },
+    {
+     "term": "Reactance",
+     "def": "A coil's or capacitor's opposition to AC, in ohms."
+    },
+    {
+     "term": "Resonance",
+     "def": "The frequency where coil and capacitor reactances cancel."
+    },
+    {
+     "term": "Transformer",
+     "def": "Two coils on a core that change AC voltage."
+    },
+    {
+     "term": "Relay",
+     "def": "An electromagnetic switch."
+    }
+   ],
+   "keyPoints": [
+    "Coil reactance X_L = 2 pi f L; it grows with frequency.",
+    "Capacitor reactance X_C = 1 / (2 pi f C); it shrinks with frequency.",
+    "Resonance: f = 1 / (2 pi sqrt(L C)).",
+    "Transformer: Vs / Vp = Ns / Np.",
+    "A transformer works only with changing current, not DC.",
+    "Put a diode across a relay coil to absorb the voltage spike."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A coil is a heavy wheel in the water, hard to start and hard to stop. A transformer is two wheels that pass a push from one to the other."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A wire carrying current makes a magnetic field. Wind the wire into a coil and the effect multiplies. A coil fights sudden changes of current, so it acts as a kind of electrical inertia. It is measured in henries, usually millihenries in electronics."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} X_L=2\\pi f L \\\\[0.6em] X_C=\\frac{1}{2\\pi f C} \\\\[0.6em] f_0=\\frac{1}{2\\pi\\sqrt{LC}} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Reactance is like resistance for AC. A coil passes low frequencies and resists high ones. A capacitor does the opposite. At one special frequency, the two cancel, and the circuit resonates. Radio tuners use this to pick one station."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A transformer has two coils on one core. AC in the first makes a changing magnetic field, which pushes AC in the second. The voltage ratio equals the turns ratio. A step-down transformer, with fewer turns on the output, gives a lower voltage and a higher current."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A relay is a switch operated by a coil. A small current in the coil pulls a contact, which switches a much bigger current. It also keeps the control side apart from the load. When the coil switches off, it kicks a voltage spike, so a diode across the coil protects the rest of the circuit."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a transformer need?",
+     "options": [
+      "Changing current",
+      "Steady DC",
+      "Light",
+      "A battery only"
+     ],
+     "answer": 0,
+     "explain": "AC."
+    },
+    {
+     "q": "What does X_L do as frequency rises?",
+     "options": [
+      "Grows",
+      "Shrinks",
+      "Stays",
+      "Vanishes"
+     ],
+     "answer": 0,
+     "explain": "2 pi f L."
+    },
+    {
+     "q": "What protects a relay driver?",
+     "options": [
+      "A diode across the coil",
+      "A bigger coil",
+      "More voltage",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Absorbs the spike."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is resonance?",
+     "a": "Reactances cancel."
+    },
+    {
+     "q": "What is a henry?",
+     "a": "Unit of inductance."
+    },
+    {
+     "q": "Step-down means?",
+     "a": "Lower voltage out."
+    },
+    {
+     "q": "Why isolate with a relay?",
+     "a": "Control and load stay apart."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Parts",
+     "intro": "Match each part with its job.",
+     "pairs": [
+      [
+       "Inductor",
+       "Stores energy in a magnetic field"
+      ],
+      [
+       "Transformer",
+       "Changes AC voltage"
+      ],
+      [
+       "Relay",
+       "Switches with a coil"
+      ],
+      [
+       "Capacitor",
+       "Stores charge"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Reactance",
+     "intro": "Write reactance(kind, f, value): kind is 'L' (henries) or 'C' (farads); return the reactance in ohms rounded to 3 decimals.",
+     "fn": "reactance",
+     "starter": "def reactance(kind, f, value):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "L",
+        1000,
+        0.01
+       ],
+       "expect": 62.832,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        "C",
+        1000,
+        1e-06
+       ],
+       "expect": 159.155,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        "C",
+        50,
+        0.0001
+       ],
+       "expect": 31.831,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        "L",
+        60,
+        1
+       ],
+       "expect": 376.991,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Two formulas.",
+     "solution": "def reactance(kind, f, value):\n    import math\n    if kind == 'L':\n        return round(2 * math.pi * f * value, 3)\n    return round(1 / (2 * math.pi * f * value), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Resonant frequency",
+     "intro": "Write resonance(l, c): the resonant frequency in hertz, rounded to 2 decimals.",
+     "fn": "resonance",
+     "starter": "def resonance(l, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.01,
+        1e-06
+       ],
+       "expect": 1591.55,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        0.001,
+        1e-09
+       ],
+       "expect": 159154.94,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        0.1,
+        0.0001
+       ],
+       "expect": 50.33,
+       "approx": 0.001
+      }
+     ],
+     "hint": "1 / (2 pi sqrt LC).",
+     "solution": "def resonance(l, c):\n    import math\n    return round(1 / (2 * math.pi * math.sqrt(l * c)), 2)\n"
+    },
+    {
+     "type": "python",
+     "title": "Transformer",
+     "intro": "Write transformer(vp, np, ns): the secondary voltage, rounded to 3 decimals.",
+     "fn": "transformer",
+     "starter": "def transformer(vp, np, ns):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        120,
+        1000,
+        100
+       ],
+       "expect": 12.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        230,
+        1000,
+        52
+       ],
+       "expect": 11.96,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        12,
+        50,
+        500
+       ],
+       "expect": 120.0,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Voltage follows the turns ratio.",
+     "solution": "def transformer(vp, np, ns):\n    return round(vp * ns / np, 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Relay logic",
+     "intro": "Write relay_state(events, hold): events is a list of coil currents in mA per time step. The relay closes when the current is at least 20 and stays closed until the current falls below hold. Return the list of states (1 closed, 0 open).",
+     "fn": "relay_state",
+     "starter": "def relay_state(events, hold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         25,
+         15,
+         8,
+         25
+        ],
+        10
+       ],
+       "expect": [
+        0,
+        1,
+        1,
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [],
+        10
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         30,
+         12,
+         12
+        ],
+        15
+       ],
+       "expect": [
+        1,
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Pull in at 20, drop out below the hold value.",
+     "solution": "def relay_state(events, hold):\n    out = []\n    closed = 0\n    for i in events:\n        if closed:\n            if i < hold:\n                closed = 0\n        elif i >= 20:\n            closed = 1\n        out.append(closed)\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Diodes and LEDs",
+   "maps": [
+    {
+     "title": "Diodes",
+     "links": [
+      "Semiconductor | sits between | Metal and insulator",
+      "Diode | passes | One direction",
+      "Forward drop | is | About 0.7 V",
+      "Rectifier | makes | AC into DC",
+      "Zener | holds | A voltage",
+      "LED | emits | Light",
+      "Resistor | limits | LED current"
+     ]
+    }
+   ],
+   "summary": [
+    "A diode lets current go one way and blocks it the other. A silicon diode drops about 0.6 to 0.7 volts when it conducts.",
+    "Rectifiers use diodes to change AC into pulsing DC. A Zener diode is used backwards to hold a steady voltage.",
+    "An LED is a diode that gives off light, and it always needs a resistor to limit its current."
+   ],
+   "glossary": [
+    {
+     "term": "Diode",
+     "def": "A part that conducts mainly one way."
+    },
+    {
+     "term": "Forward voltage",
+     "def": "The drop across a conducting diode."
+    },
+    {
+     "term": "Rectifier",
+     "def": "A circuit that turns AC into DC."
+    },
+    {
+     "term": "Zener diode",
+     "def": "A diode that conducts backwards at a set voltage."
+    },
+    {
+     "term": "LED",
+     "def": "A light-emitting diode."
+    },
+    {
+     "term": "Anode and cathode",
+     "def": "The positive and negative ends of a diode."
+    }
+   ],
+   "keyPoints": [
+    "Silicon diode forward drop is about 0.7 V; a red LED is about 2 V.",
+    "The stripe on a diode marks the cathode.",
+    "A half-wave rectifier uses one diode, a full-wave one uses four in a bridge.",
+    "A bridge loses about 1.4 V (two drops).",
+    "LED resistor: R = (Vsupply - Vled) / I.",
+    "Add a capacitor after the rectifier to smooth the ripple."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A diode is a flap that opens one way only. An LED is a flap that glows when water goes through, so it needs a narrow pipe to stay safe."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Silicon is the base of electronics. In its pure state it conducts poorly. Adding tiny amounts of other atoms makes either an N type, with extra electrons, or a P type, with missing ones, called holes. Join an N and a P piece and you get a PN junction, which is a diode."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A diode is like a one-way valve. Forward-biased, with the positive on the anode, it conducts after about 0.7 volts. Reversed, it blocks. Real diodes break down if the reverse voltage is too high."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "AC swings positive and negative. One diode passes only the positive half, which makes a half-wave rectifier. Four diodes in a bridge turn both halves the same way, giving full-wave. A capacitor across the output fills the gaps and smooths the result."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# an LED on a 9 V battery\nv_supply = 9\nv_led = 2.0\ni = 0.015          # 15 mA\nr = (v_supply - v_led) / i\nprint(round(r))    # 467 ohms, use 470"
+    },
+    {
+     "type": "text",
+     "items": [
+      "An LED makes light when current flows, but it has almost no resistance by itself. Without a resistor it draws too much and burns out. Use the formula with the LED's forward voltage. A Zener diode has a different trick: used in reverse, it conducts at a set voltage and holds it steady."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which end does the stripe mark?",
+     "options": [
+      "Cathode",
+      "Anode",
+      "Gate",
+      "Base"
+     ],
+     "answer": 0,
+     "explain": "Negative side."
+    },
+    {
+     "q": "Why does an LED need a resistor?",
+     "options": [
+      "To limit current",
+      "To make light",
+      "To add voltage",
+      "To cool it"
+     ],
+     "answer": 0,
+     "explain": "Or it burns out."
+    },
+    {
+     "q": "What does a bridge use?",
+     "options": [
+      "Four diodes",
+      "One diode",
+      "Two coils",
+      "A relay"
+     ],
+     "answer": 0,
+     "explain": "Full-wave."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Silicon drop?",
+     "a": "About 0.7 V."
+    },
+    {
+     "q": "What is a Zener for?",
+     "a": "Holding a voltage."
+    },
+    {
+     "q": "What does a rectifier do?",
+     "a": "AC to DC."
+    },
+    {
+     "q": "What is a hole?",
+     "a": "A missing electron."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Diodes",
+     "intro": "Match each part with its use.",
+     "pairs": [
+      [
+       "Rectifier diode",
+       "AC to DC"
+      ],
+      [
+       "Zener diode",
+       "Voltage reference"
+      ],
+      [
+       "LED",
+       "Light"
+      ],
+      [
+       "Photodiode",
+       "Light detector"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "LED resistor",
+     "intro": "Write led_resistor(vs, vf, i): the resistor in ohms for current i amperes, rounded to 2 decimals, and the next higher E12 value (1.0 1.2 1.5 1.8 2.2 2.7 3.3 3.9 4.7 5.6 6.8 8.2 times a power of ten). Return [exact, standard].",
+     "fn": "led_resistor",
+     "starter": "def led_resistor(vs, vf, i):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        9,
+        2.0,
+        0.015
+       ],
+       "expect": [
+        466.67,
+        470.0
+       ],
+       "approx": 0.01
+      },
+      {
+       "args": [
+        5,
+        2.0,
+        0.02
+       ],
+       "expect": [
+        150.0,
+        150.0
+       ],
+       "approx": 0.01
+      },
+      {
+       "args": [
+        12,
+        3.2,
+        0.01
+       ],
+       "expect": [
+        880.0,
+        1000.0
+       ],
+       "approx": 0.01
+      },
+      {
+       "args": [
+        3.3,
+        2.0,
+        0.005
+       ],
+       "expect": [
+        260.0,
+        270.0
+       ],
+       "approx": 0.01
+      }
+     ],
+     "hint": "Round up to a standard value.",
+     "solution": "def led_resistor(vs, vf, i):\n    import math\n    r = (vs - vf) / i\n    base = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2, 10.0]\n    p = math.floor(math.log10(r))\n    best = None\n    for b in base:\n        c = b * 10 ** p\n        if c >= r - 1e-9:\n            best = c\n            break\n    return [round(r, 2), round(best, 2)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Rectify",
+     "intro": "Write rectify(samples, mode): samples is a list of voltages. 'half' keeps the positive ones and sets negatives to 0; 'full' gives the absolute value. Ignore diode drops.",
+     "fn": "rectify",
+     "starter": "def rectify(samples, mode):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         -1,
+         2,
+         -2
+        ],
+        "half"
+       ],
+       "expect": [
+        1,
+        0,
+        2,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         -1,
+         2,
+         -2
+        ],
+        "full"
+       ],
+       "expect": [
+        1,
+        1,
+        2,
+        2
+       ]
+      },
+      {
+       "args": [
+        [],
+        "half"
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Think of the diode as a valve.",
+     "solution": "def rectify(samples, mode):\n    out = []\n    for s in samples:\n        if mode == 'half':\n            out.append(s if s > 0 else 0)\n        else:\n            out.append(abs(s))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Zener regulator",
+     "intro": "Write zener_r(vin, vz, i_load, i_zener): the series resistor, rounded to 2 decimals, and its power in watts, rounded to 3. Return [r, p].",
+     "fn": "zener_r",
+     "starter": "def zener_r(vin, vz, i_load, i_zener):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        12,
+        5.1,
+        0.02,
+        0.005
+       ],
+       "expect": [
+        276.0,
+        0.173
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        9,
+        5.6,
+        0.01,
+        0.005
+       ],
+       "expect": [
+        226.67,
+        0.051
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        15,
+        12,
+        0.05,
+        0.01
+       ],
+       "expect": [
+        50.0,
+        0.18
+       ],
+       "approx": 0.001
+      }
+     ],
+     "hint": "The resistor carries both currents.",
+     "solution": "def zener_r(vin, vz, i_load, i_zener):\n    i = i_load + i_zener\n    r = (vin - vz) / i\n    p = (vin - vz) * i\n    return [round(r, 2), round(p, 3)]\n"
+    }
+   ]
+  },
+  {
+   "title": "Transistors",
+   "maps": [
+    {
+     "title": "Transistors",
+     "links": [
+      "Transistor | controls | A big current",
+      "Base | takes | A small current",
+      "Collector | carries | The load current",
+      "Gain | multiplies | Current",
+      "Saturation | is | Fully on",
+      "FET | uses | Voltage",
+      "Switch | is | A key use"
+     ]
+    }
+   ],
+   "summary": [
+    "A transistor lets a small signal control a larger current. It can act as an amplifier or as an electronic switch.",
+    "In a bipolar transistor, a small base current controls a collector current that is hundreds of times bigger.",
+    "A field-effect transistor, or FET, is controlled by voltage on its gate and takes almost no current to do it."
+   ],
+   "glossary": [
+    {
+     "term": "Transistor",
+     "def": "A three-terminal part where one terminal controls current between the others."
+    },
+    {
+     "term": "Base",
+     "def": "The control terminal of a bipolar transistor."
+    },
+    {
+     "term": "Gain (hFE)",
+     "def": "Collector current divided by base current."
+    },
+    {
+     "term": "Saturation",
+     "def": "When the transistor is fully on as a switch."
+    },
+    {
+     "term": "MOSFET",
+     "def": "A field-effect transistor with an insulated gate."
+    },
+    {
+     "term": "Bias",
+     "def": "The steady setting that puts a transistor in the right range."
+    }
+   ],
+   "keyPoints": [
+    "NPN: current flows from collector to emitter when the base is driven above about 0.7 V.",
+    "Ic = beta x Ib while not saturated.",
+    "As a switch, drive the base hard: Ib about Ic / (beta / 10).",
+    "Vbe is about 0.7 V for silicon.",
+    "Use a resistor in series with the base.",
+    "A MOSFET gate draws almost no current; mind static."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A transistor is a tap turned by a tiny trickle. A little water on the handle lets a big river through."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The transistor is the building block of modern electronics. In an NPN transistor, a small current into the base lets a much bigger current flow from collector to emitter. The ratio is the gain, called beta or hFE, often 100 or more."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} I_C=\\beta\\,I_B \\\\[0.6em] R_B=\\frac{V_{in}-V_{BE}}{I_B} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "As a switch, you push the transistor into saturation. Choose a base current several times higher than the minimum, so the transistor is fully on and the voltage across it is a few tenths of a volt. A common rule is to assume a gain of only one tenth of the stated beta."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# switch a 100 mA lamp from a 5 V logic pin\nic = 0.1\nbeta = 100\nib = ic / (beta / 10)       # drive hard\nrb = (5 - 0.7) / ib\nprint(round(rb))            # 430 ohms"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A field-effect transistor works differently. A voltage on the gate controls the current from drain to source, and the gate draws almost nothing. Power MOSFETs switch big currents with very little loss. Their gates are delicate, so handle them with care against static."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the base do?",
+     "options": [
+      "Controls the main current",
+      "Supplies power",
+      "Makes light",
+      "Stores charge"
+     ],
+     "answer": 0,
+     "explain": "A small current controls a big one."
+    },
+    {
+     "q": "What is Ic with beta 100 and Ib 1 mA?",
+     "options": [
+      "100 mA",
+      "1 mA",
+      "0.01 mA",
+      "101 mA"
+     ],
+     "answer": 0,
+     "explain": "Beta x Ib."
+    },
+    {
+     "q": "Which draws almost no gate current?",
+     "options": [
+      "A MOSFET",
+      "A relay",
+      "A diode",
+      "A resistor"
+     ],
+     "answer": 0,
+     "explain": "Voltage controlled."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is hFE?",
+     "a": "Current gain."
+    },
+    {
+     "q": "What is saturation?",
+     "a": "Fully on."
+    },
+    {
+     "q": "Why a base resistor?",
+     "a": "To set base current."
+    },
+    {
+     "q": "What is a FET?",
+     "a": "A voltage controlled transistor."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Terminals",
+     "intro": "Match the terminal with its job.",
+     "pairs": [
+      [
+       "Base",
+       "Control input"
+      ],
+      [
+       "Collector",
+       "Receives the load current"
+      ],
+      [
+       "Emitter",
+       "Common return"
+      ],
+      [
+       "Gate",
+       "Control input of a FET"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Base resistor",
+     "intro": "Write base_r(vin, ic, beta): choose the base current as ic / (beta / 10) and return the base resistor in ohms (Vbe 0.7 V), rounded to 1 decimal.",
+     "fn": "base_r",
+     "starter": "def base_r(vin, ic, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        0.1,
+        100
+       ],
+       "expect": 430.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        3.3,
+        0.02,
+        200
+       ],
+       "expect": 2600.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        9,
+        0.5,
+        50
+       ],
+       "expect": 83.0,
+       "approx": 0.01
+      }
+     ],
+     "hint": "Drive the base hard.",
+     "solution": "def base_r(vin, ic, beta):\n    ib = ic / (beta / 10.0)\n    return round((vin - 0.7) / ib, 1)\n"
+    },
+    {
+     "type": "python",
+     "title": "Collector current",
+     "intro": "Write collector(vcc, rc, ib, beta): the collector current in amperes: beta x ib, but not more than the saturation limit (vcc - 0.2) / rc. Round to 5 decimals.",
+     "fn": "collector",
+     "starter": "def collector(vcc, rc, ib, beta):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        9,
+        1000,
+        2e-05,
+        100
+       ],
+       "expect": 0.002,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        9,
+        1000,
+        0.001,
+        100
+       ],
+       "expect": 0.0088,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        5,
+        100,
+        0.0005,
+        200
+       ],
+       "expect": 0.048,
+       "approx": 0.0001
+      }
+     ],
+     "hint": "Take the smaller.",
+     "solution": "def collector(vcc, rc, ib, beta):\n    ic = beta * ib\n    lim = (vcc - 0.2) / rc\n    return round(min(ic, lim), 5)\n"
+    },
+    {
+     "type": "python",
+     "title": "Switch state",
+     "intro": "Write is_on(vin, vbe_on): return 1 if the input voltage is at least vbe_on (a transistor switch conducts), else 0, for each input in the list vin. Return the list.",
+     "fn": "is_on",
+     "starter": "def is_on(vin, vbe_on):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0.3,
+         0.7,
+         5
+        ],
+        0.7
+       ],
+       "expect": [
+        0,
+        0,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [],
+        0.6
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         1.0,
+         0.5
+        ],
+        0.8
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      }
+     ],
+     "hint": "A threshold.",
+     "solution": "def is_on(vin, vbe_on):\n    return [1 if v >= vbe_on else 0 for v in vin]\n"
+    },
+    {
+     "type": "python",
+     "title": "Amplifier gain",
+     "intro": "Write amp_gain(rc, re): the voltage gain of a common-emitter stage with emitter resistor, approximately rc / re, rounded to 2 decimals.",
+     "fn": "amp_gain",
+     "starter": "def amp_gain(rc, re):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        4700,
+        470
+       ],
+       "expect": 10.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        10000,
+        1000
+       ],
+       "expect": 10.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        2200,
+        100
+       ],
+       "expect": 22.0,
+       "approx": 0.01
+      }
+     ],
+     "hint": "The ratio of resistors.",
+     "solution": "def amp_gain(rc, re):\n    return round(rc / re, 2)\n"
+    }
+   ]
+  },
+  {
+   "title": "Thyristors and light",
+   "maps": [
+    {
+     "title": "Switches and light",
+     "links": [
+      "SCR | latches | On",
+      "Triac | switches | AC both ways",
+      "UJT | makes | Pulses",
+      "LED | emits | Light",
+      "Photoresistor | changes | With light",
+      "Photodiode | makes | Current from light",
+      "Solar cell | gives | Power"
+     ]
+    }
+   ],
+   "summary": [
+    "A thyristor, such as an SCR or a triac, is a switch that a small pulse turns on and that then stays on until the current drops. Triacs work with AC in both directions.",
+    "Light is a wave, and LEDs, photoresistors, photodiodes and solar cells all turn electricity into light or light into electricity.",
+    "A lens bends light; a convex lens can focus it onto a detector."
+   ],
+   "glossary": [
+    {
+     "term": "SCR",
+     "def": "A silicon controlled rectifier; a one-way latching switch."
+    },
+    {
+     "term": "Triac",
+     "def": "A thyristor that conducts in both AC directions."
+    },
+    {
+     "term": "Latching",
+     "def": "Staying on after the trigger has gone."
+    },
+    {
+     "term": "Photoresistor",
+     "def": "A resistor whose value falls in bright light."
+    },
+    {
+     "term": "Photodiode",
+     "def": "A diode that makes current when lit."
+    },
+    {
+     "term": "Solar cell",
+     "def": "A large photodiode that produces power."
+    }
+   ],
+   "keyPoints": [
+    "An SCR turns on with a gate pulse and off when its current falls to zero.",
+    "Triacs control AC power, for example in light dimmers.",
+    "Mains circuits are dangerous: only experiment with low voltage.",
+    "Light's frequency is the speed of light divided by wavelength.",
+    "A photoresistor in a divider gives a voltage that follows the light.",
+    "A convex lens brings parallel rays to a focus."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A thyristor is a gate that stays open once you nudge it, until the river stops. Light parts turn brightness into a push, or a push into brightness."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A thyristor is a switch with memory. A short pulse on the gate turns an SCR on, and it stays on even after the pulse ends. It switches off only when the current through it falls to zero. That makes it useful with AC, where the current drops to zero every cycle."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A triac is like two SCRs back to back, so it handles both halves of an AC wave. By turning it on later in each half-cycle, a dimmer cuts the average power. This is how a lamp is dimmed without wasting heat in a resistor."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Light is a wave. Red light has a long wavelength and violet a short one, and frequency equals the speed of light divided by wavelength. An LED gives off light when current crosses its junction, and different materials give different colors."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "f=\\frac{c}{\\lambda}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Light detectors come in several types. A photoresistor changes its resistance with light, is cheap and slow. A photodiode makes a small current when lit and is fast. A phototransistor amplifies that current. A solar cell is a big photodiode that delivers useful power.",
+      "Put a detector in a divider to turn light into a voltage."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What turns off an SCR?",
+     "options": [
+      "Current falling to zero",
+      "A gate pulse",
+      "More light",
+      "A capacitor"
+     ],
+     "answer": 0,
+     "explain": "It latches."
+    },
+    {
+     "q": "Which switches AC both ways?",
+     "options": [
+      "Triac",
+      "SCR",
+      "LED",
+      "Photodiode"
+     ],
+     "answer": 0,
+     "explain": "Two SCRs back to back."
+    },
+    {
+     "q": "What does red light have?",
+     "options": [
+      "A longer wavelength than violet",
+      "A shorter wavelength",
+      "No frequency",
+      "Mass"
+     ],
+     "answer": 0,
+     "explain": "Violet is shorter."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is latching?",
+     "a": "Staying on."
+    },
+    {
+     "q": "What is a photodiode?",
+     "a": "A diode that makes current from light."
+    },
+    {
+     "q": "What is a triac for?",
+     "a": "AC power control."
+    },
+    {
+     "q": "What gives a solar cell power?",
+     "a": "Light on a PN junction."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Light parts",
+     "intro": "Match each part with its job.",
+     "pairs": [
+      [
+       "Photoresistor",
+       "Resistance falls in light"
+      ],
+      [
+       "Photodiode",
+       "Makes current from light"
+      ],
+      [
+       "Phototransistor",
+       "Amplifies photocurrent"
+      ],
+      [
+       "Solar cell",
+       "Produces power from light"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "SCR simulation",
+     "intro": "Write scr(steps): steps is a list of [gate, current_flowing] pairs (1 or 0). The SCR is off at the start. It turns on when gate is 1 and current is 1. Once on, it stays on while current is 1 and turns off when current is 0. Return the list of states after each step (1 on, 0 off).",
+     "fn": "scr",
+     "starter": "def scr(steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          1
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          0,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        1,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          0,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        1,
+        1
+       ]
+      }
+     ],
+     "hint": "Latch while the current continues.",
+     "solution": "def scr(steps):\n    on = 0\n    out = []\n    for gate, cur in steps:\n        if on:\n            if not cur:\n                on = 0\n        elif gate and cur:\n            on = 1\n        out.append(on)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Light frequency",
+     "intro": "Write freq_thz(nm): the frequency in terahertz of light with wavelength nm nanometres (c = 3e8 m/s), rounded to 1 decimal.",
+     "fn": "freq_thz",
+     "starter": "def freq_thz(nm):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        700
+       ],
+       "expect": 428.6,
+       "approx": 0.1
+      },
+      {
+       "args": [
+        550
+       ],
+       "expect": 545.5,
+       "approx": 0.1
+      },
+      {
+       "args": [
+        450
+       ],
+       "expect": 666.7,
+       "approx": 0.1
+      },
+      {
+       "args": [
+        850
+       ],
+       "expect": 352.9,
+       "approx": 0.1
+      }
+     ],
+     "hint": "f = c / wavelength.",
+     "solution": "def freq_thz(nm):\n    return round(3e8 / (nm * 1e-9) / 1e12, 1)\n"
+    },
+    {
+     "type": "python",
+     "title": "Light sensor",
+     "intro": "Write ldr_out(vcc, r_fixed, r_ldr): the divider voltage across the fixed resistor, rounded to 3 decimals.",
+     "fn": "ldr_out",
+     "starter": "def ldr_out(vcc, r_fixed, r_ldr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        10000,
+        1000
+       ],
+       "expect": 4.545,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        5,
+        10000,
+        100000
+       ],
+       "expect": 0.455,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        9,
+        4700,
+        4700
+       ],
+       "expect": 4.5,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Fixed over the sum.",
+     "solution": "def ldr_out(vcc, r_fixed, r_ldr):\n    return round(vcc * r_fixed / (r_fixed + r_ldr), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Dimmer power",
+     "intro": "Write dimmer(angle): a triac turns on at firing angle (0 to 180 degrees) of each half cycle. The fraction of full power delivered to a resistive load is 1 - angle/180 + sin(2 x angle)/(2 pi). Return it rounded to 3 decimals.",
+     "fn": "dimmer",
+     "starter": "def dimmer(angle):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 1.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        90
+       ],
+       "expect": 0.5,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        180
+       ],
+       "expect": -0.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        45
+       ],
+       "expect": 0.909,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Use radians for sin.",
+     "solution": "def dimmer(angle):\n    import math\n    a = math.radians(angle)\n    return round(1 - angle / 180.0 + math.sin(2 * a) / (2 * math.pi), 3)\n"
+    }
+   ]
+  },
+  {
+   "title": "Waves, signals and noise",
+   "maps": [
+    {
+     "title": "Signals",
+     "links": [
+      "Wave | repeats | In time",
+      "Frequency | counts | Cycles per second",
+      "Period | is | One cycle's time",
+      "Amplitude | is | Size",
+      "RMS | is | Equivalent DC",
+      "Duty cycle | is | Time on",
+      "Noise | hides | Signal"
+     ]
+    }
+   ],
+   "summary": [
+    "A signal is a voltage that changes with time. A wave repeats: frequency counts how many cycles each second, and the period is the time of one cycle.",
+    "The effective value of an AC wave is its RMS value. A sine wave's RMS is its peak divided by the square root of two.",
+    "Noise is unwanted signal, and engineers compare size with decibels."
+   ],
+   "glossary": [
+    {
+     "term": "Frequency",
+     "def": "Cycles per second, in hertz."
+    },
+    {
+     "term": "Period",
+     "def": "Time for one cycle: T = 1 / f."
+    },
+    {
+     "term": "RMS",
+     "def": "The DC value that gives the same heating."
+    },
+    {
+     "term": "Duty cycle",
+     "def": "The fraction of the time a pulse is on."
+    },
+    {
+     "term": "Peak to peak",
+     "def": "From the lowest to the highest value."
+    },
+    {
+     "term": "Decibel",
+     "def": "A logarithmic way to compare sizes."
+    }
+   ],
+   "keyPoints": [
+    "f = 1 / T.",
+    "RMS of a sine = peak / 1.414.",
+    "Mains 120 V RMS has a peak of about 170 V.",
+    "Duty cycle = on time / period.",
+    "Pulses and square waves carry digital information.",
+    "dB = 20 log10 of a voltage ratio."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A wave is a rope you shake. How fast you shake is the frequency, how big is the amplitude, and noise is someone else shaking the rope too."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A battery gives a flat line. Most useful signals change. Sound from a microphone, a radio wave, a heartbeat from a sensor and the clock inside a computer are all voltages that vary with time. An oscilloscope draws them on a screen."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} f=\\frac{1}{T} \\\\[0.6em] V_{\\text{rms}}=\\frac{V_{\\text{peak}}}{\\sqrt 2} \\\\[0.6em] \\text{dB}=20\\log_{10}\\frac{V_2}{V_1} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A wave that repeats has a frequency, in hertz, and a period, the time for one cycle. A 1000 hertz tone has a period of one millisecond. The amplitude says how big it is. A single number is useful for AC, the RMS value, which gives the same heating as a DC of the same size."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Pulses change between low and high. How long the pulse stays high, compared with the full period, is the duty cycle. Changing the duty cycle controls average power to a motor or the brightness of an LED without wasting heat."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Noise is any unwanted signal. It comes from nearby motors, lights and radios, and from the random motion of electrons inside parts. The signal to noise ratio says how much bigger your signal is than the noise. Engineers give it in decibels, because it covers huge ranges."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the period of 50 Hz?",
+     "options": [
+      "20 ms",
+      "50 ms",
+      "2 ms",
+      "5 ms"
+     ],
+     "answer": 0,
+     "explain": "1 / 50."
+    },
+    {
+     "q": "What is a 100% duty cycle?",
+     "options": [
+      "Always on",
+      "Always off",
+      "Half on",
+      "Noise"
+     ],
+     "answer": 0,
+     "explain": "On the whole time."
+    },
+    {
+     "q": "What is RMS?",
+     "options": [
+      "The equivalent DC heating value",
+      "The peak",
+      "The period",
+      "The noise"
+     ],
+     "answer": 0,
+     "explain": "Effective value."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is f in terms of T?",
+     "a": "1 over T."
+    },
+    {
+     "q": "What is duty cycle?",
+     "a": "Fraction of time on."
+    },
+    {
+     "q": "What does a scope show?",
+     "a": "Voltage against time."
+    },
+    {
+     "q": "What is noise?",
+     "a": "Unwanted signal."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Frequency",
+       "Cycles per second"
+      ],
+      [
+       "Period",
+       "Time of one cycle"
+      ],
+      [
+       "Amplitude",
+       "Size of the wave"
+      ],
+      [
+       "Duty cycle",
+       "Fraction of time on"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "RMS",
+     "intro": "Write rms(samples): the root mean square of the list, rounded to 4 decimals.",
+     "fn": "rms",
+     "starter": "def rms(samples):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         -1,
+         1,
+         -1
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         3,
+         4
+        ]
+       ],
+       "expect": 3.5355,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         0,
+         5,
+         0,
+         -5
+        ]
+       ],
+       "expect": 3.5355,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Square, average, square root.",
+     "solution": "def rms(samples):\n    import math\n    t = 0.0\n    for s in samples:\n        t += s * s\n    return round(math.sqrt(t / len(samples)), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Duty cycle",
+     "intro": "Write duty(samples, threshold): the fraction of the samples that are at least threshold, rounded to 3 decimals.",
+     "fn": "duty",
+     "starter": "def duty(samples, threshold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         5,
+         5,
+         0
+        ],
+        2.5
+       ],
+       "expect": 0.5,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         5,
+         5,
+         5,
+         5
+        ],
+        2.5
+       ],
+       "expect": 1.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         5
+        ],
+        2.5
+       ],
+       "expect": 0.25,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Count the high samples.",
+     "solution": "def duty(samples, threshold):\n    n = 0\n    for s in samples:\n        if s >= threshold:\n            n += 1\n    return round(n / len(samples), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Decibels",
+     "intro": "Write db(v_out, v_in): 20 x log10(v_out / v_in), rounded to 2 decimals.",
+     "fn": "db",
+     "starter": "def db(v_out, v_in):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        1
+       ],
+       "expect": 20.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        1,
+        10
+       ],
+       "expect": -20.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        2,
+        1
+       ],
+       "expect": 6.02,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        1,
+        1
+       ],
+       "expect": 0.0,
+       "approx": 0.01
+      }
+     ],
+     "hint": "A voltage ratio, so 20.",
+     "solution": "def db(v_out, v_in):\n    import math\n    return round(20 * math.log10(v_out / v_in), 2)\n"
+    },
+    {
+     "type": "python",
+     "title": "Peak from mains",
+     "intro": "Write peaks(vrms): return [peak, peak_to_peak] of a sine wave with that RMS voltage, rounded to 1 decimal.",
+     "fn": "peaks",
+     "starter": "def peaks(vrms):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        120
+       ],
+       "expect": [
+        169.7,
+        339.4
+       ],
+       "approx": 0.1
+      },
+      {
+       "args": [
+        230
+       ],
+       "expect": [
+        325.3,
+        650.5
+       ],
+       "approx": 0.1
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": [
+        1.4,
+        2.8
+       ],
+       "approx": 0.1
+      }
+     ],
+     "hint": "peak = rms x 1.414.",
+     "solution": "def peaks(vrms):\n    import math\n    p = vrms * math.sqrt(2)\n    return [round(p, 1), round(2 * p, 1)]\n"
+    }
+   ]
+  },
+  {
+   "title": "Digital logic: gates",
+   "maps": [
+    {
+     "title": "Gates",
+     "links": [
+      "Bit | is | 0 or 1",
+      "AND | needs | All inputs",
+      "OR | needs | One input",
+      "NOT | flips | A bit",
+      "NAND | is | Universal",
+      "Truth table | lists | All results",
+      "Binary | counts | In twos"
+     ]
+    }
+   ],
+   "summary": [
+    "Digital circuits use only two voltage levels, called low and high, written 0 and 1. A bit is one such digit.",
+    "Logic gates combine bits: AND is 1 only if all inputs are 1, OR is 1 if any input is 1, and NOT flips a bit.",
+    "With NAND gates alone you can build every other gate, so digital chips can be made from one repeating cell."
+   ],
+   "glossary": [
+    {
+     "term": "Bit",
+     "def": "A binary digit, 0 or 1."
+    },
+    {
+     "term": "Gate",
+     "def": "A circuit that outputs a logic function of its inputs."
+    },
+    {
+     "term": "Truth table",
+     "def": "A list of outputs for every input combination."
+    },
+    {
+     "term": "Binary",
+     "def": "Counting with only 0 and 1, base two."
+    },
+    {
+     "term": "Adder",
+     "def": "A circuit that adds binary numbers."
+    },
+    {
+     "term": "TTL and CMOS",
+     "def": "Two families of digital chips."
+    }
+   ],
+   "keyPoints": [
+    "AND: 1 only if both are 1.",
+    "OR: 1 if either is 1.",
+    "NOT: 1 becomes 0 and 0 becomes 1.",
+    "NAND is AND then NOT; NOR is OR then NOT.",
+    "XOR is 1 when the inputs differ.",
+    "A half adder is XOR for the sum and AND for the carry."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A logic gate is a tiny judge who looks at some yes-or-no answers and gives one yes or no. Put many together and you can add numbers."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Digital circuits are simple on purpose. A signal is either low or high, so small noise does not change the meaning. This makes computers reliable, and it lets us build huge systems from small parts."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Binary counts using only two digits. Each place is a power of two: 1, 2, 4, 8, 16. The number 1011 in binary is 8 plus 2 plus 1, which is 11. A group of eight bits is a byte."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# truth table of AND, OR, XOR\nfor a in (0, 1):\n    for b in (0, 1):\n        print(a, b, a & b, a | b, a ^ b)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A logic gate has one or more inputs and one output. NAND is special. Its output is 0 only when all inputs are 1. Any other gate can be built from NAND gates, so it is called universal. Real chips are made from a few transistors per gate."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Gates combine to do arithmetic. A half adder adds two bits: the sum is XOR and the carry is AND. Chain two of them and an OR to make a full adder, which also takes a carry in. A row of full adders adds binary numbers of any length."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "When is AND true?",
+     "options": [
+      "All inputs 1",
+      "Any input 1",
+      "No inputs 1",
+      "Never"
+     ],
+     "answer": 0,
+     "explain": "Both must be 1."
+    },
+    {
+     "q": "What is 1011 in binary?",
+     "options": [
+      "11",
+      "13",
+      "9",
+      "7"
+     ],
+     "answer": 0,
+     "explain": "8 + 2 + 1."
+    },
+    {
+     "q": "Which gate is universal?",
+     "options": [
+      "NAND",
+      "AND",
+      "XOR",
+      "Buffer"
+     ],
+     "answer": 0,
+     "explain": "All gates can be built from it."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a bit?",
+     "a": "0 or 1."
+    },
+    {
+     "q": "What does XOR do?",
+     "a": "1 when inputs differ."
+    },
+    {
+     "q": "What is a truth table?",
+     "a": "All outputs listed."
+    },
+    {
+     "q": "What is a byte?",
+     "a": "Eight bits."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Gates",
+     "intro": "Match each gate with its rule.",
+     "pairs": [
+      [
+       "AND",
+       "1 only if all inputs are 1"
+      ],
+      [
+       "OR",
+       "1 if any input is 1"
+      ],
+      [
+       "XOR",
+       "1 if inputs differ"
+      ],
+      [
+       "NAND",
+       "0 only if all inputs are 1"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Logic expression",
+     "intro": "Write logic(expr, values): expr is nested lists like ['and', 'a', ['not', 'b']]; operators 'and', 'or', 'not', 'xor', 'nand'; variables are names looked up in the dict values. Return 0 or 1.",
+     "fn": "logic",
+     "starter": "def logic(expr, values):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "and",
+         "a",
+         [
+          "not",
+          "b"
+         ]
+        ],
+        {
+         "a": 1,
+         "b": 0
+        }
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         "or",
+         "a",
+         "b"
+        ],
+        {
+         "a": 0,
+         "b": 0
+        }
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         "xor",
+         "a",
+         "b"
+        ],
+        {
+         "a": 1,
+         "b": 0
+        }
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         "nand",
+         "a",
+         "b"
+        ],
+        {
+         "a": 1,
+         "b": 1
+        }
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Evaluate arguments recursively.",
+     "solution": "def logic(expr, values):\n    if isinstance(expr, str):\n        return values[expr]\n    op = expr[0]\n    args = [logic(e, values) for e in expr[1:]]\n    if op == 'not':\n        return 1 - args[0]\n    if op == 'and':\n        return 1 if all(args) else 0\n    if op == 'or':\n        return 1 if any(args) else 0\n    if op == 'xor':\n        return args[0] ^ args[1]\n    if op == 'nand':\n        return 0 if all(args) else 1\n    return 0\n"
+    },
+    {
+     "type": "python",
+     "title": "Binary conversion",
+     "intro": "Write to_binary(n, width): n as binary text, padded with zeros to at least width digits.",
+     "fn": "to_binary",
+     "starter": "def to_binary(n, width):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        11,
+        4
+       ],
+       "expect": "1011"
+      },
+      {
+       "args": [
+        5,
+        8
+       ],
+       "expect": "00000101"
+      },
+      {
+       "args": [
+        0,
+        3
+       ],
+       "expect": "000"
+      },
+      {
+       "args": [
+        255,
+        8
+       ],
+       "expect": "11111111"
+      }
+     ],
+     "hint": "Repeated division by two.",
+     "solution": "def to_binary(n, width):\n    s = ''\n    while n > 0:\n        s = str(n % 2) + s\n        n = n // 2\n    while len(s) < width:\n        s = '0' + s\n    return s\n"
+    },
+    {
+     "type": "python",
+     "title": "Ripple adder",
+     "intro": "Write add_bits(a, b): a and b are equal-length lists of bits, least significant bit first. Add them with a chain of full adders and return the sum bits, least significant first, with one extra bit for the final carry.",
+     "fn": "add_bits",
+     "starter": "def add_bits(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1,
+         0
+        ],
+        [
+         1,
+         0,
+         1
+        ]
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        0,
+        1,
+        1,
+        1
+       ]
+      }
+     ],
+     "hint": "sum = x xor y xor carry.",
+     "solution": "def add_bits(a, b):\n    out = []\n    carry = 0\n    for x, y in zip(a, b):\n        s = x ^ y ^ carry\n        carry = (x & y) | (carry & (x ^ y))\n        out.append(s)\n    out.append(carry)\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Sequential logic: memory and counting",
+   "maps": [
+    {
+     "title": "Memory",
+     "links": [
+      "Latch | holds | A bit",
+      "Flip-flop | stores | One bit",
+      "Clock | steps | Time",
+      "Counter | counts | Pulses",
+      "Register | holds | Many bits",
+      "Shift register | moves | Bits",
+      "Feedback | makes | Memory"
+     ]
+    }
+   ],
+   "summary": [
+    "Combinational logic only reacts to its current inputs. Sequential logic also remembers the past, because its outputs feed back into its inputs.",
+    "A flip-flop stores one bit, and changes only on the edge of a clock. Several flip-flops make a counter, a register or a shift register.",
+    "A clock is a steady stream of pulses that keeps a digital system in step."
+   ],
+   "glossary": [
+    {
+     "term": "Latch",
+     "def": "A circuit that holds one bit using feedback."
+    },
+    {
+     "term": "Flip-flop",
+     "def": "A clocked latch that changes only on a clock edge."
+    },
+    {
+     "term": "Clock",
+     "def": "A regular pulse that steps a digital circuit."
+    },
+    {
+     "term": "Counter",
+     "def": "A set of flip-flops that counts pulses."
+    },
+    {
+     "term": "Register",
+     "def": "A group of flip-flops holding a number."
+    },
+    {
+     "term": "Shift register",
+     "def": "A chain that moves bits one place per clock."
+    }
+   ],
+   "keyPoints": [
+    "A D flip-flop copies D to Q on the rising clock edge.",
+    "A toggle flip-flop flips on each clock edge, so it halves the frequency.",
+    "An n-bit counter counts from 0 to 2 to the n minus 1.",
+    "A shift register turns serial data to parallel and back.",
+    "Cross-coupled NOR or NAND gates form an SR latch.",
+    "Count the bits: 4 flip-flops give 16 states."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A flip-flop is a light switch that remembers. A row of them can count, and the clock is a drummer keeping everyone in time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The gates in the last chapter forget. Change the input and the output follows at once. To make memory, feed the output back into the input. Two cross-coupled NAND gates make a latch with two stable states. It holds a bit as long as it has power."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A flip-flop is a latch that waits for a clock. A D flip-flop looks at its input only on the rising edge of the clock and copies it to the output. In between edges it ignores the input, so the circuit changes in neat steps."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Connect a flip-flop so that its output feeds its input inverted, and it flips at each clock pulse. Its output is half the clock frequency. Chain four such stages and you get a counter that counts in binary from zero to fifteen, then repeats."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# a 3-bit counter, in Python\ncount = 0\nfor tick in range(10):\n    count = (count + 1) % 8\n    print(tick, format(count, '03b') if False else count)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A shift register moves bits along a chain, one place per clock. Feed bits in one at a time and they come out in parallel, or the other way. Registers hold a number between operations. Together with gates, these parts make up the processor inside a computer."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a D flip-flop copy?",
+     "options": [
+      "D on the clock edge",
+      "Q always",
+      "The clock",
+      "Ground"
+     ],
+     "answer": 0,
+     "explain": "Rising edge."
+    },
+    {
+     "q": "How many states have 4 flip-flops?",
+     "options": [
+      "16",
+      "4",
+      "8",
+      "32"
+     ],
+     "answer": 0,
+     "explain": "2 to the 4."
+    },
+    {
+     "q": "What makes a latch remember?",
+     "options": [
+      "Feedback",
+      "A battery",
+      "A fuse",
+      "A lens"
+     ],
+     "answer": 0,
+     "explain": "Output to input."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a clock?",
+     "a": "A stream of pulses."
+    },
+    {
+     "q": "What is a register?",
+     "a": "Flip-flops holding a number."
+    },
+    {
+     "q": "What does a toggle do?",
+     "a": "Halves the frequency."
+    },
+    {
+     "q": "What is a shift register?",
+     "a": "A chain that moves bits."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Memory parts",
+     "intro": "Match each part with its job.",
+     "pairs": [
+      [
+       "Latch",
+       "Holds a bit using feedback"
+      ],
+      [
+       "Flip-flop",
+       "Stores a bit on a clock edge"
+      ],
+      [
+       "Counter",
+       "Counts pulses"
+      ],
+      [
+       "Shift register",
+       "Moves bits along"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "D flip-flop",
+     "intro": "Write dff(d_values, clocks): both lists have the same length. The output starts at 0; whenever the clock list has a 1 after a 0 (a rising edge; the clock before the first sample is 0), the output copies the D value at that moment. Return the list of outputs.",
+     "fn": "dff",
+     "starter": "def dff(d_values, clocks):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0,
+         1,
+         1,
+         0
+        ],
+        [
+         0,
+         1,
+         0,
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [],
+        []
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Only change on a rising edge.",
+     "solution": "def dff(d_values, clocks):\n    q = 0\n    prev = 0\n    out = []\n    for d, c in zip(d_values, clocks):\n        if c == 1 and prev == 0:\n            q = d\n        prev = c\n        out.append(q)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Binary counter",
+     "intro": "Write counter(bits, pulses): an n-bit counter starts at 0. Return the list of its values after each of the pulses (it wraps around).",
+     "fn": "counter",
+     "starter": "def counter(bits, pulses):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2,
+        6
+       ],
+       "expect": [
+        1,
+        2,
+        3,
+        0,
+        1,
+        2
+       ]
+      },
+      {
+       "args": [
+        3,
+        3
+       ],
+       "expect": [
+        1,
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        1,
+        4
+       ],
+       "expect": [
+        1,
+        0,
+        1,
+        0
+       ]
+      }
+     ],
+     "hint": "Wrap with a remainder.",
+     "solution": "def counter(bits, pulses):\n    out = []\n    v = 0\n    for _ in range(pulses):\n        v = (v + 1) % (2 ** bits)\n        out.append(v)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Shift register",
+     "intro": "Write shift(bits, data): a shift register of the given length starts at all zeros. For each bit in data, shift everything one place to the right and insert the new bit at the left. Return the final contents as a list (left first).",
+     "fn": "shift",
+     "starter": "def shift(bits, data):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        4,
+        [
+         1,
+         0,
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        1,
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        3,
+        [
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        2,
+        []
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        3,
+        [
+         1,
+         1,
+         1,
+         0
+        ]
+       ],
+       "expect": [
+        0,
+        1,
+        1
+       ]
+      }
+     ],
+     "hint": "Drop the last, add at the left.",
+     "solution": "def shift(bits, data):\n    reg = [0] * bits\n    for d in data:\n        reg = [d] + reg[:-1]\n    return reg\n"
+    },
+    {
+     "type": "python",
+     "title": "SR latch",
+     "intro": "Write sr_latch(events): events is a list of [s, r] pairs. Q starts at 0. [1, 0] sets Q to 1; [0, 1] resets it to 0; [0, 0] holds; [1, 1] is forbidden: treat it as hold. Return the list of Q values.",
+     "fn": "sr_latch",
+     "starter": "def sr_latch(events):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          0
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        1,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1
+         ],
+         [
+          1,
+          0
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        1,
+        1
+       ]
+      }
+     ],
+     "hint": "Hold when not set or reset.",
+     "solution": "def sr_latch(events):\n    q = 0\n    out = []\n    for s, r in events:\n        if s == 1 and r == 0:\n            q = 1\n        elif s == 0 and r == 1:\n            q = 0\n        out.append(q)\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Linear ICs: op-amps, timers and regulators",
+   "maps": [
+    {
+     "title": "Linear ICs",
+     "links": [
+      "Op-amp | amplifies | A difference",
+      "Feedback | sets | Gain",
+      "555 | makes | Pulses",
+      "Regulator | holds | A voltage",
+      "Comparator | decides | Higher or lower",
+      "Linear | means | Continuous",
+      "IC | packs | Many parts"
+     ]
+    }
+   ],
+   "summary": [
+    "An integrated circuit, or IC, packs many transistors and resistors onto one chip. Linear ICs handle continuous signals, while digital ones handle bits.",
+    "An operational amplifier has huge gain, and feedback resistors set the exact gain. A 555 timer makes pulses and delays with two resistors and a capacitor.",
+    "A voltage regulator holds a steady output voltage, whatever the input or load does."
+   ],
+   "glossary": [
+    {
+     "term": "IC",
+     "def": "Integrated circuit: a whole circuit on one chip."
+    },
+    {
+     "term": "Op-amp",
+     "def": "A high-gain differential amplifier."
+    },
+    {
+     "term": "Feedback",
+     "def": "Sending some output back to the input to control gain."
+    },
+    {
+     "term": "Comparator",
+     "def": "A circuit that tells which of two voltages is higher."
+    },
+    {
+     "term": "555 timer",
+     "def": "A popular chip for pulses and delays."
+    },
+    {
+     "term": "Regulator",
+     "def": "A chip that holds a fixed output voltage."
+    }
+   ],
+   "keyPoints": [
+    "Inverting gain = minus Rf / Rin.",
+    "Non-inverting gain = 1 + Rf / Rg.",
+    "A comparator's output swings to one supply rail or the other.",
+    "555 astable: f = 1.44 / ((R1 + 2 R2) C).",
+    "Linear regulator waste: (Vin - Vout) x I as heat.",
+    "Add capacitors near the chip's supply pins."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. An op-amp is a seesaw that shouts louder the more the sides differ, and a 555 is a little metronome you set with two resistors and a capacitor."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An integrated circuit puts a whole circuit on a tiny piece of silicon. You do not have to know every transistor inside. You just need to know what it does and how to connect it. Chips come in packages with numbered pins, counted from a notch or dot."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The operational amplifier, or op-amp, boosts the small difference between its two inputs. Its gain on its own is enormous, so you use feedback. A resistor from output back to input fixes the gain at a precise, predictable value, set only by resistors."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} A_{\\text{inv}}=-\\frac{R_f}{R_{in}} \\\\[0.6em] A_{\\text{non}}=1+\\frac{R_f}{R_g} \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The 555 timer is one of the most popular chips ever made. With two resistors and one capacitor it runs as a free-running oscillator, called astable, making a steady train of pulses. With one resistor and one capacitor it makes a single timed pulse, called monostable."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "f\\approx\\frac{1.44}{(R_1+2R_2)\\,C}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A linear voltage regulator, such as the 7805, turns an uneven input into a steady 5 volts. The extra voltage is burned off as heat, equal to the voltage drop times the current. For heavy loads, that heat needs a heat sink."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What sets an op-amp's gain?",
+     "options": [
+      "Feedback resistors",
+      "The battery",
+      "The case",
+      "The clock"
+     ],
+     "answer": 0,
+     "explain": "Rf and Rin."
+    },
+    {
+     "q": "What does a comparator say?",
+     "options": [
+      "Which input is higher",
+      "The frequency",
+      "The power",
+      "The color"
+     ],
+     "answer": 0,
+     "explain": "A yes or no."
+    },
+    {
+     "q": "What heats a linear regulator?",
+     "options": [
+      "The voltage drop times current",
+      "The clock",
+      "Light",
+      "Noise"
+     ],
+     "answer": 0,
+     "explain": "Wasted power."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is feedback?",
+     "a": "Output sent back to input."
+    },
+    {
+     "q": "What is astable?",
+     "a": "Free-running."
+    },
+    {
+     "q": "Which regulator gives 5 V?",
+     "a": "The 7805."
+    },
+    {
+     "q": "Where does pin 1 go?",
+     "a": "Next to the notch or dot."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Chips",
+     "intro": "Match each chip with its job.",
+     "pairs": [
+      [
+       "Op-amp",
+       "Amplify a difference"
+      ],
+      [
+       "555",
+       "Make pulses and delays"
+      ],
+      [
+       "Regulator",
+       "Hold a steady voltage"
+      ],
+      [
+       "Comparator",
+       "Decide which is higher"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Op-amp gain",
+     "intro": "Write opamp_gain(mode, rf, r): mode is 'inverting' (r is Rin) or 'non' (r is Rg). Return the gain, rounded to 3 decimals.",
+     "fn": "opamp_gain",
+     "starter": "def opamp_gain(mode, rf, r):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "inverting",
+        100000,
+        10000
+       ],
+       "expect": -10.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        "non",
+        90000,
+        10000
+       ],
+       "expect": 10.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        "inverting",
+        10000,
+        10000
+       ],
+       "expect": -1.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        "non",
+        0,
+        1000
+       ],
+       "expect": 1.0,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Two formulas.",
+     "solution": "def opamp_gain(mode, rf, r):\n    if mode == 'inverting':\n        return round(-rf / r, 3)\n    return round(1 + rf / r, 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "555 astable",
+     "intro": "Write timer555(r1, r2, c): return [frequency_hz, duty] with f = 1.44 / ((r1 + 2 r2) c) and duty = (r1 + r2) / (r1 + 2 r2); round f to 2 decimals and duty to 3.",
+     "fn": "timer555",
+     "starter": "def timer555(r1, r2, c):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1000,
+        10000,
+        1e-06
+       ],
+       "expect": [
+        68.57,
+        0.524
+       ],
+       "approx": 0.01
+      },
+      {
+       "args": [
+        10000,
+        10000,
+        1e-07
+       ],
+       "expect": [
+        480.0,
+        0.667
+       ],
+       "approx": 0.01
+      },
+      {
+       "args": [
+        4700,
+        47000,
+        1e-05
+       ],
+       "expect": [
+        1.46,
+        0.524
+       ],
+       "approx": 0.01
+      }
+     ],
+     "hint": "Plug into the formulas.",
+     "solution": "def timer555(r1, r2, c):\n    f = 1.44 / ((r1 + 2 * r2) * c)\n    d = (r1 + r2) / (r1 + 2.0 * r2)\n    return [round(f, 2), round(d, 3)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Regulator heat",
+     "intro": "Write reg_heat(vin, vout, i): the power burned off in watts, rounded to 3 decimals, and the efficiency (vout / vin), rounded to 3. Return [watts, efficiency].",
+     "fn": "reg_heat",
+     "starter": "def reg_heat(vin, vout, i):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        12,
+        5,
+        0.5
+       ],
+       "expect": [
+        3.5,
+        0.417
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        9,
+        5,
+        1
+       ],
+       "expect": [
+        4,
+        0.556
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        7,
+        5,
+        0.1
+       ],
+       "expect": [
+        0.2,
+        0.714
+       ],
+       "approx": 0.001
+      }
+     ],
+     "hint": "Drop times current.",
+     "solution": "def reg_heat(vin, vout, i):\n    return [round((vin - vout) * i, 3), round(vout / vin, 3)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Comparator",
+     "intro": "Write comparator(samples, ref, high, low): for each sample output high if it is above ref, otherwise low. Return the list.",
+     "fn": "comparator",
+     "starter": "def comparator(samples, ref, high, low):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         1,
+         2,
+         3,
+         2,
+         1
+        ],
+        1.5,
+        5,
+        0
+       ],
+       "expect": [
+        0,
+        0,
+        5,
+        5,
+        5,
+        0
+       ]
+      },
+      {
+       "args": [
+        [],
+        1,
+        5,
+        0
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        1,
+        9,
+        -9
+       ],
+       "expect": [
+        -9,
+        -9
+       ]
+      }
+     ],
+     "hint": "Compare each sample.",
+     "solution": "def comparator(samples, ref, high, low):\n    return [high if s > ref else low for s in samples]\n"
+    }
+   ]
+  },
+  {
+   "title": "Building real circuits",
+   "maps": [
+    {
+     "title": "Building",
+     "links": [
+      "Breadboard | holds | Temporary circuits",
+      "Solder | joins | Permanently",
+      "Meter | measures | V, I and R",
+      "Supply | powers | The circuit",
+      "Datasheet | lists | Part limits",
+      "Fuse | protects | Against overload",
+      "Safety | comes | First"
+     ]
+    }
+   ],
+   "summary": [
+    "Start on a solderless breadboard, which lets you build, test and change circuits without tools. Move to soldering once a design works.",
+    "A multimeter measures voltage, current and resistance. Check your supply and wiring before power goes on.",
+    "Always respect limits: part ratings, battery capacity and especially mains voltage."
+   ],
+   "glossary": [
+    {
+     "term": "Breadboard",
+     "def": "A reusable board for temporary circuits."
+    },
+    {
+     "term": "Solder",
+     "def": "A metal alloy that melts to join parts."
+    },
+    {
+     "term": "Multimeter",
+     "def": "A tool that measures volts, amps and ohms."
+    },
+    {
+     "term": "Datasheet",
+     "def": "A maker's document listing a part's limits."
+    },
+    {
+     "term": "Fuse",
+     "def": "A deliberate weak link that blows on overload."
+    },
+    {
+     "term": "Heat sink",
+     "def": "A metal piece that carries heat away from a part."
+    }
+   ],
+   "keyPoints": [
+    "Test circuits on a breadboard before soldering.",
+    "Measure voltage in parallel, current in series, resistance with power off.",
+    "Heat both the pad and the lead, then add solder.",
+    "A good joint is shiny and shaped like a small cone.",
+    "Read the datasheet for pinouts and maximum ratings.",
+    "Never experiment with wall power. Use batteries or low-voltage supplies."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Build it on a breadboard first, check it with a meter, and only then solder it. Batteries are safe to play with, but wall power is not a toy."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A breadboard has rows of small spring clips. You push component leads in and the clips connect them in rows. There is nothing to heat or cut, so mistakes are cheap. Most designs in this course can be tried on one."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A multimeter is your eyes. To measure voltage, touch the probes across the part, in parallel. To measure current, break the circuit and put the meter in series. To measure resistance, switch the circuit off and take the part out of the circuit if you can."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When a design works, you can solder it. Heat the pad and the lead together for a second or two, then touch solder to the joint, not the iron. Let the solder flow, then remove the solder and the iron. A good joint is smooth and shiny. A dull, lumpy one is probably a cold joint."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Power comes from batteries or a regulated supply. Work out how long a battery will last: capacity in milliampere-hours divided by the current in milliamperes, and then be pessimistic. Fit a fuse when the supply could deliver a dangerous current."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Before you finish, check the basics. Is every polarity right? Do your parts stay under their ratings? Is each power pin decoupled? And remember: low voltage batteries are safe to learn on. Mains power can kill. If a project needs it, get proper training and use a tested, enclosed supply."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How do you measure voltage?",
+     "options": [
+      "Across the part",
+      "In series",
+      "With power off",
+      "With a fuse"
+     ],
+     "answer": 0,
+     "explain": "In parallel."
+    },
+    {
+     "q": "What does a good solder joint look like?",
+     "options": [
+      "Shiny",
+      "Dull and lumpy",
+      "Black",
+      "Wet"
+     ],
+     "answer": 0,
+     "explain": "Smooth and shiny."
+    },
+    {
+     "q": "Where do you find a part's limits?",
+     "options": [
+      "In the datasheet",
+      "On the breadboard",
+      "In the solder",
+      "On the meter"
+     ],
+     "answer": 0,
+     "explain": "From the maker."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Why use a breadboard?",
+     "a": "Cheap changes."
+    },
+    {
+     "q": "How to measure current?",
+     "a": "In series."
+    },
+    {
+     "q": "What is a datasheet?",
+     "a": "A part's limits and pins."
+    },
+    {
+     "q": "What blows to protect a circuit?",
+     "a": "A fuse."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Tools",
+     "intro": "Match each tool with its use.",
+     "pairs": [
+      [
+       "Breadboard",
+       "Build without soldering"
+      ],
+      [
+       "Multimeter",
+       "Measure volts, amps, ohms"
+      ],
+      [
+       "Soldering iron",
+       "Join parts permanently"
+      ],
+      [
+       "Fuse",
+       "Protect against overload"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Battery life",
+     "intro": "Write runtime(mah, load_ma, usable): the hours a battery of mah capacity lasts at load_ma, if only the fraction usable can be drawn. Round to 2 decimals.",
+     "fn": "runtime",
+     "starter": "def runtime(mah, load_ma, usable):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2000,
+        100,
+        0.8
+       ],
+       "expect": 16.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        500,
+        25,
+        1.0
+       ],
+       "expect": 20.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        9000,
+        300,
+        0.7
+       ],
+       "expect": 21.0,
+       "approx": 0.01
+      }
+     ],
+     "hint": "Capacity over load.",
+     "solution": "def runtime(mah, load_ma, usable):\n    return round(mah * usable / load_ma, 2)\n"
+    },
+    {
+     "type": "python",
+     "title": "Fuse choice",
+     "intro": "Write fuse(load_a, margin): pick the smallest standard fuse from [0.1, 0.25, 0.5, 1, 2, 5, 10] amperes that is at least load_a x margin. Return 0 if none is big enough.",
+     "fn": "fuse",
+     "starter": "def fuse(load_a, margin):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.3,
+        1.25
+       ],
+       "expect": 0.5
+      },
+      {
+       "args": [
+        1.5,
+        1.25
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        9,
+        1.5
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        0.05,
+        2
+       ],
+       "expect": 0.1
+      }
+     ],
+     "hint": "The first one that fits.",
+     "solution": "def fuse(load_a, margin):\n    need = load_a * margin\n    for f in [0.1, 0.25, 0.5, 1, 2, 5, 10]:\n        if f >= need - 1e-9:\n            return f\n    return 0\n"
+    },
+    {
+     "type": "python",
+     "title": "Meter reading",
+     "intro": "Write reading(kind, v, r): kind is 'volts' (return v), 'amps' (return v / r, rounded to 4 decimals) or 'ohms' (return r). Used to check a resistor in a simple circuit.",
+     "fn": "reading",
+     "starter": "def reading(kind, v, r):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "volts",
+        9,
+        100
+       ],
+       "expect": 9,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        "amps",
+        9,
+        100
+       ],
+       "expect": 0.09,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        "ohms",
+        9,
+        470
+       ],
+       "expect": 470,
+       "approx": 0.0001
+      }
+     ],
+     "hint": "Ohm's law for amps.",
+     "solution": "def reading(kind, v, r):\n    if kind == 'volts':\n        return v\n    if kind == 'amps':\n        return round(v / r, 4)\n    return r\n"
+    },
+    {
+     "type": "python",
+     "title": "Wire resistance",
+     "intro": "Write wire_r(length_m, area_mm2): the resistance of copper wire in ohms (resistivity 0.0172 ohm mm2 per metre), rounded to 4 decimals.",
+     "fn": "wire_r",
+     "starter": "def wire_r(length_m, area_mm2):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        0.5
+       ],
+       "expect": 0.344,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        1,
+        1.5
+       ],
+       "expect": 0.0115,
+       "approx": 0.0001
+      },
+      {
+       "args": [
+        100,
+        2.5
+       ],
+       "expect": 0.688,
+       "approx": 0.0001
+      }
+     ],
+     "hint": "Resistance grows with length.",
+     "solution": "def wire_r(length_m, area_mm2):\n    return round(0.0172 * length_m / area_mm2, 4)\n"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Electronics from Scratch: Components, Circuits and Logic",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What is the unit of current?",
+    "options": [
+     "Ampere",
+     "Volt",
+     "Ohm",
+     "Watt"
+    ],
+    "answer": 0,
+    "explain": "Charge per second."
+   },
+   {
+    "q": "Which material is an insulator?",
+    "options": [
+     "Rubber",
+     "Copper",
+     "Gold",
+     "Iron"
+    ],
+    "answer": 0,
+    "explain": "It blocks current."
+   },
+   {
+    "q": "Which current changes direction?",
+    "options": [
+     "AC",
+     "DC",
+     "Static",
+     "Leakage"
+    ],
+    "answer": 0,
+    "explain": "Alternating."
+   },
+   {
+    "q": "What does Ohm's law say?",
+    "options": [
+     "V = I x R",
+     "P = I + V",
+     "V = I / R",
+     "R = V x I"
+    ],
+    "answer": 0,
+    "explain": "The basic rule."
+   },
+   {
+    "q": "What is the power with 12 V and 0.5 A?",
+    "options": [
+     "6 W",
+     "24 W",
+     "12 W",
+     "0.04 W"
+    ],
+    "answer": 0,
+    "explain": "V x I."
+   },
+   {
+    "q": "What happens to total resistance in parallel?",
+    "options": [
+     "It gets smaller",
+     "It gets larger",
+     "It stays",
+     "It doubles"
+    ],
+    "answer": 0,
+    "explain": "More paths."
+   },
+   {
+    "q": "What does a series circuit share?",
+    "options": [
+     "The same current",
+     "The same voltage",
+     "Nothing",
+     "The same resistance"
+    ],
+    "answer": 0,
+    "explain": "One path."
+   },
+   {
+    "q": "What does the third color band mean?",
+    "options": [
+     "Multiplier",
+     "Tolerance",
+     "Wattage",
+     "First digit"
+    ],
+    "answer": 0,
+    "explain": "Number of zeros."
+   },
+   {
+    "q": "What is the output of a divider with equal resistors?",
+    "options": [
+     "Half the input",
+     "The whole input",
+     "Zero",
+     "Double"
+    ],
+    "answer": 0,
+    "explain": "R2 over the sum."
+   },
+   {
+    "q": "What does a capacitor store?",
+    "options": [
+     "Charge",
+     "Light",
+     "Heat",
+     "Current"
+    ],
+    "answer": 0,
+    "explain": "On two plates."
+   },
+   {
+    "q": "What is the time constant?",
+    "options": [
+     "R x C",
+     "R + C",
+     "R / C",
+     "C / R"
+    ],
+    "answer": 0,
+    "explain": "In seconds."
+   },
+   {
+    "q": "How charged is a capacitor after one time constant?",
+    "options": [
+     "About 63 percent",
+     "50 percent",
+     "100 percent",
+     "10 percent"
+    ],
+    "answer": 0,
+    "explain": "1 minus 1/e."
+   },
+   {
+    "q": "What does a transformer need?",
+    "options": [
+     "Changing current",
+     "Steady DC",
+     "Light",
+     "A diode"
+    ],
+    "answer": 0,
+    "explain": "AC."
+   },
+   {
+    "q": "What does a step-down transformer do?",
+    "options": [
+     "Lowers the AC voltage",
+     "Raises it",
+     "Makes DC",
+     "Stores charge"
+    ],
+    "answer": 0,
+    "explain": "Fewer turns on the output."
+   },
+   {
+    "q": "What does X_L do as frequency rises?",
+    "options": [
+     "Grows",
+     "Shrinks",
+     "Stays",
+     "Vanishes"
+    ],
+    "answer": 0,
+    "explain": "2 pi f L."
+   },
+   {
+    "q": "What protects against a relay's coil spike?",
+    "options": [
+     "A diode across the coil",
+     "A bigger relay",
+     "More voltage",
+     "Nothing"
+    ],
+    "answer": 0,
+    "explain": "A flyback diode."
+   },
+   {
+    "q": "What is a silicon diode's forward drop?",
+    "options": [
+     "About 0.7 V",
+     "About 5 V",
+     "0 V",
+     "About 12 V"
+    ],
+    "answer": 0,
+    "explain": "Typical."
+   },
+   {
+    "q": "What does a rectifier do?",
+    "options": [
+     "AC to DC",
+     "DC to AC",
+     "Amplifies",
+     "Stores"
+    ],
+    "answer": 0,
+    "explain": "Using diodes."
+   },
+   {
+    "q": "Why does an LED need a resistor?",
+    "options": [
+     "To limit current",
+     "To make light",
+     "To add voltage",
+     "To cool"
+    ],
+    "answer": 0,
+    "explain": "Or it burns."
+   },
+   {
+    "q": "What does a Zener diode do?",
+    "options": [
+     "Holds a voltage",
+     "Makes light",
+     "Amplifies",
+     "Switches AC"
+    ],
+    "answer": 0,
+    "explain": "Used in reverse."
+   },
+   {
+    "q": "Which terminal controls a bipolar transistor?",
+    "options": [
+     "The base",
+     "The collector",
+     "The emitter",
+     "The case"
+    ],
+    "answer": 0,
+    "explain": "A small current."
+   },
+   {
+    "q": "What is Ic with beta 100 and Ib 0.1 mA?",
+    "options": [
+     "10 mA",
+     "0.1 mA",
+     "100 mA",
+     "1 mA"
+    ],
+    "answer": 0,
+    "explain": "Beta x Ib."
+   },
+   {
+    "q": "What does a MOSFET gate need?",
+    "options": [
+     "A voltage, almost no current",
+     "A big current",
+     "Light",
+     "A coil"
+    ],
+    "answer": 0,
+    "explain": "Voltage controlled."
+   },
+   {
+    "q": "What turns an SCR off?",
+    "options": [
+     "Current falling to zero",
+     "A gate pulse",
+     "Light",
+     "A resistor"
+    ],
+    "answer": 0,
+    "explain": "It latches."
+   },
+   {
+    "q": "Which switches AC both ways?",
+    "options": [
+     "A triac",
+     "An SCR",
+     "An LED",
+     "A diode"
+    ],
+    "answer": 0,
+    "explain": "Two SCRs back to back."
+   },
+   {
+    "q": "What does a photoresistor do in light?",
+    "options": [
+     "Resistance falls",
+     "Resistance rises",
+     "Makes light",
+     "Stores charge"
+    ],
+    "answer": 0,
+    "explain": "Brighter, lower R."
+   },
+   {
+    "q": "What is the period of a 100 Hz wave?",
+    "options": [
+     "10 ms",
+     "100 ms",
+     "1 ms",
+     "1 s"
+    ],
+    "answer": 0,
+    "explain": "1 / f."
+   },
+   {
+    "q": "What is the RMS of a sine with peak 10?",
+    "options": [
+     "About 7.07",
+     "10",
+     "5",
+     "14.1"
+    ],
+    "answer": 0,
+    "explain": "Peak over root two."
+   },
+   {
+    "q": "What does duty cycle mean?",
+    "options": [
+     "Fraction of time on",
+     "Frequency",
+     "Amplitude",
+     "Noise"
+    ],
+    "answer": 0,
+    "explain": "On over period."
+   },
+   {
+    "q": "When is an AND gate output 1?",
+    "options": [
+     "All inputs 1",
+     "Any input 1",
+     "No inputs 1",
+     "Never"
+    ],
+    "answer": 0,
+    "explain": "All of them."
+   },
+   {
+    "q": "What is 101 in binary?",
+    "options": [
+     "5",
+     "3",
+     "6",
+     "7"
+    ],
+    "answer": 0,
+    "explain": "4 + 1."
+   },
+   {
+    "q": "Which gate is universal?",
+    "options": [
+     "NAND",
+     "AND",
+     "OR",
+     "XOR"
+    ],
+    "answer": 0,
+    "explain": "All others can be built from it."
+   },
+   {
+    "q": "What does a flip-flop store?",
+    "options": [
+     "One bit",
+     "One byte",
+     "A voltage",
+     "A current"
+    ],
+    "answer": 0,
+    "explain": "On a clock edge."
+   },
+   {
+    "q": "What gives memory in a latch?",
+    "options": [
+     "Feedback",
+     "A battery",
+     "A lens",
+     "A fuse"
+    ],
+    "answer": 0,
+    "explain": "Output to input."
+   },
+   {
+    "q": "What sets an op-amp's gain?",
+    "options": [
+     "Feedback resistors",
+     "The case",
+     "The battery",
+     "The clock"
+    ],
+    "answer": 0,
+    "explain": "Rf and Rin."
+   },
+   {
+    "q": "What does a 555 timer make?",
+    "options": [
+     "Pulses and delays",
+     "Light",
+     "AC power",
+     "Heat"
+    ],
+    "answer": 0,
+    "explain": "With R and C."
+   },
+   {
+    "q": "What heats a linear regulator?",
+    "options": [
+     "Voltage drop times current",
+     "The clock",
+     "Light",
+     "Noise"
+    ],
+    "answer": 0,
+    "explain": "Wasted power."
+   },
+   {
+    "q": "How do you measure voltage with a meter?",
+    "options": [
+     "Across the part",
+     "In series",
+     "With power off",
+     "With a fuse"
+    ],
+    "answer": 0,
+    "explain": "In parallel."
+   },
+   {
+    "q": "What does a good solder joint look like?",
+    "options": [
+     "Smooth and shiny",
+     "Dull and lumpy",
+     "Black",
+     "Wet"
+    ],
+    "answer": 0,
+    "explain": "A small cone."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Electronics cheat sheet",
+  "prompt": "volt>",
+  "intro": "A scripted lookup, not a real simulator. Try: ohm, power, divider, rc, led, transistor, gates, opamp, 555, solder, help",
+  "chips": [
+   "ohm",
+   "power",
+   "divider",
+   "rc",
+   "led",
+   "transistor",
+   "gates",
+   "opamp",
+   "555",
+   "solder",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "ohm        V = I x R, so I = V / R and R = V / I",
+     "power      P = V x I = I squared x R",
+     "divider    Vout = Vin x R2 / (R1 + R2)",
+     "rc         Time constant = R x C seconds",
+     "led        R = (Vsupply - Vled) / I",
+     "transistor Ic = beta x Ib until saturation",
+     "gates      AND all, OR any, XOR differ, NAND is universal",
+     "opamp      Inverting gain = -Rf / Rin",
+     "555        Astable f = 1.44 / ((R1 + 2 R2) C)",
+     "solder     Heat the pad and the lead, then feed the solder"
+    ]
+   },
+   {
+    "re": "^ohm$",
+    "out": [
+     "V = I x R, so I = V / R and R = V / I",
+     "9 V across 900 ohms is 10 mA"
+    ]
+   },
+   {
+    "re": "^power$",
+    "out": [
+     "P = V x I = I squared x R",
+     "Pick a resistor rated for at least twice the power"
+    ]
+   },
+   {
+    "re": "^divider$",
+    "out": [
+     "Vout = Vin x R2 / (R1 + R2)",
+     "A heavy load pulls the output down"
+    ]
+   },
+   {
+    "re": "^rc$",
+    "out": [
+     "Time constant = R x C seconds",
+     "63 percent after one, 99 percent after five"
+    ]
+   },
+   {
+    "re": "^led$",
+    "out": [
+     "R = (Vsupply - Vled) / I",
+     "A red LED drops about 2 V"
+    ]
+   },
+   {
+    "re": "^transistor$",
+    "out": [
+     "Ic = beta x Ib until saturation",
+     "Drive a switch with about a tenth of the stated beta"
+    ]
+   },
+   {
+    "re": "^gates$",
+    "out": [
+     "AND all, OR any, XOR differ, NAND is universal",
+     "Half adder: sum = XOR, carry = AND"
+    ]
+   },
+   {
+    "re": "^opamp$",
+    "out": [
+     "Inverting gain = -Rf / Rin",
+     "Non-inverting gain = 1 + Rf / Rg"
+    ]
+   },
+   {
+    "re": "^555$",
+    "out": [
+     "Astable f = 1.44 / ((R1 + 2 R2) C)",
+     "Duty = (R1 + R2) / (R1 + 2 R2)"
+    ]
+   },
+   {
+    "re": "^solder$",
+    "out": [
+     "Heat the pad and the lead, then feed the solder",
+     "A good joint is smooth and shiny"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Computer Science",
+ "level": "Beginner",
+ "tags": [
+  "electronics",
+  "circuits",
+  "ohms-law",
+  "transistors",
+  "logic",
+  "555",
+  "python"
+ ]
+}

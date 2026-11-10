@@ -1,0 +1,15 @@
+FEY = [
+ ("Charge is like water in a pipe. Voltage is how hard the pump pushes, and current is how much water flows past each second.", None),
+ ("Ohm's law says a skinny pipe lets less water through. More push or a wider pipe means more flow, and power is how hard the water works.", None),
+ ("A resistor is a narrow spot in the pipe. The stripes on it are a secret code that tells you how narrow it is.", None),
+ ("A capacitor is a small tank beside the pipe. It fills slowly through a narrow pipe, and that filling time is how timers work.", None),
+ ("A coil is a heavy wheel in the water, hard to start and hard to stop. A transformer is two wheels that pass a push from one to the other.", None),
+ ("A diode is a flap that opens one way only. An LED is a flap that glows when water goes through, so it needs a narrow pipe to stay safe.", None),
+ ("A transistor is a tap turned by a tiny trickle. A little water on the handle lets a big river through.", None),
+ ("A thyristor is a gate that stays open once you nudge it, until the river stops. Light parts turn brightness into a push, or a push into brightness.", None),
+ ("A wave is a rope you shake. How fast you shake is the frequency, how big is the amplitude, and noise is someone else shaking the rope too.", None),
+ ("A logic gate is a tiny judge who looks at some yes-or-no answers and gives one yes or no. Put many together and you can add numbers.", None),
+ ("A flip-flop is a light switch that remembers. A row of them can count, and the clock is a drummer keeping everyone in time.", None),
+ ("An op-amp is a seesaw that shouts louder the more the sides differ, and a 555 is a little metronome you set with two resistors and a capacitor.", None),
+ ("Build it on a breadboard first, check it with a meter, and only then solder it. Batteries are safe to play with, but wall power is not a toy.", None),
+]
