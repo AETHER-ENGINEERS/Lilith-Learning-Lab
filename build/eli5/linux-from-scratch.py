@@ -1,0 +1,17 @@
+FEY = [
+ ("Linux is the engine of a car. A distribution is the whole car: engine, seats and steering wheel, ready to drive. The files live in one big tree with a single root.", None),
+ ("The shell is a text chat with your computer. You type a short order like ls, press Enter, and it answers. Tab finishes the word for you.", None),
+ ("Files are like paper in folders. mkdir builds a folder, cp makes a copy, mv moves or renames, and rm puts it in the shredder. There is no bin to dig it out of.", None),
+ ("Output normally goes to the screen like a talking parrot. A greater-than sign tells the parrot to write on paper instead. Two of them add to the paper.", None),
+ ("A pipe is a slide between two helpers. One helper finds the red blocks, slides them to the next who sorts them, and the last one counts how many.", None),
+ ("Every file has a little lock card: who the owner is, who the team is and what everyone else may do. Read, write, run are worth four, two and one points.", None),
+ ("Users are the people with keys. Root has a master key to everything. sudo is like asking the grown-up to open one door for you and writing it in a diary.", None),
+ ("A process is a worker doing a job with a name tag number. You can ask it to stop nicely, or, if it will not listen, pull the plug.", None),
+ ("An app store for grown-up computers: apt fetches a program and everything it needs. A service is a worker who stays at the shop all day, and systemctl is the boss.", None),
+ ("A script is a recipe card with commands instead of steps. The first line says who should read it, and a plus-x sticker lets it run on its own.", None),
+ ("Loops are a rule like: do this for every apple in the basket. A function is a recipe you give a name to so you can call it any time.", None),
+ ("Every computer has a house number, called an IP address, and every program has a door number called a port. A web server waits at door 80.", None),
+ ("Disks are shelves that fill up. Logs are a diary the computer writes about itself. Cron is an alarm clock that starts jobs at the times you set.", None),
+ ("Security is locking doors. Use a key instead of a password, only open the doors you need, keep the locks updated and keep a spare copy of your treasures somewhere else.", None),
+ ("Be a computer doctor: look first, change one thing, check it worked. Then write down what you did so the next person can follow your steps.", None),
+]
