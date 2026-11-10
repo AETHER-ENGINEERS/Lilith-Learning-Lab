@@ -1,0 +1,40 @@
+import os
+HERE = os.path.dirname(os.path.abspath(__file__))
+CURVES = """<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+input{font:inherit;width:70px;background:#0e0820;color:#f1ebff;border:1px solid #3a2a5c;border-radius:8px;padding:6px}
+button{font:inherit;border:0;border-radius:18px;padding:7px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:2px}
+canvas{width:100%;max-width:420px;display:block;margin:8px auto;background:#0e0820;border-radius:8px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.k{color:#c9b8e8}.ok{color:#8fe3a8}.bad{color:#ff9b9b}table{border-collapse:collapse;font-size:12px}td,th{border:1px solid #3a2a5c;padding:2px 6px}
+</style></head><body>
+<div class="row">y&sup2; = x&sup3; + <input id="a" type="number" value="-1"> x + <input id="b" type="number" value="0"> over F<sub>p</sub>, p = <input id="p" type="number" value="13"><button id="go">Plot</button></div>
+<canvas id="c" width="420" height="420"></canvas>
+<div id="out" class="k"></div><div id="tab" style="overflow:auto"></div>
+<div class="k" id="prog" style="margin-top:8px"></div>
+<script>
+var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+function isPrime(n){if(n<3)return n==2;if(n%2==0)return false;for(var i=3;i*i<=n;i+=2)if(n%i==0)return false;return true}
+function md(x,p){return((x%p)+p)%p}
+function pw(b,e,m){var r=1;b=md(b,m);while(e>0){if(e&1)r=r*b%m;b=b*b%m;e>>=1}return r}
+function leg(a,p){a=md(a,p);if(a==0)return 0;return pw(a,(p-1)/2,p)==1?1:-1}
+function count(a,b,p){var n=1;for(var x=0;x<p;x++){var f=md(x*x*x+a*x+b,p);n+=1+(p==2?0:leg(f,p))}return n}
+function brute(a,b,p){var n=1;for(var x=0;x<p;x++)for(var y=0;y<p;y++)if(md(y*y-(x*x*x+a*x+b),p)==0)n++;return n}
+var seen={};
+function go(){var a=+$("a").value,b=+$("b").value,p=+$("p").value;var o=$("out");
+ if(!isPrime(p)||p<3||p>199){o.innerHTML="<span class='bad'>Choose an odd prime p up to 199.</span>";return}
+ var disc=-16*(4*a*a*a+27*b*b),smooth=md(4*a*a*a+27*b*b,p)!=0;
+ var cv=$("c"),g=cv.getContext("2d");g.clearRect(0,0,420,420);var s=400/p;g.strokeStyle="#2d2046";for(var i=0;i<=p;i++){g.beginPath();g.moveTo(10+i*s,10);g.lineTo(10+i*s,410);g.moveTo(10,10+i*s);g.lineTo(410,10+i*s);g.stroke()}
+ var pts=0;g.fillStyle="#b26bff";for(var x=0;x<p;x++)for(var y=0;y<p;y++)if(md(y*y-(x*x*x+a*x+b),p)==0){pts++;g.beginPath();g.arc(10+x*s+s/2,410-(y*s+s/2),Math.max(2,s/3),0,6.3);g.fill()}
+ var N=pts+1,ap=p+1-N;
+ var h="Points over F_"+p+" (with infinity): <b>"+N+"</b><br>a_p = p + 1 - N = <b>"+ap+"</b>"+" &nbsp; Hasse bound 2&radic;p = "+(2*Math.sqrt(p)).toFixed(2)+(ap*ap<=4*p?" <span class='ok'>(satisfied)</span>":" <span class='bad'>(violated: the curve is singular here)</span>")+"<br>Discriminant = "+disc+(disc==0?" <span class='bad'>(singular curve)</span>":(smooth?"":" <span class='bad'>(bad prime: p divides the discriminant)</span>"));
+ o.innerHTML=h;
+ var t="<table><tr><th>p</th>";var ps=[];for(var q=3;q<=61;q++)if(isPrime(q))ps.push(q);ps.forEach(function(q){t+="<th>"+q+"</th>"});t+="</tr><tr><th>a_p</th>";
+ ps.forEach(function(q){var good=md(4*a*a*a+27*b*b,q)!=0;t+="<td>"+(good?(q+1-count(a,b,q)):"&ndash;")+"</td>"});t+="</tr></table>";$("tab").innerHTML="<div class='k' style='margin-top:6px'>a_p for odd primes (&ndash; = bad prime)</div>"+t;
+ if(disc!=0&&smooth)seen[a+","+b]=1;var n=Object.keys(seen).length;$("prog").textContent="Smooth curves explored: "+n+" of 3 needed.";if(n>=3)done()}
+$("go").onclick=go;go();
+</script></body></html>"""
+def main():
+    os.makedirs(os.path.join(HERE, "apps"), exist_ok=True)
+    open(os.path.join(HERE, "apps", "curves.html"), "w", encoding="utf-8").write(CURVES)
+if __name__ == "__main__":
+    main(); print("ok")

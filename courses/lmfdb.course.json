@@ -1,0 +1,4701 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "lmfdb",
+ "title": "The LMFDB: L-functions, Modular Forms and Elliptic Curves",
+ "subtitle": "A guided tour of the L-functions and Modular Forms Database: number fields, characters, elliptic curves, modular forms and L-functions, with Python labs that recompute the data",
+ "author": "Lilith Learning Lab",
+ "description": "Learn the mathematics behind the LMFDB, the free online atlas of number theory. Start with primes and quadratic residues, meet number fields and Dirichlet characters, count points on elliptic curves, compute modular forms such as Delta, and see how the modularity theorem ties curves, forms and L-functions together. Every chapter has labs that recompute what the database lists, plus an elliptic curve explorer.",
+ "pronounce": {
+  "LMFDB": "L M F D B",
+  "L-function": "L function",
+  "L-functions": "L functions",
+  "Dirichlet": "dee ree klay",
+  "Legendre": "luh zhahndr",
+  "Hasse": "hah suh",
+  "Hecke": "heck uh",
+  "Ramanujan": "rah mah noo jan",
+  "Eisenstein": "eye zen stine",
+  "Mordell": "more dell",
+  "Mazur": "mah zoor",
+  "Heegner": "hay g ner",
+  "Frobenius": "fro bay nee us",
+  "Sato-Tate": "sah toe tah tay",
+  "Birch": "birch",
+  "Swinnerton-Dyer": "swin ner ton dire",
+  "Langlands": "lang lands",
+  "Maass": "mahss",
+  "Galois": "gal wah",
+  "Deligne": "deh leen",
+  "Taniyama": "tah nee yah mah",
+  "Shimura": "shih moo rah",
+  "Weil": "vay",
+  "Wiles": "wiles",
+  "Ribet": "ree bay",
+  "Gauss": "gowss",
+  "Euler": "oiler",
+  "Eratosthenes": "air uh tos thuh neez",
+  "isogeny": "eye sodge uh nee",
+  "modularity": "mod you lair uh tee",
+  "Sage": "sayj",
+  "Pari": "pah ree",
+  "Magma": "mag muh",
+  "Tate-Shafarevich": "tate shah fah reh vich",
+  "Gamma_0": "gamma zero",
+  "ELI5": "E L I five"
+ },
+ "chapters": [
+  {
+   "title": "What the LMFDB is",
+   "maps": [
+    {
+     "title": "The LMFDB",
+     "links": [
+      "LMFDB | stores | Number theory objects",
+      "Object | has | A label",
+      "Elliptic curve | links to | Modular form",
+      "Modular form | has | An L-function",
+      "Number field | has | A Galois group",
+      "Langlands program | connects | The objects"
+     ]
+    }
+   ],
+   "summary": [
+    "The L-functions and Modular Forms Database (LMFDB) is a free online atlas of objects from number theory: elliptic curves, modular forms, number fields, Dirichlet characters, L-functions, genus 2 curves, Galois groups and more.",
+    "Each object has a unique label, a page of properties, and links to related objects. The links are the real point: the same L-function can arise from an elliptic curve and from a modular form.",
+    "This course teaches the mathematics behind the main collections and how to read their pages, with Python labs that recompute what the database lists."
+   ],
+   "glossary": [
+    {
+     "term": "LMFDB",
+     "def": "The L-functions and Modular Forms Database, a collaborative online database of number theory objects."
+    },
+    {
+     "term": "Label",
+     "def": "A short code that names an object uniquely, such as 11.a for a class of elliptic curves."
+    },
+    {
+     "term": "L-function",
+     "def": "A function of a complex variable built from arithmetic data, such as the Riemann zeta function."
+    },
+    {
+     "term": "Modular form",
+     "def": "A highly symmetric complex function on the upper half-plane, described by a q-expansion."
+    },
+    {
+     "term": "Langlands program",
+     "def": "A web of conjectures and theorems linking Galois representations, automorphic forms and L-functions."
+    }
+   ],
+   "keyPoints": [
+    "An LMFDB page lists invariants you can recompute and cross-check.",
+    "Elliptic curves, modular forms and L-functions are tied by the modularity theorem.",
+    "Labels follow patterns: number fields d.r.D.i, newforms N.k.a.x, curves N.a.n.",
+    "The database holds computed data, so the data is checkable but not a proof.",
+    "Always check the live site: collections grow and pages change."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The LMFDB is a giant library where each shelf holds a kind of number-pattern: curves, forms, fields. Every book has a short name tag, and the books point to each other."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine a map of all the numbers you can build by solving polynomial equations, and every secret tune hidden in their prime numbers. That is roughly what number theorists study, and the LMFDB is an atlas of it.",
+      "It holds tens of millions of objects: number fields, elliptic curves over the rationals, modular forms, Dirichlet characters, genus 2 curves, abelian varieties, Artin representations, Maass forms and L-functions. It is open to everyone, with an API."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why a database? In number theory, much progress starts with experiments. You compute a thousand examples and see a pattern. The LMFDB stores the computed examples, checks them against each other, and records the relations.",
+      "For example, take the elliptic curve of conductor 11, y squared plus y equals x cubed minus x squared. Count its points modulo each prime p, and you get a sequence of numbers a_p.",
+      "Now take the modular form of level 11 and weight 2, and read the coefficients of its q-expansion: they are the same numbers. That coincidence is the modularity theorem, and the database shows it on one page."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Each collection has its own labels. A newform is labelled level.weight.character.letter, as in 11.2.a.a. An elliptic curve over Q is labelled by its conductor and an isogeny class letter, then numbers: 11.a2.",
+      "A number field is labelled degree.real places.discriminant.index, as in 2.0.3.1, which is Q of the square root of minus three. Knowing the pattern lets you read a label like a street address."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "This course follows the database's own order. We recall the arithmetic you need (primes, congruences, quadratic residues), meet number fields, Dirichlet characters, elliptic curves and modular forms, and then L-functions, which tie everything together.",
+      "At each stage there is Python that recomputes what the database lists, such as the a_p of a curve or the coefficients of the modular form Delta. A caution: the database holds computations, not proofs. Treat the numbers as evidence and the theorems as the explanation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A note on what we cannot do offline. This course works without internet, so it does not query the live site. You will compute small examples yourself and compare them with the values quoted in the text.",
+      "When you go online, look at the same objects there, and you will find the same numbers, along with much more."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does LMFDB stand for?",
+     "options": [
+      "L-functions and Modular Forms Database",
+      "Large Modular Forms Data Bank",
+      "Linear Maps and Fields Database",
+      "Lattice Modules and Forms DB"
+     ],
+     "answer": 0,
+     "explain": "A number theory atlas."
+    },
+    {
+     "q": "What is a label?",
+     "options": [
+      "A unique code naming an object",
+      "A proof",
+      "A graph",
+      "A formula"
+     ],
+     "answer": 0,
+     "explain": "Like 11.2.a.a."
+    },
+    {
+     "q": "What does the modularity theorem link?",
+     "options": [
+      "Elliptic curves and modular forms",
+      "Primes and squares",
+      "Fields and rings",
+      "Graphs and trees"
+     ],
+     "answer": 0,
+     "explain": "Same a_p."
+    },
+    {
+     "q": "What does 2.0.3.1 label?",
+     "options": [
+      "Q(sqrt(-3))",
+      "Q(sqrt 5)",
+      "Q(i)",
+      "A cubic field"
+     ],
+     "answer": 0,
+     "explain": "Degree 2, no real places, disc 3."
+    },
+    {
+     "q": "Is the data in the database a proof?",
+     "options": [
+      "No, it is computed evidence",
+      "Yes always",
+      "Only for curves",
+      "Only for fields"
+     ],
+     "answer": 0,
+     "explain": "Experiments suggest theorems."
+    },
+    {
+     "q": "What is 11.2.a.a?",
+     "options": [
+      "A newform label",
+      "A number field",
+      "A Galois group",
+      "A character"
+     ],
+     "answer": 0,
+     "explain": "Level 11, weight 2."
+    }
+   ],
+   "cards": [
+    {
+     "q": "LMFDB",
+     "a": "L-functions and Modular Forms Database"
+    },
+    {
+     "q": "11.2.a.a",
+     "a": "Newform of level 11, weight 2"
+    },
+    {
+     "q": "2.0.3.1",
+     "a": "Q(sqrt(-3))"
+    },
+    {
+     "q": "a_p",
+     "a": "Trace of Frobenius, p + 1 minus the number of points"
+    },
+    {
+     "q": "Modularity",
+     "a": "Every elliptic curve over Q comes from a modular form"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match object to label style",
+     "intro": "Pair each LMFDB object with a label that fits it.",
+     "pairs": [
+      [
+       "Number field",
+       "2.0.3.1"
+      ],
+      [
+       "Newform",
+       "11.2.a.a"
+      ],
+      [
+       "Elliptic curve class",
+       "11.a"
+      ],
+      [
+       "Dirichlet character",
+       "5.2"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "LMFDB basics",
+     "text": "The LMFDB stores {{labelled}} objects. Elliptic curves and modular forms are linked by the {{modularity}} theorem. The data is computed {{evidence}}, not a proof."
+    },
+    {
+     "type": "python",
+     "title": "Read a newform label",
+     "intro": "Write parse_newform(label) for a label like '11.2.a.a' (level.weight.character_orbit.newform_orbit). Return [level, weight, character_orbit, newform_orbit] with level and weight as integers.",
+     "fn": "parse_newform",
+     "starter": "def parse_newform(label):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "11.2.a.a"
+       ],
+       "expect": [
+        11,
+        2,
+        "a",
+        "a"
+       ]
+      },
+      {
+       "args": [
+        "1.12.a.a"
+       ],
+       "expect": [
+        1,
+        12,
+        "a",
+        "a"
+       ]
+      },
+      {
+       "args": [
+        "23.2.a.a"
+       ],
+       "expect": [
+        23,
+        2,
+        "a",
+        "a"
+       ]
+      },
+      {
+       "args": [
+        "37.2.b.a"
+       ],
+       "expect": [
+        37,
+        2,
+        "b",
+        "a"
+       ]
+      }
+     ],
+     "hint": "Split on dots and convert the first two parts to int.",
+     "solution": "def parse_newform(label):\n    p = label.split(\".\")\n    return [int(p[0]), int(p[1]), p[2], p[3]]\n"
+    },
+    {
+     "type": "python",
+     "title": "Read a number field label",
+     "intro": "Write parse_field(label) for a label like '2.0.3.1' (degree.real_places.abs_discriminant.index). Return [degree, real_places, abs_discriminant, index] as integers.",
+     "fn": "parse_field",
+     "starter": "def parse_field(label):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "2.0.3.1"
+       ],
+       "expect": [
+        2,
+        0,
+        3,
+        1
+       ]
+      },
+      {
+       "args": [
+        "2.2.5.1"
+       ],
+       "expect": [
+        2,
+        2,
+        5,
+        1
+       ]
+      },
+      {
+       "args": [
+        "3.1.23.1"
+       ],
+       "expect": [
+        3,
+        1,
+        23,
+        1
+       ]
+      },
+      {
+       "args": [
+        "2.0.4.1"
+       ],
+       "expect": [
+        2,
+        0,
+        4,
+        1
+       ]
+      }
+     ],
+     "hint": "Every part is an integer.",
+     "solution": "def parse_field(label):\n    return [int(x) for x in label.split(\".\")]\n"
+    }
+   ]
+  },
+  {
+   "title": "Arithmetic toolkit: primes, congruences and squares",
+   "maps": [
+    {
+     "title": "Arithmetic toolkit",
+     "links": [
+      "Prime | divides | Integers",
+      "Congruence | works | Modulo n",
+      "Residue | is | A square mod p",
+      "Legendre symbol | detects | Squares",
+      "Euler criterion | computes | The symbol",
+      "Reciprocity | links | Two primes"
+     ]
+    }
+   ],
+   "summary": [
+    "Almost everything in the LMFDB is detected one prime at a time. We need quick tools: primes, congruences modulo n, quadratic residues and the Legendre symbol.",
+    "The Legendre symbol (a/p) is 1 if a is a nonzero square mod p, -1 if not, and 0 if p divides a. It is the key to counting points on a curve mod p.",
+    "The labs sieve primes and compute the Legendre symbol by Euler's criterion."
+   ],
+   "glossary": [
+    {
+     "term": "Congruence",
+     "def": "a is congruent to b mod n if n divides a - b."
+    },
+    {
+     "term": "Quadratic residue",
+     "def": "A number a such that x squared is congruent to a mod p has a solution."
+    },
+    {
+     "term": "Legendre symbol",
+     "def": "(a/p): 1 if a is a square mod p, -1 if not, 0 if p divides a."
+    },
+    {
+     "term": "Euler's criterion",
+     "def": "(a/p) is congruent to a^((p-1)/2) mod p."
+    },
+    {
+     "term": "Quadratic reciprocity",
+     "def": "A law relating (p/q) and (q/p) for odd primes p and q."
+    }
+   ],
+   "keyPoints": [
+    "Sieve of Eratosthenes finds all primes up to n.",
+    "Modular arithmetic: add and multiply, then reduce mod n.",
+    "Half of the nonzero residues mod an odd prime p are squares.",
+    "(a/p) = a^((p-1)/2) mod p, read as 1 or -1 (p - 1).",
+    "Reciprocity: (p/q)(q/p) = (-1)^(((p-1)/2)((q-1)/2)).",
+    "Counting solutions mod p is how a_p is defined."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Primes are numbers that only split into one and themselves. We clock-count with them: after the clock reaches p it starts over. Some numbers are perfect squares on that clock and some are not."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The LMFDB looks at numbers prime by prime, so we begin with primes. A prime is a number with exactly two divisors, one and itself. The sieve of Eratosthenes finds all of them up to n: write the numbers, cross out multiples of 2, then of 3, then 5, and the survivors are primes.",
+      "Everything we do later, such as counting points on a curve, is done modulo a prime p."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Modular arithmetic means working with remainders. Two integers are congruent mod n if they leave the same remainder when divided by n. On a clock, 15 is congruent to 3 mod 12. Addition and multiplication respect this, so you can reduce at every step.",
+      "Mod an odd prime p, each nonzero number has an inverse, which makes the residues a field, called F_p."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Which numbers are squares mod p? Try p = 7. The squares of 1 to 6 are 1, 4, 2, 2, 4, 1, so the nonzero squares are 1, 2 and 4. Exactly half of the nonzero residues are squares. The Legendre symbol records this: (a/p) is 1 for 1, 2, 4, and -1 for 3, 5, 6.",
+      "Euler's criterion gives a quick test: raise a to the power (p - 1)/2 mod p. You get 1 for a square and p - 1, that is -1, for a non-square."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\left(\\frac{a}{p}\\right) \\equiv a^{(p-1)/2} \\pmod p"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why does this matter for elliptic curves? To count the points on y squared equals f(x) mod p, you check each x. If f(x) is a nonzero square, there are two values of y; if it is zero, one; if it is a non-square, none. So the number of y for each x is 1 + (f(x)/p).",
+      "This formula turns point counting into Legendre symbols, and the labs use it directly. Quadratic reciprocity, due to Gauss, relates (p/q) to (q/p) and is the first appearance of the idea that the Langlands program generalises."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How many nonzero squares are there mod an odd prime p?",
+     "options": [
+      "(p - 1)/2",
+      "p - 1",
+      "p",
+      "p/2"
+     ],
+     "answer": 0,
+     "explain": "Half."
+    },
+    {
+     "q": "What is (3/7)?",
+     "options": [
+      "-1",
+      "1",
+      "0",
+      "3"
+     ],
+     "answer": 0,
+     "explain": "3 is not a square mod 7."
+    },
+    {
+     "q": "What does Euler's criterion compute?",
+     "options": [
+      "The Legendre symbol",
+      "The gcd",
+      "The class number",
+      "The discriminant"
+     ],
+     "answer": 0,
+     "explain": "a^((p-1)/2)."
+    },
+    {
+     "q": "How many y values for x with f(x) a nonzero square?",
+     "options": [
+      "2",
+      "1",
+      "0",
+      "p"
+     ],
+     "answer": 0,
+     "explain": "Plus and minus root."
+    },
+    {
+     "q": "What is F_p?",
+     "options": [
+      "The integers mod a prime",
+      "The reals",
+      "A polynomial",
+      "A curve"
+     ],
+     "answer": 0,
+     "explain": "A field."
+    },
+    {
+     "q": "Who proved quadratic reciprocity first?",
+     "options": [
+      "Gauss",
+      "Euler",
+      "Fermat",
+      "Riemann"
+     ],
+     "answer": 0,
+     "explain": "In 1796."
+    }
+   ],
+   "cards": [
+    {
+     "q": "(a/p)",
+     "a": "Legendre symbol"
+    },
+    {
+     "q": "a^((p-1)/2)",
+     "a": "Euler's criterion"
+    },
+    {
+     "q": "F_p",
+     "a": "Integers mod p"
+    },
+    {
+     "q": "sieve",
+     "a": "Finds primes"
+    },
+    {
+     "q": "1 + (f(x)/p)",
+     "a": "Number of y for a given x"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Squares mod 7",
+     "intro": "Match each number to whether it is a square mod 7.",
+     "pairs": [
+      [
+       "1",
+       "square"
+      ],
+      [
+       "2",
+       "square"
+      ],
+      [
+       "3",
+       "non-square"
+      ],
+      [
+       "4",
+       "square"
+      ],
+      [
+       "5",
+       "non-square"
+      ],
+      [
+       "6",
+       "non-square"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Primes up to n",
+     "intro": "Write primes_upto(n): the list of primes up to and including n, using a sieve.",
+     "fn": "primes_upto",
+     "starter": "def primes_upto(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        2
+       ],
+       "expect": [
+        2
+       ]
+      },
+      {
+       "args": [
+        20
+       ],
+       "expect": [
+        2,
+        3,
+        5,
+        7,
+        11,
+        13,
+        17,
+        19
+       ]
+      },
+      {
+       "args": [
+        50
+       ],
+       "expect": [
+        2,
+        3,
+        5,
+        7,
+        11,
+        13,
+        17,
+        19,
+        23,
+        29,
+        31,
+        37,
+        41,
+        43,
+        47
+       ]
+      },
+      {
+       "args": [
+        100
+       ],
+       "expect": [
+        2,
+        3,
+        5,
+        7,
+        11,
+        13,
+        17,
+        19,
+        23,
+        29,
+        31,
+        37,
+        41,
+        43,
+        47,
+        53,
+        59,
+        61,
+        67,
+        71,
+        73,
+        79,
+        83,
+        89,
+        97
+       ]
+      }
+     ],
+     "hint": "Cross out multiples of each prime starting from its square.",
+     "solution": "def primes_upto(n):\n    if n < 2:\n        return []\n    flags = [True] * (n + 1)\n    flags[0] = False\n    flags[1] = False\n    i = 2\n    while i * i <= n:\n        if flags[i]:\n            j = i * i\n            while j <= n:\n                flags[j] = False\n                j += i\n        i += 1\n    return [k for k in range(n + 1) if flags[k]]\n"
+    },
+    {
+     "type": "python",
+     "title": "The Legendre symbol",
+     "intro": "Write legendre(a, p) for an odd prime p. Return 0 if p divides a, 1 if a is a square mod p and -1 otherwise. Use Euler's criterion with pow(a, (p - 1) // 2, p).",
+     "fn": "legendre",
+     "starter": "def legendre(a, p):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        7
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        3,
+        7
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        2,
+        7
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        5,
+        11
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        0,
+        5
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        10,
+        13
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        6,
+        13
+       ],
+       "expect": -1
+      }
+     ],
+     "hint": "Compute the power mod p, then map p - 1 to -1.",
+     "solution": "def legendre(a, p):\n    a = a % p\n    if a == 0:\n        return 0\n    r = pow(a, (p - 1) // 2, p)\n    return 1 if r == 1 else -1\n"
+    },
+    {
+     "type": "fill",
+     "title": "Rules",
+     "text": "The Legendre symbol of a square is {{1}}. A multiple of p gives {{0}}. Euler's criterion raises a to the power {{(p-1)/2}}."
+    }
+   ]
+  },
+  {
+   "title": "Number fields",
+   "maps": [
+    {
+     "title": "Number fields",
+     "links": [
+      "Number field | extends | The rationals",
+      "Degree | counts | The dimension",
+      "Discriminant | measures | Ramification",
+      "Ring of integers | holds | Algebraic integers",
+      "Class number | counts | Ideal classes",
+      "Galois group | holds | The symmetries"
+     ]
+    }
+   ],
+   "summary": [
+    "A number field is a finite extension of the rationals, such as Q(sqrt(-3)). The LMFDB lists them by degree, signature and discriminant, with the ring of integers, the class number and the Galois group.",
+    "The discriminant tells which primes ramify. The class number measures how far unique factorisation fails. The Galois group records the symmetries of the roots.",
+    "The labs compute class numbers of imaginary quadratic fields by counting reduced quadratic forms."
+   ],
+   "glossary": [
+    {
+     "term": "Number field",
+     "def": "A field containing Q that has finite dimension over Q."
+    },
+    {
+     "term": "Discriminant",
+     "def": "An integer that measures how a field differs from Q; the primes dividing it ramify."
+    },
+    {
+     "term": "Ring of integers",
+     "def": "The algebraic integers inside a number field."
+    },
+    {
+     "term": "Class number",
+     "def": "The size of the ideal class group; it is 1 exactly when factorisation is unique."
+    },
+    {
+     "term": "Galois group",
+     "def": "The group of symmetries of the roots of the defining polynomial."
+    }
+   ],
+   "keyPoints": [
+    "Q(sqrt d) has degree 2 and discriminant d (or 4d).",
+    "The label d.r.D.i gives degree, real places, |discriminant| and an index.",
+    "Class number 1 means unique factorisation of ideals into primes is also element-wise.",
+    "Heegner: the imaginary quadratic fields with class number 1 have discriminants -3, -4, -7, -8, -11, -19, -43, -67, -163.",
+    "A prime p ramifies in K if it divides the discriminant.",
+    "The Galois group of a quadratic field is Z/2."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A number field is a bigger number world, like adding the square root of minus three to the usual fractions. Sometimes numbers there cannot be broken into building blocks in only one way."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Adjoin the square root of minus three to the rationals, and you get a field Q(sqrt(-3)): numbers of the form a + b times the square root of minus three, with rational a and b. It has dimension two over Q, so degree two. Its complex embeddings come in a conjugate pair, so it has no real places.",
+      "The LMFDB gives it the label 2.0.3.1: degree 2, zero real places, discriminant of absolute value 3, first such field. Its cousin Q(sqrt 5) is 2.2.5.1, with two real places."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Every number field has a ring of integers, the elements that satisfy a monic integer polynomial. In Q(i) it is the Gaussian integers Z[i]. Integers can sometimes factor in different ways in the ring of integers. In Z[sqrt(-5)], six equals 2 times 3 and also (1 + sqrt(-5)) times (1 - sqrt(-5)).",
+      "Factorisation of numbers is not unique, but factorisation of ideals is. The class number h counts how far unique factorisation of numbers fails; h = 1 means it holds. Q(sqrt(-5)) has class number 2."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The discriminant measures the size of the ring of integers and detects ramification. A prime p ramifies when it divides the discriminant, meaning p generates a product of repeated prime ideals. In Q(sqrt(-3)) only 3 ramifies.",
+      "Stark and Heegner showed there are exactly nine imaginary quadratic fields with class number 1: discriminants minus 3, 4, 7, 8, 11, 19, 43, 67 and 163. The last one gives the famous near integer e to the pi root 163, which is almost an integer."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "We can compute class numbers of imaginary quadratic fields without any theory of ideals, by counting reduced binary quadratic forms ax^2 + bxy + cy^2 with discriminant D = b^2 - 4ac.",
+      "A form is reduced if the absolute value of b is at most a, and a is at most c, with b nonnegative when a = c or the absolute value of b equals a. The number of reduced forms of discriminant D is the class number h(D) when D is a fundamental discriminant.",
+      "The lab does exactly this count and recovers h(-23) = 3 and h(-163) = 1."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Galois group records the symmetries of the roots. For a quadratic field, it is the group of two elements swapping the two roots. For a cubic like x^3 - x - 1, which has discriminant -23, the group is the symmetric group S3 of order six.",
+      "The LMFDB shows the group using a label like 6T2, which names the transitive group of degree 6 and number 2."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the degree of Q(sqrt(-3))?",
+     "options": [
+      "2",
+      "1",
+      "3",
+      "4"
+     ],
+     "answer": 0,
+     "explain": "Two-dimensional over Q."
+    },
+    {
+     "q": "What does the class number measure?",
+     "options": [
+      "Failure of unique factorisation",
+      "The degree",
+      "The number of real places",
+      "The discriminant"
+     ],
+     "answer": 0,
+     "explain": "h = 1 is good."
+    },
+    {
+     "q": "Which discriminant has class number 1?",
+     "options": [
+      "-163",
+      "-23",
+      "-15",
+      "-84"
+     ],
+     "answer": 0,
+     "explain": "Heegner."
+    },
+    {
+     "q": "What does a prime dividing the discriminant do?",
+     "options": [
+      "Ramifies",
+      "Splits",
+      "Is inert",
+      "Vanishes"
+     ],
+     "answer": 0,
+     "explain": "Repeated prime ideals."
+    },
+    {
+     "q": "What is h(-23)?",
+     "options": [
+      "3",
+      "1",
+      "2",
+      "4"
+     ],
+     "answer": 0,
+     "explain": "Three reduced forms."
+    },
+    {
+     "q": "What is the Galois group of x^3 - x - 1?",
+     "options": [
+      "S3",
+      "Z/3",
+      "Z/2",
+      "A4"
+     ],
+     "answer": 0,
+     "explain": "Discriminant -23."
+    }
+   ],
+   "cards": [
+    {
+     "q": "2.0.3.1",
+     "a": "Q(sqrt(-3))"
+    },
+    {
+     "q": "h = 1",
+     "a": "Unique factorisation"
+    },
+    {
+     "q": "disc -163",
+     "a": "Class number 1"
+    },
+    {
+     "q": "ramified",
+     "a": "Divides the discriminant"
+    },
+    {
+     "q": "S3",
+     "a": "Galois group of a typical cubic"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the field to its label",
+     "intro": "Pair each field with its LMFDB label.",
+     "pairs": [
+      [
+       "Q(sqrt(-3))",
+       "2.0.3.1"
+      ],
+      [
+       "Q(i)",
+       "2.0.4.1"
+      ],
+      [
+       "Q(sqrt 5)",
+       "2.2.5.1"
+      ],
+      [
+       "cubic of disc -23",
+       "3.1.23.1"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Class number by counting forms",
+     "intro": "Write class_number(D) for a negative discriminant D: count reduced forms (a, b, c) with b*b - 4*a*c = D, |b| <= a <= c, and b >= 0 when |b| == a or a == c. Return the count. Loop a from 1 while 3*a*a <= -D, b from -a+1 to a.",
+     "fn": "class_number",
+     "starter": "def class_number(D):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -3
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        -4
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        -7
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        -15
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        -23
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        -84
+       ],
+       "expect": 4
+      },
+      {
+       "args": [
+        -163
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "For each a and b, c is determined by D; check divisibility and the reduced conditions.",
+     "solution": "def class_number(D):\n    count = 0\n    a = 1\n    while 3 * a * a <= -D:\n        for b in range(-a + 1, a + 1):\n            num = b * b - D\n            if num % (4 * a) == 0:\n                c = num // (4 * a)\n                if c >= a and not (a == c and b < 0):\n                    count += 1\n        a += 1\n    return count\n"
+    },
+    {
+     "type": "fill",
+     "title": "Fields and ramification",
+     "text": "A prime ramifies when it divides the {{discriminant}}. The {{class}} number measures failure of unique factorisation. Exactly {{nine}} imaginary quadratic fields have class number 1."
+    }
+   ]
+  },
+  {
+   "title": "Dirichlet characters and their L-functions",
+   "maps": [
+    {
+     "title": "Dirichlet characters",
+     "links": [
+      "Character | is | A multiplicative map",
+      "Conductor | is | The modulus",
+      "Dirichlet L-function | sums | chi(n) / n^s",
+      "Zeta | is | The trivial character",
+      "Primes in progressions | follow | Nonvanishing L(1)",
+      "Euler product | factors | The sum"
+     ]
+    }
+   ],
+   "summary": [
+    "A Dirichlet character is a function chi on the integers that is periodic mod N, multiplicative and zero when n shares a factor with N. Each gives an L-function, the sum of chi(n)/n^s.",
+    "The Riemann zeta function is the case chi = 1. The Dirichlet L-functions prove that arithmetic progressions contain infinitely many primes. The LMFDB lists characters by modulus and Conrey label.",
+    "The labs compute a quadratic character and an Euler product."
+   ],
+   "glossary": [
+    {
+     "term": "Dirichlet character",
+     "def": "A completely multiplicative function mod N that is zero on integers sharing a factor with N."
+    },
+    {
+     "term": "Conductor",
+     "def": "The smallest modulus from which the character can be defined."
+    },
+    {
+     "term": "L-function",
+     "def": "A Dirichlet series like the sum of chi(n)/n^s, with an Euler product."
+    },
+    {
+     "term": "Euler product",
+     "def": "An expression of an L-function as a product over primes."
+    },
+    {
+     "term": "Primitive character",
+     "def": "A character not induced from a character of smaller modulus."
+    }
+   ],
+   "keyPoints": [
+    "chi(mn) = chi(m) chi(n); chi(n + N) = chi(n).",
+    "The quadratic character mod p is the Legendre symbol.",
+    "L(s, chi) = sum chi(n) n^(-s) = product over p of 1/(1 - chi(p) p^(-s)).",
+    "Zeta(s) = sum n^(-s) = product of 1/(1 - p^(-s)).",
+    "Dirichlet's theorem: infinitely many primes in a + Nk when gcd(a, N) = 1.",
+    "The LMFDB label N.k names the character with modulus N and Conrey number k."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A Dirichlet character is a pattern of plus ones and minus ones that repeats, like a stripe on a flag. Adding up the pattern divided by n gives a number that knows about the primes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Take the numbers mod 4 and define chi(n) to be 1 for n congruent to 1, -1 for n congruent to 3, and 0 for even n. This function is multiplicative: chi(3) times chi(3) is chi(9) = 1. It is a Dirichlet character. The associated L-function is 1 - 1/3^s + 1/5^s - 1/7^s and so on.",
+      "At s = 1 it gives the Leibniz series for pi over four. Dirichlet characters generalise this idea to every modulus."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Riemann zeta function is the sum of one over n^s, which is the L-function of the trivial character. Euler found that the sum factors into a product over the primes: zeta(s) is the product over p of 1 over (1 - p to the minus s). This works because every integer factors uniquely into primes.",
+      "Every Dirichlet L-function has an Euler product too, with the character value chi(p) in each factor, and the product encodes how the character behaves on primes."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "L(s,\\chi)=\\sum_{n\\ge1}\\frac{\\chi(n)}{n^{s}}=\\prod_{p}\\frac{1}{1-\\chi(p)p^{-s}}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Dirichlet used these L-functions to prove that every arithmetic progression a, a + N, a + 2N and so on contains infinitely many primes when a and N share no factor. The key is that L(1, chi) is not zero for any nontrivial character.",
+      "In the LMFDB, a character is listed by its modulus N and Conrey label k, so 5.2 is a character mod 5 with a specific order. The page shows the order, the parity (even or odd), the conductor and the values on generators."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A character is primitive when it cannot come from a smaller modulus. The conductor is the smallest modulus that works. The Legendre symbol mod an odd prime p is the unique quadratic character, so (a/p) is chi(a) for chi of order two.",
+      "Its L-function counts how primes split in Q(sqrt p*), where p* is plus or minus p. This is the first example of a deep fact: the behaviour of primes in a number field is encoded in an L-function."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is chi(n) for the character mod 4 at n = 3?",
+     "options": [
+      "-1",
+      "1",
+      "0",
+      "3"
+     ],
+     "answer": 0,
+     "explain": "3 is congruent to 3 mod 4."
+    },
+    {
+     "q": "What does an Euler product show?",
+     "options": [
+      "The sum factors over primes",
+      "The sum diverges",
+      "The sum is finite",
+      "The sum is zero"
+     ],
+     "answer": 0,
+     "explain": "Unique factorisation."
+    },
+    {
+     "q": "Which L-function is the trivial character's?",
+     "options": [
+      "Riemann zeta",
+      "Delta",
+      "An elliptic curve's",
+      "A Maass form's"
+     ],
+     "answer": 0,
+     "explain": "Sum of n^-s."
+    },
+    {
+     "q": "What did Dirichlet prove with L(1, chi)?",
+     "options": [
+      "Infinitely many primes in progressions",
+      "The Riemann hypothesis",
+      "Fermat's last theorem",
+      "Modularity"
+     ],
+     "answer": 0,
+     "explain": "Nonvanishing."
+    },
+    {
+     "q": "What is a character's conductor?",
+     "options": [
+      "The smallest modulus defining it",
+      "Its order",
+      "Its parity",
+      "Its value at 1"
+     ],
+     "answer": 0,
+     "explain": "Primitive means conductor = modulus."
+    },
+    {
+     "q": "What is the quadratic character mod p?",
+     "options": [
+      "The Legendre symbol",
+      "The gcd",
+      "The Euler phi",
+      "The sine"
+     ],
+     "answer": 0,
+     "explain": "(a/p)."
+    }
+   ],
+   "cards": [
+    {
+     "q": "chi(mn) = chi(m)chi(n)",
+     "a": "Multiplicativity"
+    },
+    {
+     "q": "Zeta",
+     "a": "L-function of the trivial character"
+    },
+    {
+     "q": "N.k",
+     "a": "A character label"
+    },
+    {
+     "q": "Dirichlet",
+     "a": "Primes in progressions"
+    },
+    {
+     "q": "conductor",
+     "a": "Smallest modulus"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Character mod 4",
+     "intro": "Match n with chi(n) for the nontrivial character mod 4.",
+     "pairs": [
+      [
+       "1",
+       "1"
+      ],
+      [
+       "2",
+       "0"
+      ],
+      [
+       "3",
+       "-1"
+      ],
+      [
+       "4",
+       "0"
+      ],
+      [
+       "5",
+       "1"
+      ],
+      [
+       "7",
+       "-1"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "The character mod 4",
+     "intro": "Write chi4(n): return 0 for even n, 1 if n is 1 mod 4, and -1 if n is 3 mod 4.",
+     "fn": "chi4",
+     "starter": "def chi4(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        2
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        3
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        7
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        9
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        11
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        100
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Use n % 4.",
+     "solution": "def chi4(n):\n    if n % 2 == 0:\n        return 0\n    return 1 if n % 4 == 1 else -1\n"
+    },
+    {
+     "type": "python",
+     "title": "The zeta Euler product",
+     "intro": "Write zeta_euler(s, bound): the product over primes p up to bound of 1 / (1 - p**(-s)), as a float. Zeta(2) is about 1.6449.",
+     "fn": "zeta_euler",
+     "starter": "def zeta_euler(s, bound):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2,
+        100
+       ],
+       "expect": 1.6419451966211158,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        2,
+        1000
+       ],
+       "expect": 1.6447251902386706,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        3,
+        50
+       ],
+       "expect": 1.202007482327819,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        4,
+        50
+       ],
+       "expect": 1.0823226361870146,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Test each number for primality as you go.",
+     "solution": "def zeta_euler(s, bound):\n    result = 1.0\n    for p in range(2, bound + 1):\n        if all(p % q for q in range(2, int(p ** 0.5) + 1)):\n            result *= 1.0 / (1.0 - p ** (-s))\n    return result\n"
+    }
+   ]
+  },
+  {
+   "title": "Elliptic curves over the rationals",
+   "maps": [
+    {
+     "title": "Elliptic curves",
+     "links": [
+      "Curve | is | y^2 = x^3 + ax + b",
+      "Points | form | A group",
+      "Discriminant | detects | Singularity",
+      "Conductor | collects | Bad primes",
+      "Rank | measures | Free rational points",
+      "Torsion | is | The finite part"
+     ]
+    }
+   ],
+   "summary": [
+    "An elliptic curve is a smooth cubic curve with a chosen point. Its rational points form a group, described by a rank (how many independent infinite-order points) and a finite torsion part.",
+    "A model y squared = x cubed + ax + b has discriminant -16(4a cubed + 27b squared). The curve is smooth when this is nonzero. The conductor packages the primes where the curve has bad reduction, and appears in the LMFDB label.",
+    "The labs compute the discriminant and the j-invariant."
+   ],
+   "glossary": [
+    {
+     "term": "Elliptic curve",
+     "def": "A smooth cubic curve with a marked point, with a group law on its points."
+    },
+    {
+     "term": "Discriminant",
+     "def": "A number that vanishes exactly when the curve is singular."
+    },
+    {
+     "term": "j-invariant",
+     "def": "A number that identifies a curve up to isomorphism over the algebraic closure."
+    },
+    {
+     "term": "Conductor",
+     "def": "An integer built from the primes of bad reduction."
+    },
+    {
+     "term": "Mordell-Weil group",
+     "def": "The group of rational points: Z^r times a finite torsion group."
+    }
+   ],
+   "keyPoints": [
+    "Short Weierstrass form: y^2 = x^3 + ax + b over Q.",
+    "Discriminant: -16(4a^3 + 27b^2); nonzero means smooth.",
+    "j = 1728 * 4a^3 / (4a^3 + 27b^2).",
+    "Mordell's theorem: the rational points form a finitely generated group.",
+    "Torsion subgroups over Q: Mazur lists the 15 possibilities.",
+    "The LMFDB label 11.a2 is conductor 11, class a, number 2."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. An elliptic curve is the line of points where y squared matches a cubic. Points on it can be added by drawing lines, so the curve is also a little number system."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An elliptic curve is the set of solutions of y squared equals x cubed plus a x plus b, together with a point at infinity. The word elliptic comes from elliptic integrals, not from ellipses.",
+      "The curve is smooth when the cubic has no repeated root, which happens exactly when the discriminant, minus 16 times (4 a cubed plus 27 b squared), is nonzero. If it vanishes, the curve has a node or a cusp, and we do not call it elliptic."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The magic is that the points on a smooth cubic form a group. Draw the line through two points P and Q; it meets the curve at a third point; reflect it in the x-axis, and call the result P plus Q. The point at infinity is the identity. This is the Mordell-Weil group of the rational points.",
+      "Mordell proved it is finitely generated: it is Z to the power r, times a finite group. The number r is the rank. The finite group is the torsion subgroup, which Mazur showed can only be one of fifteen groups."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Every curve has a j-invariant, 1728 times 4a cubed over (4a cubed plus 27b squared). Two curves with the same j are isomorphic over the complex numbers, though not always over Q.",
+      "The conductor N of a curve over Q is an integer divisible by exactly the primes where the curve degenerates when reduced mod p, which are the primes dividing the minimal discriminant.",
+      "In the LMFDB label 11.a2, the 11 is the conductor, a names the isogeny class, and 2 numbers the curve within the class."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The big open problem is to understand the rank. Is it computable? Which ranks occur? The Birch and Swinnerton-Dyer conjecture says the rank equals the order of vanishing of the L-function at s = 1.",
+      "The LMFDB records ranks, torsion, regulators and the data needed to test this conjecture for millions of curves. The curve y squared + y = x cubed - x squared - 10x - 20 has conductor 11 and rank 0, with a torsion subgroup of order five. We will use it throughout the course."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Try the explorer at the end of this chapter. Choose a and b, then a prime p. It plots the points of the curve over F_p, counts them, and shows the discriminant and the a_p. Try y squared = x cubed - x with p = 5, and see how few points there are.",
+      "Then try a singular curve, such as a = 0 and b = 0, and see why the discriminant warns you."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "When is y^2 = x^3 + ax + b smooth?",
+     "options": [
+      "When 4a^3 + 27b^2 is not 0",
+      "When a = 0",
+      "When b = 0",
+      "Always"
+     ],
+     "answer": 0,
+     "explain": "Nonzero discriminant."
+    },
+    {
+     "q": "What does the rank count?",
+     "options": [
+      "Independent points of infinite order",
+      "Torsion points",
+      "Bad primes",
+      "The degree"
+     ],
+     "answer": 0,
+     "explain": "Free part of Mordell-Weil."
+    },
+    {
+     "q": "What does the conductor involve?",
+     "options": [
+      "Primes of bad reduction",
+      "Primes of good reduction",
+      "The rank",
+      "The j-invariant"
+     ],
+     "answer": 0,
+     "explain": "Appears in the label."
+    },
+    {
+     "q": "Who classified torsion over Q?",
+     "options": [
+      "Mazur",
+      "Gauss",
+      "Euler",
+      "Hecke"
+     ],
+     "answer": 0,
+     "explain": "Fifteen groups."
+    },
+    {
+     "q": "What is j for a curve, informally?",
+     "options": [
+      "An invariant of isomorphism over C",
+      "The conductor",
+      "The rank",
+      "A prime"
+     ],
+     "answer": 0,
+     "explain": "Same j, same curve over the complex numbers."
+    },
+    {
+     "q": "In the label 11.a2, what is 11?",
+     "options": [
+      "The conductor",
+      "The rank",
+      "The torsion",
+      "The discriminant"
+     ],
+     "answer": 0,
+     "explain": "Level."
+    }
+   ],
+   "cards": [
+    {
+     "q": "y^2 = x^3 + ax + b",
+     "a": "Short Weierstrass form"
+    },
+    {
+     "q": "-16(4a^3 + 27b^2)",
+     "a": "Discriminant"
+    },
+    {
+     "q": "Mordell-Weil",
+     "a": "Z^r times a finite group"
+    },
+    {
+     "q": "Mazur",
+     "a": "Torsion theorem"
+    },
+    {
+     "q": "BSD",
+     "a": "Rank equals order of vanishing of L at 1"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match curve terms",
+     "intro": "Pair each term with what it describes.",
+     "pairs": [
+      [
+       "Discriminant",
+       "detects singular curves"
+      ],
+      [
+       "Rank",
+       "free part of rational points"
+      ],
+      [
+       "Torsion",
+       "finite part of rational points"
+      ],
+      [
+       "Conductor",
+       "primes of bad reduction"
+      ],
+      [
+       "j-invariant",
+       "isomorphism class over C"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "The discriminant",
+     "intro": "Write disc(a, b) for the curve y^2 = x^3 + ax + b. Return -16 * (4*a**3 + 27*b**2).",
+     "fn": "disc",
+     "starter": "def disc(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        1
+       ],
+       "expect": -432
+      },
+      {
+       "args": [
+        -1,
+        0
+       ],
+       "expect": 64
+      },
+      {
+       "args": [
+        1,
+        1
+       ],
+       "expect": -496
+      },
+      {
+       "args": [
+        -2,
+        3
+       ],
+       "expect": -3376
+      },
+      {
+       "args": [
+        0,
+        0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        -4,
+        4
+       ],
+       "expect": -2816
+      }
+     ],
+     "hint": "Plug into the formula.",
+     "solution": "def disc(a, b):\n    return -16 * (4 * a ** 3 + 27 * b ** 2)\n"
+    },
+    {
+     "type": "python",
+     "title": "The j-invariant as a fraction",
+     "intro": "Write j_invariant(a, b): the j-invariant 1728 * 4a^3 / (4a^3 + 27b^2) as a reduced fraction [numerator, denominator] with a positive denominator. Return None if the curve is singular. Use math-free gcd (Euclid).",
+     "fn": "j_invariant",
+     "starter": "def j_invariant(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        1
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        -1,
+        0
+       ],
+       "expect": [
+        1728,
+        1
+       ]
+      },
+      {
+       "args": [
+        1,
+        1
+       ],
+       "expect": [
+        6912,
+        31
+       ]
+      },
+      {
+       "args": [
+        -2,
+        3
+       ],
+       "expect": [
+        -55296,
+        211
+       ]
+      },
+      {
+       "args": [
+        0,
+        0
+       ],
+       "expect": null
+      },
+      {
+       "args": [
+        3,
+        5
+       ],
+       "expect": [
+        6912,
+        29
+       ]
+      }
+     ],
+     "hint": "Reduce with Euclid's algorithm and fix the sign of the denominator.",
+     "solution": "def j_invariant(a, b):\n    d = 4 * a ** 3 + 27 * b ** 2\n    if d == 0:\n        return None\n    n = 1728 * 4 * a ** 3\n    x, y = abs(n), abs(d)\n    while y:\n        x, y = y, x % y\n    g = x if x else 1\n    n //= g\n    d //= g\n    if d < 0:\n        n, d = -n, -d\n    return [n, d]\n"
+    },
+    {
+     "type": "webxdc",
+     "title": "Elliptic curve explorer",
+     "intro": "Choose a, b and a prime p. See the points mod p, the count, a_p and the discriminant. Look at three different smooth curves to finish.",
+     "height": 700,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\ninput{font:inherit;width:70px;background:#0e0820;color:#f1ebff;border:1px solid #3a2a5c;border-radius:8px;padding:6px}\nbutton{font:inherit;border:0;border-radius:18px;padding:7px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:2px}\ncanvas{width:100%;max-width:420px;display:block;margin:8px auto;background:#0e0820;border-radius:8px}\n.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.k{color:#c9b8e8}.ok{color:#8fe3a8}.bad{color:#ff9b9b}table{border-collapse:collapse;font-size:12px}td,th{border:1px solid #3a2a5c;padding:2px 6px}\n</style></head><body>\n<div class=\"row\">y&sup2; = x&sup3; + <input id=\"a\" type=\"number\" value=\"-1\"> x + <input id=\"b\" type=\"number\" value=\"0\"> over F<sub>p</sub>, p = <input id=\"p\" type=\"number\" value=\"13\"><button id=\"go\">Plot</button></div>\n<canvas id=\"c\" width=\"420\" height=\"420\"></canvas>\n<div id=\"out\" class=\"k\"></div><div id=\"tab\" style=\"overflow:auto\"></div>\n<div class=\"k\" id=\"prog\" style=\"margin-top:8px\"></div>\n<script>\nvar $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nfunction isPrime(n){if(n<3)return n==2;if(n%2==0)return false;for(var i=3;i*i<=n;i+=2)if(n%i==0)return false;return true}\nfunction md(x,p){return((x%p)+p)%p}\nfunction pw(b,e,m){var r=1;b=md(b,m);while(e>0){if(e&1)r=r*b%m;b=b*b%m;e>>=1}return r}\nfunction leg(a,p){a=md(a,p);if(a==0)return 0;return pw(a,(p-1)/2,p)==1?1:-1}\nfunction count(a,b,p){var n=1;for(var x=0;x<p;x++){var f=md(x*x*x+a*x+b,p);n+=1+(p==2?0:leg(f,p))}return n}\nfunction brute(a,b,p){var n=1;for(var x=0;x<p;x++)for(var y=0;y<p;y++)if(md(y*y-(x*x*x+a*x+b),p)==0)n++;return n}\nvar seen={};\nfunction go(){var a=+$(\"a\").value,b=+$(\"b\").value,p=+$(\"p\").value;var o=$(\"out\");\n if(!isPrime(p)||p<3||p>199){o.innerHTML=\"<span class='bad'>Choose an odd prime p up to 199.</span>\";return}\n var disc=-16*(4*a*a*a+27*b*b),smooth=md(4*a*a*a+27*b*b,p)!=0;\n var cv=$(\"c\"),g=cv.getContext(\"2d\");g.clearRect(0,0,420,420);var s=400/p;g.strokeStyle=\"#2d2046\";for(var i=0;i<=p;i++){g.beginPath();g.moveTo(10+i*s,10);g.lineTo(10+i*s,410);g.moveTo(10,10+i*s);g.lineTo(410,10+i*s);g.stroke()}\n var pts=0;g.fillStyle=\"#b26bff\";for(var x=0;x<p;x++)for(var y=0;y<p;y++)if(md(y*y-(x*x*x+a*x+b),p)==0){pts++;g.beginPath();g.arc(10+x*s+s/2,410-(y*s+s/2),Math.max(2,s/3),0,6.3);g.fill()}\n var N=pts+1,ap=p+1-N;\n var h=\"Points over F_\"+p+\" (with infinity): <b>\"+N+\"</b><br>a_p = p + 1 - N = <b>\"+ap+\"</b>\"+\" &nbsp; Hasse bound 2&radic;p = \"+(2*Math.sqrt(p)).toFixed(2)+(ap*ap<=4*p?\" <span class='ok'>(satisfied)</span>\":\" <span class='bad'>(violated: the curve is singular here)</span>\")+\"<br>Discriminant = \"+disc+(disc==0?\" <span class='bad'>(singular curve)</span>\":(smooth?\"\":\" <span class='bad'>(bad prime: p divides the discriminant)</span>\"));\n o.innerHTML=h;\n var t=\"<table><tr><th>p</th>\";var ps=[];for(var q=3;q<=61;q++)if(isPrime(q))ps.push(q);ps.forEach(function(q){t+=\"<th>\"+q+\"</th>\"});t+=\"</tr><tr><th>a_p</th>\";\n ps.forEach(function(q){var good=md(4*a*a*a+27*b*b,q)!=0;t+=\"<td>\"+(good?(q+1-count(a,b,q)):\"&ndash;\")+\"</td>\"});t+=\"</tr></table>\";$(\"tab\").innerHTML=\"<div class='k' style='margin-top:6px'>a_p for odd primes (&ndash; = bad prime)</div>\"+t;\n if(disc!=0&&smooth)seen[a+\",\"+b]=1;var n=Object.keys(seen).length;$(\"prog\").textContent=\"Smooth curves explored: \"+n+\" of 3 needed.\";if(n>=3)done()}\n$(\"go\").onclick=go;go();\n</script></body></html>"
+    }
+   ]
+  },
+  {
+   "title": "Counting points and the numbers a_p",
+   "maps": [
+    {
+     "title": "Counting points",
+     "links": [
+      "Curve | mod p | Has finitely many points",
+      "Count | gives | a_p",
+      "a_p | equals | p + 1 minus N_p",
+      "Hasse | bounds | |a_p| by 2 sqrt p",
+      "a_p | are | Fingerprints",
+      "Bad prime | breaks | The count"
+     ]
+    }
+   ],
+   "summary": [
+    "Reduce an elliptic curve mod a prime p and count the points N_p. The number a_p = p + 1 - N_p is the trace of Frobenius, and Hasse proved |a_p| is at most 2 times the square root of p.",
+    "The sequence a_2, a_3, a_5 ... is a fingerprint of the curve. It is the data the LMFDB shows under 'Frobenius traces' and the input to the curve's L-function.",
+    "The labs count points by brute force and check the Hasse bound."
+   ],
+   "glossary": [
+    {
+     "term": "Reduction mod p",
+     "def": "Reading the curve's equation over F_p."
+    },
+    {
+     "term": "N_p",
+     "def": "The number of points on the curve over F_p, including the point at infinity."
+    },
+    {
+     "term": "a_p",
+     "def": "p + 1 - N_p, the trace of Frobenius."
+    },
+    {
+     "term": "Hasse bound",
+     "def": "|a_p| <= 2 sqrt p."
+    },
+    {
+     "term": "Good reduction",
+     "def": "The reduced curve is still smooth; this holds for p not dividing the conductor."
+    }
+   ],
+   "keyPoints": [
+    "N_p = 1 + number of solutions (x, y) in F_p x F_p.",
+    "a_p = p + 1 - N_p.",
+    "Hasse: |a_p| <= 2 sqrt p, or a_p^2 <= 4p.",
+    "For short form, N_p = 1 + sum over x of (1 + (f(x)/p)).",
+    "Bad primes divide the conductor; there a_p is 0 or plus or minus 1.",
+    "For the conductor 11 curve: a_2 = -2, a_3 = -1, a_5 = 1, a_7 = -2, a_13 = 4."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Count the dots of the curve on a tiny clock with p hours. Compare the count to p plus one. That small difference is a_p, and a list of those is the curve's fingerprint."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The easiest way to meet an elliptic curve arithmetically is to count its points over finite fields. Take the curve y squared + y = x cubed - x squared - 10x - 20. Over F_2 there are only 2 times 2 = 4 pairs (x, y) to check, and adding the point at infinity gives the total.",
+      "Doing this for each prime p gives numbers N_p, and from these the traces a_p = p + 1 - N_p."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "p    2   3   5   7   11  13  17  19  23\na_p -2  -1   1  -2   1   4  -2   0  -1"
+    },
+    {
+     "type": "text",
+     "items": [
+      "These numbers are the same for every curve in the same isogeny class, and they are the LMFDB's 'Frobenius traces'. Hasse proved that a_p cannot be large: the absolute value is at most two times the square root of p. For p = 13 the bound is about 7.2, and indeed a_13 = 4.",
+      "The number a_p is the trace of the Frobenius map, the map that sends each coordinate to its p-th power. The Frobenius has two eigenvalues of absolute value the square root of p, which explains the bound."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} |a_p| \\le 2\\sqrt{p}, \\\\[0.6em] a_p = p+1-\\#E(\\mathbb F_p) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "There are two exceptions. At the primes dividing the conductor, the curve has bad reduction, and the formula changes: a_p is 1, -1 or 0 depending on the type. For the curve of conductor 11, a_11 = 1. Everywhere else the count behaves well.",
+      "For a curve with short form, the count simplifies to N_p = 1 plus the sum over x of 1 + (f(x)/p), where f(x) = x cubed + a x + b and the fraction is the Legendre symbol from chapter 2."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a_p?",
+     "options": [
+      "p + 1 minus the number of points",
+      "The rank",
+      "The torsion",
+      "The conductor"
+     ],
+     "answer": 0,
+     "explain": "Trace of Frobenius."
+    },
+    {
+     "q": "What does Hasse's bound say?",
+     "options": [
+      "|a_p| <= 2 sqrt p",
+      "a_p = 0",
+      "a_p > p",
+      "a_p is prime"
+     ],
+     "answer": 0,
+     "explain": "Small traces."
+    },
+    {
+     "q": "What is N_p?",
+     "options": [
+      "The number of points over F_p",
+      "A prime",
+      "The rank",
+      "The class number"
+     ],
+     "answer": 0,
+     "explain": "Including infinity."
+    },
+    {
+     "q": "For the conductor 11 curve, what is a_3?",
+     "options": [
+      "-1",
+      "1",
+      "2",
+      "0"
+     ],
+     "answer": 0,
+     "explain": "From the table."
+    },
+    {
+     "q": "Which primes are bad?",
+     "options": [
+      "Those dividing the conductor",
+      "All odd primes",
+      "p = 2 only",
+      "None"
+     ],
+     "answer": 0,
+     "explain": "Bad reduction."
+    },
+    {
+     "q": "What map has trace a_p?",
+     "options": [
+      "Frobenius",
+      "Translation",
+      "Reflection",
+      "Hecke"
+     ],
+     "answer": 0,
+     "explain": "Raising to the p-th power."
+    }
+   ],
+   "cards": [
+    {
+     "q": "a_p",
+     "a": "p + 1 - N_p"
+    },
+    {
+     "q": "Hasse",
+     "a": "|a_p| <= 2 sqrt p"
+    },
+    {
+     "q": "a_2, a_3, a_5",
+     "a": "-2, -1, 1 for the conductor 11 curve"
+    },
+    {
+     "q": "Frobenius",
+     "a": "Raising to the p-th power"
+    },
+    {
+     "q": "bad prime",
+     "a": "Divides the conductor"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the a_p",
+     "intro": "Pair the prime with a_p for the conductor 11 curve.",
+     "pairs": [
+      [
+       "2",
+       "-2"
+      ],
+      [
+       "3",
+       "-1"
+      ],
+      [
+       "5",
+       "1"
+      ],
+      [
+       "7",
+       "-2"
+      ],
+      [
+       "13",
+       "4"
+      ],
+      [
+       "17",
+       "-2"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Count points in the short form",
+     "intro": "Write count_points(a, b, p) for y^2 = x^3 + ax + b over F_p (p an odd prime): return 1 plus, for each x in 0..p-1, the number of y in 0..p-1 with y*y % p equal to (x**3 + a*x + b) % p. (That is, include the point at infinity.)",
+     "fn": "count_points",
+     "starter": "def count_points(a, b, p):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -1,
+        0,
+        5
+       ],
+       "expect": 8
+      },
+      {
+       "args": [
+        -1,
+        0,
+        7
+       ],
+       "expect": 8
+      },
+      {
+       "args": [
+        1,
+        1,
+        5
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        2,
+        3,
+        7
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        -1,
+        0,
+        13
+       ],
+       "expect": 8
+      },
+      {
+       "args": [
+        0,
+        1,
+        11
+       ],
+       "expect": 12
+      }
+     ],
+     "hint": "Check every (x, y) pair.",
+     "solution": "def count_points(a, b, p):\n    n = 1\n    for x in range(p):\n        rhs = (x ** 3 + a * x + b) % p\n        for y in range(p):\n            if (y * y) % p == rhs:\n                n += 1\n    return n\n"
+    },
+    {
+     "type": "python",
+     "title": "The trace a_p for the curve of conductor 11",
+     "intro": "Write ap_general(a1, a2, a3, a4, a6, p): count solutions (x, y) in F_p^2 of y^2 + a1*x*y + a3*y = x^3 + a2*x^2 + a4*x + a6 mod p, add 1 for infinity, and return p + 1 minus the total. For [0, -1, 1, -10, -20] you should get -2 at p = 2 and 4 at p = 13.",
+     "fn": "ap_general",
+     "starter": "def ap_general(a1, a2, a3, a4, a6, p):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        -1,
+        1,
+        -10,
+        -20,
+        2
+       ],
+       "expect": -2
+      },
+      {
+       "args": [
+        0,
+        -1,
+        1,
+        -10,
+        -20,
+        3
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        0,
+        -1,
+        1,
+        -10,
+        -20,
+        5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        0,
+        -1,
+        1,
+        -10,
+        -20,
+        7
+       ],
+       "expect": -2
+      },
+      {
+       "args": [
+        0,
+        -1,
+        1,
+        -10,
+        -20,
+        13
+       ],
+       "expect": 4
+      },
+      {
+       "args": [
+        0,
+        -1,
+        1,
+        -10,
+        -20,
+        17
+       ],
+       "expect": -2
+      },
+      {
+       "args": [
+        0,
+        -1,
+        1,
+        -10,
+        -20,
+        19
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Brute force over x and y; reduce the difference mod p.",
+     "solution": "def ap_general(a1, a2, a3, a4, a6, p):\n    n = 1\n    for x in range(p):\n        for y in range(p):\n            lhs = y * y + a1 * x * y + a3 * y\n            rhs = x ** 3 + a2 * x * x + a4 * x + a6\n            if (lhs - rhs) % p == 0:\n                n += 1\n    return p + 1 - n\n"
+    },
+    {
+     "type": "python",
+     "title": "Check the Hasse bound",
+     "intro": "Write hasse_ok(ap, p): True when ap*ap <= 4*p, otherwise False.",
+     "fn": "hasse_ok",
+     "starter": "def hasse_ok(ap, p):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -2,
+        2
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        4,
+        13
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        8,
+        13
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        -1,
+        3
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        3,
+        2
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        0,
+        5
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Compare the square with 4p to avoid square roots.",
+     "solution": "def hasse_ok(ap, p):\n    return ap * ap <= 4 * p\n"
+    }
+   ]
+  },
+  {
+   "title": "Modular forms",
+   "maps": [
+    {
+     "title": "Modular forms",
+     "links": [
+      "Modular form | lives on | The upper half-plane",
+      "Weight | sets | The transformation",
+      "Level | sets | The congruence subgroup",
+      "q-expansion | lists | The coefficients",
+      "Cusp form | vanishes | At cusps",
+      "Eisenstein series | are | The easy forms"
+     ]
+    }
+   ],
+   "summary": [
+    "A modular form is a complex function on the upper half-plane with a rigid symmetry under a group of matrices. Its Fourier expansion in q = e^(2 pi i z) carries arithmetic information in the coefficients.",
+    "Weight k and level N classify the space of forms. Eisenstein series give simple examples with divisor sums as coefficients; cusp forms, such as Delta, have arithmetic coefficients like Ramanujan's tau.",
+    "The labs compute Eisenstein series and the first coefficients of Delta."
+   ],
+   "glossary": [
+    {
+     "term": "Modular form",
+     "def": "A holomorphic function on the upper half-plane transforming under a congruence subgroup with weight k."
+    },
+    {
+     "term": "q-expansion",
+     "def": "The Fourier series sum a_n q^n, where q = e^(2 pi i z)."
+    },
+    {
+     "term": "Weight",
+     "def": "The integer k in the transformation f((az+b)/(cz+d)) = (cz+d)^k f(z)."
+    },
+    {
+     "term": "Level",
+     "def": "The integer N defining the group Gamma_0(N)."
+    },
+    {
+     "term": "Cusp form",
+     "def": "A modular form whose q-expansion starts at n = 1."
+    }
+   ],
+   "keyPoints": [
+    "f((az+b)/(cz+d)) = (cz+d)^k f(z) for matrices in the group.",
+    "q = e^(2 pi i z) and f = sum a_n q^n.",
+    "E_4 = 1 + 240 sum sigma_3(n) q^n; E_6 = 1 - 504 sum sigma_5(n) q^n.",
+    "Delta = q prod (1 - q^n)^24 is a weight 12 cusp form of level 1.",
+    "Dimensions of spaces are finite and known by formulas.",
+    "The LMFDB labels spaces as N.k.chi."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A modular form is a wave-like function with so much symmetry that it is almost forced into one shape. Its recipe is a list of numbers, the q-coefficients, like a song written as notes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A modular form is a function with astonishing symmetry. Let z live in the upper half-plane, the complex numbers with positive imaginary part.",
+      "A modular form f of weight k satisfies f of (a z + b) over (c z + d) equals (c z + d) to the k times f of z, for all integer matrices of determinant one, at least those in a chosen group. The simplest group is the full SL2(Z), of level 1.",
+      "For level N, we use the subgroup Gamma_0(N) of matrices with c divisible by N."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Such a function is periodic: f(z + 1) = f(z). So it has a Fourier series, which we write in q = e to the 2 pi i z as the sum of a_n q^n. These coefficients are the point. The simplest modular forms are Eisenstein series.",
+      "For weight 4, E_4 = 1 + 240 times the sum of sigma_3(n) q^n, where sigma_3(n) is the sum of the cubes of the divisors of n. So E_4 = 1 + 240q + 2160q^2 + 6720q^3 + ..."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The most famous modular form is Delta, a weight 12 cusp form of level 1: Delta = q times the product of (1 - q^n) to the 24th power. Expand it and you get Ramanujan's tau function: q - 24q^2 + 252q^3 - 1472q^4 + 4830q^5 - 6048q^6 - 16744q^7 + ...",
+      "Ramanujan observed that tau is multiplicative: tau(mn) = tau(m) tau(n) when m and n are coprime. That fact is a first sign of the Hecke operators, which we meet in the next chapter."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\Delta(z)=q\\prod_{n\\ge1}(1-q^n)^{24}=\\sum_{n\\ge1}\\tau(n)q^n"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A cusp form is one whose expansion starts at n = 1, so it vanishes at the cusps. The space of cusp forms of weight k and level N is finite-dimensional, with dimension given by formulas.",
+      "For level 1, the first cusp form appears in weight 12, which is why Delta is so special: it is the unique one there. The LMFDB stores bases for these spaces, along with q-expansions, as the main data of the modular forms collection."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is q in a q-expansion?",
+     "options": [
+      "e^(2 pi i z)",
+      "A prime",
+      "The level",
+      "The weight"
+     ],
+     "answer": 0,
+     "explain": "A coordinate on the disc."
+    },
+    {
+     "q": "What is the first cusp form of level 1?",
+     "options": [
+      "Delta, weight 12",
+      "E_4",
+      "E_6",
+      "A weight 2 form"
+     ],
+     "answer": 0,
+     "explain": "Unique in weight 12."
+    },
+    {
+     "q": "What is tau(2)?",
+     "options": [
+      "-24",
+      "24",
+      "1",
+      "252"
+     ],
+     "answer": 0,
+     "explain": "The coefficient of q^2."
+    },
+    {
+     "q": "What is E_4's q coefficient?",
+     "options": [
+      "240",
+      "1",
+      "504",
+      "24"
+     ],
+     "answer": 0,
+     "explain": "240 sigma_3(1)."
+    },
+    {
+     "q": "What does weight k control?",
+     "options": [
+      "The transformation factor (cz + d)^k",
+      "The level",
+      "The conductor",
+      "The rank"
+     ],
+     "answer": 0,
+     "explain": "Part of the symmetry."
+    },
+    {
+     "q": "What is a cusp form?",
+     "options": [
+      "One that vanishes at the cusps",
+      "One with level 1",
+      "One of weight 2",
+      "A form with no q-expansion"
+     ],
+     "answer": 0,
+     "explain": "Starts at n = 1."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Delta",
+     "a": "q prod (1 - q^n)^24"
+    },
+    {
+     "q": "tau(n)",
+     "a": "1, -24, 252, -1472, 4830, ..."
+    },
+    {
+     "q": "E_4",
+     "a": "1 + 240q + 2160q^2 + ..."
+    },
+    {
+     "q": "level N",
+     "a": "Gamma_0(N)"
+    },
+    {
+     "q": "weight k",
+     "a": "Transformation exponent"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match tau",
+     "intro": "Pair n with Ramanujan's tau(n).",
+     "pairs": [
+      [
+       "1",
+       "1"
+      ],
+      [
+       "2",
+       "-24"
+      ],
+      [
+       "3",
+       "252"
+      ],
+      [
+       "4",
+       "-1472"
+      ],
+      [
+       "5",
+       "4830"
+      ],
+      [
+       "6",
+       "-6048"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Divisor power sums",
+     "intro": "Write sigma(n, k): the sum of d**k over all divisors d of n.",
+     "fn": "sigma",
+     "starter": "def sigma(n, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        3
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        2,
+        3
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        6,
+        1
+       ],
+       "expect": 12
+      },
+      {
+       "args": [
+        12,
+        3
+       ],
+       "expect": 2044
+      },
+      {
+       "args": [
+        28,
+        1
+       ],
+       "expect": 56
+      },
+      {
+       "args": [
+        10,
+        5
+       ],
+       "expect": 103158
+      }
+     ],
+     "hint": "Loop d from 1 to n and test divisibility.",
+     "solution": "def sigma(n, k):\n    total = 0\n    for d in range(1, n + 1):\n        if n % d == 0:\n            total += d ** k\n    return total\n"
+    },
+    {
+     "type": "python",
+     "title": "The Eisenstein series E4",
+     "intro": "Write eisenstein4(n): the first n+1 coefficients [1, 240*sigma_3(1), ..., 240*sigma_3(n)] of E_4. (sigma_3(m) is the sum of the cubes of the divisors of m.)",
+     "fn": "eisenstein4",
+     "starter": "def eisenstein4(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1
+       ],
+       "expect": [
+        1,
+        240
+       ]
+      },
+      {
+       "args": [
+        3
+       ],
+       "expect": [
+        1,
+        240,
+        2160,
+        6720
+       ]
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": [
+        1,
+        240,
+        2160,
+        6720,
+        17520,
+        30240
+       ]
+      },
+      {
+       "args": [
+        8
+       ],
+       "expect": [
+        1,
+        240,
+        2160,
+        6720,
+        17520,
+        30240,
+        60480,
+        82560,
+        140400
+       ]
+      }
+     ],
+     "hint": "Compute sigma_3 for each m and multiply by 240.",
+     "solution": "def eisenstein4(n):\n    out = [1]\n    for m in range(1, n + 1):\n        s = 0\n        for d in range(1, m + 1):\n            if m % d == 0:\n                s += d ** 3\n        out.append(240 * s)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Ramanujan's tau",
+     "intro": "Write delta_coeffs(n): the coefficients tau(1), ..., tau(n) of Delta = q * prod (1 - q^m)^24, as a list. Hint: build the product P of (1 - q^m)^24 for m = 1..n-1 as a list of n integers, truncating at degree n - 1, then tau(k) = P[k-1].",
+     "fn": "delta_coeffs",
+     "starter": "def delta_coeffs(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1
+       ],
+       "expect": [
+        1
+       ]
+      },
+      {
+       "args": [
+        2
+       ],
+       "expect": [
+        1,
+        -24
+       ]
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": [
+        1,
+        -24,
+        252,
+        -1472,
+        4830
+       ]
+      },
+      {
+       "args": [
+        8
+       ],
+       "expect": [
+        1,
+        -24,
+        252,
+        -1472,
+        4830,
+        -6048,
+        -16744,
+        84480
+       ]
+      },
+      {
+       "args": [
+        10
+       ],
+       "expect": [
+        1,
+        -24,
+        252,
+        -1472,
+        4830,
+        -6048,
+        -16744,
+        84480,
+        -113643,
+        -115920
+       ]
+      }
+     ],
+     "hint": "Multiply the polynomial by (1 - q^m) twenty-four times for each m, working from the top degree down.",
+     "solution": "def delta_coeffs(n):\n    P = [1] + [0] * (n - 1)\n    for m in range(1, n):\n        for _ in range(24):\n            for i in range(n - 1, m - 1, -1):\n                P[i] -= P[i - m]\n    return P\n"
+    }
+   ]
+  },
+  {
+   "title": "Hecke operators and newforms",
+   "maps": [
+    {
+     "title": "Hecke and newforms",
+     "links": [
+      "Hecke operator | acts on | Modular forms",
+      "Eigenform | has | Multiplicative coefficients",
+      "Newform | is | A normalised eigenform",
+      "Old form | comes from | A lower level",
+      "Coefficient field | contains | The a_n",
+      "Label | names | Level weight orbit"
+     ]
+    }
+   ],
+   "summary": [
+    "Hecke operators T_p act on spaces of modular forms. A form that is an eigenvector of all of them has multiplicative coefficients and a nice Euler product. The new part of the space is spanned by newforms, which the LMFDB labels N.k.a.x.",
+    "For a newform the q-expansion coefficient a_p is the Hecke eigenvalue at p. The a_p sometimes lie in a larger number field, and Galois conjugate newforms are grouped into an orbit.",
+    "The labs test multiplicativity and compute the Hecke relation for tau."
+   ],
+   "glossary": [
+    {
+     "term": "Hecke operator",
+     "def": "A linear operator T_n on modular forms built from sums over cosets; it commutes with other T_m."
+    },
+    {
+     "term": "Eigenform",
+     "def": "A form that is an eigenvector for all Hecke operators."
+    },
+    {
+     "term": "Newform",
+     "def": "A normalised cuspidal eigenform not coming from a lower level."
+    },
+    {
+     "term": "Oldform",
+     "def": "A form built from a newform of lower level by f(z), f(dz)."
+    },
+    {
+     "term": "Galois orbit",
+     "def": "A set of newforms whose coefficients are Galois conjugates of each other."
+    }
+   ],
+   "keyPoints": [
+    "T_p on weight k, level N, prime p not dividing N, takes a_n to a_{pn} + p^(k-1) a_{n/p}.",
+    "For a newform, a_1 = 1 and a_{mn} = a_m a_n for coprime m, n.",
+    "a_{p^(r+1)} = a_p a_{p^r} - p^(k-1) a_{p^(r-1)} for good p.",
+    "Tau satisfies tau(p^2) = tau(p)^2 - p^11.",
+    "The LMFDB label N.k.a.x = level, weight, character orbit, newform orbit.",
+    "Deligne: |a_p| <= 2 p^((k-1)/2)."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Hecke operators are machines that turn modular forms into other modular forms. Forms that come out as just a multiple of themselves have coefficients that multiply nicely."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The modular forms of a given weight and level form a vector space. On it act the Hecke operators T_n, one for each n. They commute with each other, so the space can be broken into joint eigenspaces.",
+      "A form that is an eigenvector of every T_n has a very rigid structure: its coefficients a_n are the eigenvalues. For a normalised one (a_1 = 1), this gives a_m a_n = a_{mn} for coprime m, n, and a recursion for prime powers."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Check it with Delta. tau(2) = -24 and tau(3) = 252, so tau(6) should be -24 times 252, which is -6048. It is. For prime powers, tau(4) = tau(2)^2 - 2^11 = 576 - 2048 = -1472. Again it matches.",
+      "These relations are the Hecke relations, and they explain why the coefficients of Delta look so special: they are the eigenvalues of a very symmetric operator."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} a_{p^{r+1}} = a_p\\, a_{p^r} - p^{k-1} a_{p^{r-1}} \\\\[0.6em] (p\\nmid N) \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "When the level is not 1, there are also oldforms. If f has level M and M divides N, then f(z) and f(dz) for d dividing N/M have level N, but they are not new. The newforms are those that cannot be built from lower levels, and they form a basis for the new part of the space.",
+      "The LMFDB labels them level.weight.character.letter. The form 11.2.a.a is the unique newform of level 11, weight 2, trivial character. Its q-expansion starts q - 2q^2 - q^3 + 2q^4 + q^5 + 2q^6 - 2q^7 - 2q^9 ..."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sometimes the coefficients of a newform do not lie in Q but in a number field, the coefficient field. Then the newform has Galois conjugates, which together form an orbit, and the label's last letter distinguishes the orbits.",
+      "Deligne proved that the coefficients obey a Hecke-Ramanujan bound: the absolute value of a_p is at most 2 times p to the (k - 1)/2. For weight 2 this is exactly the Hasse bound."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a Hecke operator do?",
+     "options": [
+      "Acts linearly on modular forms",
+      "Counts points",
+      "Defines a field",
+      "Computes a class number"
+     ],
+     "answer": 0,
+     "explain": "T_n."
+    },
+    {
+     "q": "What does tau(6) equal?",
+     "options": [
+      "tau(2) times tau(3)",
+      "tau(2) plus tau(3)",
+      "tau(5)",
+      "0"
+     ],
+     "answer": 0,
+     "explain": "Multiplicative."
+    },
+    {
+     "q": "What is a newform?",
+     "options": [
+      "A normalised eigenform not from a lower level",
+      "A form of weight 1",
+      "Any modular form",
+      "An Eisenstein series"
+     ],
+     "answer": 0,
+     "explain": "No oldform content."
+    },
+    {
+     "q": "What is tau(4)?",
+     "options": [
+      "-1472",
+      "-576",
+      "1472",
+      "2048"
+     ],
+     "answer": 0,
+     "explain": "tau(2)^2 - 2^11."
+    },
+    {
+     "q": "What does the label 11.2.a.a say?",
+     "options": [
+      "Level 11, weight 2",
+      "Level 2, weight 11",
+      "A field of degree 11",
+      "A curve of rank 2"
+     ],
+     "answer": 0,
+     "explain": "N.k."
+    },
+    {
+     "q": "What bound did Deligne prove?",
+     "options": [
+      "|a_p| <= 2 p^((k-1)/2)",
+      "a_p = 0",
+      "a_p is an integer",
+      "|a_p| >= 1"
+     ],
+     "answer": 0,
+     "explain": "Generalises Hasse."
+    }
+   ],
+   "cards": [
+    {
+     "q": "T_n",
+     "a": "Hecke operator"
+    },
+    {
+     "q": "a_mn = a_m a_n",
+     "a": "Multiplicativity for coprime m, n"
+    },
+    {
+     "q": "tau(4) = tau(2)^2 - 2^11",
+     "a": "Hecke recursion"
+    },
+    {
+     "q": "newform",
+     "a": "Normalised new eigenform"
+    },
+    {
+     "q": "Deligne",
+     "a": "The Ramanujan-Petersson bound"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Hecke recursion for tau",
+     "intro": "Pair each statement with its value.",
+     "pairs": [
+      [
+       "tau(2)*tau(3)",
+       "-6048"
+      ],
+      [
+       "tau(2)^2 - 2^11",
+       "-1472"
+      ],
+      [
+       "tau(2)",
+       "-24"
+      ],
+      [
+       "tau(3)",
+       "252"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "The Hecke relation at a prime power",
+     "intro": "Write hecke_next(ap, ar, arm, p, k): return ap*ar - p**(k-1)*arm, which is a_{p^(r+1)} from a_p, a_{p^r}, a_{p^(r-1)}.",
+     "fn": "hecke_next",
+     "starter": "def hecke_next(ap, ar, arm, p, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -24,
+        1,
+        1,
+        2,
+        12
+       ],
+       "expect": -2072
+      },
+      {
+       "args": [
+        -24,
+        -24,
+        1,
+        2,
+        12
+       ],
+       "expect": -1472
+      },
+      {
+       "args": [
+        252,
+        252,
+        1,
+        3,
+        12
+       ],
+       "expect": -113643
+      },
+      {
+       "args": [
+        -2,
+        1,
+        1,
+        2,
+        2
+       ],
+       "expect": -4
+      }
+     ],
+     "hint": "Apply the recursion directly.",
+     "solution": "def hecke_next(ap, ar, arm, p, k):\n    return ap * ar - p ** (k - 1) * arm\n"
+    },
+    {
+     "type": "python",
+     "title": "Test multiplicativity",
+     "intro": "Write is_multiplicative(coeffs): coeffs[0] is a_1, coeffs[1] is a_2 and so on. Return True if coeffs[0] == 1 and, for all coprime m, n with m*n <= len(coeffs), a_{mn} == a_m * a_n. Use gcd by Euclid.",
+     "fn": "is_multiplicative",
+     "starter": "def is_multiplicative(coeffs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         -24,
+         252,
+         -1472,
+         4830,
+         -6048,
+         -16744,
+         84480,
+         -113643,
+         -115920
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         1,
+         -2,
+         -1,
+         2,
+         1,
+         2,
+         -2,
+         0,
+         -2,
+         -2,
+         1,
+         -2
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         2,
+         1
+        ]
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Check every coprime pair m, k whose product fits in the list.",
+     "solution": "def is_multiplicative(coeffs):\n    def g(a, b):\n        while b:\n            a, b = b, a % b\n        return a\n    if not coeffs or coeffs[0] != 1:\n        return False\n    n = len(coeffs)\n    for m in range(1, n + 1):\n        for k in range(1, n + 1):\n            if m * k <= n and g(m, k) == 1:\n                if coeffs[m * k - 1] != coeffs[m - 1] * coeffs[k - 1]:\n                    return False\n    return True\n"
+    }
+   ]
+  },
+  {
+   "title": "L-functions",
+   "maps": [
+    {
+     "title": "L-functions",
+     "links": [
+      "L-function | has | A Dirichlet series",
+      "Euler product | factors | Over primes",
+      "Functional equation | relates | s and k - s",
+      "Analytic continuation | extends | The domain",
+      "Zeros | encode | Arithmetic",
+      "Critical line | holds | The zeros, conjecturally"
+     ]
+    }
+   ],
+   "summary": [
+    "An L-function packages the local data at every prime into one analytic function. It has a Dirichlet series, an Euler product, an analytic continuation and a functional equation. The LMFDB lists many of them with plots, zeros and special values.",
+    "The Riemann zeta function is the simplest. A newform f gives L(f, s) = sum a_n n^(-s), and an elliptic curve gives L(E, s) built from its a_p. The generalised Riemann hypothesis says the nontrivial zeros all lie on the critical line.",
+    "The labs form Euler factors and partial products."
+   ],
+   "glossary": [
+    {
+     "term": "L-function",
+     "def": "A Dirichlet series with an Euler product, analytic continuation and a functional equation."
+    },
+    {
+     "term": "Euler factor",
+     "def": "The local factor at a prime p in the Euler product."
+    },
+    {
+     "term": "Functional equation",
+     "def": "A relation between L(s) and L(k - s) with a root number of absolute value one."
+    },
+    {
+     "term": "Critical strip",
+     "def": "The region where the real part of s lies strictly between the edges of absolute convergence."
+    },
+    {
+     "term": "Root number",
+     "def": "The sign (or unit) in the functional equation; it predicts the parity of the rank."
+    }
+   ],
+   "keyPoints": [
+    "Zeta: sum n^-s = product 1/(1 - p^-s).",
+    "Newform: L(f, s) = sum a_n n^-s = product 1/(1 - a_p p^-s + p^(k-1-2s)).",
+    "Elliptic curve (weight 2): factor 1/(1 - a_p p^-s + p^(1-2s)).",
+    "Functional equation relates s and k - s (weight k) with a root number.",
+    "GRH: nontrivial zeros of L-functions have real part (k/2) on the critical line.",
+    "The LMFDB lists zeros, plots, and degree and conductor for each L-function."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. An L-function packs one number per prime into a single smooth curve. It can be written as a long product with one piece per prime, and it has a mirror symmetry in the middle."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An L-function is a bundle of numbers, one per prime, packaged into an analytic function. The Riemann zeta function is the prototype: the sum over n of n to the minus s, which equals the product over p of 1 divided by 1 minus p to the minus s. The right side shows that zeta knows all the primes.",
+      "The left side shows it is a Dirichlet series. Riemann showed it extends to the whole complex plane except s = 1, and that it satisfies a functional equation relating s to 1 minus s."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Every newform f of weight k has an L-function: L(f, s) is the sum of a_n n to the minus s. Because the a_n are multiplicative with a Hecke recursion, it has an Euler product with local factors 1 over (1 minus a_p p to the minus s plus p to the (k - 1 - 2s)).",
+      "For an elliptic curve E, the L-function L(E, s) has the same form with k = 2 and a_p the trace of Frobenius. We multiply the factors over the primes up to some bound to approximate it, as the lab does for zeta."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "L(E,s)=\\prod_{p\\nmid N}\\frac{1}{1-a_p p^{-s}+p^{1-2s}}\\prod_{p\\mid N}\\frac{1}{1-a_p p^{-s}}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The deepest facts are the analytic continuation and the functional equation. For a newform of level N, the completed L-function relates s to k minus s, up to a sign called the root number.",
+      "A root number of minus 1 forces the L-function to vanish at the central point, and the Birch and Swinnerton-Dyer conjecture ties the order of vanishing at that point to the rank of the elliptic curve.",
+      "The generalised Riemann hypothesis, still unproven, says all nontrivial zeros lie on the vertical line through the center of the critical strip."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The LMFDB lists L-functions with a label that includes the degree, conductor, character and spectral parameters, and shows the zeros, plots of Z(t), the Euler factors and the special values.",
+      "Compare an elliptic curve's page with the page of its modular form, and you will find the same L-function, linked from both. That link is the modularity theorem in action, which is the next chapter."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does an Euler product show?",
+     "options": [
+      "The series factors over primes",
+      "The series is finite",
+      "The series diverges",
+      "The series is real"
+     ],
+     "answer": 0,
+     "explain": "Unique factorisation."
+    },
+    {
+     "q": "What is a functional equation?",
+     "options": [
+      "A relation between L(s) and L(k - s)",
+      "A polynomial",
+      "A matrix",
+      "A differential equation"
+     ],
+     "answer": 0,
+     "explain": "Symmetry about the centre."
+    },
+    {
+     "q": "What does the root number predict?",
+     "options": [
+      "Parity of the rank",
+      "The conductor",
+      "The class number",
+      "The torsion"
+     ],
+     "answer": 0,
+     "explain": "Sign of the equation."
+    },
+    {
+     "q": "Where do the nontrivial zeros of zeta lie (conjecturally)?",
+     "options": [
+      "On the critical line",
+      "On the real axis",
+      "At integers",
+      "Nowhere"
+     ],
+     "answer": 0,
+     "explain": "Re s = 1/2."
+    },
+    {
+     "q": "Which factor does an elliptic curve contribute at a good prime?",
+     "options": [
+      "1/(1 - a_p p^-s + p^(1-2s))",
+      "1/(1 - p^-s)",
+      "p^-s",
+      "a_p"
+     ],
+     "answer": 0,
+     "explain": "Degree two."
+    },
+    {
+     "q": "What does the LMFDB show for an L-function?",
+     "options": [
+      "Zeros, plots, Euler factors",
+      "Only the label",
+      "Only a proof",
+      "Only the coefficients"
+     ],
+     "answer": 0,
+     "explain": "Rich data."
+    }
+   ],
+   "cards": [
+    {
+     "q": "zeta",
+     "a": "sum n^-s = product 1/(1 - p^-s)"
+    },
+    {
+     "q": "L(E, s)",
+     "a": "Built from the a_p"
+    },
+    {
+     "q": "functional equation",
+     "a": "s to k - s"
+    },
+    {
+     "q": "root number",
+     "a": "Sign in the functional equation"
+    },
+    {
+     "q": "GRH",
+     "a": "Zeros on the critical line"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the L-function",
+     "intro": "Pair each object with its L-function.",
+     "pairs": [
+      [
+       "trivial character",
+       "Riemann zeta"
+      ],
+      [
+       "Newform f",
+       "sum a_n n^-s"
+      ],
+      [
+       "Elliptic curve E",
+       "built from a_p"
+      ],
+      [
+       "Dirichlet character",
+       "sum chi(n) n^-s"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "An Euler factor for an elliptic curve",
+     "intro": "Write euler_factor(ap, p, s): the value of 1 / (1 - ap * p**(-s) + p**(1 - 2*s)) as a float, for a good prime p.",
+     "fn": "euler_factor",
+     "starter": "def euler_factor(ap, p, s):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -2,
+        2,
+        2
+       ],
+       "expect": 0.6153846153846154,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -1,
+        3,
+        2
+       ],
+       "expect": 0.8709677419354839,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1,
+        5,
+        2
+       ],
+       "expect": 1.0330578512396695,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -2,
+        7,
+        3
+       ],
+       "expect": 0.9941440908553175,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        4,
+        13,
+        2
+       ],
+       "expect": 1.0237651444547995,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Compute the denominator, then invert.",
+     "solution": "def euler_factor(ap, p, s):\n    return 1.0 / (1.0 - ap * p ** (-s) + p ** (1 - 2 * s))\n"
+    },
+    {
+     "type": "python",
+     "title": "A partial Euler product",
+     "intro": "Write partial_L(aps, s): aps is a list of [p, ap] for good primes. Return the product of the Euler factors 1 / (1 - ap * p**(-s) + p**(1 - 2*s)) over the list, as a float.",
+     "fn": "partial_L",
+     "starter": "def partial_L(aps, s):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          2,
+          -2
+         ],
+         [
+          3,
+          -1
+         ],
+         [
+          5,
+          1
+         ],
+         [
+          7,
+          -2
+         ]
+        ],
+        2
+       ],
+       "expect": 0.5304988430531117,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          2,
+          -2
+         ],
+         [
+          3,
+          -1
+         ]
+        ],
+        3
+       ],
+       "expect": 0.7496384845271378,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          13,
+          4
+         ],
+         [
+          17,
+          -2
+         ],
+         [
+          19,
+          0
+         ]
+        ],
+        2
+       ],
+       "expect": 1.0163752938175512,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Multiply as you go.",
+     "solution": "def partial_L(aps, s):\n    total = 1.0\n    for p, ap in aps:\n        total *= 1.0 / (1.0 - ap * p ** (-s) + p ** (1 - 2 * s))\n    return total\n"
+    }
+   ]
+  },
+  {
+   "title": "Modularity: curves meet forms",
+   "maps": [
+    {
+     "title": "Modularity",
+     "links": [
+      "Elliptic curve | has | a_p",
+      "Newform | has | a_p",
+      "Modularity | equates | The two",
+      "Conductor | equals | The level",
+      "Wiles | proved | Fermat's Last Theorem",
+      "Isogeny class | maps to | One newform"
+     ]
+    }
+   ],
+   "summary": [
+    "The modularity theorem says that every elliptic curve over Q corresponds to a weight 2 newform whose level equals the curve's conductor, with matching coefficients: a_p(E) = a_p(f) for all good primes.",
+    "The conductor 11 curve and the newform 11.2.a.a have the same a_p. Wiles proved a large part of this, enough to prove Fermat's Last Theorem, and the full theorem followed.",
+    "The labs compare a curve's a_p with the q-expansion of a newform."
+   ],
+   "glossary": [
+    {
+     "term": "Modularity theorem",
+     "def": "Every elliptic curve over Q is modular: its L-function equals that of a weight 2 newform."
+    },
+    {
+     "term": "Isogeny",
+     "def": "A map between elliptic curves preserving the group structure; isogenous curves share a_p."
+    },
+    {
+     "term": "Taniyama-Shimura-Weil",
+     "def": "The conjecture that became the modularity theorem."
+    },
+    {
+     "term": "Frey curve",
+     "def": "A curve built from a hypothetical Fermat solution that would be non-modular."
+    },
+    {
+     "term": "Galois representation",
+     "def": "A homomorphism from the Galois group to a matrix group."
+    }
+   ],
+   "keyPoints": [
+    "Conductor of E = level of the newform f.",
+    "a_p(E) = a_p(f) for p not dividing the conductor.",
+    "Isogenous curves correspond to the same newform.",
+    "Wiles (1995) and Taylor-Wiles for semistable curves; Breuil-Conrad-Diamond-Taylor (2001) for all.",
+    "Ribet showed that a Frey curve would not be modular; Wiles proved it must be, so no solutions.",
+    "In the LMFDB, a curve page links to its modular form, with the same L-function."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Surprise: the dots-counting list of a curve and the notes of a modular form can be exactly the same list. That match is the modularity theorem, and it helped prove Fermat's Last Theorem."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is the central result. Take the elliptic curve with conductor 11, y squared plus y equals x cubed minus x squared minus 10x minus 20. We counted its points mod p and found a_p equal to -2, -1, 1, -2, 1, 4, -2, 0 for p = 2, 3, 5, 7, 11, 13, 17, 19.",
+      "Now take the newform 11.2.a.a, whose q-expansion is q - 2q^2 - q^3 + 2q^4 + q^5 + 2q^6 - 2q^7 + 0 q^8 - 2q^9 - 2q^10 + q^11 - 2q^12 + 4q^13 ... The coefficients at primes are the same list. That is not an accident."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "p       2   3   5   7  11  13  17  19\na_p(E) -2  -1   1  -2   1   4  -2   0\na_p(f) -2  -1   1  -2   1   4  -2   0"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The modularity theorem says that this happens for every elliptic curve over the rationals: there is a weight 2 newform f whose level is the conductor of E and whose Hecke eigenvalues are the traces of Frobenius. This is a completely unexpected bridge.",
+      "On one side, algebra: solutions of a cubic equation over finite fields. On the other side, analysis: a function on the upper half-plane with a transformation law. The two are different, yet they produce identical sequences."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The theorem has a famous consequence. Suppose a, b, c satisfy a^n + b^n = c^n for a prime n at least 5. Frey built an elliptic curve from them, y squared = x (x - a^n)(x + b^n), with strange properties. Ribet proved that such a curve could not be modular.",
+      "Wiles proved, in 1995, that semistable elliptic curves are modular, which includes the Frey curve. Therefore no solutions exist: Fermat's Last Theorem. In 2001 Breuil, Conrad, Diamond and Taylor extended the proof to all elliptic curves over Q."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Behind the scenes is the idea of a Galois representation. The absolute Galois group of Q acts on the torsion points of the curve, and this action, in the right language, is the same as the one attached to the modular form.",
+      "The LMFDB shows both objects and links them, with the same L-function on both pages. This is the template for the Langlands program: match objects of geometry and Galois theory with automorphic forms, so that L-functions agree."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the modularity theorem say?",
+     "options": [
+      "Every elliptic curve over Q comes from a modular form",
+      "Every modular form is a curve",
+      "Curves have rank 0",
+      "L-functions have no zeros"
+     ],
+     "answer": 0,
+     "explain": "Matching a_p."
+    },
+    {
+     "q": "What equals the conductor of E?",
+     "options": [
+      "The level of its newform",
+      "The weight",
+      "The rank",
+      "The torsion"
+     ],
+     "answer": 0,
+     "explain": "Level matches."
+    },
+    {
+     "q": "Who proved the semistable case?",
+     "options": [
+      "Wiles (with Taylor)",
+      "Gauss",
+      "Ramanujan",
+      "Hecke"
+     ],
+     "answer": 0,
+     "explain": "1995."
+    },
+    {
+     "q": "What did Ribet prove?",
+     "options": [
+      "A Frey curve could not be modular",
+      "Modularity in general",
+      "The Riemann hypothesis",
+      "Hasse's bound"
+     ],
+     "answer": 0,
+     "explain": "A key step."
+    },
+    {
+     "q": "What is a_5 for the conductor 11 newform?",
+     "options": [
+      "1",
+      "-1",
+      "2",
+      "0"
+     ],
+     "answer": 0,
+     "explain": "From the q-expansion."
+    },
+    {
+     "q": "Why is modularity surprising?",
+     "options": [
+      "It links algebraic and analytic objects",
+      "It is trivial",
+      "It is false",
+      "It only works for p = 2"
+     ],
+     "answer": 0,
+     "explain": "A bridge between worlds."
+    }
+   ],
+   "cards": [
+    {
+     "q": "a_p(E) = a_p(f)",
+     "a": "Modularity"
+    },
+    {
+     "q": "11.2.a.a",
+     "a": "The newform of the conductor 11 curve"
+    },
+    {
+     "q": "Wiles 1995",
+     "a": "Semistable modularity"
+    },
+    {
+     "q": "Frey curve",
+     "a": "From a hypothetical Fermat solution"
+    },
+    {
+     "q": "Langlands",
+     "a": "The grand pattern"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the object to its role",
+     "intro": "Pair each name with what it did.",
+     "pairs": [
+      [
+       "Frey",
+       "built a curve from a Fermat solution"
+      ],
+      [
+       "Ribet",
+       "showed it could not be modular"
+      ],
+      [
+       "Wiles",
+       "proved modularity for semistable curves"
+      ],
+      [
+       "Breuil-Conrad-Diamond-Taylor",
+       "completed modularity"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Compare a curve with a form",
+     "intro": "Write matches(ap_curve, coeffs, primes): ap_curve is a list of a_p for the given primes, coeffs is the q-expansion list [a_1, a_2, ...] of a newform (coeffs[n-1] is a_n). Return True if for every prime in primes the curve value equals the form coefficient.",
+     "fn": "matches",
+     "starter": "def matches(ap_curve, coeffs, primes):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         -2,
+         -1,
+         1,
+         -2
+        ],
+        [
+         1,
+         -2,
+         -1,
+         2,
+         1,
+         2,
+         -2,
+         0,
+         -2,
+         -2,
+         1,
+         -2,
+         4
+        ],
+        [
+         2,
+         3,
+         5,
+         7
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         -2,
+         -1,
+         2
+        ],
+        [
+         1,
+         -2,
+         -1,
+         2,
+         1,
+         2,
+         -2,
+         0,
+         -2,
+         -2,
+         1,
+         -2,
+         4
+        ],
+        [
+         2,
+         3,
+         5
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         4
+        ],
+        [
+         1,
+         -2,
+         -1,
+         2,
+         1,
+         2,
+         -2,
+         0,
+         -2,
+         -2,
+         1,
+         -2,
+         4
+        ],
+        [
+         13
+        ]
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Index the coefficients by p - 1.",
+     "solution": "def matches(ap_curve, coeffs, primes):\n    for i in range(len(primes)):\n        if ap_curve[i] != coeffs[primes[i] - 1]:\n            return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Find the first disagreement",
+     "intro": "Write first_mismatch(ap_curve, coeffs, primes): return the first prime whose curve a_p differs from the form coefficient, or 0 if they all agree.",
+     "fn": "first_mismatch",
+     "starter": "def first_mismatch(ap_curve, coeffs, primes):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         -2,
+         -1,
+         1,
+         -2
+        ],
+        [
+         1,
+         -2,
+         -1,
+         2,
+         1,
+         2,
+         -2,
+         0,
+         -2,
+         -2,
+         1,
+         -2,
+         4
+        ],
+        [
+         2,
+         3,
+         5,
+         7
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         -2,
+         -1,
+         3
+        ],
+        [
+         1,
+         -2,
+         -1,
+         2,
+         1,
+         2,
+         -2,
+         0,
+         -2,
+         -2,
+         1,
+         -2,
+         4
+        ],
+        [
+         2,
+         3,
+         5
+        ]
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         1,
+         1,
+         1,
+         1,
+         1,
+         1,
+         1
+        ],
+        [
+         2,
+         3
+        ]
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Same loop, return the prime.",
+     "solution": "def first_mismatch(ap_curve, coeffs, primes):\n    for i in range(len(primes)):\n        if ap_curve[i] != coeffs[primes[i] - 1]:\n            return primes[i]\n    return 0\n"
+    }
+   ]
+  },
+  {
+   "title": "Galois representations, Sato-Tate and BSD",
+   "maps": [
+    {
+     "title": "Beyond modularity",
+     "links": [
+      "Galois group | acts on | Roots and torsion",
+      "Representation | encodes | The action",
+      "Frobenius | has | A trace a_p",
+      "Sato-Tate | describes | The distribution of a_p",
+      "BSD | links | Rank and L(1)",
+      "Langlands | generalises | All of this"
+     ]
+    }
+   ],
+   "summary": [
+    "A Galois representation records how the Galois group of Q acts on the points of a curve or the roots of a polynomial. At each prime, Frobenius has a trace a_p, and the representation is determined by these traces.",
+    "The Sato-Tate theorem says that a_p divided by 2 sqrt p is distributed like cos of an angle with a sine squared density. The Birch and Swinnerton-Dyer conjecture ties the rank to the order of vanishing of L(E, s) at s = 1.",
+    "The labs normalise a_p and test a Hasse-style bound."
+   ],
+   "glossary": [
+    {
+     "term": "Galois representation",
+     "def": "A homomorphism from the Galois group to GL_n of some field."
+    },
+    {
+     "term": "Frobenius element",
+     "def": "The Galois element acting as x to x^p at a prime p."
+    },
+    {
+     "term": "Sato-Tate distribution",
+     "def": "The conjectured and proved distribution of normalised a_p for curves without complex multiplication."
+    },
+    {
+     "term": "BSD conjecture",
+     "def": "Rank of E(Q) equals the order of vanishing of L(E, s) at s = 1."
+    },
+    {
+     "term": "Complex multiplication",
+     "def": "Extra symmetry of a curve by an order in an imaginary quadratic field."
+    }
+   ],
+   "keyPoints": [
+    "Normalised trace: a_p / (2 sqrt p) lies in [-1, 1].",
+    "Sato-Tate: the angle theta with a_p = 2 sqrt p cos(theta) has density (2/pi) sin^2(theta).",
+    "BSD: rank = ord_{s=1} L(E, s), plus a formula for the leading coefficient.",
+    "Artin representations match Galois representations of finite image to L-functions.",
+    "The Langlands program: automorphic representations correspond to Galois representations.",
+    "The LMFDB lists Sato-Tate groups for curves and abelian varieties."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Symmetries of numbers act on points of a curve, and the action leaves a footprint at every prime. How big the footprints are follows a half-circle shape, and a famous guess ties the curve's size to its L-function."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Galois group of Q, which is the symmetry group of all the algebraic numbers, acts on lots of objects. It acts on the roots of a polynomial. It acts on the torsion points of an elliptic curve. A Galois representation is a record of this action as a family of matrices.",
+      "At a prime p where the representation is unramified, there is a special element, Frobenius, and the trace of its matrix is the a_p we have been computing. So the a_p are the main data of the representation: the local snapshots of a global symmetry."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How are the a_p distributed? Hasse tells us they lie between minus 2 root p and 2 root p. Dividing, a_p over two root p lies in minus 1 to 1. Write it as cos of an angle theta.",
+      "The Sato-Tate theorem, proved for elliptic curves over Q without complex multiplication, says that these angles are distributed with density two over pi times sine squared of theta. Computing a_p for a thousand primes and plotting a histogram shows the bell-like shape of the semicircle.",
+      "For curves with complex multiplication, such as y squared = x cubed - x, the distribution differs: half of the a_p are zero."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} a_p = 2\\sqrt p\\,\\cos\\theta_p, \\\\[0.6em] d\\mu_{ST}=\\tfrac{2}{\\pi}\\sin^2\\theta\\,d\\theta \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Birch and Swinnerton-Dyer conjecture is one of the Clay Millennium Problems. It says that the rank of the group of rational points equals the order of vanishing of L(E, s) at s = 1."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The conjecture also gives an exact formula for the leading Taylor coefficient in terms of the regulator, the Tamagawa numbers, the torsion and the order of the Tate-Shafarevich group. The LMFDB displays all these invariants for each curve, so you can test the formula numerically.",
+      "It is proved in some cases of rank 0 and 1, and unproved in general."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Langlands program generalises all this. For every n-dimensional Galois representation there should be an automorphic form whose L-function matches. Modularity is the n = 2 case for elliptic curves. For n = 1, it is class field theory, proved by Artin.",
+      "For Artin representations, it is conjectural in general. This organises the LMFDB: each collection is a corner of the Langlands picture, and the links between collections are instances of Langlands correspondences."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does Frobenius have at a prime p?",
+     "options": [
+      "A trace a_p",
+      "A class number",
+      "A rank",
+      "A conductor"
+     ],
+     "answer": 0,
+     "explain": "In the representation."
+    },
+    {
+     "q": "What is a_p / (2 sqrt p) in?",
+     "options": [
+      "[-1, 1]",
+      "[0, 1]",
+      "[1, 2]",
+      "All of R"
+     ],
+     "answer": 0,
+     "explain": "Hasse."
+    },
+    {
+     "q": "Which distribution do the angles follow?",
+     "options": [
+      "Sato-Tate, (2/pi) sin^2",
+      "Uniform",
+      "Normal",
+      "Poisson"
+     ],
+     "answer": 0,
+     "explain": "Semicircle-like."
+    },
+    {
+     "q": "What does BSD relate?",
+     "options": [
+      "Rank and the order of vanishing",
+      "Rank and conductor",
+      "Torsion and class number",
+      "Level and weight"
+     ],
+     "answer": 0,
+     "explain": "At s = 1."
+    },
+    {
+     "q": "What is the n = 1 case of Langlands?",
+     "options": [
+      "Class field theory",
+      "Modularity",
+      "Fermat's Last Theorem",
+      "Hasse's bound"
+     ],
+     "answer": 0,
+     "explain": "Artin reciprocity."
+    },
+    {
+     "q": "What kind of curve has half of its a_p zero?",
+     "options": [
+      "CM curve like y^2 = x^3 - x",
+      "Any curve",
+      "A curve of rank 5",
+      "A curve of conductor 11"
+     ],
+     "answer": 0,
+     "explain": "Complex multiplication."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Frobenius trace",
+     "a": "a_p"
+    },
+    {
+     "q": "Sato-Tate",
+     "a": "Angles with density (2/pi) sin^2"
+    },
+    {
+     "q": "BSD",
+     "a": "Rank = order of vanishing"
+    },
+    {
+     "q": "CM",
+     "a": "Complex multiplication"
+    },
+    {
+     "q": "Langlands",
+     "a": "Galois reps and automorphic forms"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its description.",
+     "pairs": [
+      [
+       "Sato-Tate",
+       "distribution of normalised a_p"
+      ],
+      [
+       "BSD",
+       "rank and L(E, 1)"
+      ],
+      [
+       "Frobenius",
+       "trace is a_p"
+      ],
+      [
+       "CM",
+       "extra endomorphisms"
+      ],
+      [
+       "Langlands",
+       "Galois to automorphic"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "The normalised trace",
+     "intro": "Write normalised(ap, p): ap / (2 * sqrt(p)) as a float, using p ** 0.5 for the root.",
+     "fn": "normalised",
+     "starter": "def normalised(ap, p):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -2,
+        2
+       ],
+       "expect": -0.7071067811865475,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        4,
+        13
+       ],
+       "expect": 0.5547001962252291,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        1,
+        5
+       ],
+       "expect": 0.22360679774997896,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        0,
+        19
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        -1,
+        23
+       ],
+       "expect": -0.10425720702853739,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Divide by two times the square root of p.",
+     "solution": "def normalised(ap, p):\n    return ap / (2.0 * p ** 0.5)\n"
+    },
+    {
+     "type": "python",
+     "title": "Fraction of zero traces",
+     "intro": "Write zero_fraction(aps): the fraction of entries of the list aps that are 0, as a float. Return 0.0 for an empty list. CM curves have a large fraction.",
+     "fn": "zero_fraction",
+     "starter": "def zero_fraction(aps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         2,
+         0,
+         -2
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0,
+         0,
+         1
+        ]
+       ],
+       "expect": 0.8,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Count zeros and divide by the length.",
+     "solution": "def zero_fraction(aps):\n    if not aps:\n        return 0.0\n    z = 0\n    for a in aps:\n        if a == 0:\n            z += 1\n    return z / len(aps)\n"
+    }
+   ]
+  },
+  {
+   "title": "Using the LMFDB and what lies beyond",
+   "maps": [
+    {
+     "title": "Using the LMFDB",
+     "links": [
+      "Browse | finds | Collections",
+      "Search | filters | By invariants",
+      "Label | opens | A single page",
+      "API | returns | JSON",
+      "Genus 2 curves | extend | Elliptic curves",
+      "Open data | invites | Your own experiments"
+     ]
+    }
+   ],
+   "summary": [
+    "The LMFDB has collections beyond those in this course: genus 2 curves, abelian varieties over finite fields, Siegel and Hilbert modular forms, Maass forms, Artin representations and local fields. Each follows the same plan: invariants, labels, links.",
+    "You can search by invariants (conductor, rank, torsion, degree, discriminant), open a page by label, or query the data through an API. Pages show proven and computed data; read the notes on what is proven.",
+    "The labs read a label and compute simple statistics, and the last exam checks the whole course."
+   ],
+   "glossary": [
+    {
+     "term": "Genus 2 curve",
+     "def": "A curve y^2 = f(x) with f of degree 5 or 6; its Jacobian is a 2-dimensional abelian variety."
+    },
+    {
+     "term": "Abelian variety",
+     "def": "A higher-dimensional analogue of an elliptic curve."
+    },
+    {
+     "term": "Maass form",
+     "def": "A non-holomorphic eigenfunction of the Laplacian on the upper half-plane."
+    },
+    {
+     "term": "Artin representation",
+     "def": "A complex representation of a Galois group with finite image."
+    },
+    {
+     "term": "API",
+     "def": "A programmatic interface for downloading data."
+    }
+   ],
+   "keyPoints": [
+    "Each LMFDB collection has search forms, label pages and downloadable data.",
+    "Labels encode invariants: conductor, class, and index.",
+    "Genus 2 curves have L-functions of degree 4.",
+    "Pages distinguish proven from computed data; look for notes.",
+    "You can reproduce an a_p or a class number yourself, as in the labs.",
+    "Cross-links between collections show the Langlands correspondences."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The database has more: curves of two folds, fancier forms, number worlds. Look at what is proven and what is only computed, and try to recompute a number yourself."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now that you know the main characters, a tour of the database makes sense. The home page lists the collections: Elliptic curves over Q and over number fields, Genus 2 curves, Number fields, Modular forms (classical, Hilbert, Bianchi, Maass), Dirichlet characters, L-functions, Galois groups, Artin representations, Abelian varieties over finite fields, and more."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Each collection has a browse page, a search form, and a page per object. The object page opens with a label and a block of invariants, followed by tables, plots and links."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Searching is by invariants. For curves, you might ask for conductor under 1000, rank 2, and torsion trivial. For number fields, degree 3 with discriminant between minus 1000 and minus 100. For modular forms, level 23 and weight 2. The results are a table of labels, and each opens a page.",
+      "The database also gives downloadable data in formats for Sage, Magma and Pari, and a programmatic interface, so you can fetch thousands of curves and compute your own statistics, for example the histogram of normalised a_p."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Genus 2 curves are the next step up. Where an elliptic curve is y squared = a cubic, a genus 2 curve is y squared = a quintic or sextic. Their Jacobians are two-dimensional abelian varieties, and their L-functions have degree four, with four numbers per Euler factor.",
+      "The paramodular conjecture, a cousin of modularity, predicts that such curves match Siegel modular forms. Maass forms are non-holomorphic cousins of modular forms; they are eigenfunctions of the Laplacian on the upper half-plane and have no known algebraic origin, but they have L-functions too."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When using the database, keep a scientific attitude. Some data are proven, such as the conductor, the discriminant and the torsion subgroup. Some are computed under assumptions, such as the rank and the Tate-Shafarevich group in some cases. The pages say so.",
+      "Cross-check what you can: compute a_p for a curve and compare it with the newform's coefficients, compute a class number from reduced forms. The data are most valuable when you can understand where they come from."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where next? Read about the Langlands program, learn Sage or Pari/GP to compute with elliptic curves and modular forms, and look at the open problems the database is meant to support: BSD, the Sato-Tate conjectures in higher genus, the paramodular conjecture and the generalised Riemann hypothesis.",
+      "The best way in is to pick one curve and one form, and follow their links around the database."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a genus 2 curve's L-function have?",
+     "options": [
+      "Degree four",
+      "Degree one",
+      "Degree two",
+      "Degree six"
+     ],
+     "answer": 0,
+     "explain": "Four numbers per prime."
+    },
+    {
+     "q": "What does the API give?",
+     "options": [
+      "Programmatic access to the data",
+      "Proofs",
+      "Videos",
+      "Only plots"
+     ],
+     "answer": 0,
+     "explain": "JSON."
+    },
+    {
+     "q": "What are Maass forms?",
+     "options": [
+      "Non-holomorphic eigenfunctions of the Laplacian",
+      "Holomorphic forms",
+      "Elliptic curves",
+      "Fields"
+     ],
+     "answer": 0,
+     "explain": "On the upper half-plane."
+    },
+    {
+     "q": "How should you treat the rank in the database?",
+     "options": [
+      "Check whether it is proven or computed",
+      "Always trust it",
+      "Ignore it",
+      "Recompute only a_p"
+     ],
+     "answer": 0,
+     "explain": "Read the notes."
+    },
+    {
+     "q": "What is a good first experiment?",
+     "options": [
+      "Compare a curve's a_p with its newform",
+      "Memorise labels",
+      "Skip the maths",
+      "Only read pages"
+     ],
+     "answer": 0,
+     "explain": "As in the labs."
+    },
+    {
+     "q": "What does a label let you do?",
+     "options": [
+      "Open a specific object page",
+      "Prove a theorem",
+      "Draw a graph",
+      "Factor a number"
+     ],
+     "answer": 0,
+     "explain": "Like an address."
+    }
+   ],
+   "cards": [
+    {
+     "q": "genus 2",
+     "a": "y^2 = quintic or sextic"
+    },
+    {
+     "q": "Maass form",
+     "a": "Non-holomorphic Laplace eigenfunction"
+    },
+    {
+     "q": "API",
+     "a": "Programmatic access"
+    },
+    {
+     "q": "proven vs computed",
+     "a": "Read the notes on each page"
+    },
+    {
+     "q": "Langlands",
+     "a": "The unifying pattern"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the collection to its idea",
+     "intro": "Pair each collection with a one-line description.",
+     "pairs": [
+      [
+       "Elliptic curves",
+       "cubic curves with a group law"
+      ],
+      [
+       "Modular forms",
+       "symmetric functions with q-expansions"
+      ],
+      [
+       "Number fields",
+       "finite extensions of Q"
+      ],
+      [
+       "Dirichlet characters",
+       "multiplicative functions mod N"
+      ],
+      [
+       "L-functions",
+       "analytic packages of local data"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Average of the a_p",
+     "intro": "Write mean_ap(aps): the mean of the list aps as a float (0.0 for an empty list). By Sato-Tate it tends to 0 for non-CM curves.",
+     "fn": "mean_ap",
+     "starter": "def mean_ap(aps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         -2,
+         -1,
+         1,
+         -2,
+         1,
+         4,
+         -2,
+         0
+        ]
+       ],
+       "expect": -0.125,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         1,
+         -1
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         3
+        ]
+       ],
+       "expect": 3.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Sum and divide.",
+     "solution": "def mean_ap(aps):\n    if not aps:\n        return 0.0\n    return sum(aps) / len(aps)\n"
+    },
+    {
+     "type": "python",
+     "title": "Largest normalised trace",
+     "intro": "Write max_normalised(pairs): pairs is a list of [p, ap]. Return the maximum of abs(ap) / (2 * p**0.5) as a float. By Hasse this is at most 1.",
+     "fn": "max_normalised",
+     "starter": "def max_normalised(pairs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          2,
+          -2
+         ],
+         [
+          3,
+          -1
+         ],
+         [
+          5,
+          1
+         ],
+         [
+          7,
+          -2
+         ],
+         [
+          13,
+          4
+         ]
+        ]
+       ],
+       "expect": 0.7071067811865475,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        [
+         [
+          11,
+          1
+         ]
+        ]
+       ],
+       "expect": 0.15075567228888181,
+       "approx": 1e-09
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": 0.0,
+       "approx": 1e-09
+      }
+     ],
+     "hint": "Track the largest value seen.",
+     "solution": "def max_normalised(pairs):\n    best = 0.0\n    for p, ap in pairs:\n        v = abs(ap) / (2.0 * p ** 0.5)\n        if v > best:\n            best = v\n    return best\n"
+    },
+    {
+     "type": "fill",
+     "title": "A scientific attitude",
+     "text": "Some data in the LMFDB are {{proven}} and some are only {{computed}}. You should {{cross-check}} what you can."
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: The LMFDB: L-functions, Modular Forms and Elliptic Curves",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What does LMFDB stand for?",
+    "options": [
+     "L-functions and Modular Forms Database",
+     "Large Modular Fields Data Bank",
+     "Linear Maps and Fields DB",
+     "Lattice Modules Forms DB"
+    ],
+    "answer": 0,
+    "explain": "A number theory atlas."
+   },
+   {
+    "q": "What does 2.0.3.1 label?",
+    "options": [
+     "Q(sqrt(-3))",
+     "Q(sqrt 5)",
+     "Q(i)",
+     "A cubic"
+    ],
+    "answer": 0,
+    "explain": "d.r.D.i."
+   },
+   {
+    "q": "What is 11.2.a.a?",
+    "options": [
+     "A newform",
+     "A number field",
+     "A character",
+     "A group"
+    ],
+    "answer": 0,
+    "explain": "Level 11, weight 2."
+   },
+   {
+    "q": "What is (3/7)?",
+    "options": [
+     "-1",
+     "1",
+     "0",
+     "3"
+    ],
+    "answer": 0,
+    "explain": "3 is not a square mod 7."
+   },
+   {
+    "q": "Euler's criterion computes...",
+    "options": [
+     "The Legendre symbol",
+     "The gcd",
+     "The rank",
+     "The class number"
+    ],
+    "answer": 0,
+    "explain": "a^((p-1)/2)."
+   },
+   {
+    "q": "How many nonzero squares mod an odd prime p?",
+    "options": [
+     "(p-1)/2",
+     "p-1",
+     "p",
+     "2"
+    ],
+    "answer": 0,
+    "explain": "Half."
+   },
+   {
+    "q": "What does the class number measure?",
+    "options": [
+     "Failure of unique factorisation",
+     "The degree",
+     "The rank",
+     "The level"
+    ],
+    "answer": 0,
+    "explain": "h = 1 is unique."
+   },
+   {
+    "q": "Which discriminant gives class number 1?",
+    "options": [
+     "-163",
+     "-23",
+     "-15",
+     "-84"
+    ],
+    "answer": 0,
+    "explain": "Heegner."
+   },
+   {
+    "q": "What is h(-23)?",
+    "options": [
+     "3",
+     "1",
+     "2",
+     "4"
+    ],
+    "answer": 0,
+    "explain": "Three reduced forms."
+   },
+   {
+    "q": "What does a prime dividing the discriminant do?",
+    "options": [
+     "Ramifies",
+     "Splits",
+     "Is inert",
+     "Disappears"
+    ],
+    "answer": 0,
+    "explain": "Ramification."
+   },
+   {
+    "q": "What is chi(3) for the nontrivial character mod 4?",
+    "options": [
+     "-1",
+     "1",
+     "0",
+     "3"
+    ],
+    "answer": 0,
+    "explain": "3 is 3 mod 4."
+   },
+   {
+    "q": "What does an Euler product show?",
+    "options": [
+     "A series factors over primes",
+     "It is finite",
+     "It diverges",
+     "It is real"
+    ],
+    "answer": 0,
+    "explain": "Unique factorisation."
+   },
+   {
+    "q": "When is y^2 = x^3 + ax + b smooth?",
+    "options": [
+     "4a^3 + 27b^2 nonzero",
+     "a = 0",
+     "b = 0",
+     "always"
+    ],
+    "answer": 0,
+    "explain": "Discriminant."
+   },
+   {
+    "q": "What does the rank count?",
+    "options": [
+     "Independent infinite-order points",
+     "Torsion points",
+     "Bad primes",
+     "The degree"
+    ],
+    "answer": 0,
+    "explain": "Free part."
+   },
+   {
+    "q": "What did Mazur classify?",
+    "options": [
+     "Torsion over Q",
+     "Class numbers",
+     "Ranks",
+     "Levels"
+    ],
+    "answer": 0,
+    "explain": "Fifteen groups."
+   },
+   {
+    "q": "What is a_p?",
+    "options": [
+     "p + 1 minus the number of points",
+     "The rank",
+     "The conductor",
+     "The level"
+    ],
+    "answer": 0,
+    "explain": "Trace of Frobenius."
+   },
+   {
+    "q": "Hasse's bound says...",
+    "options": [
+     "|a_p| <= 2 sqrt p",
+     "a_p = 0",
+     "a_p > p",
+     "a_p is prime"
+    ],
+    "answer": 0,
+    "explain": "Small traces."
+   },
+   {
+    "q": "For the conductor 11 curve, a_2 is...",
+    "options": [
+     "-2",
+     "2",
+     "0",
+     "1"
+    ],
+    "answer": 0,
+    "explain": "From the table."
+   },
+   {
+    "q": "What do bad primes divide?",
+    "options": [
+     "The conductor",
+     "The rank",
+     "The torsion",
+     "The class number"
+    ],
+    "answer": 0,
+    "explain": "Bad reduction."
+   },
+   {
+    "q": "What is q in a q-expansion?",
+    "options": [
+     "e^(2 pi i z)",
+     "A prime",
+     "The level",
+     "The weight"
+    ],
+    "answer": 0,
+    "explain": "A coordinate."
+   },
+   {
+    "q": "What is Delta?",
+    "options": [
+     "A weight 12 cusp form of level 1",
+     "A weight 2 form",
+     "An Eisenstein series",
+     "A curve"
+    ],
+    "answer": 0,
+    "explain": "q prod (1-q^n)^24."
+   },
+   {
+    "q": "What is tau(2)?",
+    "options": [
+     "-24",
+     "24",
+     "1",
+     "252"
+    ],
+    "answer": 0,
+    "explain": "Coefficient of q^2."
+   },
+   {
+    "q": "What is the q coefficient of E_4?",
+    "options": [
+     "240",
+     "1",
+     "504",
+     "24"
+    ],
+    "answer": 0,
+    "explain": "240 sigma_3(1)."
+   },
+   {
+    "q": "What is a cusp form?",
+    "options": [
+     "Vanishes at the cusps",
+     "Has level 1",
+     "Has weight 2",
+     "Has no expansion"
+    ],
+    "answer": 0,
+    "explain": "Starts at n=1."
+   },
+   {
+    "q": "What does tau(6) equal?",
+    "options": [
+     "tau(2) tau(3)",
+     "tau(2) + tau(3)",
+     "tau(5)",
+     "0"
+    ],
+    "answer": 0,
+    "explain": "Multiplicative."
+   },
+   {
+    "q": "What is tau(4)?",
+    "options": [
+     "-1472",
+     "-576",
+     "1472",
+     "2048"
+    ],
+    "answer": 0,
+    "explain": "tau(2)^2 - 2^11."
+   },
+   {
+    "q": "What is a newform?",
+    "options": [
+     "Normalised eigenform not from lower level",
+     "A weight 1 form",
+     "Any modular form",
+     "An Eisenstein series"
+    ],
+    "answer": 0,
+    "explain": "No oldform content."
+   },
+   {
+    "q": "What does a Hecke operator do?",
+    "options": [
+     "Acts linearly on modular forms",
+     "Counts points",
+     "Defines a field",
+     "Computes class numbers"
+    ],
+    "answer": 0,
+    "explain": "T_n."
+   },
+   {
+    "q": "Riemann zeta is the L-function of...",
+    "options": [
+     "The trivial character",
+     "Delta",
+     "A curve",
+     "A Maass form"
+    ],
+    "answer": 0,
+    "explain": "Sum of n^-s."
+   },
+   {
+    "q": "What is a functional equation?",
+    "options": [
+     "A relation between L(s) and L(k-s)",
+     "A polynomial",
+     "A matrix",
+     "A graph"
+    ],
+    "answer": 0,
+    "explain": "Symmetry."
+   },
+   {
+    "q": "What does the root number predict?",
+    "options": [
+     "Parity of the rank",
+     "The conductor",
+     "The class number",
+     "The torsion"
+    ],
+    "answer": 0,
+    "explain": "Sign."
+   },
+   {
+    "q": "What does the modularity theorem say?",
+    "options": [
+     "Every elliptic curve over Q comes from a modular form",
+     "Every form is a curve",
+     "All ranks are 0",
+     "L-functions have no zeros"
+    ],
+    "answer": 0,
+    "explain": "Matching a_p."
+   },
+   {
+    "q": "What equals the conductor of E?",
+    "options": [
+     "The level of its newform",
+     "The weight",
+     "The rank",
+     "The torsion"
+    ],
+    "answer": 0,
+    "explain": "Level."
+   },
+   {
+    "q": "What did Wiles prove in 1995?",
+    "options": [
+     "Modularity for semistable curves",
+     "The Riemann hypothesis",
+     "BSD",
+     "Sato-Tate"
+    ],
+    "answer": 0,
+    "explain": "With Taylor."
+   },
+   {
+    "q": "What does BSD relate?",
+    "options": [
+     "Rank and order of vanishing at s = 1",
+     "Rank and conductor",
+     "Level and weight",
+     "Torsion and class number"
+    ],
+    "answer": 0,
+    "explain": "A Millennium Problem."
+   },
+   {
+    "q": "What is the n = 1 Langlands case?",
+    "options": [
+     "Class field theory",
+     "Modularity",
+     "Fermat's Last Theorem",
+     "Hasse's bound"
+    ],
+    "answer": 0,
+    "explain": "Artin reciprocity."
+   },
+   {
+    "q": "Which curves have half of their a_p equal to zero?",
+    "options": [
+     "CM curves",
+     "All curves",
+     "Rank 5 curves",
+     "Conductor 11"
+    ],
+    "answer": 0,
+    "explain": "Complex multiplication."
+   },
+   {
+    "q": "How should you treat data in the LMFDB?",
+    "options": [
+     "Check whether it is proven or computed",
+     "Always trust it",
+     "Ignore it",
+     "Never use it"
+    ],
+    "answer": 0,
+    "explain": "Read the notes."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "LMFDB cheat sheet",
+  "prompt": "lmf>",
+  "intro": "A scripted lookup, not the live database. Try: labels, ap, tau, bsd, modularity, help",
+  "chips": [
+   "labels",
+   "ap",
+   "tau",
+   "bsd",
+   "modularity",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "labels     Number field d.r.D.i: 2.0.3.1 = Q(sqrt(-3)) | Newform N.k.a.",
+     "ap         Curve of conductor 11: a_2..a_19 = -2, -1, 1, -2, 1, 4, -2, ",
+     "tau        Delta: tau(1..6) = 1, -24, 252, -1472, 4830, -6048",
+     "bsd        BSD: rank of E(Q) = order of vanishing of L(E, s) at s = 1",
+     "modularity Every elliptic curve over Q is modular: a_p(E) = a_p(f) for "
+    ]
+   },
+   {
+    "re": "^labels$",
+    "out": [
+     "Number field d.r.D.i: 2.0.3.1 = Q(sqrt(-3)) | Newform N.k.a.x: 11.2.a.a | Elliptic curve class N.a: 11.a"
+    ]
+   },
+   {
+    "re": "^ap$",
+    "out": [
+     "Curve of conductor 11: a_2..a_19 = -2, -1, 1, -2, 1, 4, -2, 0 (p = 2, 3, 5, 7, 11, 13, 17, 19)"
+    ]
+   },
+   {
+    "re": "^tau$",
+    "out": [
+     "Delta: tau(1..6) = 1, -24, 252, -1472, 4830, -6048"
+    ]
+   },
+   {
+    "re": "^bsd$",
+    "out": [
+     "BSD: rank of E(Q) = order of vanishing of L(E, s) at s = 1"
+    ]
+   },
+   {
+    "re": "^modularity$",
+    "out": [
+     "Every elliptic curve over Q is modular: a_p(E) = a_p(f) for a weight 2 newform f of level = conductor"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Mathematics",
+ "level": "Advanced",
+ "tags": [
+  "lmfdb",
+  "number theory",
+  "elliptic curves",
+  "modular forms",
+  "l-functions",
+  "python"
+ ]
+}
