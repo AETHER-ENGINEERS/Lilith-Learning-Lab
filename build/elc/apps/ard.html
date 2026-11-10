@@ -1,0 +1,68 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button,select{font:inherit;border:0;border-radius:18px;padding:7px 12px;background:#2d2046;color:#e7d9ff;margin:2px}
+button.p{background:#b26bff;color:#1b0b33;font-weight:600}.m{color:#c9b8e8;margin:6px 0}
+textarea{width:100%;height:210px;background:#1c1530;color:#f1ebff;border:1px solid #3b2d5c;border-radius:8px;font:12px ui-monospace,monospace;padding:6px}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:6px 0}.led{width:26px;height:26px;border-radius:50%;background:#3a1b1b;border:2px solid #6b3b3b;display:inline-block;vertical-align:middle}
+#ser{font:12px ui-monospace,monospace;background:#0e0820;border-radius:8px;padding:6px;height:80px;overflow:auto;white-space:pre-wrap}.good{color:#8fe3a8}
+</style></head><body>
+<div class="m">A tiny virtual Arduino Uno. LED on pin 13, PWM LED on pin 9, button on pin 2, knob on A0. Write a sketch, press Upload. Goal: blink pin 13 at least four times and use analogWrite.</div>
+<textarea id="src" spellcheck="false"></textarea>
+<div><button class="p" id="up">Upload</button><button id="stop">Stop</button>
+<select id="pre"><option value="0">Blink</option><option value="1">Fade</option><option value="2">Button</option><option value="3">Knob dimmer</option></select>
+Speed <select id="spd"><option value="1">1x</option><option value="10" selected>10x</option><option value="50">50x</option></select></div>
+<div class="row"><span>Pin 13 <span class="led" id="l13"></span></span><span>Pin 9 (PWM) <span class="led" id="l9"></span> <span id="d9"></span></span>
+<button id="btn">Hold button (pin 2)</button><span>A0 <input type="range" id="pot" min="0" max="1023" value="512"> <span id="pv">512</span></span></div>
+<div id="ser"></div><div class="m" id="msg"></div>
+<script>
+var P=[["// Blink pin 13","void setup() {","  pinMode(13, OUTPUT);","}","","void loop() {","  digitalWrite(13, HIGH);","  delay(500);","  digitalWrite(13, LOW);","  delay(500);","  analogWrite(9, 64);   // dim the second LED","}"],
+["int level = 0;","int step = 5;","void setup() {","  pinMode(9, OUTPUT);","  pinMode(13, OUTPUT);","}","void loop() {","  analogWrite(9, level);","  level = level + step;","  if (level <= 0 || level >= 255) {","    step = -step;","    digitalWrite(13, !digitalRead(13));","  }","  delay(30);","}"],
+["void setup() {","  pinMode(2, INPUT_PULLUP);","  pinMode(13, OUTPUT);","  Serial.begin(9600);","}","void loop() {","  if (digitalRead(2) == LOW) {","    digitalWrite(13, HIGH);","    Serial.println(\"pressed\");","  } else {","    digitalWrite(13, LOW);","  }","  delay(100);","  analogWrite(9, 100);","}"],
+["void setup() {","  pinMode(9, OUTPUT);","  Serial.begin(9600);","}","void loop() {","  int raw = analogRead(A0);","  int duty = raw / 4;","  analogWrite(9, duty);","  Serial.println(raw);","  delay(200);","  digitalWrite(13, HIGH);","  delay(200);","  digitalWrite(13, LOW);","}"]];
+var $=function(i){return document.getElementById(i)};
+function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+$("src").value=P[0].join("\n");
+$("pre").onchange=function(){$("src").value=P[+this.value].join("\n")};
+var hold=false,pot=512,H={mode:{},out:{},pwm:{}},now=0,gen=null,wake=0,run=false,tog=0,aw=0,ser="",user=null,last13=0;
+$("btn").onmousedown=$("btn").ontouchstart=function(e){hold=true;e.preventDefault()};
+document.addEventListener("mouseup",function(){hold=false});document.addEventListener("touchend",function(){hold=false});
+$("pot").oninput=function(){pot=+this.value;$("pv").textContent=pot};
+var api={HIGH:1,LOW:0,INPUT:0,OUTPUT:1,INPUT_PULLUP:2,A0:14,A1:15,
+ pinMode:function(p,m){H.mode[p]=m},
+ digitalWrite:function(p,v){v=v?1:0;if(p==13){if(v!=last13){tog++;last13=v}}H.out[p]=v;H.pwm[p]=undefined;show()},
+ digitalRead:function(p){if(p==2){var pu=H.mode[2]==2;return pu?(hold?0:1):(hold?1:0)}return H.out[p]||0},
+ analogWrite:function(p,v){aw++;H.pwm[p]=Math.max(0,Math.min(255,v|0));show()},
+ analogRead:function(p){return p==14?pot:0},
+ millis:function(){return Math.floor(now)},
+ Serial:{begin:function(){},print:function(x){ser+=x},println:function(x){ser+=x+"\n";if(ser.length>2000)ser=ser.slice(-1500);$("ser").textContent=ser;$("ser").scrollTop=1e6}},
+ constrain:function(x,a,b){return Math.max(a,Math.min(b,x))},map:function(x,a,b,c,d){return Math.floor((x-a)*(d-c)/(b-a)+c)},
+ min:Math.min,max:Math.max,abs:Math.abs};
+function show(){var a=H.pwm[13]!==undefined?H.pwm[13]/255:(H.out[13]||0);$("l13").style.background="rgba(255,190,60,"+(0.15+0.85*a)+")";
+ var b=H.pwm[9]!==undefined?H.pwm[9]/255:(H.out[9]||0);$("l9").style.background="rgba(100,200,255,"+(0.15+0.85*b)+")";$("d9").textContent=H.pwm[9]!==undefined?"duty "+Math.round(H.pwm[9]/2.55)+"%":""}
+function compile(src){
+ var s=src.replace(/\/\/.*$/gm,"").replace(/\/\*[\s\S]*?\*\//g,"");
+ s=s.replace(/#define\s+(\w+)\s+([^\n]+)/g,"var $1 = $2;");
+ var names=[];s.replace(/void\s+(\w+)\s*\(/g,function(m,n){names.push(n)});
+ s=s.replace(/\b(?:unsigned\s+long|unsigned\s+int|long|int|float|byte|boolean|bool|const\s+int|const\s+byte)\s+(\w+)\s*\(([^)]*)\)\s*\{/g,function(m,n,a){return "function* "+n+"("+a.replace(/\b(?:unsigned\s+long|long|int|float|byte|boolean|bool)\s+/g,"")+"){"});
+ s=s.replace(/void\s+(\w+)\s*\(([^)]*)\)/g,function(m,n,a){return "function* "+n+"("+a.replace(/\b(?:unsigned\s+long|long|int|float|byte|boolean|bool)\s+/g,"")+")"});
+ s=s.replace(/\b(?:unsigned\s+long|unsigned\s+int|const\s+int|const\s+byte|long|int|float|byte|boolean|bool)\s+(?=\w+\s*(=|;|,|\[))/g,"var ");
+ s=s.replace(/\bdelay\s*\(/g,"yield* delay(").replace(/\bdelayMicroseconds\s*\(/g,"yield* delay(0*");
+ names.forEach(function(n){if(n!="setup"&&n!="loop")s=s.replace(new RegExp("(?<!function\\*\\s)\\b"+n+"\\s*\\(","g"),"(yield* "+n+")(")});
+ s=s.replace(/\bvar\s+(\w+)\s*\[\s*(\d*)\s*\]\s*=\s*\{/g,"var $1 = [").replace(/\}\s*;/g,function(m){return m});
+ var keys=Object.keys(api);
+ var body="var delay=function*(ms){yield ms};\n"+s+"\nreturn {setup:typeof setup=='function'?setup:null,loop:typeof loop=='function'?loop:null};";
+ return new Function(keys.join(","),body).apply(null,keys.map(function(k){return api[k]}))}
+function upload(){try{user=compile($("src").value)}catch(e){$("msg").textContent="Compile error: "+e.message;return}
+ H={mode:{},out:{},pwm:{}};now=0;wake=0;tog=0;aw=0;last13=0;ser="";$("ser").textContent="";show();
+ gen=user.setup?user.setup():(function*(){})();run=true;$("msg").textContent="Running."}
+function tick(dt){if(!run)return;now+=dt;var guard=0;
+ while(now>=wake&&guard++<5000){var r;try{r=gen.next()}catch(e){run=false;$("msg").textContent="Runtime error: "+e.message;return}
+  if(r.done){if(!user.loop){run=false;return}gen=user.loop()}else wake=now+(+r.value||0)}
+ if(tog>=4&&aw>0&&!tick.fin){tick.fin=1;$("msg").className="good";$("msg").textContent="Pin 13 toggled "+tog+" times and PWM was used. Goal reached.";done()}}
+tick.fin=0;
+var lt=performance.now();
+function frame(t){var dt=Math.min(100,t-lt)*(+$("spd").value);lt=t;tick(dt);requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+$("up").onclick=function(){tick.fin=0;$("msg").className="";upload()};
+$("stop").onclick=function(){run=false;$("msg").textContent="Stopped."};
+</script></body></html>

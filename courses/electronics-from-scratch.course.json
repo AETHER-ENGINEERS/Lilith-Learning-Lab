@@ -92,6 +92,26 @@
   "Faraday": "fair uh day",
   "sqrt": "square root",
   "log10": "log ten",
+  "Arduino": "ar dwee no",
+  "Uno": "oo no",
+  "PWM": "P W M",
+  "ADC": "A D C",
+  "LDR": "L D R",
+  "KCL": "K C L",
+  "KVL": "K V L",
+  "Kirchhoff": "keer koff",
+  "Kirchhoff's": "keer koffs",
+  "pinMode": "pin mode",
+  "digitalWrite": "digital write",
+  "digitalRead": "digital read",
+  "analogRead": "analog read",
+  "analogWrite": "analog write",
+  "millis": "millis",
+  "ATmega328P": "A T mega three two eight P",
+  "SPICE": "spice",
+  "netlist": "net list",
+  "lumped": "lumped",
+  "flyback": "fly back",
   "coulomb": "coo lomb",
   "coulombs": "coo lombs",
   "Vs": "V S",
@@ -403,6 +423,315 @@
    ]
   },
   {
+   "title": "The lumped circuit abstraction",
+   "maps": [
+    {
+     "title": "Lumped model",
+     "links": [
+      "Abstraction | hides | Detail",
+      "Lumped element | has | Two terminals",
+      "Element | obeys | A v-i rule",
+      "KCL | says | Currents at a node sum to zero",
+      "KVL | says | Voltages round a loop sum to zero",
+      "Small size | allows | Lumped model"
+     ]
+    }
+   ],
+   "summary": [
+    "Engineers do not model every electron. They squeeze a real part into a simple box with two ends and one rule.",
+    "That box is a lumped element. Its rule links the voltage across it to the current through it.",
+    "If the parts are small enough, two laws follow for free: currents at a node sum to zero, and voltages round a loop sum to zero."
+   ],
+   "glossary": [
+    {
+     "term": "Abstraction",
+     "def": "Hiding details so you can reason at a higher level."
+    },
+    {
+     "term": "Lumped element",
+     "def": "A part treated as one point with two terminals."
+    },
+    {
+     "term": "v-i relation",
+     "def": "The rule linking an element's voltage and current."
+    },
+    {
+     "term": "KCL",
+     "def": "Kirchhoff's current law: currents into a node sum to zero."
+    },
+    {
+     "term": "KVL",
+     "def": "Kirchhoff's voltage law: voltages around a loop sum to zero."
+    },
+    {
+     "term": "Node",
+     "def": "A point where element terminals join."
+    }
+   ],
+   "keyPoints": [
+    "A bulb can be replaced by a resistor if only V and I matter.",
+    "Inside a lumped element, charge does not pile up.",
+    "Outside, wires carry no changing magnetic flux.",
+    "KCL and KVL come from those two rules.",
+    "The model fails when a circuit is as big as the signal wavelength."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A lumped part is a toy version of a real part. You ignore the glass and the heat and keep only how hard it pushes and how much flows through."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Physics describes everything with fields and charges, and that is far too detailed to design a phone. So engineers build layers. Each layer keeps a few facts and throws the rest away. Software sits on processors, processors on logic gates, gates on circuits, and circuits on physics."
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "abstraction-tower.svg",
+     "caption": "Each layer of design hides the details of the layer below it. This course sits between lumped circuits and logic."
+    },
+    {
+     "type": "text",
+     "items": [
+      "Take a light bulb. It has a glass shell, a hot filament, heat and light. For circuit design you care about only two numbers: the voltage across its two ends and the current through it. So you replace it by a box with two terminals and a rule, such as I = V / R.",
+      "That box is a lumped element, and a resistor is its simplest form."
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "lumped-bulb.svg",
+     "caption": "A real bulb on the left; on the right the lumped model keeps only the voltage and the current."
+    },
+    {
+     "type": "text",
+     "items": [
+      "This works only if you obey a discipline. Inside each element, electric charge may not pile up, so whatever current goes in one terminal comes out of the other. And outside the elements, in the wires, there may be no changing magnetic flux.",
+      "When both hold, the world of fields collapses into plain algebra."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Two laws drop out. Kirchhoff's current law: at any node, the currents flowing in add up to zero, because charge cannot collect there. Kirchhoff's voltage law: going around any loop, the voltage rises and drops add up to zero, because you end up back at the same point."
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "kvl-kcl.svg",
+     "caption": "Left: voltages around a loop sum to zero. Right: currents into a node sum to zero."
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} \\sum i_{\\text{in}}=0, \\\\[0.6em] \\sum v_{\\text{loop}}=0 \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "When is a part small enough? Signals travel at about the speed of light, so a wire is lumped only if a signal crosses it much faster than the signal changes. A common rule is that the circuit should be smaller than a tenth of the wavelength. At mains frequency that allows a huge circuit.",
+      "At a few gigahertz it allows only a few millimetres."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a lumped element keep?",
+     "options": [
+      "Voltage and current",
+      "Its color",
+      "Its shape",
+      "Its temperature"
+     ],
+     "answer": 0,
+     "explain": "Only the terminal behaviour."
+    },
+    {
+     "q": "What does KCL say?",
+     "options": [
+      "Currents at a node sum to zero",
+      "Voltages at a node sum to zero",
+      "Power is constant",
+      "Resistance adds"
+     ],
+     "answer": 0,
+     "explain": "Charge cannot pile up at a node."
+    },
+    {
+     "q": "When does the lumped model fail?",
+     "options": [
+      "When circuits are as big as the wavelength",
+      "When the battery is new",
+      "When current is DC",
+      "Never"
+     ],
+     "answer": 0,
+     "explain": "Signals then take time to cross."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a lumped element?",
+     "a": "A two-terminal box with a v-i rule."
+    },
+    {
+     "q": "What is KVL?",
+     "a": "Loop voltages sum to zero."
+    },
+    {
+     "q": "Why abstract?",
+     "a": "To hide detail and reason simply."
+    },
+    {
+     "q": "Size limit for lumped?",
+     "a": "Under about a tenth of a wavelength."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Laws",
+     "intro": "Match each law with what it says.",
+     "pairs": [
+      [
+       "KCL",
+       "Currents at a node sum to zero"
+      ],
+      [
+       "KVL",
+       "Voltages round a loop sum to zero"
+      ],
+      [
+       "Lumped element",
+       "Two terminals and a v-i rule"
+      ],
+      [
+       "Abstraction",
+       "Hiding detail"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "The missing current",
+     "intro": "Write missing(currents): the currents into a node are listed with into-the-node positive and out-of-the-node negative, with one current left out. Return the missing current so that the total is zero, rounded to 6 places.",
+     "fn": "missing",
+     "starter": "def missing(currents):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         2,
+         -0.5
+        ]
+       ],
+       "expect": -1.5
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         -3
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         0.25
+        ]
+       ],
+       "expect": -0.25
+      }
+     ],
+     "hint": "Use KCL: the total must be zero.",
+     "solution": "def missing(currents):\n    return round(-sum(currents), 6)\n"
+    },
+    {
+     "type": "python",
+     "title": "The missing voltage",
+     "intro": "Write loop_gap(drops): the voltages around a loop add to zero. Given all but one, return the last, rounded to 6 places.",
+     "fn": "loop_gap",
+     "starter": "def loop_gap(drops):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         9,
+         -3,
+         -2
+        ]
+       ],
+       "expect": -4
+      },
+      {
+       "args": [
+        [
+         5,
+         5
+        ]
+       ],
+       "expect": -10
+      },
+      {
+       "args": [
+        [
+         -1.5,
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.5
+      }
+     ],
+     "hint": "Use KVL.",
+     "solution": "def loop_gap(drops):\n    return round(-sum(drops), 6)\n"
+    },
+    {
+     "type": "python",
+     "title": "Is it lumped?",
+     "intro": "Write lumped_ok(size_m, freq_hz): the signal travels at 3e8 m/s. Return True if the circuit is smaller than a tenth of the wavelength.",
+     "fn": "lumped_ok",
+     "starter": "def lumped_ok(size_m, freq_hz):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        50
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        0.1,
+        1000000000.0
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        0.001,
+        1000000000.0
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        10,
+        10000000.0
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "wavelength = speed / frequency.",
+     "solution": "def lumped_ok(size_m, freq_hz):\n    wavelength = 3e8 / freq_hz\n    return size_m < wavelength / 10\n"
+    }
+   ]
+  },
+  {
    "title": "Ohm's law, power and simple circuits",
    "maps": [
     {
@@ -473,6 +802,11 @@
     {
      "type": "math",
      "tex": "\\begin{gathered} V=I\\,R \\\\[0.6em] P=V\\,I=I^{2}R=\\frac{V^{2}}{R} \\end{gathered}"
+    },
+    {
+     "type": "figure",
+     "image": "series-parallel.svg",
+     "caption": "Resistors in series share one current; resistors in parallel share one voltage."
     },
     {
      "type": "text",
@@ -791,6 +1125,16 @@
      ]
     },
     {
+     "type": "figure",
+     "image": "resistor-code.svg",
+     "caption": "The color bands of a resistor and the digit each color stands for."
+    },
+    {
+     "type": "figure",
+     "image": "divider.svg",
+     "caption": "A voltage divider: two resistors in series share the supply."
+    },
+    {
      "type": "code",
      "lang": "python",
      "code": "# brown black red gold\ndigits = [1, 0]\nmultiplier = 10 ** 2\nvalue = (digits[0] * 10 + digits[1]) * multiplier\nprint(value)   # 1000 ohms, 5 percent"
@@ -1087,6 +1431,276 @@
    ]
   },
   {
+   "title": "Visual circuit simulator",
+   "maps": [
+    {
+     "title": "Simulation",
+     "links": [
+      "Schematic | becomes | A netlist",
+      "Nodes | hold | Voltages",
+      "KCL | gives | One equation per node",
+      "Solver | finds | All voltages",
+      "Wire | joins | Two points into one node",
+      "Ground | sets | Zero volts"
+     ]
+    }
+   ],
+   "summary": [
+    "A simulator turns your drawing into equations and solves them. It does what you would do with KCL and Ohm's law, only faster.",
+    "You choose a ground, and every other point gets a voltage. Each part then gives a current from the voltage across it.",
+    "The lab lets you place parts on a grid and press Solve. Build a divider that gives 3 V from 9 V."
+   ],
+   "glossary": [
+    {
+     "term": "Netlist",
+     "def": "A list of parts and the nodes they connect."
+    },
+    {
+     "term": "Ground",
+     "def": "The node chosen as zero volts."
+    },
+    {
+     "term": "Nodal analysis",
+     "def": "Writing KCL at each node and solving for voltages."
+    },
+    {
+     "term": "Ideal source",
+     "def": "A source whose voltage never sags."
+    },
+    {
+     "term": "Short circuit",
+     "def": "A path with no resistance, so very large current."
+    }
+   ],
+   "keyPoints": [
+    "Pick one ground node; all voltages are measured from it.",
+    "Wires merge nodes.",
+    "Each node gives one KCL equation.",
+    "Solving the equations gives every voltage and current.",
+    "An ideal battery across a wire is an error, not a circuit."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A simulator is a super fast helper that writes down every pipe's flow rule and solves them all at once, so you can try ideas without burning a thing."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A circuit drawing is also a graph. Points where parts meet are nodes, and parts are the links between them. A simulator reads that graph into a netlist: a list that says resistor R1 joins node 1 to node 2, battery B joins node 1 to ground, and so on."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "It then picks a ground node as zero volts. For every other node it writes KCL: the currents leaving the node through each connected part add up to zero. For a resistor between nodes a and b, the current is (Va - Vb) / R. The result is a set of straight-line equations, one per node."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\sum_k \\frac{V_n-V_k}{R_k}=0"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A battery fixes the voltage between two nodes, so it adds one equation and one unknown, its own current. Solving the whole set, usually by Gaussian elimination, gives every node voltage at once. Real tools such as SPICE use this idea with more part types and time steps."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The lab below has a grid. Choose a part, then tap two points. Wires join points into one node, and the ground part sets zero volts. Press Solve to see each voltage and the current in every part. Try the presets, then build a divider of your own that makes a 3 V node from the 9 V battery."
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "divider.svg",
+     "caption": "The divider you are asked to build: two resistors in series, with the output taken between them."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a simulator write at each node?",
+     "options": [
+      "A KCL equation",
+      "A color",
+      "A time",
+      "A fuse"
+     ],
+     "answer": 0,
+     "explain": "Currents sum to zero."
+    },
+    {
+     "q": "What does ground mean in a simulator?",
+     "options": [
+      "The zero-volt reference",
+      "The biggest voltage",
+      "A wire to earth only",
+      "A resistor"
+     ],
+     "answer": 0,
+     "explain": "All voltages are measured from it."
+    },
+    {
+     "q": "Why is a battery across a bare wire a problem?",
+     "options": [
+      "Current would be unlimited",
+      "It makes no light",
+      "It is AC",
+      "It is too cold"
+     ],
+     "answer": 0,
+     "explain": "An ideal source into zero ohms."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a netlist?",
+     "a": "Parts and the nodes they join."
+    },
+    {
+     "q": "Which law gives the equations?",
+     "a": "KCL."
+    },
+    {
+     "q": "What does a wire do in the model?",
+     "a": "Merges two points into one node."
+    },
+    {
+     "q": "How to get 3 V from 9 V?",
+     "a": "Two resistors 2k over 1k."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Netlist",
+       "Parts and the nodes they join"
+      ],
+      [
+       "Ground",
+       "Zero-volt reference"
+      ],
+      [
+       "Node",
+       "A point where parts connect"
+      ],
+      [
+       "Ideal source",
+       "Voltage that never sags"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Loaded divider",
+     "intro": "Write loaded(vs, r1, r2, rl): a divider whose lower resistor r2 has a load rl in parallel. Return the output voltage rounded to 4 places.",
+     "fn": "loaded",
+     "starter": "def loaded(vs, r1, r2, rl):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        9,
+        2000,
+        1000,
+        1000000000.0
+       ],
+       "expect": 3.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        9,
+        2000,
+        1000,
+        1000
+       ],
+       "expect": 1.8,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        5,
+        1000,
+        1000,
+        1000
+       ],
+       "expect": 1.6667,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Combine r2 and rl in parallel first.",
+     "solution": "def loaded(vs, r1, r2, rl):\n    rp = r2 * rl / (r2 + rl)\n    return round(vs * rp / (r1 + rp), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Series current and drops",
+     "intro": "Write drops(vs, resistors): return the voltage across each resistor in a series chain, each rounded to 4 places.",
+     "fn": "drops",
+     "starter": "def drops(vs, resistors):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        9,
+        [
+         2000,
+         1000
+        ]
+       ],
+       "expect": [
+        6.0,
+        3.0
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        12,
+        [
+         100,
+         200,
+         300
+        ]
+       ],
+       "expect": [
+        2.0,
+        4.0,
+        6.0
+       ],
+       "approx": 0.001
+      },
+      {
+       "args": [
+        5,
+        [
+         470
+        ]
+       ],
+       "expect": [
+        5.0
+       ],
+       "approx": 0.001
+      }
+     ],
+     "hint": "The same current flows through every part.",
+     "solution": "def drops(vs, resistors):\n    i = vs / sum(resistors)\n    return [round(i * r, 4) for r in resistors]\n"
+    },
+    {
+     "type": "webxdc",
+     "title": "Circuit simulator",
+     "intro": "Place parts and solve. Build a divider that makes a 3 V node from the 9 V battery.",
+     "height": 760,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:7px 12px;background:#2d2046;color:#e7d9ff;margin:2px}\nbutton.on{background:#b26bff;color:#1b0b33;font-weight:600}.m{color:#c9b8e8;margin:6px 0}\ncanvas{background:#1c1530;border-radius:10px;width:100%;max-width:560px;touch-action:manipulation;display:block;margin:6px auto}\n#out{font:12px ui-monospace,monospace;white-space:pre-wrap;color:#d9ccf5}.good{color:#8fe3a8}\n</style></head><body>\n<div class=\"m\">Pick a tool, then tap two grid points to place a part between them. Battery: first tap is plus. Tap Solve to see voltages and currents. Goal: build a divider from a 9 V battery that gives a 3 V node.</div>\n<div id=\"tools\"></div>\n<div>Value <select id=\"val\"><option>100</option><option>220</option><option>470</option><option selected>1000</option><option>2000</option><option>4700</option><option>10000</option></select>\n<button id=\"solve\">Solve</button><button id=\"pre\">Preset</button><button id=\"clr\">Clear</button></div>\n<canvas id=\"c\" width=\"560\" height=\"360\"></canvas>\n<div id=\"out\"></div>\n<script>\nvar COLS=9,ROWS=6,GX=60,OX=40,OY=40,tool=\"R\",parts=[],pend=null,volts=null,cur=null,solved=false,pi=0;\nfunction done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar TL=[[\"R\",\"Resistor\"],[\"B\",\"Battery 9V\"],[\"L\",\"Lamp\"],[\"W\",\"Wire\"],[\"G\",\"Ground\"],[\"X\",\"Erase\"]];\nvar tb=document.getElementById(\"tools\");\nTL.forEach(function(t){var b=document.createElement(\"button\");b.textContent=t[1];b.id=\"t\"+t[0];b.onclick=function(){tool=t[0];pend=null;sel();draw()};tb.appendChild(b)});\nfunction sel(){TL.forEach(function(t){document.getElementById(\"t\"+t[0]).className=t[0]==tool?\"on\":\"\"})}sel();\nvar cv=document.getElementById(\"c\"),cx=cv.getContext(\"2d\");\nfunction pt(c,r){return [OX+c*GX,OY+r*GX]}\nfunction id(c,r){return r*COLS+c}\ncv.onclick=function(e){var rc=cv.getBoundingClientRect(),sx=cv.width/rc.width;var x=(e.clientX-rc.left)*sx,y=(e.clientY-rc.top)*sx;\n var c=Math.round((x-OX)/GX),r=Math.round((y-OY)/GX);if(c<0||c>=COLS||r<0||r>=ROWS)return;var n=id(c,r);\n if(tool==\"G\"){parts.push({t:\"G\",a:n});pend=null;solved=false;volts=null}\n else if(tool==\"X\"){parts=parts.filter(function(p){return !(p.a==n||p.b==n)});volts=null}\n else if(pend===null)pend=n;\n else if(pend!=n){parts.push({t:tool,a:pend,b:n,v:tool==\"R\"?+document.getElementById(\"val\").value:tool==\"L\"?50:tool==\"B\"?9:0});pend=null;volts=null}\n else pend=null;draw()};\nfunction solve(){\n var par=[];for(var i=0;i<COLS*ROWS;i++)par.push(i);\n function f(x){while(par[x]!=x){par[x]=par[par[x]];x=par[x]}return x}\n parts.forEach(function(p){if(p.t==\"W\")par[f(p.a)]=f(p.b)});\n var gnd=-1;parts.forEach(function(p){if(p.t==\"G\"&&gnd<0)gnd=f(p.a)});\n var bats=parts.filter(function(p){return p.t==\"B\"});\n if(gnd<0&&bats.length)gnd=f(bats[0].b);\n if(gnd<0)return \"Add a battery first.\";\n var nodes={},k=0;parts.forEach(function(p){[\"a\",\"b\"].forEach(function(s){if(p[s]!==undefined){var r=f(p[s]);if(r!=gnd&&!(r in nodes))nodes[r]=k++}})});\n var n=k+bats.length,A=[],z=[];for(var i=0;i<n;i++){A.push(new Array(n).fill(0));z.push(0)}\n function ix(x){x=f(x);return x==gnd?-1:nodes[x]}\n for(var i=0;i<k;i++)A[i][i]+=1e-9;\n parts.forEach(function(p){if(p.t==\"R\"||p.t==\"L\"){var g=1/p.v,a=ix(p.a),b=ix(p.b);if(a>=0)A[a][a]+=g;if(b>=0)A[b][b]+=g;if(a>=0&&b>=0){A[a][b]-=g;A[b][a]-=g}}});\n bats.forEach(function(p,j){var a=ix(p.a),b=ix(p.b),q=k+j;if(a>=0){A[a][q]+=1;A[q][a]+=1}if(b>=0){A[b][q]-=1;A[q][b]-=1}z[q]=p.v});\n for(var c=0;c<n;c++){var m=c;for(var r=c+1;r<n;r++)if(Math.abs(A[r][c])>Math.abs(A[m][c]))m=r;\n  var t=A[c];A[c]=A[m];A[m]=t;t=z[c];z[c]=z[m];z[m]=t;if(Math.abs(A[c][c])<1e-14)return \"Circuit has a short or a loop of ideal sources.\";\n  for(var r=0;r<n;r++)if(r!=c){var q=A[r][c]/A[c][c];if(q){for(var j=c;j<n;j++)A[r][j]-=q*A[c][j];z[r]-=q*z[c]}}}\n var x=z.map(function(v,i){return v/A[i][i]});\n volts=function(nn){var i=ix(nn);return i<0?0:x[i]};\n cur=parts.map(function(p,j){if(p.t==\"R\"||p.t==\"L\")return (volts(p.a)-volts(p.b))/p.v;if(p.t==\"B\")return -x[k+bats.indexOf(p)];return 0});\n var s=\"\",hit=0,rs=parts.filter(function(p){return p.t==\"R\"}).length;\n var seen={};parts.forEach(function(p,j){if(p.t==\"G\")return;[\"a\",\"b\"].forEach(function(q){var r=f(p[q]);if(!seen[r]){seen[r]=1;var v=volts(p[q]);s+=\"node \"+(p[q]%COLS)+\",\"+Math.floor(p[q]/COLS)+\": \"+v.toFixed(3)+\" V\\n\";if(r!=gnd&&Math.abs(v-3)<0.06&&rs>=2&&bats.length)hit=1}})});\n parts.forEach(function(p,j){if(p.t==\"R\"||p.t==\"L\")s+=(p.t==\"R\"?\"R \":\"lamp \")+p.v+\" ohm: \"+(cur[j]*1000).toFixed(2)+\" mA, \"+(cur[j]*cur[j]*p.v*1000).toFixed(1)+\" mW\\n\";if(p.t==\"B\")s+=\"battery supplies \"+(cur[j]*1000).toFixed(2)+\" mA\\n\"});\n if(hit){s+=\"\\nA 3 V node from 9 V. Goal reached.\";solved=true;done()}\n return s}\nfunction draw(){cx.clearRect(0,0,560,360);cx.fillStyle=\"#3b2d5c\";\n for(var r=0;r<ROWS;r++)for(var c=0;c<COLS;c++){var p=pt(c,r);cx.beginPath();cx.arc(p[0],p[1],pend===id(c,r)?7:3,0,7);cx.fillStyle=pend===id(c,r)?\"#ffcf66\":\"#5b4a85\";cx.fill()}\n parts.forEach(function(p,j){if(p.t==\"G\"){var q=pt(p.a%COLS,Math.floor(p.a/COLS));cx.strokeStyle=\"#efe9ff\";cx.lineWidth=2;for(var i=0;i<3;i++){cx.beginPath();cx.moveTo(q[0]-12+i*4,q[1]+8+i*5);cx.lineTo(q[0]+12-i*4,q[1]+8+i*5);cx.stroke()}return}\n  var a=pt(p.a%COLS,Math.floor(p.a/COLS)),b=pt(p.b%COLS,Math.floor(p.b/COLS)),mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;\n  cx.strokeStyle=p.t==\"R\"?\"#ffb84d\":p.t==\"B\"?\"#ff6b6b\":p.t==\"L\"?\"#ffe27a\":\"#efe9ff\";cx.lineWidth=p.t==\"W\"?2:3;cx.beginPath();cx.moveTo(a[0],a[1]);cx.lineTo(b[0],b[1]);cx.stroke();\n  if(p.t!=\"W\"){cx.fillStyle=\"#150d27\";cx.fillRect(mx-16,my-9,32,18);cx.strokeRect(mx-16,my-9,32,18);cx.fillStyle=\"#f1ebff\";cx.font=\"11px sans-serif\";cx.textAlign=\"center\";\n   var lab=p.t==\"B\"?\"9V\":p.t==\"L\"?\"lamp\":(p.v>=1000?p.v/1000+\"k\":p.v);cx.fillText(lab,mx,my+4);\n   if(p.t==\"B\"){cx.fillStyle=\"#ff6b6b\";cx.fillText(\"+\",a[0]+(b[0]>a[0]?8:b[0]<a[0]?-8:0)+(a[0]==b[0]?10:0),a[1]+(a[1]==b[1]?-8:(b[1]>a[1]?10:-6)))}\n   if(p.t==\"L\"&&cur&&volts){var P=cur[j]*cur[j]*p.v;if(P>0.01){cx.fillStyle=\"rgba(255,226,122,\"+Math.min(0.6,P*2)+\")\";cx.beginPath();cx.arc(mx,my,22,0,7);cx.fill()}}}});\n if(volts&&solved!==undefined){cx.fillStyle=\"#8fe3a8\";cx.font=\"11px sans-serif\";cx.textAlign=\"center\";var d={};parts.forEach(function(p){[\"a\",\"b\"].forEach(function(q){if(p[q]!==undefined&&!d[p[q]]){d[p[q]]=1;var w=pt(p[q]%COLS,Math.floor(p[q]/COLS));cx.fillText(volts(p[q]).toFixed(1)+\"V\",w[0],w[1]-9)}})})}}\ndocument.getElementById(\"solve\").onclick=function(){document.getElementById(\"out\").textContent=solve();draw();document.getElementById(\"out\").className=solved?\"good\":\"\"};\ndocument.getElementById(\"clr\").onclick=function(){parts=[];pend=null;volts=null;cur=null;solved=false;document.getElementById(\"out\").textContent=\"\";draw()};\nvar PRE=[[{t:\"B\",a:id(1,0),b:id(1,4),v:9},{t:\"W\",a:id(1,0),b:id(3,0)},{t:\"R\",a:id(3,0),b:id(3,2),v:2000},{t:\"R\",a:id(3,2),b:id(3,4),v:1000},{t:\"W\",a:id(3,4),b:id(1,4)},{t:\"G\",a:id(1,4)}],\n [{t:\"B\",a:id(1,0),b:id(1,4),v:9},{t:\"W\",a:id(1,0),b:id(3,0)},{t:\"R\",a:id(3,0),b:id(3,4),v:470},{t:\"L\",a:id(3,0),b:id(5,0),v:50},{t:\"W\",a:id(5,0),b:id(5,4)},{t:\"W\",a:id(5,4),b:id(3,4)},{t:\"W\",a:id(3,4),b:id(1,4)},{t:\"G\",a:id(1,4)}]];\ndocument.getElementById(\"pre\").onclick=function(){parts=JSON.parse(JSON.stringify(PRE[pi%PRE.length]));pi++;volts=null;cur=null;draw()};\ndraw();\n</script></body></html>\n"
+    }
+   ]
+  },
+  {
    "title": "Capacitors and timing",
    "maps": [
     {
@@ -1157,6 +1771,11 @@
     {
      "type": "math",
      "tex": "\\begin{gathered} Q=C\\,V \\\\[0.6em] E=\\tfrac12 C V^{2} \\end{gathered}"
+    },
+    {
+     "type": "figure",
+     "image": "rc-curve.svg",
+     "caption": "Charging a capacitor through a resistor follows a rising curve; one time constant reaches 63 percent."
     },
     {
      "type": "text",
@@ -1496,6 +2115,11 @@
     {
      "type": "math",
      "tex": "\\begin{gathered} X_L=2\\pi f L \\\\[0.6em] X_C=\\frac{1}{2\\pi f C} \\\\[0.6em] f_0=\\frac{1}{2\\pi\\sqrt{LC}} \\end{gathered}"
+    },
+    {
+     "type": "figure",
+     "image": "transformer.svg",
+     "caption": "A transformer: the output voltage follows the turns ratio."
     },
     {
      "type": "text",
@@ -1842,6 +2466,21 @@
      ]
     },
     {
+     "type": "figure",
+     "image": "diode-iv.svg",
+     "caption": "A diode passes current one way, with a knee near 0.7 volts."
+    },
+    {
+     "type": "figure",
+     "image": "rectify.svg",
+     "caption": "Half-wave and full-wave rectifying of an AC wave."
+    },
+    {
+     "type": "figure",
+     "image": "led-resistor.svg",
+     "caption": "Sizing the series resistor for an LED."
+    },
+    {
      "type": "text",
      "items": [
       "AC swings positive and negative. One diode passes only the positive half, which makes a half-wave rectifier. Four diodes in a bridge turn both halves the same way, giving full-wave. A capacitor across the output fills the gaps and smooths the result."
@@ -2170,6 +2809,11 @@
     {
      "type": "math",
      "tex": "\\begin{gathered} I_C=\\beta\\,I_B \\\\[0.6em] R_B=\\frac{V_{in}-V_{BE}}{I_B} \\end{gathered}"
+    },
+    {
+     "type": "figure",
+     "image": "npn-switch.svg",
+     "caption": "An NPN transistor switching a lamp from a small base current."
     },
     {
      "type": "text",
@@ -2858,6 +3502,11 @@
      "tex": "\\begin{gathered} f=\\frac{1}{T} \\\\[0.6em] V_{\\text{rms}}=\\frac{V_{\\text{peak}}}{\\sqrt 2} \\\\[0.6em] \\text{dB}=20\\log_{10}\\frac{V_2}{V_1} \\end{gathered}"
     },
     {
+     "type": "figure",
+     "image": "waveforms.svg",
+     "caption": "A sine wave with its period and peak, and a pulse train with its duty cycle."
+    },
+    {
      "type": "text",
      "items": [
       "A wave that repeats has a frequency, in hertz, and a period, the time for one cycle. A 1000 hertz tone has a period of one millisecond. The amplitude says how big it is. A single number is useful for AC, the RMS value, which gives the same heating as a DC of the same size."
@@ -3207,6 +3856,11 @@
      "items": [
       "Binary counts using only two digits. Each place is a power of two: 1, 2, 4, 8, 16. The number 1011 in binary is 8 plus 2 plus 1, which is 11. A group of eight bits is a byte."
      ]
+    },
+    {
+     "type": "figure",
+     "image": "gate-symbols.svg",
+     "caption": "Symbols and truth tables for the basic gates."
     },
     {
      "type": "code",
@@ -3569,6 +4223,11 @@
      "items": [
       "A flip-flop is a latch that waits for a clock. A D flip-flop looks at its input only on the rising edge of the clock and copies it to the output. In between edges it ignores the input, so the circuit changes in neat steps."
      ]
+    },
+    {
+     "type": "figure",
+     "image": "flipflop.svg",
+     "caption": "A D flip-flop copies D to Q on each rising clock edge."
     },
     {
      "type": "text",
@@ -3987,6 +4646,16 @@
      ]
     },
     {
+     "type": "figure",
+     "image": "opamp.svg",
+     "caption": "An inverting op-amp stage: the gain is minus Rf over Rin."
+    },
+    {
+     "type": "figure",
+     "image": "timer555.svg",
+     "caption": "A 555 timer wired as a free-running oscillator."
+    },
+    {
      "type": "math",
      "tex": "\\begin{gathered} A_{\\text{inv}}=-\\frac{R_f}{R_{in}} \\\\[0.6em] A_{\\text{non}}=1+\\frac{R_f}{R_g} \\end{gathered}"
     },
@@ -4360,6 +5029,11 @@
      ]
     },
     {
+     "type": "figure",
+     "image": "breadboard.svg",
+     "caption": "How a solderless breadboard joins its holes."
+    },
+    {
      "type": "text",
      "items": [
       "When a design works, you can solder it. Heat the pad and the lead together for a second or two, then touch solder to the joint, not the iron. Let the solder flow, then remove the solder and the iron. A good joint is smooth and shiny. A dull, lumpy one is probably a cold joint."
@@ -4604,6 +5278,655 @@
      ],
      "hint": "Resistance grows with length.",
      "solution": "def wire_r(length_m, area_mm2):\n    return round(0.0172 * length_m / area_mm2, 4)\n"
+    }
+   ]
+  },
+  {
+   "title": "Arduino: pins and sketches",
+   "maps": [
+    {
+     "title": "Arduino",
+     "links": [
+      "Sketch | has | setup and loop",
+      "Pin | is | Input or output",
+      "digitalWrite | sets | High or low",
+      "LED | needs | A resistor",
+      "Uno | runs at | 5 volts",
+      "delay | waits | Milliseconds"
+     ]
+    }
+   ],
+   "summary": [
+    "An Arduino is a small computer board with pins you can set high or low or read. It is the bridge between code and the circuits you have learned.",
+    "A program, called a sketch, has two parts. Setup runs once. Loop runs again and again.",
+    "The lab below is a virtual Uno, so you can try each idea without any wiring."
+   ],
+   "glossary": [
+    {
+     "term": "Sketch",
+     "def": "An Arduino program."
+    },
+    {
+     "term": "Pin",
+     "def": "A connection point the program can drive or read."
+    },
+    {
+     "term": "Digital",
+     "def": "Only two values: high (5 V) or low (0 V)."
+    },
+    {
+     "term": "Analog input",
+     "def": "A pin that measures a voltage from 0 to 5 V as a number 0 to 1023."
+    },
+    {
+     "term": "PWM",
+     "def": "Pulse width modulation: fast on-off switching that acts like a partial voltage."
+    }
+   ],
+   "keyPoints": [
+    "Uno: 5 V logic, 14 digital pins, 6 analog inputs, 16 MHz.",
+    "setup() runs once; loop() repeats.",
+    "pinMode chooses input or output.",
+    "An LED pin needs about 220 ohms in series.",
+    "INPUT_PULLUP reads low when a button joins the pin to ground."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. An Arduino is a tiny brain with little doorways called pins. You tell each doorway to shout, whisper or listen, and your circuits answer back."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Arduino Uno has a small chip, the ATmega328P, running at 16 megahertz with 32 kilobytes of program memory and 2 kilobytes of working memory. Its logic runs at 5 volts. It has 14 digital pins numbered 0 to 13, six analog inputs named A0 to A5, and power pins for 5 volts, 3.3 volts and ground."
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "arduino-uno.svg",
+     "caption": "The Uno: digital pins along the top (the ones marked with a tilde can do PWM), power and analog pins along the bottom."
+    },
+    {
+     "type": "text",
+     "items": [
+      "Every sketch has two functions. Setup runs once at power-up, where you call pinMode to say whether each pin is an output or an input. Loop runs forever. A blink is just: set pin 13 high, delay 500 milliseconds, set it low, delay 500 milliseconds."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "void setup() {\n  pinMode(13, OUTPUT);\n}\n\nvoid loop() {\n  digitalWrite(13, HIGH);\n  delay(500);\n  digitalWrite(13, LOW);\n  delay(500);\n}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "An output pin that is high is a 5 volt source with a limited current, about 20 milliamps for comfort. An LED needs a series resistor, exactly the rule from the diode chapter: R = (5 - Vf) / I. A red LED at 15 milliamps needs about 200 ohms, so 220 ohms is a common choice."
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "arduino-led.svg",
+     "caption": "Pin 13 drives an LED through a 220 ohm resistor to ground."
+    },
+    {
+     "type": "text",
+     "items": [
+      "To read a button, wire it between the pin and ground and use INPUT_PULLUP. A small internal resistor pulls the pin high. Pressing the button joins it to ground, so digitalRead returns LOW when pressed. This needs no outside resistor."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Try it below. Press Upload to run Blink, then change the delays. Pin 13 is the LED you toggle, and the goal is met when it has blinked four times and the sketch has used analogWrite."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does setup() do?",
+     "options": [
+      "Runs once at start",
+      "Runs forever",
+      "Never runs",
+      "Resets the chip"
+     ],
+     "answer": 0,
+     "explain": "Then loop() repeats."
+    },
+    {
+     "q": "What does INPUT_PULLUP read when the button is pressed?",
+     "options": [
+      "LOW",
+      "HIGH",
+      "512",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "The button joins the pin to ground."
+    },
+    {
+     "q": "Why put a resistor with an LED on a pin?",
+     "options": [
+      "To limit current",
+      "To make it blink",
+      "To raise voltage",
+      "To save memory"
+     ],
+     "answer": 0,
+     "explain": "Or the pin and LED may burn out."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Logic voltage of an Uno?",
+     "a": "5 volts."
+    },
+    {
+     "q": "How many analog inputs?",
+     "a": "Six, A0 to A5."
+    },
+    {
+     "q": "What does delay(500) do?",
+     "a": "Waits half a second."
+    },
+    {
+     "q": "What is pinMode for?",
+     "a": "Setting a pin as input or output."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Functions",
+     "intro": "Match each call with its job.",
+     "pairs": [
+      [
+       "pinMode",
+       "Chooses input or output"
+      ],
+      [
+       "digitalWrite",
+       "Sets a pin high or low"
+      ],
+      [
+       "digitalRead",
+       "Reads a pin"
+      ],
+      [
+       "delay",
+       "Waits in milliseconds"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Blink recipe",
+     "text": "The function that runs once is {{setup}} and the one that repeats is {{loop}}. To make a pin drive an LED you call {{pinMode}} with OUTPUT."
+    },
+    {
+     "type": "python",
+     "title": "LED resistor on a pin",
+     "intro": "Write pin_resistor(vf, ma): the LED forward voltage vf, the wanted current in milliamps. The pin gives 5 V. Return the resistor in ohms, rounded to the nearest whole ohm.",
+     "fn": "pin_resistor",
+     "starter": "def pin_resistor(vf, ma):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2.0,
+        15
+       ],
+       "expect": 200
+      },
+      {
+       "args": [
+        3.2,
+        10
+       ],
+       "expect": 180
+      },
+      {
+       "args": [
+        1.8,
+        20
+       ],
+       "expect": 160
+      }
+     ],
+     "hint": "R = (5 - Vf) / I.",
+     "solution": "def pin_resistor(vf, ma):\n    return round((5 - vf) / (ma / 1000.0))\n"
+    },
+    {
+     "type": "python",
+     "title": "Blink count",
+     "intro": "Write blinks(total_ms, on_ms, off_ms): a blink sketch turns the LED on for on_ms then off for off_ms, repeating. How many times does it turn on within total_ms (starting at time 0)? Each turn-on counts if it starts before total_ms.",
+     "fn": "blinks",
+     "starter": "def blinks(total_ms, on_ms, off_ms):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1000,
+        500,
+        500
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        2500,
+        500,
+        500
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        300,
+        100,
+        100
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        0,
+        10,
+        10
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "A turn-on starts every period.",
+     "solution": "def blinks(total_ms, on_ms, off_ms):\n    period = on_ms + off_ms\n    return (total_ms + period - 1) // period\n"
+    },
+    {
+     "type": "webxdc",
+     "title": "Virtual Arduino Uno",
+     "intro": "Upload a sketch and watch the pins. Blink pin 13 four times and use analogWrite.",
+     "height": 860,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:7px 12px;background:#2d2046;color:#e7d9ff;margin:2px}\nbutton.p{background:#b26bff;color:#1b0b33;font-weight:600}.m{color:#c9b8e8;margin:6px 0}\ntextarea{width:100%;height:210px;background:#1c1530;color:#f1ebff;border:1px solid #3b2d5c;border-radius:8px;font:12px ui-monospace,monospace;padding:6px}\n.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:6px 0}.led{width:26px;height:26px;border-radius:50%;background:#3a1b1b;border:2px solid #6b3b3b;display:inline-block;vertical-align:middle}\n#ser{font:12px ui-monospace,monospace;background:#0e0820;border-radius:8px;padding:6px;height:80px;overflow:auto;white-space:pre-wrap}.good{color:#8fe3a8}\n</style></head><body>\n<div class=\"m\">A tiny virtual Arduino Uno. LED on pin 13, PWM LED on pin 9, button on pin 2, knob on A0. Write a sketch, press Upload. Goal: blink pin 13 at least four times and use analogWrite.</div>\n<textarea id=\"src\" spellcheck=\"false\"></textarea>\n<div><button class=\"p\" id=\"up\">Upload</button><button id=\"stop\">Stop</button>\n<select id=\"pre\"><option value=\"0\">Blink</option><option value=\"1\">Fade</option><option value=\"2\">Button</option><option value=\"3\">Knob dimmer</option></select>\nSpeed <select id=\"spd\"><option value=\"1\">1x</option><option value=\"10\" selected>10x</option><option value=\"50\">50x</option></select></div>\n<div class=\"row\"><span>Pin 13 <span class=\"led\" id=\"l13\"></span></span><span>Pin 9 (PWM) <span class=\"led\" id=\"l9\"></span> <span id=\"d9\"></span></span>\n<button id=\"btn\">Hold button (pin 2)</button><span>A0 <input type=\"range\" id=\"pot\" min=\"0\" max=\"1023\" value=\"512\"> <span id=\"pv\">512</span></span></div>\n<div id=\"ser\"></div><div class=\"m\" id=\"msg\"></div>\n<script>\nvar P=[[\"// Blink pin 13\",\"void setup() {\",\"  pinMode(13, OUTPUT);\",\"}\",\"\",\"void loop() {\",\"  digitalWrite(13, HIGH);\",\"  delay(500);\",\"  digitalWrite(13, LOW);\",\"  delay(500);\",\"  analogWrite(9, 64);   // dim the second LED\",\"}\"],\n[\"int level = 0;\",\"int step = 5;\",\"void setup() {\",\"  pinMode(9, OUTPUT);\",\"  pinMode(13, OUTPUT);\",\"}\",\"void loop() {\",\"  analogWrite(9, level);\",\"  level = level + step;\",\"  if (level <= 0 || level >= 255) {\",\"    step = -step;\",\"    digitalWrite(13, !digitalRead(13));\",\"  }\",\"  delay(30);\",\"}\"],\n[\"void setup() {\",\"  pinMode(2, INPUT_PULLUP);\",\"  pinMode(13, OUTPUT);\",\"  Serial.begin(9600);\",\"}\",\"void loop() {\",\"  if (digitalRead(2) == LOW) {\",\"    digitalWrite(13, HIGH);\",\"    Serial.println(\\\"pressed\\\");\",\"  } else {\",\"    digitalWrite(13, LOW);\",\"  }\",\"  delay(100);\",\"  analogWrite(9, 100);\",\"}\"],\n[\"void setup() {\",\"  pinMode(9, OUTPUT);\",\"  Serial.begin(9600);\",\"}\",\"void loop() {\",\"  int raw = analogRead(A0);\",\"  int duty = raw / 4;\",\"  analogWrite(9, duty);\",\"  Serial.println(raw);\",\"  delay(200);\",\"  digitalWrite(13, HIGH);\",\"  delay(200);\",\"  digitalWrite(13, LOW);\",\"}\"]];\nvar $=function(i){return document.getElementById(i)};\nfunction done(){try{if(window.lilith)lilith.complete()}catch(e){}}\n$(\"src\").value=P[0].join(\"\\n\");\n$(\"pre\").onchange=function(){$(\"src\").value=P[+this.value].join(\"\\n\")};\nvar hold=false,pot=512,H={mode:{},out:{},pwm:{}},now=0,gen=null,wake=0,run=false,tog=0,aw=0,ser=\"\",user=null,last13=0;\n$(\"btn\").onmousedown=$(\"btn\").ontouchstart=function(e){hold=true;e.preventDefault()};\ndocument.addEventListener(\"mouseup\",function(){hold=false});document.addEventListener(\"touchend\",function(){hold=false});\n$(\"pot\").oninput=function(){pot=+this.value;$(\"pv\").textContent=pot};\nvar api={HIGH:1,LOW:0,INPUT:0,OUTPUT:1,INPUT_PULLUP:2,A0:14,A1:15,\n pinMode:function(p,m){H.mode[p]=m},\n digitalWrite:function(p,v){v=v?1:0;if(p==13){if(v!=last13){tog++;last13=v}}H.out[p]=v;H.pwm[p]=undefined;show()},\n digitalRead:function(p){if(p==2){var pu=H.mode[2]==2;return pu?(hold?0:1):(hold?1:0)}return H.out[p]||0},\n analogWrite:function(p,v){aw++;H.pwm[p]=Math.max(0,Math.min(255,v|0));show()},\n analogRead:function(p){return p==14?pot:0},\n millis:function(){return Math.floor(now)},\n Serial:{begin:function(){},print:function(x){ser+=x},println:function(x){ser+=x+\"\\n\";if(ser.length>2000)ser=ser.slice(-1500);$(\"ser\").textContent=ser;$(\"ser\").scrollTop=1e6}},\n constrain:function(x,a,b){return Math.max(a,Math.min(b,x))},map:function(x,a,b,c,d){return Math.floor((x-a)*(d-c)/(b-a)+c)},\n min:Math.min,max:Math.max,abs:Math.abs};\nfunction show(){var a=H.pwm[13]!==undefined?H.pwm[13]/255:(H.out[13]||0);$(\"l13\").style.background=\"rgba(255,190,60,\"+(0.15+0.85*a)+\")\";\n var b=H.pwm[9]!==undefined?H.pwm[9]/255:(H.out[9]||0);$(\"l9\").style.background=\"rgba(100,200,255,\"+(0.15+0.85*b)+\")\";$(\"d9\").textContent=H.pwm[9]!==undefined?\"duty \"+Math.round(H.pwm[9]/2.55)+\"%\":\"\"}\nfunction compile(src){\n var s=src.replace(/\\/\\/.*$/gm,\"\").replace(/\\/\\*[\\s\\S]*?\\*\\//g,\"\");\n s=s.replace(/#define\\s+(\\w+)\\s+([^\\n]+)/g,\"var $1 = $2;\");\n var names=[];s.replace(/void\\s+(\\w+)\\s*\\(/g,function(m,n){names.push(n)});\n s=s.replace(/\\b(?:unsigned\\s+long|unsigned\\s+int|long|int|float|byte|boolean|bool|const\\s+int|const\\s+byte)\\s+(\\w+)\\s*\\(([^)]*)\\)\\s*\\{/g,function(m,n,a){return \"function* \"+n+\"(\"+a.replace(/\\b(?:unsigned\\s+long|long|int|float|byte|boolean|bool)\\s+/g,\"\")+\"){\"});\n s=s.replace(/void\\s+(\\w+)\\s*\\(([^)]*)\\)/g,function(m,n,a){return \"function* \"+n+\"(\"+a.replace(/\\b(?:unsigned\\s+long|long|int|float|byte|boolean|bool)\\s+/g,\"\")+\")\"});\n s=s.replace(/\\b(?:unsigned\\s+long|unsigned\\s+int|const\\s+int|const\\s+byte|long|int|float|byte|boolean|bool)\\s+(?=\\w+\\s*(=|;|,|\\[))/g,\"var \");\n s=s.replace(/\\bdelay\\s*\\(/g,\"yield* delay(\").replace(/\\bdelayMicroseconds\\s*\\(/g,\"yield* delay(0*\");\n names.forEach(function(n){if(n!=\"setup\"&&n!=\"loop\")s=s.replace(new RegExp(\"(?<!function\\\\*\\\\s)\\\\b\"+n+\"\\\\s*\\\\(\",\"g\"),\"(yield* \"+n+\")(\")});\n s=s.replace(/\\bvar\\s+(\\w+)\\s*\\[\\s*(\\d*)\\s*\\]\\s*=\\s*\\{/g,\"var $1 = [\").replace(/\\}\\s*;/g,function(m){return m});\n var keys=Object.keys(api);\n var body=\"var delay=function*(ms){yield ms};\\n\"+s+\"\\nreturn {setup:typeof setup=='function'?setup:null,loop:typeof loop=='function'?loop:null};\";\n return new Function(keys.join(\",\"),body).apply(null,keys.map(function(k){return api[k]}))}\nfunction upload(){try{user=compile($(\"src\").value)}catch(e){$(\"msg\").textContent=\"Compile error: \"+e.message;return}\n H={mode:{},out:{},pwm:{}};now=0;wake=0;tog=0;aw=0;last13=0;ser=\"\";$(\"ser\").textContent=\"\";show();\n gen=user.setup?user.setup():(function*(){})();run=true;$(\"msg\").textContent=\"Running.\"}\nfunction tick(dt){if(!run)return;now+=dt;var guard=0;\n while(now>=wake&&guard++<5000){var r;try{r=gen.next()}catch(e){run=false;$(\"msg\").textContent=\"Runtime error: \"+e.message;return}\n  if(r.done){if(!user.loop){run=false;return}gen=user.loop()}else wake=now+(+r.value||0)}\n if(tog>=4&&aw>0&&!tick.fin){tick.fin=1;$(\"msg\").className=\"good\";$(\"msg\").textContent=\"Pin 13 toggled \"+tog+\" times and PWM was used. Goal reached.\";done()}}\ntick.fin=0;\nvar lt=performance.now();\nfunction frame(t){var dt=Math.min(100,t-lt)*(+$(\"spd\").value);lt=t;tick(dt);requestAnimationFrame(frame)}\nrequestAnimationFrame(frame);\n$(\"up\").onclick=function(){tick.fin=0;$(\"msg\").className=\"\";upload()};\n$(\"stop\").onclick=function(){run=false;$(\"msg\").textContent=\"Stopped.\"};\n</script></body></html>\n"
+    }
+   ]
+  },
+  {
+   "title": "Arduino: sensors, PWM and loads",
+   "maps": [
+    {
+     "title": "Arduino I/O",
+     "links": [
+      "analogRead | returns | 0 to 1023",
+      "PWM | fakes | Partial voltage",
+      "LDR | forms | A divider",
+      "Transistor | drives | Big loads",
+      "Diode | protects | From coil spikes",
+      "millis | tells | Time since start"
+     ]
+    }
+   ],
+   "summary": [
+    "Analog input turns a voltage into a number. PWM turns a number into an average voltage.",
+    "A light sensor and a fixed resistor make a divider, and the Arduino reads the middle point.",
+    "Pins are weak, so motors and relays need a transistor and a flyback diode."
+   ],
+   "glossary": [
+    {
+     "term": "ADC",
+     "def": "Analog to digital converter: 10 bits on the Uno, so 0 to 1023."
+    },
+    {
+     "term": "PWM duty",
+     "def": "The fraction of each cycle that the pin is high."
+    },
+    {
+     "term": "analogWrite",
+     "def": "Sets PWM duty from 0 to 255."
+    },
+    {
+     "term": "Debounce",
+     "def": "Ignoring the tiny bounces of a switch contact."
+    },
+    {
+     "term": "Servo pulse",
+     "def": "A pulse of 1 to 2 ms, repeated every 20 ms, that sets a hobby servo angle."
+    }
+   ],
+   "keyPoints": [
+    "Volts = reading / 1023 x 5.",
+    "Average PWM voltage = duty / 255 x 5.",
+    "A pin gives about 20 mA; use a transistor for more.",
+    "Put a diode across any coil.",
+    "Use millis() instead of delay() to do two things at once."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Reading a knob turns a push of electricity into a number. Dimming a light means flicking it on and off so fast your eye sees a middle glow."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Uno's analog converter measures a voltage between 0 and 5 volts and returns a number from 0 to 1023. Because 5 volts splits into 1023 steps, each step is about 4.9 millivolts. So analogRead(A0) of 512 means about 2.5 volts."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "V=\\frac{\\text{reading}}{1023}\\times 5"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A light-dependent resistor, or LDR, is a resistor that gets smaller in the light. Put it in series with a fixed resistor between 5 volts and ground, and the middle point is a voltage divider. The brighter the light, the higher that voltage, and the bigger the number analogRead gives."
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "arduino-ldr.svg",
+     "caption": "An LDR and a 10k resistor form a divider; the middle point goes to A0."
+    },
+    {
+     "type": "text",
+     "items": [
+      "There is no true analog output on the Uno. Instead analogWrite switches a pin on and off about 490 times a second, and the fraction of time it is high is the duty. An LED sees the average, so duty 128 out of 255 looks half bright and averages 2.5 volts."
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "pwm.svg",
+     "caption": "Three duty cycles and the average voltage each one gives."
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "int raw = analogRead(A0);   // 0 to 1023\nint duty = raw / 4;           // 0 to 255\nanalogWrite(9, duty);         // dim the LED with the knob"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A pin can give only about 20 milliamps, so it cannot run a motor or a relay directly. Use a transistor as a switch: the pin drives the base through a resistor, and the load sits in the collector path.",
+      "A motor or relay coil also needs a diode across it, to catch the voltage spike when it switches off. That is the flyback diode from the coil chapter."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The delay function stops everything. To read a button while something blinks, record millis() when the last change happened and compare it on each pass of loop. Switch contacts also bounce for a few milliseconds, so accept a press only after the pin has stayed the same for a short time.",
+      "Hobby servos take a pulse of 1 to 2 milliseconds every 20 milliseconds, and the pulse length sets the angle."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does analogRead return at 5 V?",
+     "options": [
+      "1023",
+      "255",
+      "5",
+      "1"
+     ],
+     "answer": 0,
+     "explain": "The top of the 10-bit range."
+    },
+    {
+     "q": "What does analogWrite(9, 128) give?",
+     "options": [
+      "About half duty",
+      "Full on",
+      "Off",
+      "5 V steady"
+     ],
+     "answer": 0,
+     "explain": "128 of 255."
+    },
+    {
+     "q": "Why a diode across a relay coil?",
+     "options": [
+      "To absorb the turn-off spike",
+      "To make it click",
+      "To save power",
+      "To make it AC"
+     ],
+     "answer": 0,
+     "explain": "The coil keeps pushing current when switched off."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Range of analogRead?",
+     "a": "0 to 1023."
+    },
+    {
+     "q": "Range of analogWrite?",
+     "a": "0 to 255."
+    },
+    {
+     "q": "Why use millis()?",
+     "a": "To keep time without blocking."
+    },
+    {
+     "q": "What is debounce?",
+     "a": "Ignoring contact bounce."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "I/O",
+     "intro": "Match each need with the tool.",
+     "pairs": [
+      [
+       "Read a knob",
+       "analogRead"
+      ],
+      [
+       "Dim an LED",
+       "analogWrite"
+      ],
+      [
+       "Drive a motor",
+       "Transistor and diode"
+      ],
+      [
+       "Keep time",
+       "millis"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "ADC to volts",
+     "intro": "Write adc_to_volts(raw): convert a 10-bit reading to volts on a 5 V reference, rounded to 3 places.",
+     "fn": "adc_to_volts",
+     "starter": "def adc_to_volts(raw):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 0.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        512
+       ],
+       "expect": 2.502,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        1023
+       ],
+       "expect": 5.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        205
+       ],
+       "expect": 1.002,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Divide by 1023 and multiply by 5.",
+     "solution": "def adc_to_volts(raw):\n    return round(raw / 1023.0 * 5, 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "PWM average",
+     "intro": "Write pwm_average(value): analogWrite value 0 to 255. Return the average pin voltage on 5 V, rounded to 3 places.",
+     "fn": "pwm_average",
+     "starter": "def pwm_average(value):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 0.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        64
+       ],
+       "expect": 1.255,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        128
+       ],
+       "expect": 2.51,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        255
+       ],
+       "expect": 5.0,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Duty is value over 255.",
+     "solution": "def pwm_average(value):\n    return round(value / 255.0 * 5, 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "LDR reading",
+     "intro": "Write ldr_reading(r_ldr, r_fixed): the LDR is on the 5 V side and r_fixed to ground, with A0 in the middle. Return the integer reading from 0 to 1023 (round to nearest).",
+     "fn": "ldr_reading",
+     "starter": "def ldr_reading(r_ldr, r_fixed):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1000,
+        10000
+       ],
+       "expect": 930
+      },
+      {
+       "args": [
+        10000,
+        10000
+       ],
+       "expect": 512
+      },
+      {
+       "args": [
+        100000,
+        10000
+       ],
+       "expect": 93
+      }
+     ],
+     "hint": "Divider first, then scale to 1023.",
+     "solution": "def ldr_reading(r_ldr, r_fixed):\n    return round(1023.0 * r_fixed / (r_ldr + r_fixed))\n"
+    },
+    {
+     "type": "python",
+     "title": "Debounce",
+     "intro": "Write pressed_at(samples, need): samples is a list of 0 and 1 readings taken once per millisecond. A press is accepted when the pin has read 1 for need readings in a row. Return the index of the sample that completes this, or -1 if never.",
+     "fn": "pressed_at",
+     "starter": "def pressed_at(samples, need):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         1,
+         0,
+         1,
+         1,
+         1,
+         1
+        ],
+        3
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         1,
+         0
+        ],
+        2
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        3
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "Count a run of ones; reset on a zero.",
+     "solution": "def pressed_at(samples, need):\n    run = 0\n    for i in range(len(samples)):\n        if samples[i] == 1:\n            run += 1\n        else:\n            run = 0\n        if run >= need:\n            return i\n    return -1\n"
+    },
+    {
+     "type": "python",
+     "title": "Servo pulse",
+     "intro": "Write servo_pulse(angle): a servo gets 1000 microseconds at 0 degrees and 2000 at 180, linearly. Return the pulse in microseconds, rounded to a whole number.",
+     "fn": "servo_pulse",
+     "starter": "def servo_pulse(angle):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 1000
+      },
+      {
+       "args": [
+        90
+       ],
+       "expect": 1500
+      },
+      {
+       "args": [
+        180
+       ],
+       "expect": 2000
+      },
+      {
+       "args": [
+        45
+       ],
+       "expect": 1250
+      }
+     ],
+     "hint": "A straight line between the two ends.",
+     "solution": "def servo_pulse(angle):\n    return round(1000 + angle / 180.0 * 1000)\n"
     }
    ]
   }
@@ -5041,6 +6364,94 @@
     ],
     "answer": 0,
     "explain": "A small cone."
+   },
+   {
+    "q": "What is a lumped element?",
+    "options": [
+     "A two-terminal part with a v-i rule",
+     "A lump of coal",
+     "A wire only",
+     "A battery only"
+    ],
+    "answer": 0,
+    "explain": "A point-like model."
+   },
+   {
+    "q": "What does KVL say?",
+    "options": [
+     "Voltages round a loop sum to zero",
+     "Currents at a node sum to zero",
+     "Power is constant",
+     "Resistance adds"
+    ],
+    "answer": 0,
+    "explain": "Same start and end point."
+   },
+   {
+    "q": "What does KCL say?",
+    "options": [
+     "Currents at a node sum to zero",
+     "Voltages round a loop sum to zero",
+     "Voltage is constant",
+     "Current is lost"
+    ],
+    "answer": 0,
+    "explain": "No charge piles up."
+   },
+   {
+    "q": "What does a circuit simulator solve?",
+    "options": [
+     "Node voltage equations",
+     "Color codes",
+     "Fuse ratings",
+     "Battery life only"
+    ],
+    "answer": 0,
+    "explain": "One KCL equation per node."
+   },
+   {
+    "q": "What range does analogRead give on an Uno?",
+    "options": [
+     "0 to 1023",
+     "0 to 255",
+     "0 to 5",
+     "0 to 100"
+    ],
+    "answer": 0,
+    "explain": "A 10-bit converter."
+   },
+   {
+    "q": "What does analogWrite use to fake a voltage?",
+    "options": [
+     "PWM",
+     "A battery",
+     "A coil",
+     "A fuse"
+    ],
+    "answer": 0,
+    "explain": "Fast on-off switching."
+   },
+   {
+    "q": "What does INPUT_PULLUP read when a button is pressed?",
+    "options": [
+     "LOW",
+     "HIGH",
+     "1023",
+     "255"
+    ],
+    "answer": 0,
+    "explain": "It joins the pin to ground."
+   },
+   {
+    "q": "Why put a flyback diode across a relay coil?",
+    "options": [
+     "To absorb the turn-off spike",
+     "To make it louder",
+     "To speed it up",
+     "To save power"
+    ],
+    "answer": 0,
+    "explain": "The coil keeps pushing current."
    }
   ]
  },
@@ -5059,6 +6470,8 @@
    "gates",
    "opamp",
    "555",
+   "arduino",
+   "kirchhoff",
    "solder",
    "help"
   ],
@@ -5075,6 +6488,8 @@
      "gates      AND all, OR any, XOR differ, NAND is universal",
      "opamp      Inverting gain = -Rf / Rin",
      "555        Astable f = 1.44 / ((R1 + 2 R2) C)",
+     "arduino    setup() runs once, loop() repeats",
+     "kirchhoff  KCL: currents at a node sum to zero",
      "solder     Heat the pad and the lead, then feed the solder"
     ]
    },
@@ -5142,6 +6557,20 @@
     ]
    },
    {
+    "re": "^arduino$",
+    "out": [
+     "setup() runs once, loop() repeats",
+     "analogRead is 0-1023, analogWrite is 0-255"
+    ]
+   },
+   {
+    "re": "^kirchhoff$",
+    "out": [
+     "KCL: currents at a node sum to zero",
+     "KVL: voltages round a loop sum to zero"
+    ]
+   },
+   {
     "re": "^solder$",
     "out": [
      "Heat the pad and the lead, then feed the solder",
@@ -5157,6 +6586,30 @@
    }
   ],
   "tasks": []
+ },
+ "images": {
+  "abstraction-tower.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 372\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Layers of abstraction</title><desc id=\"d\">From physics up to software: each layer hides the details of the one below it.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"372\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"24\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Each layer hides the one below</text><rect x=\"40.0\" y=\"40\" width=\"560\" height=\"40\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"320.0\" y=\"57.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Software and systems</text><text x=\"320.0\" y=\"74.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >operating systems, apps</text><rect x=\"51.0\" y=\"87\" width=\"538\" height=\"40\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"320.0\" y=\"104.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Processors</text><text x=\"320.0\" y=\"121.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >instruction set abstraction</text><rect x=\"62.0\" y=\"134\" width=\"516\" height=\"40\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"320.0\" y=\"151.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Digital logic</text><text x=\"320.0\" y=\"168.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >gates, flip-flops, clocks</text><rect x=\"73.0\" y=\"181\" width=\"494\" height=\"40\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"320.0\" y=\"198.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Amplifiers and gates</text><text x=\"320.0\" y=\"215.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >op-amp and digital abstractions</text><rect x=\"84.0\" y=\"228\" width=\"472\" height=\"40\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e06aa8\" stroke-width=\"1.5\"/><text x=\"320.0\" y=\"245.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Lumped circuits</text><text x=\"320.0\" y=\"262.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >R, C, L, sources: just algebra</text><rect x=\"95.0\" y=\"275\" width=\"450\" height=\"40\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"320.0\" y=\"292.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Physics</text><text x=\"320.0\" y=\"309.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Maxwell's equations, electrons</text><text x=\"22\" y=\"362\" font-size=\"11\" fill=\"#a99dc7\">This course lives in the middle: from lumped circuits up to gates and amplifiers.</text></svg>\n",
+  "lumped-bulb.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 250\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">A bulb replaced by a resistor</title><desc id=\"d\">On the left a light bulb with a filament between terminals A and B; on the right the same bulb drawn as a resistor R with voltage V and current I.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"250\" rx=\"14\" fill=\"#120d1c\"/><text x=\"160\" y=\"26\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >The real object</text><text x=\"480\" y=\"26\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >The lumped abstraction</text><circle cx=\"160\" cy=\"110\" r=\"52\" fill=\"#2a1f45\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><polyline points=\"135,160 135,118 148,100 160,120 172,100 185,118 185,160\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"135\" y1=\"160\" x2=\"135\" y2=\"190\" stroke=\"#efe9ff\" stroke-width=\"2.4\"/><line x1=\"185\" y1=\"160\" x2=\"185\" y2=\"190\" stroke=\"#efe9ff\" stroke-width=\"2.4\"/><text x=\"135\" y=\"208\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >A</text><text x=\"185\" y=\"208\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >B</text><text x=\"160\" y=\"236\" font-size=\"11\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >shape, heat, light, color...</text><line x1=\"250\" y1=\"120\" x2=\"370\" y2=\"120\" stroke=\"#b26bff\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><text x=\"310\" y=\"108\" font-size=\"11\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >ignore all but V and I</text><polyline points=\"480,70 480,80\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"480,80 480,90 488,96.66666666666667 472,110.0 488,123.33333333333334 472,136.66666666666669 488,150.0 472,163.33333333333334 480,170 480,180\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"480,180 480,196\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"480\" cy=\"70\" r=\"3.5\" fill=\"#efe9ff\"/><circle cx=\"480\" cy=\"196\" r=\"3.5\" fill=\"#efe9ff\"/><text x=\"462\" y=\"70\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"end\" font-weight=\"400\" >A</text><text x=\"462\" y=\"200\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"end\" font-weight=\"400\" >B</text><text x=\"500\" y=\"135\" font-size=\"15\" fill=\"#e3b341\" text-anchor=\"start\" font-weight=\"700\" >R</text><text x=\"540\" y=\"100\" font-size=\"15\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"700\" >I = V / R</text><text x=\"540\" y=\"124\" font-size=\"11\" fill=\"#a99dc7\" text-anchor=\"start\" font-weight=\"400\" >only the v-i</text><text x=\"540\" y=\"138\" font-size=\"11\" fill=\"#a99dc7\" text-anchor=\"start\" font-weight=\"400\" >relationship is kept</text></svg>\n",
+  "kvl-kcl.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 270\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Kirchhoff's laws</title><desc id=\"d\">Left: voltages around a loop add to zero. Right: currents into a node add to zero.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"270\" rx=\"14\" fill=\"#120d1c\"/><text x=\"160\" y=\"24\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Loop: the voltages add to zero</text><text x=\"480\" y=\"24\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Node: the currents add to zero</text><rect x=\"60\" y=\"50\" width=\"200\" height=\"160\" rx=\"4\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\"/><rect x=\"143\" y=\"39\" width=\"34\" height=\"22\" rx=\"6\" fill=\"#2a1f45\" stroke=\"#b26bff\"/><text x=\"160\" y=\"55\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >v1</text><rect x=\"243\" y=\"119\" width=\"34\" height=\"22\" rx=\"6\" fill=\"#2a1f45\" stroke=\"#b26bff\"/><text x=\"260\" y=\"135\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >v2</text><rect x=\"143\" y=\"199\" width=\"34\" height=\"22\" rx=\"6\" fill=\"#2a1f45\" stroke=\"#b26bff\"/><text x=\"160\" y=\"215\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >v3</text><rect x=\"43\" y=\"119\" width=\"34\" height=\"22\" rx=\"6\" fill=\"#2a1f45\" stroke=\"#b26bff\"/><text x=\"60\" y=\"135\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >v4</text><text x=\"160\" y=\"240\" font-size=\"14\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >v1 + v2 + v3 + v4 = 0</text><circle cx=\"480\" cy=\"120\" r=\"6\" fill=\"#e3b341\"/><line x1=\"400\" y1=\"70\" x2=\"474\" y2=\"120\" stroke=\"#efe9ff\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><text x=\"394\" y=\"62\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >i1</text><line x1=\"400\" y1=\"170\" x2=\"474\" y2=\"120\" stroke=\"#efe9ff\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><text x=\"394\" y=\"162\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >i2</text><line x1=\"486\" y1=\"120\" x2=\"570\" y2=\"120\" stroke=\"#efe9ff\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><text x=\"576\" y=\"112\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >i3</text><text x=\"480\" y=\"240\" font-size=\"14\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >i1 + i2 = i3</text><text x=\"480\" y=\"258\" font-size=\"11\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >(in = out)</text></svg>\n",
+  "series-parallel.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 250\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Series and parallel</title><desc id=\"d\">Two circuits with a battery: two resistors in series, and two resistors in parallel.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"250\" rx=\"14\" fill=\"#120d1c\"/><text x=\"160\" y=\"22\" font-size=\"13\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Series: one path, same current</text><text x=\"480\" y=\"22\" font-size=\"13\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Parallel: same voltage, two paths</text><polyline points=\"50,60 50,122.0\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"50,138.0 50,200\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"34\" y1=\"122.0\" x2=\"66\" y2=\"122.0\" stroke=\"#ff6b6b\" stroke-width=\"3\"/><line x1=\"41\" y1=\"138.0\" x2=\"59\" y2=\"138.0\" stroke=\"#ff6b6b\" stroke-width=\"3\"/><text x=\"26\" y=\"118.0\" font-size=\"14\" fill=\"#ff6b6b\" text-anchor=\"middle\" font-weight=\"700\" >+</text><text x=\"78\" y=\"134.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"400\" >V</text><polyline points=\"50,60 130,60\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"130,60 140,60 144.16666666666666,68 152.5,52 160.83333333333334,68 169.16666666666666,52 177.5,68 185.83333333333334,52 190,60 200,60\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"200,60 240,60 240,80\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"240,80 240,90 248,95.0 232,105.0 248,115.0 232,125.0 248,135.0 232,145.0 240,150 240,160\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"240,160 240,200 50,200\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"165\" y=\"48\" font-size=\"13\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >R1</text><text x=\"262\" y=\"125\" font-size=\"13\" fill=\"#76b900\" text-anchor=\"start\" font-weight=\"400\" >R2</text><text x=\"160\" y=\"232\" font-size=\"14\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >R = R1 + R2</text><polyline points=\"380,60 380,122.0\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"380,138.0 380,200\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"364\" y1=\"122.0\" x2=\"396\" y2=\"122.0\" stroke=\"#ff6b6b\" stroke-width=\"3\"/><line x1=\"371\" y1=\"138.0\" x2=\"389\" y2=\"138.0\" stroke=\"#ff6b6b\" stroke-width=\"3\"/><text x=\"356\" y=\"118.0\" font-size=\"14\" fill=\"#ff6b6b\" text-anchor=\"middle\" font-weight=\"700\" >+</text><text x=\"408\" y=\"134.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"400\" >V</text><polyline points=\"380,60 480,60\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"480,60 560,60\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"480,60 480,70 488,77.5 472,92.5 488,107.5 472,122.5 488,137.5 472,152.5 488,167.5 472,182.5 480,190 480,200\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"560,60 560,70 568,77.5 552,92.5 568,107.5 552,122.5 568,137.5 552,152.5 568,167.5 552,182.5 560,190 560,200\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"480,200 560,200\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"380,200 480,200\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"480\" cy=\"60\" r=\"3.5\" fill=\"#efe9ff\"/><circle cx=\"480\" cy=\"200\" r=\"3.5\" fill=\"#efe9ff\"/><text x=\"500\" y=\"135\" font-size=\"13\" fill=\"#e3b341\" text-anchor=\"start\" font-weight=\"400\" >R1</text><text x=\"578\" y=\"135\" font-size=\"13\" fill=\"#76b900\" text-anchor=\"start\" font-weight=\"400\" >R2</text><text x=\"480\" y=\"232\" font-size=\"14\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >1/R = 1/R1 + 1/R2</text></svg>\n",
+  "resistor-code.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 280\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Resistor color code</title><desc id=\"d\">A resistor with brown, black, red and gold bands, which means 1000 ohms with 5 percent tolerance, and the digit table.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"280\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"24\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Brown, black, red, gold = 10 x 100 = 1000 ohms, 5 percent</text><polyline points=\"40,80 100,80\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"440,80 500,80\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><rect x=\"100\" y=\"55\" width=\"340\" height=\"50\" rx=\"22\" fill=\"#c9a66b\" stroke=\"#8d7040\" stroke-width=\"2\"/><rect x=\"140\" y=\"55\" width=\"16\" height=\"50\" fill=\"#6b3b12\"/><rect x=\"190\" y=\"55\" width=\"16\" height=\"50\" fill=\"#111\"/><rect x=\"240\" y=\"55\" width=\"16\" height=\"50\" fill=\"#d33\"/><rect x=\"380\" y=\"55\" width=\"16\" height=\"50\" fill=\"#d4af37\"/><text x=\"148\" y=\"130\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >1</text><text x=\"198\" y=\"130\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >0</text><text x=\"248\" y=\"130\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >x100</text><text x=\"388\" y=\"130\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >5%</text><rect x=\"40\" y=\"170\" width=\"46\" height=\"34\" rx=\"6\" fill=\"#111\" stroke=\"#3d2f5c\"/><text x=\"63\" y=\"226\" font-size=\"15\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >0</text><text x=\"63\" y=\"244\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >black</text><rect x=\"98\" y=\"170\" width=\"46\" height=\"34\" rx=\"6\" fill=\"#6b3b12\" stroke=\"#3d2f5c\"/><text x=\"121\" y=\"226\" font-size=\"15\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >1</text><text x=\"121\" y=\"244\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >brown</text><rect x=\"156\" y=\"170\" width=\"46\" height=\"34\" rx=\"6\" fill=\"#d33\" stroke=\"#3d2f5c\"/><text x=\"179\" y=\"226\" font-size=\"15\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >2</text><text x=\"179\" y=\"244\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >red</text><rect x=\"214\" y=\"170\" width=\"46\" height=\"34\" rx=\"6\" fill=\"#f80\" stroke=\"#3d2f5c\"/><text x=\"237\" y=\"226\" font-size=\"15\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >3</text><text x=\"237\" y=\"244\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >orange</text><rect x=\"272\" y=\"170\" width=\"46\" height=\"34\" rx=\"6\" fill=\"#ee3\" stroke=\"#3d2f5c\"/><text x=\"295\" y=\"226\" font-size=\"15\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >4</text><text x=\"295\" y=\"244\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >yellow</text><rect x=\"330\" y=\"170\" width=\"46\" height=\"34\" rx=\"6\" fill=\"#3a3\" stroke=\"#3d2f5c\"/><text x=\"353\" y=\"226\" font-size=\"15\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >5</text><text x=\"353\" y=\"244\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >green</text><rect x=\"388\" y=\"170\" width=\"46\" height=\"34\" rx=\"6\" fill=\"#35e\" stroke=\"#3d2f5c\"/><text x=\"411\" y=\"226\" font-size=\"15\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >6</text><text x=\"411\" y=\"244\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >blue</text><rect x=\"446\" y=\"170\" width=\"46\" height=\"34\" rx=\"6\" fill=\"#93c\" stroke=\"#3d2f5c\"/><text x=\"469\" y=\"226\" font-size=\"15\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >7</text><text x=\"469\" y=\"244\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >violet</text><rect x=\"504\" y=\"170\" width=\"46\" height=\"34\" rx=\"6\" fill=\"#999\" stroke=\"#3d2f5c\"/><text x=\"527\" y=\"226\" font-size=\"15\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >8</text><text x=\"527\" y=\"244\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >gray</text><rect x=\"562\" y=\"170\" width=\"46\" height=\"34\" rx=\"6\" fill=\"#fff\" stroke=\"#3d2f5c\"/><text x=\"585\" y=\"226\" font-size=\"15\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >9</text><text x=\"585\" y=\"244\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >white</text><text x=\"320\" y=\"268\" font-size=\"11\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Gold = 5 percent, silver = 10 percent. The third band is the multiplier (number of zeros).</text></svg>\n",
+  "divider.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 270\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Voltage divider</title><desc id=\"d\">Two resistors in series from Vin to ground with Vout taken from the junction.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"270\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"24\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Two resistors share the voltage</text><text x=\"130\" y=\"55\" font-size=\"14\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >Vin</text><polyline points=\"130,70 130,80\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"130\" cy=\"70\" r=\"3.5\" fill=\"#ff6b6b\"/><polyline points=\"130,80 130,90 138,94.16666666666667 122,102.5 138,110.83333333333334 122,119.16666666666667 138,127.5 122,135.83333333333334 130,140 130,150\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"152\" y=\"120\" font-size=\"14\" fill=\"#e3b341\" text-anchor=\"start\" font-weight=\"400\" >R1</text><polyline points=\"130,150 130,160\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"130\" cy=\"155\" r=\"3.5\" fill=\"#efe9ff\"/><polyline points=\"130,155 240,155\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"240\" cy=\"155\" r=\"5\" fill=\"#76b900\"/><text x=\"256\" y=\"159\" font-size=\"14\" fill=\"#76b900\" text-anchor=\"start\" font-weight=\"400\" >Vout</text><polyline points=\"130,160 130,170 138,174.16666666666666 122,182.5 138,190.83333333333334 122,199.16666666666666 138,207.5 122,215.83333333333334 130,220 130,230\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"152\" y=\"200\" font-size=\"14\" fill=\"#76b900\" text-anchor=\"start\" font-weight=\"400\" >R2</text><polyline points=\"130,230 130,238\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"116\" y1=\"238\" x2=\"144\" y2=\"238\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><line x1=\"121\" y1=\"243\" x2=\"139\" y2=\"243\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><line x1=\"126\" y1=\"248\" x2=\"134\" y2=\"248\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><rect x=\"340\" y=\"70\" width=\"270\" height=\"150\" rx=\"12\" fill=\"#1c1530\" stroke=\"#3d2f5c\"/><text x=\"475\" y=\"112\" font-size=\"14\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >Vout = Vin x R2 / (R1 + R2)</text><text x=\"475\" y=\"142\" font-size=\"12\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >9 V, R1 = 1k, R2 = 2k</text><text x=\"475\" y=\"164\" font-size=\"13\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"600\" >Vout = 9 x 2000 / 3000 = 6 V</text><text x=\"475\" y=\"198\" font-size=\"12\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Load the output and it sags.</text></svg>\n",
+  "rc-curve.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 290\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">RC charging</title><desc id=\"d\">A resistor and capacitor circuit and the charging curve, reaching 63 percent of the supply after one time constant.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"290\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"22\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Charging a capacitor through a resistor</text><polyline points=\"40,70 80,70\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"80,70 90,70 94.16666666666667,78 102.5,62 110.83333333333334,78 119.16666666666667,62 127.5,78 135.83333333333334,62 140,70 150,70\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"150,70 190,70 190,100\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"185.0\" y1=\"102\" x2=\"185.0\" y2=\"134\" stroke=\"#4fa8ff\" stroke-width=\"3\"/><line x1=\"195.0\" y1=\"102\" x2=\"195.0\" y2=\"134\" stroke=\"#4fa8ff\" stroke-width=\"3\"/><line x1=\"190\" y1=\"100\" x2=\"190\" y2=\"110\" stroke=\"#efe9ff\" stroke-width=\"2\"/><line x1=\"190\" y1=\"126\" x2=\"190\" y2=\"140\" stroke=\"#efe9ff\" stroke-width=\"2\"/><line x1=\"170\" y1=\"110\" x2=\"210\" y2=\"110\" stroke=\"#4fa8ff\" stroke-width=\"3\"/><line x1=\"170\" y1=\"126\" x2=\"210\" y2=\"126\" stroke=\"#4fa8ff\" stroke-width=\"3\"/><polyline points=\"190,140 190,200 40,200\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"40,70 40,127.0\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"40,143.0 40,200\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"24\" y1=\"127.0\" x2=\"56\" y2=\"127.0\" stroke=\"#ff6b6b\" stroke-width=\"3\"/><line x1=\"31\" y1=\"143.0\" x2=\"49\" y2=\"143.0\" stroke=\"#ff6b6b\" stroke-width=\"3\"/><text x=\"16\" y=\"123.0\" font-size=\"14\" fill=\"#ff6b6b\" text-anchor=\"middle\" font-weight=\"700\" >+</text><text x=\"115\" y=\"55\" font-size=\"13\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >R</text><text x=\"222\" y=\"122\" font-size=\"13\" fill=\"#4fa8ff\" text-anchor=\"start\" font-weight=\"400\" >C</text><text x=\"14\" y=\"140\" font-size=\"13\" fill=\"#ff6b6b\" text-anchor=\"middle\" font-weight=\"400\" >Vs</text><line x1=\"300\" y1=\"220\" x2=\"600\" y2=\"220\" stroke=\"#a99dc7\" stroke-width=\"1.5\"/><line x1=\"300\" y1=\"50\" x2=\"300\" y2=\"220\" stroke=\"#a99dc7\" stroke-width=\"1.5\"/><polyline points=\"300.0,220.0 305.0,206.40755048698497 310.0,193.90189323140442 315.0,182.39613312213882 320.0,171.8103227975442 325.0,162.07090713407544 330.0,153.11021215114766 335.0,144.865974780908 340.0,137.28091023554066 345.0,130.3023139659725 350.0,123.88169544620331 355.0,117.97444123862404 360.0,112.5395049991452 365.0,107.53912226814617 370.0,102.9385480654816 375.0,98.70581546623232 380.0,94.81151347967354 385.0,91.2285826880603 390.0,87.93212722523307 395.0,84.89924178858456 400.0,82.10885248238552 405.0,79.54157038657567 410.0,77.17955683354796 415.0,75.00639945680607 420.0,73.00699815022415 425.0,71.16746014550091 430.0,69.47500347875692 435.0,67.91786817551693 440.0,66.48523453694887 445.0,65.16714795957421 450.0,63.954449766062794 455.0,62.83871356649155 460.0,61.812186707876265 465.0,60.86773640514028 470.0,59.99880017921308 475.0,59.19934025787967 480.0,58.46380162253686 485.0,57.78707340934565 490.0,57.16445339657699 495.0,56.591615331392745 500.0,56.064578869032914 505.0,55.579681915532746 510.0,55.13355518179415 515.0,54.723098772201126 520.0,54.34546064510627 525.0,53.99801679552155 530.0,53.67835302231384 535.0,53.38424815321474 540.0,53.113658611084816 545.0,52.86470421419108 550.0,52.63565511183157 555.0,52.424919764529875 560.0,52.23103388527997 565.0,52.05265026500058 570.0,51.888529411501196 575.0,51.73753093691488 580.0,51.598605633754175 585.0,51.470788184530505 590.0,51.35319045428011 595.0,51.244995319390114 600.0,51.145450989844534\" fill=\"none\" stroke=\"#b26bff\" stroke-width=\"2.6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"300\" y1=\"112.9\" x2=\"360.0\" y2=\"112.9\" stroke=\"#e3b341\" stroke-width=\"1.2\" stroke-dasharray=\"4,3\"/><line x1=\"360.0\" y1=\"112.9\" x2=\"360.0\" y2=\"220\" stroke=\"#e3b341\" stroke-width=\"1.2\" stroke-dasharray=\"4,3\"/><text x=\"294\" y=\"56\" font-size=\"11\" fill=\"#efe9ff\" text-anchor=\"end\" font-weight=\"400\" >Vs</text><text x=\"294\" y=\"116.9\" font-size=\"11\" fill=\"#e3b341\" text-anchor=\"end\" font-weight=\"400\" >63%</text><text x=\"360.0\" y=\"236\" font-size=\"11\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >1 tau</text><text x=\"600\" y=\"236\" font-size=\"11\" fill=\"#efe9ff\" text-anchor=\"end\" font-weight=\"400\" >5 tau</text><text x=\"450.0\" y=\"254\" font-size=\"11\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >time</text><text x=\"130\" y=\"245\" font-size=\"14\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >tau = R x C</text></svg>\n",
+  "transformer.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 250\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Transformer</title><desc id=\"d\">Two coils on an iron core. The voltage ratio equals the turns ratio.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"250\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"22\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >A transformer: Vs / Vp = Ns / Np</text><rect x=\"250\" y=\"60\" width=\"140\" height=\"130\" rx=\"6\" fill=\"none\" stroke=\"#a99dc7\" stroke-width=\"10\" opacity=\"0.55\"/><path d=\"M245,80 a10,9 0 1,1 0,18\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.6\"/><path d=\"M245,98 a10,9 0 1,1 0,18\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.6\"/><path d=\"M245,116 a10,9 0 1,1 0,18\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.6\"/><path d=\"M245,134 a10,9 0 1,1 0,18\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.6\"/><path d=\"M245,152 a10,9 0 1,1 0,18\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.6\"/><path d=\"M245,170 a10,9 0 1,1 0,18\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.6\"/><text x=\"214\" y=\"135\" font-size=\"14\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >Np</text><path d=\"M395,80 a10,9 0 1,1 0,18\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.6\"/><path d=\"M395,98 a10,9 0 1,1 0,18\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.6\"/><path d=\"M395,116 a10,9 0 1,1 0,18\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.6\"/><path d=\"M395,134 a10,9 0 1,1 0,18\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.6\"/><path d=\"M395,152 a10,9 0 1,1 0,18\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.6\"/><path d=\"M395,170 a10,9 0 1,1 0,18\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.6\"/><text x=\"426\" y=\"135\" font-size=\"14\" fill=\"#76b900\" text-anchor=\"middle\" font-weight=\"400\" >Ns</text><polyline points=\"100,70 245,70\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"100,190 245,190\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"100,70 100,190\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"395,70 540,70\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"395,190 540,190\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"540,70 540,190\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"70\" y=\"135\" font-size=\"14\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >Vp</text><text x=\"570\" y=\"135\" font-size=\"14\" fill=\"#76b900\" text-anchor=\"middle\" font-weight=\"400\" >Vs</text><text x=\"320\" y=\"228\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Few turns on the output: step down. More turns: step up. Only AC passes.</text></svg>\n",
+  "diode-iv.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 270\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Diode and its I-V curve</title><desc id=\"d\">A diode symbol and a current-voltage curve showing the knee near 0.7 volts.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"270\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"22\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >A diode passes current one way</text><polyline points=\"30,90 95,90\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polygon points=\"103,78 103,102 127,90\" fill=\"none\" stroke=\"#e06aa8\" stroke-width=\"2.2\"/><line x1=\"127\" y1=\"78\" x2=\"127\" y2=\"102\" stroke=\"#e06aa8\" stroke-width=\"3\"/><polyline points=\"127,90 200,90\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"70\" y=\"76\" font-size=\"11\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >anode</text><text x=\"165\" y=\"76\" font-size=\"11\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >cathode</text><line x1=\"60\" y1=\"125\" x2=\"190\" y2=\"125\" stroke=\"#76b900\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><text x=\"125\" y=\"145\" font-size=\"11\" fill=\"#76b900\" text-anchor=\"middle\" font-weight=\"400\" >forward current</text><line x1=\"250\" y1=\"150\" x2=\"620\" y2=\"150\" stroke=\"#a99dc7\" stroke-width=\"1.5\"/><line x1=\"400\" y1=\"45\" x2=\"400\" y2=\"245\" stroke=\"#a99dc7\" stroke-width=\"1.5\"/><polyline points=\"250,150 440,150\" fill=\"none\" stroke=\"#b26bff\" stroke-width=\"2.6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"440,150.0 444,149.80913804190902 448,149.58515945923045 452,149.32231815758783 456,149.01387103276454 460,148.65190497865828 464,148.22713387923457 468,147.7286603763777 472,147.1436963018738 476,146.45723460130378 480,145.65166433316537 484,144.70631886615715 488,143.59694568378018 492,142.295084194274 496,140.76733558381295 500,138.97450598129424 504,136.8706009529026 508,134.4016455305507 512,131.5042995024266 516,128.10423244139795 520,124.11421678317971 524,119.43189003283305 528,113.93712868976547 532,107.48896652017012 536,99.92197811623188 540,91.04203496354134 544,80.62132514006969 548,68.39250887877458 552,54.041860056783335\" fill=\"none\" stroke=\"#b26bff\" stroke-width=\"2.6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"440\" y1=\"150\" x2=\"440\" y2=\"164\" stroke=\"#e3b341\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><text x=\"440\" y=\"178\" font-size=\"11\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >0.7 V knee</text><text x=\"612\" y=\"166\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >V</text><text x=\"410\" y=\"56\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >I</text><text x=\"300\" y=\"175\" font-size=\"11\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >reverse: almost no current</text></svg>\n",
+  "rectify.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 300\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Rectification</title><desc id=\"d\">An AC sine wave, the same wave after a half-wave rectifier and after a full-wave bridge.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"300\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"20\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Rectifying AC</text><line x1=\"40\" y1=\"85\" x2=\"600\" y2=\"85\" stroke=\"#3d2f5c\" stroke-width=\"1\"/><polyline points=\"40.0,85.0 44.66,81.86414610197039 49.32,78.76264927546723 53.980000000000004,75.72949016875158 58.64,72.797900707726 63.3,70.0 67.96000000000001,67.3664424312258 72.62,64.92608180923426 77.28,62.70565523567818 81.94,60.729490168751575 86.6,59.01923788646684 91.26,57.59363627072197 95.92,56.46830451114539 100.58,55.65557197798583 105.24000000000001,55.1643431389518 109.9,55.0 114.56,55.16434313895179 119.22,55.65557197798583 123.88,56.46830451114539 128.54000000000002,57.59363627072197 133.2,59.01923788646684 137.86,60.729490168751575 142.52,62.705655235678165 147.18,64.92608180923426 151.84,67.3664424312258 156.5,70.0 161.16,72.797900707726 165.82,75.72949016875157 170.48000000000002,78.76264927546723 175.14000000000001,81.86414610197039 179.8,85.0 184.46,88.13585389802961 189.12,91.23735072453277 193.78,94.27050983124843 198.44,97.202099292274 203.1,100.0 207.76,102.6335575687742 212.42000000000002,105.07391819076574 217.08,107.29434476432182 221.74,109.27050983124842 226.4,110.98076211353316 231.06,112.40636372927803 235.72,113.53169548885461 240.38,114.34442802201417 245.04000000000002,114.8356568610482 249.70000000000002,115.0 254.36,114.8356568610482 259.02,114.34442802201417 263.68,113.53169548885461 268.34000000000003,112.40636372927804 273.0,110.98076211353316 277.65999999999997,109.27050983124843 282.32,107.29434476432182 286.98,105.07391819076577 291.64,102.6335575687742 296.3,100.00000000000001 300.96000000000004,97.202099292274 305.62,94.27050983124843 310.28000000000003,91.2373507245328 314.94,88.13585389802962 319.6,85.00000000000001 324.26,81.8641461019704 328.92,78.76264927546723 333.58,75.72949016875158 338.24,72.797900707726 342.90000000000003,70.00000000000003 347.56,67.36644243122579 352.22,64.92608180923425 356.88,62.70565523567819 361.54,60.729490168751596 366.2,59.01923788646684 370.86,57.59363627072197 375.52,56.46830451114539 380.18,55.655571977985836 384.84000000000003,55.1643431389518 389.5,55.0 394.16,55.16434313895179 398.82,55.655571977985836 403.48,56.46830451114539 408.14,57.59363627072197 412.8,59.019237886466826 417.46000000000004,60.72949016875157 422.12,62.70565523567818 426.78000000000003,64.92608180923423 431.44,67.3664424312258 436.1,70.0 440.76,72.79790070772597 445.42,75.72949016875157 450.08000000000004,78.76264927546717 454.74,81.86414610197042 459.40000000000003,84.99999999999999 464.06,88.13585389802955 468.72,91.2373507245328 473.38,94.2705098312484 478.04,97.20209929227401 482.7,99.99999999999997 487.36,102.63355756877418 492.02000000000004,105.07391819076575 496.68,107.2943447643218 501.34000000000003,109.27050983124842 506.0,110.98076211353316 510.66,112.40636372927801 515.3199999999999,113.53169548885461 519.98,114.34442802201416 524.64,114.83565686104821 529.3,115.0 533.96,114.83565686104821 538.62,114.34442802201417 543.28,113.53169548885461 547.94,112.40636372927803 552.6,110.98076211353317 557.26,109.27050983124843 561.9200000000001,107.29434476432182 566.58,105.07391819076577 571.24,102.63355756877421 575.9,100.0 580.5600000000001,97.20209929227404 585.22,94.27050983124843 589.88,91.23735072453283 594.54,88.13585389802958 599.2,85.00000000000001\" fill=\"none\" stroke=\"#4fa8ff\" stroke-width=\"2.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"40\" y=\"45\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"600\" >AC in</text><line x1=\"40\" y1=\"165\" x2=\"600\" y2=\"165\" stroke=\"#3d2f5c\" stroke-width=\"1\"/><polyline points=\"40.0,165 44.66,161.8641461019704 49.32,158.76264927546723 53.980000000000004,155.72949016875157 58.64,152.797900707726 63.3,150.0 67.96000000000001,147.3664424312258 72.62,144.92608180923426 77.28,142.70565523567817 81.94,140.72949016875157 86.6,139.01923788646684 91.26,137.59363627072196 95.92,136.4683045111454 100.58,135.65557197798583 105.24000000000001,135.1643431389518 109.9,135.0 114.56,135.1643431389518 119.22,135.65557197798583 123.88,136.4683045111454 128.54000000000002,137.59363627072196 133.2,139.01923788646684 137.86,140.72949016875157 142.52,142.70565523567817 147.18,144.92608180923426 151.84,147.3664424312258 156.5,150.0 161.16,152.797900707726 165.82,155.72949016875157 170.48000000000002,158.76264927546723 175.14000000000001,161.8641461019704 179.8,165.0 184.46,165 189.12,165 193.78,165 198.44,165 203.1,165 207.76,165 212.42000000000002,165 217.08,165 221.74,165 226.4,165 231.06,165 235.72,165 240.38,165 245.04000000000002,165 249.70000000000002,165 254.36,165 259.02,165 263.68,165 268.34000000000003,165 273.0,165 277.65999999999997,165 282.32,165 286.98,165 291.64,165 296.3,165 300.96000000000004,165 305.62,165 310.28000000000003,165 314.94,165 319.6,165 324.26,161.86414610197042 328.92,158.76264927546723 333.58,155.7294901687516 338.24,152.797900707726 342.90000000000003,150.00000000000003 347.56,147.36644243122578 352.22,144.92608180923423 356.88,142.7056552356782 361.54,140.7294901687516 366.2,139.01923788646684 370.86,137.59363627072196 375.52,136.4683045111454 380.18,135.65557197798583 384.84000000000003,135.1643431389518 389.5,135.0 394.16,135.1643431389518 398.82,135.65557197798583 403.48,136.4683045111454 408.14,137.593636270722 412.8,139.01923788646684 417.46000000000004,140.72949016875157 422.12,142.7056552356782 426.78000000000003,144.92608180923423 431.44,147.3664424312258 436.1,150.0 440.76,152.79790070772597 445.42,155.72949016875157 450.08000000000004,158.76264927546717 454.74,161.86414610197042 459.40000000000003,165.0 464.06,165 468.72,165 473.38,165 478.04,165 482.7,165 487.36,165 492.02000000000004,165 496.68,165 501.34000000000003,165 506.0,165 510.66,165 515.3199999999999,165 519.98,165 524.64,165 529.3,165 533.96,165 538.62,165 543.28,165 547.94,165 552.6,165 557.26,165 561.9200000000001,165 566.58,165 571.24,165 575.9,165 580.5600000000001,165 585.22,165 589.88,165 594.54,165 599.2,165\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"40\" y=\"125\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"600\" >Half-wave (one diode)</text><line x1=\"40\" y1=\"245\" x2=\"600\" y2=\"245\" stroke=\"#3d2f5c\" stroke-width=\"1\"/><polyline points=\"40.0,245.0 44.66,241.8641461019704 49.32,238.76264927546723 53.980000000000004,235.72949016875157 58.64,232.797900707726 63.3,230.0 67.96000000000001,227.3664424312258 72.62,224.92608180923426 77.28,222.70565523567817 81.94,220.72949016875157 86.6,219.01923788646684 91.26,217.59363627072196 95.92,216.4683045111454 100.58,215.65557197798583 105.24000000000001,215.1643431389518 109.9,215.0 114.56,215.1643431389518 119.22,215.65557197798583 123.88,216.4683045111454 128.54000000000002,217.59363627072196 133.2,219.01923788646684 137.86,220.72949016875157 142.52,222.70565523567817 147.18,224.92608180923426 151.84,227.3664424312258 156.5,230.0 161.16,232.797900707726 165.82,235.72949016875157 170.48000000000002,238.76264927546723 175.14000000000001,241.8641461019704 179.8,245.0 184.46,241.8641461019704 189.12,238.76264927546723 193.78,235.72949016875157 198.44,232.797900707726 203.1,230.0 207.76,227.3664424312258 212.42000000000002,224.92608180923426 217.08,222.7056552356782 221.74,220.72949016875157 226.4,219.01923788646684 231.06,217.59363627072196 235.72,216.4683045111454 240.38,215.65557197798583 245.04000000000002,215.1643431389518 249.70000000000002,215.0 254.36,215.1643431389518 259.02,215.65557197798583 263.68,216.4683045111454 268.34000000000003,217.59363627072196 273.0,219.01923788646684 277.65999999999997,220.72949016875157 282.32,222.7056552356782 286.98,224.92608180923423 291.64,227.3664424312258 296.3,230.0 300.96000000000004,232.797900707726 305.62,235.72949016875157 310.28000000000003,238.7626492754672 314.94,241.86414610197036 319.6,245.0 324.26,241.86414610197042 328.92,238.76264927546723 333.58,235.7294901687516 338.24,232.797900707726 342.90000000000003,230.00000000000003 347.56,227.36644243122578 352.22,224.92608180923423 356.88,222.7056552356782 361.54,220.7294901687516 366.2,219.01923788646684 370.86,217.59363627072196 375.52,216.4683045111454 380.18,215.65557197798583 384.84000000000003,215.1643431389518 389.5,215.0 394.16,215.1643431389518 398.82,215.65557197798583 403.48,216.4683045111454 408.14,217.593636270722 412.8,219.01923788646684 417.46000000000004,220.72949016875157 422.12,222.7056552356782 426.78000000000003,224.92608180923423 431.44,227.3664424312258 436.1,230.0 440.76,232.79790070772597 445.42,235.72949016875157 450.08000000000004,238.76264927546717 454.74,241.86414610197042 459.40000000000003,245.0 464.06,241.86414610197045 468.72,238.7626492754672 473.38,235.7294901687516 478.04,232.797900707726 482.7,230.00000000000003 487.36,227.3664424312258 492.02000000000004,224.92608180923426 496.68,222.7056552356782 501.34000000000003,220.72949016875157 506.0,219.01923788646684 510.66,217.593636270722 515.3199999999999,216.4683045111454 519.98,215.65557197798583 524.64,215.1643431389518 529.3,215.0 533.96,215.16434313895178 538.62,215.65557197798583 543.28,216.4683045111454 547.94,217.59363627072196 552.6,219.01923788646684 557.26,220.72949016875157 561.9200000000001,222.70565523567817 566.58,224.92608180923423 571.24,227.3664424312258 575.9,230.0 580.5600000000001,232.79790070772597 585.22,235.72949016875157 589.88,238.76264927546717 594.54,241.86414610197042 599.2,244.99999999999997\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"40\" y=\"205\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"600\" >Full-wave (bridge)</text></svg>\n",
+  "led-resistor.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 250\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">LED with a series resistor</title><desc id=\"d\">A battery, a resistor and an LED in a loop. The resistor value is (supply minus LED voltage) divided by the current.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"250\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"22\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >An LED always needs a resistor</text><polyline points=\"60,50 60,117.0\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"60,133.0 60,200\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"44\" y1=\"117.0\" x2=\"76\" y2=\"117.0\" stroke=\"#ff6b6b\" stroke-width=\"3\"/><line x1=\"51\" y1=\"133.0\" x2=\"69\" y2=\"133.0\" stroke=\"#ff6b6b\" stroke-width=\"3\"/><text x=\"36\" y=\"113.0\" font-size=\"14\" fill=\"#ff6b6b\" text-anchor=\"middle\" font-weight=\"700\" >+</text><text x=\"88\" y=\"129.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"400\" >9 V</text><polyline points=\"60,50 110,50\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"110,50 120,50 127.5,58 142.5,42 157.5,58 172.5,42 187.5,58 202.5,42 210,50 220,50\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"220,50 300,50\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polygon points=\"288,70 312,70 300,95\" fill=\"none\" stroke=\"#e06aa8\" stroke-width=\"2.4\"/><line x1=\"288\" y1=\"95\" x2=\"312\" y2=\"95\" stroke=\"#e06aa8\" stroke-width=\"3\"/><polyline points=\"300,50 300,70\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"300,95 300,200 60,200\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"320\" y1=\"60\" x2=\"352\" y2=\"42\" stroke=\"#e3b341\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><line x1=\"328\" y1=\"80\" x2=\"360\" y2=\"62\" stroke=\"#e3b341\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><text x=\"165\" y=\"36\" font-size=\"14\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >R</text><text x=\"430\" y=\"90\" font-size=\"15\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"700\" >R = (Vs - Vf) / I</text><text x=\"430\" y=\"116\" font-size=\"13\" fill=\"#a99dc7\" text-anchor=\"start\" font-weight=\"400\" >= (9 - 2) / 0.015</text><text x=\"430\" y=\"140\" font-size=\"13\" fill=\"#e3b341\" text-anchor=\"start\" font-weight=\"600\" >= 467 ohms, use 470</text></svg>\n",
+  "npn-switch.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 290\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Transistor as a switch</title><desc id=\"d\">An NPN transistor with a base resistor switching a lamp. A small base current turns on the larger collector current.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"290\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"22\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >A small base current switches a bigger load</text><polyline points=\"300,40 300,70\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"300\" cy=\"40\" r=\"3.5\" fill=\"#ff6b6b\"/><text x=\"320\" y=\"44\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"400\" >+V</text><circle cx=\"300\" cy=\"100\" r=\"22\" fill=\"#2a1f45\" stroke=\"#e3b341\" stroke-width=\"2.2\"/><line x1=\"286\" y1=\"86\" x2=\"314\" y2=\"114\" stroke=\"#e3b341\" stroke-width=\"2\"/><line x1=\"314\" y1=\"86\" x2=\"286\" y2=\"114\" stroke=\"#e3b341\" stroke-width=\"2\"/><text x=\"334\" y=\"104\" font-size=\"12\" fill=\"#a99dc7\" text-anchor=\"start\" font-weight=\"400\" >lamp</text><polyline points=\"300,122 300,150 300,160\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"280\" y1=\"160\" x2=\"280\" y2=\"220\" stroke=\"#efe9ff\" stroke-width=\"4\"/><polyline points=\"280,175 300,160 300,150\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"280,205 300,220 300,245\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polygon points=\"298,214 288,206 296,204\" fill=\"#efe9ff\"/><text x=\"312\" y=\"160\" font-size=\"12\" fill=\"#a99dc7\" text-anchor=\"start\" font-weight=\"400\" >C</text><text x=\"312\" y=\"232\" font-size=\"12\" fill=\"#a99dc7\" text-anchor=\"start\" font-weight=\"400\" >E</text><text x=\"262\" y=\"195\" font-size=\"12\" fill=\"#a99dc7\" text-anchor=\"end\" font-weight=\"400\" >B</text><polyline points=\"70,190 100,190\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"100,190 110,190 115.83333333333333,198 127.5,182 139.16666666666666,198 150.83333333333331,182 162.5,198 174.16666666666666,182 180,190 190,190\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"190,190 280,190\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"145\" y=\"172\" font-size=\"13\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >Rb</text><text x=\"70\" y=\"182\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"end\" font-weight=\"400\" >input</text><polyline points=\"300,245 300,253\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"286\" y1=\"253\" x2=\"314\" y2=\"253\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><line x1=\"291\" y1=\"258\" x2=\"309\" y2=\"258\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><line x1=\"296\" y1=\"263\" x2=\"304\" y2=\"263\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><rect x=\"420\" y=\"70\" width=\"200\" height=\"140\" rx=\"12\" fill=\"#1c1530\" stroke=\"#3d2f5c\"/><text x=\"520\" y=\"100\" font-size=\"11.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >Ic = beta x Ib</text><text x=\"520\" y=\"124\" font-size=\"11.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >drive hard: Ib about Ic/(beta/10)</text><text x=\"520\" y=\"148\" font-size=\"11.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >Rb = (Vin - 0.7) / Ib</text><text x=\"520\" y=\"172\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Vce falls to a few tenths</text><text x=\"520\" y=\"196\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >of a volt when saturated</text></svg>\n",
+  "waveforms.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 292\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Waves and pulses</title><desc id=\"d\">A sine wave with its period and amplitude marked, and a pulse train with the duty cycle marked.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"292\" rx=\"14\" fill=\"#120d1c\"/><text x=\"160\" y=\"20\" font-size=\"13\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Sine wave</text><text x=\"480\" y=\"20\" font-size=\"13\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Pulse train</text><line x1=\"20\" y1=\"130\" x2=\"300\" y2=\"130\" stroke=\"#3d2f5c\" stroke-width=\"1\"/><polyline points=\"20.0,130.0 22.8,124.35350120088914 25.6,118.75712112485652 28.4,113.26053363764625 31.2,107.91252683891932 34.0,102.7605700156272 36.8,97.8503923012602 39.599999999999994,93.22557678082141 42.4,88.92717364427867 45.2,84.99333582217243 48.0,81.45898033750315 50.8,78.35547837976338 53.599999999999994,75.71037685203883 56.4,73.54715386274647 59.199999999999996,71.88501033228214 62.0,70.73869956429174 64.8,70.11839629430371 67.6,70.0296063780561 70.4,70.47311792113133 73.19999999999999,71.44499428367516 76.0,72.93660902229078 78.8,74.93472245896112 81.6,77.42159919736818 84.39999999999999,80.3751655435263 87.19999999999999,83.76920543345264 90.0,87.57359312880715 92.8,91.75456061507863 95.6,96.27499732887217 98.39999999999999,101.09477955389708 101.19999999999999,106.17112656191314 104.0,111.45898033750315 106.8,116.91140551620747 109.6,122.48000598614175 112.39999999999999,128.1153544553123 115.19999999999999,133.76743117175883 118.0,139.38606790241386 120.8,144.9213932298913 123.6,150.3242752147175 126.39999999999999,155.54675749390435 129.2,160.54248494502224 132.0,165.2671151375484 134.8,169.67871191941907 137.6,173.7381176452847 140.39999999999998,177.40930074254143 143.2,180.6596755301209 146.0,183.46039145130206 148.79999999999998,185.7865891532951 151.6,187.61762114061656 154.39999999999998,188.9372350437213 157.2,189.7337178761848 160.0,190.0 162.79999999999998,189.7337178761848 165.6,188.93723504372133 168.39999999999998,187.6176211406166 171.2,185.78658915329507 174.0,183.46039145130206 176.79999999999998,180.6596755301209 179.6,177.40930074254143 182.39999999999998,173.73811764528472 185.2,169.67871191941913 188.0,165.2671151375484 190.79999999999998,160.54248494502227 193.6,155.54675749390432 196.39999999999998,150.3242752147175 199.2,144.92139322989127 202.0,139.38606790241386 204.79999999999998,133.7674311717588 207.6,128.1153544553123 210.39999999999998,122.48000598614169 213.2,116.91140551620754 216.0,111.45898033750316 218.79999999999998,106.17112656191321 221.6,101.09477955389707 224.39999999999998,96.27499732887217 227.2,91.75456061507862 230.0,87.57359312880716 232.79999999999998,83.76920543345267 235.6,80.3751655435263 238.39999999999998,77.42159919736821 241.2,74.93472245896112 244.0,72.93660902229078 246.79999999999998,71.44499428367514 249.6,70.47311792113135 252.39999999999998,70.0296063780561 255.2,70.11839629430371 258.0,70.73869956429172 260.79999999999995,71.88501033228214 263.6,73.54715386274646 266.4,75.71037685203879 269.2,78.35547837976338 272.0,81.45898033750314 274.79999999999995,84.99333582217247 277.59999999999997,88.9271736442787 280.4,93.22557678082148 283.2,97.85039230126017 286.0,102.76057001562722 288.79999999999995,107.91252683891922 291.59999999999997,113.2605336376462 294.4,118.75712112485645 297.2,124.35350120088916 300.0,129.99999999999997\" fill=\"none\" stroke=\"#4fa8ff\" stroke-width=\"2.6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"20\" y1=\"70\" x2=\"300\" y2=\"70\" stroke=\"#a99dc7\" stroke-width=\"1\" stroke-dasharray=\"3,3\"/><text x=\"300\" y=\"64\" font-size=\"11\" fill=\"#a99dc7\" text-anchor=\"end\" font-weight=\"400\" >peak</text><line x1=\"20\" y1=\"235\" x2=\"113\" y2=\"235\" stroke=\"#e3b341\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><line x1=\"113\" y1=\"235\" x2=\"20\" y2=\"235\" stroke=\"#e3b341\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><text x=\"66\" y=\"253\" font-size=\"11.5\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >period T = 1/f</text><text x=\"160\" y=\"272\" font-size=\"11.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >RMS = peak / 1.414</text><line x1=\"340\" y1=\"190\" x2=\"620\" y2=\"190\" stroke=\"#3d2f5c\" stroke-width=\"1\"/><polyline points=\"340,190 340,110 368,110 368,190 410,190 410,110 438,110 438,190 480,190 480,110 508,110 508,190 550,190 550,110 578,110 578,190 620,190\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"340\" y1=\"75\" x2=\"368\" y2=\"75\" stroke=\"#e3b341\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><line x1=\"368\" y1=\"75\" x2=\"340\" y2=\"75\" stroke=\"#e3b341\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><text x=\"354\" y=\"66\" font-size=\"11\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >on</text><line x1=\"340\" y1=\"235\" x2=\"410\" y2=\"235\" stroke=\"#e06aa8\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><line x1=\"410\" y1=\"235\" x2=\"340\" y2=\"235\" stroke=\"#e06aa8\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><text x=\"375\" y=\"253\" font-size=\"11.5\" fill=\"#e06aa8\" text-anchor=\"middle\" font-weight=\"400\" >period</text><text x=\"480\" y=\"276\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >duty = on / period = 40%</text></svg>\n",
+  "gate-symbols.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 300\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Logic gate symbols</title><desc id=\"d\">Symbols and truth tables for AND, OR, NOT, NAND and XOR gates.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"300\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"20\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Logic gates</text><path d=\"M30,90 h26 a26,26 0 0,1 0,52 h-26 z\" fill=\"#2a1f45\" stroke=\"#b26bff\" stroke-width=\"2.2\"/><text x=\"60\" y=\"78\" font-size=\"14\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >AND</text><text x=\"60\" y=\"180\" font-size=\"11\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >out: 0 0 0 1</text><text x=\"60\" y=\"200\" font-size=\"10\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >inputs 00 01 10 11</text><path d=\"M152,90 q12,26 0,52 q38,0 54,-26 q-16,-26 -54,-26 z\" fill=\"#2a1f45\" stroke=\"#b26bff\" stroke-width=\"2.2\"/><text x=\"182\" y=\"78\" font-size=\"14\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >OR</text><text x=\"182\" y=\"180\" font-size=\"11\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >out: 0 1 1 1</text><text x=\"182\" y=\"200\" font-size=\"10\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >inputs 00 01 10 11</text><polygon points=\"274,90 274,142 318,116\" fill=\"#2a1f45\" stroke=\"#b26bff\" stroke-width=\"2.2\"/><circle cx=\"323\" cy=\"116\" r=\"5\" fill=\"#120d1c\" stroke=\"#b26bff\" stroke-width=\"2\"/><text x=\"304\" y=\"78\" font-size=\"14\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >NOT</text><text x=\"304\" y=\"180\" font-size=\"11\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >in 0,1 -&gt; 1 0</text><text x=\"304\" y=\"200\" font-size=\"10\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" ></text><path d=\"M396,90 h26 a26,26 0 0,1 0,52 h-26 z\" fill=\"#2a1f45\" stroke=\"#b26bff\" stroke-width=\"2.2\"/><circle cx=\"450\" cy=\"116\" r=\"5\" fill=\"#120d1c\" stroke=\"#b26bff\" stroke-width=\"2\"/><text x=\"426\" y=\"78\" font-size=\"14\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >NAND</text><text x=\"426\" y=\"180\" font-size=\"11\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >out: 1 1 1 0</text><text x=\"426\" y=\"200\" font-size=\"10\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >inputs 00 01 10 11</text><path d=\"M518,90 q12,26 0,52 q38,0 54,-26 q-16,-26 -54,-26 z\" fill=\"#2a1f45\" stroke=\"#b26bff\" stroke-width=\"2.2\"/><path d=\"M511,90 q12,26 0,52\" fill=\"none\" stroke=\"#b26bff\" stroke-width=\"2.2\"/><text x=\"548\" y=\"78\" font-size=\"14\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >XOR</text><text x=\"548\" y=\"180\" font-size=\"11\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >out: 0 1 1 0</text><text x=\"548\" y=\"200\" font-size=\"10\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >inputs 00 01 10 11</text><text x=\"320\" y=\"270\" font-size=\"12\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >NAND is universal: every other gate can be built from NAND gates alone.</text></svg>\n",
+  "flipflop.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 250\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">D flip-flop timing</title><desc id=\"d\">A timing diagram of a D flip-flop: Q copies D only on rising clock edges.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"250\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"20\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >D flip-flop: Q copies D on the rising clock edge</text><text x=\"40\" y=\"84\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"end\" font-weight=\"400\" >CLK</text><polyline points=\"60,90 130,90 130,90 130,60 200,60 200,60 200,90 270,90 270,90 270,60 340,60 340,60 340,90 410,90 410,90 410,60 480,60 480,60 480,90 550,90 550,90 550,60 620,60\" fill=\"none\" stroke=\"#4fa8ff\" stroke-width=\"2.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"40\" y=\"144\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"end\" font-weight=\"400\" >D</text><polyline points=\"60,120 130,120 130,120 130,120 200,120 200,120 200,150 270,150 270,150 270,150 340,150 340,150 340,120 410,120 410,120 410,120 480,120 480,120 480,150 550,150 550,150 550,150 620,150\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"40\" y=\"204\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"end\" font-weight=\"400\" >Q</text><polyline points=\"60,210 130,210 130,210 130,180 200,180 200,180 200,180 270,180 270,180 270,210 340,210 340,210 340,210 410,210 410,210 410,180 480,180 480,180 480,180 550,180 550,180 550,210 620,210\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"130\" y1=\"50\" x2=\"130\" y2=\"215\" stroke=\"#a99dc7\" stroke-width=\"1\" stroke-dasharray=\"3,4\"/><line x1=\"270\" y1=\"50\" x2=\"270\" y2=\"215\" stroke=\"#a99dc7\" stroke-width=\"1\" stroke-dasharray=\"3,4\"/><line x1=\"410\" y1=\"50\" x2=\"410\" y2=\"215\" stroke=\"#a99dc7\" stroke-width=\"1\" stroke-dasharray=\"3,4\"/><line x1=\"550\" y1=\"50\" x2=\"550\" y2=\"215\" stroke=\"#a99dc7\" stroke-width=\"1\" stroke-dasharray=\"3,4\"/><text x=\"320\" y=\"238\" font-size=\"11\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Dotted lines: rising edges, when the flip-flop looks at D.</text></svg>\n",
+  "opamp.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 270\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Inverting op-amp</title><desc id=\"d\">An op-amp with a feedback resistor Rf and an input resistor Rin. The gain is minus Rf over Rin.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"270\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"22\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Feedback sets the gain</text><polygon points=\"260,80 260,190 360,135\" fill=\"#2a1f45\" stroke=\"#b26bff\" stroke-width=\"2.4\"/><text x=\"272\" y=\"112\" font-size=\"18\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >-</text><text x=\"272\" y=\"168\" font-size=\"18\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >+</text><polyline points=\"40,108 80,108\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"80,108 90,108 95.83333333333333,116 107.5,100 119.16666666666666,116 130.83333333333331,100 142.5,116 154.16666666666666,100 160,108 170,108\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"170,108 260,108\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"125\" y=\"92\" font-size=\"13\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >Rin</text><text x=\"30\" y=\"112\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"end\" font-weight=\"400\" >Vin</text><polyline points=\"360,135 460,135\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"470\" y=\"139\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"400\" >Vout</text><polyline points=\"215,108 215,50 410,50 410,135\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"215\" cy=\"108\" r=\"3.5\" fill=\"#efe9ff\"/><circle cx=\"410\" cy=\"135\" r=\"3.5\" fill=\"#efe9ff\"/><polyline points=\"270,50 280,50 285.0,58 295.0,42 305.0,58 315.0,42 325.0,58 335.0,42 340,50 350,50\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"310\" y=\"38\" font-size=\"13\" fill=\"#76b900\" text-anchor=\"middle\" font-weight=\"400\" >Rf</text><polyline points=\"260,162 230,162 230,200\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"230,200 230,208\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"216\" y1=\"208\" x2=\"244\" y2=\"208\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><line x1=\"221\" y1=\"213\" x2=\"239\" y2=\"213\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><line x1=\"226\" y1=\"218\" x2=\"234\" y2=\"218\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><text x=\"500\" y=\"100\" font-size=\"14\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"700\" >gain = -Rf / Rin</text><text x=\"500\" y=\"124\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"start\" font-weight=\"400\" >Rf = 100k, Rin = 10k:</text><text x=\"500\" y=\"144\" font-size=\"13\" fill=\"#e3b341\" text-anchor=\"start\" font-weight=\"600\" >gain = -10</text></svg>\n",
+  "timer555.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 300\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">555 astable circuit</title><desc id=\"d\">A 555 timer with resistors R1 and R2 and a capacitor C making a free-running oscillator.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"300\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"22\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >555 astable oscillator</text><rect x=\"230\" y=\"60\" width=\"140\" height=\"170\" rx=\"8\" fill=\"#2a1f45\" stroke=\"#b26bff\" stroke-width=\"2.2\"/><text x=\"300\" y=\"150\" font-size=\"22\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >555</text><text x=\"240\" y=\"214\" font-size=\"9.5\" fill=\"#a99dc7\" text-anchor=\"start\" font-weight=\"400\" >1 GND</text><text x=\"240\" y=\"184\" font-size=\"9.5\" fill=\"#a99dc7\" text-anchor=\"start\" font-weight=\"400\" >2 TRIG</text><text x=\"360\" y=\"154\" font-size=\"9.5\" fill=\"#a99dc7\" text-anchor=\"end\" font-weight=\"400\" >3 OUT</text><text x=\"240\" y=\"94\" font-size=\"9.5\" fill=\"#a99dc7\" text-anchor=\"start\" font-weight=\"400\" >4 RST</text><text x=\"360\" y=\"204\" font-size=\"9.5\" fill=\"#a99dc7\" text-anchor=\"end\" font-weight=\"400\" >5 CTRL</text><text x=\"240\" y=\"154\" font-size=\"9.5\" fill=\"#a99dc7\" text-anchor=\"start\" font-weight=\"400\" >6 THR</text><text x=\"240\" y=\"124\" font-size=\"9.5\" fill=\"#a99dc7\" text-anchor=\"start\" font-weight=\"400\" >7 DIS</text><text x=\"360\" y=\"94\" font-size=\"9.5\" fill=\"#a99dc7\" text-anchor=\"end\" font-weight=\"400\" >8 VCC</text><polyline points=\"100,60 400,60\" fill=\"none\" stroke=\"#ff6b6b\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"80\" y=\"64\" font-size=\"12\" fill=\"#ff6b6b\" text-anchor=\"end\" font-weight=\"400\" >+V</text><polyline points=\"300,60 300,60\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"370,90 400,90 400,60\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"150,60 150,70 158,72.5 142,77.5 158,82.5 142,87.5 158,92.5 142,97.5 150,100 150,110\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"150,110 150,120 230,120\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"172\" y=\"90\" font-size=\"12\" fill=\"#e3b341\" text-anchor=\"start\" font-weight=\"400\" >R1</text><polyline points=\"150,120 150,130 158,132.5 142,137.5 158,142.5 142,147.5 158,152.5 142,157.5 150,160 150,170\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"172\" y=\"150\" font-size=\"12\" fill=\"#76b900\" text-anchor=\"start\" font-weight=\"400\" >R2</text><polyline points=\"150,170 170,170\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"170,170 170,150 230,150\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"170,170 170,180 230,180\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"150,170 150,200\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"135\" y1=\"200\" x2=\"165\" y2=\"200\" stroke=\"#4fa8ff\" stroke-width=\"3\"/><line x1=\"135\" y1=\"210\" x2=\"165\" y2=\"210\" stroke=\"#4fa8ff\" stroke-width=\"3\"/><polyline points=\"150,210 150,240\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"150,240 150,248\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"136\" y1=\"248\" x2=\"164\" y2=\"248\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><line x1=\"141\" y1=\"253\" x2=\"159\" y2=\"253\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><line x1=\"146\" y1=\"258\" x2=\"154\" y2=\"258\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><text x=\"176\" y=\"208\" font-size=\"12\" fill=\"#4fa8ff\" text-anchor=\"start\" font-weight=\"400\" >C</text><polyline points=\"230,90 200,90 200,60\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"230,210 210,210 210,250\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"210,250 210,258\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"196\" y1=\"258\" x2=\"224\" y2=\"258\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><line x1=\"201\" y1=\"263\" x2=\"219\" y2=\"263\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><line x1=\"206\" y1=\"268\" x2=\"214\" y2=\"268\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><polyline points=\"370,150 440,150\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"450\" y=\"154\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"400\" >out</text><text x=\"500\" y=\"210\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >f = 1.44 / ((R1 + 2 R2) C)</text><text x=\"500\" y=\"230\" font-size=\"11\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >duty = (R1 + R2) / (R1 + 2 R2)</text></svg>\n",
+  "breadboard.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 270\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Solderless breadboard</title><desc id=\"d\">A breadboard with power rails along the top and bottom and rows of five connected holes. An LED and resistor sit across the middle gap.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"270\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"20\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >A solderless breadboard</text><rect x=\"30\" y=\"36\" width=\"580\" height=\"200\" rx=\"8\" fill=\"#d9d2c0\" stroke=\"#9d957f\" stroke-width=\"1.5\"/><line x1=\"40\" y1=\"42\" x2=\"600\" y2=\"42\" stroke=\"#ff6b6b\" stroke-width=\"1\"/><rect x=\"50\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"47\" width=\"7\" height=\"7\" fill=\"#444\"/><line x1=\"40\" y1=\"54\" x2=\"600\" y2=\"54\" stroke=\"#2a58d9\" stroke-width=\"1\"/><rect x=\"50\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"59\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"50\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"207\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"50\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"219\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"40\" y=\"124\" width=\"560\" height=\"10\" fill=\"#bdb6a2\"/><rect x=\"50\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"50\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"50\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"50\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"50\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"50\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"50\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"50\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"50\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"50\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"72\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"94\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"116\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"138\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"160\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"182\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"204\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"226\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"248\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"270\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"292\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"314\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"336\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"358\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"380\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"402\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"424\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"446\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"468\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"490\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"512\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"534\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"556\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"80\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"140\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"89\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"149\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"98\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"158\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"107\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"167\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"116\" width=\"7\" height=\"7\" fill=\"#444\"/><rect x=\"578\" y=\"176\" width=\"7\" height=\"7\" fill=\"#444\"/><line x1=\"94\" y1=\"76\" x2=\"94\" y2=\"188\" stroke=\"#e33\" stroke-width=\"1\" stroke-dasharray=\"2,3\"/><rect x=\"70\" y=\"105\" width=\"44\" height=\"12\" rx=\"5\" fill=\"#c9a66b\" stroke=\"#8d7040\"/><circle cx=\"160\" cy=\"150\" r=\"9\" fill=\"#ff7777\" stroke=\"#900\"/><text x=\"320\" y=\"258\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Holes in a column of five are joined; the rails run along the whole length; the middle gap separates the two halves.</text></svg>\n",
+  "arduino-uno.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 340\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Arduino Uno layout</title><desc id=\"d\">A simplified Arduino Uno showing the USB socket, the power header, digital pins 0 to 13 with PWM pins marked, and analog pins A0 to A5.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"340\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"20\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Arduino Uno: where the pins are</text><rect x=\"60\" y=\"40\" width=\"520\" height=\"270\" rx=\"14\" fill=\"#0f6a6a\" stroke=\"#064\" stroke-width=\"2\"/><rect x=\"60\" y=\"90\" width=\"60\" height=\"70\" rx=\"4\" fill=\"#9aa\" stroke=\"#566\" stroke-width=\"1.5\"/><text x=\"90\" y=\"130\" font-size=\"11\" fill=\"#123\" text-anchor=\"middle\" font-weight=\"400\" >USB</text><rect x=\"60\" y=\"210\" width=\"50\" height=\"60\" rx=\"4\" fill=\"#111\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"85\" y=\"245\" font-size=\"10\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >DC in</text><rect x=\"300\" y=\"150\" width=\"100\" height=\"110\" rx=\"4\" fill=\"#222\" stroke=\"#555\" stroke-width=\"1.5\"/><text x=\"350\" y=\"200\" font-size=\"11\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >ATmega328P</text><text x=\"350\" y=\"216\" font-size=\"10\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >5 V, 16 MHz</text><text x=\"320\" y=\"66\" font-size=\"11\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >Digital pins (~ = PWM)</text><rect x=\"172\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"180\" y=\"106\" font-size=\"10.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >0</text><rect x=\"200\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"208\" y=\"106\" font-size=\"10.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >1</text><rect x=\"228\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"236\" y=\"106\" font-size=\"10.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >2</text><rect x=\"256\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"264\" y=\"106\" font-size=\"10.5\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >~3</text><rect x=\"284\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"292\" y=\"106\" font-size=\"10.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >4</text><rect x=\"312\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"320\" y=\"106\" font-size=\"10.5\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >~5</text><rect x=\"340\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"348\" y=\"106\" font-size=\"10.5\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >~6</text><rect x=\"368\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"376\" y=\"106\" font-size=\"10.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >7</text><rect x=\"396\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"404\" y=\"106\" font-size=\"10.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >8</text><rect x=\"424\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"432\" y=\"106\" font-size=\"10.5\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >~9</text><rect x=\"452\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"460\" y=\"106\" font-size=\"10.5\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >~10</text><rect x=\"480\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"488\" y=\"106\" font-size=\"10.5\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >~11</text><rect x=\"508\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"516\" y=\"106\" font-size=\"10.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >12</text><rect x=\"536\" y=\"72\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"544\" y=\"106\" font-size=\"10.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >13</text><text x=\"150\" y=\"90\" font-size=\"9\" fill=\"#a99dc7\" text-anchor=\"end\" font-weight=\"400\" >GND AREF</text><text x=\"230\" y=\"270\" font-size=\"11\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >Power</text><rect x=\"162\" y=\"276\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"170\" y=\"308\" font-size=\"9.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >RESET</text><rect x=\"198\" y=\"276\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"206\" y=\"308\" font-size=\"9.5\" fill=\"#ff6b6b\" text-anchor=\"middle\" font-weight=\"400\" >3V3</text><rect x=\"234\" y=\"276\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"242\" y=\"308\" font-size=\"9.5\" fill=\"#ff6b6b\" text-anchor=\"middle\" font-weight=\"400\" >5V</text><rect x=\"270\" y=\"276\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"278\" y=\"308\" font-size=\"9.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >GND</text><rect x=\"306\" y=\"276\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"314\" y=\"308\" font-size=\"9.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >GND</text><rect x=\"342\" y=\"276\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"350\" y=\"308\" font-size=\"9.5\" fill=\"#ff6b6b\" text-anchor=\"middle\" font-weight=\"400\" >VIN</text><text x=\"500\" y=\"270\" font-size=\"11\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >Analog in</text><rect x=\"412\" y=\"276\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"420\" y=\"308\" font-size=\"9.5\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"400\" >A0</text><rect x=\"439\" y=\"276\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"447\" y=\"308\" font-size=\"9.5\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"400\" >A1</text><rect x=\"466\" y=\"276\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"474\" y=\"308\" font-size=\"9.5\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"400\" >A2</text><rect x=\"493\" y=\"276\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"501\" y=\"308\" font-size=\"9.5\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"400\" >A3</text><rect x=\"520\" y=\"276\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"528\" y=\"308\" font-size=\"9.5\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"400\" >A4</text><rect x=\"547\" y=\"276\" width=\"16\" height=\"20\" fill=\"#111\" stroke=\"#777\"/><text x=\"555\" y=\"308\" font-size=\"9.5\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"400\" >A5</text><circle cx=\"540\" cy=\"120\" r=\"8\" fill=\"#ff9d3c\"/><text x=\"540\" y=\"142\" font-size=\"10\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >pin 13 LED</text><text x=\"160\" y=\"190\" font-size=\"11\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >Reset</text><circle cx=\"190\" cy=\"165\" r=\"9\" fill=\"#c33\" stroke=\"#511\"/></svg>\n",
+  "arduino-led.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 260\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">LED on an Arduino pin</title><desc id=\"d\">Pin 13 connects through a 220 ohm resistor to an LED and then to ground.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"260\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"22\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Blink: pin 13 to resistor to LED to GND</text><rect x=\"30\" y=\"60\" width=\"120\" height=\"140\" rx=\"10\" fill=\"#0f6a6a\" stroke=\"#064\" stroke-width=\"2\"/><text x=\"90\" y=\"120\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"700\" >Arduino</text><text x=\"90\" y=\"140\" font-size=\"12\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >Uno</text><polyline points=\"150,90 200,90\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"150\" y=\"80\" font-size=\"10.5\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"400\" >pin 13</text><polyline points=\"200,90 210,90 216.66666666666666,98 230.0,82 243.33333333333334,98 256.6666666666667,82 270.0,98 283.33333333333337,82 290,90 300,90\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"250\" y=\"72\" font-size=\"11.5\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >220 ohm</text><polyline points=\"300,90 380,90\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polygon points=\"380,78 380,102 404,90\" fill=\"none\" stroke=\"#e06aa8\" stroke-width=\"2.4\"/><line x1=\"404\" y1=\"78\" x2=\"404\" y2=\"102\" stroke=\"#e06aa8\" stroke-width=\"3\"/><line x1=\"400\" y1=\"68\" x2=\"424\" y2=\"50\" stroke=\"#e3b341\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><line x1=\"412\" y1=\"76\" x2=\"436\" y2=\"58\" stroke=\"#e3b341\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><polyline points=\"404,90 470,90 470,200 150,200\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"150\" y=\"216\" font-size=\"10.5\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"400\" >GND</text><text x=\"330\" y=\"150\" font-size=\"11.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >digitalWrite(13, HIGH) puts 5 V on the pin</text><text x=\"330\" y=\"170\" font-size=\"11.5\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >Current = (5 - 2) / 220 = about 14 mA</text><text x=\"330\" y=\"190\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >(an Uno pin can give about 20 mA)</text></svg>\n",
+  "arduino-ldr.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 270\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Reading a light sensor</title><desc id=\"d\">A photoresistor and a fixed resistor form a voltage divider between 5 volts and ground, with the middle point wired to analog pin A0.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"270\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"22\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >analogRead(A0) reads the divider</text><polyline points=\"160,50 160,60\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"160\" cy=\"50\" r=\"3.5\" fill=\"#ff6b6b\"/><text x=\"180\" y=\"54\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"400\" >5V</text><polyline points=\"160,60 160,70 168,74.16666666666667 152,82.5 168,90.83333333333334 152,99.16666666666667 168,107.5 152,115.83333333333334 160,120 160,130\" fill=\"none\" stroke=\"#e3b341\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"184\" y=\"100\" font-size=\"12\" fill=\"#e3b341\" text-anchor=\"start\" font-weight=\"400\" >LDR</text><polyline points=\"160,130 160,140\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"160\" cy=\"140\" r=\"5\" fill=\"#76b900\"/><polyline points=\"160,140 260,140\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"272\" y=\"144\" font-size=\"12\" fill=\"#76b900\" text-anchor=\"start\" font-weight=\"400\" >to A0</text><polyline points=\"160,140 160,150 168,154.16666666666666 152,162.5 168,170.83333333333334 152,179.16666666666666 168,187.5 152,195.83333333333334 160,200 160,210\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"184\" y=\"180\" font-size=\"12\" fill=\"#76b900\" text-anchor=\"start\" font-weight=\"400\" >10k</text><polyline points=\"160,210 160,218\" fill=\"none\" stroke=\"#efe9ff\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"146\" y1=\"218\" x2=\"174\" y2=\"218\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><line x1=\"151\" y1=\"223\" x2=\"169\" y2=\"223\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><line x1=\"156\" y1=\"228\" x2=\"164\" y2=\"228\" stroke=\"#efe9ff\" stroke-width=\"2.2\"/><line x1=\"110\" y1=\"70\" x2=\"140\" y2=\"90\" stroke=\"#e3b341\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><line x1=\"104\" y1=\"90\" x2=\"134\" y2=\"108\" stroke=\"#e3b341\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"380\" y=\"60\" width=\"230\" height=\"150\" rx=\"12\" fill=\"#1c1530\" stroke=\"#3d2f5c\"/><text x=\"495\" y=\"90\" font-size=\"11.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >Bright: LDR small</text><text x=\"495\" y=\"118\" font-size=\"11.5\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >A0 voltage high, value near 1023</text><text x=\"495\" y=\"146\" font-size=\"11.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >Dark: LDR large</text><text x=\"495\" y=\"174\" font-size=\"11.5\" fill=\"#e3b341\" text-anchor=\"middle\" font-weight=\"400\" >A0 voltage low, value near 0</text><text x=\"495\" y=\"202\" font-size=\"11.5\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"400\" >value = volts / 5 x 1023</text></svg>\n",
+  "pwm.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 290\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">PWM duty cycles</title><desc id=\"d\">Three pulse trains with 25, 50 and 75 percent duty and their average voltages of 1.25, 2.5 and 3.75 volts.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"640\" height=\"290\" rx=\"14\" fill=\"#120d1c\"/><text x=\"320\" y=\"20\" font-size=\"14\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >PWM: average voltage = duty x 5 V</text><polyline points=\"40,90 40,50 60.0,50 60.0,90 120,90 120,50 140.0,50 140.0,90 200,90 200,50 220.0,50 220.0,90 280,90 280,50 300.0,50 300.0,90 360,90 360,50 380.0,50 380.0,90 440,90\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"40\" y1=\"80.0\" x2=\"440\" y2=\"80.0\" stroke=\"#e3b341\" stroke-width=\"1.2\" stroke-dasharray=\"5,4\"/><text x=\"450\" y=\"76\" font-size=\"11\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"400\" >analogWrite(9, 64)   25%  avg 1.25 V</text><polyline points=\"40,170 40,130 80.0,130 80.0,170 120,170 120,130 160.0,130 160.0,170 200,170 200,130 240.0,130 240.0,170 280,170 280,130 320.0,130 320.0,170 360,170 360,130 400.0,130 400.0,170 440,170\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"40\" y1=\"150.0\" x2=\"440\" y2=\"150.0\" stroke=\"#e3b341\" stroke-width=\"1.2\" stroke-dasharray=\"5,4\"/><text x=\"450\" y=\"156\" font-size=\"11\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"400\" >analogWrite(9, 128)  50%  avg 2.5 V</text><polyline points=\"40,250 40,210 100.0,210 100.0,250 120,250 120,210 180.0,210 180.0,250 200,250 200,210 260.0,210 260.0,250 280,250 280,210 340.0,210 340.0,250 360,250 360,210 420.0,210 420.0,250 440,250\" fill=\"none\" stroke=\"#76b900\" stroke-width=\"2.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"40\" y1=\"220.0\" x2=\"440\" y2=\"220.0\" stroke=\"#e3b341\" stroke-width=\"1.2\" stroke-dasharray=\"5,4\"/><text x=\"450\" y=\"236\" font-size=\"11\" fill=\"#efe9ff\" text-anchor=\"start\" font-weight=\"400\" >analogWrite(9, 191)  75%  avg 3.75 V</text></svg>\n"
  },
  "category": "Computer Science",
  "level": "Beginner",

@@ -4,7 +4,7 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "elc"))
-import cmk, el1, el2  # noqa: E402
+import cmk, el1, el2, el3, figs  # noqa: E402
 
 PRONOUNCE = {
     "Ohm": "ohm", "ohm": "ohm", "ohms": "ohms", "Ohm's": "ohms", "ampere": "am pair", "amperes": "am pairs", "milliamperes": "mil ee am pairs", "hertz": "hurts", "henry": "hen ree", "henries": "hen reez", "farad": "far ad", "farads": "far ads",
@@ -15,7 +15,7 @@ PRONOUNCE = {
     "op-amp": "op amp", "Op-amp": "op amp", "op-amps": "op amps", "astable": "ay stable", "monostable": "mono stable", "decibels": "dess ih bels", "decibel": "dess ih bel", "dB": "decibel", "dBs": "decibels", "7805": "seventy eight oh five",
     "555": "five five five", "hFE": "H F E", "pF": "pico farad", "uF": "micro farad", "kHz": "kilohertz", "MHz": "megahertz", "mA": "milliamps", "mAh": "milliamp hours", "ELI5": "E L I five", "Vbe": "V B E", "Ic": "I C", "Ib": "I B",
     "silicon": "silicon", "bipolar": "by polar", "unijunction": "you nee junction", "ripple": "ripple", "solder": "sodder", "soldering": "sodder ing", "Georg": "gay org", "Faraday": "fair uh day", "sqrt": "square root", "log10": "log ten",
-    "coulomb": "coo lomb", "coulombs": "coo lombs", "hertz": "hurts", "kHz": "kilohertz", "Vs": "V S", "E12": "E twelve", "PN": "P N", "NTC": "N T C",
+    "Arduino": "ar dwee no", "Uno": "oo no", "PWM": "P W M", "ADC": "A D C", "LDR": "L D R", "KCL": "K C L", "KVL": "K V L", "Kirchhoff": "keer koff", "Kirchhoff's": "keer koffs", "pinMode": "pin mode", "digitalWrite": "digital write", "digitalRead": "digital read", "analogRead": "analog read", "analogWrite": "analog write", "millis": "millis", "ATmega328P": "A T mega three two eight P", "SPICE": "spice", "netlist": "net list", "lumped": "lumped", "flyback": "fly back", "coulomb": "coo lomb", "coulombs": "coo lombs", "hertz": "hurts", "kHz": "kilohertz", "Vs": "V S", "E12": "E twelve", "PN": "P N", "NTC": "N T C",
 }
 
 SANDBOX = cmk.terminal("Electronics cheat sheet", "volt>", "A scripted lookup, not a real simulator. Try: ohm, power, divider, rc, led, transistor, gates, opamp, 555, solder", [
@@ -28,6 +28,8 @@ SANDBOX = cmk.terminal("Electronics cheat sheet", "volt>", "A scripted lookup, n
     ("gates", ["AND all, OR any, XOR differ, NAND is universal", "Half adder: sum = XOR, carry = AND"]),
     ("opamp", ["Inverting gain = -Rf / Rin", "Non-inverting gain = 1 + Rf / Rg"]),
     ("555", ["Astable f = 1.44 / ((R1 + 2 R2) C)", "Duty = (R1 + R2) / (R1 + 2 R2)"]),
+    ("arduino", ["setup() runs once, loop() repeats", "analogRead is 0-1023, analogWrite is 0-255"]),
+    ("kirchhoff", ["KCL: currents at a node sum to zero", "KVL: voltages round a loop sum to zero"]),
     ("solder", ["Heat the pad and the lead, then feed the solder", "A good joint is smooth and shiny"]),
 ])
 
@@ -71,12 +73,44 @@ EXAM = [
  ("What heats a linear regulator?", ["Voltage drop times current", "The clock", "Light", "Noise"], 0, "Wasted power."),
  ("How do you measure voltage with a meter?", ["Across the part", "In series", "With power off", "With a fuse"], 0, "In parallel."),
  ("What does a good solder joint look like?", ["Smooth and shiny", "Dull and lumpy", "Black", "Wet"], 0, "A small cone."),
+ ("What is a lumped element?", ["A two-terminal part with a v-i rule", "A lump of coal", "A wire only", "A battery only"], 0, "A point-like model."),
+ ("What does KVL say?", ["Voltages round a loop sum to zero", "Currents at a node sum to zero", "Power is constant", "Resistance adds"], 0, "Same start and end point."),
+ ("What does KCL say?", ["Currents at a node sum to zero", "Voltages round a loop sum to zero", "Voltage is constant", "Current is lost"], 0, "No charge piles up."),
+ ("What does a circuit simulator solve?", ["Node voltage equations", "Color codes", "Fuse ratings", "Battery life only"], 0, "One KCL equation per node."),
+ ("What range does analogRead give on an Uno?", ["0 to 1023", "0 to 255", "0 to 5", "0 to 100"], 0, "A 10-bit converter."),
+ ("What does analogWrite use to fake a voltage?", ["PWM", "A battery", "A coil", "A fuse"], 0, "Fast on-off switching."),
+ ("What does INPUT_PULLUP read when a button is pressed?", ["LOW", "HIGH", "1023", "255"], 0, "It joins the pin to ground."),
+ ("Why put a flyback diode across a relay coil?", ["To absorb the turn-off spike", "To make it louder", "To speed it up", "To save power"], 0, "The coil keeps pushing current."),
 ]
+
+IMAGES = figs.build_all()
+FIGS = {1: [("series-parallel.svg", "Resistors in series share one current; resistors in parallel share one voltage.")],
+        2: [("resistor-code.svg", "The color bands of a resistor and the digit each color stands for."), ("divider.svg", "A voltage divider: two resistors in series share the supply.")],
+        3: [("rc-curve.svg", "Charging a capacitor through a resistor follows a rising curve; one time constant reaches 63 percent.")],
+        4: [("transformer.svg", "A transformer: the output voltage follows the turns ratio.")],
+        5: [("diode-iv.svg", "A diode passes current one way, with a knee near 0.7 volts."), ("rectify.svg", "Half-wave and full-wave rectifying of an AC wave."), ("led-resistor.svg", "Sizing the series resistor for an LED.")],
+        6: [("npn-switch.svg", "An NPN transistor switching a lamp from a small base current.")],
+        8: [("waveforms.svg", "A sine wave with its period and peak, and a pulse train with its duty cycle.")],
+        9: [("gate-symbols.svg", "Symbols and truth tables for the basic gates.")],
+        10: [("flipflop.svg", "A D flip-flop copies D to Q on each rising clock edge.")],
+        11: [("opamp.svg", "An inverting op-amp stage: the gain is minus Rf over Rin."), ("timer555.svg", "A 555 timer wired as a free-running oscillator.")],
+        12: [("breadboard.svg", "How a solderless breadboard joins its holes.")]}
+
+
+def build_chapters():
+    base = el1.A + el2.B
+    for i, figlist in FIGS.items():
+        les = base[i]["lesson"]
+        for k, (img, cap) in enumerate(figlist):
+            les.insert(2 + k, el3.FIG(img, cap))
+    # order: charge, lumped, ohm, resistors, simulator, rest, arduino x2
+    return [base[0], el3.LUMP, base[1], base[2], el3.SIM] + base[3:] + [el3.ARD1, el3.ARD2]
+
 
 CFG = dict(id="electronics-from-scratch", title="Electronics from Scratch: Components, Circuits and Logic", subtitle="From electric charge to op-amps and logic gates, with small Python models of each idea",
     description="An original beginner course in electronics, covering the same ground as a classic introductory handbook. You will learn electricity and Ohm's law, resistors, capacitors, coils and transformers, diodes and LEDs, transistors, thyristors and light detectors, waves and signals, digital logic and memory, linear ICs such as the op-amp and the 555 timer, and how to build, solder and measure real circuits safely. Each chapter has an ELI5 block, a quiz and Python labs that calculate the circuits.",
-    pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, appdir="elc", apps={})
+    pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, appdir="elc", apps={"__SIM__": "sim.html", "__ARD__": "ard.html"}, images=IMAGES)
 
 if __name__ == "__main__":
     out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "courses", "electronics-from-scratch.course.json")
-    cmk.main(CFG, el1.A + el2.B, [sys.argv[0], out])
+    cmk.main(CFG, build_chapters(), [sys.argv[0], out])

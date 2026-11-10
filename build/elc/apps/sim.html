@@ -1,0 +1,72 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button,select{font:inherit;border:0;border-radius:18px;padding:7px 12px;background:#2d2046;color:#e7d9ff;margin:2px}
+button.on{background:#b26bff;color:#1b0b33;font-weight:600}.m{color:#c9b8e8;margin:6px 0}
+canvas{background:#1c1530;border-radius:10px;width:100%;max-width:560px;touch-action:manipulation;display:block;margin:6px auto}
+#out{font:12px ui-monospace,monospace;white-space:pre-wrap;color:#d9ccf5}.good{color:#8fe3a8}
+</style></head><body>
+<div class="m">Pick a tool, then tap two grid points to place a part between them. Battery: first tap is plus. Tap Solve to see voltages and currents. Goal: build a divider from a 9 V battery that gives a 3 V node.</div>
+<div id="tools"></div>
+<div>Value <select id="val"><option>100</option><option>220</option><option>470</option><option selected>1000</option><option>2000</option><option>4700</option><option>10000</option></select>
+<button id="solve">Solve</button><button id="pre">Preset</button><button id="clr">Clear</button></div>
+<canvas id="c" width="560" height="360"></canvas>
+<div id="out"></div>
+<script>
+var COLS=9,ROWS=6,GX=60,OX=40,OY=40,tool="R",parts=[],pend=null,volts=null,cur=null,solved=false,pi=0;
+function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var TL=[["R","Resistor"],["B","Battery 9V"],["L","Lamp"],["W","Wire"],["G","Ground"],["X","Erase"]];
+var tb=document.getElementById("tools");
+TL.forEach(function(t){var b=document.createElement("button");b.textContent=t[1];b.id="t"+t[0];b.onclick=function(){tool=t[0];pend=null;sel();draw()};tb.appendChild(b)});
+function sel(){TL.forEach(function(t){document.getElementById("t"+t[0]).className=t[0]==tool?"on":""})}sel();
+var cv=document.getElementById("c"),cx=cv.getContext("2d");
+function pt(c,r){return [OX+c*GX,OY+r*GX]}
+function id(c,r){return r*COLS+c}
+cv.onclick=function(e){var rc=cv.getBoundingClientRect(),sx=cv.width/rc.width;var x=(e.clientX-rc.left)*sx,y=(e.clientY-rc.top)*sx;
+ var c=Math.round((x-OX)/GX),r=Math.round((y-OY)/GX);if(c<0||c>=COLS||r<0||r>=ROWS)return;var n=id(c,r);
+ if(tool=="G"){parts.push({t:"G",a:n});pend=null;solved=false;volts=null}
+ else if(tool=="X"){parts=parts.filter(function(p){return !(p.a==n||p.b==n)});volts=null}
+ else if(pend===null)pend=n;
+ else if(pend!=n){parts.push({t:tool,a:pend,b:n,v:tool=="R"?+document.getElementById("val").value:tool=="L"?50:tool=="B"?9:0});pend=null;volts=null}
+ else pend=null;draw()};
+function solve(){
+ var par=[];for(var i=0;i<COLS*ROWS;i++)par.push(i);
+ function f(x){while(par[x]!=x){par[x]=par[par[x]];x=par[x]}return x}
+ parts.forEach(function(p){if(p.t=="W")par[f(p.a)]=f(p.b)});
+ var gnd=-1;parts.forEach(function(p){if(p.t=="G"&&gnd<0)gnd=f(p.a)});
+ var bats=parts.filter(function(p){return p.t=="B"});
+ if(gnd<0&&bats.length)gnd=f(bats[0].b);
+ if(gnd<0)return "Add a battery first.";
+ var nodes={},k=0;parts.forEach(function(p){["a","b"].forEach(function(s){if(p[s]!==undefined){var r=f(p[s]);if(r!=gnd&&!(r in nodes))nodes[r]=k++}})});
+ var n=k+bats.length,A=[],z=[];for(var i=0;i<n;i++){A.push(new Array(n).fill(0));z.push(0)}
+ function ix(x){x=f(x);return x==gnd?-1:nodes[x]}
+ for(var i=0;i<k;i++)A[i][i]+=1e-9;
+ parts.forEach(function(p){if(p.t=="R"||p.t=="L"){var g=1/p.v,a=ix(p.a),b=ix(p.b);if(a>=0)A[a][a]+=g;if(b>=0)A[b][b]+=g;if(a>=0&&b>=0){A[a][b]-=g;A[b][a]-=g}}});
+ bats.forEach(function(p,j){var a=ix(p.a),b=ix(p.b),q=k+j;if(a>=0){A[a][q]+=1;A[q][a]+=1}if(b>=0){A[b][q]-=1;A[q][b]-=1}z[q]=p.v});
+ for(var c=0;c<n;c++){var m=c;for(var r=c+1;r<n;r++)if(Math.abs(A[r][c])>Math.abs(A[m][c]))m=r;
+  var t=A[c];A[c]=A[m];A[m]=t;t=z[c];z[c]=z[m];z[m]=t;if(Math.abs(A[c][c])<1e-14)return "Circuit has a short or a loop of ideal sources.";
+  for(var r=0;r<n;r++)if(r!=c){var q=A[r][c]/A[c][c];if(q){for(var j=c;j<n;j++)A[r][j]-=q*A[c][j];z[r]-=q*z[c]}}}
+ var x=z.map(function(v,i){return v/A[i][i]});
+ volts=function(nn){var i=ix(nn);return i<0?0:x[i]};
+ cur=parts.map(function(p,j){if(p.t=="R"||p.t=="L")return (volts(p.a)-volts(p.b))/p.v;if(p.t=="B")return -x[k+bats.indexOf(p)];return 0});
+ var s="",hit=0,rs=parts.filter(function(p){return p.t=="R"}).length;
+ var seen={};parts.forEach(function(p,j){if(p.t=="G")return;["a","b"].forEach(function(q){var r=f(p[q]);if(!seen[r]){seen[r]=1;var v=volts(p[q]);s+="node "+(p[q]%COLS)+","+Math.floor(p[q]/COLS)+": "+v.toFixed(3)+" V\n";if(r!=gnd&&Math.abs(v-3)<0.06&&rs>=2&&bats.length)hit=1}})});
+ parts.forEach(function(p,j){if(p.t=="R"||p.t=="L")s+=(p.t=="R"?"R ":"lamp ")+p.v+" ohm: "+(cur[j]*1000).toFixed(2)+" mA, "+(cur[j]*cur[j]*p.v*1000).toFixed(1)+" mW\n";if(p.t=="B")s+="battery supplies "+(cur[j]*1000).toFixed(2)+" mA\n"});
+ if(hit){s+="\nA 3 V node from 9 V. Goal reached.";solved=true;done()}
+ return s}
+function draw(){cx.clearRect(0,0,560,360);cx.fillStyle="#3b2d5c";
+ for(var r=0;r<ROWS;r++)for(var c=0;c<COLS;c++){var p=pt(c,r);cx.beginPath();cx.arc(p[0],p[1],pend===id(c,r)?7:3,0,7);cx.fillStyle=pend===id(c,r)?"#ffcf66":"#5b4a85";cx.fill()}
+ parts.forEach(function(p,j){if(p.t=="G"){var q=pt(p.a%COLS,Math.floor(p.a/COLS));cx.strokeStyle="#efe9ff";cx.lineWidth=2;for(var i=0;i<3;i++){cx.beginPath();cx.moveTo(q[0]-12+i*4,q[1]+8+i*5);cx.lineTo(q[0]+12-i*4,q[1]+8+i*5);cx.stroke()}return}
+  var a=pt(p.a%COLS,Math.floor(p.a/COLS)),b=pt(p.b%COLS,Math.floor(p.b/COLS)),mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;
+  cx.strokeStyle=p.t=="R"?"#ffb84d":p.t=="B"?"#ff6b6b":p.t=="L"?"#ffe27a":"#efe9ff";cx.lineWidth=p.t=="W"?2:3;cx.beginPath();cx.moveTo(a[0],a[1]);cx.lineTo(b[0],b[1]);cx.stroke();
+  if(p.t!="W"){cx.fillStyle="#150d27";cx.fillRect(mx-16,my-9,32,18);cx.strokeRect(mx-16,my-9,32,18);cx.fillStyle="#f1ebff";cx.font="11px sans-serif";cx.textAlign="center";
+   var lab=p.t=="B"?"9V":p.t=="L"?"lamp":(p.v>=1000?p.v/1000+"k":p.v);cx.fillText(lab,mx,my+4);
+   if(p.t=="B"){cx.fillStyle="#ff6b6b";cx.fillText("+",a[0]+(b[0]>a[0]?8:b[0]<a[0]?-8:0)+(a[0]==b[0]?10:0),a[1]+(a[1]==b[1]?-8:(b[1]>a[1]?10:-6)))}
+   if(p.t=="L"&&cur&&volts){var P=cur[j]*cur[j]*p.v;if(P>0.01){cx.fillStyle="rgba(255,226,122,"+Math.min(0.6,P*2)+")";cx.beginPath();cx.arc(mx,my,22,0,7);cx.fill()}}}});
+ if(volts&&solved!==undefined){cx.fillStyle="#8fe3a8";cx.font="11px sans-serif";cx.textAlign="center";var d={};parts.forEach(function(p){["a","b"].forEach(function(q){if(p[q]!==undefined&&!d[p[q]]){d[p[q]]=1;var w=pt(p[q]%COLS,Math.floor(p[q]/COLS));cx.fillText(volts(p[q]).toFixed(1)+"V",w[0],w[1]-9)}})})}}
+document.getElementById("solve").onclick=function(){document.getElementById("out").textContent=solve();draw();document.getElementById("out").className=solved?"good":""};
+document.getElementById("clr").onclick=function(){parts=[];pend=null;volts=null;cur=null;solved=false;document.getElementById("out").textContent="";draw()};
+var PRE=[[{t:"B",a:id(1,0),b:id(1,4),v:9},{t:"W",a:id(1,0),b:id(3,0)},{t:"R",a:id(3,0),b:id(3,2),v:2000},{t:"R",a:id(3,2),b:id(3,4),v:1000},{t:"W",a:id(3,4),b:id(1,4)},{t:"G",a:id(1,4)}],
+ [{t:"B",a:id(1,0),b:id(1,4),v:9},{t:"W",a:id(1,0),b:id(3,0)},{t:"R",a:id(3,0),b:id(3,4),v:470},{t:"L",a:id(3,0),b:id(5,0),v:50},{t:"W",a:id(5,0),b:id(5,4)},{t:"W",a:id(5,4),b:id(3,4)},{t:"W",a:id(3,4),b:id(1,4)},{t:"G",a:id(1,4)}]];
+document.getElementById("pre").onclick=function(){parts=JSON.parse(JSON.stringify(PRE[pi%PRE.length]));pi++;volts=null;cur=null;draw()};
+draw();
+</script></body></html>

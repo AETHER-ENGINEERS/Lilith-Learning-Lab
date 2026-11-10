@@ -31,6 +31,8 @@ def main(cfg, chapters, argv):
         "finalExam": {"title": "Final exam: " + cfg["title"], "passMark": 70, "size": 20, "questions": exam},
         "sandbox": cfg["sandbox"],
     }
+    if cfg.get("images"):
+        course["images"] = cfg["images"]
     out = argv[1] if len(argv) > 1 else cfg["id"] + ".course.json"
     with open(out, "w", encoding="utf-8") as f:
         json.dump(course, f, ensure_ascii=False, indent=1)
