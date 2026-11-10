@@ -1,0 +1,3740 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "homotopy-type-theory",
+ "title": "Homotopy Type Theory",
+ "subtitle": "Types as spaces, proofs as programs, equality as paths: a first course with Python labs and a circle explorer",
+ "author": "Lilith Learning Lab",
+ "description": "A beginner-friendly introduction to homotopy type theory: types and terms, dependent Pi and Sigma types, propositions as types, identity types and paths, higher paths and groupoids, homotopy levels, equivalences and univalence, higher inductive types such as the circle, the fundamental group of the circle, and cubical type theory with proof assistants. Python labs recompute counts, reduce path words and compute winding numbers; two small interactive apps let you explore loops on the circle and propositions as types.",
+ "pronounce": {
+  "HoTT": "hot",
+  "Voevodsky": "voh ev sky",
+  "Martin-Lof": "mar tin loff",
+  "univalence": "yoo nih vay lence",
+  "Univalence": "yoo nih vay lence",
+  "univalent": "yoo nih vay lent",
+  "homotopy": "hoe mot oh pee",
+  "Homotopy": "hoe mot oh pee",
+  "groupoid": "groop oid",
+  "Groupoid": "groop oid",
+  "Eckmann-Hilton": "eck man hill ton",
+  "Freudenthal": "froy den tall",
+  "Agda": "ahg duh",
+  "Rocq": "rock",
+  "Coq": "coke",
+  "GADT": "gad tee",
+  "Hopf": "hopf",
+  "Curry-Howard": "curry how ard",
+  "refl": "reflect",
+  "Sigma": "sig muh",
+  "Pi": "pie",
+  "Church": "church",
+  "Coquand": "koh kahn",
+  "Awodey": "ah woh dee",
+  "Shulman": "shool man",
+  "fibre": "fy ber",
+  "fibres": "fy bers",
+  "Omega": "oh may guh",
+  "pi1": "pie one",
+  "ELI5": "E L I five"
+ },
+ "chapters": [
+  {
+   "title": "Why types? The big idea of HoTT",
+   "maps": [
+    {
+     "title": "Homotopy type theory",
+     "links": [
+      "Type theory | replaces | Set theory",
+      "Type | has | Terms",
+      "Proposition | is | A type",
+      "Proof | is | A term",
+      "Equality | is | A path",
+      "Univalence | says | Equivalent types are equal",
+      "HoTT | studies | Shapes of types"
+     ]
+    }
+   ],
+   "summary": [
+    "Homotopy type theory, or HoTT, reads types as spaces, terms as points, and equalities as paths between points. A proof that two things are equal becomes a path you can walk, bend and compose.",
+    "It combines two old ideas: Martin-Lof type theory, a foundation for mathematics and programming, and homotopy theory, the study of shapes up to continuous deformation.",
+    "The result is a foundation where equal things really are interchangeable, which is exactly what mathematicians always wanted equality to mean."
+   ],
+   "glossary": [
+    {
+     "term": "Type",
+     "def": "A collection of terms, such as Nat or Bool. Every term belongs to exactly one type."
+    },
+    {
+     "term": "Term",
+     "def": "An element of a type, written a : A."
+    },
+    {
+     "term": "Judgment",
+     "def": "A basic claim, such as a : A (a is a term of type A) or a = b : A (definitionally equal)."
+    },
+    {
+     "term": "Path",
+     "def": "In HoTT, an identification of two terms of the same type."
+    },
+    {
+     "term": "Univalence",
+     "def": "The axiom that equivalent types are equal."
+    },
+    {
+     "term": "Propositions as types",
+     "def": "The reading where a statement is a type and a proof is a term of it."
+    }
+   ],
+   "keyPoints": [
+    "a : A means the term a has type A, like 3 : Nat.",
+    "Statements are types; proofs are terms.",
+    "Equal means connected by a path.",
+    "Paths can be reversed and composed, like loops on a map.",
+    "Univalence: equivalent types are equal.",
+    "HoTT gives a foundation that proof assistants can check."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Every thing in type theory carries a name tag saying what kind of thing it is. The number 3 wears a tag that says Nat. Equal things are things you can walk between."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In ordinary set theory, a thing can belong to many sets, and equality is a yes-or-no fact outside the system. In type theory every thing has a type, born with it, like a passport. The number 3 is a Nat, and that is part of what it is."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "We write a : A for 'a is a term of type A'. We write A -> B for functions from A to B, and A x B for pairs. A new idea comes with a type: Bool has two terms, true and false. Nat has zero and a successor operation, so 0, 1, 2 and so on."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A judgment is a basic assertion that the rules can check. 3 : Nat is a judgment, and so is 2 + 1 = 3 : Nat, which says the two sides compute to the same thing. Judgments are about computation. They are not things you prove inside the theory."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The surprise is that logic comes for free. A statement like 'A implies B' is read as the function type A -> B, and a proof of it is a function that turns proofs of A into proofs of B. This is the Curry-Howard idea, and the next chapters build it up."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Then comes the homotopy. Equality of two terms a and b of type A is itself a type, written a = b. A term of it is a path from a to b. Two paths can be equal too, by a path between paths. The tower of paths between paths gives each type a shape."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Vladimir Voevodsky noticed in the 2000s that this matches homotopy theory. The program, with Awodey, Warren, Coquand, Shulman and many others, produced the HoTT book in 2013. Its flagship idea, univalence, says equivalent types may be treated as equal."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a : A mean?",
+     "options": [
+      "a is a term of type A",
+      "a is a subset of A",
+      "a equals A",
+      "a implies A"
+     ],
+     "answer": 0,
+     "explain": "Typing judgment."
+    },
+    {
+     "q": "In HoTT, what is a proof of a = b?",
+     "options": [
+      "A path from a to b",
+      "A number",
+      "A truth table",
+      "A set"
+     ],
+     "answer": 0,
+     "explain": "An identification."
+    },
+    {
+     "q": "Which idea does homotopy theory supply?",
+     "options": [
+      "Shapes up to deformation",
+      "Counting primes",
+      "Sorting lists",
+      "Compiling code"
+     ],
+     "answer": 0,
+     "explain": "Spaces and paths."
+    },
+    {
+     "q": "What does univalence say?",
+     "options": [
+      "Equivalent types are equal",
+      "All types are sets",
+      "Every type is Bool",
+      "Paths do not exist"
+     ],
+     "answer": 0,
+     "explain": "Transfer along equivalences."
+    },
+    {
+     "q": "A statement 'A implies B' is read as...",
+     "options": [
+      "The function type A -> B",
+      "The pair A x B",
+      "The type Nat",
+      "A path"
+     ],
+     "answer": 0,
+     "explain": "Curry-Howard."
+    },
+    {
+     "q": "Is 2 + 1 = 3 : Nat a theorem or a judgment?",
+     "options": [
+      "A judgment about computation",
+      "An axiom",
+      "A path between paths",
+      "False"
+     ],
+     "answer": 0,
+     "explain": "Both sides compute to the same value."
+    }
+   ],
+   "cards": [
+    {
+     "q": "a : A",
+     "a": "term a has type A"
+    },
+    {
+     "q": "A -> B",
+     "a": "functions from A to B"
+    },
+    {
+     "q": "a = b",
+     "a": "the type of paths from a to b"
+    },
+    {
+     "q": "Univalence",
+     "a": "equivalent types are equal"
+    },
+    {
+     "q": "Judgment",
+     "a": "a basic claim the rules can check"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the notation",
+     "intro": "Pair each notation with its reading.",
+     "pairs": [
+      [
+       "a : A",
+       "a is a term of type A"
+      ],
+      [
+       "A -> B",
+       "function type"
+      ],
+      [
+       "A x B",
+       "pair type"
+      ],
+      [
+       "a = b",
+       "type of paths from a to b"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "The core slogans",
+     "text": "In HoTT, propositions are {{types}}, proofs are {{terms}}, and equalities are {{paths}}."
+    },
+    {
+     "type": "python",
+     "title": "Judge a term",
+     "intro": "Write type_of(expr). An expression is a list: ['num', n] has type 'Nat'; ['bool', b] has type 'Bool'; ['pair', e1, e2] has type '(' + T1 + ' x ' + T2 + ')'; ['add', e1, e2] has type 'Nat' if both parts are Nat, otherwise 'error'; ['if', c, a, b] has the type of a if c is Bool and a and b have the same type, otherwise 'error'. Any 'error' inside makes the result 'error'.",
+     "fn": "type_of",
+     "starter": "def type_of(expr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "num",
+         3
+        ]
+       ],
+       "expect": "Nat"
+      },
+      {
+       "args": [
+        [
+         "bool",
+         true
+        ]
+       ],
+       "expect": "Bool"
+      },
+      {
+       "args": [
+        [
+         "pair",
+         [
+          "num",
+          1
+         ],
+         [
+          "bool",
+          false
+         ]
+        ]
+       ],
+       "expect": "(Nat x Bool)"
+      },
+      {
+       "args": [
+        [
+         "add",
+         [
+          "num",
+          1
+         ],
+         [
+          "num",
+          2
+         ]
+        ]
+       ],
+       "expect": "Nat"
+      },
+      {
+       "args": [
+        [
+         "add",
+         [
+          "num",
+          1
+         ],
+         [
+          "bool",
+          true
+         ]
+        ]
+       ],
+       "expect": "error"
+      },
+      {
+       "args": [
+        [
+         "if",
+         [
+          "bool",
+          true
+         ],
+         [
+          "num",
+          1
+         ],
+         [
+          "num",
+          2
+         ]
+        ]
+       ],
+       "expect": "Nat"
+      },
+      {
+       "args": [
+        [
+         "if",
+         [
+          "num",
+          1
+         ],
+         [
+          "num",
+          1
+         ],
+         [
+          "num",
+          2
+         ]
+        ]
+       ],
+       "expect": "error"
+      },
+      {
+       "args": [
+        [
+         "if",
+         [
+          "bool",
+          false
+         ],
+         [
+          "num",
+          1
+         ],
+         [
+          "bool",
+          true
+         ]
+        ]
+       ],
+       "expect": "error"
+      }
+     ],
+     "hint": "Recurse on the parts, and return 'error' when a rule is broken.",
+     "solution": "def type_of(expr):\n    k = expr[0]\n    if k == \"num\":\n        return \"Nat\"\n    if k == \"bool\":\n        return \"Bool\"\n    if k == \"pair\":\n        a = type_of(expr[1])\n        b = type_of(expr[2])\n        if a == \"error\" or b == \"error\":\n            return \"error\"\n        return \"(\" + a + \" x \" + b + \")\"\n    if k == \"add\":\n        if type_of(expr[1]) == \"Nat\" and type_of(expr[2]) == \"Nat\":\n            return \"Nat\"\n        return \"error\"\n    if k == \"if\":\n        c = type_of(expr[1])\n        a = type_of(expr[2])\n        b = type_of(expr[3])\n        if c == \"Bool\" and a == b and a != \"error\":\n            return a\n        return \"error\"\n    return \"error\"\n"
+    }
+   ]
+  },
+  {
+   "title": "Functions, pairs and dependent types",
+   "maps": [
+    {
+     "title": "Pi and Sigma",
+     "links": [
+      "Function type | is | A to B",
+      "Dependent function | is | Pi type",
+      "Pair type | is | A times B",
+      "Dependent pair | is | Sigma type",
+      "Pi type | is | A product",
+      "Sigma type | is | A sum",
+      "Fibre | depends on | A point"
+     ]
+    }
+   ],
+   "summary": [
+    "A dependent type is a family of types B(x) indexed by x : A. For each x you get a type, called the fibre over x.",
+    "A dependent function type, Pi over x : A of B(x), has functions that send each x to a term in its own fibre B(x). A dependent pair type, Sigma over x : A of B(x), holds pairs of a point x and a term in the fibre over x.",
+    "When B does not depend on x, Pi becomes the function type A -> B and Sigma becomes the product A x B. Counting terms of finite types shows the names: Pi multiplies, Sigma adds."
+   ],
+   "glossary": [
+    {
+     "term": "Dependent type",
+     "def": "A family of types B(x), one for each term x of A."
+    },
+    {
+     "term": "Pi type",
+     "def": "The type of dependent functions; its size is a product of the fibre sizes."
+    },
+    {
+     "term": "Sigma type",
+     "def": "The type of dependent pairs; its size is a sum of the fibre sizes."
+    },
+    {
+     "term": "Fibre",
+     "def": "The type B(x) sitting over a point x."
+    },
+    {
+     "term": "Universe",
+     "def": "A type whose terms are types, written U."
+    }
+   ],
+   "keyPoints": [
+    "Pi: for all. Sigma: there exists.",
+    "|Pi x:A. B(x)| = product of |B(x)|.",
+    "|Sigma x:A. B(x)| = sum of |B(x)|.",
+    "Non-dependent Pi is A -> B; non-dependent Sigma is A x B.",
+    "A universe U holds small types as terms."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A school has students and classes. Pick a class for every student, or pick one student with one class. Those two ways of picking are the two big kinds of type."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Think of a school. For each student x there is a set B(x) of classes the student attends. This is a family indexed by students. That is exactly a dependent type."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A Pi type is a rule that picks one class for every student. A Sigma type is a single pair: one chosen student together with one of that student's classes. 'For all' goes with Pi, and 'there exists' goes with Sigma."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Count with finite types. If A has 3 students and every student has 2 classes, a rule that picks one class for each student has 2 x 2 x 2 = 8 choices. A single pair of student and class has 3 x 2 = 6 choices, which is a sum 2 + 2 + 2."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When every fibre is the same type B, the Pi type is the ordinary function type A -> B with |B| to the power |A| terms. The Sigma type is the product A x B. Dependence adds nothing new, so the usual types are special cases."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To talk about families of types we need types as terms. A universe U is a type whose terms are types. The family B : A -> U assigns each point a type. Writing U : U would cause paradoxes, so in practice there is a hierarchy U0, U1, U2 and so on."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a Pi type collect?",
+     "options": [
+      "Dependent functions",
+      "Dependent pairs",
+      "Paths",
+      "Universes"
+     ],
+     "answer": 0,
+     "explain": "For all."
+    },
+    {
+     "q": "What does a Sigma type collect?",
+     "options": [
+      "Dependent pairs",
+      "Dependent functions",
+      "Booleans",
+      "Proofs of False"
+     ],
+     "answer": 0,
+     "explain": "There exists."
+    },
+    {
+     "q": "If A has 3 points and each fibre has 2, how big is the Sigma type?",
+     "options": [
+      "6",
+      "8",
+      "5",
+      "9"
+     ],
+     "answer": 0,
+     "explain": "2 + 2 + 2."
+    },
+    {
+     "q": "If A has 3 points and each fibre has 2, how big is the Pi type?",
+     "options": [
+      "8",
+      "6",
+      "5",
+      "9"
+     ],
+     "answer": 0,
+     "explain": "2 x 2 x 2."
+    },
+    {
+     "q": "Non-dependent Pi becomes...",
+     "options": [
+      "A -> B",
+      "A x B",
+      "A + B",
+      "A = B"
+     ],
+     "answer": 0,
+     "explain": "Ordinary functions."
+    },
+    {
+     "q": "What is a universe?",
+     "options": [
+      "A type of types",
+      "A proof",
+      "A path",
+      "A number"
+     ],
+     "answer": 0,
+     "explain": "U."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Pi",
+     "a": "for all; product of fibres"
+    },
+    {
+     "q": "Sigma",
+     "a": "there exists; sum of fibres"
+    },
+    {
+     "q": "Fibre",
+     "a": "B(x) over x"
+    },
+    {
+     "q": "Universe",
+     "a": "a type of types"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match logic to type",
+     "intro": "Pair each statement with its type former.",
+     "pairs": [
+      [
+       "for all x, B(x)",
+       "Pi type"
+      ],
+      [
+       "there exists x with B(x)",
+       "Sigma type"
+      ],
+      [
+       "A implies B",
+       "A -> B"
+      ],
+      [
+       "A and B",
+       "A x B"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Count terms",
+     "intro": "Write count_type(kind, fibre_sizes). fibre_sizes is a list with one size for each point of A. If kind is 'pi' return the product of the sizes; if kind is 'sigma' return the sum of the sizes. The product of an empty list is 1 and the sum is 0.",
+     "fn": "count_type",
+     "starter": "def count_type(kind, fibre_sizes):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "pi",
+        [
+         2,
+         2,
+         2
+        ]
+       ],
+       "expect": 8
+      },
+      {
+       "args": [
+        "sigma",
+        [
+         2,
+         2,
+         2
+        ]
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        "pi",
+        [
+         1,
+         3,
+         2
+        ]
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        "sigma",
+        [
+         1,
+         3,
+         2
+        ]
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        "pi",
+        []
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "sigma",
+        []
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        "pi",
+        [
+         2,
+         0,
+         3
+        ]
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Multiply for pi and add for sigma.",
+     "solution": "def count_type(kind, fibre_sizes):\n    if kind == \"pi\":\n        r = 1\n        for s in fibre_sizes:\n            r = r * s\n        return r\n    r = 0\n    for s in fibre_sizes:\n        r = r + s\n    return r\n"
+    },
+    {
+     "type": "python",
+     "title": "Function counts",
+     "intro": "Write count_functions(a, b): the number of ordinary functions from a type with a points to a type with b points. This is b to the power a (note that 0 to the power 0 is 1).",
+     "fn": "count_functions",
+     "starter": "def count_functions(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        2
+       ],
+       "expect": 8
+      },
+      {
+       "args": [
+        2,
+        3
+       ],
+       "expect": 9
+      },
+      {
+       "args": [
+        0,
+        0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        0,
+        5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        4,
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        3,
+        0
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Multiply b by itself a times.",
+     "solution": "def count_functions(a, b):\n    r = 1\n    for i in range(a):\n        r = r * b\n    return r\n"
+    }
+   ]
+  },
+  {
+   "title": "Propositions as types: Curry-Howard",
+   "maps": [
+    {
+     "title": "Curry-Howard",
+     "links": [
+      "Proposition | is | A type",
+      "Implication | is | Function",
+      "Conjunction | is | Pair",
+      "Disjunction | is | Sum type",
+      "False | is | Empty type",
+      "Negation | is | Map to empty",
+      "Proof | is | A program"
+     ]
+    }
+   ],
+   "summary": [
+    "Under the Curry-Howard correspondence, a logical formula is a type and a proof of it is a program of that type. Proving a theorem and writing a program are the same activity.",
+    "Implication is a function type, and is proved by a function. And is a pair type. Or is a sum type, with a left and a right case. False is the empty type, and not-A means A -> False.",
+    "Excluded middle and double negation elimination have no general proof in pure type theory. Statements that need them are not provable constructively."
+   ],
+   "glossary": [
+    {
+     "term": "Curry-Howard",
+     "def": "The correspondence between proofs and programs, and between formulas and types."
+    },
+    {
+     "term": "Lambda abstraction",
+     "def": "Writing a function as a binder, lam x. body."
+    },
+    {
+     "term": "Application",
+     "def": "Using a function on an argument, f a."
+    },
+    {
+     "term": "Empty type",
+     "def": "The type with no terms; it stands for False."
+    },
+    {
+     "term": "Constructive logic",
+     "def": "Logic where a proof of 'exists' must produce a witness."
+    }
+   ],
+   "keyPoints": [
+    "A -> B is both implication and function.",
+    "A x B is both 'and' and pair.",
+    "A + B is both 'or' and sum.",
+    "Empty type: false. Not A is A -> Empty.",
+    "Excluded middle is not provable in pure type theory."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A proof is like a recipe. If you can write a recipe that turns the ingredients A into the dish B, you have proved A leads to B."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Take the formula A implies A. It is true for any statement A, and the proof is easy: assume A and say it again. As a program that is the identity function lam x. x, of type A -> A."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now A implies (B implies A). Assume A, then assume B, and then answer A. As a program, lam x. lam y. x. This function takes two arguments and returns the first. The type of the program is the formula it proves."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A simple type checker is a proof checker. Given the term lam x : A. x, it finds the type A -> A by looking at how the variable x is used. If the term does not typecheck there is no proof. This is the same logic as in the lab for this chapter."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "And is a pair. To prove A and B, give a proof of each. To use it, take out a half with fst or snd. Or is a tagged choice: inl a or inr b. To use a proof of A or B, you must handle both cases, like a case split in a program."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "False has no proof, so it is the empty type. Not A is the function type A -> False. A proof of not A turns any proof of A into a contradiction. Classical logic adds the law A or not A, but a program of that type would have to decide A, which is impossible in general."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In Haskell the same ideas show up in everyday code. The function const :: a -> b -> a is the proof of A implies (B implies A), and the type Either a b is a disjunction. A program that compiles is a proof of its type, as long as it terminates and uses no undefined."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "haskell",
+     "code": "-- Haskell: types as propositions\nidentity :: a -> a\nidentity x = x\n\nconstFn :: a -> b -> a\nconstFn x _ = x\n\nswapPair :: (a, b) -> (b, a)\nswapPair (x, y) = (y, x)"
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does A x B stand for in logic?",
+     "options": [
+      "A and B",
+      "A or B",
+      "Not A",
+      "A implies B"
+     ],
+     "answer": 0,
+     "explain": "Pair."
+    },
+    {
+     "q": "What is the proof of A -> A?",
+     "options": [
+      "The identity function",
+      "A pair",
+      "The empty type",
+      "A path"
+     ],
+     "answer": 0,
+     "explain": "lam x. x."
+    },
+    {
+     "q": "How is not-A defined?",
+     "options": [
+      "A -> False",
+      "A x False",
+      "A + False",
+      "False -> A"
+     ],
+     "answer": 0,
+     "explain": "Map to the empty type."
+    },
+    {
+     "q": "Which law is not provable in pure type theory?",
+     "options": [
+      "A or not A",
+      "A -> A",
+      "A and B implies A",
+      "A -> (B -> A)"
+     ],
+     "answer": 0,
+     "explain": "Excluded middle."
+    },
+    {
+     "q": "What is a proof of A or B?",
+     "options": [
+      "inl a or inr b",
+      "A pair (a, b)",
+      "A function",
+      "A path"
+     ],
+     "answer": 0,
+     "explain": "Tagged choice."
+    },
+    {
+     "q": "A type checker that accepts a term is also...",
+     "options": [
+      "A proof checker",
+      "A compiler",
+      "A sorter",
+      "A parser"
+     ],
+     "answer": 0,
+     "explain": "Checks the proof."
+    }
+   ],
+   "cards": [
+    {
+     "q": "A -> B",
+     "a": "implication = function"
+    },
+    {
+     "q": "A x B",
+     "a": "conjunction = pair"
+    },
+    {
+     "q": "A + B",
+     "a": "disjunction = sum"
+    },
+    {
+     "q": "Empty",
+     "a": "false"
+    },
+    {
+     "q": "Not A",
+     "a": "A -> Empty"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the connective",
+     "intro": "Pair each logical connective with its type.",
+     "pairs": [
+      [
+       "implies",
+       "function type"
+      ],
+      [
+       "and",
+       "pair type"
+      ],
+      [
+       "or",
+       "sum type"
+      ],
+      [
+       "false",
+       "empty type"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Curry-Howard",
+     "text": "A proof of A implies B is a {{function}} from proofs of A to proofs of B. The identity function proves A implies {{A}}. False is the {{empty}} type."
+    },
+    {
+     "type": "python",
+     "title": "A tiny proof checker",
+     "intro": "Write infer(term, ctx). A term is ['var', name], ['lam', name, type, body] or ['app', f, a]. A type is a string such as 'A' or a list ['->', t1, t2]. ctx is a dict from names to types. Return the type of the term, or 'error'. A lam of type t with body type r has type ['->', t, r]. An app needs f of type ['->', t1, t2] and an argument of type t1, and gives t2.",
+     "fn": "infer",
+     "starter": "def infer(term, ctx):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "lam",
+         "x",
+         "A",
+         [
+          "var",
+          "x"
+         ]
+        ],
+        {}
+       ],
+       "expect": [
+        "->",
+        "A",
+        "A"
+       ]
+      },
+      {
+       "args": [
+        [
+         "lam",
+         "x",
+         "A",
+         [
+          "lam",
+          "y",
+          "B",
+          [
+           "var",
+           "x"
+          ]
+         ]
+        ],
+        {}
+       ],
+       "expect": [
+        "->",
+        "A",
+        [
+         "->",
+         "B",
+         "A"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "app",
+         [
+          "lam",
+          "x",
+          "A",
+          [
+           "var",
+           "x"
+          ]
+         ],
+         [
+          "var",
+          "a"
+         ]
+        ],
+        {
+         "a": "A"
+        }
+       ],
+       "expect": "A"
+      },
+      {
+       "args": [
+        [
+         "app",
+         [
+          "lam",
+          "x",
+          "A",
+          [
+           "var",
+           "x"
+          ]
+         ],
+         [
+          "var",
+          "b"
+         ]
+        ],
+        {
+         "b": "B"
+        }
+       ],
+       "expect": "error"
+      },
+      {
+       "args": [
+        [
+         "var",
+         "z"
+        ],
+        {}
+       ],
+       "expect": "error"
+      },
+      {
+       "args": [
+        [
+         "lam",
+         "f",
+         [
+          "->",
+          "A",
+          "B"
+         ],
+         [
+          "lam",
+          "x",
+          "A",
+          [
+           "app",
+           [
+            "var",
+            "f"
+           ],
+           [
+            "var",
+            "x"
+           ]
+          ]
+         ]
+        ],
+        {}
+       ],
+       "expect": [
+        "->",
+        [
+         "->",
+         "A",
+         "B"
+        ],
+        [
+         "->",
+         "A",
+         "B"
+        ]
+       ]
+      }
+     ],
+     "hint": "Copy the context before adding the lambda variable.",
+     "solution": "def infer(term, ctx):\n    k = term[0]\n    if k == \"var\":\n        if term[1] in ctx:\n            return ctx[term[1]]\n        return \"error\"\n    if k == \"lam\":\n        c = {}\n        for key in ctx:\n            c[key] = ctx[key]\n        c[term[1]] = term[2]\n        r = infer(term[3], c)\n        if r == \"error\":\n            return \"error\"\n        return [\"->\", term[2], r]\n    if k == \"app\":\n        f = infer(term[1], ctx)\n        a = infer(term[2], ctx)\n        if f == \"error\" or a == \"error\":\n            return \"error\"\n        if isinstance(f, list) and f[0] == \"->\" and f[1] == a:\n            return f[2]\n        return \"error\"\n    return \"error\"\n"
+    }
+   ]
+  },
+  {
+   "title": "Identity types and paths",
+   "maps": [
+    {
+     "title": "Identity types",
+     "links": [
+      "Identity type | holds | Paths",
+      "Reflexivity | is | The trivial path",
+      "Path | has | Inverse",
+      "Paths | compose | End to start",
+      "Function | acts on | Paths",
+      "Transport | moves | Fibres along paths",
+      "Path induction | proves | By refl only"
+     ]
+    }
+   ],
+   "summary": [
+    "For terms a, b : A, the identity type a = b holds the proofs that a and b are equal. In HoTT we call a term p : a = b a path from a to b.",
+    "The basic path is refl : a = a. The induction principle for paths, written J, says that to prove something about all paths it is enough to prove it for refl.",
+    "From this one rule come symmetry (reverse a path), transitivity (compose paths), ap (apply a function to a path) and transport (move a term along a path)."
+   ],
+   "glossary": [
+    {
+     "term": "Identity type",
+     "def": "The type a = b of identifications between a and b."
+    },
+    {
+     "term": "refl",
+     "def": "The constant path refl_a : a = a."
+    },
+    {
+     "term": "Path induction",
+     "def": "The rule that lets you assume a path is refl when proving things about all paths."
+    },
+    {
+     "term": "ap",
+     "def": "Applying a function f to a path p : a = b to get ap f p : f a = f b."
+    },
+    {
+     "term": "Transport",
+     "def": "Moving a term in a fibre B(a) along a path p : a = b to a term in B(b)."
+    }
+   ],
+   "keyPoints": [
+    "refl : a = a.",
+    "Reverse: p : a = b gives inverse p : b = a.",
+    "Compose: p : a = b and q : b = c give p . q : a = c.",
+    "ap f p : f a = f b.",
+    "transport B p : B(a) -> B(b)."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Two places are equal if you can walk from one to the other. Walking back and forth, or joining two walks, are just ways to build new walks."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A path from a to b is a way to get from a to b inside the type. The simplest path stays put: refl at a. Because every type has refl at every point, every point is connected to itself."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "From refl we can build the rest. To reverse a path, just walk it backwards. To follow a path from a to b, then a path from b to c, join them end to start. Joined paths are written p . q. Reverse paths are written p inverse."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A function carries paths with it. If f : A -> B and p is a path from a to a prime in A, then ap f p is a path from f a to f a prime in B. Functions respect equality, so 'equal inputs give equal outputs' is just ap."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Transport is the dependent version. A type family B over A tells you what sits over each point. If p is a path from a to b, then transport along p turns a term in B(a) into a term in B(b). Facts about a can be moved to b along any identification."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Path induction is the elimination rule. To prove a statement about every path p from x to y for all x and y, it is enough to prove it for refl at each x. This one rule gives you inverse, composition, ap and transport, and it is why proofs of equality can be so short."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "-- Agda-style sketch\nsym : {A : Type} {a b : A} -> a == b -> b == a\nsym refl = refl\n\ntrans : {A : Type} {a b c : A} -> a == b -> b == c -> a == c\ntrans refl q = q\n\nap : {A B : Type} (f : A -> B) {a b : A} -> a == b -> f a == f b\nap f refl = refl"
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is refl?",
+     "options": [
+      "The path from a to a",
+      "A function",
+      "A universe",
+      "A pair"
+     ],
+     "answer": 0,
+     "explain": "Trivial identification."
+    },
+    {
+     "q": "What does ap f p give?",
+     "options": [
+      "A path from f a to f b",
+      "A path from a to b",
+      "A pair",
+      "A number"
+     ],
+     "answer": 0,
+     "explain": "Functions respect paths."
+    },
+    {
+     "q": "What does transport do?",
+     "options": [
+      "Moves a term along a path",
+      "Reverses a path",
+      "Counts points",
+      "Defines a type"
+     ],
+     "answer": 0,
+     "explain": "Fibres follow paths."
+    },
+    {
+     "q": "What is enough to prove for all paths?",
+     "options": [
+      "The case refl",
+      "The case of numbers",
+      "A pair",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Path induction."
+    },
+    {
+     "q": "If p : a = b and q : b = c, p . q is...",
+     "options": [
+      "a = c",
+      "b = b",
+      "a = a",
+      "c = a"
+     ],
+     "answer": 0,
+     "explain": "Composition."
+    },
+    {
+     "q": "What is the inverse of p : a = b?",
+     "options": [
+      "A path b = a",
+      "A path a = a",
+      "A function",
+      "A type"
+     ],
+     "answer": 0,
+     "explain": "Walk backwards."
+    }
+   ],
+   "cards": [
+    {
+     "q": "refl",
+     "a": "the trivial path"
+    },
+    {
+     "q": "p . q",
+     "a": "compose paths"
+    },
+    {
+     "q": "inverse p",
+     "a": "reverse the path"
+    },
+    {
+     "q": "ap f p",
+     "a": "apply f to a path"
+    },
+    {
+     "q": "transport",
+     "a": "move along a path"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the path operation",
+     "intro": "Pair each operation with its description.",
+     "pairs": [
+      [
+       "refl",
+       "stay put"
+      ],
+      [
+       "inverse",
+       "walk backwards"
+      ],
+      [
+       "compose",
+       "join end to start"
+      ],
+      [
+       "ap",
+       "carry a path through a function"
+      ],
+      [
+       "transport",
+       "move a term along a path"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Compose paths",
+     "intro": "Paths are lists of points, for example [1, 2, 3] goes from 1 to 3. Write compose(p, q): if the last point of p equals the first point of q, return the joined path with the shared point kept once; otherwise return an empty list. Write the answer for q starting where p ends.",
+     "fn": "compose",
+     "starter": "def compose(p, q):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         3,
+         4
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        3,
+        4
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         3,
+         4
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         5
+        ],
+        [
+         5,
+         6,
+         7
+        ]
+       ],
+       "expect": [
+        5,
+        6,
+        7
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         3
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         1
+        ]
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Skip the first point of q when you copy it.",
+     "solution": "def compose(p, q):\n    if len(p) == 0 or len(q) == 0:\n        return []\n    if p[len(p) - 1] != q[0]:\n        return []\n    r = []\n    for x in p:\n        r.append(x)\n    for i in range(1, len(q)):\n        r.append(q[i])\n    return r\n"
+    },
+    {
+     "type": "python",
+     "title": "Inverse and ap",
+     "intro": "Write invert_apply(p, f): reverse the path p, then apply the function table f (a dict mapping a string of the point to a new point, with points as ints) to every point. Use f[str(x)] for point x. Return the new list.",
+     "fn": "invert_apply",
+     "starter": "def invert_apply(p, f):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        {
+         "1": 10,
+         "2": 20,
+         "3": 30
+        }
+       ],
+       "expect": [
+        30,
+        20,
+        10
+       ]
+      },
+      {
+       "args": [
+        [
+         4
+        ],
+        {
+         "4": 0
+        }
+       ],
+       "expect": [
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         1
+        ],
+        {
+         "1": 5,
+         "2": 6
+        }
+       ],
+       "expect": [
+        5,
+        6,
+        5
+       ]
+      }
+     ],
+     "hint": "Walk the list from the end.",
+     "solution": "def invert_apply(p, f):\n    r = []\n    i = len(p) - 1\n    while i >= 0:\n        r.append(f[str(p[i])])\n        i = i - 1\n    return r\n"
+    }
+   ]
+  },
+  {
+   "title": "Higher paths and the groupoid structure",
+   "maps": [
+    {
+     "title": "Higher paths",
+     "links": [
+      "Path | between | Paths",
+      "Types | form | Infinity groupoids",
+      "Composition | is | Associative up to path",
+      "Inverse | cancels | Up to path",
+      "Loop | is | A path to itself",
+      "Loop space | holds | Loops at a point",
+      "Eckmann-Hilton | makes | Higher loops commute"
+     ]
+    }
+   ],
+   "summary": [
+    "Paths are terms of the identity type, so two paths p, q : a = b can themselves be compared by the type p = q. A term of that is a 2-path, a path between paths.",
+    "Composition of paths is associative, has refl as a unit, and has inverses, but only up to a higher path. A type with this structure is an infinity-groupoid.",
+    "A loop at a is a path a = a. The loops at a form the loop space, and its structure is where homotopy groups come from."
+   ],
+   "glossary": [
+    {
+     "term": "2-path",
+     "def": "A path between two paths with the same ends."
+    },
+    {
+     "term": "Groupoid",
+     "def": "A structure with objects, reversible arrows, composition and identities."
+    },
+    {
+     "term": "Loop",
+     "def": "A path from a point to itself."
+    },
+    {
+     "term": "Loop space",
+     "def": "The type of loops a = a at a base point a, written Omega(A, a)."
+    },
+    {
+     "term": "Eckmann-Hilton argument",
+     "def": "Two compatible products on a set that share a unit must agree and be commutative."
+    }
+   ],
+   "keyPoints": [
+    "p = q is a type; its terms are 2-paths.",
+    "Associativity: (p . q) . r = p . (q . r) by a path.",
+    "p . inverse p = refl by a path.",
+    "Loops at a form the loop space Omega(A, a).",
+    "Each type is a tower of paths: an infinity-groupoid."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Two walks between the same places can sometimes be bent into each other. That bend is a path between paths, and you can keep doing this forever."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Take a map of a city with one-way and two-way streets. A path is a route. Two routes with the same ends are different, but you can ask whether one can be smoothly bent into the other. If so, there is a 2-path between them."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The laws of composition hold up to such bends. Joining three routes in one order or the other gives routes that are not identical, but they are connected by a bend. Going out and back along the same route can be shrunk to staying put, up to a bend."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There is no end to the tower, since 2-paths are also compared, giving 3-paths, and so on. A type with all these layers is an infinity-groupoid. This is how type theory sees a space: as points, paths, paths between paths, forever."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A loop at a base point a is a path from a to a. The loops at a form the loop space. Composition of loops gives a group-like structure. Taking loops again, loops of loops, gives the higher loop spaces, and those are commutative by the Eckmann-Hilton argument."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the lab you work with the simplest model: free groupoid words. A route is a word in letters a and b, with capital letters for walking backwards. A letter followed by its inverse cancels. Reducing a word gives its normal form, the shortest route that is equal to it."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a 2-path?",
+     "options": [
+      "A path between paths",
+      "Two points",
+      "A pair of types",
+      "A universe"
+     ],
+     "answer": 0,
+     "explain": "Higher structure."
+    },
+    {
+     "q": "What do loops at a base point form?",
+     "options": [
+      "The loop space",
+      "A function",
+      "A proof of False",
+      "A set of numbers"
+     ],
+     "answer": 0,
+     "explain": "Omega(A, a)."
+    },
+    {
+     "q": "What does a . inverse a equal, up to a path?",
+     "options": [
+      "refl",
+      "a",
+      "b",
+      "empty"
+     ],
+     "answer": 0,
+     "explain": "Cancellation."
+    },
+    {
+     "q": "A type seen with all its higher paths is...",
+     "options": [
+      "An infinity-groupoid",
+      "A Boolean algebra",
+      "A graph",
+      "A list"
+     ],
+     "answer": 0,
+     "explain": "Towers of paths."
+    },
+    {
+     "q": "Why are higher loops commutative?",
+     "options": [
+      "Eckmann-Hilton",
+      "Pythagoras",
+      "Euclid",
+      "Cantor"
+     ],
+     "answer": 0,
+     "explain": "Two products agree."
+    },
+    {
+     "q": "Do the groupoid laws hold on the nose?",
+     "options": [
+      "Only up to higher paths",
+      "Always as identity",
+      "Never",
+      "Only for Nat"
+     ],
+     "answer": 0,
+     "explain": "Coherence."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Loop",
+     "a": "a path from a to a"
+    },
+    {
+     "q": "Omega(A, a)",
+     "a": "the loop space"
+    },
+    {
+     "q": "2-path",
+     "a": "a path between paths"
+    },
+    {
+     "q": "Groupoid",
+     "a": "objects with invertible arrows"
+    },
+    {
+     "q": "Eckmann-Hilton",
+     "a": "higher loops commute"
+    }
+   ],
+   "practice": [
+    {
+     "type": "order",
+     "title": "Reduce a route",
+     "intro": "Put the steps in the order you would cancel the word a b B A c.",
+     "items": [
+      "Find the adjacent pair b B",
+      "Cancel it",
+      "Find the new adjacent pair a A",
+      "Cancel it",
+      "Left with c"
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Reduce a word",
+     "intro": "Write reduce_word(w). w is a string of letters where a lowercase letter is a step and the same capital letter is its inverse, for example 'aA' cancels. Repeatedly remove adjacent pairs of a letter and its inverse (like 'aA' or 'Bb') and return the reduced string.",
+     "fn": "reduce_word",
+     "starter": "def reduce_word(w):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "abBA"
+       ],
+       "expect": ""
+      },
+      {
+       "args": [
+        "aabAAb"
+       ],
+       "expect": "aabAAb"
+      },
+      {
+       "args": [
+        "abc"
+       ],
+       "expect": "abc"
+      },
+      {
+       "args": [
+        "aAbBcC"
+       ],
+       "expect": ""
+      },
+      {
+       "args": [
+        "abBAc"
+       ],
+       "expect": "c"
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": ""
+      },
+      {
+       "args": [
+        "aaAAa"
+       ],
+       "expect": "a"
+      }
+     ],
+     "hint": "Use a stack: cancel when the top is the opposite case of the same letter.",
+     "solution": "def reduce_word(w):\n    out = []\n    for ch in w:\n        if len(out) > 0 and out[len(out) - 1] != ch and out[len(out) - 1].lower() == ch.lower():\n            out.pop()\n        else:\n            out.append(ch)\n    return \"\".join(out)\n"
+    },
+    {
+     "type": "python",
+     "title": "Inverse of a word",
+     "intro": "Write word_inverse(w): the inverse of a route reverses the order and swaps the case of each letter. 'abC' becomes 'cBA'.",
+     "fn": "word_inverse",
+     "starter": "def word_inverse(w):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "abC"
+       ],
+       "expect": "cBA"
+      },
+      {
+       "args": [
+        "a"
+       ],
+       "expect": "A"
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": ""
+      },
+      {
+       "args": [
+        "AbcD"
+       ],
+       "expect": "dCBa"
+      }
+     ],
+     "hint": "Walk backwards and flip the case.",
+     "solution": "def word_inverse(w):\n    r = []\n    i = len(w) - 1\n    while i >= 0:\n        ch = w[i]\n        if ch == ch.lower():\n            r.append(ch.upper())\n        else:\n            r.append(ch.lower())\n        i = i - 1\n    return \"\".join(r)\n"
+    }
+   ]
+  },
+  {
+   "title": "Homotopy levels: propositions and sets",
+   "maps": [
+    {
+     "title": "Homotopy levels",
+     "links": [
+      "Contractible | has | One point",
+      "Proposition | has | At most one proof",
+      "Set | has | Trivial path spaces",
+      "1-type | has | Nontrivial loops",
+      "Level n | restricts | Path spaces",
+      "Truncation | forces | A lower level",
+      "Nat | is | A set"
+     ]
+    }
+   ],
+   "summary": [
+    "Types come in levels by how complicated their paths are. A contractible type is a single point up to paths. A proposition has at most one term up to paths. A set has no interesting paths between paths.",
+    "Level n + 1 means that all path types a = b have level n. The levels start at -2 for contractible, -1 for propositions, 0 for sets and 1 for groupoid-like types.",
+    "Truncation squeezes a type into a lower level. For example, a set truncation keeps only which component you are in, forgetting the paths."
+   ],
+   "glossary": [
+    {
+     "term": "Contractible",
+     "def": "A type with a center point such that every point equals it; level -2."
+    },
+    {
+     "term": "Proposition",
+     "def": "A type any two of whose terms are equal; level -1."
+    },
+    {
+     "term": "Set",
+     "def": "A type whose path types are propositions; level 0."
+    },
+    {
+     "term": "n-type",
+     "def": "A type whose path types are (n-1)-types."
+    },
+    {
+     "term": "Truncation",
+     "def": "Turning a type into the closest type at a lower level."
+    }
+   ],
+   "keyPoints": [
+    "Level -2: contractible. Level -1: proposition. Level 0: set.",
+    "A proposition has at most one proof.",
+    "A set has paths that are all unique.",
+    "Nat and Bool are sets.",
+    "Truncation forgets higher paths."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Some shapes are a dot, some are a few dots, and some have holes. Counting how complicated their paths are gives them a level."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Look at a type from a distance. If it is just one point with nothing to wiggle, it is contractible, like a single dot. If it has at most one point, so any two proofs are the same, it is a proposition. These behave like true or false in ordinary logic."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "If it has many points but each pair is joined by at most one path, it is a set. The natural numbers are a set: 3 is 3 in one way only. Sets are what ordinary mathematics uses, and in HoTT they are a special case."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "If the paths of a type can themselves differ, but the paths between paths are unique, the type is a 1-type, or a groupoid. A circle is the typical example. Its loops are counted by the integers, which is the first interesting homotopy."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The level of a type is a property, not a choice. Sigma and Pi types preserve levels. A function type into a proposition is a proposition. This is why logic with propositions works well in HoTT: the usual rules hold."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Truncation makes the right statement for 'there exists'. A plain Sigma type remembers which witness, but we often only want to know that one exists. Propositional truncation squashes the Sigma type to a proposition, so existence means no more than just that it exists."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What level is a contractible type?",
+     "options": [
+      "-2",
+      "-1",
+      "0",
+      "1"
+     ],
+     "answer": 0,
+     "explain": "A point."
+    },
+    {
+     "q": "A proposition has...",
+     "options": [
+      "At most one term up to paths",
+      "Exactly two terms",
+      "Infinitely many",
+      "No terms"
+     ],
+     "answer": 0,
+     "explain": "Level -1."
+    },
+    {
+     "q": "Is Nat a set?",
+     "options": [
+      "Yes",
+      "No",
+      "Only after truncation",
+      "Only in Agda"
+     ],
+     "answer": 0,
+     "explain": "Unique equalities."
+    },
+    {
+     "q": "What does truncation do?",
+     "options": [
+      "Forgets higher paths",
+      "Adds paths",
+      "Deletes the type",
+      "Counts points"
+     ],
+     "answer": 0,
+     "explain": "Lowers the level."
+    },
+    {
+     "q": "What is a typical 1-type?",
+     "options": [
+      "The circle",
+      "A point",
+      "Bool",
+      "Empty"
+     ],
+     "answer": 0,
+     "explain": "Nontrivial loops."
+    },
+    {
+     "q": "Which levels are logic's propositions?",
+     "options": [
+      "-1",
+      "0",
+      "1",
+      "2"
+     ],
+     "answer": 0,
+     "explain": "Squashed to a mere yes or no."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Level -2",
+     "a": "contractible"
+    },
+    {
+     "q": "Level -1",
+     "a": "proposition"
+    },
+    {
+     "q": "Level 0",
+     "a": "set"
+    },
+    {
+     "q": "Level 1",
+     "a": "groupoid"
+    },
+    {
+     "q": "Truncation",
+     "a": "forget higher paths"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the level",
+     "intro": "Pair each type with its homotopy level.",
+     "pairs": [
+      [
+       "A single point",
+       "contractible"
+      ],
+      [
+       "The empty type",
+       "proposition"
+      ],
+      [
+       "Bool",
+       "set"
+      ],
+      [
+       "The circle",
+       "1-type"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Classify a toy type",
+     "intro": "A toy type has n points, and each point has the same number of loops (automorphisms). Write level(n, loops, connected). Follow these rules in order: n == 0 gives -1 (the empty type is a proposition); n == 1 and loops == 1 gives -2 (contractible); loops > 1 gives 1 (nontrivial loops); anything else gives 0 (a set). The argument connected is kept for the picture but not needed.",
+     "fn": "level",
+     "starter": "def level(n, loops, connected):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        1,
+        false
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        1,
+        1,
+        true
+       ],
+       "expect": -2
+      },
+      {
+       "args": [
+        3,
+        1,
+        false
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        1,
+        2,
+        true
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        5,
+        1,
+        false
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        2,
+        3,
+        false
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Follow the rules in the order given.",
+     "solution": "def level(n, loops, connected):\n    if n == 0:\n        return -1\n    if n == 1 and loops == 1:\n        return -2\n    if loops > 1:\n        return 1\n    return 0\n"
+    },
+    {
+     "type": "python",
+     "title": "Count components",
+     "intro": "Write components(n, edges): the number of connected components of a graph with n points 0..n-1 and a list of edges [a, b]. This counts the points of the set truncation.",
+     "fn": "components",
+     "starter": "def components(n, edges):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        4,
+        [
+         [
+          0,
+          1
+         ],
+         [
+          2,
+          3
+         ]
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        5,
+        []
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        3,
+        [
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          2
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        0,
+        []
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        6,
+        [
+         [
+          0,
+          1
+         ],
+         [
+          2,
+          3
+         ],
+         [
+          4,
+          5
+         ],
+         [
+          1,
+          2
+         ]
+        ]
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "Union-find, or walk the graph from each unseen point.",
+     "solution": "def components(n, edges):\n    parent = []\n    for i in range(n):\n        parent.append(i)\n\n    def find(x):\n        while parent[x] != x:\n            parent[x] = parent[parent[x]]\n            x = parent[x]\n        return x\n    for e in edges:\n        a = find(e[0])\n        b = find(e[1])\n        if a != b:\n            parent[a] = b\n    roots = {}\n    for i in range(n):\n        roots[find(i)] = 1\n    return len(roots)\n"
+    }
+   ]
+  },
+  {
+   "title": "Equivalences and univalence",
+   "maps": [
+    {
+     "title": "Univalence",
+     "links": [
+      "Equivalence | is | A good bijection",
+      "Equivalence | has | An inverse",
+      "Identity | gives | Equivalence",
+      "Univalence | turns | Equivalence into path",
+      "Path in U | is | An equivalence",
+      "Transport | follows | Equivalence",
+      "Structure | transfers | Along equivalence"
+     ]
+    }
+   ],
+   "summary": [
+    "An equivalence between types A and B is a function with an inverse up to paths, written A ~ B. For sets it is exactly a bijection.",
+    "Every path A = B in the universe gives an equivalence, by transport. The univalence axiom says that this map is itself an equivalence, so equivalences are the same as paths in the universe.",
+    "Therefore equivalent types are interchangeable: any property proved for A can be transported to B."
+   ],
+   "glossary": [
+    {
+     "term": "Equivalence",
+     "def": "A function with a two-sided inverse up to homotopy."
+    },
+    {
+     "term": "Bijection",
+     "def": "A function between sets with an inverse; an equivalence of sets."
+    },
+    {
+     "term": "Univalence axiom",
+     "def": "The map from paths A = B in a universe to equivalences A ~ B is an equivalence."
+    },
+    {
+     "term": "Transport along an equivalence",
+     "def": "Moving structure or properties from one type to an equivalent one."
+    },
+    {
+     "term": "Isomorphism",
+     "def": "An invertible structure-preserving map; univalence makes isomorphic structures equal."
+    }
+   ],
+   "keyPoints": [
+    "A ~ B: a function with an inverse up to paths.",
+    "For finite sets, equivalence = bijection.",
+    "Univalence: (A = B) is equivalent to (A ~ B).",
+    "Isomorphic things are equal; use either.",
+    "n points have n! self-equivalences."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. If two toys are the same in every way that matters, you can swap them. Univalence says the math may treat them as one and the same toy."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In everyday mathematics, we say two things are 'the same' if they are isomorphic, and then we freely replace one with the other. But set theory does not support this: a statement about one may be false for the other if it looks at the details of how it is built. Univalence fixes that."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An equivalence is a function f with an inverse g such that going there and back is homotopic to doing nothing. For two sets, this is simply a bijection. For richer types there is extra data, because the homotopies must be coherent."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Take any path between two types in the universe. Transport along the path gives an equivalence, so every identification yields one. The axiom says the reverse: every equivalence arises, uniquely, from a path. So A = B and A ~ B are the same."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The consequences are strong. Anything you prove about a type, like a group structure, can be carried over to an equivalent type automatically, with no special proof. The principle that isomorphic structures are indistinguishable becomes a theorem."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Count to see equivalence at work. A set with 3 points has 3! = 6 self-equivalences, the permutations. The type of equivalences from a 3-point set to itself has exactly six points, and the path space of the 3-point set in the universe also has six points. They match, as univalence predicts."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "For finite sets, an equivalence is...",
+     "options": [
+      "A bijection",
+      "A subset",
+      "A path of length 2",
+      "A proposition"
+     ],
+     "answer": 0,
+     "explain": "Two-sided inverse."
+    },
+    {
+     "q": "What does the univalence axiom say?",
+     "options": [
+      "Paths A = B correspond to equivalences A ~ B",
+      "All types are sets",
+      "Nat is empty",
+      "J has no proof"
+     ],
+     "answer": 0,
+     "explain": "In a universe."
+    },
+    {
+     "q": "How many self-equivalences does a 3-point set have?",
+     "options": [
+      "6",
+      "3",
+      "9",
+      "27"
+     ],
+     "answer": 0,
+     "explain": "3 factorial."
+    },
+    {
+     "q": "What can you transport along an equivalence?",
+     "options": [
+      "Structure and properties",
+      "Only numbers",
+      "Nothing",
+      "Only proofs of False"
+     ],
+     "answer": 0,
+     "explain": "That is the point."
+    },
+    {
+     "q": "Are isomorphic groups equal in HoTT?",
+     "options": [
+      "Yes, by univalence",
+      "No",
+      "Only finite ones",
+      "Only Z"
+     ],
+     "answer": 0,
+     "explain": "Isomorphism becomes identity."
+    },
+    {
+     "q": "What gives an equivalence from a path in U?",
+     "options": [
+      "Transport",
+      "Truncation",
+      "Sorting",
+      "Counting"
+     ],
+     "answer": 0,
+     "explain": "Path to equivalence."
+    }
+   ],
+   "cards": [
+    {
+     "q": "A ~ B",
+     "a": "equivalence of types"
+    },
+    {
+     "q": "Univalence",
+     "a": "(A = B) ~ (A ~ B)"
+    },
+    {
+     "q": "n!",
+     "a": "equivalences of an n-point set"
+    },
+    {
+     "q": "Bijection",
+     "a": "equivalence of sets"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the idea",
+     "intro": "Pair each idea with its meaning.",
+     "pairs": [
+      [
+       "Equivalence",
+       "function with an inverse up to paths"
+      ],
+      [
+       "Bijection",
+       "equivalence between sets"
+      ],
+      [
+       "Univalence",
+       "equivalences are paths in the universe"
+      ],
+      [
+       "Transport",
+       "carry a property along a path"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Is it an equivalence?",
+     "intro": "A function on n points 0..n-1 is given as a list f where f[i] is the image of i. Write is_equiv(f): return True if f is a bijection (every point 0..n-1 is hit exactly once), otherwise False.",
+     "fn": "is_equiv",
+     "starter": "def is_equiv(f):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0,
+         2
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         1
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         2,
+         1,
+         0
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         0,
+         3,
+         1
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         3,
+         1,
+         0,
+         2
+        ]
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Check range and that no value repeats.",
+     "solution": "def is_equiv(f):\n    n = len(f)\n    seen = {}\n    for x in f:\n        if x < 0 or x >= n:\n            return False\n        if x in seen:\n            return False\n        seen[x] = 1\n    return len(seen) == n\n"
+    },
+    {
+     "type": "python",
+     "title": "Inverse of an equivalence",
+     "intro": "Write quasi_inverse(f): for a bijection f given as a list, return the list g with g[f[i]] = i. Then going there and back is the identity.",
+     "fn": "quasi_inverse",
+     "starter": "def quasi_inverse(f):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         0
+        ]
+       ],
+       "expect": [
+        2,
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         0
+        ]
+       ],
+       "expect": [
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         0,
+         1,
+         3
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        0,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         3,
+         2,
+         1,
+         0
+        ]
+       ],
+       "expect": [
+        3,
+        2,
+        1,
+        0
+       ]
+      }
+     ],
+     "hint": "Fill the inverse by sending f[i] back to i.",
+     "solution": "def quasi_inverse(f):\n    g = []\n    for i in range(len(f)):\n        g.append(0)\n    for i in range(len(f)):\n        g[f[i]] = i\n    return g\n"
+    },
+    {
+     "type": "python",
+     "title": "Count self-equivalences",
+     "intro": "Write count_equivs(n): the number of equivalences from an n-point set to itself, which is n factorial.",
+     "fn": "count_equivs",
+     "starter": "def count_equivs(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        3
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": 120
+      },
+      {
+       "args": [
+        7
+       ],
+       "expect": 5040
+      }
+     ],
+     "hint": "Multiply 2 through n.",
+     "solution": "def count_equivs(n):\n    r = 1\n    for i in range(2, n + 1):\n        r = r * i\n    return r\n"
+    }
+   ]
+  },
+  {
+   "title": "Higher inductive types: the circle",
+   "maps": [
+    {
+     "title": "Higher inductive types",
+     "links": [
+      "HIT | has | Point constructors",
+      "HIT | has | Path constructors",
+      "Circle | has | A base point",
+      "Circle | has | A loop",
+      "Interval | has | Two ends",
+      "Interval | is | Contractible",
+      "Suspension | glues | Two cones"
+     ]
+    }
+   ],
+   "summary": [
+    "An ordinary inductive type lists point constructors. A higher inductive type, or HIT, may also list path constructors: new equalities that must hold.",
+    "The circle S1 has one point base and one path loop : base = base. The interval has two points and a path joining them. Spheres and other shapes are built the same way.",
+    "These are the types that let HoTT reason about real shapes directly."
+   ],
+   "glossary": [
+    {
+     "term": "Higher inductive type",
+     "def": "A type defined by point constructors and path constructors."
+    },
+    {
+     "term": "Circle S1",
+     "def": "The HIT with a point base and a loop base = base."
+    },
+    {
+     "term": "Interval",
+     "def": "The HIT with points 0, 1 and a path between them; it is contractible."
+    },
+    {
+     "term": "Suspension",
+     "def": "The HIT with two poles and a path from north to south for every point of the original type."
+    },
+    {
+     "term": "Recursion principle",
+     "def": "To map out of a HIT, say where each constructor goes."
+    }
+   ],
+   "keyPoints": [
+    "S1: base : S1 and loop : base = base.",
+    "Interval: two ends joined by a path; it is contractible.",
+    "Suspension of S^n is S^(n+1).",
+    "To map out of S1, give a point and a loop in the target.",
+    "HITs add shape, not just data."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A circle is a dot with a rope tied back to itself. Going around once is different from not moving, and going around twice is different again."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine defining the natural numbers: zero, and successor. Now imagine a type with one point, and one path from that point back to itself. That is the circle. It has base, a point, and loop, an identification of base with itself that is not equal to refl."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The loop is not trivial, and that is the whole point. A path that goes around once is different from standing still. Going around twice gives a different path again. The paths base = base look like the integers: loop to the n for any whole number n, with negative numbers meaning the other way."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To define a function out of the circle you must say where base goes and what loop goes to. A point in the target and a loop at that point are enough. This is the recursion principle, and for the circle it means that maps S1 to X are the same as loops in X."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The interval has two points, zero and one, and a path between them. It looks like a line, and it is contractible. Because it has a path from zero to one, it gives a way to prove that equal functions are equal by a path, which is function extensionality."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The suspension of a type A has a north pole and a south pole, and for every point of A a path from north to south. The suspension of two points is a circle, and the suspension of a circle is a two-sphere. Spheres of every dimension come out by repeating it."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a HIT add to an inductive type?",
+     "options": [
+      "Path constructors",
+      "Faster code",
+      "More universes",
+      "Fewer points"
+     ],
+     "answer": 0,
+     "explain": "Equalities."
+    },
+    {
+     "q": "What are the constructors of S1?",
+     "options": [
+      "base and loop",
+      "zero and succ",
+      "true and false",
+      "inl and inr"
+     ],
+     "answer": 0,
+     "explain": "A point and a loop."
+    },
+    {
+     "q": "Is loop equal to refl in S1?",
+     "options": [
+      "No",
+      "Yes",
+      "Only for n = 1",
+      "Always"
+     ],
+     "answer": 0,
+     "explain": "That is what makes S1 interesting."
+    },
+    {
+     "q": "Is the interval contractible?",
+     "options": [
+      "Yes",
+      "No",
+      "Only in Agda",
+      "It is a circle"
+     ],
+     "answer": 0,
+     "explain": "Collapses to a point."
+    },
+    {
+     "q": "What is the suspension of S1?",
+     "options": [
+      "The two-sphere S2",
+      "The interval",
+      "A point",
+      "S1"
+     ],
+     "answer": 0,
+     "explain": "Raises dimension."
+    },
+    {
+     "q": "To map out of S1 you give...",
+     "options": [
+      "A point and a loop in the target",
+      "Two numbers",
+      "A set",
+      "A function"
+     ],
+     "answer": 0,
+     "explain": "Recursion principle."
+    }
+   ],
+   "cards": [
+    {
+     "q": "S1",
+     "a": "base and loop"
+    },
+    {
+     "q": "Interval",
+     "a": "two ends joined by a path"
+    },
+    {
+     "q": "Suspension",
+     "a": "two poles and paths between"
+    },
+    {
+     "q": "HIT",
+     "a": "inductive type with paths"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Walk around the circle",
+     "intro": "Press loop, inverse loop or the other buttons to build a route around the circle. The word is reduced for you, and the winding number counts how many times you went round. Reach a winding number of 3 or -3 to complete this lab.",
+     "height": 680,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:18px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}\nbutton.s{background:#3a2a5c;color:#f1ebff}canvas{width:100%;max-width:340px;display:block;margin:8px auto;background:#0e0820;border-radius:8px}\n.k{color:#c9b8e8}.ok{color:#8fe3a8}.bad{color:#ff9b9b}code{background:#0e0820;padding:2px 6px;border-radius:6px}pre{background:#0e0820;padding:8px;border-radius:8px;overflow:auto}\nselect{font:inherit;width:100%;background:#0e0820;color:#f1ebff;border:1px solid #3a2a5c;border-radius:8px;padding:8px}</style></head><body>\n<div><button id=\"f\">loop</button><button id=\"b\" class=\"s\">inverse loop</button><button id=\"r\" class=\"s\">reset</button></div>\n<canvas id=\"c\" width=\"340\" height=\"340\"></canvas>\n<div>Word: <code id=\"w\">(empty)</code></div><div>Reduced: <code id=\"rw\">(empty)</code></div>\n<div>Winding number: <b id=\"n\">0</b></div>\n<div class=\"k\" id=\"msg\" style=\"margin-top:8px\">l = go round once forwards, L = go round once backwards. Equal winding numbers mean equal paths.</div>\n<script>\nvar $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar word=\"\",ang=0;\nfunction reduce(w){var o=[];for(var i=0;i<w.length;i++){var c=w[i],t=o[o.length-1];if(t&&t!==c&&t.toLowerCase()===c.toLowerCase())o.pop();else o.push(c)}return o.join(\"\")}\nfunction wind(w){var n=0;for(var i=0;i<w.length;i++){if(w[i]===\"l\")n++;else if(w[i]===\"L\")n--}return n}\nfunction draw(){var g=$(\"c\").getContext(\"2d\");g.clearRect(0,0,340,340);g.strokeStyle=\"#3a2a5c\";g.lineWidth=6;g.beginPath();g.arc(170,170,110,0,6.3);g.stroke();\n g.fillStyle=\"#f1ebff\";g.beginPath();g.arc(280,170,8,0,6.3);g.fill();g.fillText(\"base\",270,155);\n var x=170+110*Math.cos(-ang),y=170+110*Math.sin(-ang);g.fillStyle=\"#b26bff\";g.beginPath();g.arc(x,y,10,0,6.3);g.fill()}\nvar seen={};\nfunction upd(){var n=wind(word);$(\"w\").textContent=word||\"(empty)\";var rw=reduce(word);$(\"rw\").textContent=rw||\"(empty)\";$(\"n\").textContent=n;draw();\n if(Math.abs(n)>=3)seen[n>0?\"p\":\"m\"]=1;if(Math.abs(n)>=3)done()}\nfunction step(d){word+=d>0?\"l\":\"L\";var t=ang,target=ang+d*6.2832,k=0;var iv=setInterval(function(){k++;ang=t+(target-t)*k/12;draw();if(k>=12){clearInterval(iv);ang=((target%6.2832)+6.2832)%6.2832;upd()}},20)}\n$(\"f\").onclick=function(){step(1)};$(\"b\").onclick=function(){step(-1)};$(\"r\").onclick=function(){word=\"\";ang=0;upd()};upd();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the type to its constructors",
+     "intro": "Pair each type with how it is defined.",
+     "pairs": [
+      [
+       "Circle",
+       "a point and a loop"
+      ],
+      [
+       "Interval",
+       "two points and a path"
+      ],
+      [
+       "Nat",
+       "zero and successor"
+      ],
+      [
+       "Bool",
+       "true and false"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Winding number",
+     "intro": "A route on the circle is a string of letters: 'l' goes around once forwards and 'L' goes around once backwards. Write winding(w): the number of l minus the number of L. Routes with the same winding number are equal paths.",
+     "fn": "winding",
+     "starter": "def winding(w):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "lll"
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        "llL"
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        "lLlL"
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        "LLLl"
+       ],
+       "expect": -2
+      },
+      {
+       "args": [
+        "lllLLLL"
+       ],
+       "expect": -1
+      }
+     ],
+     "hint": "Count up for l and down for L.",
+     "solution": "def winding(w):\n    n = 0\n    for ch in w:\n        if ch == \"l\":\n            n = n + 1\n        elif ch == \"L\":\n            n = n - 1\n    return n\n"
+    },
+    {
+     "type": "python",
+     "title": "Loop to the power n",
+     "intro": "Write loop_power(n): the route that goes around n times, as a string. For positive n use n copies of 'l'; for negative n use abs(n) copies of 'L'; for 0 return an empty string.",
+     "fn": "loop_power",
+     "starter": "def loop_power(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3
+       ],
+       "expect": "lll"
+      },
+      {
+       "args": [
+        -2
+       ],
+       "expect": "LL"
+      },
+      {
+       "args": [
+        0
+       ],
+       "expect": ""
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": "l"
+      },
+      {
+       "args": [
+        -5
+       ],
+       "expect": "LLLLL"
+      }
+     ],
+     "hint": "Pick l or L depending on the sign.",
+     "solution": "def loop_power(n):\n    if n >= 0:\n        return \"l\" * n\n    return \"L\" * (0 - n)\n"
+    }
+   ]
+  },
+  {
+   "title": "Homotopy groups and the fundamental group of the circle",
+   "maps": [
+    {
+     "title": "Homotopy groups",
+     "links": [
+      "Loop space | gives | Fundamental group",
+      "pi1 of circle | is | The integers",
+      "Encode-decode | proves | The theorem",
+      "Cover | is | A type family",
+      "Sphere | has | Homotopy groups",
+      "pi n | is | n-fold loops",
+      "Freudenthal | stabilizes | pi k of spheres"
+     ]
+    }
+   ],
+   "summary": [
+    "The n-th homotopy group of a pointed type is the set of n-fold loops, with 'same up to a path' as equality. For n = 1 this is the fundamental group.",
+    "The fundamental group of the circle is the integers. In HoTT the proof uses a type family over the circle, whose fibre over every point is the integers and where transport along loop adds one.",
+    "The homotopy groups of spheres are a famous hard table. Some entries are easy, and some are still being computed."
+   ],
+   "glossary": [
+    {
+     "term": "Fundamental group",
+     "def": "The group of loops at a base point up to paths; pi1(A, a)."
+    },
+    {
+     "term": "Homotopy group",
+     "def": "pi_n(A, a), the n-fold loops at a, with truncation to a set."
+    },
+    {
+     "term": "Encode-decode method",
+     "def": "Prove a path space is some type by building maps in both directions using transport."
+    },
+    {
+     "term": "Universal cover",
+     "def": "A type family over the circle with fibre Z, used to prove pi1(S1) = Z."
+    },
+    {
+     "term": "Freudenthal suspension theorem",
+     "def": "Suspension eventually becomes an equivalence on low homotopy groups."
+    }
+   ],
+   "keyPoints": [
+    "pi1(S1) = Z: loops are counted by integers.",
+    "Encode: send a loop to its winding number.",
+    "Decode: send n to loop to the n.",
+    "pi_k(S^n) = 0 for k < n; pi_n(S^n) = Z.",
+    "Stable groups appear by Freudenthal."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Wind a rope around a pole. The only thing that matters is how many times and in which direction, so loops are counted by whole numbers."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Use a rope and a pole. A loop of rope around the pole can be undone only by unwinding it. How many times it winds around, and in which direction, is an integer. This count is what the fundamental group of the circle measures."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To prove the group of loops at base in S1 is Z in HoTT, first define a family of types over the circle. Its fibre at every point is Z, but going around the loop shifts the integers by one. So transport along loop is adding one."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Then encode: transport the integer 0 along a given path to get an integer, which counts the winding. Decode: for n, go around the loop n times. The two maps cancel. This is called the encode-decode method, and it is how most path spaces are computed in HoTT."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Higher homotopy groups come from loops of loops. The circle has none: pi_k of S1 is trivial for k above 1. The two-sphere is different. It has pi_2 = Z, and also pi_3 = Z, a famous surprise from the Hopf fibration."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Spheres have a table that grows ever more complex, with finite groups like Z/2 and Z/12 scattered in it. The Freudenthal theorem says that after enough suspensions the groups stop changing, which gives the stable homotopy groups. HoTT proves such theorems in the same language as everything else."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is pi1 of the circle?",
+     "options": [
+      "The integers",
+      "Zero",
+      "The reals",
+      "Z mod 2"
+     ],
+     "answer": 0,
+     "explain": "Winding numbers."
+    },
+    {
+     "q": "What does transport along loop do in the cover?",
+     "options": [
+      "Adds one",
+      "Does nothing",
+      "Doubles",
+      "Negates"
+     ],
+     "answer": 0,
+     "explain": "Shifts Z."
+    },
+    {
+     "q": "What is pi_2 of the two-sphere?",
+     "options": [
+      "Z",
+      "0",
+      "Z/2",
+      "Z/12"
+     ],
+     "answer": 0,
+     "explain": "Same dimension."
+    },
+    {
+     "q": "What is pi_3 of the two-sphere?",
+     "options": [
+      "Z",
+      "0",
+      "Z/2",
+      "Z/12"
+     ],
+     "answer": 0,
+     "explain": "The Hopf fibration."
+    },
+    {
+     "q": "Which method proves pi1(S1) = Z?",
+     "options": [
+      "Encode-decode",
+      "Induction on Nat only",
+      "Truncation only",
+      "Brute force"
+     ],
+     "answer": 0,
+     "explain": "Two maps."
+    },
+    {
+     "q": "What does a higher homotopy group count?",
+     "options": [
+      "Loops of loops",
+      "Prime numbers",
+      "Points",
+      "Functions"
+     ],
+     "answer": 0,
+     "explain": "n-fold loops."
+    }
+   ],
+   "cards": [
+    {
+     "q": "pi1(S1)",
+     "a": "the integers Z"
+    },
+    {
+     "q": "pi_n(S^n)",
+     "a": "Z"
+    },
+    {
+     "q": "pi_3(S2)",
+     "a": "Z by Hopf"
+    },
+    {
+     "q": "Encode-decode",
+     "a": "build both maps by transport"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the group",
+     "intro": "Pair each homotopy group with its value.",
+     "pairs": [
+      [
+       "pi_1(S1)",
+       "Z"
+      ],
+      [
+       "pi_2(S2)",
+       "Z"
+      ],
+      [
+       "pi_3(S2)",
+       "Z"
+      ],
+      [
+       "pi_2(S1)",
+       "0"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Encode a loop",
+     "intro": "Write encode(w): the winding number of a route written with 'l' (forward) and 'L' (back); then the decoded route is loop_power of that number. Return the pair [n, route] where n is the winding number and route is the shortest equivalent string made of only 'l' (when n is positive) or only 'L' (when n is negative).",
+     "fn": "encode",
+     "starter": "def encode(w):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "lLlll"
+       ],
+       "expect": [
+        3,
+        "lll"
+       ]
+      },
+      {
+       "args": [
+        "LLl"
+       ],
+       "expect": [
+        -1,
+        "L"
+       ]
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": [
+        0,
+        ""
+       ]
+      },
+      {
+       "args": [
+        "lL"
+       ],
+       "expect": [
+        0,
+        ""
+       ]
+      },
+      {
+       "args": [
+        "LLLLL"
+       ],
+       "expect": [
+        -5,
+        "LLLLL"
+       ]
+      }
+     ],
+     "hint": "Compute n, then rebuild the shortest route.",
+     "solution": "def encode(w):\n    n = 0\n    for ch in w:\n        if ch == \"l\":\n            n = n + 1\n        elif ch == \"L\":\n            n = n - 1\n    if n >= 0:\n        return [n, \"l\" * n]\n    return [n, \"L\" * (0 - n)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Sphere homotopy table",
+     "intro": "Write pi_sphere(n, k) for a small table: return the group as a string. pi_k(S^n) is '0' when k is less than n; 'Z' when k equals n. Use the known values: pi_3(S2) = 'Z', pi_4(S2) = 'Z/2', pi_5(S2) = 'Z/2', pi_4(S3) = 'Z/2', pi_5(S3) = 'Z/2', pi_6(S3) = 'Z/12', and for any n = 1 and k > 1 the group is '0'. Anything else in the table you were not given: return '?'.",
+     "fn": "pi_sphere",
+     "starter": "def pi_sphere(n, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        1
+       ],
+       "expect": "Z"
+      },
+      {
+       "args": [
+        1,
+        3
+       ],
+       "expect": "0"
+      },
+      {
+       "args": [
+        2,
+        1
+       ],
+       "expect": "0"
+      },
+      {
+       "args": [
+        2,
+        2
+       ],
+       "expect": "Z"
+      },
+      {
+       "args": [
+        2,
+        3
+       ],
+       "expect": "Z"
+      },
+      {
+       "args": [
+        3,
+        6
+       ],
+       "expect": "Z/12"
+      },
+      {
+       "args": [
+        4,
+        4
+       ],
+       "expect": "Z"
+      },
+      {
+       "args": [
+        3,
+        7
+       ],
+       "expect": "?"
+      },
+      {
+       "args": [
+        2,
+        4
+       ],
+       "expect": "Z/2"
+      }
+     ],
+     "hint": "Handle n = 1 first, then the diagonal, then the table.",
+     "solution": "def pi_sphere(n, k):\n    if n == 1:\n        if k == 1:\n            return \"Z\"\n        return \"0\"\n    if k < n:\n        return \"0\"\n    if k == n:\n        return \"Z\"\n    table = {\"2,3\": \"Z\", \"2,4\": \"Z/2\", \"2,5\": \"Z/2\", \"3,4\": \"Z/2\", \"3,5\": \"Z/2\", \"3,6\": \"Z/12\"}\n    key = str(n) + \",\" + str(k)\n    if key in table:\n        return table[key]\n    return \"?\"\n"
+    }
+   ]
+  },
+  {
+   "title": "Cubical type theory and proof assistants",
+   "maps": [
+    {
+     "title": "Practice",
+     "links": [
+      "HoTT book | explains | The theory",
+      "Cubical Agda | computes | Univalence",
+      "Rocq | supports | HoTT library",
+      "Lean | offers | Mathlib",
+      "Cubical | uses | Interval variables",
+      "Univalence | computes in | Cubical",
+      "Haskell | illustrates | Curry-Howard"
+     ]
+    }
+   ],
+   "summary": [
+    "Plain HoTT assumes univalence as an axiom, so programs using it can get stuck. Cubical type theory builds paths from an interval, so univalence computes.",
+    "Cubical Agda is a proof assistant with these features. Rocq (formerly Coq) has HoTT libraries, and Lean has a large library of ordinary mathematics.",
+    "The HoTT book, free online, is the standard introduction. This course is a gentle path to it."
+   ],
+   "glossary": [
+    {
+     "term": "Cubical type theory",
+     "def": "A version of type theory where paths are functions from an interval, and univalence has computational meaning."
+    },
+    {
+     "term": "Cubical Agda",
+     "def": "A variant of Agda with cubical features."
+    },
+    {
+     "term": "Proof assistant",
+     "def": "Software that checks formal proofs written as typed terms."
+    },
+    {
+     "term": "Function extensionality",
+     "def": "Functions that agree at every point are equal; provable via the interval."
+    },
+    {
+     "term": "HoTT book",
+     "def": "Homotopy Type Theory: Univalent Foundations of Mathematics, 2013."
+    }
+   ],
+   "keyPoints": [
+    "Cubical: a path is a function from the interval.",
+    "Univalence computes in cubical type theory.",
+    "Agda, Rocq and Lean can all check proofs.",
+    "The HoTT book is free and written by a large group.",
+    "Types you write in Haskell show the idea in small."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Computers can check a proof as if it were a program. Some tools even let the paths run like code, so the proof can actually compute."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The axiom of univalence is added from outside to plain type theory. That is fine for a proof, but a program built with it cannot always run, because the axiom has no computation rule. This bothers people who like programs that evaluate."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Cubical type theory makes paths concrete. A path from a to b is a function from an interval, taking a at one end and b at the other. With this, composition, transport and univalence all compute. It also gives function extensionality for free."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To try this yourself, use a proof assistant. Cubical Agda has the new features built in. Rocq has a HoTT library and Lean has a very large collection of mathematics, though with different foundations. You give each one terms, and it checks the types."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Haskell cannot state dependent types fully, but it can show the main ideas. A GADT can index a type by a value, a type class can carry evidence, and phantom types can mark facts at compile time. These give a feel for how types carry proofs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where to go next? Read the first chapters of the HoTT book, then try path induction and the circle in a proof assistant. Compute pi1(S1) once yourself. After that the rest of the book, about higher inductive types, cohomology and the cumulative hierarchy, is open to you."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "haskell",
+     "code": "-- Haskell: a vector indexed by its length (a dependent-type taste)\n{-# LANGUAGE GADTs, DataKinds, KindSignatures #-}\ndata Nat = Z | S Nat\n\ndata Vec (n :: Nat) a where\n  Nil  :: Vec 'Z a\n  Cons :: a -> Vec n a -> Vec ('S n) a\n\n-- head only accepts a nonempty vector, checked by the type\nvhead :: Vec ('S n) a -> a\nvhead (Cons x _) = x"
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Why do we want cubical type theory?",
+     "options": [
+      "So univalence computes",
+      "To remove types",
+      "To make Nat finite",
+      "To avoid paths"
+     ],
+     "answer": 0,
+     "explain": "Computational content."
+    },
+    {
+     "q": "What is a path in cubical type theory?",
+     "options": [
+      "A function from an interval",
+      "A pair",
+      "A set",
+      "A type of numbers"
+     ],
+     "answer": 0,
+     "explain": "Interval maps."
+    },
+    {
+     "q": "Which tool has cubical features built in?",
+     "options": [
+      "Cubical Agda",
+      "A spreadsheet",
+      "A text editor",
+      "A browser"
+     ],
+     "answer": 0,
+     "explain": "A proof assistant."
+    },
+    {
+     "q": "What is the HoTT book?",
+     "options": [
+      "A free textbook",
+      "A video game",
+      "A compiler",
+      "A database"
+     ],
+     "answer": 0,
+     "explain": "2013."
+    },
+    {
+     "q": "What does vhead guarantee in the Vec example?",
+     "options": [
+      "The vector is nonempty",
+      "The vector is sorted",
+      "The vector has 3 items",
+      "The vector is empty"
+     ],
+     "answer": 0,
+     "explain": "Checked by the type."
+    },
+    {
+     "q": "What is a proof assistant?",
+     "options": [
+      "Software that checks formal proofs",
+      "A search engine",
+      "A calculator",
+      "A word processor"
+     ],
+     "answer": 0,
+     "explain": "Typed terms."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Cubical",
+     "a": "paths from an interval, univalence computes"
+    },
+    {
+     "q": "Agda",
+     "a": "dependently typed language and proof assistant"
+    },
+    {
+     "q": "Rocq",
+     "a": "formerly Coq"
+    },
+    {
+     "q": "Lean",
+     "a": "proof assistant with Mathlib"
+    },
+    {
+     "q": "HoTT book",
+     "a": "free textbook, 2013"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Propositions as types",
+     "intro": "Pick a statement to see the program that proves it and its type. Then try excluded middle: no program exists. Look at three statements to complete this lab.",
+     "height": 640,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:18px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}\nbutton.s{background:#3a2a5c;color:#f1ebff}canvas{width:100%;max-width:340px;display:block;margin:8px auto;background:#0e0820;border-radius:8px}\n.k{color:#c9b8e8}.ok{color:#8fe3a8}.bad{color:#ff9b9b}code{background:#0e0820;padding:2px 6px;border-radius:6px}pre{background:#0e0820;padding:8px;border-radius:8px;overflow:auto}\nselect{font:inherit;width:100%;background:#0e0820;color:#f1ebff;border:1px solid #3a2a5c;border-radius:8px;padding:8px}</style></head><body>\n<select id=\"s\"></select>\n<div style=\"margin-top:8px\" class=\"k\">Statement:</div><div id=\"st\"></div>\n<div style=\"margin-top:8px\" class=\"k\">Type:</div><pre id=\"ty\"></pre>\n<div class=\"k\">Program (the proof):</div><pre id=\"pr\"></pre>\n<div id=\"note\"></div>\n<div class=\"k\" id=\"prog\" style=\"margin-top:8px\"></div>\n<script>\nvar $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar L=[\n{n:\"A implies A\",t:\"A -> A\",p:\"identity x = x\",s:\"If A is true, then A is true.\"},\n{n:\"A implies (B implies A)\",t:\"A -> B -> A\",p:\"constFn x y = x\",s:\"A true gives: any B still leaves A true.\"},\n{n:\"A and B implies B and A\",t:\"(A, B) -> (B, A)\",p:\"swap (x, y) = (y, x)\",s:\"Swap the two halves of a pair.\"},\n{n:\"A implies (A or B)\",t:\"A -> Either A B\",p:\"orIntro x = Left x\",s:\"If A holds then A or B holds.\"},\n{n:\"Modus ponens\",t:\"(A -> B) -> A -> B\",p:\"apply f x = f x\",s:\"Given A -> B and A, you get B.\"},\n{n:\"Compose implications\",t:\"(A -> B) -> (B -> C) -> A -> C\",p:\"compose f g x = g (f x)\",s:\"Chain two implications.\"},\n{n:\"Excluded middle: A or not A\",t:\"Either A (A -> Void)\",p:\"(no program exists)\",s:\"Would decide every statement A.\",bad:1},\n{n:\"Double negation elimination\",t:\"((A -> Void) -> Void) -> A\",p:\"(no program exists)\",s:\"Not provable constructively.\",bad:1}];\nvar sel=$(\"s\");L.forEach(function(x,i){var o=document.createElement(\"option\");o.value=i;o.textContent=x.n;sel.appendChild(o)});\nvar seen={};\nfunction show(){var x=L[+sel.value];$(\"st\").textContent=x.s;$(\"ty\").textContent=x.t;$(\"pr\").textContent=x.p;\n $(\"note\").innerHTML=x.bad?\"<span class='bad'>No term has this type in pure type theory.</span>\":\"<span class='ok'>A program of this type is a proof.</span>\";\n seen[sel.value]=1;var n=Object.keys(seen).length;$(\"prog\").textContent=\"Statements viewed: \"+n+\" of 3 needed (include one that has no proof).\";\n var hasBad=Object.keys(seen).some(function(k){return L[+k].bad});if(n>=3&&hasBad)done()}\nsel.onchange=show;show();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the tool",
+     "intro": "Pair each tool with a fact about it.",
+     "pairs": [
+      [
+       "Cubical Agda",
+       "univalence computes"
+      ],
+      [
+       "Lean",
+       "large library of mathematics"
+      ],
+      [
+       "Rocq",
+       "formerly Coq"
+      ],
+      [
+       "Haskell",
+       "shows types as propositions in everyday code"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Wrap up",
+     "text": "Plain HoTT adds univalence as an {{axiom}}. In cubical type theory a path is a function from the {{interval}}, and univalence {{computes}}."
+    },
+    {
+     "type": "python",
+     "title": "Church numerals",
+     "intro": "Church numerals encode numbers as functions that apply f n times. Write church_apply(n, k) where we use the function 'add k' starting at 0: apply the step 'add k' to 0 exactly n times and return the result. This shows a number as a program.",
+     "fn": "church_apply",
+     "starter": "def church_apply(n, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        2
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        0,
+        5
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        4,
+        4
+       ],
+       "expect": 16
+      },
+      {
+       "args": [
+        1,
+        7
+       ],
+       "expect": 7
+      },
+      {
+       "args": [
+        6,
+        3
+       ],
+       "expect": 18
+      }
+     ],
+     "hint": "Repeat adding k, n times.",
+     "solution": "def church_apply(n, k):\n    x = 0\n    for i in range(n):\n        x = x + k\n    return x\n"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Homotopy Type Theory",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What does a : A mean?",
+    "options": [
+     "a is a term of type A",
+     "a is a subset of A",
+     "a equals A",
+     "a implies A"
+    ],
+    "answer": 0,
+    "explain": "A typing judgment."
+   },
+   {
+    "q": "In HoTT, a proof of a = b is...",
+    "options": [
+     "A path from a to b",
+     "A number",
+     "A set",
+     "A truth value"
+    ],
+    "answer": 0,
+    "explain": "An identification."
+   },
+   {
+    "q": "What does a Pi type collect?",
+    "options": [
+     "Dependent functions",
+     "Dependent pairs",
+     "Paths",
+     "Universes"
+    ],
+    "answer": 0,
+    "explain": "For all."
+   },
+   {
+    "q": "How big is a Sigma type over 3 points with fibres of size 2?",
+    "options": [
+     "6",
+     "8",
+     "5",
+     "9"
+    ],
+    "answer": 0,
+    "explain": "2 + 2 + 2."
+   },
+   {
+    "q": "How big is a Pi type over 3 points with fibres of size 2?",
+    "options": [
+     "8",
+     "6",
+     "5",
+     "9"
+    ],
+    "answer": 0,
+    "explain": "2 x 2 x 2."
+   },
+   {
+    "q": "Which type stands for False?",
+    "options": [
+     "The empty type",
+     "The unit type",
+     "Bool",
+     "Nat"
+    ],
+    "answer": 0,
+    "explain": "No terms."
+   },
+   {
+    "q": "What is the proof of A implies A?",
+    "options": [
+     "The identity function",
+     "A pair",
+     "A loop",
+     "Nothing"
+    ],
+    "answer": 0,
+    "explain": "lam x. x."
+   },
+   {
+    "q": "Which law is not provable in pure type theory?",
+    "options": [
+     "A or not A",
+     "A -> A",
+     "A and B implies A",
+     "A -> B -> A"
+    ],
+    "answer": 0,
+    "explain": "Excluded middle."
+   },
+   {
+    "q": "What does ap f p give?",
+    "options": [
+     "A path from f a to f b",
+     "A path from a to b",
+     "A pair",
+     "A number"
+    ],
+    "answer": 0,
+    "explain": "Functions respect paths."
+   },
+   {
+    "q": "What does transport do?",
+    "options": [
+     "Moves a term along a path",
+     "Reverses a path",
+     "Counts points",
+     "Defines a type"
+    ],
+    "answer": 0,
+    "explain": "Fibres follow paths."
+   },
+   {
+    "q": "What is enough to prove a statement about all paths?",
+    "options": [
+     "The case refl",
+     "The case 0",
+     "Nothing",
+     "Two cases"
+    ],
+    "answer": 0,
+    "explain": "Path induction."
+   },
+   {
+    "q": "What is a 2-path?",
+    "options": [
+     "A path between paths",
+     "Two points",
+     "A pair of types",
+     "A function"
+    ],
+    "answer": 0,
+    "explain": "Higher structure."
+   },
+   {
+    "q": "What do loops at a base point form?",
+    "options": [
+     "The loop space",
+     "A function",
+     "A proof of False",
+     "A number"
+    ],
+    "answer": 0,
+    "explain": "Omega(A, a)."
+   },
+   {
+    "q": "What level is a contractible type?",
+    "options": [
+     "-2",
+     "-1",
+     "0",
+     "1"
+    ],
+    "answer": 0,
+    "explain": "A point."
+   },
+   {
+    "q": "A proposition has...",
+    "options": [
+     "At most one term up to paths",
+     "Exactly two terms",
+     "Infinitely many",
+     "No terms"
+    ],
+    "answer": 0,
+    "explain": "Level -1."
+   },
+   {
+    "q": "Is Nat a set?",
+    "options": [
+     "Yes",
+     "No",
+     "Only after truncation",
+     "Only in Agda"
+    ],
+    "answer": 0,
+    "explain": "Unique equalities."
+   },
+   {
+    "q": "What does univalence say?",
+    "options": [
+     "Paths A = B match equivalences A ~ B",
+     "All types are sets",
+     "J has no proof",
+     "Nat is empty"
+    ],
+    "answer": 0,
+    "explain": "In a universe."
+   },
+   {
+    "q": "How many self-equivalences does a 3-point set have?",
+    "options": [
+     "6",
+     "3",
+     "9",
+     "27"
+    ],
+    "answer": 0,
+    "explain": "3 factorial."
+   },
+   {
+    "q": "What are the constructors of S1?",
+    "options": [
+     "base and loop",
+     "zero and succ",
+     "true and false",
+     "inl and inr"
+    ],
+    "answer": 0,
+    "explain": "A point and a loop."
+   },
+   {
+    "q": "Is loop equal to refl in S1?",
+    "options": [
+     "No",
+     "Yes",
+     "Only for n = 1",
+     "Always"
+    ],
+    "answer": 0,
+    "explain": "That is why it is interesting."
+   },
+   {
+    "q": "What is pi1 of the circle?",
+    "options": [
+     "The integers",
+     "Zero",
+     "The reals",
+     "Z mod 2"
+    ],
+    "answer": 0,
+    "explain": "Winding numbers."
+   },
+   {
+    "q": "What is pi_3 of the two-sphere?",
+    "options": [
+     "Z",
+     "0",
+     "Z/2",
+     "Z/12"
+    ],
+    "answer": 0,
+    "explain": "The Hopf fibration."
+   },
+   {
+    "q": "Which method proves pi1(S1) = Z?",
+    "options": [
+     "Encode-decode",
+     "Brute force",
+     "Truncation only",
+     "Sorting"
+    ],
+    "answer": 0,
+    "explain": "Two maps built by transport."
+   },
+   {
+    "q": "Why do we want cubical type theory?",
+    "options": [
+     "So univalence computes",
+     "To remove types",
+     "To avoid paths",
+     "To make Nat finite"
+    ],
+    "answer": 0,
+    "explain": "Computational content."
+   },
+   {
+    "q": "What is the HoTT book?",
+    "options": [
+     "A free textbook, 2013",
+     "A game",
+     "A compiler",
+     "A database"
+    ],
+    "answer": 0,
+    "explain": "Written by a large group."
+   },
+   {
+    "q": "What does the suspension of S1 give?",
+    "options": [
+     "The two-sphere",
+     "The interval",
+     "A point",
+     "S1"
+    ],
+    "answer": 0,
+    "explain": "Raises dimension."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "HoTT cheat sheet",
+  "prompt": "hott>",
+  "intro": "A scripted lookup. Try: refl, ap, transport, univalence, circle, levels, help",
+  "chips": [
+   "refl",
+   "ap",
+   "transport",
+   "univalence",
+   "circle",
+   "levels",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "refl       refl : a = a. The trivial path; every point is equal to itse",
+     "ap         ap f p : f a = f b for p : a = b. Functions respect paths.",
+     "transport  transport B p : B a -> B b. Move a term in the fibre over a ",
+     "univalence (A = B) is equivalent to (A ~ B). Equivalent types are equal",
+     "circle     S1: base : S1, loop : base = base. pi1(S1) = Z.",
+     "levels     -2 contractible, -1 proposition, 0 set, 1 groupoid. Nat and "
+    ]
+   },
+   {
+    "re": "^refl$",
+    "out": [
+     "refl : a = a. The trivial path; every point is equal to itself."
+    ]
+   },
+   {
+    "re": "^ap$",
+    "out": [
+     "ap f p : f a = f b for p : a = b. Functions respect paths."
+    ]
+   },
+   {
+    "re": "^transport$",
+    "out": [
+     "transport B p : B a -> B b. Move a term in the fibre over a to the fibre over b."
+    ]
+   },
+   {
+    "re": "^univalence$",
+    "out": [
+     "(A = B) is equivalent to (A ~ B). Equivalent types are equal."
+    ]
+   },
+   {
+    "re": "^circle$",
+    "out": [
+     "S1: base : S1, loop : base = base. pi1(S1) = Z."
+    ]
+   },
+   {
+    "re": "^levels$",
+    "out": [
+     "-2 contractible, -1 proposition, 0 set, 1 groupoid. Nat and Bool are sets."
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Mathematics",
+ "level": "Advanced",
+ "tags": [
+  "homotopy type theory",
+  "hott",
+  "type theory",
+  "univalence",
+  "logic",
+  "agda"
+ ]
+}
