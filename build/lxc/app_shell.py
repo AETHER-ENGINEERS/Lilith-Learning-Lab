@@ -17,9 +17,9 @@ def parts():
     cmds = cmds.rstrip()
     assert cmds.endswith("})(window.__SIM);")
     cmds = cmds[:-len("})(window.__SIM);")] + "}"
-    kit = rd(os.path.join(V, "jade-agent-kit.iife.js"))
+    kit = rd(os.path.join(HERE, "sim_lite.js"))
     dev = rd(os.path.join(HERE, "sim_devops.js"))
-    blob = pack([("glue", open(os.path.join(V, "busybox.glue.js"), "rb").read()), ("wasm", open(os.path.join(V, "busybox.wasm"), "rb").read())])
+    blob = ""
     _cache.update(core=core, cmds=cmds, kit=kit, blob=blob, dev=dev)
     return _cache
 
@@ -54,9 +54,8 @@ document.getElementById('solb').onclick=function(){var s=document.getElementById
 document.getElementById('rst').onclick=function(){location.reload()};
 (CFG.hints||[]).forEach(function(h){var s=document.createElement('span');s.textContent=h;s.onclick=function(){inp.value=h;inp.focus()};document.getElementById('chips').appendChild(s)});
 document.getElementById('intro').innerHTML=CFG.intro;document.getElementById('sol').textContent=CFG.solution||'';if(!CFG.solution)document.getElementById('solb').style.display='none';
-(async function(){put('Starting the sandbox...\n');try{var f=await unpack(BLOB),glue=new TextDecoder().decode(f.glue),wasm=f.wasm;var of=window.fetch;window.fetch=function(u,o){u=String(u&&u.url||u);if(u.indexOf('https://kit.local/assets/')==0){var n=u.split('/').pop();if(n=='busybox.glue.js')return Promise.resolve(new Response(glue,{headers:{'content-type':'text/javascript'}}));if(n=='busybox.wasm')return Promise.resolve(new Response(wasm,{headers:{'content-type':'application/wasm'}}))}return of.call(window,u,o)};
- var kit=await JadeKit.createKit({assetsBase:'https://kit.local/assets/',scheduler:false,busybox:true});await kit.busybox.load();
- S=new LinuxSim(kit,CFG.sim||{});LinuxCmds(S);if(CFG.devops)DevopsCmds(S);S.syncPasswd();(CFG.procs||[]).forEach(function(p){S.procs.push(p)});
+(async function(){put('Starting the sandbox...\n');try{var kit={vfs:new LiteVFS()};
+ S=new LinuxSim(kit,CFG.sim||{});LiteText(S);LinuxCmds(S);if(CFG.devops)DevopsCmds(S);S.syncPasswd();(CFG.procs||[]).forEach(function(p){S.procs.push(p)});
  S.vars.HOME=S.users[S.user].home;S.vars.USER=S.user;
  for(var i=0;i<(CFG.init||[]).length;i++){await S.run(CFG.init[i])}S.hist=[];S.allout='';
  window.__S=S;term.innerHTML='';put(CFG.welcome||'Type a command. Tab completes, arrow keys recall history.\n','');renderTasks();inp.disabled=false;inp.focus();window.__ready=1}catch(e){put('Could not start: '+e+'\n','e')}})();

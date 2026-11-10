@@ -15,4 +15,5 @@ FEY = [
  ("Tape stores sounds made of short, medium and long beeps. Two beeps make a one or a zero, and a check bit catches mistakes.", None),
  ("A disk is a record with circles. Each circle is cut into pieces that each hold a little data, and the middle circle keeps the list.", None),
  ("Now you can build little games: read the stick, move the sticker, play a sound, and do it all again fifty times every second.", None),
+ ("Demo coders make the computer do tricks it was never meant to: colour stripes, wobbling letters, music. They count every tick of the clock to do it.", None),
 ]

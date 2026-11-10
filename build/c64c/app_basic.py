@@ -116,8 +116,10 @@ document.addEventListener("keydown",function(e){if(document.activeElement==$("in
 document.addEventListener("keyup",function(e){if(e.key=="ArrowUp")joy&=~1;if(e.key=="ArrowDown")joy&=~2;if(e.key=="ArrowLeft")joy&=~4;if(e.key=="ArrowRight")joy&=~8;if(e.key==" ")joy&=~16});
 function check(){var G=CFG.goals||[],all=true,h="";G.forEach(function(g,i){var ok=false;
  if(g.screen){var s="";for(var k=0;k<1000;k++){var v=M[1024+k]&127;s+=v==0?"@":v<=26?String.fromCharCode(v+64):v<64?String.fromCharCode(v):" "}ok=s.indexOf(g.screen.toUpperCase())>=0}
- else if(g.ran)ok=flags.ran;else if(g.uses)ok=new RegExp(g.uses,"i").test($("src").value);else if(g.cell0)ok=M[1024]!=32&&CR[0]!=14;else if(g.border)ok=M[0xD020]!=14;else if(g.bg)ok=M[0xD021]!=6;
+ else if(g.ran)ok=flags.ran;else if(g.uses)ok=new RegExp(g.uses,"i").test($("src").value);else if(g.cell0)ok=M[1024]!=32&&CR[0]!=14;else if(g.border)ok=M[0xD020]!=14;else if(g.bg)ok=M[0xD021]!=6;else if(g.ram)ok=M[g.ram[0]]==g.ram[1];else if(g.ramnz)ok=M[g.ramnz]!=0;else if(g.sid)ok=(M[54296]&15)>0&&(M[54276]&1)==1&&(M[54273]|M[54272])>0;else if(g.spr)ok=(M[53269]&1)==1&&M[2040]!=0;else if(g.ramgt)ok=M[g.ramgt[0]]>g.ramgt[1];
  if(g.keep&&CFG["k"+i])ok=true;if(ok)CFG["k"+i]=true;if(!ok)all=false;h+="<li class='"+(ok?"ok":"")+"'>"+(ok?"&#10003; ":"&#9744; ")+g.t+"</li>"});$("goals").innerHTML=h;if(all&&G.length&&!CFG.fin){CFG.fin=1;done()}}
+var PAL=["#000","#fff","#883932","#67b6bd","#8b5429","#55a049","#40318d","#bfce72","#8b5429","#574200","#b86962","#505050","#787878","#94e089","#7869c4","#9f9f9f"];
+var _drawBase=draw;draw=function(){_drawBase();try{var c=$("scr").getContext("2d");for(var n=0;n<8;n++){if(!(M[53269]&(1<<n)))continue;var ptr=M[2040+n]*64,x=M[53248+n*2]+((M[53264]>>n&1)?256:0),y=M[53249+n*2];c.fillStyle=PAL[M[53287+n]&15];for(var r=0;r<21;r++)for(var b=0;b<3;b++){var by=M[(ptr+r*3+b)&65535];for(var k=0;k<8;k++)if(by&(128>>k))c.fillRect(((x-24)+b*8+k)*1.5,((y-50)+r)*1.6,1.5,1.7)}}}catch(e){}};
 $("run").onclick=start;$("stop").onclick=function(){stop();put("\rBREAK\rREADY.\r");draw()};
 $("src").value=CFG.src||"";
 var pre=$("pre");(CFG.presets||[]).forEach(function(p){var b=document.createElement("button");b.textContent=p[0];b.onclick=function(){$("src").value=p[1]};pre.appendChild(b)});

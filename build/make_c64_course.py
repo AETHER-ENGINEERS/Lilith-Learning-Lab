@@ -4,7 +4,8 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "c64c"))
-import cmk, cb1, cb2, labs_c64, app_emu, app_basic, app_tools  # noqa: E402
+import cmk, cb1, cb2, cb3, labs_c64, labs_more, app_emu, app_basic, app_tools  # noqa: E402
+from clib import T, C  # noqa: E402
 
 BAS = {
  "1": ("Run the program, then change it so the border goes through colours 0 to 15. Use a FOR loop with a POKE inside.",
@@ -23,7 +24,18 @@ for k, (desc, src, goals) in labs_c64.LABS.items():
     tabs = ["c", "asm"] if k == "c" else ["asm"]
     app_emu.make_app(desc, tabs, src, goals, studio=(k == "c"), out="emu_%s.html" % k)
 
+for k, (d, src, goals) in labs_more.BASIC.items():
+    app_basic.make_basic(d, src, goals, out="basic_%s.html" % k)
+for k, (d, src, goals) in labs_more.C.items():
+    app_emu.make_app(d, ["c", "asm"], {"c": src, "asm": "*=$C000\n      rts\n"}, goals, studio=True, out="emu_%s.html" % k)
+for k, (d, src, goals) in labs_more.ASM.items():
+    app_emu.make_app(d, ["asm"], {"asm": src}, goals, out="emu_%s.html" % k)
+
 APPS = {}
+for k in list(labs_c64.LABS) + list(labs_more.C) + list(labs_more.ASM):
+    APPS["__EMU_%s__" % k] = "emu_%s.html" % k
+for k in labs_more.BASIC:
+    APPS["__BAS_%s__" % k] = "basic_%s.html" % k
 for k in labs_c64.LABS:
     APPS["__EMU_%s__" % k] = "emu_%s.html" % k
 for k in BAS:
@@ -103,4 +115,18 @@ CFG = dict(id="commodore-64-programming", title="Commodore 64 Programming: BASIC
 
 if __name__ == "__main__":
     out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "courses", "commodore-64-programming.course.json")
-    cmk.main(CFG, cb1.A + cb2.B, [sys.argv[0], out])
+    chs = cb1.A + cb2.B
+    L = lambda kind, key, title, intro, h: {"type": "webxdc", "title": title, "intro": intro, "height": h, "html": "__%s_%s__" % (kind, key)}
+    EXTRA = {
+     8: ([T("Sprites work from every language, because they are only registers and memory. In BASIC you POKE the 63 data bytes, the pointer at 2040, the position at 53248 and 53249, the colour at 53287 and the enable bit at 53269. The BASIC lab draws the sprite on its own screen. In C the lines are almost the same with peekpoke.h, and the emulator lab shows the real VIC-II.")],
+         [L("BAS", "4", "BASIC lab: a sprite with POKE", "Switch the sprite on and slide it with a FOR loop.", 930), L("EMU", "c_sprite", "C lab: two sprites", "Set up sprite 0 in C, then add sprite 1.", 1250)]),
+     9: ([T("Sound is the same story. The SID has no idea which language wrote to it. In BASIC the note is a handful of POKEs to 54272 and up. In C it is the same list with peekpoke.h. Only the speed differs, which matters when you want to play a melody in time.")],
+         [L("BAS", "5", "BASIC lab: a note with POKE", "Complete the program so the SID plays a note.", 930), L("EMU", "c_sid", "C lab: change the waveform", "Run the note, then switch to a pulse wave.", 1250)]),
+     11: ([T("BASIC reads the joystick with PEEK(56320), and the BASIC lab has arrow and fire buttons under the screen. In C the line is j = PEEK(56320U). The bit tests are the same everywhere: a pressed direction reads as 0 in its bit.")],
+          [L("BAS", "6", "BASIC lab: read the joystick", "Print a message for each direction and for fire.", 930), L("EMU", "c_joy", "C lab: read the joystick", "Mirror port 2 and print the direction.", 1250)]),
+    }
+    for i, (blocks, labs) in EXTRA.items():
+        chs[i]["lesson"] = chs[i]["lesson"] + blocks
+        chs[i]["practice"] = chs[i]["practice"] + labs
+    chs = chs + cb3.D
+    cmk.main(CFG, chs, [sys.argv[0], out])
