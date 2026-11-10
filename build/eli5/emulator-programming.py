@@ -1,0 +1,15 @@
+FEY = [
+ ("An emulator is a pretend machine. It reads the instructions meant for another machine and does what that machine would have done, so the games think nothing changed.", None),
+ ("A computer is a team of parts: a thinker, a notebook, a screen and a speaker. An emulator makes one small helper for each part and lets them talk.", None),
+ ("Numbers in a little machine are like a car odometer. After 255 it rolls back to 0, and a tiny flag lights up to say it rolled over.", None),
+ ("The thinker repeats three jobs: read the next card, work out what it says, and do it. Then it moves to the next card, over and over.", None),
+ ("Each instruction card has parts, like a postcard with a country, a town and a street. Reading the parts quickly tells you what to do.", None),
+ ("Memory is a street of numbered mailboxes. Some are real mailboxes, some are doors to other machines, and some show the same house twice.", None),
+ ("Every part has a heartbeat. Count the beats, and tell the screen and the speaker when it is their turn, without dropping any beats.", None),
+ ("An interrupt is a doorbell. The thinker finishes the card it is on, then answers the door. A scheduler is a calendar of who will ring when.", None),
+ ("The screen is built from small stickers called tiles and little movable stickers called sprites. Colors come from a box of crayons numbered one, two, three.", None),
+ ("Buttons are a row of lights, one per button. A timer is an egg timer that counts down while the machine works, and a copier moves a stack of papers fast.", None),
+ ("A translator who learns a page once and writes it down will be faster than one who reads it fresh each time. Save the page, and throw it away if the page changes.", None),
+ ("To check your pretend machine, ask the real one the same question and compare answers. Keep every run the same so you can replay it and spot where it went wrong.", None),
+ ("A debugger is a pause button with a magnifying glass. Stop, look inside, step forward one card, and see exactly what happened.", None),
+]

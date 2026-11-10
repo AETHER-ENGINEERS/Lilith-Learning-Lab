@@ -1,0 +1,6271 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "emulator-programming",
+ "title": "Emulator Programming: From Fetch-Decode-Execute to JIT",
+ "subtitle": "Build the ideas of a computer emulator step by step, with a tiny CPU, a memory map, timing, interrupts, video, sound and testing",
+ "author": "Lilith Learning Lab",
+ "description": "Learn how to write a computer emulator. Starting from what an emulator is and how it differs from a simulator or a compatibility layer, you build a tiny 8-bit CPU and study the fetch-decode-execute loop, instruction decoding, bit tricks, flags and endianness, memory maps, mirroring, banking and memory-mapped devices, cycle timing, interrupts and event schedulers, video and sound, input and DMA, caches and just-in-time compilation, accuracy and hardware-derived test suites, and debuggers. The course updates the classic 1990s how-to advice for modern compilers, languages, tools and test suites. Each chapter has an ELI5 block, a quiz and Python labs that run on the built-in interpreter.",
+ "pronounce": {
+  "emulator": "em you lay ter",
+  "emulators": "em you lay ters",
+  "Emulator": "em you lay ter",
+  "emulation": "em you lay shun",
+  "Emulation": "em you lay shun",
+  "emulate": "em you late",
+  "emulated": "em you lay ted",
+  "6502": "sixty five oh two",
+  "Z80": "zee eighty",
+  "8088": "eighty eighty eight",
+  "68000": "sixty eight thousand",
+  "x86": "x eighty six",
+  "CHIP-8": "chip eight",
+  "TOY8": "toy eight",
+  "NES": "ness",
+  "NESdev": "ness dev",
+  "ROM": "rom",
+  "ROMs": "roms",
+  "RAM": "ram",
+  "CPU": "C P U",
+  "JIT": "jit",
+  "IRQ": "I R Q",
+  "NMI": "N M I",
+  "DMA": "D M A",
+  "MMIO": "M M I O",
+  "RGB565": "R G B five six five",
+  "RGB888": "R G B eight eight eight",
+  "HLT": "halt",
+  "LDI": "L D I",
+  "ADD": "add",
+  "SUB": "sub",
+  "STA": "S T A",
+  "LDA": "L D A",
+  "JMP": "jump",
+  "JNZ": "J N Z",
+  "OUT": "out",
+  "PC": "P C",
+  "ISA": "I S A",
+  "HOWTO": "how to",
+  "FPGA": "F P G A",
+  "endianness": "end ee an ness",
+  "Endianness": "end ee an ness",
+  "little-endian": "little endian",
+  "big-endian": "big endian",
+  "uint8_t": "u int eight",
+  "uint16_t": "u int sixteen",
+  "u8": "U eight",
+  "u16": "U sixteen",
+  "IBM": "I B M",
+  "Fayzullin": "fay zoo lin",
+  "Marat": "mah rat",
+  "Commodore": "commodore",
+  "Nintendo": "nin ten doe",
+  "Dolphin": "dolphin",
+  "libretro": "libre retro",
+  "MiSTer": "mister",
+  "perf": "perf",
+  "Rust": "rust",
+  "Zig": "zig",
+  "Python": "pie thon",
+  "ELI5": "E L I five",
+  "JSON": "jason",
+  "Fletcher-16": "fletcher sixteen",
+  "LCG": "L C G",
+  "lcg": "L C G",
+  "hex": "hex",
+  "HLE": "H L E",
+  "pixel": "pixel",
+  "scanline": "scan line",
+  "scanlines": "scan lines",
+  "vblank": "V blank",
+  "hblank": "H blank",
+  "framebuffer": "frame buffer",
+  "Pan": "pan",
+  "AAAA": "four hex digits",
+  "nnn": "N N N",
+  "VF": "V F",
+  "Vx": "V X"
+ },
+ "chapters": [
+  {
+   "title": "What an emulator is",
+   "maps": [
+    {
+     "title": "Emulators",
+     "links": [
+      "Emulator | imitates | A guest machine",
+      "Host | runs | The emulator",
+      "Guest | is | The imitated system",
+      "Simulator | models | Behavior",
+      "Compatibility layer | translates | System calls",
+      "Interpreter | runs | One instruction at a time",
+      "ROM | holds | Guest software"
+     ]
+    }
+   ],
+   "summary": [
+    "An emulator is a program, or a device, that lets one system, the host, behave like another, the guest. The goal is to run the guest's software unchanged.",
+    "A simulator models behavior in the abstract, while an emulator reproduces the machine well enough to run its real binaries. In everyday use the two words blur.",
+    "Emulators exist for consoles, computers, terminals, printers and chips, and are used for play, preservation, homebrew and development."
+   ],
+   "glossary": [
+    {
+     "term": "Emulator",
+     "def": "Software or hardware that imitates another system."
+    },
+    {
+     "term": "Host",
+     "def": "The real machine the emulator runs on."
+    },
+    {
+     "term": "Guest",
+     "def": "The machine being imitated."
+    },
+    {
+     "term": "Simulation",
+     "def": "A model of behavior, not necessarily running real binaries."
+    },
+    {
+     "term": "Compatibility layer",
+     "def": "A translator of one system's calls into another's, without imitating its hardware."
+    },
+    {
+     "term": "ROM image",
+     "def": "A file copy of a program or chip's contents."
+    }
+   ],
+   "keyPoints": [
+    "IBM engineers coined the term emulator in the 1960s for hardware-assisted imitation.",
+    "Types: console and arcade emulators, terminal emulators, in-circuit emulators, floating-point emulators and instruction-set simulators.",
+    "A compatibility layer is lighter than an emulator but needs the same kind of programs.",
+    "Interpreters are simple; recompilers are faster.",
+    "Accuracy needs depend on the guest: some software relies on exact timing.",
+    "You can write a small emulator in an afternoon and learn a great deal from it."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. An emulator is a pretend machine. It reads the instructions meant for another machine and does what that machine would have done, so the games think nothing changed."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine a toy robot that only understands a special language. An emulator is a translator in the middle. It reads the robot's instructions one at a time and does what the robot would do, using your own computer. The program inside does not know the difference."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The guest is the system you imitate and the host is the one you run on. A classic example is running a game console's games on a laptop. Other examples include printers that imitate a popular model, so existing software works, and terminals on a modern desktop that act like old text terminals."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "People often ask about emulation and simulation. Historically, emulation meant imitation helped by hardware or microcode, and simulation meant pure software.",
+      "Today, emulation usually means reproducing a machine that runs real binary code, and simulation often means a model, such as a network or weather simulation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A compatibility layer is a cousin. Instead of imitating the hardware, it translates the foreign program's requests, such as open a file, into calls the host understands. That works well when the programs rarely touch hardware directly, and it is much faster than full emulation."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# the smallest emulator: a stack calculator\ndef calc(tokens):\n    stack = []\n    for t in tokens:\n        if t == '+':\n            b = stack.pop(); a = stack.pop(); stack.append(a + b)\n        elif t == '*':\n            b = stack.pop(); a = stack.pop(); stack.append(a * b)\n        else:\n            stack.append(t)\n    return stack[-1]\n\nprint(calc([2, 3, '+', 4, '*']))   # 20"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Through this course we build up a tiny imaginary computer called TOY8 and write pieces of its emulator as labs. You will meet the same ideas that real emulators use: a fetch-decode-execute loop, a memory map, cycle timing, interrupts, video and sound, and testing."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the guest?",
+     "options": [
+      "The system being imitated",
+      "The real machine",
+      "The compiler",
+      "The ROM file only"
+     ],
+     "answer": 0,
+     "explain": "The host runs the emulator."
+    },
+    {
+     "q": "What does a compatibility layer translate?",
+     "options": [
+      "System calls",
+      "Pixels",
+      "Voltages",
+      "Clock speed"
+     ],
+     "answer": 0,
+     "explain": "It does not imitate hardware."
+    },
+    {
+     "q": "What does a simulator usually model?",
+     "options": [
+      "Behavior",
+      "A copper wire",
+      "A keyboard",
+      "A screen"
+     ],
+     "answer": 0,
+     "explain": "Often abstract."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a host?",
+     "a": "The machine running the emulator."
+    },
+    {
+     "q": "What is a ROM image?",
+     "a": "A file copy of a program or chip."
+    },
+    {
+     "q": "What is a compatibility layer?",
+     "a": "A call translator."
+    },
+    {
+     "q": "When was emulator coined?",
+     "a": "In the 1960s at IBM."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Terms",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Host",
+       "The real machine"
+      ],
+      [
+       "Guest",
+       "The imitated machine"
+      ],
+      [
+       "Compatibility layer",
+       "Translates system calls"
+      ],
+      [
+       "ROM image",
+       "A file copy of software"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "RPN calculator",
+     "intro": "Write calc(tokens): tokens are numbers and the strings '+', '-', '*'. Evaluate them on a stack (reverse Polish notation) and return the last value.",
+     "fn": "calc",
+     "starter": "def calc(tokens):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         2,
+         3,
+         "+",
+         4,
+         "*"
+        ]
+       ],
+       "expect": 20
+      },
+      {
+       "args": [
+        [
+         5
+        ]
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         10,
+         4,
+         "-",
+         3,
+         "*"
+        ]
+       ],
+       "expect": 18
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         "*",
+         "+"
+        ]
+       ],
+       "expect": 7
+      }
+     ],
+     "hint": "Push numbers, pop two for each operator.",
+     "solution": "def calc(tokens):\n    stack = []\n    for t in tokens:\n        if t == '+':\n            b = stack.pop()\n            a = stack.pop()\n            stack.append(a + b)\n        elif t == '-':\n            b = stack.pop()\n            a = stack.pop()\n            stack.append(a - b)\n        elif t == '*':\n            b = stack.pop()\n            a = stack.pop()\n            stack.append(a * b)\n        else:\n            stack.append(t)\n    return stack[-1]\n"
+    },
+    {
+     "type": "python",
+     "title": "Compatibility layer",
+     "intro": "Write translate(calls, table): calls is a list of guest call names and table maps guest names to host names. Return the list of host names, using 'unsupported' for names not in the table.",
+     "fn": "translate",
+     "starter": "def translate(calls, table):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "open",
+         "write",
+         "fork"
+        ],
+        {
+         "open": "fopen",
+         "write": "fwrite"
+        }
+       ],
+       "expect": [
+        "fopen",
+        "fwrite",
+        "unsupported"
+       ]
+      },
+      {
+       "args": [
+        [],
+        {}
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        {
+         "x": "y"
+        }
+       ],
+       "expect": [
+        "y"
+       ]
+      }
+     ],
+     "hint": "A dictionary lookup with a default.",
+     "solution": "def translate(calls, table):\n    out = []\n    for c in calls:\n        out.append(table.get(c, 'unsupported'))\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Anatomy of an emulator",
+   "maps": [
+    {
+     "title": "Anatomy",
+     "links": [
+      "CPU module | runs | Instructions",
+      "Memory module | maps | Addresses",
+      "Device module | imitates | A chip",
+      "Bus | links | Parts",
+      "Frontend | shows | Video and sound",
+      "Scheduler | keeps | Time",
+      "Module | can be | Reused"
+     ]
+    }
+   ],
+   "summary": [
+    "Split an emulator into modules that mirror the real machine: CPU, memory, video, sound, input and other chips. Each can be built and tested alone.",
+    "A real bus connects the chips; emulators often skip it and give each device a direct link, or a central routing function.",
+    "A frontend turns the emulated video and sound into a window and speakers on the host."
+   ],
+   "glossary": [
+    {
+     "term": "Module",
+     "def": "A separable part of the emulator, such as the CPU."
+    },
+    {
+     "term": "Bus",
+     "def": "The wires and rules that connect chips."
+    },
+    {
+     "term": "Address decoding",
+     "def": "Deciding which chip answers an address."
+    },
+    {
+     "term": "Open bus",
+     "def": "What a read returns when no chip answers."
+    },
+    {
+     "term": "Frontend",
+     "def": "The part that talks to the host's window, audio and input."
+    },
+    {
+     "term": "Core",
+     "def": "The emulation part, kept apart from the frontend."
+    }
+   ],
+   "keyPoints": [
+    "Keep the CPU core free of video and window code.",
+    "A memory function routes each address to RAM, ROM or a device.",
+    "Reads from nowhere return an open-bus value, often a leftover or 0xFF.",
+    "Writing to ROM is usually ignored.",
+    "Reusing a chip's module across machines saves work.",
+    "Separating core from frontend lets one core run in many places."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A computer is a team of parts: a thinker, a notebook, a screen and a speaker. An emulator makes one small helper for each part and lets them talk."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Look at a real computer and you see chips: a processor, some RAM, a ROM, a graphics chip and a sound chip. A good emulator has the same shape. Each chip becomes a module, with a clear job and a small interface. It is easier to find bugs when each piece is small."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In hardware, the CPU talks to the other chips over a bus. Every chip watches the address wires and answers only when the address belongs to it. The emulator copies this with a routing function. Given an address, it picks RAM, ROM or a device."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# a tiny address decoder\ndef route(addr):\n    if addr < 0x100:\n        return 'RAM'\n    if addr < 0x200:\n        return 'ROM'\n    return 'open bus'"
+    },
+    {
+     "type": "text",
+     "items": [
+      "What happens when the CPU reads an address where no chip lives? On real hardware, the wires keep whatever voltage was there last, or float. Software sometimes depends on this. Emulators return a fixed value, such as 0xFF, or the last value on the bus."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Keep the core of the emulator separate from the frontend, the part that opens windows and plays sound. The core only works on memory and numbers, so it can be tested without a screen and moved between platforms. The frontend asks the core to run one frame, then shows the picture and plays the sound."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is open bus?",
+     "options": [
+      "A read where no chip answers",
+      "A full bus",
+      "A fast bus",
+      "A bug"
+     ],
+     "answer": 0,
+     "explain": "Floating wires."
+    },
+    {
+     "q": "What is a frontend?",
+     "options": [
+      "Window, audio and input code",
+      "A CPU",
+      "A ROM",
+      "A compiler"
+     ],
+     "answer": 0,
+     "explain": "Kept apart from the core."
+    },
+    {
+     "q": "Why modules?",
+     "options": [
+      "Easier to test and reuse",
+      "Smaller screens",
+      "Fewer pixels",
+      "Free code"
+     ],
+     "answer": 0,
+     "explain": "Each is small."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does a bus connect?",
+     "a": "Chips."
+    },
+    {
+     "q": "What happens on ROM write?",
+     "a": "Usually ignored."
+    },
+    {
+     "q": "What is address decoding?",
+     "a": "Choosing the chip."
+    },
+    {
+     "q": "What is a core?",
+     "a": "The emulation logic."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Modules",
+     "intro": "Match each module with its job.",
+     "pairs": [
+      [
+       "CPU",
+       "Runs instructions"
+      ],
+      [
+       "Memory map",
+       "Routes addresses"
+      ],
+      [
+       "Video chip",
+       "Makes the picture"
+      ],
+      [
+       "Frontend",
+       "Shows it on the host"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Address decoder",
+     "intro": "Write route(addr, regions): regions is a list of [start, end, name] where end is exclusive. Return the name of the first region containing addr, or 'open bus'.",
+     "fn": "route",
+     "starter": "def route(addr, regions):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        [
+         [
+          0,
+          256,
+          "RAM"
+         ],
+         [
+          256,
+          512,
+          "ROM"
+         ]
+        ]
+       ],
+       "expect": "RAM"
+      },
+      {
+       "args": [
+        300,
+        [
+         [
+          0,
+          256,
+          "RAM"
+         ],
+         [
+          256,
+          512,
+          "ROM"
+         ]
+        ]
+       ],
+       "expect": "ROM"
+      },
+      {
+       "args": [
+        900,
+        [
+         [
+          0,
+          256,
+          "RAM"
+         ]
+        ]
+       ],
+       "expect": "open bus"
+      },
+      {
+       "args": [
+        0,
+        []
+       ],
+       "expect": "open bus"
+      }
+     ],
+     "hint": "Check each range in order.",
+     "solution": "def route(addr, regions):\n    for start, end, name in regions:\n        if start <= addr < end:\n            return name\n    return 'open bus'\n"
+    },
+    {
+     "type": "python",
+     "title": "A tiny bus",
+     "intro": "Write bus_run(rom, ops): RAM is 256 bytes at 0x00-0xFF (starting at 0), ROM is the list rom at 0x100 onward and cannot be written. Each op is ['w', addr, value] or ['r', addr]. Reads of unmapped addresses return 255. Return the list of values read.",
+     "fn": "bus_run",
+     "starter": "def bus_run(rom, ops):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         7,
+         8,
+         9
+        ],
+        [
+         [
+          "w",
+          5,
+          42
+         ],
+         [
+          "r",
+          5
+         ],
+         [
+          "r",
+          257
+         ],
+         [
+          "w",
+          257,
+          1
+         ],
+         [
+          "r",
+          257
+         ],
+         [
+          "r",
+          999
+         ]
+        ]
+       ],
+       "expect": [
+        42,
+        8,
+        8,
+        255
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         [
+          "r",
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        0
+       ]
+      }
+     ],
+     "hint": "RAM, then ROM, then open bus.",
+     "solution": "def bus_run(rom, ops):\n    ram = [0] * 256\n    out = []\n    for op in ops:\n        addr = op[1]\n        if op[0] == 'w':\n            if addr < 256:\n                ram[addr] = op[2] & 255\n        else:\n            if addr < 256:\n                out.append(ram[addr])\n            elif addr - 256 < len(rom):\n                out.append(rom[addr - 256])\n            else:\n                out.append(255)\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Bits, numbers and flags",
+   "maps": [
+    {
+     "title": "Numbers",
+     "links": [
+      "Byte | has | 8 bits",
+      "Wraparound | keeps | 8 bits",
+      "Carry | marks | Overflow out",
+      "Zero flag | marks | A zero result",
+      "Two's complement | makes | Negatives",
+      "Endianness | orders | Bytes",
+      "Mask | keeps | Some bits"
+     ]
+    }
+   ],
+   "summary": [
+    "Real CPUs work with fixed-size numbers that wrap around. An emulator must reproduce that exactly, using masks.",
+    "After most operations the CPU sets flags, such as carry, zero, negative and overflow, that later instructions test.",
+    "Multi-byte numbers can be stored low byte first, called little-endian, or high byte first, big-endian. Combine bytes with shifts, never by peeking at memory layout."
+   ],
+   "glossary": [
+    {
+     "term": "Wraparound",
+     "def": "A result is cut to the register size, so 255 plus 1 gives 0."
+    },
+    {
+     "term": "Flag",
+     "def": "A single bit recording something about the last result."
+    },
+    {
+     "term": "Carry",
+     "def": "Set when an addition overflows the register."
+    },
+    {
+     "term": "Two's complement",
+     "def": "The common way to store negative numbers."
+    },
+    {
+     "term": "Endianness",
+     "def": "Whether the low byte or the high byte comes first."
+    },
+    {
+     "term": "Mask",
+     "def": "A bit pattern used with AND to keep chosen bits."
+    }
+   ],
+   "keyPoints": [
+    "Mask with & 0xFF to keep 8 bits and & 0xFFFF for 16.",
+    "Carry: the full sum is above 255.",
+    "Overflow (signed): two numbers of the same sign give a result of the other sign.",
+    "To read a signed byte: if it is 128 or more, subtract 256.",
+    "Little-endian word = low + (high << 8).",
+    "Use shifts and masks, not type punning; modern compilers and fixed-width types make that safe and portable."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Numbers in a little machine are like a car odometer. After 255 it rolls back to 0, and a tiny flag lights up to say it rolled over."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A byte holds 256 different values, from 0 to 255. If you add 1 to 255 a real 8-bit register does not become 256. It wraps to 0 and sets the carry flag. Your emulator has to copy that. In Python or C, you mask the result with 255."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\begin{gathered} r=(a+b)\\bmod 256 \\\\[0.6em] C=[a+b>255] \\end{gathered}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Negative numbers use two's complement. The byte 255 is minus one, 254 is minus two, and so on. The top bit tells you the sign. The same bits mean different numbers depending on whether the instruction treats them as signed or unsigned."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "def add8(a, b):\n    full = a + b\n    r = full & 0xFF\n    carry = 1 if full > 255 else 0\n    zero = 1 if r == 0 else 0\n    neg = r >> 7\n    # signed overflow: same input signs, different result sign\n    ov = 1 if ((a ^ r) & (b ^ r) & 0x80) else 0\n    return [r, carry, zero, neg, ov]"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Endianness is the order of the bytes in a larger number. The 6502, Z80 and x86 store the low byte first. The 68000 stores the high byte first. The old HOWTO showed tricks with unions and pointer casts to handle this.",
+      "Today, the clean way is shifts: build the word with low plus high shifted left by eight, which works on any host."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Another modern habit is fixed-width types. Instead of relying on how big an int is, use uint8_t, uint16_t and so on in C, or u8 and u16 in Rust. Then your masks and wraparound do exactly what you expect, on every compiler."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is 255 + 1 in an 8-bit register?",
+     "options": [
+      "0 with carry",
+      "256",
+      "-1",
+      "1"
+     ],
+     "answer": 0,
+     "explain": "It wraps."
+    },
+    {
+     "q": "What is byte 255 as signed?",
+     "options": [
+      "-1",
+      "255",
+      "0",
+      "127"
+     ],
+     "answer": 0,
+     "explain": "Two's complement."
+    },
+    {
+     "q": "How do you build a little-endian word?",
+     "options": [
+      "low + (high << 8)",
+      "high + low",
+      "low << 8",
+      "low & high"
+     ],
+     "answer": 0,
+     "explain": "Use shifts."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is carry?",
+     "a": "Overflow out of the top bit."
+    },
+    {
+     "q": "What is a mask?",
+     "a": "A pattern used with AND."
+    },
+    {
+     "q": "What does little-endian mean?",
+     "a": "Low byte first."
+    },
+    {
+     "q": "What sets zero flag?",
+     "a": "A zero result."
+    }
+   ],
+   "practice": [
+    {
+     "type": "fill",
+     "title": "Wraparound",
+     "text": "To keep 8 bits you use & {{255}}, and a sum over 255 sets the {{carry}} flag."
+    },
+    {
+     "type": "python",
+     "title": "Signed byte",
+     "intro": "Write to_signed(v, bits): interpret v (an unsigned number) as a two's complement number of that many bits.",
+     "fn": "to_signed",
+     "starter": "def to_signed(v, bits):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        255,
+        8
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        127,
+        8
+       ],
+       "expect": 127
+      },
+      {
+       "args": [
+        128,
+        8
+       ],
+       "expect": -128
+      },
+      {
+       "args": [
+        65535,
+        16
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        32768,
+        16
+       ],
+       "expect": -32768
+      },
+      {
+       "args": [
+        0,
+        8
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Subtract 2 to the bits when the top bit is set.",
+     "solution": "def to_signed(v, bits):\n    v = v & ((1 << bits) - 1)\n    if v >= (1 << (bits - 1)):\n        return v - (1 << bits)\n    return v\n"
+    },
+    {
+     "type": "python",
+     "title": "8-bit add",
+     "intro": "Write add8(a, b): return [result, carry, zero, negative, overflow] for an 8-bit addition (all as 0 or 1 except the result).",
+     "fn": "add8",
+     "starter": "def add8(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        2
+       ],
+       "expect": [
+        3,
+        0,
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        255,
+        1
+       ],
+       "expect": [
+        0,
+        1,
+        1,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        127,
+        1
+       ],
+       "expect": [
+        128,
+        0,
+        0,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        128,
+        128
+       ],
+       "expect": [
+        0,
+        1,
+        1,
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        100,
+        27
+       ],
+       "expect": [
+        127,
+        0,
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        0,
+        0
+       ],
+       "expect": [
+        0,
+        0,
+        1,
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Overflow depends on signs.",
+     "solution": "def add8(a, b):\n    full = a + b\n    r = full & 0xFF\n    carry = 1 if full > 255 else 0\n    zero = 1 if r == 0 else 0\n    neg = r >> 7\n    ov = 1 if ((a ^ r) & (b ^ r) & 0x80) else 0\n    return [r, carry, zero, neg, ov]\n"
+    },
+    {
+     "type": "python",
+     "title": "Read a word",
+     "intro": "Write read_word(mem, addr, endian): the 16-bit value from two bytes at addr and addr + 1; endian is 'little' or 'big'.",
+     "fn": "read_word",
+     "starter": "def read_word(mem, addr, endian):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         52,
+         18
+        ],
+        0,
+        "little"
+       ],
+       "expect": 4660
+      },
+      {
+       "args": [
+        [
+         18,
+         52
+        ],
+        0,
+        "big"
+       ],
+       "expect": 4660
+      },
+      {
+       "args": [
+        [
+         0,
+         255,
+         1
+        ],
+        1,
+        "little"
+       ],
+       "expect": 511
+      },
+      {
+       "args": [
+        [
+         0,
+         255,
+         1
+        ],
+        1,
+        "big"
+       ],
+       "expect": 65281
+      }
+     ],
+     "hint": "Shift the high byte by 8.",
+     "solution": "def read_word(mem, addr, endian):\n    a = mem[addr]\n    b = mem[addr + 1]\n    if endian == 'little':\n        return a | (b << 8)\n    return (a << 8) | b\n"
+    },
+    {
+     "type": "python",
+     "title": "Swap bytes",
+     "intro": "Write swap16(w): swap the two bytes of a 16-bit number.",
+     "fn": "swap16",
+     "starter": "def swap16(w):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        4660
+       ],
+       "expect": 13330
+      },
+      {
+       "args": [
+        255
+       ],
+       "expect": 65280
+      },
+      {
+       "args": [
+        43981
+       ],
+       "expect": 52651
+      },
+      {
+       "args": [
+        0
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Shift and mask each half.",
+     "solution": "def swap16(w):\n    return ((w & 0xFF) << 8) | ((w >> 8) & 0xFF)\n"
+    }
+   ]
+  },
+  {
+   "title": "The fetch-decode-execute loop",
+   "maps": [
+    {
+     "title": "The loop",
+     "links": [
+      "PC | points to | The next opcode",
+      "Fetch | reads | An opcode",
+      "Decode | picks | An action",
+      "Execute | changes | State",
+      "Cycle count | tracks | Time",
+      "Halt | stops | The loop",
+      "Register | holds | A value"
+     ]
+    }
+   ],
+   "summary": [
+    "The heart of every CPU emulator is a loop: fetch the opcode at the program counter, decode it, execute it, and add its cycles to a counter.",
+    "The CPU's state is just a few variables: registers, flags and the program counter. Each instruction changes them.",
+    "We use TOY8, a tiny accumulator CPU with nine opcodes, as the running example."
+   ],
+   "glossary": [
+    {
+     "term": "Program counter (PC)",
+     "def": "The register holding the address of the next instruction."
+    },
+    {
+     "term": "Fetch",
+     "def": "Reading the opcode (and operands) from memory."
+    },
+    {
+     "term": "Decode",
+     "def": "Working out which instruction it is."
+    },
+    {
+     "term": "Execute",
+     "def": "Doing what the instruction says."
+    },
+    {
+     "term": "Accumulator",
+     "def": "A register that most arithmetic uses."
+    },
+    {
+     "term": "Opcode",
+     "def": "The number that names an instruction."
+    }
+   ],
+   "keyPoints": [
+    "Loop: opcode = mem[pc]; advance pc; decode; execute; cycles += cost.",
+    "Jumps simply overwrite pc.",
+    "Conditional jumps read a flag.",
+    "Different opcodes take different numbers of cycles.",
+    "Stop on a halt instruction or after a step limit.",
+    "TOY8 opcodes: 0 HLT, 1 LDI, 2 ADD, 3 SUB, 4 STA, 5 LDA, 6 JMP, 7 JNZ, 8 OUT."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The thinker repeats three jobs: read the next card, work out what it says, and do it. Then it moves to the next card, over and over."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A processor is a very fast reader. It looks at the address in its program counter, reads the number there, and treats that number as a command. When the command is done, the counter moves to the next one. An emulator does exactly that with a loop."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "TOY8 has an accumulator A, a program counter and a zero flag. Memory is 256 bytes. LDI loads a number, ADD and SUB change A, STA and LDA store and load from memory, JMP and JNZ jump, OUT sends A to an output list, and HLT stops. Most instructions have one operand byte."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "def run(program, max_steps):\n    mem = list(program) + [0] * (256 - len(program))\n    pc, a, z, out = 0, 0, False, []\n    for _ in range(max_steps):\n        op = mem[pc]\n        n = mem[(pc + 1) & 255]\n        if op == 0:            # HLT\n            break\n        elif op == 1:          # LDI\n            a = n; z = a == 0; pc += 2\n        elif op == 3:          # SUB\n            a = (a - n) & 255; z = a == 0; pc += 2\n        elif op == 7:          # JNZ\n            pc = n if not z else pc + 2\n        elif op == 8:          # OUT\n            out.append(a); pc += 1\n    return out"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Each instruction costs a number of cycles, the ticks of the CPU's clock. LDI takes two, a load from memory takes three, and a taken jump takes one more than a jump that is not taken. We add up cycles so we can keep other chips in step. You will see why in the chapter about timing."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Here is a program that counts down: load 3, then loop: output A, subtract 1, and jump back while A is not zero. Running it on the emulator gives 3, 2, 1. Try it in the first lab below."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the PC hold?",
+     "options": [
+      "The address of the next instruction",
+      "The last result",
+      "A flag",
+      "The clock"
+     ],
+     "answer": 0,
+     "explain": "Program counter."
+    },
+    {
+     "q": "What does a jump do?",
+     "options": [
+      "Overwrites the PC",
+      "Adds to A",
+      "Stops the CPU",
+      "Clears memory"
+     ],
+     "answer": 0,
+     "explain": "New address."
+    },
+    {
+     "q": "Why count cycles?",
+     "options": [
+      "To keep other chips in step",
+      "To save memory",
+      "To draw pixels",
+      "To read ROM"
+     ],
+     "answer": 0,
+     "explain": "Timing."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is fetch?",
+     "a": "Reading the opcode."
+    },
+    {
+     "q": "What is decode?",
+     "a": "Working out the instruction."
+    },
+    {
+     "q": "What does HLT do?",
+     "a": "Stops the loop."
+    },
+    {
+     "q": "What does JNZ test?",
+     "a": "The zero flag."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "TOY8",
+     "intro": "Match each opcode with its job.",
+     "pairs": [
+      [
+       "LDI",
+       "Load a number into A"
+      ],
+      [
+       "STA",
+       "Store A in memory"
+      ],
+      [
+       "JNZ",
+       "Jump if not zero"
+      ],
+      [
+       "OUT",
+       "Send A to the output"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Run TOY8",
+     "intro": "Write run_toy(program, max_steps): run the TOY8 machine (opcodes 0 HLT, 1 LDI n, 2 ADD n, 3 SUB n, 4 STA a, 5 LDA a, 6 JMP a, 7 JNZ a, 8 OUT; instruction lengths 1,2,2,2,2,2,2,2,1; cycles 1,2,2,2,3,3,3,3(taken) or 2(not taken),2; memory 256 bytes, program at 0, addresses wrap at 256; A wraps at 256; the zero flag z is set when A is 0 after LDI, ADD, SUB or LDA and starts false; HLT stops and still costs its cycle). Stop after max_steps instructions. Return [outputs, cycles, a, halted] with halted 1 or 0.",
+     "fn": "run_toy",
+     "starter": "def run_toy(program, max_steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         3,
+         1,
+         7,
+         2,
+         0
+        ],
+        100
+       ],
+       "expect": [
+        [
+         3,
+         2,
+         1
+        ],
+        23,
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         5,
+         2,
+         250,
+         8,
+         0
+        ],
+        100
+       ],
+       "expect": [
+        [
+         255
+        ],
+        7,
+        255,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         6,
+         0
+        ],
+        5
+       ],
+       "expect": [
+        [],
+        12,
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         7,
+         4,
+         100,
+         1,
+         0,
+         5,
+         100,
+         8,
+         0
+        ],
+        50
+       ],
+       "expect": [
+        [
+         7
+        ],
+        13,
+        7,
+        1
+       ]
+      }
+     ],
+     "hint": "Loop, decode with if-elif, add cycles.",
+     "solution": "LEN = [1, 2, 2, 2, 2, 2, 2, 2, 1]\nNAMES = ['HLT', 'LDI', 'ADD', 'SUB', 'STA', 'LDA', 'JMP', 'JNZ', 'OUT']\nCYC = [1, 2, 2, 2, 3, 3, 3, 3, 2]\n\ndef run_toy(program, max_steps):\n    mem = list(program) + [0] * (256 - len(program))\n    pc = 0\n    a = 0\n    z = False\n    out = []\n    cycles = 0\n    halted = 0\n    for _ in range(max_steps):\n        op = mem[pc & 255]\n        n = mem[(pc + 1) & 255]\n        pc = (pc + LEN[op]) & 255 if op < 9 else pc\n        cycles += CYC[op]\n        if op == 0:\n            halted = 1\n            break\n        elif op == 1:\n            a = n\n            z = a == 0\n        elif op == 2:\n            a = (a + n) & 255\n            z = a == 0\n        elif op == 3:\n            a = (a - n) & 255\n            z = a == 0\n        elif op == 4:\n            mem[n] = a\n        elif op == 5:\n            a = mem[n]\n            z = a == 0\n        elif op == 6:\n            pc = n\n        elif op == 7:\n            if not z:\n                pc = n\n            else:\n                cycles -= 1\n        elif op == 8:\n            out.append(a)\n    return [out, cycles, a, halted]\n"
+    },
+    {
+     "type": "python",
+     "title": "Fetch and decode",
+     "intro": "Write decode(program, pc): return [name, operand, length] for the instruction at pc, using the names HLT LDI ADD SUB STA LDA JMP JNZ OUT; operand is None for one-byte instructions; unknown opcodes give ['???', None, 1].",
+     "fn": "decode",
+     "starter": "def decode(program, pc):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         0
+        ],
+        0
+       ],
+       "expect": [
+        "LDI",
+        3,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         0
+        ],
+        2
+       ],
+       "expect": [
+        "OUT",
+        null,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         0
+        ],
+        3
+       ],
+       "expect": [
+        "HLT",
+        null,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         99
+        ],
+        0
+       ],
+       "expect": [
+        "???",
+        null,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         7,
+         2
+        ],
+        0
+       ],
+       "expect": [
+        "JNZ",
+        2,
+        2
+       ]
+      }
+     ],
+     "hint": "Look up the name; two-byte ones have an operand.",
+     "solution": "def decode(program, pc):\n    names = ['HLT', 'LDI', 'ADD', 'SUB', 'STA', 'LDA', 'JMP', 'JNZ', 'OUT']\n    op = program[pc]\n    if op > 8:\n        return ['???', None, 1]\n    if op == 0 or op == 8:\n        return [names[op], None, 1]\n    return [names[op], program[pc + 1], 2]\n"
+    },
+    {
+     "type": "python",
+     "title": "Count cycles",
+     "intro": "Write cycles_for(program): run TOY8 until it halts (at most 1000 steps) and return only the number of cycles. Use the costs: HLT 1, LDI/ADD/SUB 2, STA/LDA 3, JMP 3, JNZ 3 taken or 2 not taken, OUT 2.",
+     "fn": "cycles_for",
+     "starter": "def cycles_for(program):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         3,
+         1,
+         7,
+         2,
+         0
+        ]
+       ],
+       "expect": 23
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         7,
+         9,
+         0
+        ]
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         8,
+         0
+        ]
+       ],
+       "expect": 5
+      }
+     ],
+     "hint": "Reuse the loop.",
+     "solution": "LEN = [1, 2, 2, 2, 2, 2, 2, 2, 1]\nNAMES = ['HLT', 'LDI', 'ADD', 'SUB', 'STA', 'LDA', 'JMP', 'JNZ', 'OUT']\nCYC = [1, 2, 2, 2, 3, 3, 3, 3, 2]\n\ndef run_toy(program, max_steps):\n    mem = list(program) + [0] * (256 - len(program))\n    pc = 0\n    a = 0\n    z = False\n    out = []\n    cycles = 0\n    halted = 0\n    for _ in range(max_steps):\n        op = mem[pc & 255]\n        n = mem[(pc + 1) & 255]\n        pc = (pc + LEN[op]) & 255 if op < 9 else pc\n        cycles += CYC[op]\n        if op == 0:\n            halted = 1\n            break\n        elif op == 1:\n            a = n\n            z = a == 0\n        elif op == 2:\n            a = (a + n) & 255\n            z = a == 0\n        elif op == 3:\n            a = (a - n) & 255\n            z = a == 0\n        elif op == 4:\n            mem[n] = a\n        elif op == 5:\n            a = mem[n]\n            z = a == 0\n        elif op == 6:\n            pc = n\n        elif op == 7:\n            if not z:\n                pc = n\n            else:\n                cycles -= 1\n        elif op == 8:\n            out.append(a)\n    return [out, cycles, a, halted]\n\ndef cycles_for(program):\n    return run_toy(program, 1000)[1]\n"
+    }
+   ]
+  },
+  {
+   "title": "Decoding instructions",
+   "maps": [
+    {
+     "title": "Decoding",
+     "links": [
+      "Opcode | has | Bit fields",
+      "Switch | picks | An action",
+      "Table | maps | Opcode to handler",
+      "Prefix | extends | The opcode space",
+      "Addressing mode | says | Where data is",
+      "Undocumented | opcodes | Do exist",
+      "Decoder | can be | Generated"
+     ]
+    }
+   ],
+   "summary": [
+    "Opcodes are numbers with structure: some bits pick the operation, others pick registers or addressing modes. Decoding by bit fields is often shorter than listing every opcode.",
+    "Common ways to dispatch are a big switch, a table of handlers, or code generated from a table. Modern compilers turn a dense switch into a fast jump table.",
+    "Real CPUs have undocumented opcodes, and some software uses them."
+   ],
+   "glossary": [
+    {
+     "term": "Bit field",
+     "def": "A group of bits within an opcode that has one meaning."
+    },
+    {
+     "term": "Addressing mode",
+     "def": "How an instruction finds its operand: immediate, absolute, indexed and so on."
+    },
+    {
+     "term": "Dispatch",
+     "def": "Choosing which code to run for an opcode."
+    },
+    {
+     "term": "Jump table",
+     "def": "An array of addresses indexed by opcode."
+    },
+    {
+     "term": "Prefix byte",
+     "def": "An opcode that changes the meaning of the next one."
+    },
+    {
+     "term": "Undocumented opcode",
+     "def": "An instruction the maker never described but that works."
+    }
+   ],
+   "keyPoints": [
+    "Split opcodes with shifts and masks: (op >> 5) & 7.",
+    "A switch on a dense range compiles to a jump table in modern compilers.",
+    "A table of function pointers is clear, but each call has some cost.",
+    "Generating decoder code from a table avoids typing mistakes.",
+    "Write instruction handlers once and reuse them across addressing modes.",
+    "Test undocumented opcodes against hardware-derived test suites."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Each instruction card has parts, like a postcard with a country, a town and a street. Reading the parts quickly tells you what to do."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An opcode is a number, but it is not random. On the 6502, for example, many opcodes can be split into three fields, written aaabbbcc: a group in the low two bits, an addressing mode in the middle three and an operation in the top three. Learn the pattern and you can decode whole families at once."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "def fields(op):\n    return [op >> 5, (op >> 2) & 7, op & 3]   # aaa, bbb, cc\n\nprint(fields(0xA9))   # [5, 2, 1]: LDA immediate on the 6502"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The old HOWTO compared a switch with a table of function pointers and a table of labels. Today the choice is easier. Compilers make a dense switch into a jump table by themselves, and some compilers offer computed goto or guaranteed tail calls for the very hot path.",
+      "Start with a plain switch and measure."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Addressing modes tell the instruction where its data is. Immediate means the operand is the next byte. Absolute means the next bytes name an address. Indexed adds a register. Write the address calculation as a small function for each mode, and let every instruction reuse it.",
+      "That cuts the code size by a lot."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "CHIP-8 is a friendly practice target. Its instructions are two bytes, and the first hex digit picks the family. For example, 6XNN means set register X to NN, and 7XNN means add NN to register X. Many people write a CHIP-8 emulator as their first project."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is an addressing mode?",
+     "options": [
+      "How an instruction finds its operand",
+      "A kind of flag",
+      "A clock speed",
+      "A bus"
+     ],
+     "answer": 0,
+     "explain": "Immediate, absolute and others."
+    },
+    {
+     "q": "What does a compiler do with a dense switch?",
+     "options": [
+      "Often makes a jump table",
+      "Deletes it",
+      "Slows it down",
+      "Splits the file"
+     ],
+     "answer": 0,
+     "explain": "Fast dispatch."
+    },
+    {
+     "q": "What is a prefix byte?",
+     "options": [
+      "Changes the next opcode's meaning",
+      "Ends a program",
+      "Holds a flag",
+      "Selects a bank"
+     ],
+     "answer": 0,
+     "explain": "Extends the opcode space."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is dispatch?",
+     "a": "Choosing the handler."
+    },
+    {
+     "q": "What is a bit field?",
+     "a": "A group of opcode bits."
+    },
+    {
+     "q": "What is CHIP-8?",
+     "a": "A friendly first target."
+    },
+    {
+     "q": "What is immediate mode?",
+     "a": "The operand follows the opcode."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Modes",
+     "intro": "Match each mode with its meaning.",
+     "pairs": [
+      [
+       "Immediate",
+       "The operand follows the opcode"
+      ],
+      [
+       "Absolute",
+       "The operand is at a given address"
+      ],
+      [
+       "Indexed",
+       "An address plus a register"
+      ],
+      [
+       "Implied",
+       "No operand"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "CHIP-8 decode",
+     "intro": "Write chip8_decode(op): op is a 16-bit number. Return the text 'CLS' for 0x00E0, 'RET' for 0x00EE, 'JP nnn' for 1NNN (nnn as three lowercase hex digits), 'LD Vx,nn' for 6XNN, 'ADD Vx,nn' for 7XNN (x as one hex digit, nn as two hex digits), 'LD I,nnn' for ANNN, otherwise 'UNKNOWN'.",
+     "fn": "chip8_decode",
+     "starter": "def chip8_decode(op):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        224
+       ],
+       "expect": "CLS"
+      },
+      {
+       "args": [
+        4660
+       ],
+       "expect": "JP 234"
+      },
+      {
+       "args": [
+        27141
+       ],
+       "expect": "LD Va,05"
+      },
+      {
+       "args": [
+        31504
+       ],
+       "expect": "ADD Vb,10"
+      },
+      {
+       "args": [
+        41712
+       ],
+       "expect": "LD I,2f0"
+      },
+      {
+       "args": [
+        65535
+       ],
+       "expect": "UNKNOWN"
+      },
+      {
+       "args": [
+        238
+       ],
+       "expect": "RET"
+      }
+     ],
+     "hint": "Use the first nibble.",
+     "solution": "def chip8_decode(op):\n    h = '0123456789abcdef'\n    x = (op >> 8) & 15\n    nn = op & 255\n    nnn = op & 4095\n    def hx(v, n):\n        s = ''\n        for i in range(n):\n            s = h[v & 15] + s\n            v = v >> 4\n        return s\n    if op == 0x00E0:\n        return 'CLS'\n    if op == 0x00EE:\n        return 'RET'\n    t = op >> 12\n    if t == 1:\n        return 'JP ' + hx(nnn, 3)\n    if t == 6:\n        return 'LD V' + hx(x, 1) + ',' + hx(nn, 2)\n    if t == 7:\n        return 'ADD V' + hx(x, 1) + ',' + hx(nn, 2)\n    if t == 0xA:\n        return 'LD I,' + hx(nnn, 3)\n    return 'UNKNOWN'\n"
+    },
+    {
+     "type": "python",
+     "title": "Opcode fields",
+     "intro": "Write fields(op): split an 8-bit opcode into [aaa, bbb, cc] where aaa is the top 3 bits, bbb the middle 3 and cc the low 2 bits.",
+     "fn": "fields",
+     "starter": "def fields(op):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        169
+       ],
+       "expect": [
+        5,
+        2,
+        1
+       ]
+      },
+      {
+       "args": [
+        0
+       ],
+       "expect": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        255
+       ],
+       "expect": [
+        7,
+        7,
+        3
+       ]
+      },
+      {
+       "args": [
+        76
+       ],
+       "expect": [
+        2,
+        3,
+        0
+       ]
+      }
+     ],
+     "hint": "Shifts and masks.",
+     "solution": "def fields(op):\n    return [(op >> 5) & 7, (op >> 2) & 7, op & 3]\n"
+    },
+    {
+     "type": "python",
+     "title": "CHIP-8 execute",
+     "intro": "Write chip8_exec(ops): V is a list of 16 registers, all 0. For each op: 6XNN sets V[x] = nn; 7XNN adds nn to V[x] (wrapping at 256, no flag); 8XY4 adds V[y] to V[x], wraps at 256 and sets V[15] to 1 if there was a carry otherwise 0. Ignore other ops. Return V.",
+     "fn": "chip8_exec",
+     "starter": "def chip8_exec(ops):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         24581,
+         24835,
+         32788
+        ]
+       ],
+       "expect": [
+        8,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         24831,
+         24834,
+         32788
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         24577,
+         28927
+        ]
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Handle the carry in VF.",
+     "solution": "def chip8_exec(ops):\n    v = [0] * 16\n    for op in ops:\n        t = op >> 12\n        x = (op >> 8) & 15\n        y = (op >> 4) & 15\n        nn = op & 255\n        if t == 6:\n            v[x] = nn\n        elif t == 7:\n            v[x] = (v[x] + nn) & 255\n        elif t == 8 and (op & 15) == 4:\n            s = v[x] + v[y]\n            v[x] = s & 255\n            v[15] = 1 if s > 255 else 0\n    return v\n"
+    }
+   ]
+  },
+  {
+   "title": "Memory maps",
+   "maps": [
+    {
+     "title": "Memory",
+     "links": [
+      "Flat memory | is | A byte array",
+      "Mirroring | repeats | A region",
+      "Banking | swaps | Memory pages",
+      "ROM | cannot be | Written",
+      "MMIO | reaches | A device",
+      "Side effect | follows | A read or write",
+      "Paging | extends | The address space"
+     ]
+    }
+   ],
+   "summary": [
+    "The simplest memory is an array of bytes, but real machines add mirroring, bank switching, ROM and memory-mapped I/O.",
+    "Wrap every access in read and write functions that apply those rules in one place.",
+    "Some addresses are devices: reading or writing them does something, such as clearing a flag or advancing a counter."
+   ],
+   "glossary": [
+    {
+     "term": "Mirroring",
+     "def": "The same memory appearing at several addresses."
+    },
+    {
+     "term": "Bank switching",
+     "def": "Swapping which block of memory appears in a window."
+    },
+    {
+     "term": "Memory-mapped I/O",
+     "def": "Device registers placed in the address space."
+    },
+    {
+     "term": "Side effect",
+     "def": "An action caused by a memory access, beyond the data."
+    },
+    {
+     "term": "Address window",
+     "def": "A range of addresses showing a selected bank."
+    },
+    {
+     "term": "Paged lookup",
+     "def": "Using high address bits to pick a block."
+    }
+   ],
+   "keyPoints": [
+    "Mirroring: addr & (size - 1) when size is a power of two.",
+    "Bank window: physical = bank x window_size + (addr - window_start).",
+    "Reads happen far more often than writes, so keep the read path short.",
+    "ROM writes may be ignored, or used to switch banks.",
+    "A device read may change state, so never read a device just to look at it in a debugger.",
+    "Fast emulators use a table of page pointers for the common case."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Memory is a street of numbered mailboxes. Some are real mailboxes, some are doors to other machines, and some show the same house twice."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A CPU thinks it sees one long row of bytes. Behind that row, the real machine may have many different chips. The memory map says which address goes where. Your emulator wraps all of this in two functions, one for reads and one for writes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Mirroring happens because the address decoder ignores some wires. If a machine has 2 kilobytes of RAM but decodes 8 kilobytes of space, the same RAM appears four times. The fix is a mask: keep only the low bits of the address."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Bank switching gets more memory than the address space allows. A window of addresses shows one of several blocks, and writing a number to a special address changes which one. Many cartridge games used this to fit large programs on a small processor."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "def read(addr, banks, bank):\n    # window 0x8000-0xBFFF shows one 16 KB bank\n    if 0x8000 <= addr < 0xC000:\n        return banks[bank][addr - 0x8000]\n    return 0xFF"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Memory-mapped I/O means a device register lives at an address. Reading a status register might clear a flag. Writing a control register might start a sound. So your read function can have side effects. Remember that when you add a debugger, since peeking must not trigger them."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is mirroring?",
+     "options": [
+      "The same memory at several addresses",
+      "A copy of the CPU",
+      "A fast bus",
+      "A bug"
+     ],
+     "answer": 0,
+     "explain": "From partial decoding."
+    },
+    {
+     "q": "What does bank switching do?",
+     "options": [
+      "Changes which block is visible",
+      "Makes memory faster",
+      "Erases ROM",
+      "Slows the CPU"
+     ],
+     "answer": 0,
+     "explain": "A window of addresses."
+    },
+    {
+     "q": "What is MMIO?",
+     "options": [
+      "Device registers in the address space",
+      "A kind of ROM",
+      "A cache",
+      "A screen"
+     ],
+     "answer": 0,
+     "explain": "Reads can have side effects."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a window?",
+     "a": "A range showing a bank."
+    },
+    {
+     "q": "How to mirror?",
+     "a": "Mask the address."
+    },
+    {
+     "q": "What is a side effect?",
+     "a": "An action from an access."
+    },
+    {
+     "q": "Which is hotter, reads or writes?",
+     "a": "Reads."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Memory ideas",
+     "intro": "Match each idea with its meaning.",
+     "pairs": [
+      [
+       "Mirroring",
+       "Same data at several addresses"
+      ],
+      [
+       "Banking",
+       "Swap blocks in a window"
+      ],
+      [
+       "MMIO",
+       "Registers of a device"
+      ],
+      [
+       "ROM",
+       "Not writable"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Mirror",
+     "intro": "Write mirror(addr, size): size is a power of two; return the address folded into the memory of that size.",
+     "fn": "mirror",
+     "starter": "def mirror(addr, size):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        8192,
+        2048
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        2047,
+        2048
+       ],
+       "expect": 2047
+      },
+      {
+       "args": [
+        4660,
+        1024
+       ],
+       "expect": 564
+      },
+      {
+       "args": [
+        5,
+        16
+       ],
+       "expect": 5
+      }
+     ],
+     "hint": "Mask with size minus one.",
+     "solution": "def mirror(addr, size):\n    return addr & (size - 1)\n"
+    },
+    {
+     "type": "python",
+     "title": "Banked read",
+     "intro": "Write banked_read(banks, bank, addr, win_start, win_size): banks is a list of lists. If addr is inside the window (win_start to win_start + win_size, end exclusive) return the byte from the selected bank at the offset; otherwise return 255.",
+     "fn": "banked_read",
+     "starter": "def banked_read(banks, bank, addr, win_start, win_size):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        1,
+        32769,
+        32768,
+        2
+       ],
+       "expect": 4
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        0,
+        32768,
+        32768,
+        2
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ]
+        ],
+        0,
+        5,
+        32768,
+        2
+       ],
+       "expect": 255
+      }
+     ],
+     "hint": "Offset into the selected bank.",
+     "solution": "def banked_read(banks, bank, addr, win_start, win_size):\n    if win_start <= addr < win_start + win_size:\n        return banks[bank][addr - win_start]\n    return 255\n"
+    },
+    {
+     "type": "python",
+     "title": "MMIO counter",
+     "intro": "Write mmio(ops): memory has 16 bytes of RAM at addresses 0 to 15, all 0. Address 255 is a counter register: every read returns the current counter and then increments it (starting at 0); writes to 255 reset the counter to 0. Each op is ['r', addr] or ['w', addr, value]. Return the list of values read. Reads from any other address return 0.",
+     "fn": "mmio",
+     "starter": "def mmio(ops):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "r",
+          255
+         ],
+         [
+          "r",
+          255
+         ],
+         [
+          "r",
+          255
+         ],
+         [
+          "w",
+          255,
+          9
+         ],
+         [
+          "r",
+          255
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        1,
+        2,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "w",
+          3,
+          7
+         ],
+         [
+          "r",
+          3
+         ],
+         [
+          "r",
+          99
+         ]
+        ]
+       ],
+       "expect": [
+        7,
+        0
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "A read can change state.",
+     "solution": "def mmio(ops):\n    ram = [0] * 16\n    counter = 0\n    out = []\n    for op in ops:\n        a = op[1]\n        if op[0] == 'r':\n            if a == 255:\n                out.append(counter)\n                counter += 1\n            elif a < 16:\n                out.append(ram[a])\n            else:\n                out.append(0)\n        else:\n            if a == 255:\n                counter = 0\n            elif a < 16:\n                ram[a] = op[2] & 255\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Page table",
+     "intro": "Write page_lookup(page_map, addr): page_map is a list of region names, one for each 256-byte page starting at address 0. Return the name for addr, or 'open bus' if addr is past the end.",
+     "fn": "page_lookup",
+     "starter": "def page_lookup(page_map, addr):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "RAM",
+         "RAM",
+         "ROM"
+        ],
+        511
+       ],
+       "expect": "RAM"
+      },
+      {
+       "args": [
+        [
+         "RAM",
+         "RAM",
+         "ROM"
+        ],
+        512
+       ],
+       "expect": "ROM"
+      },
+      {
+       "args": [
+        [
+         "RAM"
+        ],
+        768
+       ],
+       "expect": "open bus"
+      },
+      {
+       "args": [
+        [],
+        0
+       ],
+       "expect": "open bus"
+      }
+     ],
+     "hint": "High bits pick the page.",
+     "solution": "def page_lookup(page_map, addr):\n    p = addr >> 8\n    if p >= len(page_map):\n        return 'open bus'\n    return page_map[p]\n"
+    }
+   ]
+  },
+  {
+   "title": "Timing and cycles",
+   "maps": [
+    {
+     "title": "Timing",
+     "links": [
+      "Clock | ticks | Cycles",
+      "Cycle count | tracks | Time",
+      "Frame | is | A screen refresh",
+      "Scanline | is | One screen line",
+      "Period | sets | A task's rhythm",
+      "Pacing | matches | Real time",
+      "Drift | is | Lost cycles"
+     ]
+    }
+   ],
+   "summary": [
+    "Every chip in a machine runs from clocks, so an emulator needs a notion of time. The CPU's cycle count is the usual yardstick.",
+    "A frame lasts clock rate divided by frame rate cycles, and a scanline is a fraction of that. Video, sound and timer events fire at those intervals.",
+    "Add the period to the counter instead of resetting it, so leftover cycles are not lost."
+   ],
+   "glossary": [
+    {
+     "term": "Clock rate",
+     "def": "Cycles per second, such as 1.79 million for an old CPU."
+    },
+    {
+     "term": "Frame",
+     "def": "One complete picture, 50 or 60 times a second on many systems."
+    },
+    {
+     "term": "Scanline",
+     "def": "One horizontal line of the picture."
+    },
+    {
+     "term": "Cycle counter",
+     "def": "A number that counts down to the next event."
+    },
+    {
+     "term": "Pacing",
+     "def": "Slowing the emulator to match real time."
+    },
+    {
+     "term": "Drift",
+     "def": "Error that builds up when leftovers are dropped."
+    }
+   ],
+   "keyPoints": [
+    "Cycles per frame = clock / fps.",
+    "Cycles per scanline = cycles per frame / lines.",
+    "Use the greatest common divisor of all periods as the tick.",
+    "When the counter reaches zero, handle events and add the period back.",
+    "Run no more than a few frames at once to avoid a spiral of death.",
+    "Use the host's monotonic clock to pace; never sleep in the middle of a frame."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Every part has a heartbeat. Count the beats, and tell the screen and the speaker when it is their turn, without dropping any beats."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The CPU, the video chip and the sound chip all run at the same time in the real machine. In an emulator, they run one after another, so we cut time into slices. We run the CPU for a few cycles, then let the other chips catch up. Cycle counts are what keep them in step."
+     ]
+    },
+    {
+     "type": "math",
+     "tex": "\\text{cycles per frame}=\\frac{f_{\\text{clock}}}{\\text{fps}}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Suppose a CPU runs at 2.5 million cycles per second and the screen refreshes 50 times a second. Each frame is 50,000 cycles. If the screen has 256 lines, each line is about 195 cycles. Video events must happen at those points, because games often change things between lines."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "counter = period\nfor cycles in instruction_costs:\n    counter -= cycles\n    while counter <= 0:\n        run_tick()\n        counter += period       # add, do not reset!"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Notice the last line. If you set the counter back to the period, you lose the cycles by which you overshot. Add the period instead. After a million ticks, those lost cycles would add up to real drift. Timing errors like this cause audio crackle and missed raster effects."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To run at real speed, measure host time with a monotonic clock. Work out how many frames are due, run them, show the picture, and wait if you are early. Cap the number of frames you catch up in one go, or a slow moment will make the emulator run harder and fall further behind."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What are cycles per frame?",
+     "options": [
+      "Clock rate divided by fps",
+      "Fps times two",
+      "Lines times fps",
+      "Clock plus fps"
+     ],
+     "answer": 0,
+     "explain": "Spread over the frame."
+    },
+    {
+     "q": "Why add the period instead of resetting?",
+     "options": [
+      "Keeps leftover cycles",
+      "Saves memory",
+      "Looks nicer",
+      "Is faster"
+     ],
+     "answer": 0,
+     "explain": "Avoids drift."
+    },
+    {
+     "q": "What is a spiral of death?",
+     "options": [
+      "Catching up makes you slower and further behind",
+      "A graphic effect",
+      "A loop in ROM",
+      "A CPU bug"
+     ],
+     "answer": 0,
+     "explain": "Cap the catch-up."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a scanline?",
+     "a": "One screen line."
+    },
+    {
+     "q": "What is pacing?",
+     "a": "Matching real time."
+    },
+    {
+     "q": "What is drift?",
+     "a": "Accumulated lost cycles."
+    },
+    {
+     "q": "What is a good tick?",
+     "a": "The GCD of the periods."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Timing",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Frame",
+       "One whole picture"
+      ],
+      [
+       "Scanline",
+       "One line of it"
+      ],
+      [
+       "Tick",
+       "A scheduled step"
+      ],
+      [
+       "Pacing",
+       "Matching real time"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Cycles per frame",
+     "intro": "Write frame_cycles(clock_hz, fps, lines): return [cycles_per_frame, cycles_per_scanline] with the first as a whole number (rounded) and the second rounded to 2 decimals.",
+     "fn": "frame_cycles",
+     "starter": "def frame_cycles(clock_hz, fps, lines):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2500000,
+        50,
+        256
+       ],
+       "expect": [
+        50000,
+        195.31
+       ],
+       "approx": 0.01
+      },
+      {
+       "args": [
+        1789773,
+        60,
+        262
+       ],
+       "expect": [
+        29830,
+        113.85
+       ],
+       "approx": 0.01
+      },
+      {
+       "args": [
+        4194304,
+        60,
+        154
+       ],
+       "expect": [
+        69905,
+        453.93
+       ],
+       "approx": 0.01
+      }
+     ],
+     "hint": "Divide.",
+     "solution": "def frame_cycles(clock_hz, fps, lines):\n    f = clock_hz / fps\n    return [round(f), round(f / lines, 2)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Event counter",
+     "intro": "Write run_ticks(costs, period): a counter starts at period. For each instruction cost, subtract it; while the counter is 0 or less, count a tick and add period. Return [ticks, counter].",
+     "fn": "run_ticks",
+     "starter": "def run_ticks(costs, period):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         3,
+         4,
+         5,
+         2,
+         6
+        ],
+        8
+       ],
+       "expect": [
+        2,
+        4
+       ]
+      },
+      {
+       "args": [
+        [],
+        5
+       ],
+       "expect": [
+        0,
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         10
+        ],
+        4
+       ],
+       "expect": [
+        2,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1,
+         1
+        ],
+        2
+       ],
+       "expect": [
+        2,
+        2
+       ]
+      }
+     ],
+     "hint": "Add the period back.",
+     "solution": "def run_ticks(costs, period):\n    counter = period\n    ticks = 0\n    for c in costs:\n        counter -= c\n        while counter <= 0:\n            ticks += 1\n            counter += period\n    return [ticks, counter]\n"
+    },
+    {
+     "type": "python",
+     "title": "Common tick",
+     "intro": "Write common_tick(periods): the greatest common divisor of all the task periods.",
+     "fn": "common_tick",
+     "starter": "def common_tick(periods):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         195,
+         39000,
+         50000
+        ]
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         12,
+         18
+        ]
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        [
+         7
+        ]
+       ],
+       "expect": 7
+      },
+      {
+       "args": [
+        [
+         100,
+         250,
+         400
+        ]
+       ],
+       "expect": 50
+      }
+     ],
+     "hint": "Euclid's algorithm.",
+     "solution": "def common_tick(periods):\n    g = 0\n    for p in periods:\n        a = g\n        b = p\n        while b:\n            a, b = b, a % b\n        g = a\n    return g\n"
+    },
+    {
+     "type": "python",
+     "title": "Frames due",
+     "intro": "Write frames_due(elapsed_ms, fps, emulated, cap): how many frames should be run now: floor(elapsed_ms x fps / 1000) minus emulated, but never below 0 and never above cap.",
+     "fn": "frames_due",
+     "starter": "def frames_due(elapsed_ms, fps, emulated, cap):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1000,
+        60,
+        0,
+        5
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        1000,
+        60,
+        58,
+        5
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        5000,
+        60,
+        0,
+        5
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        10,
+        60,
+        3,
+        5
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Clamp between 0 and the cap.",
+     "solution": "def frames_due(elapsed_ms, fps, emulated, cap):\n    due = int(elapsed_ms * fps // 1000) - emulated\n    return max(0, min(cap, due))\n"
+    }
+   ]
+  },
+  {
+   "title": "Interrupts and event schedulers",
+   "maps": [
+    {
+     "title": "Events",
+     "links": [
+      "Interrupt | pauses | The CPU",
+      "IRQ | can be | Masked",
+      "NMI | cannot be | Masked",
+      "Edge | triggers | An NMI",
+      "Scheduler | orders | Events",
+      "Next event | bounds | A run slice",
+      "Raster IRQ | fires | On a line"
+     ]
+    }
+   ],
+   "summary": [
+    "An interrupt makes the CPU stop what it is doing and run a handler. Maskable interrupts (IRQ) can be disabled; non-maskable ones (NMI) cannot.",
+    "Rather than checking every device after every instruction, an event scheduler finds when the next thing happens and runs the CPU exactly that long.",
+    "Video and timers usually raise interrupts at set cycle counts, such as the start of the vertical blank."
+   ],
+   "glossary": [
+    {
+     "term": "Interrupt",
+     "def": "A signal that makes the CPU run a handler."
+    },
+    {
+     "term": "IRQ",
+     "def": "A maskable interrupt request."
+    },
+    {
+     "term": "NMI",
+     "def": "A non-maskable interrupt, often triggered by an edge."
+    },
+    {
+     "term": "Mask",
+     "def": "A flag that tells the CPU to ignore IRQs."
+    },
+    {
+     "term": "Scheduler",
+     "def": "A list of future events ordered by time."
+    },
+    {
+     "term": "Vertical blank",
+     "def": "The short gap between frames."
+    }
+   ],
+   "keyPoints": [
+    "Check interrupt lines between instructions, not in the middle.",
+    "An IRQ is level-sensitive: it fires while the line is high and the mask allows it.",
+    "An NMI is edge-sensitive: it fires when the line goes from low to high.",
+    "A scheduler runs the CPU until the earliest event, then handles it.",
+    "Keep events in time order; use insertion order for ties.",
+    "A timer that wakes at cycle N is just an event."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. An interrupt is a doorbell. The thinker finishes the card it is on, then answers the door. A scheduler is a calendar of who will ring when."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sometimes a device needs the CPU right now: the screen has finished a frame, a timer ran out, a key was pressed. Instead of the CPU asking again and again, the device raises an interrupt line. At the next safe moment, the CPU saves where it was, jumps to a handler and comes back later."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There are two kinds. A maskable interrupt can be turned off by a flag in the CPU, so important code can run undisturbed. A non-maskable interrupt cannot, and is often wired to the start of the vertical blank so that games can update the screen safely.",
+      "NMI usually reacts to the edge, the moment the line rises."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The old way to emulate this is to run a fixed number of cycles and then check everything. A cleaner way is a scheduler. Keep a list of events with their times: next scanline, timer expiry, sound sample. Ask for the nearest one, run the CPU until that time, and then handle the event."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "events = [(120, 'timer'), (80, 'hblank'), (200, 'vblank')]\nnow = 0\nwhile events:\n    events.sort()\n    when, name = events.pop(0)\n    run_cpu(when - now)\n    now = when\n    handle(name)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This design handles odd cases well. If a timer is set for 37 cycles from now, the CPU runs exactly 37 cycles, with no slack. Event schedulers also make it easy to add new chips: each chip posts its next event. Many accurate modern emulators are built around such a scheduler."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which interrupt can be masked?",
+     "options": [
+      "IRQ",
+      "NMI",
+      "Both",
+      "Neither"
+     ],
+     "answer": 0,
+     "explain": "A flag disables it."
+    },
+    {
+     "q": "When does an NMI fire?",
+     "options": [
+      "On a rising edge",
+      "While high",
+      "Never",
+      "Only at reset"
+     ],
+     "answer": 0,
+     "explain": "Edge-sensitive."
+    },
+    {
+     "q": "What does a scheduler find?",
+     "options": [
+      "The next event time",
+      "The CPU model",
+      "The ROM",
+      "The frame rate"
+     ],
+     "answer": 0,
+     "explain": "Then runs until then."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a handler?",
+     "a": "Code run on an interrupt."
+    },
+    {
+     "q": "What is masking?",
+     "a": "Ignoring an interrupt."
+    },
+    {
+     "q": "What is vblank?",
+     "a": "The gap between frames."
+    },
+    {
+     "q": "What is an event?",
+     "a": "Something at a future time."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Interrupts",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "IRQ",
+       "Maskable request"
+      ],
+      [
+       "NMI",
+       "Cannot be masked"
+      ],
+      [
+       "Edge",
+       "A change from low to high"
+      ],
+      [
+       "Scheduler",
+       "Ordered list of events"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Interrupt service",
+     "intro": "Write irq_service(steps): each step is [irq, nmi, i_flag] with 0 or 1 values. An NMI is serviced when nmi is 1 and was 0 at the step before (it is 0 before the first step). Otherwise an IRQ is serviced if irq is 1 and i_flag is 0. Return the list of 'NMI', 'IRQ' or 'none' for each step.",
+     "fn": "irq_service",
+     "starter": "def irq_service(steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          0
+         ],
+         [
+          1,
+          0,
+          0
+         ],
+         [
+          1,
+          0,
+          1
+         ],
+         [
+          0,
+          1,
+          0
+         ],
+         [
+          0,
+          1,
+          0
+         ],
+         [
+          1,
+          1,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        "none",
+        "IRQ",
+        "none",
+        "NMI",
+        "none",
+        "IRQ"
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1,
+          1
+         ],
+         [
+          1,
+          1,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        "NMI",
+        "IRQ"
+       ]
+      }
+     ],
+     "hint": "Remember the previous NMI level.",
+     "solution": "def irq_service(steps):\n    prev = 0\n    out = []\n    for irq, nmi, iflag in steps:\n        if nmi == 1 and prev == 0:\n            out.append('NMI')\n        elif irq == 1 and iflag == 0:\n            out.append('IRQ')\n        else:\n            out.append('none')\n        prev = nmi\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Event scheduler",
+     "intro": "Write scheduler(events, until): events is a list of [time, name]. Return the names of the events with time at most until, ordered by time (ties keep the original order).",
+     "fn": "scheduler",
+     "starter": "def scheduler(events, until):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          120,
+          "timer"
+         ],
+         [
+          80,
+          "hblank"
+         ],
+         [
+          200,
+          "vblank"
+         ]
+        ],
+        150
+       ],
+       "expect": [
+        "hblank",
+        "timer"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          5,
+          "a"
+         ],
+         [
+          5,
+          "b"
+         ],
+         [
+          1,
+          "c"
+         ]
+        ],
+        5
+       ],
+       "expect": [
+        "c",
+        "a",
+        "b"
+       ]
+      },
+      {
+       "args": [
+        [],
+        10
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          9,
+          "x"
+         ]
+        ],
+        3
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Sort by time, then position.",
+     "solution": "def scheduler(events, until):\n    items = []\n    for i, e in enumerate(events):\n        if e[0] <= until:\n            items.append([e[0], i, e[1]])\n    items.sort()\n    return [x[2] for x in items]\n"
+    },
+    {
+     "type": "python",
+     "title": "Next event",
+     "intro": "Write next_event(timers, now): timers is a list of [period, due] pairs with due the cycle count of the next firing. Return [cycles_to_run, index] for the earliest due (on a tie, the lowest index); cycles_to_run is never below 0.",
+     "fn": "next_event",
+     "starter": "def next_event(timers, now):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          100,
+          120
+         ],
+         [
+          50,
+          80
+         ],
+         [
+          10,
+          80
+         ]
+        ],
+        50
+       ],
+       "expect": [
+        30,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          10,
+          5
+         ]
+        ],
+        9
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          7
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        0
+       ],
+       "expect": [
+        4,
+        1
+       ]
+      }
+     ],
+     "hint": "Find the minimum due time.",
+     "solution": "def next_event(timers, now):\n    best = 0\n    for i in range(1, len(timers)):\n        if timers[i][1] < timers[best][1]:\n            best = i\n    return [max(0, timers[best][1] - now), best]\n"
+    },
+    {
+     "type": "python",
+     "title": "Raster position",
+     "intro": "Write raster(cycle, per_line, lines): return [frame, line, cycle_in_line] for an absolute CPU cycle count.",
+     "fn": "raster",
+     "starter": "def raster(cycle, per_line, lines):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        100,
+        10
+       ],
+       "expect": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        250,
+        100,
+        10
+       ],
+       "expect": [
+        0,
+        2,
+        50
+       ]
+      },
+      {
+       "args": [
+        1005,
+        100,
+        10
+       ],
+       "expect": [
+        1,
+        0,
+        5
+       ]
+      },
+      {
+       "args": [
+        999,
+        100,
+        10
+       ],
+       "expect": [
+        0,
+        9,
+        99
+       ]
+      }
+     ],
+     "hint": "Divide twice.",
+     "solution": "def raster(cycle, per_line, lines):\n    frame_len = per_line * lines\n    return [cycle // frame_len, (cycle % frame_len) // per_line, cycle % per_line]\n"
+    }
+   ]
+  },
+  {
+   "title": "Video and sound",
+   "maps": [
+    {
+     "title": "Video",
+     "links": [
+      "Framebuffer | holds | The picture",
+      "Tile | repeats | A small image",
+      "Sprite | moves | Over the background",
+      "Palette | maps | Numbers to colors",
+      "Scanline | is | Drawn in turn",
+      "Sample | is | One sound value",
+      "Mixer | adds | Channels"
+     ]
+    }
+   ],
+   "summary": [
+    "Many old machines draw the picture from tiles, sprites and palettes rather than a full bitmap. An emulator reads those tables and writes pixels into a framebuffer.",
+    "Rendering a whole frame at once is simple; rendering line by line is needed when games change settings between lines.",
+    "Sound is a stream of samples, often square waves mixed together. The emulator must make samples at the audio rate, in step with the cycles."
+   ],
+   "glossary": [
+    {
+     "term": "Framebuffer",
+     "def": "A block of memory holding the pixels of the picture."
+    },
+    {
+     "term": "Tile",
+     "def": "A small block of pixels reused many times."
+    },
+    {
+     "term": "Sprite",
+     "def": "A movable object drawn over the background."
+    },
+    {
+     "term": "Palette",
+     "def": "A table that turns small numbers into colors."
+    },
+    {
+     "term": "Sample",
+     "def": "One measurement of a sound wave."
+    },
+    {
+     "term": "Mixer",
+     "def": "Code that adds several sound channels together."
+    }
+   ],
+   "keyPoints": [
+    "Tile maps store which tile goes where; the tiles store the pixels.",
+    "A scanline renderer draws one line at a time using the settings in force at that moment.",
+    "RGB565 packs a color in 16 bits: 5 red, 6 green, 5 blue.",
+    "A square wave toggles between high and low at a fixed frequency.",
+    "Mix by adding samples and clamping to the valid range.",
+    "Accuracy matters: games change registers mid-frame to get effects."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The screen is built from small stickers called tiles and little movable stickers called sprites. Colors come from a box of crayons numbered one, two, three."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Early consoles had very little memory, so their graphics chips were clever. They kept a small set of 8 by 8 pixel tiles and a map saying which tile goes at each place on the screen. A background of a whole level was just a table of numbers.",
+      "Sprites, which are the moving characters, were drawn over it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An emulator must turn those tables into pixels. A simple method draws the entire frame once the frame is over. A better method draws each scanline at the right time, because games often change the scroll or palette part way down the screen to make effects, such as a wavy water or a split screen."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "def tile_row(tile_ids, tiles, y):\n    # tiles[id] is a list of 8 strings of 8 pixels\n    return ''.join(tiles[t][y] for t in tile_ids)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Colors are often packed. In the common RGB565 format a 16-bit number holds 5 bits of red, 6 of green and 5 of blue. To show it on a modern screen you spread each part out to 8 bits. Palettes add another step, because a pixel value is just an index into a table of colors."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sound is simpler than it sounds. The hardware makes tones, often square waves, and noise. The emulator creates a sample for each tick of the audio clock, say 44,100 a second, adds the channels and sends the result to the sound card.",
+      "If the samples arrive late, you hear clicks, so timing matters again."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a palette do?",
+     "options": [
+      "Maps numbers to colors",
+      "Draws sprites",
+      "Plays sound",
+      "Stores ROM"
+     ],
+     "answer": 0,
+     "explain": "An index into colors."
+    },
+    {
+     "q": "Why draw by scanline?",
+     "options": [
+      "Games change settings mid-frame",
+      "It uses less memory",
+      "It looks darker",
+      "It is required by Python"
+     ],
+     "answer": 0,
+     "explain": "Raster effects."
+    },
+    {
+     "q": "What is a square wave?",
+     "options": [
+      "A signal toggling between two levels",
+      "A sine",
+      "A noise",
+      "A sprite"
+     ],
+     "answer": 0,
+     "explain": "High, low, high, low."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a tile?",
+     "a": "A small reusable block of pixels."
+    },
+    {
+     "q": "What is a sprite?",
+     "a": "A movable object."
+    },
+    {
+     "q": "What is RGB565?",
+     "a": "16-bit color."
+    },
+    {
+     "q": "What is a sample?",
+     "a": "One sound value."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Graphics",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Tile",
+       "A reusable block of pixels"
+      ],
+      [
+       "Sprite",
+       "A movable object"
+      ],
+      [
+       "Palette",
+       "Index to color table"
+      ],
+      [
+       "Framebuffer",
+       "Memory holding the picture"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Draw a scanline",
+     "intro": "Write render_row(tile_ids, tiles, y): tiles is a list of tiles, each a list of 8 strings of 8 characters. Return the string for pixel row y built by joining that row of each tile in tile_ids.",
+     "fn": "render_row",
+     "starter": "def render_row(tile_ids, tiles, y):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         1,
+         0
+        ],
+        [
+         [
+          "........",
+          "........",
+          "........",
+          "........",
+          "........",
+          "........",
+          "........",
+          "........"
+         ],
+         [
+          "########",
+          "#......#",
+          "#......#",
+          "#......#",
+          "#......#",
+          "#......#",
+          "#......#",
+          "########"
+         ]
+        ],
+        0
+       ],
+       "expect": "........########........"
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        [
+         [
+          "........",
+          "........",
+          "........",
+          "........",
+          "........",
+          "........",
+          "........",
+          "........"
+         ],
+         [
+          "#.#.#.#.",
+          "#.#.#.#.",
+          "#.#.#.#.",
+          "#.#.#.#.",
+          "#.#.#.#.",
+          "#.#.#.#.",
+          "#.#.#.#.",
+          "#.#.#.#."
+         ]
+        ],
+        3
+       ],
+       "expect": "#.#.#.#."
+      },
+      {
+       "args": [
+        [],
+        [],
+        0
+       ],
+       "expect": ""
+      }
+     ],
+     "hint": "Join one row of each tile.",
+     "solution": "def render_row(tile_ids, tiles, y):\n    out = ''\n    for t in tile_ids:\n        out += tiles[t][y]\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Sprite collision",
+     "intro": "Write overlap(a, b): a and b are rectangles [x, y, w, h]. Return True if they overlap (touching edges do not count).",
+     "fn": "overlap",
+     "starter": "def overlap(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0,
+         4,
+         4
+        ],
+        [
+         2,
+         2,
+         4,
+         4
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         4,
+         4
+        ],
+        [
+         4,
+         0,
+         4,
+         4
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         2,
+         2
+        ],
+        [
+         5,
+         5,
+         1,
+         1
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         3,
+         3
+        ],
+        [
+         2,
+         2,
+         1,
+         1
+        ]
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Compare ranges on both axes.",
+     "solution": "def overlap(a, b):\n    return a[0] < b[0] + b[2] and b[0] < a[0] + a[2] and a[1] < b[1] + b[3] and b[1] < a[1] + a[3]\n"
+    },
+    {
+     "type": "python",
+     "title": "RGB565 to RGB888",
+     "intro": "Write rgb565(v): return [r, g, b] with each 0 to 255, scaling r and b (5 bits) as r x 255 // 31 and g (6 bits) as g x 255 // 63.",
+     "fn": "rgb565",
+     "starter": "def rgb565(v):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        65535
+       ],
+       "expect": [
+        255,
+        255,
+        255
+       ]
+      },
+      {
+       "args": [
+        0
+       ],
+       "expect": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        63488
+       ],
+       "expect": [
+        255,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        2016
+       ],
+       "expect": [
+        0,
+        255,
+        0
+       ]
+      },
+      {
+       "args": [
+        31
+       ],
+       "expect": [
+        0,
+        0,
+        255
+       ]
+      },
+      {
+       "args": [
+        33808
+       ],
+       "expect": [
+        131,
+        129,
+        131
+       ]
+      }
+     ],
+     "hint": "Mask and scale each field.",
+     "solution": "def rgb565(v):\n    r = (v >> 11) & 31\n    g = (v >> 5) & 63\n    b = v & 31\n    return [r * 255 // 31, g * 255 // 63, b * 255 // 31]\n"
+    },
+    {
+     "type": "python",
+     "title": "Square wave",
+     "intro": "Write square(freq, rate, n): n samples of a square wave of frequency freq at sample rate rate. Sample i is 1 when (i x freq x 2 // rate) is even, otherwise -1.",
+     "fn": "square",
+     "starter": "def square(freq, rate, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        8,
+        8
+       ],
+       "expect": [
+        1,
+        1,
+        1,
+        1,
+        -1,
+        -1,
+        -1,
+        -1
+       ]
+      },
+      {
+       "args": [
+        2,
+        8,
+        8
+       ],
+       "expect": [
+        1,
+        1,
+        -1,
+        -1,
+        1,
+        1,
+        -1,
+        -1
+       ]
+      },
+      {
+       "args": [
+        440,
+        44100,
+        5
+       ],
+       "expect": [
+        1,
+        1,
+        1,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        1,
+        4,
+        8
+       ],
+       "expect": [
+        1,
+        1,
+        -1,
+        -1,
+        1,
+        1,
+        -1,
+        -1
+       ]
+      }
+     ],
+     "hint": "Integer arithmetic keeps it exact.",
+     "solution": "def square(freq, rate, n):\n    out = []\n    for i in range(n):\n        out.append(1 if (i * freq * 2 // rate) % 2 == 0 else -1)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Mix channels",
+     "intro": "Write mix(a, b): add two lists of samples item by item (the shorter list is padded with zeros) and clamp each result to the range -32768 to 32767.",
+     "fn": "mix",
+     "starter": "def mix(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         100,
+         200
+        ],
+        [
+         50,
+         50
+        ]
+       ],
+       "expect": [
+        150,
+        250
+       ]
+      },
+      {
+       "args": [
+        [
+         30000
+        ],
+        [
+         30000
+        ]
+       ],
+       "expect": [
+        32767
+       ]
+      },
+      {
+       "args": [
+        [
+         -30000,
+         1
+        ],
+        [
+         -30000
+        ]
+       ],
+       "expect": [
+        -32768,
+        1
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         5
+        ]
+       ],
+       "expect": [
+        5
+       ]
+      }
+     ],
+     "hint": "Add, then clamp.",
+     "solution": "def mix(a, b):\n    n = max(len(a), len(b))\n    out = []\n    for i in range(n):\n        x = a[i] if i < len(a) else 0\n        y = b[i] if i < len(b) else 0\n        s = x + y\n        out.append(max(-32768, min(32767, s)))\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Input, timers and devices",
+   "maps": [
+    {
+     "title": "Devices",
+     "links": [
+      "Joypad | reports | Button bits",
+      "Matrix | scans | Keys",
+      "Timer | counts | Down",
+      "DMA | copies | Memory",
+      "Polling | reads | Input",
+      "Frontend | sends | Key events",
+      "Device | has | Registers"
+     ]
+    }
+   ],
+   "summary": [
+    "Input devices appear to the guest as registers. A joypad is often a byte where each bit is a button; a keyboard may be a matrix that the program scans row by row.",
+    "Timers count down at a fixed rate, and fire an interrupt at zero. DMA lets a device copy memory without the CPU, and the CPU may have to wait while it does.",
+    "Treat every device as a small state machine with registers, and update it by cycles, not by wall-clock time."
+   ],
+   "glossary": [
+    {
+     "term": "Joypad register",
+     "def": "A byte whose bits show which buttons are down."
+    },
+    {
+     "term": "Key matrix",
+     "def": "Keys wired in rows and columns, read by selecting rows."
+    },
+    {
+     "term": "Timer",
+     "def": "A counter that decrements at a fixed rate."
+    },
+    {
+     "term": "DMA",
+     "def": "Direct memory access: copying without the CPU."
+    },
+    {
+     "term": "Polling",
+     "def": "Reading a device again and again."
+    },
+    {
+     "term": "Latch",
+     "def": "A register that holds a value until read."
+    }
+   ],
+   "keyPoints": [
+    "Map host keys to guest buttons in the frontend; the core just sees bits.",
+    "Timers must count in cycles, keeping the leftover cycles between updates.",
+    "DMA often steals cycles from the CPU: charge them.",
+    "A read of the key matrix returns the OR of the selected rows.",
+    "Fewer surprises: update devices only when their registers are accessed or their event fires.",
+    "Record inputs per frame to make runs repeatable."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Buttons are a row of lights, one per button. A timer is an egg timer that counts down while the machine works, and a copier moves a stack of papers fast."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The guest does not know about your keyboard. It knows its own hardware. A console pad might be a register where bit 0 means up, bit 1 means down and so on. Your frontend translates real key presses into that byte, and the core hands it to the program when it reads that address."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "ORDER = ['up', 'down', 'left', 'right', 'a', 'b']\ndef joypad(pressed):\n    v = 0\n    for i, name in enumerate(ORDER):\n        if name in pressed:\n            v |= 1 << i\n    return v"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Computer keyboards are often a matrix of rows and columns. The program drives one or more rows, then reads the columns. If it selects several rows, a pressed key in any of them shows up. In the emulator, you OR the bytes of the rows that are selected."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Timers are counters. A typical one counts down sixty times a second and sets a flag at zero. Because the emulator measures time in cycles, a timer must keep the leftover cycles between steps. Otherwise it drifts. This is the same rule as in the timing chapter."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "DMA is a way to copy memory without running CPU instructions. On some machines the CPU is stopped for the duration, so a copy of 256 bytes costs hundreds of cycles. If you forget to charge them, timing-sensitive games break. When a device is the source of surprise, check the cost first."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a joypad register hold?",
+     "options": [
+      "One bit per button",
+      "A picture",
+      "The score",
+      "Sound"
+     ],
+     "answer": 0,
+     "explain": "Bits for buttons."
+    },
+    {
+     "q": "What does DMA do?",
+     "options": [
+      "Copies memory without the CPU",
+      "Draws sprites",
+      "Plays sound",
+      "Reads keys"
+     ],
+     "answer": 0,
+     "explain": "May steal cycles."
+    },
+    {
+     "q": "Why keep leftover cycles in a timer?",
+     "options": [
+      "To avoid drift",
+      "To save memory",
+      "To hide bugs",
+      "To increase speed"
+     ],
+     "answer": 0,
+     "explain": "Counts must be exact."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is polling?",
+     "a": "Reading a device repeatedly."
+    },
+    {
+     "q": "What is a key matrix?",
+     "a": "Rows and columns of keys."
+    },
+    {
+     "q": "What does a timer do?",
+     "a": "Counts down."
+    },
+    {
+     "q": "What does DMA cost?",
+     "a": "CPU cycles."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Devices",
+     "intro": "Match each device with its job.",
+     "pairs": [
+      [
+       "Joypad",
+       "Button bits"
+      ],
+      [
+       "Timer",
+       "Counts down at a rate"
+      ],
+      [
+       "DMA",
+       "Copies memory"
+      ],
+      [
+       "Key matrix",
+       "Rows and columns"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Joypad byte",
+     "intro": "Write joypad(pressed, order): return a byte with bit i set when order[i] is in pressed.",
+     "fn": "joypad",
+     "starter": "def joypad(pressed, order):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "up",
+         "a"
+        ],
+        [
+         "up",
+         "down",
+         "left",
+         "right",
+         "a",
+         "b"
+        ]
+       ],
+       "expect": 17
+      },
+      {
+       "args": [
+        [],
+        [
+         "a",
+         "b"
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         "b"
+        ],
+        [
+         "a",
+         "b"
+        ]
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        [
+         "left",
+         "right"
+        ],
+        [
+         "up",
+         "down",
+         "left",
+         "right"
+        ]
+       ],
+       "expect": 12
+      }
+     ],
+     "hint": "Set the bit for each pressed button.",
+     "solution": "def joypad(pressed, order):\n    v = 0\n    for i in range(len(order)):\n        if order[i] in pressed:\n            v |= 1 << i\n    return v\n"
+    },
+    {
+     "type": "python",
+     "title": "Key matrix",
+     "intro": "Write key_scan(rows, selected): rows is a list of ints, one per row, with a bit per key pressed. selected is a list of row indexes being driven. Return the OR of those rows (0 if none selected).",
+     "fn": "key_scan",
+     "starter": "def key_scan(rows, selected):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         4
+        ],
+        [
+         0,
+         2
+        ]
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         4
+        ],
+        []
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         255
+        ],
+        [
+         0
+        ]
+       ],
+       "expect": 255
+      },
+      {
+       "args": [
+        [
+         3,
+         12
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": 12
+      }
+     ],
+     "hint": "OR the chosen rows.",
+     "solution": "def key_scan(rows, selected):\n    v = 0\n    for i in selected:\n        v |= rows[i]\n    return v\n"
+    },
+    {
+     "type": "python",
+     "title": "Timer tick",
+     "intro": "Write timer_tick(value, leftover, cycles, per_tick): total = leftover + cycles; ticks = total // per_tick; value drops by ticks but not below 0; new leftover = total % per_tick. Return [value, leftover].",
+     "fn": "timer_tick",
+     "starter": "def timer_tick(value, leftover, cycles, per_tick):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        0,
+        25,
+        10
+       ],
+       "expect": [
+        8,
+        5
+       ]
+      },
+      {
+       "args": [
+        10,
+        5,
+        5,
+        10
+       ],
+       "expect": [
+        9,
+        0
+       ]
+      },
+      {
+       "args": [
+        1,
+        0,
+        100,
+        10
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        0,
+        3,
+        3,
+        4
+       ],
+       "expect": [
+        0,
+        2
+       ]
+      }
+     ],
+     "hint": "Keep the remainder.",
+     "solution": "def timer_tick(value, leftover, cycles, per_tick):\n    total = leftover + cycles\n    ticks = total // per_tick\n    return [max(0, value - ticks), total % per_tick]\n"
+    },
+    {
+     "type": "python",
+     "title": "DMA copy",
+     "intro": "Write dma(mem, src, dst, length): copy length bytes from src to dst (read all the source bytes first, then write them). Return [new_mem, cycles] where cycles = 4 + 2 x length.",
+     "fn": "dma",
+     "starter": "def dma(mem, src, dst, length):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         0,
+         0,
+         0
+        ],
+        0,
+        3,
+        3
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         3,
+         1,
+         2,
+         3
+        ],
+        10
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        0,
+        1,
+        3
+       ],
+       "expect": [
+        [
+         1,
+         1,
+         2,
+         3
+        ],
+        10
+       ]
+      },
+      {
+       "args": [
+        [
+         9,
+         9
+        ],
+        0,
+        1,
+        0
+       ],
+       "expect": [
+        [
+         9,
+         9
+        ],
+        4
+       ]
+      }
+     ],
+     "hint": "Snapshot the source first.",
+     "solution": "def dma(mem, src, dst, length):\n    m = list(mem)\n    data = m[src:src + length]\n    for i in range(length):\n        m[dst + i] = data[i]\n    return [m, 4 + 2 * length]\n"
+    }
+   ]
+  },
+  {
+   "title": "Speed: caches, JITs and what has changed since the 1990s",
+   "maps": [
+    {
+     "title": "Speed",
+     "links": [
+      "Interpreter | runs | One by one",
+      "Basic block | has | One way in",
+      "JIT | translates | At run time",
+      "Cache | stores | Translated code",
+      "Static recompile | translates | Ahead of time",
+      "Profile | finds | Hot code",
+      "Hardware assist | runs | Same ISA fast"
+     ]
+    }
+   ],
+   "summary": [
+    "An interpreter is simple and portable but slow. A dynamic recompiler, or JIT, translates blocks of guest code into host code the first time they run and caches the result.",
+    "Static recompilation translates a whole program ahead of time, but struggles with code that changes itself and with telling code from data.",
+    "Much advice from the 1990s, written for assembly and early compilers, is out of date. Measure first, and let the compiler and the profiler help."
+   ],
+   "glossary": [
+    {
+     "term": "Basic block",
+     "def": "A run of instructions with one entry and one exit, ending in a jump."
+    },
+    {
+     "term": "JIT",
+     "def": "Just-in-time compilation: translating code while the program runs."
+    },
+    {
+     "term": "Code cache",
+     "def": "Storage for already translated blocks."
+    },
+    {
+     "term": "Static recompilation",
+     "def": "Translating the whole guest program before it runs."
+    },
+    {
+     "term": "Profiler",
+     "def": "A tool that shows where a program spends its time."
+    },
+    {
+     "term": "Hardware assist",
+     "def": "Using the host CPU's own features, such as virtualization, to run guest code."
+    }
+   ],
+   "keyPoints": [
+    "Interpret first; optimize only the hot paths found by a profiler.",
+    "A JIT translates basic blocks and caches them by guest address.",
+    "Self-modifying code means the cache must be invalidated when guest memory is written.",
+    "Modern systems often forbid memory that is both writable and executable; JITs write first, then switch to executable.",
+    "If the guest and host share an instruction set, virtualization can run guest code almost natively.",
+    "Prefer clear code in a modern compiled language; the compiler outperforms hand tuning for most uses."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A translator who learns a page once and writes it down will be faster than one who reads it fresh each time. Save the page, and throw it away if the page changes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An interpreter pays a toll on every instruction: fetch, decode, dispatch. If the guest runs a loop a million times, the toll is paid a million times. A dynamic recompiler pays once. It translates a block into host code, remembers it, and runs the stored version every time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A basic block is a straight run of instructions that ends with a jump. It is the natural unit to translate, since control always enters at the start. To find blocks, mark the program start, every jump target and every instruction after a jump."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# leaders: where basic blocks start\nleaders = {0}\nfor pc, op, target in instructions:\n    if op in ('JMP', 'JNZ'):\n        leaders.add(target)\n        leaders.add(pc + length)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The old HOWTO said static translation cannot cope with self-modifying code, and that is still true. The dynamic approach has the same issue in a milder form: when the guest writes to memory that holds translated code, the cache entry must be thrown away.",
+      "Many JITs track which pages hold code and watch writes to them."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Other advice has aged. Today, compilers turn a dense switch into a jump table by themselves, so hand-written label tables are rarely needed. The register keyword is ignored. Hand-unrolled loops often do worse than the compiler's choices. Use fixed-width integer types and shifts, not pointer tricks.",
+      "Use a profiler such as perf or a flame graph before changing anything. Assembly is rarely needed, and languages such as Rust, C++ and Zig are all common choices."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "New constraints have arrived too. Some platforms refuse to run memory that is both writable and executable, or forbid JITs altogether, so a fast interpreter is still valuable. Multi-core hosts rarely help a single emulated CPU, but a separate thread for audio or video can.",
+      "And the best news is testing: hardware-derived test suites now exist for many classic CPUs, as the next chapter shows."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a basic block?",
+     "options": [
+      "Instructions with one entry and one exit",
+      "A single byte",
+      "A memory bank",
+      "A frame"
+     ],
+     "answer": 0,
+     "explain": "Straight-line code."
+    },
+    {
+     "q": "What invalidates a JIT cache entry?",
+     "options": [
+      "The guest writing to translated code",
+      "A new frame",
+      "A key press",
+      "Sound output"
+     ],
+     "answer": 0,
+     "explain": "Self-modifying code."
+    },
+    {
+     "q": "What should you do before optimizing?",
+     "options": [
+      "Profile",
+      "Rewrite in assembly",
+      "Remove tests",
+      "Use more threads"
+     ],
+     "answer": 0,
+     "explain": "Measure first."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What does a JIT do?",
+     "a": "Translates at run time."
+    },
+    {
+     "q": "What is hardware assist?",
+     "a": "Running guest code natively."
+    },
+    {
+     "q": "Why a code cache?",
+     "a": "Avoid retranslating."
+    },
+    {
+     "q": "What is a profiler for?",
+     "a": "Finding hot code."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Then and now",
+     "intro": "Match the old advice with the modern view.",
+     "pairs": [
+      [
+       "Hand-written jump tables",
+       "Compilers make them from a switch"
+      ],
+      [
+       "The register keyword",
+       "Ignored by compilers"
+      ],
+      [
+       "Pointer tricks for byte order",
+       "Use shifts and masks"
+      ],
+      [
+       "Guess where it is slow",
+       "Profile it"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Basic blocks",
+     "intro": "Write basic_blocks(program): decode TOY8 (instruction lengths 1,2,2,2,2,2,2,2,1 for opcodes 0..8) and return the sorted list of block start addresses: 0; every JMP (6) or JNZ (7) target that lies inside the program; and the address after every JMP, JNZ or HLT (0) if it lies inside the program.",
+     "fn": "basic_blocks",
+     "starter": "def basic_blocks(program):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         3,
+         1,
+         7,
+         2,
+         0
+        ]
+       ],
+       "expect": [
+        0,
+        2,
+        7
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         7,
+         6,
+         0,
+         0,
+         8,
+         0
+        ]
+       ],
+       "expect": [
+        0,
+        4,
+        5,
+        6
+       ]
+      },
+      {
+       "args": [
+        [
+         8,
+         8,
+         0
+        ]
+       ],
+       "expect": [
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         6,
+         0
+        ]
+       ],
+       "expect": [
+        0
+       ]
+      }
+     ],
+     "hint": "Walk the program and mark leaders.",
+     "solution": "def basic_blocks(program):\n    lens = [1, 2, 2, 2, 2, 2, 2, 2, 1]\n    leaders = set([0])\n    pc = 0\n    while pc < len(program):\n        op = program[pc]\n        n = lens[op] if op < 9 else 1\n        if op == 6 or op == 7:\n            t = program[pc + 1]\n            if t < len(program):\n                leaders.add(t)\n        if op in (0, 6, 7):\n            if pc + n < len(program):\n                leaders.add(pc + n)\n        pc += n\n    return sorted(leaders)\n"
+    },
+    {
+     "type": "python",
+     "title": "Translate a block",
+     "intro": "Write block_ops(program, start): decode TOY8 instructions from start up to and including the first JMP, JNZ or HLT (or the end of the program). Return a list of texts such as 'LDI 3' or 'OUT' (names HLT LDI ADD SUB STA LDA JMP JNZ OUT; one-byte instructions have no operand).",
+     "fn": "block_ops",
+     "starter": "def block_ops(program, start):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         3,
+         1,
+         7,
+         2,
+         0
+        ],
+        0
+       ],
+       "expect": [
+        "LDI 3",
+        "OUT",
+        "SUB 1",
+        "JNZ 2"
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         3,
+         1,
+         7,
+         2,
+         0
+        ],
+        2
+       ],
+       "expect": [
+        "OUT",
+        "SUB 1",
+        "JNZ 2"
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         3,
+         1,
+         7,
+         2,
+         0
+        ],
+        7
+       ],
+       "expect": [
+        "HLT"
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         2,
+         2
+        ],
+        0
+       ],
+       "expect": [
+        "LDI 1",
+        "ADD 2"
+       ]
+      }
+     ],
+     "hint": "Stop at the first control instruction.",
+     "solution": "def block_ops(program, start):\n    names = ['HLT', 'LDI', 'ADD', 'SUB', 'STA', 'LDA', 'JMP', 'JNZ', 'OUT']\n    out = []\n    pc = start\n    while pc < len(program):\n        op = program[pc]\n        if op == 0 or op == 8:\n            out.append(names[op])\n            pc += 1\n        else:\n            out.append(names[op] + ' ' + str(program[pc + 1]))\n            pc += 2\n        if op in (0, 6, 7):\n            break\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Code cache",
+     "intro": "Write cache_sim(trace, cap): trace is a list of block addresses executed in order. The cache holds at most cap blocks and evicts the least recently used. Return [hits, misses].",
+     "fn": "cache_sim",
+     "starter": "def cache_sim(trace, cap):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         2,
+         2,
+         2,
+         7
+        ],
+        4
+       ],
+       "expect": [
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         1,
+         2,
+         3
+        ],
+        2
+       ],
+       "expect": [
+        0,
+        6
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         1,
+         2,
+         3
+        ],
+        3
+       ],
+       "expect": [
+        3,
+        3
+       ]
+      },
+      {
+       "args": [
+        [],
+        2
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Move used blocks to the end.",
+     "solution": "def cache_sim(trace, cap):\n    cache = []\n    hits = 0\n    misses = 0\n    for b in trace:\n        if b in cache:\n            hits += 1\n            cache.remove(b)\n            cache.append(b)\n        else:\n            misses += 1\n            if len(cache) >= cap:\n                cache.pop(0)\n            cache.append(b)\n    return [hits, misses]\n"
+    },
+    {
+     "type": "python",
+     "title": "Interpret or JIT",
+     "intro": "Write jit_total(trace, sizes, interp_cost, compile_cost, run_cost): trace lists block ids; sizes maps id to the number of instructions in the block (a dict with string keys, ids are strings too). Interpreting costs interp_cost per instruction each time. The JIT pays compile_cost per instruction the first time a block runs, plus run_cost per instruction on every run. Return [interpreted_total, jit_total].",
+     "fn": "jit_total",
+     "starter": "def jit_total(trace, sizes, interp_cost, compile_cost, run_cost):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "a",
+         "a"
+        ],
+        {
+         "a": 4,
+         "b": 2
+        },
+        10,
+        50,
+        1
+       ],
+       "expect": [
+        140,
+        314
+       ]
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        {
+         "a": 3
+        },
+        10,
+        50,
+        1
+       ],
+       "expect": [
+        30,
+        153
+       ]
+      },
+      {
+       "args": [
+        [
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a",
+         "a"
+        ],
+        {
+         "a": 5
+        },
+        10,
+        50,
+        1
+       ],
+       "expect": [
+        5000,
+        750
+       ]
+      },
+      {
+       "args": [
+        [],
+        {},
+        1,
+        1,
+        1
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "A JIT pays once and runs cheaply.",
+     "solution": "def jit_total(trace, sizes, interp_cost, compile_cost, run_cost):\n    seen = set()\n    interp = 0\n    jit = 0\n    for b in trace:\n        n = sizes[b]\n        interp += n * interp_cost\n        if b not in seen:\n            seen.add(b)\n            jit += n * compile_cost\n        jit += n * run_cost\n    return [interp, jit]\n"
+    }
+   ]
+  },
+  {
+   "title": "Accuracy and testing",
+   "maps": [
+    {
+     "title": "Accuracy",
+     "links": [
+      "Accuracy | has | Levels",
+      "Instruction accurate | matches | Results",
+      "Cycle accurate | matches | Timing",
+      "Test ROM | checks | Behavior",
+      "Single-step test | checks | One instruction",
+      "Save state | stores | Everything",
+      "Determinism | allows | Replay"
+     ]
+    }
+   ],
+   "summary": [
+    "How accurate an emulator must be depends on the guest. Some software works with approximate timing, while some relies on exact cycles and undocumented behavior.",
+    "Test your CPU with test ROMs and with hardware-derived single-instruction test suites, which give the exact registers, memory and sometimes bus activity before and after each instruction.",
+    "A deterministic core lets you save state, replay input, and compare runs, which makes bugs reproducible."
+   ],
+   "glossary": [
+    {
+     "term": "Instruction accurate",
+     "def": "Gets the same results per instruction but not necessarily the same timing."
+    },
+    {
+     "term": "Cycle accurate",
+     "def": "Matches the guest's timing cycle by cycle."
+    },
+    {
+     "term": "High-level emulation",
+     "def": "Reproducing a chip's job instead of its inner workings."
+    },
+    {
+     "term": "Test ROM",
+     "def": "A program that checks parts of a machine and reports pass or fail."
+    },
+    {
+     "term": "Single-step test",
+     "def": "A record of a state before one instruction and the expected state after."
+    },
+    {
+     "term": "Save state",
+     "def": "A snapshot of the whole emulated machine."
+    }
+   ],
+   "keyPoints": [
+    "Pick the level of accuracy the software needs.",
+    "High-level emulation can be faster but can break software that depends on details.",
+    "Hardware-generated JSON suites exist for many CPUs, including the 6502 family, Z80, 8088 and 68000.",
+    "Test ROMs exist for many machines and run inside the emulator.",
+    "Keep the core deterministic: no clocks, no random numbers without a seed.",
+    "A checksum on save states catches corrupted files."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. To check your pretend machine, ask the real one the same question and compare answers. Keep every run the same so you can replay it and spot where it went wrong."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "There are many levels of accuracy. An instruction-accurate core gets each instruction's result right, but may not match the timing. A cycle-accurate core matches the exact cycle of every bus access. Some systems, such as the Commodore 64, have software that depends on cycle-level behavior.",
+      "Others do not, and a simpler emulator is enough."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "High-level emulation reproduces what a chip does, not how. Some Game Boy Advance emulators can run without the real boot ROM by imitating its functions, at a small cost in accuracy. The Nintendo 64 used preprogrammed graphics routines, so emulators can handle those directly.",
+      "The trade is speed against exactness."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How do you know your CPU is right? There are two good ways. First, test ROMs: programs that run in your emulator and print pass or fail. Second, and more recent, are test suites made from real hardware. Each test lists registers and memory before one instruction and the expected state after it.",
+      "You load the state, run one instruction and compare."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "def check(case):\n    cpu = load(case['initial'])\n    cpu.step()\n    return diff(case['final'], cpu.state())   # [] means pass"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Save states copy the whole machine to a file: registers, memory, device state. They need the core to be a pure function of its state and inputs.",
+      "A deterministic core also lets you record the buttons pressed each frame and replay the exact same run, which is a huge help when you hunt a bug that appears after twenty minutes."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is cycle accurate?",
+     "options": [
+      "Matches timing cycle by cycle",
+      "Fast",
+      "Small",
+      "High level"
+     ],
+     "answer": 0,
+     "explain": "Needed by some software."
+    },
+    {
+     "q": "What is a single-step test?",
+     "options": [
+      "State before and after one instruction",
+      "A full game",
+      "A sound test",
+      "A backup"
+     ],
+     "answer": 0,
+     "explain": "Exact checks."
+    },
+    {
+     "q": "What does determinism allow?",
+     "options": [
+      "Replay and save states",
+      "More colors",
+      "Faster ROMs",
+      "Smaller files"
+     ],
+     "answer": 0,
+     "explain": "Same inputs, same results."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is HLE?",
+     "a": "Imitating what a chip does."
+    },
+    {
+     "q": "What is a test ROM?",
+     "a": "A self-checking program."
+    },
+    {
+     "q": "What is a save state?",
+     "a": "A snapshot."
+    },
+    {
+     "q": "Why a checksum?",
+     "a": "To catch corruption."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Accuracy",
+     "intro": "Match each term with its meaning.",
+     "pairs": [
+      [
+       "Cycle accurate",
+       "Matches exact timing"
+      ],
+      [
+       "Instruction accurate",
+       "Matches results of each instruction"
+      ],
+      [
+       "High-level emulation",
+       "Imitates what a chip does"
+      ],
+      [
+       "Test ROM",
+       "A self-checking program"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Compare states",
+     "intro": "Write diff_state(expected, actual): both are dicts. Return the sorted list of keys whose values differ (a key missing from either side counts as different).",
+     "fn": "diff_state",
+     "starter": "def diff_state(expected, actual):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "a": 1,
+         "pc": 2
+        },
+        {
+         "a": 1,
+         "pc": 2
+        }
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        {
+         "a": 1,
+         "pc": 2
+        },
+        {
+         "a": 5,
+         "pc": 2
+        }
+       ],
+       "expect": [
+        "a"
+       ]
+      },
+      {
+       "args": [
+        {
+         "a": 1
+        },
+        {
+         "a": 1,
+         "z": 0
+        }
+       ],
+       "expect": [
+        "z"
+       ]
+      },
+      {
+       "args": [
+        {},
+        {}
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Compare each key.",
+     "solution": "def diff_state(expected, actual):\n    keys = set(list(expected.keys()) + list(actual.keys()))\n    bad = []\n    for k in keys:\n        if k not in expected or k not in actual or expected[k] != actual[k]:\n            bad.append(k)\n    return sorted(bad)\n"
+    },
+    {
+     "type": "python",
+     "title": "Single-step test",
+     "intro": "Write check_case(case): case has 'initial' ({'a', 'pc', 'ram' as a list of [addr, value]}) and 'final' ({'a', 'pc'}). Run exactly one TOY8 instruction (LDI, ADD, SUB, JMP or OUT) from the initial state (memory is 256 bytes of zeros plus the ram entries; the instruction is at pc) and return the sorted list of keys among 'a' and 'pc' whose result differs from final (an empty list means the test passes).",
+     "fn": "check_case",
+     "starter": "def check_case(case):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "initial": {
+          "a": 0,
+          "pc": 0,
+          "ram": [
+           [
+            0,
+            1
+           ],
+           [
+            1,
+            5
+           ]
+          ]
+         },
+         "final": {
+          "a": 5,
+          "pc": 2
+         }
+        }
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        {
+         "initial": {
+          "a": 250,
+          "pc": 4,
+          "ram": [
+           [
+            4,
+            2
+           ],
+           [
+            5,
+            10
+           ]
+          ]
+         },
+         "final": {
+          "a": 4,
+          "pc": 6
+         }
+        }
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        {
+         "initial": {
+          "a": 3,
+          "pc": 0,
+          "ram": [
+           [
+            0,
+            3
+           ],
+           [
+            1,
+            5
+           ]
+          ]
+         },
+         "final": {
+          "a": 0,
+          "pc": 2
+         }
+        }
+       ],
+       "expect": [
+        "a"
+       ]
+      },
+      {
+       "args": [
+        {
+         "initial": {
+          "a": 7,
+          "pc": 9,
+          "ram": [
+           [
+            9,
+            6
+           ],
+           [
+            10,
+            20
+           ]
+          ]
+         },
+         "final": {
+          "a": 7,
+          "pc": 20
+         }
+        }
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        {
+         "initial": {
+          "a": 1,
+          "pc": 0,
+          "ram": [
+           [
+            0,
+            8
+           ]
+          ]
+         },
+         "final": {
+          "a": 1,
+          "pc": 2
+         }
+        }
+       ],
+       "expect": [
+        "pc"
+       ]
+      }
+     ],
+     "hint": "The last two cases have wrong expectations on purpose.",
+     "solution": "LEN = [1, 2, 2, 2, 2, 2, 2, 2, 1]\nNAMES = ['HLT', 'LDI', 'ADD', 'SUB', 'STA', 'LDA', 'JMP', 'JNZ', 'OUT']\n\ndef toy_step(mem, st):\n    pc = st[0]\n    a = st[1]\n    z = st[2]\n    op = mem[pc & 255]\n    n = mem[(pc + 1) & 255]\n    out = None\n    npc = (pc + LEN[op]) & 255\n    if op == 0:\n        st[3] = 1\n        npc = pc\n    elif op == 1:\n        a = n\n        z = a == 0\n    elif op == 2:\n        a = (a + n) & 255\n        z = a == 0\n    elif op == 3:\n        a = (a - n) & 255\n        z = a == 0\n    elif op == 4:\n        mem[n] = a\n    elif op == 5:\n        a = mem[n]\n        z = a == 0\n    elif op == 6:\n        npc = n\n    elif op == 7:\n        if not z:\n            npc = n\n    elif op == 8:\n        out = a\n    st[0] = npc\n    st[1] = a\n    st[2] = z\n    return out\n\ndef check_case(case):\n    mem = [0] * 256\n    for addr, v in case['initial']['ram']:\n        mem[addr] = v\n    st = [case['initial']['pc'], case['initial']['a'], False, 0]\n    toy_step(mem, st)\n    bad = []\n    if st[1] != case['final']['a']:\n        bad.append('a')\n    if st[0] != case['final']['pc']:\n        bad.append('pc')\n    return sorted(bad)\n"
+    },
+    {
+     "type": "python",
+     "title": "Fletcher-16",
+     "intro": "Write fletcher16(data): data is a list of bytes. sum1 and sum2 both start at 0; for each byte: sum1 = (sum1 + byte) % 255, sum2 = (sum2 + sum1) % 255. Return sum2 x 256 + sum1.",
+     "fn": "fletcher16",
+     "starter": "def fletcher16(data):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2
+        ]
+       ],
+       "expect": 1027
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         255,
+         255,
+         255
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         0,
+         1,
+         2,
+         3,
+         4,
+         5,
+         6,
+         7
+        ]
+       ],
+       "expect": 21532
+      }
+     ],
+     "hint": "Two running sums.",
+     "solution": "def fletcher16(data):\n    s1 = 0\n    s2 = 0\n    for b in data:\n        s1 = (s1 + b) % 255\n        s2 = (s2 + s1) % 255\n    return s2 * 256 + s1\n"
+    },
+    {
+     "type": "python",
+     "title": "Save state",
+     "intro": "Write save_state(a, pc, z, ram): return a list: [a, pc low byte, pc high byte, 1 or 0 for z] followed by the ram bytes, followed by the two checksum bytes [sum1, sum2] of Fletcher-16 over that body (sum1 = sum1 + byte mod 255, sum2 = sum2 + sum1 mod 255).",
+     "fn": "save_state",
+     "starter": "def save_state(a, pc, z, ram):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        4660,
+        true,
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        5,
+        52,
+        18,
+        1,
+        1,
+        2,
+        3,
+        82,
+        196
+       ]
+      },
+      {
+       "args": [
+        0,
+        0,
+        false,
+        []
+       ],
+       "expect": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        255,
+        65535,
+        true,
+        [
+         255
+        ]
+       ],
+       "expect": [
+        255,
+        255,
+        255,
+        1,
+        255,
+        1,
+        2
+       ]
+      }
+     ],
+     "hint": "Body then checksum.",
+     "solution": "def save_state(a, pc, z, ram):\n    body = [a, pc & 255, (pc >> 8) & 255, 1 if z else 0] + list(ram)\n    s1 = 0\n    s2 = 0\n    for b in body:\n        s1 = (s1 + b) % 255\n        s2 = (s2 + s1) % 255\n    return body + [s1, s2]\n"
+    },
+    {
+     "type": "python",
+     "title": "Replayable randomness",
+     "intro": "Write lcg(seed, n): a deterministic generator: x = seed; repeat n times: x = (x x 1103515245 + 12345) & 0x7FFFFFFF and output x % 256. Return the list of outputs.",
+     "fn": "lcg",
+     "starter": "def lcg(seed, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        5
+       ],
+       "expect": [
+        166,
+        231,
+        148,
+        61,
+        50
+       ]
+      },
+      {
+       "args": [
+        42,
+        3
+       ],
+       "expect": [
+        27,
+        184,
+        145
+       ]
+      },
+      {
+       "args": [
+        0,
+        0
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        2147483647,
+        4
+       ],
+       "expect": [
+        204,
+        21,
+        42,
+        27
+       ]
+      }
+     ],
+     "hint": "Same seed, same values.",
+     "solution": "def lcg(seed, n):\n    x = seed\n    out = []\n    for _ in range(n):\n        x = (x * 1103515245 + 12345) & 0x7FFFFFFF\n        out.append(x % 256)\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Debuggers, preservation and next steps",
+   "maps": [
+    {
+     "title": "Next steps",
+     "links": [
+      "Debugger | steps | Code",
+      "Breakpoint | stops | At an address",
+      "Trace | logs | Instructions",
+      "Disassembler | shows | Mnemonics",
+      "Preservation | keeps | Old software alive",
+      "Homebrew | makes | New software",
+      "Community | shares | Documents"
+     ]
+    }
+   ],
+   "summary": [
+    "A debugger and a disassembler are the emulator author's best tools: they let you stop at an address, look at registers and memory, and read the program as text.",
+    "Emulation is also how old software and documents stay usable, and how new software for old systems gets made.",
+    "Legal and ethical rules differ by country. Emulators themselves are widely treated as lawful, but sharing copyrighted ROMs or system software without permission is not; this course is not legal advice."
+   ],
+   "glossary": [
+    {
+     "term": "Debugger",
+     "def": "A tool to run a program step by step and inspect its state."
+    },
+    {
+     "term": "Breakpoint",
+     "def": "An address where execution pauses."
+    },
+    {
+     "term": "Disassembler",
+     "def": "A tool turning bytes into instruction names."
+    },
+    {
+     "term": "Trace",
+     "def": "A log of executed instructions and states."
+    },
+    {
+     "term": "Preservation",
+     "def": "Keeping old software and data usable."
+    },
+    {
+     "term": "Homebrew",
+     "def": "New programs written for old systems."
+    }
+   ],
+   "keyPoints": [
+    "Build the debugger and disassembler early.",
+    "Peeking at memory must not trigger device side effects.",
+    "Trace logs let you compare your emulator against a known-good one line by line.",
+    "Dump your own cartridges and discs; do not distribute copyrighted system software.",
+    "The old HOWTO's links are mostly gone; use present-day wikis, test suites, forums and open-source cores instead.",
+    "Good places to learn: platform wikis such as the NESdev Wiki, Pan Docs for the Game Boy, public test ROMs and open emulator source code."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A debugger is a pause button with a magnifying glass. Stop, look inside, step forward one card, and see exactly what happened."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Writing an emulator without a debugger is like driving at night without headlights. The first thing to add after the CPU is a way to stop, step and look.",
+      "A disassembler turns the bytes at an address into names such as LDI 3, so you can read the guest program, and a trace log prints each instruction as it runs."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "pc = 0\nwhile pc < len(program):\n    name, operand, length = decode(program, pc)\n    print('%04x  %s %s' % (pc, name, operand if operand is not None else ''))\n    pc += length"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A breakpoint is a list of addresses. Before each instruction, check whether the program counter is in the list, and if so, stop. Combine breakpoints with single stepping and a view of memory and you can find most bugs. When you read memory for display, use a side-effect-free peek."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Emulation has a wider purpose. It keeps software and documents alive when the original hardware is gone, which is called digital preservation. It lets developers write programs for old systems and test them, and lets engineers test new chips before they are built.",
+      "It is a fine way to learn how computers really work."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Where next? Pick a small system, such as CHIP-8, the Game Boy or the NES. Read its public documentation, write the CPU, test it with the hardware-derived suites, then add video, sound and input. Look at open-source emulators for ideas, use the community wikis for details, and share your findings.",
+      "The HOWTO you may have read years ago was a great start, and now you have the modern map."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a breakpoint do?",
+     "options": [
+      "Stops at an address",
+      "Makes code faster",
+      "Deletes a ROM",
+      "Plays sound"
+     ],
+     "answer": 0,
+     "explain": "Pauses the run."
+    },
+    {
+     "q": "What does a disassembler show?",
+     "options": [
+      "Instruction names from bytes",
+      "The picture",
+      "The sound",
+      "The clock"
+     ],
+     "answer": 0,
+     "explain": "Readable code."
+    },
+    {
+     "q": "Why must a debugger peek without side effects?",
+     "options": [
+      "Reads can change device state",
+      "It is faster",
+      "It saves memory",
+      "It is a rule of Python"
+     ],
+     "answer": 0,
+     "explain": "MMIO."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What is a trace?",
+     "a": "A log of executed instructions."
+    },
+    {
+     "q": "What is homebrew?",
+     "a": "New software for old systems."
+    },
+    {
+     "q": "What is preservation?",
+     "a": "Keeping software usable."
+    },
+    {
+     "q": "What system to start with?",
+     "a": "CHIP-8 or Game Boy."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Tools",
+     "intro": "Match each tool with its job.",
+     "pairs": [
+      [
+       "Disassembler",
+       "Shows instruction names"
+      ],
+      [
+       "Breakpoint",
+       "Stops at an address"
+      ],
+      [
+       "Trace log",
+       "Records what ran"
+      ],
+      [
+       "Test suite",
+       "Checks the CPU against hardware"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Disassemble",
+     "intro": "Write disassemble(program): return a list of lines for TOY8, one per instruction, of the form 'AAAA: NAME operand' with the address as four lowercase hex digits and no operand for one-byte instructions (names HLT LDI ADD SUB STA LDA JMP JNZ OUT; lengths 1,2,2,2,2,2,2,2,1; operands in decimal). Stop at the end of the program.",
+     "fn": "disassemble",
+     "starter": "def disassemble(program):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         3,
+         1,
+         7,
+         2,
+         0
+        ]
+       ],
+       "expect": [
+        "0000: LDI 3",
+        "0002: OUT",
+        "0003: SUB 1",
+        "0005: JNZ 2",
+        "0007: HLT"
+       ]
+      },
+      {
+       "args": [
+        [
+         8
+        ]
+       ],
+       "expect": [
+        "0000: OUT"
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         1,
+         255,
+         6,
+         0
+        ]
+       ],
+       "expect": [
+        "0000: LDI 255",
+        "0002: JMP 0"
+       ]
+      }
+     ],
+     "hint": "Format the address by hand.",
+     "solution": "def disassemble(program):\n    names = ['HLT', 'LDI', 'ADD', 'SUB', 'STA', 'LDA', 'JMP', 'JNZ', 'OUT']\n    h = '0123456789abcdef'\n    out = []\n    pc = 0\n    while pc < len(program):\n        op = program[pc]\n        addr = h[(pc >> 12) & 15] + h[(pc >> 8) & 15] + h[(pc >> 4) & 15] + h[pc & 15]\n        if op == 0 or op == 8:\n            out.append(addr + ': ' + names[op])\n            pc += 1\n        else:\n            out.append(addr + ': ' + names[op] + ' ' + str(program[pc + 1]))\n            pc += 2\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Run to breakpoint",
+     "intro": "Write run_until(program, breakpoints, max_steps): run TOY8 from address 0 (the machine as in the earlier labs, memory padded with zeros). Before executing each instruction, stop if its address is in breakpoints. Return [pc, steps, reason] where reason is 'breakpoint', 'halt' (after executing a HLT) or 'limit' (max_steps instructions done).",
+     "fn": "run_until",
+     "starter": "def run_until(program, breakpoints, max_steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         3,
+         1,
+         7,
+         2,
+         0
+        ],
+        [
+         5
+        ],
+        100
+       ],
+       "expect": [
+        5,
+        3,
+        "breakpoint"
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         3,
+         1,
+         7,
+         2,
+         0
+        ],
+        [],
+        100
+       ],
+       "expect": [
+        7,
+        11,
+        "halt"
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         3,
+         1,
+         7,
+         2,
+         0
+        ],
+        [],
+        3
+       ],
+       "expect": [
+        5,
+        3,
+        "limit"
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         3,
+         1,
+         7,
+         2,
+         0
+        ],
+        [
+         0
+        ],
+        10
+       ],
+       "expect": [
+        0,
+        0,
+        "breakpoint"
+       ]
+      }
+     ],
+     "hint": "Check the breakpoint before each step.",
+     "solution": "LEN = [1, 2, 2, 2, 2, 2, 2, 2, 1]\nNAMES = ['HLT', 'LDI', 'ADD', 'SUB', 'STA', 'LDA', 'JMP', 'JNZ', 'OUT']\n\ndef toy_step(mem, st):\n    pc = st[0]\n    a = st[1]\n    z = st[2]\n    op = mem[pc & 255]\n    n = mem[(pc + 1) & 255]\n    out = None\n    npc = (pc + LEN[op]) & 255\n    if op == 0:\n        st[3] = 1\n        npc = pc\n    elif op == 1:\n        a = n\n        z = a == 0\n    elif op == 2:\n        a = (a + n) & 255\n        z = a == 0\n    elif op == 3:\n        a = (a - n) & 255\n        z = a == 0\n    elif op == 4:\n        mem[n] = a\n    elif op == 5:\n        a = mem[n]\n        z = a == 0\n    elif op == 6:\n        npc = n\n    elif op == 7:\n        if not z:\n            npc = n\n    elif op == 8:\n        out = a\n    st[0] = npc\n    st[1] = a\n    st[2] = z\n    return out\n\ndef run_until(program, breakpoints, max_steps):\n    mem = list(program) + [0] * (256 - len(program))\n    st = [0, 0, False, 0]\n    steps = 0\n    while steps < max_steps:\n        if st[0] in breakpoints:\n            return [st[0], steps, 'breakpoint']\n        toy_step(mem, st)\n        steps += 1\n        if st[3]:\n            return [st[0], steps, 'halt']\n    return [st[0], steps, 'limit']\n"
+    },
+    {
+     "type": "python",
+     "title": "Trace",
+     "intro": "Write trace(program, n): run TOY8 and return a list of up to n entries [pc, name, a] describing each executed instruction (pc before it executes, and A after it executes). Stop after executing a HLT. Names: HLT LDI ADD SUB STA LDA JMP JNZ OUT.",
+     "fn": "trace",
+     "starter": "def trace(program, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         3,
+         1,
+         7,
+         2,
+         0
+        ],
+        6
+       ],
+       "expect": [
+        [
+         0,
+         "LDI",
+         3
+        ],
+        [
+         2,
+         "OUT",
+         3
+        ],
+        [
+         3,
+         "SUB",
+         2
+        ],
+        [
+         5,
+         "JNZ",
+         2
+        ],
+        [
+         2,
+         "OUT",
+         2
+        ],
+        [
+         3,
+         "SUB",
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         3,
+         8,
+         3,
+         1,
+         7,
+         2,
+         0
+        ],
+        100
+       ],
+       "expect": [
+        [
+         0,
+         "LDI",
+         3
+        ],
+        [
+         2,
+         "OUT",
+         3
+        ],
+        [
+         3,
+         "SUB",
+         2
+        ],
+        [
+         5,
+         "JNZ",
+         2
+        ],
+        [
+         2,
+         "OUT",
+         2
+        ],
+        [
+         3,
+         "SUB",
+         1
+        ],
+        [
+         5,
+         "JNZ",
+         1
+        ],
+        [
+         2,
+         "OUT",
+         1
+        ],
+        [
+         3,
+         "SUB",
+         0
+        ],
+        [
+         5,
+         "JNZ",
+         0
+        ],
+        [
+         7,
+         "HLT",
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         9,
+         2,
+         1,
+         0
+        ],
+        10
+       ],
+       "expect": [
+        [
+         0,
+         "LDI",
+         9
+        ],
+        [
+         2,
+         "ADD",
+         10
+        ],
+        [
+         4,
+         "HLT",
+         10
+        ]
+       ]
+      },
+      {
+       "args": [
+        [],
+        3
+       ],
+       "expect": [
+        [
+         0,
+         "HLT",
+         0
+        ]
+       ]
+      }
+     ],
+     "hint": "Record before and after.",
+     "solution": "LEN = [1, 2, 2, 2, 2, 2, 2, 2, 1]\nNAMES = ['HLT', 'LDI', 'ADD', 'SUB', 'STA', 'LDA', 'JMP', 'JNZ', 'OUT']\n\ndef toy_step(mem, st):\n    pc = st[0]\n    a = st[1]\n    z = st[2]\n    op = mem[pc & 255]\n    n = mem[(pc + 1) & 255]\n    out = None\n    npc = (pc + LEN[op]) & 255\n    if op == 0:\n        st[3] = 1\n        npc = pc\n    elif op == 1:\n        a = n\n        z = a == 0\n    elif op == 2:\n        a = (a + n) & 255\n        z = a == 0\n    elif op == 3:\n        a = (a - n) & 255\n        z = a == 0\n    elif op == 4:\n        mem[n] = a\n    elif op == 5:\n        a = mem[n]\n        z = a == 0\n    elif op == 6:\n        npc = n\n    elif op == 7:\n        if not z:\n            npc = n\n    elif op == 8:\n        out = a\n    st[0] = npc\n    st[1] = a\n    st[2] = z\n    return out\n\ndef trace(program, n):\n    mem = list(program) + [0] * (256 - len(program))\n    st = [0, 0, False, 0]\n    out = []\n    for _ in range(n):\n        pc = st[0]\n        op = mem[pc]\n        toy_step(mem, st)\n        out.append([pc, NAMES[op], st[1]])\n        if st[3]:\n            break\n    return out\n"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Emulator Programming: From Fetch-Decode-Execute to JIT",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What is the guest in emulation?",
+    "options": [
+     "The system being imitated",
+     "The real machine",
+     "The compiler",
+     "The window"
+    ],
+    "answer": 0,
+    "explain": "The host runs the emulator."
+   },
+   {
+    "q": "What does a compatibility layer translate?",
+    "options": [
+     "System calls",
+     "Pixels",
+     "Voltages",
+     "Clock rate"
+    ],
+    "answer": 0,
+    "explain": "It does not imitate hardware."
+   },
+   {
+    "q": "Who coined the term emulator?",
+    "options": [
+     "IBM engineers in the 1960s",
+     "Nintendo",
+     "A game studio",
+     "A university in 2000"
+    ],
+    "answer": 0,
+    "explain": "Hardware and microcode assisted."
+   },
+   {
+    "q": "What is open bus?",
+    "options": [
+     "A read where no chip answers",
+     "A fast bus",
+     "A bug in Python",
+     "A cache"
+    ],
+    "answer": 0,
+    "explain": "Floating wires."
+   },
+   {
+    "q": "Why separate the core from the frontend?",
+    "options": [
+     "Testing and portability",
+     "Smaller screens",
+     "Fewer colors",
+     "Faster ROMs"
+    ],
+    "answer": 0,
+    "explain": "The core needs no window."
+   },
+   {
+    "q": "What is 255 + 1 in an 8-bit register?",
+    "options": [
+     "0 with carry",
+     "256",
+     "-1",
+     "1"
+    ],
+    "answer": 0,
+    "explain": "Wraparound."
+   },
+   {
+    "q": "What is byte 255 as a signed number?",
+    "options": [
+     "-1",
+     "255",
+     "0",
+     "127"
+    ],
+    "answer": 0,
+    "explain": "Two's complement."
+   },
+   {
+    "q": "How do you build a little-endian word portably?",
+    "options": [
+     "low | (high << 8)",
+     "high + low",
+     "A pointer cast",
+     "A union only"
+    ],
+    "answer": 0,
+    "explain": "Shifts."
+   },
+   {
+    "q": "What does the program counter hold?",
+    "options": [
+     "The next instruction's address",
+     "The last result",
+     "A flag",
+     "The clock"
+    ],
+    "answer": 0,
+    "explain": "PC."
+   },
+   {
+    "q": "What does a jump instruction do?",
+    "options": [
+     "Overwrites the PC",
+     "Adds to A",
+     "Halts",
+     "Clears memory"
+    ],
+    "answer": 0,
+    "explain": "New address."
+   },
+   {
+    "q": "What does the loop add after each instruction?",
+    "options": [
+     "Its cycle cost",
+     "A pixel",
+     "A sound sample",
+     "Nothing"
+    ],
+    "answer": 0,
+    "explain": "Timing."
+   },
+   {
+    "q": "What is an addressing mode?",
+    "options": [
+     "How an instruction finds its operand",
+     "A kind of flag",
+     "A clock",
+     "A bus"
+    ],
+    "answer": 0,
+    "explain": "Immediate, absolute..."
+   },
+   {
+    "q": "What does a modern compiler do with a dense switch?",
+    "options": [
+     "Often makes a jump table",
+     "Rejects it",
+     "Slows it down",
+     "Splits it"
+    ],
+    "answer": 0,
+    "explain": "No hand tables needed."
+   },
+   {
+    "q": "What first digit of a CHIP-8 opcode means 'set register'?",
+    "options": [
+     "6",
+     "1",
+     "A",
+     "F"
+    ],
+    "answer": 0,
+    "explain": "6XNN."
+   },
+   {
+    "q": "What is mirroring?",
+    "options": [
+     "The same memory at several addresses",
+     "A CPU copy",
+     "A fast bus",
+     "A bug"
+    ],
+    "answer": 0,
+    "explain": "Partial decoding."
+   },
+   {
+    "q": "What does bank switching do?",
+    "options": [
+     "Changes which block is visible",
+     "Makes memory faster",
+     "Erases ROM",
+     "Slows the CPU"
+    ],
+    "answer": 0,
+    "explain": "A window."
+   },
+   {
+    "q": "What is special about MMIO reads?",
+    "options": [
+     "They may change device state",
+     "They are slower",
+     "They are illegal",
+     "They are free"
+    ],
+    "answer": 0,
+    "explain": "Side effects."
+   },
+   {
+    "q": "How many cycles per frame at 2.5 MHz and 50 fps?",
+    "options": [
+     "50,000",
+     "125,000",
+     "5,000",
+     "2,500"
+    ],
+    "answer": 0,
+    "explain": "Clock over fps."
+   },
+   {
+    "q": "Why add the period instead of resetting the counter?",
+    "options": [
+     "To keep leftover cycles",
+     "To save memory",
+     "To hide bugs",
+     "To go faster"
+    ],
+    "answer": 0,
+    "explain": "Avoid drift."
+   },
+   {
+    "q": "What is a spiral of death?",
+    "options": [
+     "Catching up makes you fall further behind",
+     "A graphics effect",
+     "A ROM bug",
+     "A key matrix"
+    ],
+    "answer": 0,
+    "explain": "Cap catch-up frames."
+   },
+   {
+    "q": "Which interrupt cannot be masked?",
+    "options": [
+     "NMI",
+     "IRQ",
+     "Both",
+     "Neither"
+    ],
+    "answer": 0,
+    "explain": "Non-maskable."
+   },
+   {
+    "q": "When does an NMI fire?",
+    "options": [
+     "On a rising edge",
+     "While high",
+     "Never",
+     "At reset only"
+    ],
+    "answer": 0,
+    "explain": "Edge-sensitive."
+   },
+   {
+    "q": "What does an event scheduler find?",
+    "options": [
+     "The next event time",
+     "The CPU model",
+     "The ROM",
+     "The frame rate"
+    ],
+    "answer": 0,
+    "explain": "Run until then."
+   },
+   {
+    "q": "What does a palette do?",
+    "options": [
+     "Maps numbers to colors",
+     "Draws sprites",
+     "Plays sound",
+     "Stores ROM"
+    ],
+    "answer": 0,
+    "explain": "Index to color."
+   },
+   {
+    "q": "Why render by scanline?",
+    "options": [
+     "Games change settings mid-frame",
+     "Less memory",
+     "Darker picture",
+     "A Python rule"
+    ],
+    "answer": 0,
+    "explain": "Raster effects."
+   },
+   {
+    "q": "How are sound samples mixed?",
+    "options": [
+     "Add and clamp",
+     "Multiply",
+     "Pick the loudest",
+     "Concatenate"
+    ],
+    "answer": 0,
+    "explain": "Sum within range."
+   },
+   {
+    "q": "What does a joypad register hold?",
+    "options": [
+     "One bit per button",
+     "A picture",
+     "A score",
+     "Sound"
+    ],
+    "answer": 0,
+    "explain": "Bits."
+   },
+   {
+    "q": "What does DMA do?",
+    "options": [
+     "Copies memory without the CPU",
+     "Draws sprites",
+     "Reads keys",
+     "Plays sound"
+    ],
+    "answer": 0,
+    "explain": "May steal cycles."
+   },
+   {
+    "q": "What is a basic block?",
+    "options": [
+     "Straight code with one entry and one exit",
+     "A byte",
+     "A memory bank",
+     "A frame"
+    ],
+    "answer": 0,
+    "explain": "Ends in a jump."
+   },
+   {
+    "q": "What invalidates a JIT cache entry?",
+    "options": [
+     "The guest writing to translated code",
+     "A new frame",
+     "A key press",
+     "Sound output"
+    ],
+    "answer": 0,
+    "explain": "Self-modifying code."
+   },
+   {
+    "q": "What should you do before optimizing?",
+    "options": [
+     "Profile",
+     "Write assembly",
+     "Remove tests",
+     "Add threads"
+    ],
+    "answer": 0,
+    "explain": "Measure first."
+   },
+   {
+    "q": "Which old advice has aged?",
+    "options": [
+     "Hand-written label tables for dispatch",
+     "Keep CPU and video modular",
+     "Charge DMA cycles",
+     "Test instructions"
+    ],
+    "answer": 0,
+    "explain": "Compilers do it."
+   },
+   {
+    "q": "What is cycle accurate?",
+    "options": [
+     "Matches timing cycle by cycle",
+     "Fast",
+     "Small",
+     "High level"
+    ],
+    "answer": 0,
+    "explain": "Some software needs it."
+   },
+   {
+    "q": "What is a single-step test?",
+    "options": [
+     "State before and after one instruction",
+     "A full game",
+     "A backup",
+     "A sound test"
+    ],
+    "answer": 0,
+    "explain": "Exact."
+   },
+   {
+    "q": "What does determinism allow?",
+    "options": [
+     "Replay and save states",
+     "More colors",
+     "Smaller ROMs",
+     "Faster clocks"
+    ],
+    "answer": 0,
+    "explain": "Same inputs same results."
+   },
+   {
+    "q": "What does a breakpoint do?",
+    "options": [
+     "Stops at an address",
+     "Speeds up code",
+     "Deletes a ROM",
+     "Plays sound"
+    ],
+    "answer": 0,
+    "explain": "Pauses."
+   },
+   {
+    "q": "Why must a debugger peek without side effects?",
+    "options": [
+     "Reads can change device state",
+     "It is faster",
+     "It saves memory",
+     "A Python rule"
+    ],
+    "answer": 0,
+    "explain": "MMIO."
+   },
+   {
+    "q": "What is digital preservation?",
+    "options": [
+     "Keeping old software usable",
+     "Compressing files",
+     "Encrypting ROMs",
+     "Selling games"
+    ],
+    "answer": 0,
+    "explain": "Emulation helps."
+   },
+   {
+    "q": "What is a sensible first emulator target?",
+    "options": [
+     "CHIP-8",
+     "A modern console",
+     "A server farm",
+     "A phone OS"
+    ],
+    "answer": 0,
+    "explain": "Small and friendly."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Emulator cheat sheet",
+  "prompt": "emu>",
+  "intro": "A scripted lookup, not a real emulator. Try: loop, flags, memory, timing, irq, jit, test, debug, endian, help",
+  "chips": [
+   "loop",
+   "flags",
+   "memory",
+   "timing",
+   "irq",
+   "jit",
+   "test",
+   "debug",
+   "endian",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "loop       fetch opcode at PC, advance PC, decode, execute, add cycles",
+     "flags      carry = sum above 255; zero = result 0; negative = top bit",
+     "memory     route each address to RAM, ROM or a device; mirror with a ma",
+     "timing     cycles per frame = clock / fps",
+     "irq        IRQ: level, can be masked; NMI: rising edge, cannot",
+     "jit        translate a basic block once, cache it by address",
+     "test       load state, run one instruction, compare",
+     "debug      breakpoints, single step, trace log, disassembler",
+     "endian     little: low byte first (6502, Z80, x86); big: high first (68"
+    ]
+   },
+   {
+    "re": "^loop$",
+    "out": [
+     "fetch opcode at PC, advance PC, decode, execute, add cycles",
+     "when the cycle counter runs out: run events, add the period back"
+    ]
+   },
+   {
+    "re": "^flags$",
+    "out": [
+     "carry = sum above 255; zero = result 0; negative = top bit",
+     "overflow: same input signs, different result sign"
+    ]
+   },
+   {
+    "re": "^memory$",
+    "out": [
+     "route each address to RAM, ROM or a device; mirror with a mask",
+     "bank = window into a larger memory; MMIO reads can have side effects"
+    ]
+   },
+   {
+    "re": "^timing$",
+    "out": [
+     "cycles per frame = clock / fps",
+     "tick = greatest common divisor of the periods"
+    ]
+   },
+   {
+    "re": "^irq$",
+    "out": [
+     "IRQ: level, can be masked; NMI: rising edge, cannot",
+     "check lines between instructions"
+    ]
+   },
+   {
+    "re": "^jit$",
+    "out": [
+     "translate a basic block once, cache it by address",
+     "invalidate when the guest writes to code"
+    ]
+   },
+   {
+    "re": "^test$",
+    "out": [
+     "load state, run one instruction, compare",
+     "hardware-derived JSON suites exist for the 6502, Z80, 8088, 68000 and more"
+    ]
+   },
+   {
+    "re": "^debug$",
+    "out": [
+     "breakpoints, single step, trace log, disassembler",
+     "peek memory without side effects"
+    ]
+   },
+   {
+    "re": "^endian$",
+    "out": [
+     "little: low byte first (6502, Z80, x86); big: high first (68000)",
+     "word = low | (high << 8) works on any host"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Computer Science",
+ "level": "Intermediate",
+ "tags": [
+  "emulation",
+  "emulator",
+  "cpu",
+  "jit",
+  "retro",
+  "debugging",
+  "python"
+ ]
+}
