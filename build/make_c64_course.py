@@ -8,8 +8,8 @@ import cmk, cb1, cb2, cb3, labs_c64, labs_more, app_emu, app_basic, app_tools  #
 from clib import T, C  # noqa: E402
 
 BAS = {
- "1": ("Run the program, then change it so the border goes through colours 0 to 15. Use a FOR loop with a POKE inside.",
-       '10 PRINT "BORDER TEST"\n20 POKE 53280,2\n30 END\n',
+ "1": ("Make the border go through colours 0 to 15. Use a FOR loop with a POKE to register 53280 inside it, then run the program.",
+       '10 PRINT "BORDER TEST"\n20 REM CYCLE THE BORDER COLOUR HERE (REGISTER 53280)\n30 END\n',
        [{"t": "program ends normally", "ran": True}, {"t": "border colour changed", "border": True}, {"t": "uses a FOR loop", "uses": "\\bFOR\\b"}]),
  "2": ("Type a number when asked. Then add a line that prints DOUBLE and twice that number.",
        '10 INPUT "YOUR NUMBER";N\n20 PRINT "YOU TYPED";N\n30 END\n',

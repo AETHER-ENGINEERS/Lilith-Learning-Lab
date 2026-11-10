@@ -1,9 +1,9 @@
 """Extra BASIC and C labs for the C64 course (sprites, SID, joystick, raster, demo effects)."""
 
 BASIC = {
- "4": ("A sprite from BASIC. The data, pointer, position and colour are set, but the sprite is not switched on. Switch it on with POKE 53269,1, then slide it right with a FOR loop on X (register 53248) until it passes x=160.",
-       '10 REM SPRITE 0 FROM BASIC\n20 FOR I=0 TO 62:POKE 832+I,255:NEXT I\n30 POKE 2040,13\n40 POKE 53248,60:POKE 53249,120\n50 POKE 53287,1\n60 END\n',
-       [{"t": "sprite switched on with its pointer set", "spr": True}, {"t": "uses a FOR loop", "uses": "\\bFOR\\b.*\\bNEXT\\b|\\bFOR\\b"}, {"t": "the sprite slid past x=160", "ramgt": [53248, 160]}]),
+ "4": ("A sprite from BASIC. The sprite data, pointer, position and colour are already set up, but the sprite is switched off. Switch it on with POKE 53269,1, then make it slide right: a FOR X loop from 60 to 250 that POKEs X into register 53248, with a short empty loop as a delay so you can watch it move.",
+       '10 REM SPRITE 0 FROM BASIC\n20 FOR I=0 TO 62:POKE 832+I,255:NEXT I\n30 POKE 2040,13\n40 POKE 53248,60:POKE 53249,120\n50 POKE 53287,1\n60 REM 1) SWITCH THE SPRITE ON: POKE 53269,1\n70 REM 2) FOR X=60 TO 250 STEP 2 : POKE 53248,X\n80 REM    FOR D=1 TO 40:NEXT D : NEXT X\n90 END\n',
+       [{"t": "sprite switched on with its pointer set", "spr": True}, {"t": "uses a FOR X loop to move it", "uses": "\\bFOR\\s+X\\b"}, {"t": "the sprite slid past x=160", "ramgt": [53248, 160]}]),
  "5": ("SID from BASIC. Set the volume, the envelope and a frequency, then start the note by setting the gate bit in the voice 1 control register 54276. Fill in the missing lines.",
        '10 REM A NOTE ON SID VOICE 1\n20 POKE 54296,15\n30 POKE 54277,9:POKE 54278,240\n40 POKE 54273,29:POKE 54272,69\n50 REM NOW START THE NOTE: TRIANGLE WAVE PLUS GATE IS 17\n60 END\n',
        [{"t": "SID is making a note", "sid": True}]),
