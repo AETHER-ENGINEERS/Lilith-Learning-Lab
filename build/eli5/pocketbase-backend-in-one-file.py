@@ -1,0 +1,15 @@
+FEY = [
+ ("PocketBase is a lunchbox that holds a whole kitchen: a notebook for your data, a door guard, a mailbox for files and a doorbell. You carry one box and everything is inside.", None),
+ ("A collection is a labelled tray of index cards. Each card is a record, each line on a card is a field, and the tray says what kind of cards go in it.", None),
+ ("The API is a counter with five windows: list, look, add, change and remove. You ask politely through a window and get back a page of cards.", None),
+ ("The SDK is a friendly helper who speaks the counter's language for you. It also washes your words, so a sneaky quote mark cannot trick the counter.", None),
+ ("A rule is a bouncer with a short question. Locked means nobody but the owner of the building, empty means everybody, and a question means only people who answer it right.", None),
+ ("A token is a stamped wristband you get after proving who you are. You show the wristband each time, and it stops working after a while.", None),
+ ("A relation is a sticky note on one card saying see card number 12 in the other tray. Expanding is walking over and bringing card 12 back with you.", None),
+ ("Realtime is a doorbell for changes. You tell the house what you care about, and it rings your phone the moment a card is added, changed or thrown away.", None),
+ ("A file field is a coat check. You hand in a coat, you get a ticket with a new name, and the ticket is only good for your own coat.", None),
+ ("A hook is a little helper standing at a door who can tidy a thing before it goes in, or say stop. If the helper does not wave it on, it does not go through.", None),
+ ("Migrations are a diary of changes to the trays, with dates. Anyone can replay the diary in order and end up with the same trays.", None),
+ ("Production is taking the lunchbox out of your bedroom and putting it in a safe place: a lock on the door, photocopies of the notebook, and a limit on how fast people can knock.", None),
+ ("Before you build, ask who may look at each card and who may change it. Start with every door locked and open them one at a time.", None),
+]
