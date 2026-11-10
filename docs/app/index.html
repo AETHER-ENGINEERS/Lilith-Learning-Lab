@@ -2468,8 +2468,22 @@ ST.courses = ST.courses || []; ST.prog = ST.prog || {}; ST.current = ST.current 
 ST.set = Object.assign({ rate: 1, readCode: false, captions: true, autoNext: true, voice: null }, ST.set || {});
 const memCourses = {};
 function save() { mem = ST; try { localStorage.setItem(IDX, JSON.stringify(ST)); return true; } catch (e) { return false; } }
+/* courses live in IndexedDB (localStorage holds only about 5 MB, too small for the big courses); memCourses is the sync cache */
+const CDB = { db: null, open() { return new Promise(res => { try { const r = indexedDB.open('lilith-courses', 1); r.onupgradeneeded = () => r.result.createObjectStore('c'); r.onsuccess = () => res(r.result); r.onerror = () => res(null); r.onblocked = () => res(null); } catch (e) { res(null); } }); },
+  put(c) { return new Promise(res => { try { const t = this.db.transaction('c', 'readwrite'); t.objectStore('c').put(c, c.id); t.oncomplete = () => res(true); t.onerror = t.onabort = () => res(false); } catch (e) { res(false); } }); },
+  del(id) { try { this.db.transaction('c', 'readwrite').objectStore('c').delete(id); } catch (e) {} },
+  all() { return new Promise(res => { try { const r = this.db.transaction('c').objectStore('c').getAll(); r.onsuccess = () => res(r.result || []); r.onerror = () => res([]); } catch (e) { res([]); } }); } };
 function readCourse(id) { if (memCourses[id]) return memCourses[id]; try { const v = localStorage.getItem(CKEY(id)); if (v) return JSON.parse(v); } catch (e) {} return null; }
-function writeCourse(c) { memCourses[c.id] = c; try { localStorage.setItem(CKEY(c.id), JSON.stringify(c)); return true; } catch (e) { return false; } }
+function writeCourse(c) {
+  memCourses[c.id] = c;
+  if (CDB.db) { CDB.put(c).then(ok => { if (ok) { try { localStorage.removeItem(CKEY(c.id)); } catch (e) {} } else toast('Could not save the course on this device'); }); return true; }
+  try { localStorage.setItem(CKEY(c.id), JSON.stringify(c)); return true; } catch (e) { return false; }
+}
+const coursesReady = (async function () {
+  CDB.db = await CDB.open(); if (!CDB.db) return;
+  (await CDB.all()).forEach(c => { if (c && c.id) memCourses[c.id] = c; });
+  for (const m of ST.courses) { if (memCourses[m.id]) continue; let c = null; try { const v = localStorage.getItem(CKEY(m.id)); if (v) c = JSON.parse(v); } catch (e) {} if (c && await CDB.put(c)) { memCourses[m.id] = c; try { localStorage.removeItem(CKEY(m.id)); } catch (e) {} } }
+})();
 if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) document.body.classList.add('rm');
 
 let CUR = null;   // { course, ch: [views], byId }
@@ -2743,7 +2757,7 @@ function getCourse(c) {
 
 function openCourse(id) { NAR.stop(); LEC = null; mode = null; setCourse(id); tab = 'lecture'; view = null; readCh = null; labSel = null; render(); }
 function deleteCourse(id) {
-  try { localStorage.removeItem(CKEY(id)); } catch (e) {} delete memCourses[id];
+  try { localStorage.removeItem(CKEY(id)); } catch (e) {} delete memCourses[id]; if (CDB.db) CDB.del(id);
   ST.courses = ST.courses.filter(c => c.id !== id); delete ST.prog[id];
   if (ST.current === id) { NAR.stop(); LEC = null; mode = null; CUR = null; ST.current = null; N.setPronounce({}); }
   save(); view = 'lib'; render(); toast('Course deleted');
@@ -3701,8 +3715,7 @@ $('#gear').onclick = () => {
   if (t) setTimeout(() => importText(t, 'course.json'), 300);
 })();
 window.__app = { NAR, AV, ST, K, readCourse, openLecture, openCourse, importText, go, get LEC() { return LEC; }, get CUR() { return CUR; }, get EXAM() { return EXAM; }, ENV, answerQuiz, openLab, openTour };
-setCourse(ST.current || (ST.courses[0] && ST.courses[0].id));
-render();
+coursesReady.catch(() => {}).then(() => { setCourse(ST.current || (ST.courses[0] && ST.courses[0].id)); render(); });
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
