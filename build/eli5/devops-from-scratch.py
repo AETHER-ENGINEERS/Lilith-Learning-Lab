@@ -1,0 +1,17 @@
+FEY = [
+ ("DevOps is like a kitchen where the cooks and the waiters work as one team. They hand out small plates often, and they listen to how the guests liked them.", None),
+ ("Git is a time machine for your files. Every save is a numbered photo with a note, so you can look back at any day or undo a mistake.", None),
+ ("A branch is a side road. You try your idea there so the main road stays clear, and then you merge back. If two roads changed the same sign, you pick the right one.", None),
+ ("A robot checks your homework every time you hand it in. It builds your model and tests it, and if something is wrong it stops and tells you which step failed.", None),
+ ("Bake the cake once, put a label on it with a number, and serve that same cake everywhere. Add one to the number for a fix, a bigger step for a new flavour.", None),
+ ("A container is a lunch box with the food, the fork and the napkin all packed. It works the same at any table. The image is the recipe card for the lunch box.", None),
+ ("A Dockerfile is a recipe in layers like a sandwich. If you change the top slice, you keep all the bottom layers and only redo the top one.", None),
+ ("Kubernetes is a manager who always checks that three workers are on shift. If one goes home sick, the manager calls in a new one straight away.", None),
+ ("Instead of building your toy city by hand each time, you write a plan. The plan can build the whole city again, and building twice changes nothing new.", None),
+ ("Settings go on sticky notes outside the machine, and secrets go in a locked box. You never write a password on the wall of the shop.", None),
+ ("When you release a new game level, first let a few friends try it. If they like it, let everyone in. If not, close the door and go back to the old level.", None),
+ ("Dashboards are the lights on a car. Logs are the diary, and traces follow one marble through a maze. Look at the slowest marbles, not only the average.", None),
+ ("A promise of 99.9 percent leaves a small allowance for mistakes, like a few free passes. Use them to try new things, and stop when they run out.", None),
+ ("Lock the doors early: look for secrets in your code, check the parts you borrowed for known problems, and never wear the master key at the shop counter.", None),
+ ("Be the pit crew: fix the bug, test it, pack it in a labelled box, send it out, and watch the dials. If the car shakes, swap back to the old tyres.", None),
+]
