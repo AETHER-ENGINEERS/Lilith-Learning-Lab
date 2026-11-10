@@ -1,0 +1,43 @@
+# -*- coding: utf-8 -*-
+import os
+HERE = os.path.dirname(os.path.abspath(__file__))
+SEARCH = """<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}
+canvas{width:100%;max-width:400px;display:block;margin:8px auto;background:#0e0820;border-radius:8px;touch-action:none}.k{color:#c9b8e8}
+</style></head><body>
+<div><button id="bfs">Run BFS</button><button id="dfs">Run DFS</button><button id="ast">Run A*</button><button id="clr" class="s">Clear walls</button></div>
+<canvas id="c" width="400" height="280"></canvas>
+<div id="out" class="k">Tap cells to draw walls (green = start, red = goal).</div><div id="prog" class="k" style="margin-top:6px"></div>
+<script>
+var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var R=14,C=20,S=20,wall={},S0=[1,1],G0=[12,18],ran={},busy=false;
+(function(){for(var r=3;r<11;r++)wall[r+","+9]=1;wall["8,9"]=0;wall["4,9"]=0})();
+var vis={},path={};
+function draw(){var g=$("c").getContext("2d");g.clearRect(0,0,400,280);
+ for(var r=0;r<R;r++)for(var c=0;c<C;c++){var k=r+","+c;g.fillStyle=wall[k]?"#5c4a85":(path[k]?"#ffd36b":(vis[k]?"#2f4f7f":"#1d1236"));g.fillRect(c*S+1,r*S+1,S-2,S-2)}
+ g.fillStyle="#8fe3a8";g.fillRect(S0[1]*S+1,S0[0]*S+1,S-2,S-2);g.fillStyle="#ff8f8f";g.fillRect(G0[1]*S+1,G0[0]*S+1,S-2,S-2)}
+function nbrs(r,c){var o=[[1,0],[-1,0],[0,1],[0,-1]],out=[];o.forEach(function(d){var nr=r+d[0],nc=c+d[1];if(nr>=0&&nr<R&&nc>=0&&nc<C&&!wall[nr+","+nc])out.push([nr,nc])});return out}
+function h(p){return Math.abs(p[0]-G0[0])+Math.abs(p[1]-G0[1])}
+function solve(kind){var order=[],par={},seen={},front=[[S0[0],S0[1],0]];seen[S0[0]+","+S0[1]]=1;
+ while(front.length){var cur;
+  if(kind==="bfs")cur=front.shift();else if(kind==="dfs")cur=front.pop();else{var bi=0;for(var i=1;i<front.length;i++)if(front[i][2]+h(front[i])<front[bi][2]+h(front[bi]))bi=i;cur=front.splice(bi,1)[0]}
+  order.push(cur[0]+","+cur[1]);if(cur[0]===G0[0]&&cur[1]===G0[1])break;
+  nbrs(cur[0],cur[1]).forEach(function(n){var k=n[0]+","+n[1];if(!seen[k]){seen[k]=1;par[k]=cur[0]+","+cur[1];front.push([n[0],n[1],cur[2]+1])}})}
+ var p=[],k=G0[0]+","+G0[1];if(par[k]!==undefined||k===S0[0]+","+S0[1]){while(k!==undefined){p.push(k);k=par[k]}}return{order:order,path:p}}
+function run(kind){if(busy)return;busy=true;vis={};path={};var res=solve(kind),i=0;
+ var iv=setInterval(function(){for(var j=0;j<4&&i<res.order.length;j++,i++)vis[res.order[i]]=1;draw();
+  if(i>=res.order.length){clearInterval(iv);res.path.forEach(function(k){path[k]=1});draw();busy=false;
+   $("out").textContent=kind.toUpperCase()+": expanded "+res.order.length+" cells, path length "+(res.path.length?res.path.length-1:"none");
+   ran[kind]=1;var n=Object.keys(ran).length;$("prog").textContent="Strategies run: "+n+" of 3";if(n>=3)done()}},30)}
+$("bfs").onclick=function(){run("bfs")};$("dfs").onclick=function(){run("dfs")};$("ast").onclick=function(){run("ast")};
+$("clr").onclick=function(){wall={};vis={};path={};draw()};
+function tap(e){var r=$("c").getBoundingClientRect(),c=Math.floor((e.clientX-r.left)*400/r.width/S),rr=Math.floor((e.clientY-r.top)*280/r.height/S);
+ if(rr<0||rr>=R||c<0||c>=C)return;if((rr===S0[0]&&c===S0[1])||(rr===G0[0]&&c===G0[1]))return;wall[rr+","+c]=wall[rr+","+c]?0:1;vis={};path={};draw()}
+$("c").onpointerdown=tap;draw();
+</script></body></html>"""
+def main():
+    os.makedirs(os.path.join(HERE, "apps"), exist_ok=True)
+    open(os.path.join(HERE, "apps", "search.html"), "w", encoding="utf-8").write(SEARCH)
+if __name__ == "__main__":
+    main(); print("ok")

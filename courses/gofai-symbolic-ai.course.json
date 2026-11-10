@@ -1,0 +1,4924 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "gofai-symbolic-ai",
+ "title": "GOFAI: Symbolic AI",
+ "subtitle": "Logic, search, rules and planning: how Good Old-Fashioned AI reasons, with runnable Python labs and a search visualiser",
+ "author": "Lilith Learning Lab",
+ "description": "A hands-on course in symbolic AI, also called Good Old-Fashioned AI: its history, knowledge representation with networks and frames, propositional and predicate logic with resolution and unification, uninformed and heuristic search, game playing with minimax and alpha-beta, rule-based and expert systems, STRIPS planning and the frame problem, constraint satisfaction and Prolog, and the limits and legacy of the approach including neuro-symbolic AI. Every chapter has Python labs, and an interactive grid shows breadth-first, depth-first and A* search side by side.",
+ "pronounce": {
+  "GOFAI": "go fie",
+  "Haugeland": "how geh land",
+  "McCarthy": "muh car thee",
+  "Minsky": "min skee",
+  "Newell": "new el",
+  "Shannon": "shan un",
+  "DENDRAL": "den dral",
+  "MYCIN": "my sin",
+  "STRIPS": "strips",
+  "PDDL": "P D D L",
+  "Prolog": "pro log",
+  "Colmerauer": "col mer oh",
+  "Kowalski": "ko val skee",
+  "Searle": "serl",
+  "Kasparov": "kas par off",
+  "Cyc": "sike",
+  "Lenat": "len at",
+  "unification": "you nih fih kay shun",
+  "unifier": "you nih fy er",
+  "admissible": "ad miss ih bull",
+  "heuristic": "hyoo ris tik",
+  "heuristics": "hyoo ris tiks",
+  "minimax": "min ih max",
+  "A*": "A star",
+  "SAT": "sat",
+  "Horn": "horn",
+  "Whitehead": "white head",
+  "Principia": "prin kip ee uh",
+  "Mathematica": "math uh mat ih kuh",
+  "tautology": "taw tol oh jee",
+  "ontology": "on tol oh jee",
+  "ontologies": "on tol oh jees",
+  "Wikidata": "wiki data",
+  "brittleness": "brit ul ness",
+  "ELI5": "E L I five"
+ },
+ "chapters": [
+  {
+   "title": "What GOFAI is: symbols, rules and the dream of reasoning machines",
+   "maps": [
+    {
+     "title": "GOFAI",
+     "links": [
+      "GOFAI | means | Good Old-Fashioned AI",
+      "Symbol | stands for | A thing or idea",
+      "Rule | transforms | Symbols",
+      "Search | explores | Possibilities",
+      "Knowledge base | stores | Facts and rules",
+      "Dartmouth 1956 | named | Artificial intelligence",
+      "Connectionism | is | The contrast"
+     ]
+    }
+   ],
+   "summary": [
+    "GOFAI, Good Old-Fashioned Artificial Intelligence, is the approach that builds intelligence from explicit symbols and rules: facts written down, logic applied to them, and search through possible answers. The name was coined by the philosopher John Haugeland in 1985.",
+    "It dominated AI from the 1950s to the 1980s and produced theorem provers, game players, planners and expert systems. Its rival, connectionism, learns patterns in numbers, as neural networks do.",
+    "This course teaches the core ideas with small programs you can run: representation, logic, search, rules, planning, constraints and what GOFAI could not do."
+   ],
+   "glossary": [
+    {
+     "term": "GOFAI",
+     "def": "Good Old-Fashioned AI: intelligence built from explicit symbols and rules."
+    },
+    {
+     "term": "Symbol",
+     "def": "A token that stands for something, such as a fact, object or action."
+    },
+    {
+     "term": "Knowledge base",
+     "def": "A collection of facts and rules a program can reason over."
+    },
+    {
+     "term": "Physical symbol system hypothesis",
+     "def": "Newell and Simon's claim that a system that manipulates symbols has what is needed for general intelligence."
+    },
+    {
+     "term": "Connectionism",
+     "def": "The approach that models intelligence with networks of simple units that learn from data."
+    }
+   ],
+   "keyPoints": [
+    "GOFAI = symbols + rules + search.",
+    "Dartmouth workshop, 1956, named the field.",
+    "Logic Theorist (1956) and GPS (1957) were early programs.",
+    "Expert systems peaked in the 1980s.",
+    "AI winters followed over-promising."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Some of the first thinking machines worked like a very careful child with a rulebook: write the facts down, then follow the rules to see what must be true."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When people first imagined thinking machines, they imagined machines that follow rules. A person solves a puzzle by writing down what is known and working out what follows. So a program could write facts as symbols and work out the rest by rules. That is the heart of GOFAI."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The field was named at a summer workshop at Dartmouth College in 1956, organised by John McCarthy, Marvin Minsky, Nathaniel Rochester and Claude Shannon.",
+      "That same year Allen Newell, Herbert Simon and Cliff Shaw showed the Logic Theorist, which proved theorems from Whitehead and Russell's Principia Mathematica."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Newell and Simon followed it with the General Problem Solver in 1957, which separated what a problem is from how to search for solutions. In 1976 they stated the physical symbol system hypothesis: manipulating symbols is both necessary and sufficient for intelligent action.",
+      "Much of GOFAI is an attempt to test this claim."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the 1970s and 1980s, expert systems captured the knowledge of human specialists as thousands of if-then rules. DENDRAL guessed chemical structures. MYCIN suggested antibiotics for blood infections. Companies invested heavily.",
+      "But the systems were brittle and costly to maintain, and funding fell in the so-called AI winters."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Today most headline AI uses learned models, but the symbolic ideas have not vanished. Search runs in route planners and game engines. Logic checks hardware and software. Knowledge graphs power web search. And recent work called neuro-symbolic AI tries to combine learning with reasoning.",
+      "Knowing GOFAI helps you see what each approach is good at."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does GOFAI stand for?",
+     "options": [
+      "Good Old-Fashioned AI",
+      "General Optimal Function AI",
+      "Graph Oriented Fact AI",
+      "Greatest Of Formal AI"
+     ],
+     "answer": 0,
+     "explain": "Coined by Haugeland."
+    },
+    {
+     "q": "When was the field named at Dartmouth?",
+     "options": [
+      "1956",
+      "1936",
+      "1976",
+      "1996"
+     ],
+     "answer": 0,
+     "explain": "Summer workshop."
+    },
+    {
+     "q": "Which program proved theorems from Principia Mathematica?",
+     "options": [
+      "Logic Theorist",
+      "MYCIN",
+      "DENDRAL",
+      "ELIZA"
+     ],
+     "answer": 0,
+     "explain": "Newell, Simon, Shaw."
+    },
+    {
+     "q": "What does the physical symbol system hypothesis claim?",
+     "options": [
+      "Symbol manipulation is enough for intelligence",
+      "Only brains think",
+      "Neural networks are best",
+      "Intelligence needs robots"
+     ],
+     "answer": 0,
+     "explain": "1976."
+    },
+    {
+     "q": "What was MYCIN used for?",
+     "options": [
+      "Suggesting antibiotics",
+      "Playing chess",
+      "Translating text",
+      "Drawing"
+     ],
+     "answer": 0,
+     "explain": "An expert system."
+    },
+    {
+     "q": "What is GOFAI's main rival approach?",
+     "options": [
+      "Connectionism",
+      "Cryptography",
+      "Compilers",
+      "Databases"
+     ],
+     "answer": 0,
+     "explain": "Learning from data."
+    }
+   ],
+   "cards": [
+    {
+     "q": "1956",
+     "a": "Dartmouth workshop"
+    },
+    {
+     "q": "Logic Theorist",
+     "a": "first theorem-proving program"
+    },
+    {
+     "q": "GPS",
+     "a": "General Problem Solver, 1957"
+    },
+    {
+     "q": "MYCIN",
+     "a": "medical expert system"
+    },
+    {
+     "q": "PSSH",
+     "a": "physical symbol system hypothesis"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the program",
+     "intro": "Pair each program with what it did.",
+     "pairs": [
+      [
+       "Logic Theorist",
+       "proved theorems"
+      ],
+      [
+       "GPS",
+       "general problem solving by means-ends analysis"
+      ],
+      [
+       "DENDRAL",
+       "guessed chemical structures"
+      ],
+      [
+       "MYCIN",
+       "recommended antibiotics"
+      ]
+     ]
+    },
+    {
+     "type": "order",
+     "title": "A short timeline",
+     "intro": "Order these events from earliest to latest.",
+     "items": [
+      "Dartmouth workshop",
+      "General Problem Solver",
+      "Physical symbol system hypothesis",
+      "Expert system boom of the 1980s",
+      "Knowledge graph search"
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Core idea",
+     "text": "GOFAI builds intelligence from explicit {{symbols}} and {{rules}} plus search."
+    },
+    {
+     "type": "python",
+     "title": "Era of a year",
+     "intro": "Write era(year): return 'foundations' for 1950 to 1969, 'knowledge' for 1970 to 1989, 'winter' for 1990 to 1999, 'modern' for 2000 or later, and 'before' for anything earlier than 1950.",
+     "fn": "era",
+     "starter": "def era(year):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1940
+       ],
+       "expect": "before"
+      },
+      {
+       "args": [
+        1956
+       ],
+       "expect": "foundations"
+      },
+      {
+       "args": [
+        1976
+       ],
+       "expect": "knowledge"
+      },
+      {
+       "args": [
+        1985
+       ],
+       "expect": "knowledge"
+      },
+      {
+       "args": [
+        1995
+       ],
+       "expect": "winter"
+      },
+      {
+       "args": [
+        2010
+       ],
+       "expect": "modern"
+      }
+     ],
+     "hint": "Check the limits in order.",
+     "solution": "def era(year):\n    if year < 1950:\n        return \"before\"\n    if year < 1970:\n        return \"foundations\"\n    if year < 1990:\n        return \"knowledge\"\n    if year < 2000:\n        return \"winter\"\n    return \"modern\"\n"
+    }
+   ]
+  },
+  {
+   "title": "Knowledge representation: networks, frames and ontologies",
+   "maps": [
+    {
+     "title": "Representation",
+     "links": [
+      "Semantic network | links | Concepts",
+      "IS-A | gives | Inheritance",
+      "Frame | has | Slots",
+      "Default | can be | Overridden",
+      "Ontology | defines | Categories",
+      "Knowledge graph | stores | Triples",
+      "Representation | shapes | Reasoning"
+     ]
+    }
+   ],
+   "summary": [
+    "How you write knowledge down decides what a program can do with it. A semantic network draws concepts as nodes and relations as labelled links, such as canary IS-A bird. A frame bundles slots and values for a concept, such as a bird with wings and a way of moving.",
+    "IS-A links allow inheritance: a canary inherits what is true of birds unless told otherwise. Defaults can be overridden, so a penguin IS-A bird but cannot fly.",
+    "An ontology is a shared list of categories and relations, and a knowledge graph stores facts as subject, relation, object triples."
+   ],
+   "glossary": [
+    {
+     "term": "Semantic network",
+     "def": "A graph with concepts as nodes and labelled relations as links."
+    },
+    {
+     "term": "Frame",
+     "def": "A structure of slots and values describing a typical object or situation."
+    },
+    {
+     "term": "Inheritance",
+     "def": "A property passing from a category down to its members."
+    },
+    {
+     "term": "Default reasoning",
+     "def": "Assuming a typical property unless there is information against it."
+    },
+    {
+     "term": "Triple",
+     "def": "A fact in the form subject, relation, object."
+    }
+   ],
+   "keyPoints": [
+    "IS-A links build a hierarchy.",
+    "Members inherit properties from categories.",
+    "Defaults: birds fly, unless exceptions say otherwise.",
+    "Frames: slots with values and defaults.",
+    "Knowledge graph: facts as triples."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A robot's brain can be a big web of words, with lines that say 'is a kind of'. Follow the lines up and you learn a canary is an animal."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Think of a family tree for ideas. Canary is a kind of bird. Bird is a kind of animal. Animal is a kind of living thing. You write each link once, and the program can answer many questions. Is a canary an animal? Follow the links up and you reach yes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Properties move down the same links. Birds can fly, so canaries can fly. Animals breathe, so canaries breathe. You do not have to write the fact once per animal. That saving is called inheritance, and it keeps a knowledge base small and consistent."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Exceptions complicate it. Penguins are birds, but they do not fly. A good system lets a more specific fact beat a general one: the nearest node on the path wins. This is default reasoning. Dealing with the exceptions properly is one of the main reasons GOFAI got hard."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A frame gathers what is known about a type of thing. A restaurant frame has slots for menu, waiter, bill and a typical script of ordering, eating and paying. When you hear that someone went to a restaurant, the frame lets you fill in the unstated parts, which is a kind of common sense."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Modern systems store such knowledge as triples, subject, relation, object, in a knowledge graph. Wikidata and the graphs behind web search work this way. An ontology fixes the vocabulary, so different programs mean the same thing by the same word. The Semantic Web is this idea at scale."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does IS-A mean in a semantic network?",
+     "options": [
+      "A category link",
+      "A cause link",
+      "A part link",
+      "A time link"
+     ],
+     "answer": 0,
+     "explain": "Canary IS-A bird."
+    },
+    {
+     "q": "What is inheritance?",
+     "options": [
+      "Properties passing from category to member",
+      "A copy of a file",
+      "A loop",
+      "A kind of search"
+     ],
+     "answer": 0,
+     "explain": "Saves repetition."
+    },
+    {
+     "q": "Why do penguins matter in knowledge representation?",
+     "options": [
+      "They are exceptions to a default",
+      "They are rare",
+      "They are birds that sing",
+      "They have no category"
+     ],
+     "answer": 0,
+     "explain": "Birds fly, penguins do not."
+    },
+    {
+     "q": "What is a frame?",
+     "options": [
+      "Slots and values for a concept",
+      "A window",
+      "A proof",
+      "A graph colour"
+     ],
+     "answer": 0,
+     "explain": "A structured description."
+    },
+    {
+     "q": "What is a triple?",
+     "options": [
+      "Subject, relation, object",
+      "Three rules",
+      "Three players",
+      "Three nodes only"
+     ],
+     "answer": 0,
+     "explain": "A fact."
+    },
+    {
+     "q": "What does an ontology provide?",
+     "options": [
+      "Shared categories and relations",
+      "A faster CPU",
+      "A random seed",
+      "A neural net"
+     ],
+     "answer": 0,
+     "explain": "Common vocabulary."
+    }
+   ],
+   "cards": [
+    {
+     "q": "IS-A",
+     "a": "category link"
+    },
+    {
+     "q": "Frame",
+     "a": "slots and defaults"
+    },
+    {
+     "q": "Inheritance",
+     "a": "properties pass down"
+    },
+    {
+     "q": "Triple",
+     "a": "subject, relation, object"
+    },
+    {
+     "q": "Ontology",
+     "a": "shared vocabulary"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Semantic network",
+       "concepts linked by relations"
+      ],
+      [
+       "Frame",
+       "slots and defaults for a concept"
+      ],
+      [
+       "Inheritance",
+       "properties pass down IS-A links"
+      ],
+      [
+       "Ontology",
+       "shared categories and relations"
+      ],
+      [
+       "Triple",
+       "subject, relation, object"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Is it a kind of?",
+     "intro": "Write is_a(kb, x, y): kb is a dict mapping a concept to its parent (the concept it IS-A), for example {'canary': 'bird', 'bird': 'animal'}. Return True if y can be reached from x by following parents (x equals y also counts), otherwise False.",
+     "fn": "is_a",
+     "starter": "def is_a(kb, x, y):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "canary": "bird",
+         "bird": "animal"
+        },
+        "canary",
+        "animal"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        {
+         "canary": "bird",
+         "bird": "animal"
+        },
+        "animal",
+        "canary"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        {
+         "canary": "bird"
+        },
+        "canary",
+        "canary"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        {},
+        "a",
+        "b"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        {
+         "penguin": "bird",
+         "bird": "animal"
+        },
+        "penguin",
+        "bird"
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Walk up the parents until you hit y or run out.",
+     "solution": "def is_a(kb, x, y):\n    seen = 0\n    while seen < 100:\n        if x == y:\n            return True\n        if x not in kb:\n            return False\n        x = kb[x]\n        seen = seen + 1\n    return False\n"
+    },
+    {
+     "type": "python",
+     "title": "Inherited property",
+     "intro": "Write inherited(kb, props, x, name): kb is a dict child to parent, props is a dict from concept to a dict of its own properties. Return the value of property name for x, using the nearest concept on the path from x upward that defines it, or None if no concept does.",
+     "fn": "inherited",
+     "starter": "def inherited(kb, props, x, name):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "canary": "bird",
+         "bird": "animal",
+         "penguin": "bird"
+        },
+        {
+         "bird": {
+          "flies": true
+         },
+         "animal": {
+          "breathes": true
+         },
+         "penguin": {
+          "flies": false
+         }
+        },
+        "canary",
+        "flies"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        {
+         "canary": "bird",
+         "bird": "animal",
+         "penguin": "bird"
+        },
+        {
+         "bird": {
+          "flies": true
+         },
+         "animal": {
+          "breathes": true
+         },
+         "penguin": {
+          "flies": false
+         }
+        },
+        "penguin",
+        "flies"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        {
+         "canary": "bird",
+         "bird": "animal",
+         "penguin": "bird"
+        },
+        {
+         "bird": {
+          "flies": true
+         },
+         "animal": {
+          "breathes": true
+         },
+         "penguin": {
+          "flies": false
+         }
+        },
+        "penguin",
+        "breathes"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        {
+         "canary": "bird",
+         "bird": "animal"
+        },
+        {
+         "bird": {
+          "flies": true
+         }
+        },
+        "canary",
+        "colour"
+       ],
+       "expect": null
+      }
+     ],
+     "hint": "The nearest definition wins, so look at x first.",
+     "solution": "def inherited(kb, props, x, name):\n    steps = 0\n    while steps < 100:\n        if x in props and name in props[x]:\n            return props[x][name]\n        if x not in kb:\n            return None\n        x = kb[x]\n        steps = steps + 1\n    return None\n"
+    },
+    {
+     "type": "python",
+     "title": "Query triples",
+     "intro": "Write query(triples, s, r, o): triples is a list of [subject, relation, object]. A query argument of None means any value. Return the list of triples that match, in the original order.",
+     "fn": "query",
+     "starter": "def query(triples, s, r, o):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          "likes",
+          "b"
+         ],
+         [
+          "a",
+          "knows",
+          "c"
+         ],
+         [
+          "d",
+          "likes",
+          "b"
+         ]
+        ],
+        null,
+        "likes",
+        "b"
+       ],
+       "expect": [
+        [
+         "a",
+         "likes",
+         "b"
+        ],
+        [
+         "d",
+         "likes",
+         "b"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "likes",
+          "b"
+         ],
+         [
+          "a",
+          "knows",
+          "c"
+         ]
+        ],
+        "a",
+        null,
+        null
+       ],
+       "expect": [
+        [
+         "a",
+         "likes",
+         "b"
+        ],
+        [
+         "a",
+         "knows",
+         "c"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "likes",
+          "b"
+         ]
+        ],
+        "z",
+        null,
+        null
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Skip any triple that fails a given test.",
+     "solution": "def query(triples, s, r, o):\n    out = []\n    for t in triples:\n        if s is not None and t[0] != s:\n            continue\n        if r is not None and t[1] != r:\n            continue\n        if o is not None and t[2] != o:\n            continue\n        out.append(t)\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Propositional logic and resolution",
+   "maps": [
+    {
+     "title": "Propositional logic",
+     "links": [
+      "Proposition | is | True or false",
+      "Connective | combines | Propositions",
+      "Truth table | lists | All cases",
+      "Tautology | is | Always true",
+      "Entailment | follows | From premises",
+      "Resolution | refutes | A set of clauses",
+      "Clause | is | A disjunction of literals"
+     ]
+    }
+   ],
+   "summary": [
+    "Propositional logic works with statements that are true or false and connectives such as not, and, or and implies. A truth table lists the value of a formula for every assignment of truth values to its variables.",
+    "A formula is a tautology if it is true in every row, satisfiable if true in some row, and a contradiction if true in none. A set of premises entails a conclusion if the conclusion is true in every row that makes all premises true.",
+    "Resolution is a single rule that is complete for refutation: to show that premises entail a goal, add the negation of the goal and derive the empty clause."
+   ],
+   "glossary": [
+    {
+     "term": "Tautology",
+     "def": "A formula true under every assignment."
+    },
+    {
+     "term": "Satisfiable",
+     "def": "True under at least one assignment."
+    },
+    {
+     "term": "Entailment",
+     "def": "A conclusion follows from premises if every assignment making the premises true makes it true."
+    },
+    {
+     "term": "Clause",
+     "def": "A disjunction of literals, such as A or not B."
+    },
+    {
+     "term": "Resolution",
+     "def": "From (A or X) and (not A or Y) derive (X or Y)."
+    }
+   ],
+   "keyPoints": [
+    "n variables give 2^n rows.",
+    "Tautology: always true. Contradiction: never.",
+    "P implies Q is the same as not P or Q.",
+    "Resolution: cancel a literal and its negation.",
+    "Empty clause means contradiction."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Logic is a game of true and false. If 'it rains' and 'rain means wet' are true, then 'wet' must be true too."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A statement like 'it is raining' is either true or false. Combine them with not, and, or, and implies. 'If it rains then the grass is wet' is a rule. Together with 'it rains' it lets you conclude 'the grass is wet'. This step is called modus ponens, and it is the basic move of logic."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To check a formula mechanically, build its truth table. With two variables there are four rows, with three there are eight, with n there are two to the n. That growth is why exact checking becomes slow.",
+      "The SAT problem, deciding if any row works, is hard in general, though modern solvers handle huge cases."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A formula true in every row is a tautology, such as P or not P. If a conclusion is true in every row where the premises are true, we say the premises entail it. This is semantic entailment, the thing we want programs to decide correctly."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Resolution works on clauses, which are ORs of literals. Convert each formula to clauses. Take two clauses, one with A and one with not A, and merge the rest: (A or X) and (not A or Y) give (X or Y). Repeating until the empty clause appears shows the set is inconsistent."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To prove that premises entail a goal by resolution, add the negation of the goal to the clauses and see if you can reach the empty clause. This refutation proof is complete, which means it always finds a proof when one exists.",
+      "It underlies automated theorem provers and the SAT solvers used in chip design."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How many rows in a truth table with 3 variables?",
+     "options": [
+      "8",
+      "6",
+      "9",
+      "3"
+     ],
+     "answer": 0,
+     "explain": "2 to the 3."
+    },
+    {
+     "q": "What is a tautology?",
+     "options": [
+      "True under every assignment",
+      "True under some assignment",
+      "False under every assignment",
+      "A kind of clause"
+     ],
+     "answer": 0,
+     "explain": "P or not P."
+    },
+    {
+     "q": "P implies Q is equivalent to...",
+     "options": [
+      "not P or Q",
+      "P and not Q",
+      "not P and Q",
+      "P or Q"
+     ],
+     "answer": 0,
+     "explain": "A standard identity."
+    },
+    {
+     "q": "What does resolution on (A or X) and (not A or Y) give?",
+     "options": [
+      "X or Y",
+      "A or Y",
+      "not X",
+      "X and Y"
+     ],
+     "answer": 0,
+     "explain": "Cancel A."
+    },
+    {
+     "q": "What does reaching the empty clause show?",
+     "options": [
+      "The clauses are inconsistent",
+      "The clauses are satisfiable",
+      "A tautology",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Contradiction."
+    },
+    {
+     "q": "How do you prove a goal with resolution?",
+     "options": [
+      "Add its negation and derive the empty clause",
+      "Search for the goal directly",
+      "Count the rows",
+      "Add the goal and stop"
+     ],
+     "answer": 0,
+     "explain": "Refutation."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Tautology",
+     "a": "always true"
+    },
+    {
+     "q": "Modus ponens",
+     "a": "from P and P implies Q, infer Q"
+    },
+    {
+     "q": "Resolution",
+     "a": "cancel a literal and its negation"
+    },
+    {
+     "q": "SAT",
+     "a": "does any assignment satisfy the formula?"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Tautology",
+       "true in every row"
+      ],
+      [
+       "Contradiction",
+       "true in no row"
+      ],
+      [
+       "Satisfiable",
+       "true in some row"
+      ],
+      [
+       "Entailment",
+       "true whenever the premises are true"
+      ],
+      [
+       "Clause",
+       "an OR of literals"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Evaluate a formula",
+     "intro": "Write evaluate(f, env). A formula is a string variable name like 'A', or a list: ['not', f], ['and', f, g], ['or', f, g], ['implies', f, g]. env maps names to True or False. Return the truth value.",
+     "fn": "evaluate",
+     "starter": "def evaluate(f, env):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "A",
+        {
+         "A": true
+        }
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "not",
+         "A"
+        ],
+        {
+         "A": true
+        }
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         "implies",
+         "A",
+         "B"
+        ],
+        {
+         "A": true,
+         "B": false
+        }
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         "implies",
+         "A",
+         "B"
+        ],
+        {
+         "A": false,
+         "B": false
+        }
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "and",
+         "A",
+         [
+          "or",
+          "B",
+          "C"
+         ]
+        ],
+        {
+         "A": true,
+         "B": false,
+         "C": true
+        }
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Recurse on the structure.",
+     "solution": "def evaluate(f, env):\n    if isinstance(f, str):\n        return env[f]\n    op = f[0]\n    if op == \"not\":\n        return not evaluate(f[1], env)\n    a = evaluate(f[1], env)\n    b = evaluate(f[2], env)\n    if op == \"and\":\n        return a and b\n    if op == \"or\":\n        return a or b\n    return (not a) or b\n"
+    },
+    {
+     "type": "python",
+     "title": "Tautology check",
+     "intro": "Write is_tautology(f, names). f is a formula as in the previous lab and names is the list of variable names. Return True if f is true under all 2^n assignments.",
+     "fn": "is_tautology",
+     "starter": "def is_tautology(f, names):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "or",
+         "P",
+         [
+          "not",
+          "P"
+         ]
+        ],
+        [
+         "P"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "implies",
+         "P",
+         "Q"
+        ],
+        [
+         "P",
+         "Q"
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         "implies",
+         [
+          "and",
+          "P",
+          [
+           "implies",
+           "P",
+           "Q"
+          ]
+         ],
+         "Q"
+        ],
+        [
+         "P",
+         "Q"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "and",
+         "P",
+         [
+          "not",
+          "P"
+         ]
+        ],
+        [
+         "P"
+        ]
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Try every assignment with bit tricks or nested loops.",
+     "solution": "def ev(f, env):\n    if isinstance(f, str):\n        return env[f]\n    op = f[0]\n    if op == \"not\":\n        return not ev(f[1], env)\n    a = ev(f[1], env)\n    b = ev(f[2], env)\n    if op == \"and\":\n        return a and b\n    if op == \"or\":\n        return a or b\n    return (not a) or b\ndef is_tautology(f, names):\n    n = len(names)\n    for i in range(2 ** n):\n        env = {}\n        for j in range(n):\n            env[names[j]] = (i // (2 ** j)) % 2 == 1\n        if not ev(f, env):\n            return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Resolve two clauses",
+     "intro": "Write resolve(c1, c2). A clause is a list of literal strings, where a leading '-' means not, for example ['A', '-B']. If the clauses contain a complementary pair (a literal and its negation), return the resolvent, the sorted list of remaining literals without duplicates, using the first complementary pair found when scanning c1 in order. Otherwise return None.",
+     "fn": "resolve",
+     "starter": "def resolve(c1, c2):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "A",
+         "X"
+        ],
+        [
+         "-A",
+         "Y"
+        ]
+       ],
+       "expect": [
+        "X",
+        "Y"
+       ]
+      },
+      {
+       "args": [
+        [
+         "A"
+        ],
+        [
+         "-A"
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "A",
+         "B"
+        ],
+        [
+         "C"
+        ]
+       ],
+       "expect": null
+      },
+      {
+       "args": [
+        [
+         "-P",
+         "Q"
+        ],
+        [
+         "P",
+         "R",
+         "Q"
+        ]
+       ],
+       "expect": [
+        "Q",
+        "R"
+       ]
+      }
+     ],
+     "hint": "Find a literal whose negation is in the other clause.",
+     "solution": "def neg(l):\n    if l[0] == \"-\":\n        return l[1:]\n    return \"-\" + l\ndef resolve(c1, c2):\n    for l in c1:\n        if neg(l) in c2:\n            rest = {}\n            for x in c1:\n                if x != l:\n                    rest[x] = 1\n            for x in c2:\n                if x != neg(l):\n                    rest[x] = 1\n            return sorted(rest.keys())\n    return None\n"
+    }
+   ]
+  },
+  {
+   "title": "Predicate logic and unification",
+   "maps": [
+    {
+     "title": "Predicate logic",
+     "links": [
+      "Predicate | describes | Objects",
+      "Quantifier | ranges | Over objects",
+      "Variable | stands for | Any object",
+      "Substitution | replaces | Variables",
+      "Unification | matches | Two terms",
+      "Most general unifier | is | The simplest match",
+      "Prolog | uses | Unification"
+     ]
+    }
+   ],
+   "summary": [
+    "Predicate logic adds objects, predicates and quantifiers to propositional logic. It lets you say all humans are mortal and Socrates is human, so Socrates is mortal.",
+    "To apply a general rule to a particular fact, a program must match patterns. Unification finds a substitution of variables that makes two terms identical, such as turning Human(x) and Human(Socrates) into the same term by setting x to Socrates.",
+    "Unification is the core operation of resolution theorem provers and of Prolog."
+   ],
+   "glossary": [
+    {
+     "term": "Predicate",
+     "def": "A property or relation applied to objects, such as Human(Socrates)."
+    },
+    {
+     "term": "Quantifier",
+     "def": "For all or there exists, binding a variable."
+    },
+    {
+     "term": "Substitution",
+     "def": "A mapping from variables to terms."
+    },
+    {
+     "term": "Unifier",
+     "def": "A substitution that makes two terms identical."
+    },
+    {
+     "term": "Occurs check",
+     "def": "A test that stops a variable being bound to a term containing itself."
+    }
+   ],
+   "keyPoints": [
+    "All humans are mortal: for all x, Human(x) implies Mortal(x).",
+    "Variables begin with a lowercase letter; constants are capitalised, in this course.",
+    "Unify Human(x) with Human(Socrates): x = Socrates.",
+    "A variable can unify with any term not containing itself.",
+    "Different constants never unify."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. When a rule says 'every person is mortal', the robot must match it to 'Socrates is a person'. Matching the pattern is called unification."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Propositional logic cannot say much about the world. You need a different proposition for every person: SocratesIsHuman, PlatoIsHuman, and so on. Predicate logic fixes this. Human is a predicate, and Human(x) is a statement about any object x.",
+      "A quantifier binds x: for all x, if x is human then x is mortal."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Now the program has a rule with a variable and a fact with a constant. To use the rule it must match them. Human(x) against Human(Socrates): the predicate is the same, and the argument x can be Socrates. The substitution, written x maps to Socrates, makes both sides identical.",
+      "This matching is unification."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Unification works recursively. Two constants unify only if they are equal. A variable unifies with any term, and the binding is recorded. Two compound terms unify if they have the same name and number of arguments and every pair of arguments unifies under one consistent substitution.",
+      "Otherwise unification fails."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A catch is the occurs check. Unifying x with F(x) would need an infinite term, so a correct unifier refuses. Prolog historically skipped this check for speed, which can lead to odd behaviour. Many modern systems offer it as an option."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Unification gives GOFAI much of its power. Resolution for predicate logic unifies a literal with a negated literal, then resolves. Prolog does the same in a fixed order, which makes logic into a programming language. Planners and parsers use it to match patterns against facts."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does unification do?",
+     "options": [
+      "Finds a substitution making two terms identical",
+      "Sorts a list",
+      "Runs a program",
+      "Draws a graph"
+     ],
+     "answer": 0,
+     "explain": "Pattern matching."
+    },
+    {
+     "q": "Unify Human(x) with Human(Socrates). What is x?",
+     "options": [
+      "Socrates",
+      "Human",
+      "Mortal",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "x maps to Socrates."
+    },
+    {
+     "q": "Can two different constants unify?",
+     "options": [
+      "No",
+      "Yes",
+      "Only in Prolog",
+      "Only if short"
+     ],
+     "answer": 0,
+     "explain": "A and B are different."
+    },
+    {
+     "q": "What is the occurs check for?",
+     "options": [
+      "Stopping x unifying with F(x)",
+      "Counting variables",
+      "Speeding up search",
+      "Printing"
+     ],
+     "answer": 0,
+     "explain": "No infinite terms."
+    },
+    {
+     "q": "Which system uses unification at its core?",
+     "options": [
+      "Prolog",
+      "A spreadsheet",
+      "A compiler only",
+      "A database index"
+     ],
+     "answer": 0,
+     "explain": "Logic programming."
+    },
+    {
+     "q": "What does a universal quantifier say?",
+     "options": [
+      "For all objects",
+      "For some object",
+      "For no objects",
+      "For the first object"
+     ],
+     "answer": 0,
+     "explain": "For all x."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Human(x)",
+     "a": "predicate with a variable"
+    },
+    {
+     "q": "x maps to Socrates",
+     "a": "a substitution"
+    },
+    {
+     "q": "MGU",
+     "a": "most general unifier"
+    },
+    {
+     "q": "Occurs check",
+     "a": "reject x = F(x)"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the unification case",
+     "intro": "Pair each pair of terms with the result.",
+     "pairs": [
+      [
+       "f(x) and f(A)",
+       "x = A"
+      ],
+      [
+       "A and A",
+       "unify with no bindings"
+      ],
+      [
+       "A and B",
+       "fail"
+      ],
+      [
+       "x and F(x)",
+       "fail (occurs check)"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Unify",
+     "intro": "Write unify(a, b). Terms are strings or lists. A string starting with a lowercase letter is a variable; a string starting with an uppercase letter is a constant; a list [name, arg1, arg2, ...] is a compound term whose first item is a string name. Return the substitution as a list of [variable, term] pairs sorted by variable name (the bindings found, without applying later ones to earlier ones), or None if they do not unify. Include the occurs check.",
+     "fn": "unify",
+     "starter": "def unify(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "Human",
+         "x"
+        ],
+        [
+         "Human",
+         "Socrates"
+        ]
+       ],
+       "expect": [
+        [
+         "x",
+         "Socrates"
+        ]
+       ]
+      },
+      {
+       "args": [
+        "A",
+        "A"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "A",
+        "B"
+       ],
+       "expect": null
+      },
+      {
+       "args": [
+        "x",
+        [
+         "F",
+         "x"
+        ]
+       ],
+       "expect": null
+      },
+      {
+       "args": [
+        [
+         "P",
+         "x",
+         "B"
+        ],
+        [
+         "P",
+         "A",
+         "y"
+        ]
+       ],
+       "expect": [
+        [
+         "x",
+         "A"
+        ],
+        [
+         "y",
+         "B"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "P",
+         "x",
+         "x"
+        ],
+        [
+         "P",
+         "A",
+         "B"
+        ]
+       ],
+       "expect": null
+      }
+     ],
+     "hint": "Walk variables through the substitution before comparing.",
+     "solution": "def is_var(t):\n    return isinstance(t, str) and t[0].islower()\ndef walk(t, s):\n    while is_var(t) and t in s:\n        t = s[t]\n    return t\ndef occurs(v, t, s):\n    t = walk(t, s)\n    if t == v:\n        return True\n    if isinstance(t, list):\n        for x in t:\n            if occurs(v, x, s):\n                return True\n    return False\ndef uni(a, b, s):\n    a = walk(a, s)\n    b = walk(b, s)\n    if a == b:\n        return s\n    if is_var(a):\n        if occurs(a, b, s):\n            return None\n        s[a] = b\n        return s\n    if is_var(b):\n        if occurs(b, a, s):\n            return None\n        s[b] = a\n        return s\n    if isinstance(a, list) and isinstance(b, list) and len(a) == len(b):\n        for i in range(len(a)):\n            s = uni(a[i], b[i], s)\n            if s is None:\n                return None\n        return s\n    return None\ndef unify(a, b):\n    s = uni(a, b, {})\n    if s is None:\n        return None\n    out = []\n    for k in sorted(s.keys()):\n        out.append([k, s[k]])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Apply a substitution",
+     "intro": "Write apply_sub(t, s): replace variables in the term t using the substitution dict s, repeatedly until nothing changes. Terms are as before (lowercase strings are variables, lists are compound terms).",
+     "fn": "apply_sub",
+     "starter": "def apply_sub(t, s):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "Human",
+         "x"
+        ],
+        {
+         "x": "Socrates"
+        }
+       ],
+       "expect": [
+        "Human",
+        "Socrates"
+       ]
+      },
+      {
+       "args": [
+        [
+         "P",
+         "x",
+         "y"
+        ],
+        {
+         "x": "y",
+         "y": "A"
+        }
+       ],
+       "expect": [
+        "P",
+        "A",
+        "A"
+       ]
+      },
+      {
+       "args": [
+        "z",
+        {}
+       ],
+       "expect": "z"
+      },
+      {
+       "args": [
+        [
+         "F",
+         [
+          "G",
+          "x"
+         ]
+        ],
+        {
+         "x": "B"
+        }
+       ],
+       "expect": [
+        "F",
+        [
+         "G",
+         "B"
+        ]
+       ]
+      }
+     ],
+     "hint": "Resolve each variable down to a term, then recurse into lists.",
+     "solution": "def apply_sub(t, s):\n    if isinstance(t, str):\n        n = 0\n        while t in s and n < 50:\n            t = s[t]\n            n = n + 1\n        if isinstance(t, list):\n            return apply_sub(t, s)\n        return t\n    return [apply_sub(x, s) for x in t]\n"
+    }
+   ]
+  },
+  {
+   "title": "Search: finding answers by exploring",
+   "maps": [
+    {
+     "title": "Search",
+     "links": [
+      "State | describes | A situation",
+      "Operator | moves | Between states",
+      "Goal test | ends | Search",
+      "BFS | finds | Shortest paths",
+      "DFS | goes | Deep first",
+      "Frontier | holds | States to expand",
+      "Branching | grows | Exponentially"
+     ]
+    }
+   ],
+   "summary": [
+    "Many AI problems are search problems: a start state, operators that move from one state to another, and a goal test. Finding a route, solving a puzzle or planning a move are all ways of exploring a graph of states.",
+    "Breadth-first search expands states level by level, and finds a shortest path when every step costs the same. Depth-first search goes deep along one branch first, using little memory but possibly missing short answers.",
+    "The enemy of search is the exponential growth of states with depth, called the combinatorial explosion."
+   ],
+   "glossary": [
+    {
+     "term": "State space",
+     "def": "The set of all states reachable from the start by applying operators."
+    },
+    {
+     "term": "Frontier",
+     "def": "The states that have been found but not yet expanded."
+    },
+    {
+     "term": "Breadth-first search",
+     "def": "Search that expands the shallowest states first, using a queue."
+    },
+    {
+     "term": "Depth-first search",
+     "def": "Search that expands the deepest state first, using a stack."
+    },
+    {
+     "term": "Branching factor",
+     "def": "The average number of operators applicable in a state."
+    }
+   ],
+   "keyPoints": [
+    "BFS uses a queue; DFS uses a stack.",
+    "BFS is complete and finds fewest steps.",
+    "DFS uses less memory but is not optimal.",
+    "Branching b and depth d give about b^d states.",
+    "Keep a visited set to avoid loops."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. To find your way out of a maze, you can try every path by rings, or run down one path as far as it goes. Both are ways of searching."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Think of a maze as a graph. Each junction is a state, each corridor an operator that takes you to a neighbouring junction. The start is where you are, and the goal is the exit. Search is the systematic way to try the junctions without going round in circles."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Breadth-first search explores in rings. First all the junctions one step away, then two steps away, and so on. It keeps the found-but-unvisited junctions in a queue, first in first out. The first time it reaches the goal, it has used the fewest possible steps."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Depth-first search chooses one corridor and follows it as far as it goes, backing up only when stuck. It keeps junctions in a stack. It needs little memory since it stores only one path, but it can wander down a long wrong path and return a long answer when a short one exists."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The cost is the number of states. If every state has b choices and the answer is d steps away, breadth-first search may look at about b to the power d states. Chess has about thirty moves per position, so looking ahead ten moves would need on the order of 30 to the 10th power, far too many.",
+      "This is the combinatorial explosion."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To avoid loops, keep a set of visited states and never expand one twice. To avoid blind exploration, use extra knowledge to guide the search, which is the idea of heuristics in the next chapter. The widget in this chapter lets you see the difference between the strategies on a grid."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which data structure does BFS use?",
+     "options": [
+      "A queue",
+      "A stack",
+      "A heap only",
+      "A tree only"
+     ],
+     "answer": 0,
+     "explain": "First in, first out."
+    },
+    {
+     "q": "Which data structure does DFS use?",
+     "options": [
+      "A stack",
+      "A queue",
+      "A set only",
+      "A list of lists"
+     ],
+     "answer": 0,
+     "explain": "Last in, first out."
+    },
+    {
+     "q": "Which search finds a fewest-steps path when steps cost the same?",
+     "options": [
+      "Breadth-first",
+      "Depth-first",
+      "Random",
+      "Neither"
+     ],
+     "answer": 0,
+     "explain": "Level by level."
+    },
+    {
+     "q": "What is the branching factor?",
+     "options": [
+      "Average number of moves per state",
+      "Depth of the tree",
+      "Number of goals",
+      "Memory used"
+     ],
+     "answer": 0,
+     "explain": "b."
+    },
+    {
+     "q": "Why keep a visited set?",
+     "options": [
+      "To avoid loops and repeats",
+      "To speed up printing",
+      "To find more goals",
+      "To sort the frontier"
+     ],
+     "answer": 0,
+     "explain": "Graphs have cycles."
+    },
+    {
+     "q": "What is the combinatorial explosion?",
+     "options": [
+      "Exponential growth in states",
+      "A software bug",
+      "A graphics effect",
+      "A sorting method"
+     ],
+     "answer": 0,
+     "explain": "b to the d."
+    }
+   ],
+   "cards": [
+    {
+     "q": "BFS",
+     "a": "queue, shortest path in steps"
+    },
+    {
+     "q": "DFS",
+     "a": "stack, deep first"
+    },
+    {
+     "q": "Frontier",
+     "a": "found but not expanded"
+    },
+    {
+     "q": "Branching factor",
+     "a": "moves per state"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Search on a grid",
+     "intro": "Draw walls by tapping cells, then press Run to watch breadth-first, depth-first and A* explore the grid. Run all three strategies to complete this lab.",
+     "height": 720,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\ncanvas{width:100%;max-width:400px;display:block;margin:8px auto;background:#0e0820;border-radius:8px;touch-action:none}.k{color:#c9b8e8}\n</style></head><body>\n<div><button id=\"bfs\">Run BFS</button><button id=\"dfs\">Run DFS</button><button id=\"ast\">Run A*</button><button id=\"clr\" class=\"s\">Clear walls</button></div>\n<canvas id=\"c\" width=\"400\" height=\"280\"></canvas>\n<div id=\"out\" class=\"k\">Tap cells to draw walls (green = start, red = goal).</div><div id=\"prog\" class=\"k\" style=\"margin-top:6px\"></div>\n<script>\nvar $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar R=14,C=20,S=20,wall={},S0=[1,1],G0=[12,18],ran={},busy=false;\n(function(){for(var r=3;r<11;r++)wall[r+\",\"+9]=1;wall[\"8,9\"]=0;wall[\"4,9\"]=0})();\nvar vis={},path={};\nfunction draw(){var g=$(\"c\").getContext(\"2d\");g.clearRect(0,0,400,280);\n for(var r=0;r<R;r++)for(var c=0;c<C;c++){var k=r+\",\"+c;g.fillStyle=wall[k]?\"#5c4a85\":(path[k]?\"#ffd36b\":(vis[k]?\"#2f4f7f\":\"#1d1236\"));g.fillRect(c*S+1,r*S+1,S-2,S-2)}\n g.fillStyle=\"#8fe3a8\";g.fillRect(S0[1]*S+1,S0[0]*S+1,S-2,S-2);g.fillStyle=\"#ff8f8f\";g.fillRect(G0[1]*S+1,G0[0]*S+1,S-2,S-2)}\nfunction nbrs(r,c){var o=[[1,0],[-1,0],[0,1],[0,-1]],out=[];o.forEach(function(d){var nr=r+d[0],nc=c+d[1];if(nr>=0&&nr<R&&nc>=0&&nc<C&&!wall[nr+\",\"+nc])out.push([nr,nc])});return out}\nfunction h(p){return Math.abs(p[0]-G0[0])+Math.abs(p[1]-G0[1])}\nfunction solve(kind){var order=[],par={},seen={},front=[[S0[0],S0[1],0]];seen[S0[0]+\",\"+S0[1]]=1;\n while(front.length){var cur;\n  if(kind===\"bfs\")cur=front.shift();else if(kind===\"dfs\")cur=front.pop();else{var bi=0;for(var i=1;i<front.length;i++)if(front[i][2]+h(front[i])<front[bi][2]+h(front[bi]))bi=i;cur=front.splice(bi,1)[0]}\n  order.push(cur[0]+\",\"+cur[1]);if(cur[0]===G0[0]&&cur[1]===G0[1])break;\n  nbrs(cur[0],cur[1]).forEach(function(n){var k=n[0]+\",\"+n[1];if(!seen[k]){seen[k]=1;par[k]=cur[0]+\",\"+cur[1];front.push([n[0],n[1],cur[2]+1])}})}\n var p=[],k=G0[0]+\",\"+G0[1];if(par[k]!==undefined||k===S0[0]+\",\"+S0[1]){while(k!==undefined){p.push(k);k=par[k]}}return{order:order,path:p}}\nfunction run(kind){if(busy)return;busy=true;vis={};path={};var res=solve(kind),i=0;\n var iv=setInterval(function(){for(var j=0;j<4&&i<res.order.length;j++,i++)vis[res.order[i]]=1;draw();\n  if(i>=res.order.length){clearInterval(iv);res.path.forEach(function(k){path[k]=1});draw();busy=false;\n   $(\"out\").textContent=kind.toUpperCase()+\": expanded \"+res.order.length+\" cells, path length \"+(res.path.length?res.path.length-1:\"none\");\n   ran[kind]=1;var n=Object.keys(ran).length;$(\"prog\").textContent=\"Strategies run: \"+n+\" of 3\";if(n>=3)done()}},30)}\n$(\"bfs\").onclick=function(){run(\"bfs\")};$(\"dfs\").onclick=function(){run(\"dfs\")};$(\"ast\").onclick=function(){run(\"ast\")};\n$(\"clr\").onclick=function(){wall={};vis={};path={};draw()};\nfunction tap(e){var r=$(\"c\").getBoundingClientRect(),c=Math.floor((e.clientX-r.left)*400/r.width/S),rr=Math.floor((e.clientY-r.top)*280/r.height/S);\n if(rr<0||rr>=R||c<0||c>=C)return;if((rr===S0[0]&&c===S0[1])||(rr===G0[0]&&c===G0[1]))return;wall[rr+\",\"+c]=wall[rr+\",\"+c]?0:1;vis={};path={};draw()}\n$(\"c\").onpointerdown=tap;draw();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the strategy",
+     "intro": "Pair each strategy with a fact.",
+     "pairs": [
+      [
+       "BFS",
+       "queue; fewest steps"
+      ],
+      [
+       "DFS",
+       "stack; little memory"
+      ],
+      [
+       "Visited set",
+       "avoids loops"
+      ],
+      [
+       "Combinatorial explosion",
+       "states grow as b to the d"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Breadth-first search",
+     "intro": "Write bfs(graph, start, goal): graph is a dict from node to a list of neighbours. Return the shortest path as a list of nodes from start to goal (inclusive), or an empty list if there is none. Expand neighbours in the order they are listed.",
+     "fn": "bfs",
+     "starter": "def bfs(graph, start, goal):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "A": [
+          "B",
+          "C"
+         ],
+         "B": [
+          "D"
+         ],
+         "C": [
+          "D"
+         ],
+         "D": []
+        },
+        "A",
+        "D"
+       ],
+       "expect": [
+        "A",
+        "B",
+        "D"
+       ]
+      },
+      {
+       "args": [
+        {
+         "A": [
+          "B"
+         ],
+         "B": []
+        },
+        "A",
+        "A"
+       ],
+       "expect": [
+        "A"
+       ]
+      },
+      {
+       "args": [
+        {
+         "A": [
+          "B"
+         ],
+         "B": [],
+         "C": []
+        },
+        "A",
+        "C"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        {
+         "S": [
+          "A",
+          "B"
+         ],
+         "A": [
+          "G"
+         ],
+         "B": [
+          "C"
+         ],
+         "C": [
+          "G"
+         ],
+         "G": []
+        },
+        "S",
+        "G"
+       ],
+       "expect": [
+        "S",
+        "A",
+        "G"
+       ]
+      }
+     ],
+     "hint": "Keep a queue of paths and a visited set.",
+     "solution": "def bfs(graph, start, goal):\n    queue = [[start]]\n    seen = {start: 1}\n    head = 0\n    while head < len(queue):\n        path = queue[head]\n        head = head + 1\n        node = path[len(path) - 1]\n        if node == goal:\n            return path\n        for nb in graph.get(node, []):\n            if nb not in seen:\n                seen[nb] = 1\n                queue.append(path + [nb])\n    return []\n"
+    },
+    {
+     "type": "python",
+     "title": "Depth-first search",
+     "intro": "Write dfs(graph, start, goal): return the first path from start to goal found by depth-first search that expands neighbours in the listed order and never visits a node twice (a visited set shared by the whole search). Return an empty list if there is none.",
+     "fn": "dfs",
+     "starter": "def dfs(graph, start, goal):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "A": [
+          "B",
+          "C"
+         ],
+         "B": [
+          "D"
+         ],
+         "C": [
+          "D"
+         ],
+         "D": []
+        },
+        "A",
+        "D"
+       ],
+       "expect": [
+        "A",
+        "B",
+        "D"
+       ]
+      },
+      {
+       "args": [
+        {
+         "A": [
+          "B",
+          "C"
+         ],
+         "B": [],
+         "C": [
+          "D"
+         ],
+         "D": []
+        },
+        "A",
+        "D"
+       ],
+       "expect": [
+        "A",
+        "C",
+        "D"
+       ]
+      },
+      {
+       "args": [
+        {
+         "A": [
+          "B"
+         ],
+         "B": [
+          "A"
+         ]
+        },
+        "A",
+        "C"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        {
+         "S": [
+          "A",
+          "B"
+         ],
+         "A": [
+          "B"
+         ],
+         "B": [
+          "G"
+         ],
+         "G": []
+        },
+        "S",
+        "G"
+       ],
+       "expect": [
+        "S",
+        "A",
+        "B",
+        "G"
+       ]
+      }
+     ],
+     "hint": "Recurse, marking nodes visited as you go.",
+     "solution": "def dfs(graph, start, goal):\n    seen = {}\n    def go(node, path):\n        if node == goal:\n            return path\n        seen[node] = 1\n        for nb in graph.get(node, []):\n            if nb not in seen:\n                r = go(nb, path + [nb])\n                if r:\n                    return r\n        return []\n    return go(start, [start])\n"
+    },
+    {
+     "type": "python",
+     "title": "Count states",
+     "intro": "Write states(b, d): the number of nodes in a complete search tree with branching factor b and depth d (the root counts as depth 0): 1 + b + b^2 + ... + b^d.",
+     "fn": "states",
+     "starter": "def states(b, d):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2,
+        3
+       ],
+       "expect": 15
+      },
+      {
+       "args": [
+        3,
+        4
+       ],
+       "expect": 121
+      },
+      {
+       "args": [
+        1,
+        5
+       ],
+       "expect": 6
+      },
+      {
+       "args": [
+        10,
+        2
+       ],
+       "expect": 111
+      },
+      {
+       "args": [
+        30,
+        3
+       ],
+       "expect": 27931
+      }
+     ],
+     "hint": "Add up the powers of b.",
+     "solution": "def states(b, d):\n    total = 0\n    p = 1\n    for i in range(d + 1):\n        total = total + p\n        p = p * b\n    return total\n"
+    }
+   ]
+  },
+  {
+   "title": "Heuristic search and A*",
+   "maps": [
+    {
+     "title": "Heuristic search",
+     "links": [
+      "Heuristic | estimates | Cost to goal",
+      "Greedy search | follows | The heuristic",
+      "A star | adds | Cost so far",
+      "Admissible | never | Overestimates",
+      "Priority queue | orders | The frontier",
+      "Manhattan distance | is | A grid heuristic",
+      "Optimal | means | Cheapest path"
+     ]
+    }
+   ],
+   "summary": [
+    "A heuristic is a rule of thumb that estimates how far a state is from the goal. Using it to choose which state to expand next makes search much faster than blind search.",
+    "A* orders states by f = g + h, where g is the cost so far and h is the heuristic estimate to go. If h never overestimates the true cost (it is admissible), A* finds a cheapest path.",
+    "On a grid the Manhattan distance, the sum of horizontal and vertical steps, is a common admissible heuristic."
+   ],
+   "glossary": [
+    {
+     "term": "Heuristic",
+     "def": "An estimate of the remaining cost from a state to the goal."
+    },
+    {
+     "term": "Admissible heuristic",
+     "def": "A heuristic that never overestimates the true remaining cost."
+    },
+    {
+     "term": "A* search",
+     "def": "Best-first search that expands the state with the lowest g plus h."
+    },
+    {
+     "term": "Priority queue",
+     "def": "A queue that always returns the item with the lowest key."
+    },
+    {
+     "term": "Manhattan distance",
+     "def": "The sum of the absolute differences in x and y."
+    }
+   ],
+   "keyPoints": [
+    "f(n) = g(n) + h(n).",
+    "Admissible: h(n) never exceeds the true cost.",
+    "Admissible h gives optimal A*.",
+    "Greedy search uses only h and is not optimal.",
+    "Manhattan distance for 4-way grids."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A good guess about how far the goal is makes search much quicker, like knowing the exit is to the north-east."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Blind search treats every direction the same. But you often have a hunch. If you want to go north-east, a path going south-west is probably wasted. A heuristic turns the hunch into a number: an estimate of how far each state is from the goal."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Greedy best-first search always expands the state that looks closest to the goal. It can be quick, but it can also be fooled. A route that heads straight at the goal may run into a wall and end up far longer than a detour. It does not weigh the cost already paid."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A* fixes this by adding the two. For each state, g is the cost from the start so far and h is the estimated cost to the goal. A* always expands the state with the smallest f, the sum. If h never overestimates, A* is both complete and optimal."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "On a grid where you move up, down, left or right, the Manhattan distance, the sum of the x and y differences, never overestimates, because you must make at least that many steps. If diagonal moves are allowed, the straight-line distance or the larger of the two differences is safer."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Designing heuristics is a classic GOFAI skill. For the sliding-tile puzzle, the number of misplaced tiles and the sum of Manhattan distances of tiles are both admissible, and the second is stronger. A stronger admissible heuristic means fewer states to search."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does A* minimise when choosing the next state?",
+     "options": [
+      "g + h",
+      "g only",
+      "h only",
+      "depth only"
+     ],
+     "answer": 0,
+     "explain": "Cost so far plus estimate."
+    },
+    {
+     "q": "What does admissible mean?",
+     "options": [
+      "Never overestimates",
+      "Always exact",
+      "Always zero",
+      "Always large"
+     ],
+     "answer": 0,
+     "explain": "Keeps A* optimal."
+    },
+    {
+     "q": "Which heuristic suits a 4-way grid?",
+     "options": [
+      "Manhattan distance",
+      "Number of cells",
+      "Random",
+      "Zero only"
+     ],
+     "answer": 0,
+     "explain": "Sum of dx and dy."
+    },
+    {
+     "q": "What data structure holds A*'s frontier?",
+     "options": [
+      "A priority queue",
+      "A stack",
+      "A plain queue",
+      "A set only"
+     ],
+     "answer": 0,
+     "explain": "Lowest f first."
+    },
+    {
+     "q": "Is greedy best-first search optimal?",
+     "options": [
+      "No",
+      "Yes",
+      "Only on grids",
+      "Only with h = 0"
+     ],
+     "answer": 0,
+     "explain": "It ignores g."
+    },
+    {
+     "q": "What happens with h = 0 in A*?",
+     "options": [
+      "It behaves like uniform-cost search",
+      "It fails",
+      "It becomes DFS",
+      "It becomes greedy"
+     ],
+     "answer": 0,
+     "explain": "Only g counts."
+    }
+   ],
+   "cards": [
+    {
+     "q": "f = g + h",
+     "a": "A* priority"
+    },
+    {
+     "q": "Admissible",
+     "a": "h never overestimates"
+    },
+    {
+     "q": "Manhattan",
+     "a": "|dx| + |dy|"
+    },
+    {
+     "q": "Greedy",
+     "a": "uses only h"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "g",
+       "cost so far"
+      ],
+      [
+       "h",
+       "estimated cost to go"
+      ],
+      [
+       "f",
+       "g plus h"
+      ],
+      [
+       "Admissible",
+       "never overestimates"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Manhattan distance",
+     "intro": "Write manhattan(a, b): a and b are [x, y] pairs. Return the sum of the absolute differences.",
+     "fn": "manhattan",
+     "starter": "def manhattan(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         3,
+         4
+        ]
+       ],
+       "expect": 7
+      },
+      {
+       "args": [
+        [
+         2,
+         5
+        ],
+        [
+         2,
+         5
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         -1,
+         2
+        ],
+        [
+         3,
+         -2
+        ]
+       ],
+       "expect": 8
+      },
+      {
+       "args": [
+        [
+         7,
+         1
+        ],
+        [
+         4,
+         1
+        ]
+       ],
+       "expect": 3
+      }
+     ],
+     "hint": "Add the two absolute differences.",
+     "solution": "def manhattan(a, b):\n    dx = a[0] - b[0]\n    dy = a[1] - b[1]\n    if dx < 0:\n        dx = 0 - dx\n    if dy < 0:\n        dy = 0 - dy\n    return dx + dy\n"
+    },
+    {
+     "type": "python",
+     "title": "A* on a grid",
+     "intro": "Write astar(grid, start, goal): grid is a list of strings where '#' is a wall and '.' is open; start and goal are [row, col]. Moves are up, down, left, right with cost 1. Use the Manhattan distance as h. Return the length of a cheapest path (number of steps), or -1 if the goal is unreachable.",
+     "fn": "astar",
+     "starter": "def astar(grid, start, goal):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "....",
+         "....",
+         "...."
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         2,
+         3
+        ]
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         "..#.",
+         "..#.",
+         "...."
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         3
+        ]
+       ],
+       "expect": 7
+      },
+      {
+       "args": [
+        [
+         "..#.",
+         "###.",
+         "...."
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         2,
+         0
+        ]
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        [
+         "."
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Pick the open entry with the lowest f each time.",
+     "solution": "def astar(grid, start, goal):\n    rows = len(grid)\n    cols = len(grid[0])\n    def h(p):\n        return abs(p[0] - goal[0]) + abs(p[1] - goal[1])\n    best = {}\n    best[(start[0], start[1])] = 0\n    open_list = [[h(start), 0, start[0], start[1]]]\n    while open_list:\n        bi = 0\n        for i in range(1, len(open_list)):\n            if open_list[i] < open_list[bi]:\n                bi = i\n        f, g, r, c = open_list.pop(bi)\n        if r == goal[0] and c == goal[1]:\n            return g\n        if g > best.get((r, c), 10 ** 9):\n            continue\n        for dr, dc in [[1, 0], [-1, 0], [0, 1], [0, -1]]:\n            nr = r + dr\n            nc = c + dc\n            if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] != \"#\":\n                ng = g + 1\n                if ng < best.get((nr, nc), 10 ** 9):\n                    best[(nr, nc)] = ng\n                    open_list.append([ng + h([nr, nc]), ng, nr, nc])\n    return -1\n"
+    },
+    {
+     "type": "python",
+     "title": "Sliding puzzle heuristic",
+     "intro": "Write misplaced(board, goal): both are flat lists of tile numbers with 0 for the blank. Return the number of tiles (not counting the blank) that are not in their goal position.",
+     "fn": "misplaced",
+     "starter": "def misplaced(board, goal):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5,
+         6,
+         7,
+         8,
+         0
+        ],
+        [
+         1,
+         2,
+         3,
+         4,
+         5,
+         6,
+         7,
+         8,
+         0
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5,
+         6,
+         7,
+         0,
+         8
+        ],
+        [
+         1,
+         2,
+         3,
+         4,
+         5,
+         6,
+         7,
+         8,
+         0
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [
+         2,
+         1,
+         3,
+         4,
+         5,
+         6,
+         7,
+         8,
+         0
+        ],
+        [
+         1,
+         2,
+         3,
+         4,
+         5,
+         6,
+         7,
+         8,
+         0
+        ]
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "Compare each position, skipping the blank.",
+     "solution": "def misplaced(board, goal):\n    n = 0\n    for i in range(len(board)):\n        if board[i] != 0 and board[i] != goal[i]:\n            n = n + 1\n    return n\n"
+    }
+   ]
+  },
+  {
+   "title": "Game playing: minimax and alpha-beta",
+   "maps": [
+    {
+     "title": "Games",
+     "links": [
+      "Game tree | lists | Moves",
+      "Minimax | assumes | Best play",
+      "MAX | maximises | Score",
+      "MIN | minimises | Score",
+      "Evaluation | scores | Positions",
+      "Alpha-beta | prunes | Branches",
+      "Depth limit | bounds | Search"
+     ]
+    }
+   ],
+   "summary": [
+    "For two-player games with perfect information, GOFAI builds a game tree of moves and counter-moves. Minimax assumes both sides play the best they can: MAX picks the move with the highest value and MIN picks the lowest.",
+    "Real games are too big to search completely, so programs search to a depth limit and score positions with an evaluation function that counts material, mobility and similar features.",
+    "Alpha-beta pruning gives the same result as minimax while skipping branches that cannot affect the answer, which roughly doubles the reachable depth."
+   ],
+   "glossary": [
+    {
+     "term": "Minimax",
+     "def": "A rule that chooses the move maximising the worst-case outcome against a best-playing opponent."
+    },
+    {
+     "term": "Evaluation function",
+     "def": "A function that scores a non-final position for one side."
+    },
+    {
+     "term": "Alpha-beta pruning",
+     "def": "Minimax with cut-offs for branches that cannot change the result."
+    },
+    {
+     "term": "Horizon effect",
+     "def": "Misjudging a position because a threat lies just past the search depth."
+    },
+    {
+     "term": "Zero-sum game",
+     "def": "A game in which one player's gain equals the other's loss."
+    }
+   ],
+   "keyPoints": [
+    "MAX picks the largest child value; MIN the smallest.",
+    "Leaves hold scores; internal nodes get backed-up values.",
+    "Alpha-beta never changes the minimax value.",
+    "Good move ordering prunes more.",
+    "Deep Blue beat Kasparov in 1997 using search."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A game player thinks ahead: 'if I do this, you do that, then I do this', and picks the move that is best even if you play your best."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Draw the possible moves as a tree. At the root it is your turn, and each branch is a move. At each child it is the opponent's turn with their own branches, and so on down to the end of the game or a chosen depth. This is the game tree."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Give each end position a score from your point of view: plus one for a win, zero for a draw, minus one for a loss. Now work upward. At a node where you move, take the highest child value. Where the opponent moves, assume they take the lowest.",
+      "The value at the root is what you can guarantee against best play. That is minimax."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Chess has too many positions to search to the end, so programs stop at a depth limit and use an evaluation function. A simple one counts the value of pieces: pawns one, knights and bishops three, rooks five, queen nine. Better ones add king safety, pawn structure and mobility."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Alpha-beta pruning tracks the best value MAX can already get (alpha) and the best MIN can already hold (beta). If a branch can no longer improve on those bounds, the rest of it is skipped.",
+      "The final answer is unchanged, but with good move ordering the program searches about twice as deep in the same time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "This approach reached its peak with IBM's Deep Blue, which beat world champion Garry Kasparov in 1997 with special chips searching hundreds of millions of positions per second. It was brute force guided by hand-built evaluation, a showpiece for GOFAI. Later programs used learning instead."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does MAX do at its node?",
+     "options": [
+      "Takes the highest child value",
+      "Takes the lowest",
+      "Takes the average",
+      "Takes a random child"
+     ],
+     "answer": 0,
+     "explain": "Maximises."
+    },
+    {
+     "q": "What does MIN assume?",
+     "options": [
+      "The opponent picks the lowest value for MAX",
+      "The opponent plays randomly",
+      "The opponent passes",
+      "The opponent copies MAX"
+     ],
+     "answer": 0,
+     "explain": "Worst case for MAX."
+    },
+    {
+     "q": "What does alpha-beta change?",
+     "options": [
+      "Speed, not the result",
+      "The minimax value",
+      "The rules",
+      "The evaluation"
+     ],
+     "answer": 0,
+     "explain": "Same answer, less work."
+    },
+    {
+     "q": "Why use an evaluation function?",
+     "options": [
+      "To score non-final positions at the depth limit",
+      "To print the board",
+      "To store moves",
+      "To train a network"
+     ],
+     "answer": 0,
+     "explain": "Cannot search to the end."
+    },
+    {
+     "q": "Who beat Kasparov in 1997?",
+     "options": [
+      "Deep Blue",
+      "AlphaGo",
+      "ELIZA",
+      "MYCIN"
+     ],
+     "answer": 0,
+     "explain": "IBM."
+    },
+    {
+     "q": "What is a zero-sum game?",
+     "options": [
+      "One player's gain is the other's loss",
+      "A game with no winner",
+      "A game with zero moves",
+      "A game of chance"
+     ],
+     "answer": 0,
+     "explain": "Total is constant."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Minimax",
+     "a": "best play against best play"
+    },
+    {
+     "q": "Alpha-beta",
+     "a": "pruned minimax"
+    },
+    {
+     "q": "Evaluation",
+     "a": "score at the depth limit"
+    },
+    {
+     "q": "Deep Blue",
+     "a": "beat Kasparov, 1997"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "MAX",
+       "chooses the highest value"
+      ],
+      [
+       "MIN",
+       "chooses the lowest value"
+      ],
+      [
+       "Alpha-beta",
+       "prunes without changing the result"
+      ],
+      [
+       "Horizon effect",
+       "threat just past the depth limit"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Minimax",
+     "intro": "Write minimax(tree, maximizing). A tree is either a number (a leaf score) or a list of subtrees. maximizing is True when MAX moves at this node. Return the minimax value.",
+     "fn": "minimax",
+     "starter": "def minimax(tree, maximizing):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        true
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         3,
+         5
+        ],
+        true
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          5
+         ],
+         [
+          2,
+          9
+         ]
+        ],
+        true
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        [
+         [
+          3,
+          5
+         ],
+         [
+          2,
+          9
+         ]
+        ],
+        false
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           1,
+           2
+          ],
+          [
+           3,
+           4
+          ]
+         ],
+         [
+          [
+           5,
+           6
+          ],
+          [
+           7,
+           8
+          ]
+         ]
+        ],
+        true
+       ],
+       "expect": 6
+      }
+     ],
+     "hint": "Alternate maximizing at each level.",
+     "solution": "def minimax(tree, maximizing):\n    if not isinstance(tree, list):\n        return tree\n    vals = [minimax(t, not maximizing) for t in tree]\n    if maximizing:\n        return max(vals)\n    return min(vals)\n"
+    },
+    {
+     "type": "python",
+     "title": "Alpha-beta leaves",
+     "intro": "Write ab_count(tree, maximizing): run minimax with alpha-beta pruning and return a list [value, leaves_visited] where leaves_visited counts the leaf scores actually looked at. Use alpha = negative infinity (-1000) and beta = infinity (1000) at the start. Visit children left to right and stop when beta is at most alpha.",
+     "fn": "ab_count",
+     "starter": "def ab_count(tree, maximizing):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          3,
+          5
+         ],
+         [
+          2,
+          9
+         ]
+        ],
+        true
+       ],
+       "expect": [
+        3,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           3,
+           5
+          ],
+          [
+           6,
+           9
+          ]
+         ],
+         [
+          [
+           1,
+           2
+          ],
+          [
+           0,
+           -1
+          ]
+         ]
+        ],
+        true
+       ],
+       "expect": [
+        5,
+        5
+       ]
+      },
+      {
+       "args": [
+        4,
+        true
+       ],
+       "expect": [
+        4,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ],
+         [
+          5,
+          6
+         ]
+        ],
+        false
+       ],
+       "expect": [
+        2,
+        4
+       ]
+      }
+     ],
+     "hint": "Carry alpha and beta down, and break when they cross.",
+     "solution": "def ab_count(tree, maximizing):\n    count = [0]\n    def go(t, mx, alpha, beta):\n        if not isinstance(t, list):\n            count[0] = count[0] + 1\n            return t\n        if mx:\n            v = -1000\n            for c in t:\n                v = max(v, go(c, False, alpha, beta))\n                alpha = max(alpha, v)\n                if beta <= alpha:\n                    break\n            return v\n        v = 1000\n        for c in t:\n            v = min(v, go(c, True, alpha, beta))\n            beta = min(beta, v)\n            if beta <= alpha:\n                break\n        return v\n    value = go(tree, maximizing, -1000, 1000)\n    return [value, count[0]]\n"
+    },
+    {
+     "type": "python",
+     "title": "Material evaluation",
+     "intro": "Write material(pieces): pieces is a string of piece letters; uppercase belongs to MAX and lowercase to MIN. Values are p/P 1, n/N 3, b/B 3, r/R 5, q/Q 9. Return MAX's total minus MIN's total.",
+     "fn": "material",
+     "starter": "def material(pieces):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "PPNQ"
+       ],
+       "expect": 14
+      },
+      {
+       "args": [
+        "Qq"
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        "RRrbn"
+       ],
+       "expect": -1
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        "PPPPpp"
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "Add for capitals and subtract for lowercase.",
+     "solution": "def material(pieces):\n    vals = {\"p\": 1, \"n\": 3, \"b\": 3, \"r\": 5, \"q\": 9}\n    total = 0\n    for ch in pieces:\n        v = vals.get(ch.lower(), 0)\n        if ch.isupper():\n            total = total + v\n        else:\n            total = total - v\n    return total\n"
+    }
+   ]
+  },
+  {
+   "title": "Rule-based systems and expert systems",
+   "maps": [
+    {
+     "title": "Expert systems",
+     "links": [
+      "Rule | has | If and then",
+      "Working memory | holds | Facts",
+      "Inference engine | applies | Rules",
+      "Forward chaining | starts | From facts",
+      "Backward chaining | starts | From goals",
+      "Expert system | encodes | Expertise",
+      "Knowledge engineer | builds | Rules"
+     ]
+    }
+   ],
+   "summary": [
+    "A production system has a set of if-then rules, a working memory of facts, and an inference engine that matches rules against facts and fires them. Expert systems apply this to specialised fields such as medicine and chemistry.",
+    "Forward chaining starts with known facts and fires rules to derive new ones until nothing changes. Backward chaining starts with a goal and works back to see which facts would prove it.",
+    "Expert systems like MYCIN also attach certainty factors and can explain their reasoning by showing the rules used."
+   ],
+   "glossary": [
+    {
+     "term": "Production rule",
+     "def": "A statement of the form IF conditions THEN conclusions."
+    },
+    {
+     "term": "Working memory",
+     "def": "The set of facts currently believed true."
+    },
+    {
+     "term": "Forward chaining",
+     "def": "Reasoning from facts to conclusions by firing rules."
+    },
+    {
+     "term": "Backward chaining",
+     "def": "Reasoning from a goal to the facts needed to support it."
+    },
+    {
+     "term": "Knowledge engineer",
+     "def": "A person who turns an expert's knowledge into rules."
+    }
+   ],
+   "keyPoints": [
+    "IF conditions THEN conclusion.",
+    "Forward chaining is data-driven.",
+    "Backward chaining is goal-driven.",
+    "Explanation: show the rules that fired.",
+    "The knowledge acquisition bottleneck: rules are hard to collect."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. An expert system is a long list of if-then tips from a human expert, and a little engine that follows them."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Ask a doctor how they diagnose and you may hear rules. If the patient has a fever and a stiff neck, then suspect meningitis. An expert system writes such rules as data and lets a general engine run them. The engine does not know medicine. All the knowledge is in the rules."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In forward chaining, the engine keeps a pool of facts. It looks for rules whose conditions are all in the pool, fires one and adds its conclusion to the pool. It repeats until no new facts appear. This suits situations where data arrives and you want to see what follows."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In backward chaining the engine begins with a question. Is this bacterial infection caused by this organism? It looks for rules that conclude this, then makes their conditions into new questions. It asks the user for facts it cannot derive. Prolog works this way, and it asks only what it needs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "MYCIN, built at Stanford in the 1970s, had about six hundred rules and gave certainty factors between minus one and one. It matched the advice of specialists in tests, and could explain by listing the rules it used. It was never used in practice, partly for legal and ethical reasons."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Expert systems met limits. Collecting rules from experts was slow, called the knowledge acquisition bottleneck. Large rule sets became hard to maintain and interact in unexpected ways. The systems failed ungracefully outside their narrow domain.",
+      "Even so, the rule-based approach lives on in business rules and decision engines."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is working memory?",
+     "options": [
+      "The set of current facts",
+      "The program's RAM",
+      "The rule list",
+      "The user interface"
+     ],
+     "answer": 0,
+     "explain": "Facts believed true."
+    },
+    {
+     "q": "Which chaining starts from known facts?",
+     "options": [
+      "Forward",
+      "Backward",
+      "Sideways",
+      "Random"
+     ],
+     "answer": 0,
+     "explain": "Data-driven."
+    },
+    {
+     "q": "Which chaining starts from a goal?",
+     "options": [
+      "Backward",
+      "Forward",
+      "Neither",
+      "Both"
+     ],
+     "answer": 0,
+     "explain": "Goal-driven."
+    },
+    {
+     "q": "What did MYCIN diagnose?",
+     "options": [
+      "Bacterial infections",
+      "Car faults",
+      "Chess positions",
+      "Weather"
+     ],
+     "answer": 0,
+     "explain": "Stanford, 1970s."
+    },
+    {
+     "q": "What is the knowledge acquisition bottleneck?",
+     "options": [
+      "Getting expert knowledge into rules is slow",
+      "Computers are slow",
+      "Rules run out",
+      "Memory is full"
+     ],
+     "answer": 0,
+     "explain": "Human effort."
+    },
+    {
+     "q": "What can an expert system do that a neural net often cannot?",
+     "options": [
+      "Explain by showing rules",
+      "Learn from pixels",
+      "Recognise faces",
+      "Predict stock prices"
+     ],
+     "answer": 0,
+     "explain": "Traceable reasoning."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Forward chaining",
+     "a": "facts to conclusions"
+    },
+    {
+     "q": "Backward chaining",
+     "a": "goal to facts"
+    },
+    {
+     "q": "MYCIN",
+     "a": "blood infection advice"
+    },
+    {
+     "q": "Certainty factor",
+     "a": "number for belief"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Production rule",
+       "IF conditions THEN conclusion"
+      ],
+      [
+       "Working memory",
+       "facts so far"
+      ],
+      [
+       "Forward chaining",
+       "data-driven"
+      ],
+      [
+       "Backward chaining",
+       "goal-driven"
+      ],
+      [
+       "Inference engine",
+       "matches and fires rules"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Forward chaining",
+     "intro": "Write forward(rules, facts). rules is a list of [conditions, conclusion] where conditions is a list of fact names. facts is a list of fact names known to be true. Fire rules repeatedly until nothing new is added, and return the sorted list of all facts.",
+     "fn": "forward",
+     "starter": "def forward(rules, facts):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           "fever",
+           "stiff_neck"
+          ],
+          "meningitis_suspected"
+         ],
+         [
+          [
+           "meningitis_suspected"
+          ],
+          "needs_test"
+         ]
+        ],
+        [
+         "fever",
+         "stiff_neck"
+        ]
+       ],
+       "expect": [
+        "fever",
+        "meningitis_suspected",
+        "needs_test",
+        "stiff_neck"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           "a"
+          ],
+          "b"
+         ],
+         [
+          [
+           "b"
+          ],
+          "c"
+         ]
+        ],
+        [
+         "a"
+        ]
+       ],
+       "expect": [
+        "a",
+        "b",
+        "c"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           "a",
+           "z"
+          ],
+          "b"
+         ]
+        ],
+        [
+         "a"
+        ]
+       ],
+       "expect": [
+        "a"
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         "x"
+        ]
+       ],
+       "expect": [
+        "x"
+       ]
+      }
+     ],
+     "hint": "Loop until a full pass adds nothing.",
+     "solution": "def forward(rules, facts):\n    known = {}\n    for f in facts:\n        known[f] = 1\n    changed = True\n    while changed:\n        changed = False\n        for r in rules:\n            ok = True\n            for c in r[0]:\n                if c not in known:\n                    ok = False\n            if ok and r[1] not in known:\n                known[r[1]] = 1\n                changed = True\n    return sorted(known.keys())\n"
+    },
+    {
+     "type": "python",
+     "title": "Backward chaining",
+     "intro": "Write backward(rules, facts, goal): return True if goal is a known fact or there is a rule concluding goal all of whose conditions can be proved the same way. Rules are [conditions, conclusion]. Assume the rules contain no cycles.",
+     "fn": "backward",
+     "starter": "def backward(rules, facts, goal):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           "a"
+          ],
+          "b"
+         ],
+         [
+          [
+           "b"
+          ],
+          "c"
+         ]
+        ],
+        [
+         "a"
+        ],
+        "c"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           "a"
+          ],
+          "b"
+         ]
+        ],
+        [],
+        "b"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           "a",
+           "z"
+          ],
+          "b"
+         ]
+        ],
+        [
+         "a"
+        ],
+        "b"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [],
+        [
+         "g"
+        ],
+        "g"
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Prove each condition recursively.",
+     "solution": "def backward(rules, facts, goal):\n    if goal in facts:\n        return True\n    for r in rules:\n        if r[1] == goal:\n            ok = True\n            for c in r[0]:\n                if not backward(rules, facts, c):\n                    ok = False\n                    break\n            if ok:\n                return True\n    return False\n"
+    },
+    {
+     "type": "python",
+     "title": "Explain a conclusion",
+     "intro": "Write explain(rules, facts, goal): return the list of rule indices (positions in rules, starting at 0) that fired, in order, in forward chaining from facts until goal is derived. Fire the first applicable rule in list order each time it adds a new fact. If goal is already in facts return []. If it cannot be derived return None.",
+     "fn": "explain",
+     "starter": "def explain(rules, facts, goal):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           "a"
+          ],
+          "b"
+         ],
+         [
+          [
+           "b"
+          ],
+          "c"
+         ],
+         [
+          [
+           "x"
+          ],
+          "y"
+         ]
+        ],
+        [
+         "a"
+        ],
+        "c"
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           "a"
+          ],
+          "b"
+         ]
+        ],
+        [
+         "a",
+         "b"
+        ],
+        "b"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           "a"
+          ],
+          "b"
+         ]
+        ],
+        [],
+        "b"
+       ],
+       "expect": null
+      }
+     ],
+     "hint": "Record the index each time a rule adds a fact.",
+     "solution": "def explain(rules, facts, goal):\n    known = {}\n    for f in facts:\n        known[f] = 1\n    used = []\n    while goal not in known:\n        fired = False\n        for i in range(len(rules)):\n            r = rules[i]\n            ok = True\n            for c in r[0]:\n                if c not in known:\n                    ok = False\n            if ok and r[1] not in known:\n                known[r[1]] = 1\n                used.append(i)\n                fired = True\n                break\n        if not fired:\n            return None\n    return used\n"
+    }
+   ]
+  },
+  {
+   "title": "Planning: STRIPS and the frame problem",
+   "maps": [
+    {
+     "title": "Planning",
+     "links": [
+      "State | is | A set of facts",
+      "Action | has | Preconditions",
+      "Action | has | Add and delete lists",
+      "Plan | is | A sequence of actions",
+      "STRIPS | represents | Actions",
+      "Frame problem | asks | What stays the same",
+      "Means-ends analysis | reduces | Differences"
+     ]
+    }
+   ],
+   "summary": [
+    "Planning finds a sequence of actions that turns an initial state into a goal state. In STRIPS, a state is a set of facts, and each action has preconditions that must hold, an add list of facts it makes true, and a delete list of facts it makes false.",
+    "Applying an action to a state removes the delete list and adds the add list, leaving everything else unchanged. Planning is then a search over states, where good heuristics and clever representations matter.",
+    "The frame problem is the difficulty of stating, in a general logic, everything that an action does not change."
+   ],
+   "glossary": [
+    {
+     "term": "STRIPS",
+     "def": "The Stanford Research Institute Problem Solver, and the action format it introduced."
+    },
+    {
+     "term": "Precondition",
+     "def": "A fact that must hold before an action can be applied."
+    },
+    {
+     "term": "Add and delete lists",
+     "def": "The facts an action makes true and the facts it makes false."
+    },
+    {
+     "term": "Frame problem",
+     "def": "The problem of representing what does not change when an action occurs."
+    },
+    {
+     "term": "Means-ends analysis",
+     "def": "Reducing the difference between current state and goal, as in GPS."
+    }
+   ],
+   "keyPoints": [
+    "State = set of facts.",
+    "Apply: new = (state minus delete) plus add.",
+    "Applicable if preconditions are a subset of state.",
+    "Plan = sequence of applicable actions reaching the goal.",
+    "STRIPS assumption solves the frame problem for simple domains."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A plan is a list of steps. Each step needs some things to be true first, and changes some things. The hard part is saying what does not change."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine a robot in a world of blocks. A state is a set of facts such as OnTable(A), On(B, A), Clear(B), HandEmpty. The goal might be On(A, B). An action such as Unstack(B, A) needs Clear(B), On(B, A) and HandEmpty, and changes the state."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A STRIPS action lists preconditions, an add list and a delete list. Unstack(B, A) adds Holding(B) and Clear(A), and deletes On(B, A), Clear(B) and HandEmpty. To apply it, check the preconditions are in the state, remove the deleted facts and insert the added facts. All other facts stay as they were."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A plan is a sequence of actions such that each one is applicable when its turn comes, and the final state contains the goal. A planner searches for such a sequence. Forward search starts from the initial state, and backward search starts from the goal and works out what must hold before."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "That last sentence in the STRIPS definition, all other facts stay as they were, hides a deep problem. In general logic, you have to say explicitly that moving a block does not change the colour of the table, the position of the other blocks, or the weather.",
+      "Writing all those frame axioms is impractical. McCarthy and Hayes named this the frame problem in 1969."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "STRIPS sidesteps it by assuming that anything not in the add or delete lists stays unchanged. That works in tidy worlds, but fails when actions have indirect effects or when the world changes by itself.",
+      "Modern planners such as those using PDDL, a descendant of STRIPS, power logistics, scheduling and robotics, with heuristics that make them fast."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a state in STRIPS?",
+     "options": [
+      "A set of facts",
+      "A number",
+      "A sequence of actions",
+      "A graph colour"
+     ],
+     "answer": 0,
+     "explain": "What is true now."
+    },
+    {
+     "q": "What does an action's delete list do?",
+     "options": [
+      "Removes facts from the state",
+      "Adds facts",
+      "Lists preconditions",
+      "Counts steps"
+     ],
+     "answer": 0,
+     "explain": "Makes them false."
+    },
+    {
+     "q": "When is an action applicable?",
+     "options": [
+      "When its preconditions are in the state",
+      "Always",
+      "When the goal holds",
+      "When the add list is empty"
+     ],
+     "answer": 0,
+     "explain": "Preconditions subset of state."
+    },
+    {
+     "q": "What is the frame problem?",
+     "options": [
+      "Stating what does not change",
+      "A graphics bug",
+      "A search failure",
+      "A proof of resolution"
+     ],
+     "answer": 0,
+     "explain": "McCarthy and Hayes, 1969."
+    },
+    {
+     "q": "What does a plan consist of?",
+     "options": [
+      "A sequence of actions",
+      "A single fact",
+      "A rule set",
+      "A score"
+     ],
+     "answer": 0,
+     "explain": "Reaches the goal."
+    },
+    {
+     "q": "What descended from STRIPS?",
+     "options": [
+      "PDDL",
+      "HTML",
+      "SQL",
+      "CSS"
+     ],
+     "answer": 0,
+     "explain": "Planning language."
+    }
+   ],
+   "cards": [
+    {
+     "q": "STRIPS",
+     "a": "preconditions, add list, delete list"
+    },
+    {
+     "q": "PDDL",
+     "a": "modern planning language"
+    },
+    {
+     "q": "Plan",
+     "a": "sequence of actions"
+    },
+    {
+     "q": "Frame problem",
+     "a": "what stays the same?"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the part of an action",
+     "intro": "Pair each part with its role.",
+     "pairs": [
+      [
+       "Preconditions",
+       "must hold before"
+      ],
+      [
+       "Add list",
+       "facts made true"
+      ],
+      [
+       "Delete list",
+       "facts made false"
+      ],
+      [
+       "Plan",
+       "sequence of actions"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Apply an action",
+     "intro": "Write apply_action(state, action). state is a list of facts (strings). action is a dict with keys 'pre', 'add', 'del', each a list of facts. If every fact in 'pre' is in the state return the new state as a sorted list: (state minus 'del') plus 'add', without duplicates. Otherwise return None.",
+     "fn": "apply_action",
+     "starter": "def apply_action(state, action):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "HandEmpty",
+         "Clear(B)",
+         "On(B,A)"
+        ],
+        {
+         "pre": [
+          "HandEmpty",
+          "Clear(B)",
+          "On(B,A)"
+         ],
+         "add": [
+          "Holding(B)",
+          "Clear(A)"
+         ],
+         "del": [
+          "HandEmpty",
+          "Clear(B)",
+          "On(B,A)"
+         ]
+        }
+       ],
+       "expect": [
+        "Clear(A)",
+        "Holding(B)"
+       ]
+      },
+      {
+       "args": [
+        [
+         "HandEmpty"
+        ],
+        {
+         "pre": [
+          "Holding(B)"
+         ],
+         "add": [
+          "x"
+         ],
+         "del": []
+        }
+       ],
+       "expect": null
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        {
+         "pre": [],
+         "add": [
+          "b"
+         ],
+         "del": [
+          "a"
+         ]
+        }
+       ],
+       "expect": [
+        "b"
+       ]
+      }
+     ],
+     "hint": "Check preconditions, then remove and add.",
+     "solution": "def apply_action(state, action):\n    for p in action[\"pre\"]:\n        if p not in state:\n            return None\n    new = {}\n    for f in state:\n        if f not in action[\"del\"]:\n            new[f] = 1\n    for f in action[\"add\"]:\n        new[f] = 1\n    return sorted(new.keys())\n"
+    },
+    {
+     "type": "python",
+     "title": "Plan by breadth-first search",
+     "intro": "Write plan(init, goal, actions). init and goal are lists of facts, actions is a list of dicts with keys 'name', 'pre', 'add', 'del'. Return the shortest list of action names that reaches a state containing all goal facts, trying actions in list order, or None if no plan exists. If the goal already holds return []. Use breadth-first search over states.",
+     "fn": "plan",
+     "starter": "def plan(init, goal, actions):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "at_home"
+        ],
+        [
+         "at_work"
+        ],
+        [
+         {
+          "name": "walk",
+          "pre": [
+           "at_home"
+          ],
+          "add": [
+           "at_work"
+          ],
+          "del": [
+           "at_home"
+          ]
+         }
+        ]
+       ],
+       "expect": [
+        "walk"
+       ]
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        [
+         "a"
+        ],
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        [
+         "c"
+        ],
+        [
+         {
+          "name": "ab",
+          "pre": [
+           "a"
+          ],
+          "add": [
+           "b"
+          ],
+          "del": [
+           "a"
+          ]
+         },
+         {
+          "name": "bc",
+          "pre": [
+           "b"
+          ],
+          "add": [
+           "c"
+          ],
+          "del": [
+           "b"
+          ]
+         }
+        ]
+       ],
+       "expect": [
+        "ab",
+        "bc"
+       ]
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        [
+         "z"
+        ],
+        [
+         {
+          "name": "ab",
+          "pre": [
+           "a"
+          ],
+          "add": [
+           "b"
+          ],
+          "del": []
+         }
+        ]
+       ],
+       "expect": null
+      }
+     ],
+     "hint": "Treat each state as a node and each action as an edge.",
+     "solution": "def plan(init, goal, actions):\n    start = sorted(init)\n    queue = [[start, []]]\n    seen = {tuple(start): 1}\n    head = 0\n    while head < len(queue):\n        state, steps = queue[head]\n        head = head + 1\n        ok = True\n        for g in goal:\n            if g not in state:\n                ok = False\n        if ok:\n            return steps\n        for a in actions:\n            good = True\n            for p in a[\"pre\"]:\n                if p not in state:\n                    good = False\n            if not good:\n                continue\n            new = {}\n            for f in state:\n                if f not in a[\"del\"]:\n                    new[f] = 1\n            for f in a[\"add\"]:\n                new[f] = 1\n            ns = sorted(new.keys())\n            key = tuple(ns)\n            if key not in seen:\n                seen[key] = 1\n                queue.append([ns, steps + [a[\"name\"]]])\n    return None\n"
+    },
+    {
+     "type": "python",
+     "title": "Goal reached?",
+     "intro": "Write satisfied(state, goal): True if every fact in goal is in state.",
+     "fn": "satisfied",
+     "starter": "def satisfied(state, goal):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c"
+        ],
+        [
+         "a",
+         "c"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        [
+         "a",
+         "b"
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [],
+        []
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Check every goal fact.",
+     "solution": "def satisfied(state, goal):\n    for g in goal:\n        if g not in state:\n            return False\n    return True\n"
+    }
+   ]
+  },
+  {
+   "title": "Constraints and logic programming",
+   "maps": [
+    {
+     "title": "Constraints",
+     "links": [
+      "Variable | takes | A value",
+      "Domain | lists | Allowed values",
+      "Constraint | restricts | Combinations",
+      "Backtracking | tries | And undoes",
+      "Propagation | prunes | Domains",
+      "Prolog | runs | Logic",
+      "Horn clause | has | One positive literal"
+     ]
+    }
+   ],
+   "summary": [
+    "A constraint satisfaction problem (CSP) has variables, each with a domain of possible values, and constraints on combinations of values. Map colouring, scheduling and Sudoku are classic examples.",
+    "Backtracking search assigns variables one at a time and undoes a choice when a constraint is violated. Constraint propagation prunes domains early, such as removing values that conflict with a neighbour's only remaining value.",
+    "Logic programming, as in Prolog, states facts and rules as Horn clauses and answers queries by backward chaining with unification and backtracking."
+   ],
+   "glossary": [
+    {
+     "term": "CSP",
+     "def": "A problem defined by variables, domains and constraints."
+    },
+    {
+     "term": "Backtracking",
+     "def": "A depth-first search that undoes assignments that lead to a violation."
+    },
+    {
+     "term": "Constraint propagation",
+     "def": "Using constraints to remove impossible values from domains."
+    },
+    {
+     "term": "Horn clause",
+     "def": "A clause with at most one positive literal, the form used by Prolog."
+    },
+    {
+     "term": "Prolog",
+     "def": "A logic programming language based on Horn clauses and backward chaining."
+    }
+   ],
+   "keyPoints": [
+    "CSP = variables + domains + constraints.",
+    "Backtracking: assign, check, undo.",
+    "Choose the most constrained variable first.",
+    "Prolog: facts, rules and queries.",
+    "Prolog searches depth-first with backtracking."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Colouring a map so neighbours differ is a puzzle of choices and rules. Try a colour, and if you get stuck, undo and try another."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A map-colouring puzzle asks for a colour for each region so that no two neighbouring regions share a colour. Regions are the variables, the colours are the domain, and the constraint is that neighbours differ.",
+      "The same pattern fits timetabling, where classes are variables, time slots are the domain and clashes are forbidden."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The basic method is backtracking. Pick a variable, try a value, and check the constraints. If it is fine, move on to the next variable. If no value works, go back and change an earlier choice.",
+      "This is depth-first search with early failure, and it avoids exploring any branch that has already broken a constraint."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Heuristics speed it up a great deal. Choosing the variable with the fewest remaining values, the most constrained one, finds dead ends sooner. Constraint propagation, such as arc consistency, removes values that cannot be part of any solution before search even starts. Sudoku solvers work this way."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Prolog turns logic into a programming language. A program is a set of facts and rules, such as parent(tom, bob) and grandparent(X, Z) :- parent(X, Y), parent(Y, Z).",
+      "A query such as grandparent(tom, Who) is answered by backward chaining, unifying each goal with facts and rule heads, and backtracking when a choice fails."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Prolog, created by Colmerauer and Kowalski in the early 1970s, was chosen for Japan's Fifth Generation Computer project in the 1980s.",
+      "That project did not deliver the expected breakthroughs, but Prolog and constraint solvers are still used in scheduling, configuration and language processing, and its ideas live on in modern solvers."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a CSP?",
+     "options": [
+      "Variables, domains and constraints",
+      "A sorting algorithm",
+      "A neural net",
+      "A database"
+     ],
+     "answer": 0,
+     "explain": "A structured puzzle."
+    },
+    {
+     "q": "What does backtracking do on failure?",
+     "options": [
+      "Undoes an earlier choice",
+      "Stops the program",
+      "Restarts from scratch",
+      "Ignores the constraint"
+     ],
+     "answer": 0,
+     "explain": "Goes back."
+    },
+    {
+     "q": "Which variable should be chosen first?",
+     "options": [
+      "The most constrained one",
+      "The least constrained",
+      "A random one",
+      "The last one"
+     ],
+     "answer": 0,
+     "explain": "Fail early."
+    },
+    {
+     "q": "What is a Horn clause?",
+     "options": [
+      "At most one positive literal",
+      "Two negations",
+      "A loop",
+      "A fact with no head"
+     ],
+     "answer": 0,
+     "explain": "Prolog's form."
+    },
+    {
+     "q": "How does Prolog answer a query?",
+     "options": [
+      "Backward chaining with unification",
+      "Forward chaining only",
+      "Random guesses",
+      "Sorting"
+     ],
+     "answer": 0,
+     "explain": "Depth-first."
+    },
+    {
+     "q": "Which project used Prolog in the 1980s?",
+     "options": [
+      "Japan's Fifth Generation",
+      "Apollo",
+      "Deep Blue",
+      "Human Genome"
+     ],
+     "answer": 0,
+     "explain": "A national AI programme."
+    }
+   ],
+   "cards": [
+    {
+     "q": "CSP",
+     "a": "variables, domains, constraints"
+    },
+    {
+     "q": "Backtracking",
+     "a": "assign, check, undo"
+    },
+    {
+     "q": "Prolog",
+     "a": "logic programming"
+    },
+    {
+     "q": "Arc consistency",
+     "a": "prune domains by pairs"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Variable",
+       "a thing to assign"
+      ],
+      [
+       "Domain",
+       "the allowed values"
+      ],
+      [
+       "Constraint",
+       "a restriction on combinations"
+      ],
+      [
+       "Backtracking",
+       "undo and retry"
+      ],
+      [
+       "Prolog",
+       "facts, rules and queries"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Map colouring",
+     "intro": "Write colour_map(graph, colours): graph is a dict from region to a list of neighbouring regions (symmetric). colours is a list of colour names. Colour the regions in sorted name order using backtracking, trying colours in list order. Return the list of colours in sorted region order, or None if impossible.",
+     "fn": "colour_map",
+     "starter": "def colour_map(graph, colours):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "A": [
+          "B",
+          "C"
+         ],
+         "B": [
+          "A",
+          "C"
+         ],
+         "C": [
+          "A",
+          "B"
+         ]
+        },
+        [
+         "red",
+         "green",
+         "blue"
+        ]
+       ],
+       "expect": [
+        "red",
+        "green",
+        "blue"
+       ]
+      },
+      {
+       "args": [
+        {
+         "A": [
+          "B",
+          "C"
+         ],
+         "B": [
+          "A",
+          "C"
+         ],
+         "C": [
+          "A",
+          "B"
+         ]
+        },
+        [
+         "red",
+         "green"
+        ]
+       ],
+       "expect": null
+      },
+      {
+       "args": [
+        {
+         "A": [
+          "B"
+         ],
+         "B": [
+          "A"
+         ]
+        },
+        [
+         "x",
+         "y"
+        ]
+       ],
+       "expect": [
+        "x",
+        "y"
+       ]
+      },
+      {
+       "args": [
+        {
+         "W": [
+          "X"
+         ],
+         "X": [
+          "W",
+          "Y"
+         ],
+         "Y": [
+          "X"
+         ]
+        },
+        [
+         "r",
+         "g"
+        ]
+       ],
+       "expect": [
+        "r",
+        "g",
+        "r"
+       ]
+      }
+     ],
+     "hint": "Try each colour, recurse, and undo if the rest fails.",
+     "solution": "def colour_map(graph, colours):\n    regions = sorted(graph.keys())\n    assign = {}\n    def ok(r, c):\n        for nb in graph[r]:\n            if assign.get(nb) == c:\n                return False\n        return True\n    def go(i):\n        if i == len(regions):\n            return True\n        r = regions[i]\n        for c in colours:\n            if ok(r, c):\n                assign[r] = c\n                if go(i + 1):\n                    return True\n                del assign[r]\n        return False\n    if go(0):\n        return [assign[r] for r in regions]\n    return None\n"
+    },
+    {
+     "type": "python",
+     "title": "N queens count",
+     "intro": "Write queens(n): the number of ways to place n queens on an n by n board so that no two attack each other (same row, column or diagonal). Use backtracking row by row.",
+     "fn": "queens",
+     "starter": "def queens(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        2
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        4
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": 10
+      },
+      {
+       "args": [
+        6
+       ],
+       "expect": 4
+      }
+     ],
+     "hint": "Place one queen per row and check columns and diagonals.",
+     "solution": "def queens(n):\n    cols = []\n    def ok(c):\n        r = len(cols)\n        for i in range(r):\n            if cols[i] == c or abs(cols[i] - c) == r - i:\n                return False\n        return True\n    def go():\n        if len(cols) == n:\n            return 1\n        total = 0\n        for c in range(n):\n            if ok(c):\n                cols.append(c)\n                total = total + go()\n                cols.pop()\n        return total\n    return go()\n"
+    },
+    {
+     "type": "python",
+     "title": "Grandparent query",
+     "intro": "Write grandparents(parents, person): parents is a list of [parent, child] facts. Return the sorted list of grandparents of person, the parents of the parents. This is the Prolog rule grandparent(X, Z) :- parent(X, Y), parent(Y, Z).",
+     "fn": "grandparents",
+     "starter": "def grandparents(parents, person):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "tom",
+          "bob"
+         ],
+         [
+          "bob",
+          "ann"
+         ],
+         [
+          "liz",
+          "bob"
+         ]
+        ],
+        "ann"
+       ],
+       "expect": [
+        "liz",
+        "tom"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "tom",
+          "bob"
+         ]
+        ],
+        "bob"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "b"
+         ],
+         [
+          "b",
+          "c"
+         ],
+         [
+          "c",
+          "d"
+         ]
+        ],
+        "d"
+       ],
+       "expect": [
+        "b"
+       ]
+      }
+     ],
+     "hint": "Join the parent facts on the middle person.",
+     "solution": "def grandparents(parents, person):\n    out = {}\n    for p in parents:\n        if p[1] == person:\n            for q in parents:\n                if q[1] == p[0]:\n                    out[q[0]] = 1\n    return sorted(out.keys())\n"
+    }
+   ]
+  },
+  {
+   "title": "Limits, legacy and the road to neuro-symbolic AI",
+   "maps": [
+    {
+     "title": "Legacy",
+     "links": [
+      "Common sense | resisted | Rules",
+      "Cyc | encoded | Common sense",
+      "Brittleness | limits | Rule systems",
+      "Symbol grounding | asks | Where meaning comes from",
+      "Learning | rose | After 2010",
+      "Knowledge graphs | survive | In search",
+      "Neuro-symbolic | combines | Both"
+     ]
+    }
+   ],
+   "summary": [
+    "GOFAI ran into walls. Everyday common sense turned out to need millions of facts and exceptions. Rule systems were brittle at the edges of their knowledge, and the frame, qualification and ramification problems made precise logical descriptions of the world endless.",
+    "Projects like Cyc, started by Douglas Lenat in 1984, tried to write down common sense by hand, and are still running. Meanwhile, learning from data overtook hand-written rules in vision, speech and language.",
+    "The symbolic legacy remains in search, planning, verification, databases and knowledge graphs. Neuro-symbolic AI tries to give learned systems the ability to reason, and symbolic systems the ability to learn."
+   ],
+   "glossary": [
+    {
+     "term": "Common-sense knowledge",
+     "def": "Everyday facts and expectations that people share, such as water making things wet."
+    },
+    {
+     "term": "Cyc",
+     "def": "A long-running project to encode common-sense knowledge in formal logic."
+    },
+    {
+     "term": "Symbol grounding problem",
+     "def": "The question of how symbols get meaning beyond other symbols."
+    },
+    {
+     "term": "Brittleness",
+     "def": "The tendency of rule systems to fail sharply outside their narrow domain."
+    },
+    {
+     "term": "Neuro-symbolic AI",
+     "def": "Approaches that combine neural networks with symbolic reasoning."
+    }
+   ],
+   "keyPoints": [
+    "Common sense needs huge amounts of knowledge.",
+    "Rule systems are brittle at their edges.",
+    "Searle's Chinese Room argued against pure symbol manipulation.",
+    "Symbolic ideas survive in search, planning and verification.",
+    "Neuro-symbolic AI mixes learning and reasoning."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Old-style AI was good at clear rules but bad at everyday common sense. New AI learns from examples. Putting the two together is an exciting idea."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "People know without thinking that a glass dropped on a hard floor will break, that you cannot pour a liquid into a closed bottle, and that an elephant does not fit in a car. Nobody listed these facts for us.",
+      "Writing them all down turned out to be vast, because each fact has exceptions, and each exception has exceptions."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Cyc is the boldest attempt. Beginning in 1984, a team has entered millions of assertions about the everyday world in a formal language and written inference rules over them. It is useful for some tasks.",
+      "But after forty years, it has not reached the broad understanding its founders hoped for, which many see as a sign of the limits of hand-coding."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Philosophers raised deeper doubts. John Searle's Chinese Room argued in 1980 that shuffling symbols by rules, however well done, does not give understanding. The symbol grounding problem asks how a symbol can mean anything without a link to the world.",
+      "Defenders replied that understanding may arise from the whole system, and the debate continues."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "After 2010, deep learning delivered large gains on perception and language without hand-written rules. It learns from examples, copes with noise and needs no knowledge engineer. But it has its own weaknesses: errors that are hard to explain, a need for lots of data, and uncertain reasoning.",
+      "These are exactly what symbolic methods were designed for."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "So the symbolic ideas are far from dead. Search guides game programs and route planners. Logic verifies chips and software. Knowledge graphs power search engines and assistants. Neuro-symbolic systems pair neural perception with a reasoning step, or let language models call a solver.",
+      "Studying GOFAI gives you the other half of the toolbox."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Why is common sense hard for rule systems?",
+     "options": [
+      "It needs huge amounts of knowledge and exceptions",
+      "It is too short",
+      "It is secret",
+      "It uses colours"
+     ],
+     "answer": 0,
+     "explain": "Endless detail."
+    },
+    {
+     "q": "What is Cyc?",
+     "options": [
+      "A long-running common-sense knowledge project",
+      "A chess engine",
+      "A Tarot deck",
+      "A search engine"
+     ],
+     "answer": 0,
+     "explain": "Started in 1984."
+    },
+    {
+     "q": "What did Searle's Chinese Room argue?",
+     "options": [
+      "Symbol shuffling alone is not understanding",
+      "Computers can be taught Chinese",
+      "Rules are enough",
+      "Translation is easy"
+     ],
+     "answer": 0,
+     "explain": "1980."
+    },
+    {
+     "q": "What is brittleness?",
+     "options": [
+      "Failing sharply outside narrow knowledge",
+      "Running slowly",
+      "Using more memory",
+      "Looping forever"
+     ],
+     "answer": 0,
+     "explain": "Typical of expert systems."
+    },
+    {
+     "q": "What does neuro-symbolic AI try to do?",
+     "options": [
+      "Combine learning and reasoning",
+      "Replace all computers",
+      "Draw pictures",
+      "Avoid data"
+     ],
+     "answer": 0,
+     "explain": "Best of both."
+    },
+    {
+     "q": "Where do symbolic ideas still appear?",
+     "options": [
+      "Search, planning, verification and knowledge graphs",
+      "Nowhere",
+      "Only in museums",
+      "Only in games"
+     ],
+     "answer": 0,
+     "explain": "Everywhere in software."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Cyc",
+     "a": "common-sense knowledge base, 1984"
+    },
+    {
+     "q": "Chinese Room",
+     "a": "Searle's 1980 argument"
+    },
+    {
+     "q": "Brittleness",
+     "a": "failure outside the narrow domain"
+    },
+    {
+     "q": "Neuro-symbolic",
+     "a": "learning plus reasoning"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the limit",
+     "intro": "Pair each problem with its description.",
+     "pairs": [
+      [
+       "Frame problem",
+       "stating what does not change"
+      ],
+      [
+       "Brittleness",
+       "sharp failure at the edges"
+      ],
+      [
+       "Knowledge bottleneck",
+       "rules are slow to collect"
+      ],
+      [
+       "Symbol grounding",
+       "where does meaning come from?"
+      ],
+      [
+       "Common sense",
+       "huge amounts of everyday facts"
+      ]
+     ]
+    },
+    {
+     "type": "order",
+     "title": "A short history",
+     "intro": "Order these events from earliest to latest.",
+     "items": [
+      "Dartmouth workshop",
+      "Expert system boom",
+      "Cyc project begins",
+      "Deep Blue beats Kasparov",
+      "Deep learning surge"
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Wrap up",
+     "text": "GOFAI used explicit {{symbols}} and rules. Its weakness was {{brittleness}} at the edges of its knowledge, and its legacy lives on in search, planning and {{knowledge}} graphs."
+    },
+    {
+     "type": "python",
+     "title": "Which approach?",
+     "intro": "Write approach(task): return 'symbolic' for 'route planning', 'theorem proving', 'scheduling' and 'chip verification'; 'learning' for 'image recognition', 'speech recognition' and 'translation'; 'hybrid' for 'question answering'; otherwise 'unknown'.",
+     "fn": "approach",
+     "starter": "def approach(task):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "route planning"
+       ],
+       "expect": "symbolic"
+      },
+      {
+       "args": [
+        "image recognition"
+       ],
+       "expect": "learning"
+      },
+      {
+       "args": [
+        "question answering"
+       ],
+       "expect": "hybrid"
+      },
+      {
+       "args": [
+        "cooking"
+       ],
+       "expect": "unknown"
+      },
+      {
+       "args": [
+        "scheduling"
+       ],
+       "expect": "symbolic"
+      }
+     ],
+     "hint": "Three lists of tasks.",
+     "solution": "def approach(task):\n    if task in [\"route planning\", \"theorem proving\", \"scheduling\", \"chip verification\"]:\n        return \"symbolic\"\n    if task in [\"image recognition\", \"speech recognition\", \"translation\"]:\n        return \"learning\"\n    if task == \"question answering\":\n        return \"hybrid\"\n    return \"unknown\"\n"
+    },
+    {
+     "type": "python",
+     "title": "Rule coverage",
+     "intro": "Write coverage(rules, cases): rules is a list of [conditions, conclusion] with conditions a list of fact names. cases is a list of fact lists. Return the number of cases for which at least one rule has all its conditions present. This shows the brittleness of a rule set on new cases.",
+     "fn": "coverage",
+     "starter": "def coverage(rules, cases):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [
+           "fever",
+           "rash"
+          ],
+          "measles"
+         ]
+        ],
+        [
+         [
+          "fever",
+          "rash",
+          "cough"
+         ],
+         [
+          "fever"
+         ],
+         [
+          "rash"
+         ]
+        ]
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        [],
+        [
+         [
+          "a"
+         ]
+        ]
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           "a"
+          ],
+          "b"
+         ],
+         [
+          [
+           "c"
+          ],
+          "d"
+         ]
+        ],
+        [
+         [
+          "a"
+         ],
+         [
+          "c"
+         ],
+         [
+          "e"
+         ]
+        ]
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "A case is covered if any rule fires on it.",
+     "solution": "def coverage(rules, cases):\n    n = 0\n    for case in cases:\n        hit = False\n        for r in rules:\n            ok = True\n            for c in r[0]:\n                if c not in case:\n                    ok = False\n            if ok:\n                hit = True\n        if hit:\n            n = n + 1\n    return n\n"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: GOFAI: Symbolic AI",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What does GOFAI stand for?",
+    "options": [
+     "Good Old-Fashioned AI",
+     "General Optimal Function AI",
+     "Graph Oriented Fact AI",
+     "Greatest Of Formal AI"
+    ],
+    "answer": 0,
+    "explain": "Haugeland, 1985."
+   },
+   {
+    "q": "When was the field named at Dartmouth?",
+    "options": [
+     "1956",
+     "1936",
+     "1976",
+     "1996"
+    ],
+    "answer": 0,
+    "explain": "Summer workshop."
+   },
+   {
+    "q": "What does the physical symbol system hypothesis claim?",
+    "options": [
+     "Symbol manipulation is enough for intelligence",
+     "Only brains think",
+     "Neural nets are best",
+     "Robots are needed"
+    ],
+    "answer": 0,
+    "explain": "Newell and Simon."
+   },
+   {
+    "q": "What does IS-A mean in a semantic network?",
+    "options": [
+     "A category link",
+     "A cause link",
+     "A part link",
+     "A time link"
+    ],
+    "answer": 0,
+    "explain": "Canary IS-A bird."
+   },
+   {
+    "q": "What is inheritance?",
+    "options": [
+     "Properties passing from category to member",
+     "A file copy",
+     "A loop",
+     "A search"
+    ],
+    "answer": 0,
+    "explain": "Saves repetition."
+   },
+   {
+    "q": "How many rows in a truth table with 3 variables?",
+    "options": [
+     "8",
+     "6",
+     "9",
+     "3"
+    ],
+    "answer": 0,
+    "explain": "2 to the 3."
+   },
+   {
+    "q": "What does resolution on (A or X) and (not A or Y) give?",
+    "options": [
+     "X or Y",
+     "A or Y",
+     "not X",
+     "X and Y"
+    ],
+    "answer": 0,
+    "explain": "Cancel A."
+   },
+   {
+    "q": "What does reaching the empty clause show?",
+    "options": [
+     "The clauses are inconsistent",
+     "They are satisfiable",
+     "A tautology",
+     "Nothing"
+    ],
+    "answer": 0,
+    "explain": "Contradiction."
+   },
+   {
+    "q": "What does unification do?",
+    "options": [
+     "Finds a substitution making two terms identical",
+     "Sorts a list",
+     "Runs a program",
+     "Draws a graph"
+    ],
+    "answer": 0,
+    "explain": "Pattern matching."
+   },
+   {
+    "q": "Can two different constants unify?",
+    "options": [
+     "No",
+     "Yes",
+     "Only in Prolog",
+     "Only if short"
+    ],
+    "answer": 0,
+    "explain": "A and B differ."
+   },
+   {
+    "q": "Which data structure does BFS use?",
+    "options": [
+     "A queue",
+     "A stack",
+     "A heap only",
+     "A tree only"
+    ],
+    "answer": 0,
+    "explain": "First in, first out."
+   },
+   {
+    "q": "Which search uses a stack?",
+    "options": [
+     "Depth-first",
+     "Breadth-first",
+     "A*",
+     "Uniform cost"
+    ],
+    "answer": 0,
+    "explain": "Last in, first out."
+   },
+   {
+    "q": "What does A* minimise when choosing the next state?",
+    "options": [
+     "g + h",
+     "g only",
+     "h only",
+     "depth only"
+    ],
+    "answer": 0,
+    "explain": "Cost plus estimate."
+   },
+   {
+    "q": "What does admissible mean?",
+    "options": [
+     "Never overestimates",
+     "Always exact",
+     "Always zero",
+     "Always large"
+    ],
+    "answer": 0,
+    "explain": "Keeps A* optimal."
+   },
+   {
+    "q": "What does MIN assume?",
+    "options": [
+     "The opponent picks the lowest value for MAX",
+     "The opponent plays randomly",
+     "The opponent passes",
+     "The opponent copies MAX"
+    ],
+    "answer": 0,
+    "explain": "Worst case."
+   },
+   {
+    "q": "What does alpha-beta change?",
+    "options": [
+     "Speed, not the result",
+     "The minimax value",
+     "The rules",
+     "The evaluation"
+    ],
+    "answer": 0,
+    "explain": "Same answer."
+   },
+   {
+    "q": "Who beat Kasparov in 1997?",
+    "options": [
+     "Deep Blue",
+     "AlphaGo",
+     "ELIZA",
+     "MYCIN"
+    ],
+    "answer": 0,
+    "explain": "IBM."
+   },
+   {
+    "q": "Which chaining starts from known facts?",
+    "options": [
+     "Forward",
+     "Backward",
+     "Sideways",
+     "Random"
+    ],
+    "answer": 0,
+    "explain": "Data-driven."
+   },
+   {
+    "q": "What was MYCIN used for?",
+    "options": [
+     "Suggesting antibiotics",
+     "Playing chess",
+     "Translating",
+     "Drawing"
+    ],
+    "answer": 0,
+    "explain": "An expert system."
+   },
+   {
+    "q": "What is a state in STRIPS?",
+    "options": [
+     "A set of facts",
+     "A number",
+     "A sequence of actions",
+     "A graph colour"
+    ],
+    "answer": 0,
+    "explain": "What is true now."
+   },
+   {
+    "q": "What is the frame problem?",
+    "options": [
+     "Stating what does not change",
+     "A graphics bug",
+     "A search failure",
+     "A proof rule"
+    ],
+    "answer": 0,
+    "explain": "McCarthy and Hayes."
+   },
+   {
+    "q": "What is a CSP?",
+    "options": [
+     "Variables, domains and constraints",
+     "A sorting algorithm",
+     "A neural net",
+     "A database"
+    ],
+    "answer": 0,
+    "explain": "A structured puzzle."
+   },
+   {
+    "q": "What does backtracking do on failure?",
+    "options": [
+     "Undoes an earlier choice",
+     "Stops the program",
+     "Restarts from scratch",
+     "Ignores the constraint"
+    ],
+    "answer": 0,
+    "explain": "Goes back."
+   },
+   {
+    "q": "How does Prolog answer a query?",
+    "options": [
+     "Backward chaining with unification",
+     "Forward chaining only",
+     "Random guesses",
+     "Sorting"
+    ],
+    "answer": 0,
+    "explain": "Depth-first."
+   },
+   {
+    "q": "What did Searle's Chinese Room argue?",
+    "options": [
+     "Symbol shuffling alone is not understanding",
+     "Computers can learn Chinese",
+     "Rules are enough",
+     "Translation is easy"
+    ],
+    "answer": 0,
+    "explain": "1980."
+   },
+   {
+    "q": "What does neuro-symbolic AI try to do?",
+    "options": [
+     "Combine learning and reasoning",
+     "Replace all computers",
+     "Draw pictures",
+     "Avoid data"
+    ],
+    "answer": 0,
+    "explain": "Best of both."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "GOFAI cheat sheet",
+  "prompt": "ai>",
+  "intro": "A scripted lookup. Try: bfs, dfs, astar, minimax, resolution, strips, chaining, help",
+  "chips": [
+   "bfs",
+   "dfs",
+   "astar",
+   "minimax",
+   "resolution",
+   "strips",
+   "chaining",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "bfs        Breadth-first: queue, shallowest first, fewest steps.",
+     "dfs        Depth-first: stack, deepest first, little memory, not optima",
+     "astar      A*: expand the lowest f = g + h; optimal if h is admissible.",
+     "minimax    MAX takes the highest child value, MIN the lowest. Alpha-bet",
+     "resolution From (A or X) and (not A or Y) derive (X or Y). The empty cl",
+     "strips     Apply: new state = (state minus delete list) plus add list, ",
+     "chaining   Forward: facts to conclusions. Backward: goal to facts."
+    ]
+   },
+   {
+    "re": "^bfs$",
+    "out": [
+     "Breadth-first: queue, shallowest first, fewest steps."
+    ]
+   },
+   {
+    "re": "^dfs$",
+    "out": [
+     "Depth-first: stack, deepest first, little memory, not optimal."
+    ]
+   },
+   {
+    "re": "^astar$",
+    "out": [
+     "A*: expand the lowest f = g + h; optimal if h is admissible."
+    ]
+   },
+   {
+    "re": "^minimax$",
+    "out": [
+     "MAX takes the highest child value, MIN the lowest. Alpha-beta prunes without changing the result."
+    ]
+   },
+   {
+    "re": "^resolution$",
+    "out": [
+     "From (A or X) and (not A or Y) derive (X or Y). The empty clause means contradiction."
+    ]
+   },
+   {
+    "re": "^strips$",
+    "out": [
+     "Apply: new state = (state minus delete list) plus add list, if preconditions hold."
+    ]
+   },
+   {
+    "re": "^chaining$",
+    "out": [
+     "Forward: facts to conclusions. Backward: goal to facts."
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Computer Science",
+ "level": "Intermediate",
+ "tags": [
+  "ai",
+  "gofai",
+  "symbolic ai",
+  "logic",
+  "search",
+  "planning",
+  "expert systems",
+  "prolog"
+ ]
+}
