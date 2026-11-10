@@ -78,7 +78,7 @@ A.append(CH(
  ("BASIC", ["Line number | orders | Statements", "PRINT | shows | Values", "FOR NEXT | repeats | A block", "IF THEN | chooses | A path", "POKE | writes | A memory byte", "PEEK | reads | A memory byte"]),
  ["Turn the C64 on and you are in BASIC V2. It is slow but friendly, and its PEEK and POKE commands reach every chip.",
   "Programs are numbered lines. The computer runs them in order, jumping with GOTO and GOSUB.",
-  "The lab below is a faithful BASIC V2 interpreter. Type a program, press RUN, and the output appears on a 40 by 25 screen."],
+  "Every example in this chapter can be typed straight into a real C64 or an emulator such as VICE. The labs in this course use assembly and C, which run on a real C64 emulator."],
  [("Line number", "Orders the lines of a program."), ("Variable", "A named value; names use two significant letters; $ marks text."), ("FOR NEXT", "A loop with a counter."), ("GOSUB", "Jumps to a subroutine and RETURN comes back."), ("POKE", "Stores a value in a memory address."), ("PEEK", "Reads the value at a memory address.")],
  ["Lines run in number order.", "Variable names use only the first two letters.", "Text variables end with $, whole numbers with %.", "POKE 53280,0 makes the border black.", "BASIC V2 has no sound or graphics commands: use POKE."],
  [T("BASIC V2 was written for the C64 by Microsoft. Each line starts with a number, and the computer runs lines in order. PRINT shows text and numbers, and a semicolon keeps the cursor on the same line. FOR and NEXT repeat a block, and IF and THEN choose between two paths."),
@@ -98,8 +98,7 @@ def loop_values(a, b, step):
         i += step
     return out
 """, [[1, 5, 1], [10, 0, -5], [1, 10, 4], [3, 1, 1]], "A positive step stops after passing b; a negative step stops before."),
-  BAS("1", "BASIC lab: loops and the border", "Run the program, then change it so the border colour goes through all the colours. You need a FOR loop and a POKE inside it."),
-  BAS("2", "BASIC lab: ask and answer", "This program asks a question with INPUT. Run it, answer, and then add a line that prints the double of the number you typed.")]))
+  ]))
 
 A.append(CH(
  "Memory map and banking",
@@ -144,7 +143,7 @@ A.append(CH(
   M(r"\text{address}=\$0400+\text{row}\times40+\text{column}"),
   T("The codes in screen RAM are screen codes. In them, the letter A is 1, B is 2 and so on, a space is 32, and digits are 48 to 57. They differ from PETSCII, the codes you get from PRINT and CHR$, where A is 65. The system converts between them when it prints."),
   T("There are 16 colours, numbered 0 to 15: black, white, red, cyan, purple, green, blue, yellow, orange, brown, light red, dark grey, mid grey, light green, light blue and light grey. Register $D020 sets the border and $D021 the background."),
-  T("Try both labs below. The BASIC lab writes characters with POKE. The assembly lab copies a message into screen and colour RAM. Change the row, the column and the colour to see them move.")],
+  T("Try the assembly lab below. It copies a message into screen and colour RAM. Change the row, the column and the colour to see them move.")],
  [("Where does screen RAM start?", ["$0400", "$D800", "$0801", "$C000"], 0, "1000 bytes."), ("What is screen code 1?", ["The letter A", "A space", "The digit 1", "Nothing"], 0, "A=1, B=2..."), ("Where is colour RAM?", ["$D800", "$0400", "$A000", "$0001"], 0, "One nibble per cell.")],
  [("Cells on the screen?", "1000."), ("Border register?", "$D020."), ("How to find a cell?", "$0400 + row*40 + column."), ("What is colour 1?", "White.")],
  [FILL("Screen facts", "Screen RAM starts at {{$0400}} and colour RAM at {{$D800}}. The border colour is held in {{$D020}}."),
@@ -169,7 +168,6 @@ def to_screen(p):
         return p - 128
     return 94
 """, [[65], [32], [97], [193], [255], [10], [130]], "Handle each range in turn."),
-  BAS("3", "BASIC lab: POKE the screen", "Use POKE to put a letter on the screen at the top-left corner, in a colour of your choice. You need two POKEs: one to screen RAM and one to colour RAM."),
   EMU("screen", "Assembly lab: text in screen RAM", "Run the program, then change the row, the column or the colour.")]))
 
 A.append(CH(

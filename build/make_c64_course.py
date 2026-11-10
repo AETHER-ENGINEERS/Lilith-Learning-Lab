@@ -18,14 +18,10 @@ BAS = {
        '10 REM A AT THE TOP LEFT\n20 POKE 1024,1\n30 END\n',
        [{"t": "a character is in the top-left cell with its own colour", "cell0": True}]),
 }
-for k, (d, src, goals) in BAS.items():
-    app_basic.make_basic(d, src, goals, out="basic_%s.html" % k)
 for k, (desc, src, goals) in labs_c64.LABS.items():
     tabs = ["c", "asm"] if k == "c" else ["asm"]
     app_emu.make_app(desc, tabs, src, goals, studio=(k == "c"), out="emu_%s.html" % k)
 
-for k, (d, src, goals) in labs_more.BASIC.items():
-    app_basic.make_basic(d, src, goals, out="basic_%s.html" % k)
 for k, (d, src, goals) in labs_more.C.items():
     app_emu.make_app(d, ["c", "asm"], {"c": src, "asm": "*=$C000\n      rts\n"}, goals, studio=True, out="emu_%s.html" % k)
 for k, (d, src, goals) in labs_more.ASM.items():
@@ -34,12 +30,8 @@ for k, (d, src, goals) in labs_more.ASM.items():
 APPS = {}
 for k in list(labs_c64.LABS) + list(labs_more.C) + list(labs_more.ASM):
     APPS["__EMU_%s__" % k] = "emu_%s.html" % k
-for k in labs_more.BASIC:
-    APPS["__BAS_%s__" % k] = "basic_%s.html" % k
 for k in labs_c64.LABS:
     APPS["__EMU_%s__" % k] = "emu_%s.html" % k
-for k in BAS:
-    APPS["__BAS_%s__" % k] = "basic_%s.html" % k
 for k in ("mem", "uport", "tape", "disk"):
     APPS["__T_%s__" % k] = "%s.html" % k
 
@@ -110,7 +102,7 @@ EXAM = [
 CFG = dict(id="commodore-64-programming", title="Commodore 64 Programming: BASIC, Assembly, C and the Hardware",
     subtitle="From the memory map to sprites, sound, tape, disk and the user port, with a real C64 emulator in every lab",
     description="A condensed, original course on programming the Commodore 64. It covers the chips and memory map, BASIC V2, 6510 assembly, C with cc65, VIC-II sprites, SID sound, interrupts, joysticks and keyboard, the user port, tape and disk, with labs that run on an emulated C64 inside the app, so no real hardware is needed. "
-    "Credits: the labs reuse the WebAssembly C64 emulator core from floooh/chips (zlib licence) as packaged by 8bitworkshop (GPL-3.0), the Open ROMs generic ROM image, and the cc65 toolchain (zlib licence). The course text and the BASIC interpreter are original.",
+    "Credits: the labs reuse the WebAssembly C64 emulator core from floooh/chips (zlib licence) as packaged by 8bitworkshop (GPL-3.0), the Open ROMs generic ROM image, and the cc65 toolchain (zlib licence). The course text is original.",
     pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, appdir="c64c", apps=APPS)
 
 if __name__ == "__main__":
@@ -118,12 +110,12 @@ if __name__ == "__main__":
     chs = cb1.A + cb2.B
     L = lambda kind, key, title, intro, h: {"type": "webxdc", "title": title, "intro": intro, "height": h, "html": "__%s_%s__" % (kind, key)}
     EXTRA = {
-     8: ([T("Sprites work from every language, because they are only registers and memory. In BASIC you POKE the 63 data bytes, the pointer at 2040, the position at 53248 and 53249, the colour at 53287 and the enable bit at 53269. The BASIC lab draws the sprite on its own screen. In C the lines are almost the same with peekpoke.h, and the emulator lab shows the real VIC-II.")],
-         [L("BAS", "4", "BASIC lab: a sprite with POKE", "Switch the sprite on and slide it with a FOR loop.", 930), L("EMU", "c_sprite", "C lab: two sprites", "Set up sprite 0 in C, then add sprite 1.", 1250)]),
-     9: ([T("Sound is the same story. The SID has no idea which language wrote to it. In BASIC the note is a handful of POKEs to 54272 and up. In C it is the same list with peekpoke.h. Only the speed differs, which matters when you want to play a melody in time.")],
-         [L("BAS", "5", "BASIC lab: a note with POKE", "Complete the program so the SID plays a note.", 930), L("EMU", "c_sid", "C lab: change the waveform", "Run the note, then switch to a pulse wave.", 1250)]),
-     11: ([T("BASIC reads the joystick with PEEK(56320), and the BASIC lab has arrow and fire buttons under the screen. In C the line is j = PEEK(56320U). The bit tests are the same everywhere: a pressed direction reads as 0 in its bit.")],
-          [L("BAS", "6", "BASIC lab: read the joystick", "Print a message for each direction and for fire.", 930), L("EMU", "c_joy", "C lab: read the joystick", "Mirror port 2 and print the direction.", 1250)]),
+     8: ([T("Sprites work from every language, because they are only registers and memory. In BASIC you would POKE the 63 data bytes, the pointer at 2040, the position at 53248 and 53249, the colour at 53287 and the enable bit at 53269. In C the lines are almost the same with peekpoke.h, and the emulator lab shows the real VIC-II.")],
+         [L("EMU", "c_sprite", "C lab: two sprites", "Set up sprite 0 in C, then add sprite 1.", 1250)]),
+     9: ([T("Sound is the same story. The SID has no idea which language wrote to it. In BASIC the note would be a handful of POKEs to 54272 and up. In C it is the same list with peekpoke.h. Only the speed differs, which matters when you want to play a melody in time.")],
+         [L("EMU", "c_sid", "C lab: change the waveform", "Run the note, then switch to a pulse wave.", 1250)]),
+     11: ([T("BASIC reads the joystick with PEEK(56320). In C the line is j = PEEK(56320U). The bit tests are the same everywhere: a pressed direction reads as 0 in its bit.")],
+          [L("EMU", "c_joy", "C lab: read the joystick", "Mirror port 2 and print the direction.", 1250)]),
     }
     for i, (blocks, labs) in EXTRA.items():
         chs[i]["lesson"] = chs[i]["lesson"] + blocks
