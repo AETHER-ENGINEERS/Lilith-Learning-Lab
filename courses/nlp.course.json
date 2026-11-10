@@ -1,0 +1,7100 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "nlp",
+ "title": "Natural Language Processing",
+ "subtitle": "From tokens and TF-IDF to n-grams, taggers, embeddings, transformers and large language models, classical and modern, with Python labs",
+ "author": "Lilith Learning Lab",
+ "description": "A hands-on course in natural language processing covering classical and modern techniques: tokens, normalisation, stemming and Zipf's law; bag of words, TF-IDF, cosine similarity and edit distance; n-gram language models and perplexity; Naive Bayes text classification and evaluation; part-of-speech tagging with Viterbi, CKY parsing and entity extraction; word embeddings; recurrent networks, LSTMs, sequence-to-sequence models and attention; the transformer, positional encoding and subword tokenisers; BERT, GPT, prompting and sampling; and search with BM25, retrieval-augmented generation, evaluation metrics and responsible NLP. Every chapter has Python labs verified in the built-in interpreter, plus an n-gram text generator and a self-attention explorer.",
+ "pronounce": {
+  "NLP": "N L P",
+  "TF-IDF": "T F I D F",
+  "BM25": "B M twenty five",
+  "BERT": "bert",
+  "GPT": "G P T",
+  "LSTM": "L S T M",
+  "RNN": "R N N",
+  "GRU": "G R U",
+  "BPE": "B P E",
+  "word2vec": "word to vec",
+  "GloVe": "glove",
+  "Viterbi": "vih ter bee",
+  "CKY": "C K Y",
+  "BLEU": "blue",
+  "ROUGE": "rooj",
+  "RAG": "rag",
+  "RLHF": "R L H F",
+  "ModernBERT": "modern bert",
+  "Naive": "nye eve",
+  "Bayes": "bayz",
+  "Zipf": "zif",
+  "Levenshtein": "leh ven shtine",
+  "Hochreiter": "hock rye ter",
+  "Schmidhuber": "shmid hoo ber",
+  "Bahdanau": "bah da now",
+  "Mikolov": "mik oh lov",
+  "seq2seq": "seq to seq",
+  "softmax": "soft max",
+  "tanh": "tan H",
+  "Llama": "lah ma",
+  "RoBERTa": "roberta",
+  "n-gram": "en gram",
+  "stemming": "stem ing",
+  "lemma": "lem uh"
+ },
+ "chapters": [
+  {
+   "title": "Text as data: tokens, normalisation and patterns",
+   "maps": [
+    {
+     "title": "Text basics",
+     "links": [
+      "Corpus | is | A collection of texts",
+      "Token | is | A unit of text",
+      "Normalisation | reduces | Variation",
+      "Stopword | is | A very common word",
+      "Stemming | chops | Suffixes",
+      "Lemma | is | Dictionary form",
+      "Regex | matches | Patterns"
+     ]
+    }
+   ],
+   "summary": [
+    "Natural language processing (NLP) lets computers work with human language. Text is first split into tokens (words, pieces of words or characters) and normalised: lower-cased, stripped of punctuation, perhaps reduced to stems or lemmas.",
+    "Counting words already reveals a lot, and Zipf's law says a few words are extremely common while most are rare.",
+    "Classical NLP is a pipeline of such steps; modern NLP learns many of them end to end, but tokenisation and data hygiene still matter."
+   ],
+   "glossary": [
+    {
+     "term": "Token",
+     "def": "A unit of text produced by tokenisation: a word, subword, punctuation mark or character."
+    },
+    {
+     "term": "Corpus",
+     "def": "A large collection of texts used for analysis or training."
+    },
+    {
+     "term": "Stemming",
+     "def": "Cutting off word endings by rule, so 'running' and 'runs' become 'run'."
+    },
+    {
+     "term": "Lemmatisation",
+     "def": "Reducing a word to its dictionary form using vocabulary and grammar, so 'better' becomes 'good'."
+    },
+    {
+     "term": "Regular expression",
+     "def": "A compact pattern language for matching text."
+    }
+   ],
+   "keyPoints": [
+    "Tokenise, lower-case, remove noise.",
+    "Stem is a chopped root; lemma is a real word.",
+    "Zipf: frequency is about 1 / rank.",
+    "Out-of-vocabulary words are a problem for word-level models.",
+    "Subword tokens fix that."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "A tweet, a medical report, a legal contract, a novel: all are strings of characters. To compute with them we must decide what the pieces are. The first step is tokenisation.",
+      "In English, splitting on spaces and peeling off punctuation gets you far, but 'don't', 'New York', 'state-of-the-art' and a URL all raise questions. Languages without spaces, such as Chinese or Japanese, need other methods."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Normalisation reduces variation. Lower-casing makes 'The' and 'the' one word. Stripping accents, expanding contractions and fixing spelling help in some tasks and hurt in others: 'US' and 'us' are different.",
+      "Stopwords such as 'the', 'of' and 'and' carry little meaning for search and topic tasks and are often removed, though modern models keep them."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import re, collections\ntext = 'The cats are running. The dog runs fast!'\ntokens = re.findall(r\"[a-z']+\", text.lower())\nprint(tokens)\nprint(collections.Counter(tokens).most_common(3))\n\nimport nltk\nfrom nltk.stem import PorterStemmer, WordNetLemmatizer\nprint(PorterStemmer().stem('running'))          # run\nprint(WordNetLemmatizer().lemmatize('geese'))   # goose"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Stemming and lemmatisation merge forms of one word. A stemmer such as Porter's chops suffixes by rules, so 'caresses' becomes 'caress' and 'running' becomes 'run', sometimes producing non-words like 'happi'.",
+      "A lemmatiser uses a dictionary and the part of speech to return real forms: 'geese' becomes 'goose' and 'better' becomes 'good'. Stemmers are fast; lemmatisers are more accurate."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Counting words reveals Zipf's law: the most frequent word occurs about twice as often as the second, three times as often as the third, and so on, leaving a long tail of rare words, many appearing once.",
+      "This is why word-level vocabularies struggle with unseen words, and why modern systems split text into subword pieces. Regular expressions, patterns such as digits followed by a percent sign, remain the Swiss army knife for extracting dates, prices and codes."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is tokenisation?",
+     "options": [
+      "Splitting text into units",
+      "Translating",
+      "Deleting words",
+      "Counting letters only"
+     ],
+     "answer": 0,
+     "explain": "First step."
+    },
+    {
+     "q": "What is a stopword?",
+     "options": [
+      "A very common low-content word",
+      "A rare word",
+      "A verb",
+      "A name"
+     ],
+     "answer": 0,
+     "explain": "The, of, and."
+    },
+    {
+     "q": "How does a stemmer differ from a lemmatiser?",
+     "options": [
+      "It chops endings by rule",
+      "It uses a neural network",
+      "It translates",
+      "It sorts"
+     ],
+     "answer": 0,
+     "explain": "May give non-words."
+    },
+    {
+     "q": "What does Zipf's law say?",
+     "options": [
+      "A few words are very frequent, most are rare",
+      "All words are equal",
+      "Words are random",
+      "Long words dominate"
+     ],
+     "answer": 0,
+     "explain": "Long tail."
+    },
+    {
+     "q": "Why subword tokens?",
+     "options": [
+      "They handle unseen words",
+      "They are shorter",
+      "They remove punctuation",
+      "They are alphabetical"
+     ],
+     "answer": 0,
+     "explain": "Out-of-vocabulary."
+    },
+    {
+     "q": "What are regular expressions for?",
+     "options": [
+      "Matching text patterns",
+      "Training models",
+      "Drawing",
+      "Sorting"
+     ],
+     "answer": 0,
+     "explain": "Extract dates and prices."
+    }
+   ],
+   "cards": [
+    {
+     "q": "re.findall(r'\\w+', s)",
+     "a": "split into words"
+    },
+    {
+     "q": "Counter(tokens)",
+     "a": "word counts"
+    },
+    {
+     "q": "PorterStemmer().stem(w)",
+     "a": "stem a word"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Token",
+       "unit of text"
+      ],
+      [
+       "Stopword",
+       "very common word"
+      ],
+      [
+       "Stemming",
+       "chop endings by rule"
+      ],
+      [
+       "Lemma",
+       "dictionary form"
+      ],
+      [
+       "Corpus",
+       "collection of texts"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Tokenise",
+     "intro": "Write tokenize(text): lower-case the text and return the list of tokens, where a token is a maximal run of letters, digits or apostrophes. Everything else separates tokens.",
+     "fn": "tokenize",
+     "starter": "def tokenize(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "The cats are running. The dog runs fast!"
+       ],
+       "expect": [
+        "the",
+        "cats",
+        "are",
+        "running",
+        "the",
+        "dog",
+        "runs",
+        "fast"
+       ]
+      },
+      {
+       "args": [
+        "Don't stop, it's 5 o'clock"
+       ],
+       "expect": [
+        "don't",
+        "stop",
+        "it's",
+        "5",
+        "o'clock"
+       ]
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "A-B  C"
+       ],
+       "expect": [
+        "a",
+        "b",
+        "c"
+       ]
+      }
+     ],
+     "hint": "Build tokens character by character.",
+     "solution": "def tokenize(text):\n    out = []\n    cur = ''\n    for ch in text.lower():\n        if ch.isalpha() or ch.isdigit() or ch == \"'\":\n            cur = cur + ch\n        else:\n            if cur != '':\n                out.append(cur)\n            cur = ''\n    if cur != '':\n        out.append(cur)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Word frequencies",
+     "intro": "Write top_words(tokens, n): the n most frequent tokens as [token, count] pairs, ordered by count descending then token alphabetically.",
+     "fn": "top_words",
+     "starter": "def top_words(tokens, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "a",
+         "c",
+         "b",
+         "a"
+        ],
+        2
+       ],
+       "expect": [
+        [
+         "a",
+         3
+        ],
+        [
+         "b",
+         2
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        3
+       ],
+       "expect": [
+        [
+         "x",
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "b",
+         "a"
+        ],
+        2
+       ],
+       "expect": [
+        [
+         "a",
+         1
+        ],
+        [
+         "b",
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Sort by count then by word.",
+     "solution": "def top_words(tokens, n):\n    d = {}\n    for t in tokens:\n        d[t] = d.get(t, 0) + 1\n    items = sorted(d.items(), key=lambda p: (-p[1], p[0]))\n    return [[k, v] for k, v in items[:n]]\n"
+    },
+    {
+     "type": "python",
+     "title": "Remove stopwords",
+     "intro": "Write remove_stop(tokens, stop): the tokens that are not in the list stop.",
+     "fn": "remove_stop",
+     "starter": "def remove_stop(tokens, stop):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "the",
+         "cat",
+         "sat",
+         "on",
+         "the",
+         "mat"
+        ],
+        [
+         "the",
+         "on"
+        ]
+       ],
+       "expect": [
+        "cat",
+        "sat",
+        "mat"
+       ]
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        []
+       ],
+       "expect": [
+        "a"
+       ]
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         "a",
+         "b"
+        ]
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Filter by membership.",
+     "solution": "def remove_stop(tokens, stop):\n    return [t for t in tokens if t not in stop]\n"
+    },
+    {
+     "type": "python",
+     "title": "Tiny stemmer",
+     "intro": "Write stem(word): remove the first matching suffix from this list in order: 'ing', 'ed', 'ly', 'es', 's', but only if at least 3 letters remain; if the word then ends in two identical consonant letters (like 'runn'), drop one of them.",
+     "fn": "stem",
+     "starter": "def stem(word):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "running"
+       ],
+       "expect": "run"
+      },
+      {
+       "args": [
+        "jumped"
+       ],
+       "expect": "jump"
+      },
+      {
+       "args": [
+        "quickly"
+       ],
+       "expect": "quick"
+      },
+      {
+       "args": [
+        "cats"
+       ],
+       "expect": "cat"
+      },
+      {
+       "args": [
+        "boxes"
+       ],
+       "expect": "box"
+      },
+      {
+       "args": [
+        "sing"
+       ],
+       "expect": "sing"
+      },
+      {
+       "args": [
+        "class"
+       ],
+       "expect": "clas"
+      }
+     ],
+     "hint": "Check suffixes in order.",
+     "solution": "def stem(word):\n    for suf in ['ing', 'ed', 'ly', 'es', 's']:\n        if word.endswith(suf) and len(word) - len(suf) >= 3:\n            w = word[:-len(suf)]\n            if len(w) >= 2 and w[-1] == w[-2] and w[-1] not in 'aeiou':\n                w = w[:-1]\n            return w\n    return word\n"
+    },
+    {
+     "type": "python",
+     "title": "Character n-grams",
+     "intro": "Write char_ngrams(word, n): all substrings of length n of the word padded with '<' at the start and '>' at the end.",
+     "fn": "char_ngrams",
+     "starter": "def char_ngrams(word, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "cat",
+        3
+       ],
+       "expect": [
+        "<ca",
+        "cat",
+        "at>"
+       ]
+      },
+      {
+       "args": [
+        "hi",
+        2
+       ],
+       "expect": [
+        "<h",
+        "hi",
+        "i>"
+       ]
+      },
+      {
+       "args": [
+        "a",
+        3
+       ],
+       "expect": [
+        "<a>"
+       ]
+      }
+     ],
+     "hint": "Slide a window over the padded word.",
+     "solution": "def char_ngrams(word, n):\n    w = '<' + word + '>'\n    return [w[i:i + n] for i in range(len(w) - n + 1)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Sentence split",
+     "intro": "Write sentences(text): split the text into sentences at '.', '!' or '?' followed by a space or the end; strip surrounding spaces and drop empty pieces. Keep the ending punctuation with its sentence.",
+     "fn": "sentences",
+     "starter": "def sentences(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Hello there. How are you? Fine!"
+       ],
+       "expect": [
+        "Hello there.",
+        "How are you?",
+        "Fine!"
+       ]
+      },
+      {
+       "args": [
+        "No end"
+       ],
+       "expect": [
+        "No end"
+       ]
+      },
+      {
+       "args": [
+        "One."
+       ],
+       "expect": [
+        "One."
+       ]
+      }
+     ],
+     "hint": "Cut after sentence-ending marks.",
+     "solution": "def sentences(text):\n    out = []\n    cur = ''\n    n = len(text)\n    for i in range(n):\n        cur = cur + text[i]\n        if text[i] in '.!?' and (i == n - 1 or text[i + 1] == ' '):\n            s = cur.strip()\n            if s != '':\n                out.append(s)\n            cur = ''\n    s = cur.strip()\n    if s != '':\n        out.append(s)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Zipf check",
+     "intro": "Write zipf(counts): given word counts sorted descending, return the list of count x rank for each word, which should be roughly constant for Zipfian text.",
+     "fn": "zipf",
+     "starter": "def zipf(counts):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         100,
+         50,
+         33,
+         25
+        ]
+       ],
+       "expect": [
+        100,
+        100,
+        99,
+        100
+       ]
+      },
+      {
+       "args": [
+        [
+         10
+        ]
+       ],
+       "expect": [
+        10
+       ]
+      },
+      {
+       "args": [
+        [
+         8,
+         4,
+         2
+        ]
+       ],
+       "expect": [
+        8,
+        8,
+        6
+       ]
+      }
+     ],
+     "hint": "Rank starts at 1.",
+     "solution": "def zipf(counts):\n    return [counts[i] * (i + 1) for i in range(len(counts))]\n"
+    }
+   ]
+  },
+  {
+   "title": "Bag of words, TF-IDF and similarity",
+   "maps": [
+    {
+     "title": "Vectors",
+     "links": [
+      "Bag of words | counts | Words per document",
+      "TF | is | Term frequency",
+      "IDF | down-weights | Common terms",
+      "TF-IDF | scores | Importance",
+      "Cosine | compares | Direction",
+      "Edit distance | counts | Character edits",
+      "Search | ranks | Documents"
+     ]
+    }
+   ],
+   "summary": [
+    "The bag-of-words model describes a document by how often each word occurs, ignoring order. TF-IDF multiplies term frequency by inverse document frequency, so words that are common everywhere count for little and distinctive words count for a lot.",
+    "Cosine similarity compares two document vectors by the angle between them, regardless of document length. Ranking documents by similarity to a query is the basis of classic search.",
+    "Edit distance (Levenshtein) measures how many insertions, deletions and substitutions turn one string into another, useful for spelling correction."
+   ],
+   "glossary": [
+    {
+     "term": "Bag of words",
+     "def": "A representation of text as word counts, discarding order."
+    },
+    {
+     "term": "TF-IDF",
+     "def": "Term frequency times inverse document frequency; high for words frequent in a document but rare overall."
+    },
+    {
+     "term": "Cosine similarity",
+     "def": "The cosine of the angle between two vectors; 1 means the same direction."
+    },
+    {
+     "term": "Sparse vector",
+     "def": "A vector with mostly zeros, as in bag-of-words with a large vocabulary."
+    },
+    {
+     "term": "Levenshtein distance",
+     "def": "The minimum number of single-character edits to turn one string into another."
+    }
+   ],
+   "keyPoints": [
+    "tfidf = tf x log(N / df).",
+    "cos = a.b / (|a||b|).",
+    "Sparse vectors: store only non-zeros.",
+    "Query and documents in the same space.",
+    "Edit distance by dynamic programming."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "How would you find the document most about 'volcano' in a library of ten thousand? A first idea: count the word. But long documents win, and 'the' wins everything. TF-IDF fixes both. The term frequency, how often a word appears in this document, is divided by the length.",
+      "The inverse document frequency is the logarithm of the number of documents divided by the number containing the word. A word in every document has IDF zero; a rare, telling word has a large one."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.metrics.pairwise import cosine_similarity\n\ndocs = ['the volcano erupted', 'the cat sat on the mat', 'volcano ash covered the town']\nvec = TfidfVectorizer()\nX = vec.fit_transform(docs)\nq = vec.transform(['volcano ash'])\nprint(cosine_similarity(q, X))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Each document becomes a vector with one position per vocabulary word. The vectors are huge and nearly all zeros, so we store them sparsely. To compare two vectors we use the cosine of the angle between them: the dot product divided by the product of their lengths.",
+      "Two documents using the same words in similar proportions point the same way, however long they are."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A search engine of this kind embeds the query as a vector too and ranks documents by cosine similarity, or by refinements such as BM25. It knows nothing about meaning: 'car' and 'automobile' share no dimension, so a query for one misses the other.",
+      "That limitation motivates the embeddings of Chapter 6."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A different kind of similarity is between spellings. The Levenshtein edit distance counts the fewest single-character insertions, deletions and substitutions that turn one string into another: 'kitten' to 'sitting' is three. A table filled by dynamic programming computes it.",
+      "Spell checkers suggest the dictionary words within one or two edits of what you typed."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does bag of words ignore?",
+     "options": [
+      "Word order",
+      "Word counts",
+      "Vocabulary",
+      "Spelling"
+     ],
+     "answer": 0,
+     "explain": "Only counts."
+    },
+    {
+     "q": "What does a high IDF mean?",
+     "options": [
+      "The word is rare across documents",
+      "The word is common",
+      "The document is long",
+      "The word is a name"
+     ],
+     "answer": 0,
+     "explain": "Distinctive."
+    },
+    {
+     "q": "What does cosine similarity of 1 mean?",
+     "options": [
+      "Same direction",
+      "Opposite",
+      "Unrelated",
+      "Zero length"
+     ],
+     "answer": 0,
+     "explain": "Angle 0."
+    },
+    {
+     "q": "Why divide by vector length in cosine?",
+     "options": [
+      "To ignore document length",
+      "To add noise",
+      "To sort",
+      "To stem"
+     ],
+     "answer": 0,
+     "explain": "Normalise."
+    },
+    {
+     "q": "What is a limitation of TF-IDF?",
+     "options": [
+      "It knows no synonyms",
+      "It is slow",
+      "It needs images",
+      "It ignores counts"
+     ],
+     "answer": 0,
+     "explain": "Car vs automobile."
+    },
+    {
+     "q": "What is the edit distance from kitten to sitting?",
+     "options": [
+      "3",
+      "1",
+      "7",
+      "0"
+     ],
+     "answer": 0,
+     "explain": "s, e->i, add g."
+    }
+   ],
+   "cards": [
+    {
+     "q": "tf x log(N/df)",
+     "a": "TF-IDF"
+    },
+    {
+     "q": "cos = a.b/(|a||b|)",
+     "a": "cosine similarity"
+    },
+    {
+     "q": "TfidfVectorizer()",
+     "a": "scikit-learn TF-IDF"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "TF",
+       "count in this document"
+      ],
+      [
+       "IDF",
+       "rarity across documents"
+      ],
+      [
+       "Cosine",
+       "angle between vectors"
+      ],
+      [
+       "Sparse",
+       "mostly zeros"
+      ],
+      [
+       "Levenshtein",
+       "character edit count"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Bag of words vector",
+     "intro": "Write bow(tokens, vocab): the list of counts of each vocab word in the tokens.",
+     "fn": "bow",
+     "starter": "def bow(tokens, vocab):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "a"
+        ],
+        [
+         "a",
+         "b",
+         "c"
+        ]
+       ],
+       "expect": [
+        2,
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         "x"
+        ]
+       ],
+       "expect": [
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         "z",
+         "z"
+        ],
+        [
+         "z"
+        ]
+       ],
+       "expect": [
+        2
+       ]
+      }
+     ],
+     "hint": "Count each vocabulary word.",
+     "solution": "def bow(tokens, vocab):\n    return [tokens.count(w) for w in vocab]\n"
+    },
+    {
+     "type": "python",
+     "title": "Inverse document frequency",
+     "intro": "Write idf(docs, term): log(N / df) where N is the number of documents (lists of tokens) and df the number containing the term; rounded to 4 decimals. If df is 0 return 0.",
+     "fn": "idf",
+     "starter": "def idf(docs, term):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          "b"
+         ],
+         [
+          "a",
+          "c"
+         ],
+         [
+          "d"
+         ]
+        ],
+        "a"
+       ],
+       "expect": 0.4055,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "b"
+         ],
+         [
+          "a",
+          "c"
+         ],
+         [
+          "d"
+         ]
+        ],
+        "d"
+       ],
+       "expect": 1.0986,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         [
+          "a"
+         ]
+        ],
+        "z"
+       ],
+       "expect": 0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         [
+          "a"
+         ],
+         [
+          "a"
+         ]
+        ],
+        "a"
+       ],
+       "expect": 0.0,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Natural log of N over df.",
+     "solution": "import math\ndef idf(docs, term):\n    df = 0\n    for d in docs:\n        if term in d:\n            df = df + 1\n    if df == 0:\n        return 0\n    return round(math.log(len(docs) / float(df)), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "TF-IDF vector",
+     "intro": "Write tfidf(doc, docs, vocab): for each vocab word, tf x idf where tf = count in doc / len(doc) and idf = log(N / df) (0 if df = 0); each rounded to 4 decimals.",
+     "fn": "tfidf",
+     "starter": "def tfidf(doc, docs, vocab):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "a"
+        ],
+        [
+         [
+          "a",
+          "b",
+          "a"
+         ],
+         [
+          "a",
+          "c"
+         ],
+         [
+          "d"
+         ]
+        ],
+        [
+         "a",
+         "b",
+         "c"
+        ]
+       ],
+       "expect": [
+        0.2703,
+        0.3662,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         "d"
+        ],
+        [
+         [
+          "a"
+         ],
+         [
+          "d"
+         ]
+        ],
+        [
+         "a",
+         "d"
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.6931
+       ]
+      },
+      {
+       "args": [
+        [
+         "x",
+         "y"
+        ],
+        [
+         [
+          "x",
+          "y"
+         ]
+        ],
+        [
+         "x"
+        ]
+       ],
+       "expect": [
+        0.0
+       ]
+      }
+     ],
+     "hint": "Multiply the two factors.",
+     "solution": "import math\ndef tfidf(doc, docs, vocab):\n    out = []\n    for w in vocab:\n        df = 0\n        for d in docs:\n            if w in d:\n                df = df + 1\n        idf = 0 if df == 0 else math.log(len(docs) / float(df))\n        tf = doc.count(w) / float(len(doc))\n        out.append(round(tf * idf, 4))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Cosine similarity",
+     "intro": "Write cosine(a, b): cosine similarity of two vectors rounded to 4 decimals (0 if either vector has zero length).",
+     "fn": "cosine",
+     "starter": "def cosine(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0
+        ],
+        [
+         0,
+         1
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         2,
+         4,
+         6
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": 0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         1,
+         0
+        ]
+       ],
+       "expect": 0.7071,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Guard against zero length.",
+     "solution": "import math\ndef cosine(a, b):\n    dot = sum([a[i] * b[i] for i in range(len(a))])\n    na = math.sqrt(sum([v * v for v in a]))\n    nb = math.sqrt(sum([v * v for v in b]))\n    if na == 0 or nb == 0:\n        return 0\n    return round(dot / (na * nb), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Rank documents",
+     "intro": "Write rank(query_vec, doc_vecs): the document indexes sorted by cosine similarity to the query, highest first (ties by lower index).",
+     "fn": "rank",
+     "starter": "def rank(query_vec, doc_vecs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0,
+         1
+        ],
+        [
+         [
+          1,
+          1,
+          0
+         ],
+         [
+          1,
+          0,
+          1
+         ],
+         [
+          0,
+          1,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        0,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         1
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          2
+         ]
+        ]
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         [
+          1,
+          1
+         ],
+         [
+          2,
+          2
+         ]
+        ]
+       ],
+       "expect": [
+        0,
+        1
+       ]
+      }
+     ],
+     "hint": "Sort by similarity.",
+     "solution": "import math\ndef rank(query_vec, doc_vecs):\n    def cos(a, b):\n        dot = sum([a[i] * b[i] for i in range(len(a))])\n        na = math.sqrt(sum([v * v for v in a]))\n        nb = math.sqrt(sum([v * v for v in b]))\n        if na == 0 or nb == 0:\n            return 0\n        return dot / (na * nb)\n    scores = [(-round(cos(query_vec, d), 6), i) for i, d in enumerate(doc_vecs)]\n    scores.sort()\n    return [i for s, i in scores]\n"
+    },
+    {
+     "type": "python",
+     "title": "Edit distance",
+     "intro": "Write edit_distance(a, b): the Levenshtein distance between two strings.",
+     "fn": "edit_distance",
+     "starter": "def edit_distance(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "kitten",
+        "sitting"
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        "",
+        "abc"
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        "same",
+        "same"
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        "flaw",
+        "lawn"
+       ],
+       "expect": 2
+      }
+     ],
+     "hint": "Fill the table row by row.",
+     "solution": "def edit_distance(a, b):\n    m = len(a)\n    n = len(b)\n    d = [[0] * (n + 1) for _ in range(m + 1)]\n    for i in range(m + 1):\n        d[i][0] = i\n    for j in range(n + 1):\n        d[0][j] = j\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            cost = 0 if a[i - 1] == b[j - 1] else 1\n            d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost)\n    return d[m][n]\n"
+    },
+    {
+     "type": "python",
+     "title": "Jaccard similarity",
+     "intro": "Write jaccard(a, b): the size of the intersection of two token lists (as sets) divided by the size of the union, rounded to 4 decimals (1.0 if both are empty).",
+     "fn": "jaccard",
+     "starter": "def jaccard(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c"
+        ],
+        [
+         "b",
+         "c",
+         "d"
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [],
+        []
+       ],
+       "expect": 1.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        [
+         "y"
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Overlap over union.",
+     "solution": "def jaccard(a, b):\n    sa = set(a)\n    sb = set(b)\n    if len(sa | sb) == 0:\n        return 1.0\n    return round(len(sa & sb) / float(len(sa | sb)), 4)\n"
+    }
+   ]
+  },
+  {
+   "title": "N-gram language models",
+   "maps": [
+    {
+     "title": "Language models",
+     "links": [
+      "Language model | assigns | Probabilities to text",
+      "N-gram | conditions on | Previous n-1 words",
+      "Markov assumption | limits | History",
+      "Smoothing | fixes | Zero counts",
+      "Perplexity | measures | Surprise",
+      "Backoff | falls to | Shorter context",
+      "Generation | samples | Next words"
+     ]
+    }
+   ],
+   "summary": [
+    "A language model assigns a probability to a sequence of words, or equivalently predicts the next word. An n-gram model assumes that the next word depends only on the previous n-1 words, and estimates probabilities by counting in a corpus.",
+    "Unseen word pairs would get probability zero, so we smooth: add-one (Laplace) smoothing, or back off to shorter contexts. Quality is measured by perplexity, the model's average surprise on held-out text; lower is better.",
+    "Language modelling is the idea behind autocomplete, speech recognition and, at a much larger scale, today's large language models."
+   ],
+   "glossary": [
+    {
+     "term": "Language model",
+     "def": "A model that assigns probabilities to sequences of words or predicts the next word."
+    },
+    {
+     "term": "Bigram",
+     "def": "A pair of consecutive words; a bigram model conditions each word on the one before."
+    },
+    {
+     "term": "Smoothing",
+     "def": "Adjusting counts so unseen events get non-zero probability."
+    },
+    {
+     "term": "Perplexity",
+     "def": "The exponential of the average negative log-probability per word; roughly the effective number of choices."
+    },
+    {
+     "term": "Markov assumption",
+     "def": "The assumption that the future depends only on a limited recent past."
+    }
+   ],
+   "keyPoints": [
+    "P(w | prev) = count(prev w) / count(prev).",
+    "Add-k: (count + k) / (total + k V).",
+    "log P(sentence) = sum of log P(w | prev).",
+    "Perplexity = exp(-mean log P).",
+    "Larger n: more context, more sparsity."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Your phone suggests the next word as you type. Behind it is a language model. 'I am going to' is often followed by 'be' or 'the' or 'bed', rarely by 'purple'. Language models turn that intuition into numbers."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The chain rule says the probability of a sentence is the product of each word's probability given everything before it. That is too much history to count.",
+      "The bigram model keeps only the previous word: the probability of 'sat' after 'cat' is the number of times 'cat sat' appears divided by the number of times 'cat' appears. Trigram models keep two words, and so on. This is the Markov assumption."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Counting has a trap. A perfectly good sentence may contain a word pair never seen in training, giving probability zero and, because probabilities multiply, probability zero for the whole sentence. Smoothing shares out some probability to unseen events. Add-one smoothing adds one to every count.",
+      "Kneser-Ney smoothing, which backs off to shorter contexts in a smarter way, was the best n-gram method for decades."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from collections import Counter, defaultdict\nimport math\n\ntokens = '<s> the cat sat on the mat </s>'.split()\nbigrams = Counter(zip(tokens, tokens[1:]))\nunigrams = Counter(tokens)\ndef p(w, prev, k=1, V=len(unigrams)):\n    return (bigrams[(prev, w)] + k) / (unigrams[prev] + k * V)\nprint(p('cat', 'the'))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "To judge a language model, compute how surprised it is by text it has not seen. The perplexity is the exponential of the average negative log probability per word. A perplexity of 100 means the model is as unsure as if it had to choose among 100 equally likely words at each step.",
+      "You can also run the model forwards: pick a next word from its distribution, append, repeat. N-gram generation gives locally sensible but globally rambling text, as the playground shows."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a bigram model condition on?",
+     "options": [
+      "The previous word",
+      "The next word",
+      "The sentence length",
+      "The author"
+     ],
+     "answer": 0,
+     "explain": "n-1 = 1."
+    },
+    {
+     "q": "Why smooth counts?",
+     "options": [
+      "Unseen pairs would get probability zero",
+      "To speed up",
+      "To remove stopwords",
+      "To stem"
+     ],
+     "answer": 0,
+     "explain": "Zero kills the product."
+    },
+    {
+     "q": "What does lower perplexity mean?",
+     "options": [
+      "A better model",
+      "A worse model",
+      "A longer text",
+      "More words"
+     ],
+     "answer": 0,
+     "explain": "Less surprise."
+    },
+    {
+     "q": "What is add-one smoothing?",
+     "options": [
+      "Add one to every count",
+      "Remove one word",
+      "Add one word",
+      "Square the counts"
+     ],
+     "answer": 0,
+     "explain": "Laplace."
+    },
+    {
+     "q": "What is the downside of a large n?",
+     "options": [
+      "Sparse counts",
+      "Too fast",
+      "Too little memory use",
+      "No context"
+     ],
+     "answer": 0,
+     "explain": "Rare n-grams."
+    },
+    {
+     "q": "What is a language model used for?",
+     "options": [
+      "Predicting the next word",
+      "Resizing images",
+      "Sorting",
+      "Compression only"
+     ],
+     "answer": 0,
+     "explain": "Autocomplete."
+    }
+   ],
+   "cards": [
+    {
+     "q": "P(w|prev)",
+     "a": "bigram probability"
+    },
+    {
+     "q": "exp(-mean log p)",
+     "a": "perplexity"
+    },
+    {
+     "q": "(c + k)/(N + kV)",
+     "a": "add-k smoothing"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "N-gram text generator",
+     "intro": "Pick a small corpus and an order (bigram or trigram), then generate text and look at the counts. Generate text with at least two different corpora or orders to complete the lab.",
+     "height": 800,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;min-height:60px;line-height:1.6}\ntable{border-collapse:collapse;width:100%}td,th{border:1px solid #3a2a5c;padding:3px 5px;text-align:center}\n.tk{display:inline-block;padding:4px 8px;margin:2px;border-radius:8px;background:#2a1b48;cursor:pointer}.tk.on{background:#b26bff;color:#1b0b33;font-weight:700}\n</style></head><body>\n<label>Corpus <select id=\"c\"><option value=\"0\">Nursery rhyme</option><option value=\"1\">Weather talk</option><option value=\"2\">Tiny story</option></select>\nOrder <select id=\"o\"><option value=\"1\">Bigram</option><option value=\"2\">Trigram</option></select></label>\n<button id=\"g\">Generate</button><button id=\"s\" class=\"s\">Show counts</button>\n<div id=\"out\" class=\"box\"></div><div id=\"cnt\" class=\"k\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar CORP=[\"the cat sat on the mat . the cat saw the dog . the dog sat on the log . the dog saw the cat . the cat ran to the mat .\",\n\"it is sunny today . it is cold today . it will be sunny tomorrow . it will be rainy tomorrow . today it is sunny and warm . tomorrow it is rainy and cold .\",\n\"the girl found a key . the key opened a door . the door led to a garden . the garden had a tree . the girl climbed the tree . the tree was tall .\"];\nvar seed=7;function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff}\nvar seen={};\nfunction model(){var w=CORP[+$(\"c\").value].split(\" \"),n=+$(\"o\").value,m={},i,k;for(i=0;i+n<w.length;i++){k=w.slice(i,i+n).join(\" \");(m[k]=m[k]||[]).push(w[i+n])}return {m:m,w:w,n:n}}\nfunction pick(a){return a[Math.floor(rnd()*a.length)]}\n$(\"g\").onclick=function(){var M=model(),w=M.w,out=w.slice(0,M.n),i;for(i=0;i<22;i++){var k=out.slice(out.length-M.n).join(\" \"),nx=M.m[k];if(!nx)break;out.push(pick(nx))}\n $(\"out\").textContent=out.join(\" \");seen[$(\"c\").value+\"/\"+$(\"o\").value]=1;var n=Object.keys(seen).length;$(\"p\").textContent=\"Settings tried: \"+n+\" of 2 needed\";if(n>=2)done()};\n$(\"s\").onclick=function(){var M=model(),ks=Object.keys(M.m).slice(0,12),h=\"<table><tr><th>Context</th><th>Next words seen</th></tr>\";ks.forEach(function(k){var c={};M.m[k].forEach(function(x){c[x]=(c[x]||0)+1});h+=\"<tr><td>\"+k+\"</td><td>\"+Object.keys(c).map(function(x){return x+\" x\"+c[x]}).join(\", \")+\"</td></tr>\"});$(\"cnt\").innerHTML=h+\"</table>\"+\"<div>Trigrams are more fluent but copy the corpus more.</div>\"};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Bigram",
+       "two consecutive words"
+      ],
+      [
+       "Smoothing",
+       "give unseen events some probability"
+      ],
+      [
+       "Perplexity",
+       "average surprise"
+      ],
+      [
+       "Markov assumption",
+       "limited history"
+      ],
+      [
+       "Language model",
+       "probabilities of text"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Bigram counts",
+     "intro": "Write bigram_counts(tokens): all distinct bigrams with counts as [w1, w2, count] triples sorted by w1 then w2.",
+     "fn": "bigram_counts",
+     "starter": "def bigram_counts(tokens):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "a",
+         "b",
+         "c"
+        ]
+       ],
+       "expect": [
+        [
+         "a",
+         "b",
+         2
+        ],
+        [
+         "b",
+         "a",
+         1
+        ],
+        [
+         "b",
+         "c",
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "x"
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "the",
+         "cat",
+         "the",
+         "dog"
+        ]
+       ],
+       "expect": [
+        [
+         "cat",
+         "the",
+         1
+        ],
+        [
+         "the",
+         "cat",
+         1
+        ],
+        [
+         "the",
+         "dog",
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Count adjacent pairs.",
+     "solution": "def bigram_counts(tokens):\n    d = {}\n    for i in range(len(tokens) - 1):\n        k = (tokens[i], tokens[i + 1])\n        d[k] = d.get(k, 0) + 1\n    return [[k[0], k[1], d[k]] for k in sorted(d.keys())]\n"
+    },
+    {
+     "type": "python",
+     "title": "Bigram probability",
+     "intro": "Write bigram_prob(tokens, prev, w, k): the add-k smoothed probability (count(prev w) + k) / (count(prev as first of a pair) + k V) where V is the number of distinct tokens; rounded to 4 decimals.",
+     "fn": "bigram_prob",
+     "starter": "def bigram_prob(tokens, prev, w, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "the",
+         "cat",
+         "sat",
+         "the",
+         "cat",
+         "ran"
+        ],
+        "the",
+        "cat",
+        0
+       ],
+       "expect": 1.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         "the",
+         "cat",
+         "sat",
+         "the",
+         "cat",
+         "ran"
+        ],
+        "the",
+        "dog",
+        1
+       ],
+       "expect": 0.1667,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        "a",
+        "b",
+        1
+       ],
+       "expect": 0.6667,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Smoothed relative frequency.",
+     "solution": "def bigram_prob(tokens, prev, w, k):\n    V = len(set(tokens))\n    c = 0\n    cp = 0\n    for i in range(len(tokens) - 1):\n        if tokens[i] == prev:\n            cp = cp + 1\n            if tokens[i + 1] == w:\n                c = c + 1\n    return round((c + k) / float(cp + k * V), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Sentence log-probability",
+     "intro": "Write sent_logprob(sentence, tokens, k): the log of the product of add-k bigram probabilities for consecutive words of sentence, using counts from tokens (V = distinct tokens in tokens), rounded to 3 decimals.",
+     "fn": "sent_logprob",
+     "starter": "def sent_logprob(sentence, tokens, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "the",
+         "cat",
+         "sat"
+        ],
+        [
+         "the",
+         "cat",
+         "sat",
+         "the",
+         "cat",
+         "ran"
+        ],
+        1
+       ],
+       "expect": -1.792,
+       "approx": 0.003
+      },
+      {
+       "args": [
+        [
+         "the",
+         "cat"
+        ],
+        [
+         "the",
+         "cat",
+         "the",
+         "cat"
+        ],
+        1
+       ],
+       "expect": -0.288,
+       "approx": 0.003
+      },
+      {
+       "args": [
+        [
+         "cat",
+         "the"
+        ],
+        [
+         "the",
+         "cat",
+         "the",
+         "cat"
+        ],
+        0.5
+       ],
+       "expect": -0.288,
+       "approx": 0.003
+      }
+     ],
+     "hint": "Sum logs instead of multiplying.",
+     "solution": "import math\ndef sent_logprob(sentence, tokens, k):\n    V = len(set(tokens))\n    total = 0.0\n    for j in range(len(sentence) - 1):\n        prev = sentence[j]\n        w = sentence[j + 1]\n        c = 0\n        cp = 0\n        for i in range(len(tokens) - 1):\n            if tokens[i] == prev:\n                cp = cp + 1\n                if tokens[i + 1] == w:\n                    c = c + 1\n        total = total + math.log((c + k) / float(cp + k * V))\n    return round(total, 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Perplexity",
+     "intro": "Write perplexity(probs): given the list of probabilities the model gave to each word, exp(-mean(log p)) rounded to 3 decimals.",
+     "fn": "perplexity",
+     "starter": "def perplexity(probs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 2.0,
+       "approx": 0.003
+      },
+      {
+       "args": [
+        [
+         1.0,
+         1.0
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.003
+      },
+      {
+       "args": [
+        [
+         0.1,
+         0.2,
+         0.4
+        ]
+       ],
+       "expect": 5.0,
+       "approx": 0.003
+      },
+      {
+       "args": [
+        [
+         0.25
+        ]
+       ],
+       "expect": 4.0,
+       "approx": 0.003
+      }
+     ],
+     "hint": "Inverse geometric mean.",
+     "solution": "import math\ndef perplexity(probs):\n    s = 0.0\n    for p in probs:\n        s = s + math.log(p)\n    return round(math.exp(-s / len(probs)), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Most likely next word",
+     "intro": "Write next_word(tokens, prev): the word that most often follows prev in tokens (ties: alphabetically first); return None if prev never appears as a non-final token.",
+     "fn": "next_word",
+     "starter": "def next_word(tokens, prev):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "a",
+         "c",
+         "a",
+         "b"
+        ],
+        "a"
+       ],
+       "expect": "b"
+      },
+      {
+       "args": [
+        [
+         "x",
+         "y"
+        ],
+        "y"
+       ],
+       "expect": null
+      },
+      {
+       "args": [
+        [
+         "p",
+         "q",
+         "p",
+         "r"
+        ],
+        "p"
+       ],
+       "expect": "q"
+      }
+     ],
+     "hint": "Count followers.",
+     "solution": "def next_word(tokens, prev):\n    d = {}\n    for i in range(len(tokens) - 1):\n        if tokens[i] == prev:\n            d[tokens[i + 1]] = d.get(tokens[i + 1], 0) + 1\n    if not d:\n        return None\n    best = None\n    for w in sorted(d.keys()):\n        if best is None or d[w] > d[best]:\n            best = w\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Greedy generation",
+     "intro": "Write generate(tokens, start, n): starting from the word start, repeatedly append the most frequent following word (ties alphabetical) up to n extra words; stop early if no follower exists. Return the list of words including start.",
+     "fn": "generate",
+     "starter": "def generate(tokens, start, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "the",
+         "cat",
+         "sat",
+         "on",
+         "the",
+         "mat",
+         "the",
+         "cat",
+         "ran"
+        ],
+        "the",
+        4
+       ],
+       "expect": [
+        "the",
+        "cat",
+        "ran"
+       ]
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        "b",
+        3
+       ],
+       "expect": [
+        "b"
+       ]
+      },
+      {
+       "args": [
+        [
+         "x",
+         "y",
+         "x",
+         "y"
+        ],
+        "x",
+        5
+       ],
+       "expect": [
+        "x",
+        "y",
+        "x",
+        "y",
+        "x",
+        "y"
+       ]
+      }
+     ],
+     "hint": "Follow the most common next word.",
+     "solution": "def generate(tokens, start, n):\n    out = [start]\n    for step in range(n):\n        d = {}\n        for i in range(len(tokens) - 1):\n            if tokens[i] == out[-1]:\n                d[tokens[i + 1]] = d.get(tokens[i + 1], 0) + 1\n        if not d:\n            break\n        best = None\n        for w in sorted(d.keys()):\n            if best is None or d[w] > d[best]:\n                best = w\n        out.append(best)\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Text classification: Naive Bayes and sentiment",
+   "maps": [
+    {
+     "title": "Classification",
+     "links": [
+      "Classification | assigns | A label",
+      "Naive Bayes | multiplies | Word likelihoods",
+      "Prior | is | Class frequency",
+      "Likelihood | is | P(word | class)",
+      "Sentiment | is | Opinion polarity",
+      "Lexicon | scores | Words",
+      "F1 | balances | Precision and recall"
+     ]
+    }
+   ],
+   "summary": [
+    "Text classification assigns a label to a document: spam or not, topic, sentiment, language. A strong classical baseline is Naive Bayes, which combines the class prior with the likelihood of each word given the class, assuming words are independent.",
+    "Logistic regression or linear SVMs on TF-IDF features are usually stronger. Sentiment analysis can also use lexicons of positive and negative words, with care over negation.",
+    "Evaluate with held-out data and per-class precision, recall and F1, especially when classes are imbalanced."
+   ],
+   "glossary": [
+    {
+     "term": "Naive Bayes",
+     "def": "A classifier that picks the class maximising prior times the product of word likelihoods, assuming conditional independence."
+    },
+    {
+     "term": "Prior",
+     "def": "The probability of a class before seeing the document."
+    },
+    {
+     "term": "Likelihood",
+     "def": "The probability of the words given a class."
+    },
+    {
+     "term": "Sentiment analysis",
+     "def": "Determining whether text expresses a positive, negative or neutral opinion."
+    },
+    {
+     "term": "Macro F1",
+     "def": "The average of the F1 scores of each class."
+    }
+   ],
+   "keyPoints": [
+    "class = argmax log P(c) + sum log P(w | c).",
+    "P(w | c) = (count + 1) / (total + V).",
+    "Work in logs to avoid underflow.",
+    "Negation flips polarity: 'not good'.",
+    "Macro F1 treats classes equally."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Is this review positive or negative? Is this email spam? Which topic does this article belong to? Each is classification of text, and a simple method works surprisingly well.",
+      "Naive Bayes asks: given the label, how likely would the words be? Spam emails use 'free' and 'winner' more; ham emails use 'meeting' and 'attached'."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Bayes' rule turns this around. The probability of a class given the words is proportional to the prior probability of the class times the probability of the words given the class.",
+      "The naive assumption treats words as independent given the class, so the likelihood is a product of per-word probabilities. They are not independent, but the result ranks classes well.",
+      "Counting gives the probabilities; adding one to every count, Laplace smoothing, handles unseen words; working with logarithms avoids multiplying many tiny numbers."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer\nfrom sklearn.naive_bayes import MultinomialNB\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.metrics import classification_report\n\nclf = make_pipeline(TfidfVectorizer(ngram_range=(1, 2)), LogisticRegression(max_iter=1000))\nclf.fit(train_texts, train_labels)\nprint(classification_report(test_labels, clf.predict(test_texts)))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sentiment analysis is a favourite task. A lexicon method adds up scores of words from a list: 'wonderful' plus two, 'dull' minus one. It is transparent but trips on negation, 'not good', sarcasm and domain: 'unpredictable' praises a thriller and damns a car.",
+      "Handling negation, for instance by flipping the score of words after 'not' until punctuation, fixes some mistakes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Measure on data the model has not seen. Accuracy can mislead with imbalanced classes. Precision, recall and their balance, F1, per class, and the macro average of them show where the model fails.",
+      "Pre-trained transformers, which you meet in later chapters, now beat these classical models on most benchmarks, but Naive Bayes and logistic regression remain fast, cheap, explainable baselines."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does Naive Bayes assume?",
+     "options": [
+      "Words are independent given the class",
+      "Words are in order",
+      "Classes are equal",
+      "Documents are short"
+     ],
+     "answer": 0,
+     "explain": "Naive."
+    },
+    {
+     "q": "Why use logs?",
+     "options": [
+      "Avoid underflow from tiny products",
+      "Make it slower",
+      "Remove words",
+      "Add features"
+     ],
+     "answer": 0,
+     "explain": "Sums of logs."
+    },
+    {
+     "q": "What does Laplace smoothing do?",
+     "options": [
+      "Adds one to counts",
+      "Removes rare words",
+      "Squares counts",
+      "Sorts words"
+     ],
+     "answer": 0,
+     "explain": "Unseen words."
+    },
+    {
+     "q": "What breaks a simple lexicon method?",
+     "options": [
+      "Negation and sarcasm",
+      "Long words",
+      "Spaces",
+      "Numbers"
+     ],
+     "answer": 0,
+     "explain": "Not good."
+    },
+    {
+     "q": "What is a prior?",
+     "options": [
+      "Class probability before seeing the text",
+      "A word list",
+      "A filter",
+      "A token"
+     ],
+     "answer": 0,
+     "explain": "Class frequency."
+    },
+    {
+     "q": "Why macro F1?",
+     "options": [
+      "It weighs classes equally",
+      "It is faster",
+      "It ignores errors",
+      "It uses accuracy"
+     ],
+     "answer": 0,
+     "explain": "Imbalanced classes."
+    }
+   ],
+   "cards": [
+    {
+     "q": "argmax_c log P(c) + sum log P(w|c)",
+     "a": "Naive Bayes rule"
+    },
+    {
+     "q": "MultinomialNB()",
+     "a": "scikit-learn Naive Bayes"
+    },
+    {
+     "q": "classification_report",
+     "a": "per-class metrics"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each classification idea with its meaning.",
+     "pairs": [
+      [
+       "Prior",
+       "class probability alone"
+      ],
+      [
+       "Likelihood",
+       "words given class"
+      ],
+      [
+       "Laplace smoothing",
+       "add one"
+      ],
+      [
+       "Lexicon",
+       "list of scored words"
+      ],
+      [
+       "Macro F1",
+       "average over classes"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Train Naive Bayes",
+     "intro": "Write train_nb(docs, labels): docs are lists of tokens. Return [priors, counts] where priors is a list of [label, count of docs] sorted by label and counts is a list of [label, word, count] sorted by label then word.",
+     "fn": "train_nb",
+     "starter": "def train_nb(docs, labels):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "good",
+          "film"
+         ],
+         [
+          "bad",
+          "film"
+         ]
+        ],
+        [
+         "pos",
+         "neg"
+        ]
+       ],
+       "expect": [
+        [
+         [
+          "neg",
+          1
+         ],
+         [
+          "pos",
+          1
+         ]
+        ],
+        [
+         [
+          "neg",
+          "bad",
+          1
+         ],
+         [
+          "neg",
+          "film",
+          1
+         ],
+         [
+          "pos",
+          "film",
+          1
+         ],
+         [
+          "pos",
+          "good",
+          1
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "a"
+         ]
+        ],
+        [
+         "x"
+        ]
+       ],
+       "expect": [
+        [
+         [
+          "x",
+          1
+         ]
+        ],
+        [
+         [
+          "x",
+          "a",
+          2
+         ]
+        ]
+       ]
+      }
+     ],
+     "hint": "Count documents per label and words per label.",
+     "solution": "def train_nb(docs, labels):\n    pri = {}\n    cnt = {}\n    for d, l in zip(docs, labels):\n        pri[l] = pri.get(l, 0) + 1\n        for w in d:\n            k = (l, w)\n            cnt[k] = cnt.get(k, 0) + 1\n    return [[[l, pri[l]] for l in sorted(pri.keys())], [[k[0], k[1], cnt[k]] for k in sorted(cnt.keys())]]\n"
+    },
+    {
+     "type": "python",
+     "title": "Predict with Naive Bayes",
+     "intro": "Write predict_nb(doc, docs, labels): train add-one-smoothed Naive Bayes on docs and labels and return the label with the highest log P(c) + sum over the doc's words of log((count(c, w) + 1) / (total words in c + V)), where V is the number of distinct words in docs. Ties go to the alphabetically first label.",
+     "fn": "predict_nb",
+     "starter": "def predict_nb(doc, docs, labels):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "good",
+         "fun"
+        ],
+        [
+         [
+          "good",
+          "film"
+         ],
+         [
+          "fun",
+          "good"
+         ],
+         [
+          "bad",
+          "film"
+         ],
+         [
+          "dull",
+          "bad"
+         ]
+        ],
+        [
+         "pos",
+         "pos",
+         "neg",
+         "neg"
+        ]
+       ],
+       "expect": "pos"
+      },
+      {
+       "args": [
+        [
+         "bad"
+        ],
+        [
+         [
+          "good",
+          "film"
+         ],
+         [
+          "fun",
+          "good"
+         ],
+         [
+          "bad",
+          "film"
+         ],
+         [
+          "dull",
+          "bad"
+         ]
+        ],
+        [
+         "pos",
+         "pos",
+         "neg",
+         "neg"
+        ]
+       ],
+       "expect": "neg"
+      },
+      {
+       "args": [
+        [
+         "film"
+        ],
+        [
+         [
+          "good",
+          "film"
+         ],
+         [
+          "bad",
+          "film"
+         ]
+        ],
+        [
+         "pos",
+         "neg"
+        ]
+       ],
+       "expect": "neg"
+      }
+     ],
+     "hint": "Compare the log scores of each class.",
+     "solution": "import math\ndef predict_nb(doc, docs, labels):\n    vocab = set()\n    for d in docs:\n        for w in d:\n            vocab.add(w)\n    V = len(vocab)\n    best = None\n    bs = None\n    for c in sorted(set(labels)):\n        n = len([l for l in labels if l == c])\n        s = math.log(n / float(len(labels)))\n        words = []\n        for d, l in zip(docs, labels):\n            if l == c:\n                words = words + d\n        tot = len(words)\n        for w in doc:\n            s = s + math.log((words.count(w) + 1) / float(tot + V))\n        if bs is None or s > bs + 1e-12:\n            bs = s\n            best = c\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Lexicon sentiment",
+     "intro": "Write sentiment(tokens, lexicon): lexicon is a list of [word, score]. Sum the scores of tokens found in it; a token's score is multiplied by -1 if the previous token is 'not'. Return the label 'positive' if the total is above 0, 'negative' if below 0, else 'neutral'.",
+     "fn": "sentiment",
+     "starter": "def sentiment(tokens, lexicon):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "great",
+         "film"
+        ],
+        [
+         [
+          "great",
+          2
+         ],
+         [
+          "dull",
+          -1
+         ]
+        ]
+       ],
+       "expect": "positive"
+      },
+      {
+       "args": [
+        [
+         "not",
+         "great"
+        ],
+        [
+         [
+          "great",
+          2
+         ],
+         [
+          "dull",
+          -1
+         ]
+        ]
+       ],
+       "expect": "negative"
+      },
+      {
+       "args": [
+        [
+         "fine"
+        ],
+        [
+         [
+          "great",
+          2
+         ]
+        ]
+       ],
+       "expect": "neutral"
+      },
+      {
+       "args": [
+        [
+         "dull",
+         "but",
+         "great"
+        ],
+        [
+         [
+          "great",
+          2
+         ],
+         [
+          "dull",
+          -1
+         ]
+        ]
+       ],
+       "expect": "positive"
+      }
+     ],
+     "hint": "Flip after a negation.",
+     "solution": "def sentiment(tokens, lexicon):\n    d = {}\n    for w, s in lexicon:\n        d[w] = s\n    total = 0\n    for i in range(len(tokens)):\n        if tokens[i] in d:\n            s = d[tokens[i]]\n            if i > 0 and tokens[i - 1] == 'not':\n                s = -s\n            total = total + s\n    if total > 0:\n        return 'positive'\n    if total < 0:\n        return 'negative'\n    return 'neutral'\n"
+    },
+    {
+     "type": "python",
+     "title": "Per-class F1",
+     "intro": "Write f1_for(y_true, y_pred, label): the F1 score for one label, rounded to 3 decimals (0 if undefined).",
+     "fn": "f1_for",
+     "starter": "def f1_for(y_true, y_pred, label):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "a",
+         "b",
+         "b"
+        ],
+        [
+         "a",
+         "b",
+         "b",
+         "b"
+        ],
+        "a"
+       ],
+       "expect": 0.667,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         "b",
+         "a"
+        ],
+        "a"
+       ],
+       "expect": 0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         "a",
+         "a"
+        ],
+        [
+         "a",
+         "a"
+        ],
+        "a"
+       ],
+       "expect": 1.0,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Count the three cases.",
+     "solution": "def f1_for(y_true, y_pred, label):\n    tp = 0\n    fp = 0\n    fn = 0\n    for i in range(len(y_true)):\n        if y_pred[i] == label and y_true[i] == label:\n            tp = tp + 1\n        elif y_pred[i] == label:\n            fp = fp + 1\n        elif y_true[i] == label:\n            fn = fn + 1\n    p = tp / float(tp + fp) if tp + fp else 0\n    r = tp / float(tp + fn) if tp + fn else 0\n    if p + r == 0:\n        return 0\n    return round(2 * p * r / (p + r), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Macro F1",
+     "intro": "Write macro_f1(y_true, y_pred): the average over all labels (sorted) of the per-class F1, rounded to 3 decimals.",
+     "fn": "macro_f1",
+     "starter": "def macro_f1(y_true, y_pred):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "a",
+         "b",
+         "b"
+        ],
+        [
+         "a",
+         "b",
+         "b",
+         "b"
+        ]
+       ],
+       "expect": 0.733,
+       "approx": 0.003
+      },
+      {
+       "args": [
+        [
+         "x",
+         "y",
+         "z"
+        ],
+        [
+         "x",
+         "y",
+         "z"
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.003
+      },
+      {
+       "args": [
+        [
+         "a",
+         "a",
+         "a",
+         "b"
+        ],
+        [
+         "a",
+         "a",
+         "a",
+         "a"
+        ]
+       ],
+       "expect": 0.429,
+       "approx": 0.003
+      }
+     ],
+     "hint": "Average the class scores.",
+     "solution": "def macro_f1(y_true, y_pred):\n    labels = sorted(set(y_true) | set(y_pred))\n    total = 0.0\n    for label in labels:\n        tp = 0\n        fp = 0\n        fn = 0\n        for i in range(len(y_true)):\n            if y_pred[i] == label and y_true[i] == label:\n                tp = tp + 1\n            elif y_pred[i] == label:\n                fp = fp + 1\n            elif y_true[i] == label:\n                fn = fn + 1\n        p = tp / float(tp + fp) if tp + fp else 0\n        r = tp / float(tp + fn) if tp + fn else 0\n        f = 0 if p + r == 0 else 2 * p * r / (p + r)\n        total = total + f\n    return round(total / len(labels), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Language detection",
+     "intro": "Write detect(text, profiles): profiles is a list of [language, characters] where characters is a string of that language's typical letters. Return the language whose profile contains the most of the text's letters (count letters of the text that appear in the profile string; ties go to the first language).",
+     "fn": "detect",
+     "starter": "def detect(text, profiles):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "hello world",
+        [
+         [
+          "en",
+          "abcdefghijklmnopqrstuvwxyz"
+         ],
+         [
+          "de",
+          "abcdefghijklmnopqrstuvwxyzäöüß"
+         ]
+        ]
+       ],
+       "expect": "en"
+      },
+      {
+       "args": [
+        "grüße",
+        [
+         [
+          "en",
+          "abcdefghijklmnopqrstuvwxyz"
+         ],
+         [
+          "de",
+          "abcdefghijklmnopqrstuvwxyzäöüß"
+         ]
+        ]
+       ],
+       "expect": "de"
+      },
+      {
+       "args": [
+        "",
+        [
+         [
+          "a",
+          "x"
+         ],
+         [
+          "b",
+          "y"
+         ]
+        ]
+       ],
+       "expect": "a"
+      }
+     ],
+     "hint": "Count matching letters.",
+     "solution": "def detect(text, profiles):\n    best = None\n    bs = -1\n    for lang, chars in profiles:\n        s = 0\n        for ch in text.lower():\n            if ch != \" \" and ch in chars:\n                s = s + 1\n        if s > bs:\n            bs = s\n            best = lang\n    return best\n"
+    }
+   ]
+  },
+  {
+   "title": "Linguistic structure: tagging, parsing and entities",
+   "maps": [
+    {
+     "title": "Structure",
+     "links": [
+      "POS tag | labels | Word class",
+      "HMM | models | Tag sequences",
+      "Viterbi | finds | Best tag path",
+      "Grammar | generates | Sentences",
+      "Parse tree | shows | Structure",
+      "NER | finds | Names",
+      "Dependency | links | Heads and dependents"
+     ]
+    }
+   ],
+   "summary": [
+    "Language has structure. Part-of-speech tagging labels each word as noun, verb and so on; context matters, since 'duck' can be either. A hidden Markov model with the Viterbi algorithm finds the most probable tag sequence.",
+    "A context-free grammar describes how phrases build sentences, and a parser recovers the tree, for example with the CKY algorithm. Dependency parsing links each word to its head.",
+    "Named entity recognition finds names of people, places and organisations, usually by tagging tokens with B-I-O labels."
+   ],
+   "glossary": [
+    {
+     "term": "Part of speech (POS)",
+     "def": "The grammatical category of a word, such as noun, verb or adjective."
+    },
+    {
+     "term": "Hidden Markov model",
+     "def": "A model with hidden states (tags) that emit observed words and move by transition probabilities."
+    },
+    {
+     "term": "Viterbi algorithm",
+     "def": "A dynamic programming method that finds the most probable hidden state sequence."
+    },
+    {
+     "term": "Context-free grammar",
+     "def": "A set of rewrite rules such as S -> NP VP that generate sentences."
+    },
+    {
+     "term": "Named entity recognition",
+     "def": "Finding and classifying names of people, organisations, locations and so on in text."
+    }
+   ],
+   "keyPoints": [
+    "Viterbi: best[t][s] = max over p of best[t-1][p] T[p][s] E[s][w].",
+    "CKY fills a chart for spans.",
+    "BIO tags: B-PER begins, I-PER continues, O outside.",
+    "Dependency: each word has one head.",
+    "Neural taggers now give the best accuracy."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Read 'Time flies like an arrow' and 'Fruit flies like a banana'. The same words get different structures. Understanding language requires more than a bag of words. The first layer of structure is the part of speech. 'Flies' might be a verb or a noun, and neighbours decide.",
+      "A tagger assigns each word a tag using the surrounding words."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The classic model is the hidden Markov model. Tags are hidden states. Each tag tends to follow certain tags, determiner then noun, which gives transition probabilities, and each tag emits certain words, which gives emission probabilities.",
+      "Given a sentence, the number of possible tag sequences is huge, but the Viterbi algorithm finds the best one in time proportional to the length times the square of the number of tags, by keeping, for each position and tag, only the best path ending there."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Above tags sit phrases. A context-free grammar has rules such as a sentence is a noun phrase followed by a verb phrase, and a noun phrase is a determiner followed by a noun. A parser finds the tree that the grammar assigns to a sentence.",
+      "The CKY algorithm fills a triangular chart with every constituent for every span of words, working from short spans to long. Ambiguity, as in 'I saw the man with the telescope', produces several trees, and probabilistic grammars choose the likeliest."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import spacy\nnlp = spacy.load('en_core_web_sm')\ndoc = nlp('Apple is looking at buying a U.K. startup for $1 billion.')\nfor t in doc:\n    print(t.text, t.pos_, t.dep_, t.head.text)\nfor ent in doc.ents:\n    print(ent.text, ent.label_)   # Apple ORG, U.K. GPE, $1 billion MONEY"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Dependency grammars take another view. Instead of nested phrases, each word depends on exactly one head word, with a labelled link such as subject or object, giving a tree of word-to-word arrows. Named entity recognition finds mentions of people, organisations, places and dates.",
+      "It is usually treated as tagging with BIO labels: B marks the beginning of an entity, I its continuation, O everything outside. Today these tasks are done by neural networks trained on annotated treebanks, and later chapters show how pre-trained transformers made them much more accurate."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does POS tagging assign?",
+     "options": [
+      "A grammatical category to each word",
+      "A sentiment",
+      "A translation",
+      "A frequency"
+     ],
+     "answer": 0,
+     "explain": "Noun, verb."
+    },
+    {
+     "q": "What does the Viterbi algorithm find?",
+     "options": [
+      "The most probable tag sequence",
+      "The shortest word",
+      "The most common word",
+      "A grammar"
+     ],
+     "answer": 0,
+     "explain": "Dynamic programming."
+    },
+    {
+     "q": "What does a context-free grammar contain?",
+     "options": [
+      "Rewrite rules",
+      "Word vectors",
+      "Images",
+      "Counts"
+     ],
+     "answer": 0,
+     "explain": "S -> NP VP."
+    },
+    {
+     "q": "What does BIO tagging mark?",
+     "options": [
+      "Entity boundaries",
+      "Sentiment",
+      "Stopwords",
+      "Verbs"
+     ],
+     "answer": 0,
+     "explain": "Begin, inside, outside."
+    },
+    {
+     "q": "What is a dependency link?",
+     "options": [
+      "From a word to its head",
+      "Between letters",
+      "A synonym",
+      "A suffix"
+     ],
+     "answer": 0,
+     "explain": "Head and dependent."
+    },
+    {
+     "q": "Why is parsing hard?",
+     "options": [
+      "Ambiguity",
+      "Short sentences",
+      "Too few words",
+      "Spelling only"
+     ],
+     "answer": 0,
+     "explain": "Many trees."
+    }
+   ],
+   "cards": [
+    {
+     "q": "S -> NP VP",
+     "a": "grammar rule"
+    },
+    {
+     "q": "B-PER, I-PER, O",
+     "a": "BIO tags"
+    },
+    {
+     "q": "nlp(text).ents",
+     "a": "spaCy entities"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each structure idea with its meaning.",
+     "pairs": [
+      [
+       "POS tag",
+       "word class"
+      ],
+      [
+       "Viterbi",
+       "best hidden path"
+      ],
+      [
+       "CKY",
+       "chart parsing"
+      ],
+      [
+       "NER",
+       "find names"
+      ],
+      [
+       "Dependency",
+       "word to head link"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Most frequent tag baseline",
+     "intro": "Write tag_baseline(words, lexicon, default): lexicon is a list of [word, tag]; return the list of tags for the words (the lexicon tag if known, else default).",
+     "fn": "tag_baseline",
+     "starter": "def tag_baseline(words, lexicon, default):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "the",
+         "dog",
+         "barks"
+        ],
+        [
+         [
+          "the",
+          "DET"
+         ],
+         [
+          "dog",
+          "NOUN"
+         ]
+        ],
+        "VERB"
+       ],
+       "expect": [
+        "DET",
+        "NOUN",
+        "VERB"
+       ]
+      },
+      {
+       "args": [
+        [],
+        [],
+        "X"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        [
+         [
+          "a",
+          "DET"
+         ]
+        ],
+        "N"
+       ],
+       "expect": [
+        "DET"
+       ]
+      }
+     ],
+     "hint": "Look each word up.",
+     "solution": "def tag_baseline(words, lexicon, default):\n    d = {}\n    for w, t in lexicon:\n        d[w] = t\n    return [d.get(w, default) for w in words]\n"
+    },
+    {
+     "type": "python",
+     "title": "Viterbi",
+     "intro": "Write viterbi(obs, states, start_p, trans_p, emit_p): the most probable state path for the observation list. start_p is a list aligned with states, trans_p a matrix [from][to], emit_p a list (per state) of dictionaries given as lists of [observation, probability] pairs (missing observation = probability 0). On ties choose the lower state index. Return the list of state names.",
+     "fn": "viterbi",
+     "starter": "def viterbi(obs, states, start_p, trans_p, emit_p):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "dogs",
+         "bark"
+        ],
+        [
+         "N",
+         "V"
+        ],
+        [
+         0.7,
+         0.3
+        ],
+        [
+         [
+          0.3,
+          0.7
+         ],
+         [
+          0.6,
+          0.4
+         ]
+        ],
+        [
+         [
+          [
+           "dogs",
+           0.6
+          ],
+          [
+           "bark",
+           0.1
+          ]
+         ],
+         [
+          [
+           "dogs",
+           0.05
+          ],
+          [
+           "bark",
+           0.7
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        "N",
+        "V"
+       ]
+      },
+      {
+       "args": [
+        [
+         "bark",
+         "dogs"
+        ],
+        [
+         "N",
+         "V"
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        [
+         [
+          0.3,
+          0.7
+         ],
+         [
+          0.8,
+          0.2
+         ]
+        ],
+        [
+         [
+          [
+           "dogs",
+           0.6
+          ],
+          [
+           "bark",
+           0.3
+          ]
+         ],
+         [
+          [
+           "dogs",
+           0.05
+          ],
+          [
+           "bark",
+           0.6
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        "V",
+        "N"
+       ]
+      },
+      {
+       "args": [
+        [
+         "dogs"
+        ],
+        [
+         "N",
+         "V"
+        ],
+        [
+         0.5,
+         0.5
+        ],
+        [
+         [
+          0.5,
+          0.5
+         ],
+         [
+          0.5,
+          0.5
+         ]
+        ],
+        [
+         [
+          [
+           "dogs",
+           0.4
+          ]
+         ],
+         [
+          [
+           "dogs",
+           0.1
+          ]
+         ]
+        ]
+       ],
+       "expect": [
+        "N"
+       ]
+      }
+     ],
+     "hint": "Keep the best predecessor for each state.",
+     "solution": "def viterbi(obs, states, start_p, trans_p, emit_p):\n    n = len(states)\n    E = []\n    for lst in emit_p:\n        d = {}\n        for o, p in lst:\n            d[o] = p\n        E.append(d)\n    V = [[0.0] * n for _ in obs]\n    B = [[0] * n for _ in obs]\n    for s in range(n):\n        V[0][s] = start_p[s] * E[s].get(obs[0], 0.0)\n    for t in range(1, len(obs)):\n        for s in range(n):\n            best = -1.0\n            arg = 0\n            for p in range(n):\n                v = V[t - 1][p] * trans_p[p][s]\n                if v > best + 1e-15:\n                    best = v\n                    arg = p\n            V[t][s] = best * E[s].get(obs[t], 0.0)\n            B[t][s] = arg\n    last = 0\n    bv = -1.0\n    for s in range(n):\n        if V[-1][s] > bv + 1e-15:\n            bv = V[-1][s]\n            last = s\n    path = [last]\n    for t in range(len(obs) - 1, 0, -1):\n        last = B[t][last]\n        path.append(last)\n    path.reverse()\n    return [states[i] for i in path]\n"
+    },
+    {
+     "type": "python",
+     "title": "CKY recognition",
+     "intro": "Write cky(words, lexicon, rules): lexicon is a list of [word, category]; rules is a list of [parent, left, right] binary rules (Chomsky normal form). Return True if the start symbol 'S' can be derived over the whole sentence.",
+     "fn": "cky",
+     "starter": "def cky(words, lexicon, rules):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "the",
+         "dog",
+         "barks"
+        ],
+        [
+         [
+          "the",
+          "Det"
+         ],
+         [
+          "dog",
+          "N"
+         ],
+         [
+          "barks",
+          "V"
+         ]
+        ],
+        [
+         [
+          "S",
+          "NP",
+          "V"
+         ],
+         [
+          "NP",
+          "Det",
+          "N"
+         ]
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "dog",
+         "the",
+         "barks"
+        ],
+        [
+         [
+          "the",
+          "Det"
+         ],
+         [
+          "dog",
+          "N"
+         ],
+         [
+          "barks",
+          "V"
+         ]
+        ],
+        [
+         [
+          "S",
+          "NP",
+          "V"
+         ],
+         [
+          "NP",
+          "Det",
+          "N"
+         ]
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         "dogs",
+         "bark"
+        ],
+        [
+         [
+          "dogs",
+          "NP"
+         ],
+         [
+          "bark",
+          "V"
+         ]
+        ],
+        [
+         [
+          "S",
+          "NP",
+          "V"
+         ]
+        ]
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Fill the chart by span length.",
+     "solution": "def cky(words, lexicon, rules):\n    n = len(words)\n    chart = [[set() for _ in range(n + 1)] for _ in range(n + 1)]\n    for i in range(n):\n        for w, c in lexicon:\n            if w == words[i]:\n                chart[i][i + 1].add(c)\n    for span in range(2, n + 1):\n        for i in range(0, n - span + 1):\n            j = i + span\n            for k in range(i + 1, j):\n                for p, l, r in rules:\n                    if l in chart[i][k] and r in chart[k][j]:\n                        chart[i][j].add(p)\n    return 'S' in chart[0][n]\n"
+    },
+    {
+     "type": "python",
+     "title": "Decode BIO entities",
+     "intro": "Write entities(tokens, tags): tags use B-X, I-X and O. Return the list of [text, type] where text joins the tokens of an entity with spaces.",
+     "fn": "entities",
+     "starter": "def entities(tokens, tags):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "Ada",
+         "Lovelace",
+         "visited",
+         "London"
+        ],
+        [
+         "B-PER",
+         "I-PER",
+         "O",
+         "B-LOC"
+        ]
+       ],
+       "expect": [
+        [
+         "Ada Lovelace",
+         "PER"
+        ],
+        [
+         "London",
+         "LOC"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         "O",
+         "O"
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "New",
+         "York",
+         "City"
+        ],
+        [
+         "B-LOC",
+         "I-LOC",
+         "I-LOC"
+        ]
+       ],
+       "expect": [
+        [
+         "New York City",
+         "LOC"
+        ]
+       ]
+      }
+     ],
+     "hint": "Open an entity on B, extend on I.",
+     "solution": "def entities(tokens, tags):\n    out = []\n    cur = None\n    typ = None\n    for t, g in zip(tokens, tags):\n        if g.startswith('B-'):\n            if cur is not None:\n                out.append([cur, typ])\n            cur = t\n            typ = g[2:]\n        elif g.startswith('I-') and cur is not None and g[2:] == typ:\n            cur = cur + ' ' + t\n        else:\n            if cur is not None:\n                out.append([cur, typ])\n            cur = None\n            typ = None\n    if cur is not None:\n        out.append([cur, typ])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Regex-like entity finder",
+     "intro": "Write find_money(tokens): the indexes of tokens that start with '$' followed by digits (digits may include commas or a decimal point).",
+     "fn": "find_money",
+     "starter": "def find_money(tokens):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "pay",
+         "$5",
+         "or",
+         "$1,200.50",
+         "or",
+         "$abc"
+        ]
+       ],
+       "expect": [
+        1,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         "no",
+         "money"
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "$",
+         "$9"
+        ]
+       ],
+       "expect": [
+        1
+       ]
+      }
+     ],
+     "hint": "Check the body characters.",
+     "solution": "def find_money(tokens):\n    out = []\n    for i, t in enumerate(tokens):\n        if len(t) > 1 and t[0] == '$':\n            body = t[1:]\n            ok = True\n            has_digit = False\n            for ch in body:\n                if ch.isdigit():\n                    has_digit = True\n                elif ch not in ',.':\n                    ok = False\n            if ok and has_digit:\n                out.append(i)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Dependency heads",
+     "intro": "Write root_and_children(heads): heads[i] is the index of word i's head, with -1 for the root. Return [root index, list of the children counts per word].",
+     "fn": "root_and_children",
+     "starter": "def root_and_children(heads):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         -1,
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        [
+         0,
+         2,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         -1
+        ]
+       ],
+       "expect": [
+        0,
+        [
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         2,
+         -1,
+         2
+        ]
+       ],
+       "expect": [
+        2,
+        [
+         0,
+         0,
+         3,
+         0
+        ]
+       ]
+      }
+     ],
+     "hint": "Count how often each index is a head.",
+     "solution": "def root_and_children(heads):\n    root = heads.index(-1)\n    counts = [0] * len(heads)\n    for h in heads:\n        if h >= 0:\n            counts[h] = counts[h] + 1\n    return [root, counts]\n"
+    },
+    {
+     "type": "python",
+     "title": "Tagging accuracy",
+     "intro": "Write tag_accuracy(gold, pred): the fraction of positions where the tags agree, rounded to 3 decimals.",
+     "fn": "tag_accuracy",
+     "starter": "def tag_accuracy(gold, pred):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "N",
+         "V",
+         "N"
+        ],
+        [
+         "N",
+         "N",
+         "N"
+        ]
+       ],
+       "expect": 0.667,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         "A"
+        ],
+        [
+         "A"
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         "x",
+         "y"
+        ],
+        [
+         "y",
+         "x"
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Count agreements.",
+     "solution": "def tag_accuracy(gold, pred):\n    ok = 0\n    for i in range(len(gold)):\n        if gold[i] == pred[i]:\n            ok = ok + 1\n    return round(ok / float(len(gold)), 3)\n"
+    }
+   ]
+  },
+  {
+   "title": "Word embeddings: meaning as geometry",
+   "maps": [
+    {
+     "title": "Embeddings",
+     "links": [
+      "Distributional hypothesis | links | Context to meaning",
+      "Co-occurrence | counts | Neighbours",
+      "PMI | measures | Association",
+      "Word2vec | predicts | Context words",
+      "Embedding | is | A dense vector",
+      "Analogy | uses | Vector arithmetic",
+      "Bias | is learned | From text"
+     ]
+    }
+   ],
+   "summary": [
+    "You shall know a word by the company it keeps. Words that appear in similar contexts have similar meanings. Counting co-occurrences and reducing the table to dense vectors gives word embeddings, in which similar words are close together.",
+    "Word2vec and GloVe learn vectors of a few hundred numbers. Cosine similarity finds neighbours, and directions encode relations: king minus man plus woman lands near queen.",
+    "Embeddings reflect the text they were trained on, including its social biases, which must be audited."
+   ],
+   "glossary": [
+    {
+     "term": "Distributional hypothesis",
+     "def": "The idea that words used in similar contexts have similar meanings."
+    },
+    {
+     "term": "Word embedding",
+     "def": "A dense vector of real numbers representing a word, learned from text."
+    },
+    {
+     "term": "PPMI",
+     "def": "Positive pointwise mutual information: how much more often two words co-occur than chance, floored at zero."
+    },
+    {
+     "term": "Skip-gram",
+     "def": "A word2vec training task: predict the context words around a given word."
+    },
+    {
+     "term": "Out-of-vocabulary",
+     "def": "A word not seen in training and so lacking a vector."
+    }
+   ],
+   "keyPoints": [
+    "PMI = log P(w, c) / (P(w) P(c)).",
+    "Similar words, similar contexts.",
+    "Skip-gram pairs (centre, context) in a window.",
+    "king - man + woman is about queen.",
+    "Contextual embeddings replaced static ones."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The bag-of-words view treats 'car' and 'automobile' as strangers. But they appear among the same neighbours: drive, road, engine, parked. The linguist J. R. Firth put it as a slogan: you shall know a word by the company it keeps.",
+      "If we describe each word by the words around it, similar words get similar descriptions."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Build a table with a row per word and a column per context word, counting how often they appear within a few words of each other.",
+      "Raw counts are dominated by common words, so replace them by pointwise mutual information, which asks how much more often the pair occurs than if the words were independent. Table rows are long sparse vectors.",
+      "Reduce them, for instance with singular value decomposition, to 100 or 300 dense dimensions, and you have embeddings."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Word2vec, from Tomas Mikolov and colleagues at Google in 2013, learns the vectors directly with a tiny neural network. In the skip-gram variant, the network reads a word and tries to predict the words in a window around it. Training pushes words that share contexts toward similar vectors.",
+      "With negative sampling, random wrong words serve as the contrast. GloVe fits vectors to the log co-occurrence counts. Both train in minutes on a laptop."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from gensim.models import Word2Vec\nsentences = [['the', 'king', 'rules'], ['the', 'queen', 'rules'], ['a', 'dog', 'barks']]\nmodel = Word2Vec(sentences, vector_size=50, window=2, min_count=1, sg=1, epochs=50)\nprint(model.wv.most_similar('king'))\n# with pretrained vectors:\n# print(wv.most_similar(positive=['king', 'woman'], negative=['man']))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The resulting space has remarkable regularities. Differences between vectors capture relations, so the vector for king minus man plus woman lies near queen, and Paris minus France plus Italy lies near Rome.",
+      "But the space also absorbs the prejudice of its training text: 'doctor' sits closer to 'he' and 'nurse' closer to 'she'. Static embeddings give one vector per word, even for 'bank' of a river and 'bank' of money.",
+      "Chapters ahead replace them with contextual embeddings from transformers, which give each occurrence its own vector."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the distributional hypothesis?",
+     "options": [
+      "Similar contexts imply similar meanings",
+      "Words are random",
+      "Meaning is fixed",
+      "Only nouns matter"
+     ],
+     "answer": 0,
+     "explain": "Company it keeps."
+    },
+    {
+     "q": "What does PMI measure?",
+     "options": [
+      "Association beyond chance",
+      "Word length",
+      "Frequency only",
+      "Spelling"
+     ],
+     "answer": 0,
+     "explain": "Pointwise mutual information."
+    },
+    {
+     "q": "What does skip-gram predict?",
+     "options": [
+      "Context words from a centre word",
+      "The next sentence",
+      "A label",
+      "Spelling"
+     ],
+     "answer": 0,
+     "explain": "Word2vec."
+    },
+    {
+     "q": "What does king - man + woman approximate?",
+     "options": [
+      "queen",
+      "kings",
+      "men",
+      "crown"
+     ],
+     "answer": 0,
+     "explain": "Analogy."
+    },
+    {
+     "q": "What problem do static embeddings have?",
+     "options": [
+      "One vector per word, ignoring sense",
+      "Too long",
+      "Too sparse",
+      "Not numeric"
+     ],
+     "answer": 0,
+     "explain": "Bank."
+    },
+    {
+     "q": "Why audit embeddings?",
+     "options": [
+      "They absorb biases of the text",
+      "They are slow",
+      "They are sparse",
+      "They need labels"
+     ],
+     "answer": 0,
+     "explain": "Social bias."
+    }
+   ],
+   "cards": [
+    {
+     "q": "cos(a, b)",
+     "a": "vector similarity"
+    },
+    {
+     "q": "log P(w,c)/(P(w)P(c))",
+     "a": "PMI"
+    },
+    {
+     "q": "Word2Vec(sentences)",
+     "a": "train embeddings"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each embedding idea with its meaning.",
+     "pairs": [
+      [
+       "Co-occurrence",
+       "words near each other"
+      ],
+      [
+       "PMI",
+       "association beyond chance"
+      ],
+      [
+       "Skip-gram",
+       "predict context words"
+      ],
+      [
+       "Analogy",
+       "vector arithmetic"
+      ],
+      [
+       "OOV",
+       "unseen word"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Co-occurrence counts",
+     "intro": "Write cooc(tokens, window): for each unordered pair of distinct words appearing within window positions of each other, count the co-occurrences; return [w1, w2, count] triples with w1 < w2, sorted.",
+     "fn": "cooc",
+     "starter": "def cooc(tokens, window):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c",
+         "a"
+        ],
+        1
+       ],
+       "expect": [
+        [
+         "a",
+         "b",
+         1
+        ],
+        [
+         "a",
+         "c",
+         1
+        ],
+        [
+         "b",
+         "c",
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "x",
+         "y",
+         "x",
+         "y"
+        ],
+        2
+       ],
+       "expect": [
+        [
+         "x",
+         "y",
+         3
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "p"
+        ],
+        3
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Look ahead at most window positions.",
+     "solution": "def cooc(tokens, window):\n    d = {}\n    for i in range(len(tokens)):\n        for j in range(i + 1, min(len(tokens), i + window + 1)):\n            a = tokens[i]\n            b = tokens[j]\n            if a == b:\n                continue\n            k = (a, b) if a < b else (b, a)\n            d[k] = d.get(k, 0) + 1\n    return [[k[0], k[1], d[k]] for k in sorted(d.keys())]\n"
+    },
+    {
+     "type": "python",
+     "title": "PMI",
+     "intro": "Write pmi(count_xy, count_x, count_y, total): log2((count_xy / total) / ((count_x / total) x (count_y / total))), rounded to 3 decimals; return 0 if count_xy is 0.",
+     "fn": "pmi",
+     "starter": "def pmi(count_xy, count_x, count_y, total):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        20,
+        25,
+        100
+       ],
+       "expect": 1.0,
+       "approx": 0.003
+      },
+      {
+       "args": [
+        1,
+        50,
+        50,
+        100
+       ],
+       "expect": -4.644,
+       "approx": 0.003
+      },
+      {
+       "args": [
+        0,
+        5,
+        5,
+        10
+       ],
+       "expect": 0,
+       "approx": 0.003
+      },
+      {
+       "args": [
+        5,
+        10,
+        10,
+        100
+       ],
+       "expect": 2.322,
+       "approx": 0.003
+      }
+     ],
+     "hint": "Compare joint with product of marginals.",
+     "solution": "import math\ndef pmi(count_xy, count_x, count_y, total):\n    if count_xy == 0:\n        return 0\n    p = count_xy / float(total)\n    return round(math.log(p / ((count_x / float(total)) * (count_y / float(total))), 2), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Nearest neighbours",
+     "intro": "Write nearest(word, vocab, vectors, k): the k words (excluding word itself) with the highest cosine similarity to the vector of word; vocab and vectors are parallel lists. Ties by vocab order. Return the list of words.",
+     "fn": "nearest",
+     "starter": "def nearest(word, vocab, vectors, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "cat",
+        [
+         "cat",
+         "dog",
+         "car",
+         "truck"
+        ],
+        [
+         [
+          1,
+          0.1
+         ],
+         [
+          0.9,
+          0.2
+         ],
+         [
+          0.1,
+          1
+         ],
+         [
+          0.2,
+          0.9
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        "dog"
+       ]
+      },
+      {
+       "args": [
+        "car",
+        [
+         "cat",
+         "dog",
+         "car",
+         "truck"
+        ],
+        [
+         [
+          1,
+          0.1
+         ],
+         [
+          0.9,
+          0.2
+         ],
+         [
+          0.1,
+          1
+         ],
+         [
+          0.2,
+          0.9
+         ]
+        ],
+        2
+       ],
+       "expect": [
+        "truck",
+        "dog"
+       ]
+      },
+      {
+       "args": [
+        "a",
+        [
+         "a",
+         "b"
+        ],
+        [
+         [
+          1,
+          1
+         ],
+         [
+          2,
+          2
+         ]
+        ],
+        1
+       ],
+       "expect": [
+        "b"
+       ]
+      }
+     ],
+     "hint": "Rank by cosine.",
+     "solution": "import math\ndef nearest(word, vocab, vectors, k):\n    def cos(a, b):\n        dot = sum([a[i] * b[i] for i in range(len(a))])\n        return dot / (math.sqrt(sum([v * v for v in a])) * math.sqrt(sum([v * v for v in b])))\n    q = vectors[vocab.index(word)]\n    scored = []\n    for i in range(len(vocab)):\n        if vocab[i] != word:\n            scored.append((-round(cos(q, vectors[i]), 6), i))\n    scored.sort()\n    return [vocab[i] for s, i in scored[:k]]\n"
+    },
+    {
+     "type": "python",
+     "title": "Analogy",
+     "intro": "Write analogy(a, b, c, vocab, vectors): find the word (excluding a, b, c) whose vector is nearest by cosine similarity to vec(b) - vec(a) + vec(c). Return the word (first on ties).",
+     "fn": "analogy",
+     "starter": "def analogy(a, b, c, vocab, vectors):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "man",
+        "king",
+        "woman",
+        [
+         "man",
+         "woman",
+         "king",
+         "queen",
+         "apple"
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          0,
+          0.5
+         ],
+         [
+          0.1,
+          1.4
+         ],
+         [
+          3,
+          3
+         ]
+        ]
+       ],
+       "expect": "queen"
+      },
+      {
+       "args": [
+        "a",
+        "b",
+        "c",
+        [
+         "a",
+         "b",
+         "c",
+         "d"
+        ],
+        [
+         [
+          0,
+          0
+         ],
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": "d"
+      }
+     ],
+     "hint": "Do the vector arithmetic first.",
+     "solution": "import math\ndef analogy(a, b, c, vocab, vectors):\n    va = vectors[vocab.index(a)]\n    vb = vectors[vocab.index(b)]\n    vc = vectors[vocab.index(c)]\n    t = [vb[i] - va[i] + vc[i] for i in range(len(va))]\n    best = None\n    bs = None\n    for i in range(len(vocab)):\n        if vocab[i] in (a, b, c):\n            continue\n        v = vectors[i]\n        dot = sum([t[j] * v[j] for j in range(len(t))])\n        s = dot / (math.sqrt(sum([x * x for x in t])) * math.sqrt(sum([x * x for x in v])))\n        if bs is None or s > bs + 1e-12:\n            bs = s\n            best = vocab[i]\n    return best\n"
+    },
+    {
+     "type": "python",
+     "title": "Skip-gram pairs",
+     "intro": "Write skipgram_pairs(tokens, window): all [centre, context] pairs where the context is within window positions on either side, ordered by centre position then context position.",
+     "fn": "skipgram_pairs",
+     "starter": "def skipgram_pairs(tokens, window):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c"
+        ],
+        1
+       ],
+       "expect": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         "b",
+         "a"
+        ],
+        [
+         "b",
+         "c"
+        ],
+        [
+         "c",
+         "b"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "x",
+         "y"
+        ],
+        2
+       ],
+       "expect": [
+        [
+         "x",
+         "y"
+        ],
+        [
+         "y",
+         "x"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "p"
+        ],
+        2
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Training data for word2vec.",
+     "solution": "def skipgram_pairs(tokens, window):\n    out = []\n    for i in range(len(tokens)):\n        for j in range(max(0, i - window), min(len(tokens), i + window + 1)):\n            if j != i:\n                out.append([tokens[i], tokens[j]])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Sentence vector",
+     "intro": "Write sentence_vec(tokens, vocab, vectors): the average of the vectors of the tokens found in vocab (skip unknown tokens); rounded to 3 decimals. Return a list of zeros if none are known.",
+     "fn": "sentence_vec",
+     "starter": "def sentence_vec(tokens, vocab, vectors):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "zzz"
+        ],
+        [
+         "a",
+         "b"
+        ],
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ]
+       ],
+       "expect": [
+        2.0,
+        3.0
+       ]
+      },
+      {
+       "args": [
+        [
+         "q"
+        ],
+        [
+         "a"
+        ],
+        [
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         "a",
+         "a"
+        ],
+        [
+         "a"
+        ],
+        [
+         [
+          0.5,
+          2
+         ]
+        ]
+       ],
+       "expect": [
+        0.5,
+        2.0
+       ]
+      }
+     ],
+     "hint": "Average over known tokens.",
+     "solution": "def sentence_vec(tokens, vocab, vectors):\n    dim = len(vectors[0])\n    acc = [0.0] * dim\n    n = 0\n    for t in tokens:\n        if t in vocab:\n            v = vectors[vocab.index(t)]\n            for j in range(dim):\n                acc[j] = acc[j] + v[j]\n            n = n + 1\n    if n == 0:\n        return [0.0] * dim\n    return [round(a / n, 3) for a in acc]\n"
+    },
+    {
+     "type": "python",
+     "title": "Bias score",
+     "intro": "Write bias_score(word, a, b, vocab, vectors): cosine(word, a) minus cosine(word, b), rounded to 3 decimals, a simple measure of whether word sits closer to a than to b.",
+     "fn": "bias_score",
+     "starter": "def bias_score(word, a, b, vocab, vectors):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "nurse",
+        "she",
+        "he",
+        [
+         "nurse",
+         "she",
+         "he"
+        ],
+        [
+         [
+          0.9,
+          0.2
+         ],
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ]
+       ],
+       "expect": 0.759,
+       "approx": 0.003
+      },
+      {
+       "args": [
+        "doctor",
+        "she",
+        "he",
+        [
+         "doctor",
+         "she",
+         "he"
+        ],
+        [
+         [
+          0.5,
+          0.5
+         ],
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.003
+      }
+     ],
+     "hint": "Difference of two cosines.",
+     "solution": "import math\ndef bias_score(word, a, b, vocab, vectors):\n    def cos(u, v):\n        dot = sum([u[i] * v[i] for i in range(len(u))])\n        return dot / (math.sqrt(sum([x * x for x in u])) * math.sqrt(sum([x * x for x in v])))\n    w = vectors[vocab.index(word)]\n    return round(cos(w, vectors[vocab.index(a)]) - cos(w, vectors[vocab.index(b)]), 3)\n"
+    }
+   ]
+  },
+  {
+   "title": "Neural sequence models: RNNs, LSTMs and attention",
+   "maps": [
+    {
+     "title": "Sequences",
+     "links": [
+      "RNN | carries | A hidden state",
+      "Hidden state | remembers | The past",
+      "Vanishing gradient | forgets | Long range",
+      "LSTM | gates | Memory",
+      "Seq2seq | maps | Sequence to sequence",
+      "Beam search | keeps | Several hypotheses",
+      "Attention | looks back | At inputs"
+     ]
+    }
+   ],
+   "summary": [
+    "A recurrent neural network reads text one token at a time, updating a hidden state that summarises everything so far. It can predict the next word, tag every word or encode a whole sentence.",
+    "Plain RNNs forget over long distances because gradients shrink; LSTMs and GRUs add gates that control what to keep. Sequence-to-sequence models use an encoder RNN and a decoder RNN for translation and summarisation.",
+    "Attention lets the decoder look back at every encoder state and focus on the relevant ones. It removed the bottleneck of squeezing a sentence into one vector and led directly to the transformer."
+   ],
+   "glossary": [
+    {
+     "term": "Recurrent neural network",
+     "def": "A network that processes a sequence step by step, passing a hidden state from one step to the next."
+    },
+    {
+     "term": "LSTM",
+     "def": "Long short-term memory: an RNN with gates that decide what to forget, write and output."
+    },
+    {
+     "term": "Seq2seq",
+     "def": "An encoder-decoder model that maps an input sequence to an output sequence."
+    },
+    {
+     "term": "Beam search",
+     "def": "A decoding method keeping the k best partial outputs at each step."
+    },
+    {
+     "term": "Attention",
+     "def": "A mechanism that computes a weighted average of states, with weights depending on relevance to the current need."
+    }
+   ],
+   "keyPoints": [
+    "h_t = tanh(W x_t + U h_{t-1} + b).",
+    "LSTM: forget, input and output gates.",
+    "Teacher forcing: feed the true previous token in training.",
+    "Beam search keeps top-k hypotheses.",
+    "Attention weights = softmax(scores)."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Language comes in order, so it is natural to process it in order. A recurrent neural network keeps a small memory, the hidden state, a vector.",
+      "At each step it reads the next word's embedding, mixes it with the old memory through a weight matrix, and squashes the result with tanh to produce the new memory. The same weights are reused at every step, so the network handles sentences of any length."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The trouble is long distance. Training adjusts weights by passing gradients back through all the steps, and multiplying many numbers below one makes them vanish, so the network cannot learn that the verb at the end agrees with the subject at the start.",
+      "The LSTM, from Hochreiter and Schmidhuber in 1997, adds a cell state and three gates, learned numbers between zero and one that decide what to forget, what to write and what to reveal. The GRU is a leaner relative."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import tensorflow as tf\nfrom tensorflow.keras import layers\nmodel = tf.keras.Sequential([\n    layers.Embedding(20000, 128),\n    layers.Bidirectional(layers.LSTM(64)),\n    layers.Dense(1, activation='sigmoid'),\n])\nmodel.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])"
+    },
+    {
+     "type": "text",
+     "items": [
+      "For translation, the sequence-to-sequence model of 2014 uses one RNN, the encoder, to read the source sentence into a vector, and another, the decoder, to write the target one word at a time. At test time the decoder must choose words.",
+      "Greedy decoding takes the best word each step and can paint itself into a corner, so beam search keeps the k best partial sentences and extends them all."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Squeezing a long sentence into one vector was a bottleneck. Bahdanau, Cho and Bengio proposed in 2014 that the decoder, at each step, look back over all encoder states and take a weighted average, with weights from a learned score of how relevant each source word is right now. This is attention.",
+      "It sharply improved translation and also produced pleasing alignment pictures. Within three years, researchers asked what would happen if attention were the only mechanism and the recurrence was thrown out. The answer was the transformer."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does an RNN pass between steps?",
+     "options": [
+      "A hidden state",
+      "A word list",
+      "A label",
+      "A gradient only"
+     ],
+     "answer": 0,
+     "explain": "Memory."
+    },
+    {
+     "q": "Why do plain RNNs forget?",
+     "options": [
+      "Vanishing gradients",
+      "Too few words",
+      "Wrong tokens",
+      "Small vocabularies"
+     ],
+     "answer": 0,
+     "explain": "Long chains."
+    },
+    {
+     "q": "What do LSTM gates do?",
+     "options": [
+      "Control what to keep, write and output",
+      "Split words",
+      "Reduce vocabulary",
+      "Sort tokens"
+     ],
+     "answer": 0,
+     "explain": "Learned 0..1 switches."
+    },
+    {
+     "q": "What does beam search keep?",
+     "options": [
+      "The k best partial outputs",
+      "Only the best word",
+      "All outputs",
+      "Random words"
+     ],
+     "answer": 0,
+     "explain": "k hypotheses."
+    },
+    {
+     "q": "What does attention compute?",
+     "options": [
+      "A weighted average of states",
+      "A count",
+      "A sum of letters",
+      "A sort"
+     ],
+     "answer": 0,
+     "explain": "Relevance weights."
+    },
+    {
+     "q": "Why did attention help translation?",
+     "options": [
+      "It avoided squeezing a sentence into one vector",
+      "It made words shorter",
+      "It removed the decoder",
+      "It used images"
+     ],
+     "answer": 0,
+     "explain": "Bottleneck."
+    }
+   ],
+   "cards": [
+    {
+     "q": "h_t = tanh(Wx + Uh + b)",
+     "a": "RNN update"
+    },
+    {
+     "q": "softmax(score)",
+     "a": "attention weights"
+    },
+    {
+     "q": "beam width k",
+     "a": "hypotheses kept"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each sequence idea with its meaning.",
+     "pairs": [
+      [
+       "Hidden state",
+       "network memory"
+      ],
+      [
+       "LSTM gate",
+       "learned keep or forget switch"
+      ],
+      [
+       "Seq2seq",
+       "encoder then decoder"
+      ],
+      [
+       "Beam search",
+       "keep top-k outputs"
+      ],
+      [
+       "Attention",
+       "focus on relevant inputs"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "RNN step",
+     "intro": "Write rnn_step(x, h, Wx, Wh, b): the new hidden state tanh(Wx x + Wh h + b) for vectors, with Wx and Wh given as lists of rows; round to 4 decimals.",
+     "fn": "rnn_step",
+     "starter": "def rnn_step(x, h, Wx, Wh, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         [
+          0.5,
+          0.1
+         ],
+         [
+          0.2,
+          0.3
+         ]
+        ],
+        [
+         [
+          0.1,
+          0
+         ],
+         [
+          0,
+          0.1
+         ]
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        0.4621,
+        0.1974
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         1
+        ],
+        [
+         0.5,
+         -0.5
+        ],
+        [
+         [
+          1,
+          1
+         ]
+        ],
+        [
+         [
+          0.5,
+          0.5
+         ]
+        ],
+        [
+         0.1
+        ]
+       ],
+       "expect": [
+        0.8005
+       ]
+      },
+      {
+       "args": [
+        [
+         0
+        ],
+        [
+         0
+        ],
+        [
+         [
+          1
+         ]
+        ],
+        [
+         [
+          1
+         ]
+        ],
+        [
+         0
+        ]
+       ],
+       "expect": [
+        0.0
+       ]
+      }
+     ],
+     "hint": "Two matrix products plus bias, then tanh.",
+     "solution": "import math\ndef rnn_step(x, h, Wx, Wh, b):\n    out = []\n    for i in range(len(b)):\n        s = b[i]\n        for j in range(len(x)):\n            s = s + Wx[i][j] * x[j]\n        for j in range(len(h)):\n            s = s + Wh[i][j] * h[j]\n        out.append(round(math.tanh(s), 4))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Unroll an RNN",
+     "intro": "Write run_rnn(xs, w, u, b): a scalar RNN h_t = tanh(w x_t + u h_{t-1} + b) with h_0 = 0 over the list xs; return the list of hidden states rounded to 3 decimals.",
+     "fn": "run_rnn",
+     "starter": "def run_rnn(xs, w, u, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0,
+         0
+        ],
+        1.0,
+        0.5,
+        0
+       ],
+       "expect": [
+        0.762,
+        0.363,
+        0.18
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1
+        ],
+        0.5,
+        0.5,
+        0.1
+       ],
+       "expect": [
+        0.537,
+        0.701,
+        0.74
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        1,
+        1,
+        0
+       ],
+       "expect": [
+        0.0,
+        0.0
+       ]
+      }
+     ],
+     "hint": "Carry h forward.",
+     "solution": "import math\ndef run_rnn(xs, w, u, b):\n    h = 0.0\n    out = []\n    for x in xs:\n        h = math.tanh(w * x + u * h + b)\n        out.append(round(h, 3))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Gate",
+     "intro": "Write lstm_cell_update(c_prev, f, i, g): the LSTM cell state update c = f x c_prev + i x g (all scalars), rounded to 4 decimals.",
+     "fn": "lstm_cell_update",
+     "starter": "def lstm_cell_update(c_prev, f, i, g):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1.0,
+        0.9,
+        0.1,
+        0.5
+       ],
+       "expect": 0.95,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        2.0,
+        0.0,
+        1.0,
+        -1.0
+       ],
+       "expect": -1.0,
+       "approx": 0.0002
+      },
+      {
+       "args": [
+        0.5,
+        1.0,
+        0.0,
+        9.0
+       ],
+       "expect": 0.5,
+       "approx": 0.0002
+      }
+     ],
+     "hint": "Forget part of the old, write part of the new.",
+     "solution": "def lstm_cell_update(c_prev, f, i, g):\n    return round(f * c_prev + i * g, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Attention weights over states",
+     "intro": "Write attend(query, states): scores are dot products of query with each state; return the softmax weights rounded to 4 decimals.",
+     "fn": "attend",
+     "starter": "def attend(query, states):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0.4223,
+        0.1554,
+        0.4223
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         0
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          5
+         ]
+        ]
+       ],
+       "expect": [
+        0.8808,
+        0.1192
+       ]
+      }
+     ],
+     "hint": "Softmax of dot products.",
+     "solution": "import math\ndef attend(query, states):\n    scores = []\n    for s in states:\n        scores.append(sum([query[i] * s[i] for i in range(len(query))]))\n    m = max(scores)\n    e = [math.exp(v - m) for v in scores]\n    t = sum(e)\n    return [round(v / t, 4) for v in e]\n"
+    },
+    {
+     "type": "python",
+     "title": "Context vector",
+     "intro": "Write context(weights, states): the weighted sum of the state vectors, rounded to 4 decimals.",
+     "fn": "context",
+     "starter": "def context(weights, states):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         0
+        ],
+        [
+         [
+          3,
+          4
+         ],
+         [
+          1,
+          1
+         ],
+         [
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        3.0,
+        4.0
+       ]
+      },
+      {
+       "args": [
+        [
+         0.2,
+         0.8
+        ],
+        [
+         [
+          10
+         ],
+         [
+          20
+         ]
+        ]
+       ],
+       "expect": [
+        18.0
+       ]
+      }
+     ],
+     "hint": "Blend the encoder states.",
+     "solution": "def context(weights, states):\n    dim = len(states[0])\n    out = [0.0] * dim\n    for w, s in zip(weights, states):\n        for j in range(dim):\n            out[j] = out[j] + w * s[j]\n    return [round(v, 4) for v in out]\n"
+    },
+    {
+     "type": "python",
+     "title": "Beam search step",
+     "intro": "Write beam_step(beams, next_probs, k): beams is a list of [sequence (list), score (log prob)]; next_probs is a list of probabilities of each vocabulary index. Extend every beam with every token; the new score is score + log(p). Return the k best as [sequence, score rounded to 3 decimals], sorted by score descending (ties: lower token index first, earlier beam first).",
+     "fn": "beam_step",
+     "starter": "def beam_step(beams, next_probs, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          [],
+          0.0
+         ]
+        ],
+        [
+         0.5,
+         0.3,
+         0.2
+        ],
+        2
+       ],
+       "expect": [
+        [
+         [
+          0
+         ],
+         -0.693
+        ],
+        [
+         [
+          1
+         ],
+         -1.204
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           0
+          ],
+          -0.5
+         ],
+         [
+          [
+           1
+          ],
+          -0.7
+         ]
+        ],
+        [
+         0.6,
+         0.4
+        ],
+        3
+       ],
+       "expect": [
+        [
+         [
+          0,
+          0
+         ],
+         -1.011
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         -1.211
+        ],
+        [
+         [
+          0,
+          1
+         ],
+         -1.416
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          [
+           2
+          ],
+          -1.0
+         ]
+        ],
+        [
+         1.0
+        ],
+        1
+       ],
+       "expect": [
+        [
+         [
+          2,
+          0
+         ],
+         -1.0
+        ]
+       ]
+      }
+     ],
+     "hint": "Keep the k highest-scoring extensions.",
+     "solution": "import math\ndef beam_step(beams, next_probs, k):\n    cand = []\n    for bi in range(len(beams)):\n        seq = beams[bi][0]\n        sc = beams[bi][1]\n        for t in range(len(next_probs)):\n            if next_probs[t] > 0:\n                cand.append((-(sc + math.log(next_probs[t])), bi, t, seq + [t], sc + math.log(next_probs[t])))\n    cand.sort(key=lambda c: (round(c[0], 9), c[1], c[2]))\n    return [[c[3], round(c[4], 3)] for c in cand[:k]]\n"
+    },
+    {
+     "type": "python",
+     "title": "Greedy decode",
+     "intro": "Write greedy(table, start, steps): table maps each token index to a list of next-token probabilities (a list of lists). Starting at token start, repeatedly append the index of the highest probability (lowest index on ties) for steps steps. Return the list of tokens including start.",
+     "fn": "greedy",
+     "starter": "def greedy(table, start, steps):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0.1,
+          0.9
+         ],
+         [
+          0.8,
+          0.2
+         ]
+        ],
+        0,
+        4
+       ],
+       "expect": [
+        0,
+        1,
+        0,
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0.5,
+          0.5
+         ],
+         [
+          0.5,
+          0.5
+         ]
+        ],
+        1,
+        2
+       ],
+       "expect": [
+        1,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          1,
+          0
+         ],
+         [
+          0,
+          0,
+          1
+         ],
+         [
+          1,
+          0,
+          0
+         ]
+        ],
+        0,
+        5
+       ],
+       "expect": [
+        0,
+        1,
+        2,
+        0,
+        1,
+        2
+       ]
+      }
+     ],
+     "hint": "Always take the arg max.",
+     "solution": "def greedy(table, start, steps):\n    out = [start]\n    for s in range(steps):\n        row = table[out[-1]]\n        best = 0\n        for i in range(len(row)):\n            if row[i] > row[best]:\n                best = i\n        out.append(best)\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Transformers: self-attention, positions and tokenisers",
+   "maps": [
+    {
+     "title": "Transformers",
+     "links": [
+      "Self-attention | relates | All tokens",
+      "Query key value | define | Attention",
+      "Multi-head | looks | In several ways",
+      "Positional encoding | adds | Order",
+      "Causal mask | hides | The future",
+      "BPE | merges | Frequent pairs",
+      "Layer norm | stabilises | Training"
+     ]
+    }
+   ],
+   "summary": [
+    "The transformer replaces recurrence with self-attention: every token compares its query with every token's key and takes a weighted average of their values. All positions are processed in parallel, which makes training fast on GPUs.",
+    "Because attention ignores order, positional information is added. Several attention heads run in parallel, followed by feed-forward layers, residual connections and layer normalisation, repeated in a stack of blocks.",
+    "Text enters as subword tokens, built by algorithms such as byte-pair encoding, which merges the most frequent adjacent pairs to make a vocabulary of tens of thousands of pieces."
+   ],
+   "glossary": [
+    {
+     "term": "Self-attention",
+     "def": "A layer where each token's output is a weighted mix of all tokens' values, with weights from query-key similarity."
+    },
+    {
+     "term": "Multi-head attention",
+     "def": "Several attention operations in parallel, each with its own projections, whose outputs are concatenated."
+    },
+    {
+     "term": "Positional encoding",
+     "def": "Extra information added to token embeddings so the model knows their order."
+    },
+    {
+     "term": "Causal mask",
+     "def": "A mask that prevents a position from attending to later positions, used for left-to-right generation."
+    },
+    {
+     "term": "Byte-pair encoding",
+     "def": "A tokenisation method that repeatedly merges the most frequent pair of symbols."
+    }
+   ],
+   "keyPoints": [
+    "Attention(Q, K, V) = softmax(QK^T / sqrt(d)) V.",
+    "Block = attention + MLP, each with residual and norm.",
+    "Causal mask: position i sees positions up to i.",
+    "Sinusoidal positions: sin and cos at many frequencies.",
+    "BPE: merge most frequent pair, repeat."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "The 2017 paper 'Attention Is All You Need' began a revolution. Its idea: let every token look directly at every other token. Each token produces three vectors from its embedding: a query, saying what it is looking for; a key, saying what it offers; and a value, the content to pass on.",
+      "The match between a query and each key, the dot product, scaled down by the square root of the vector length, is turned into weights by a softmax. The output is the weighted sum of values."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Compare with the RNN. A recurrent network passes information along a chain, so a word at the start reaches the end only through many steps. In self-attention any two tokens interact in one step, so long-range dependencies are easy.",
+      "And since no step waits for the previous one, a whole sentence is computed in parallel, which is why transformers could be trained on far more data than RNNs."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import torch, math\ndef attention(Q, K, V, mask=None):\n    scores = Q @ K.transpose(-2, -1) / math.sqrt(Q.size(-1))\n    if mask is not None:\n        scores = scores.masked_fill(mask == 0, float('-inf'))\n    return torch.softmax(scores, dim=-1) @ V\n\nL = 5\ncausal = torch.tril(torch.ones(L, L))   # position i sees j <= i"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Attention treats the input as a set, so a sentence and its scrambled version would look alike. Positional information fixes this.",
+      "The original paper added sinusoids of many frequencies to the embeddings; modern models rotate the query and key vectors by position-dependent angles (rotary embeddings) or learn the positions.",
+      "For text generation a causal mask blocks each position from seeing later ones, so the model can be trained to predict every next word in parallel. A full block adds a position-wise feed-forward network, a residual connection around each part, and layer normalisation.",
+      "Multi-head attention runs several smaller attentions side by side so each can specialise."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How does text become the model's input? Word-level vocabularies fail on rare words and typos; character-level sequences are too long. Byte-pair encoding splits the difference. Start with characters.",
+      "Count adjacent pairs, merge the most frequent into a new symbol, and repeat tens of thousands of times. Common words become single tokens, rare ones split into pieces, and anything can be spelled with bytes.",
+      "The model never sees spelling directly, which explains odd failures such as counting the letters of a word."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a query match against?",
+     "options": [
+      "Keys",
+      "Values",
+      "Positions",
+      "Labels"
+     ],
+     "answer": 0,
+     "explain": "Q dot K."
+    },
+    {
+     "q": "Why divide by sqrt(d)?",
+     "options": [
+      "To keep scores moderate for softmax",
+      "To add noise",
+      "To mask",
+      "To sort"
+     ],
+     "answer": 0,
+     "explain": "Stabilise."
+    },
+    {
+     "q": "Why positional encodings?",
+     "options": [
+      "Attention alone ignores order",
+      "To shrink vectors",
+      "To add vocabulary",
+      "To remove noise"
+     ],
+     "answer": 0,
+     "explain": "Order."
+    },
+    {
+     "q": "What does a causal mask do?",
+     "options": [
+      "Blocks attention to later tokens",
+      "Blocks attention to earlier tokens",
+      "Removes padding",
+      "Doubles the heads"
+     ],
+     "answer": 0,
+     "explain": "Left to right."
+    },
+    {
+     "q": "What does BPE merge?",
+     "options": [
+      "The most frequent adjacent pair",
+      "The rarest word",
+      "Two sentences",
+      "Heads"
+     ],
+     "answer": 0,
+     "explain": "Repeatedly."
+    },
+    {
+     "q": "Why is a transformer fast to train?",
+     "options": [
+      "Positions are processed in parallel",
+      "It has no weights",
+      "It uses fewer data",
+      "It is recurrent"
+     ],
+     "answer": 0,
+     "explain": "No sequential chain."
+    }
+   ],
+   "cards": [
+    {
+     "q": "softmax(QK^T/sqrt(d)) V",
+     "a": "scaled dot-product attention"
+    },
+    {
+     "q": "tril(ones(L, L))",
+     "a": "causal mask"
+    },
+    {
+     "q": "BPE merges",
+     "a": "learned tokeniser"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Self-attention explorer",
+     "intro": "Pick a sentence and a token and see where it attends. Change the temperature and turn the causal mask on and off. Explore three different tokens to complete the lab.",
+     "height": 800,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;min-height:60px;line-height:1.6}\ntable{border-collapse:collapse;width:100%}td,th{border:1px solid #3a2a5c;padding:3px 5px;text-align:center}\n.tk{display:inline-block;padding:4px 8px;margin:2px;border-radius:8px;background:#2a1b48;cursor:pointer}.tk.on{background:#b26bff;color:#1b0b33;font-weight:700}\n</style></head><body>\n<label>Sentence <select id=\"se\"><option value=\"0\">the animal did not cross the street because it was tired</option><option value=\"1\">the bank by the river was steep</option><option value=\"2\">she poured water into the glass because it was empty</option></select></label>\n<label><input type=\"checkbox\" id=\"cm\"> Causal mask (hide later words)</label>\n<label>Temperature: <b id=\"tv\"></b><input id=\"t\" type=\"range\" min=\"2\" max=\"40\" value=\"10\"></label>\n<div class=\"k\">Tap a word to see where it attends.</div><div id=\"tk\"></div><div id=\"hm\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar S=[\"the animal did not cross the street because it was tired\",\"the bank by the river was steep\",\"she poured water into the glass because it was empty\"];\nvar REL=[{\"it:animal\":3,\"it:street\":1.2,\"it:tired\":1,\"cross:animal\":2,\"cross:street\":2,\"did:not\":2,\"not:cross\":1.5,\"was:tired\":2,\"tired:animal\":1.5,\"because:it\":1,\"the:animal\":.8,\"the:street\":.8},\n{\"bank:river\":3,\"steep:bank\":2,\"steep:river\":1.5,\"was:steep\":2,\"by:river\":2,\"river:bank\":1.5,\"the:bank\":.8,\"the:river\":.8},\n{\"it:glass\":3,\"it:empty\":1.2,\"it:water\":1,\"poured:water\":2.5,\"poured:glass\":1.5,\"into:glass\":2,\"was:empty\":2,\"empty:glass\":1.5,\"she:poured\":1.5,\"because:it\":1}];\nvar sel=0,cur=-1,seen={};\nfunction words(){return S[+$(\"se\").value].split(\" \")}\nfunction score(w,i,j){if(i===j)return 1.2;var k=w[i]+\":\"+w[j],v=REL[+$(\"se\").value][k]||0;return v+0.3/(1+Math.abs(i-j))}\nfunction weights(i){var w=words(),T=$(\"t\").value/10,cm=$(\"cm\").checked,sc=[],j,m=-1e9;for(j=0;j<w.length;j++){var s=(cm&&j>i)?-1e9:score(w,i,j)/T;sc.push(s);if(s>m)m=s}\n var e=sc.map(function(s){return s<-1e8?0:Math.exp(s-m)}),t=e.reduce(function(a,b){return a+b},0);return e.map(function(x){return x/t})}\nfunction draw(){var w=words();$(\"tv\").textContent=($(\"t\").value/10).toFixed(1);var h=\"\";w.forEach(function(x,i){h+='<span class=\"tk'+(i===cur?\" on\":\"\")+'\" data-i=\"'+i+'\">'+x+'</span>'});$(\"tk\").innerHTML=h;\n var els=document.querySelectorAll(\".tk\");for(var q=0;q<els.length;q++)els[q].onclick=function(){cur=+this.dataset.i;seen[cur]=1;draw();var n=Object.keys(seen).length;$(\"p\").textContent=\"Words explored: \"+n+\" of 3\";if(n>=3)done()};\n if(cur<0){$(\"hm\").textContent=\"Select a word.\";return}\n var a=weights(cur),o=\"<b>\"+w[cur]+\"</b> attends to:<br>\";a.forEach(function(x,j){o+='<div style=\"display:flex;align-items:center;gap:6px\"><span style=\"width:6em\">'+w[j]+'</span><div style=\"height:12px;border-radius:6px;background:#b26bff;width:'+Math.round(x*100)+'%\"></div><span class=\"k\">'+x.toFixed(2)+'</span></div>'});$(\"hm\").innerHTML=o}\n$(\"se\").onchange=function(){cur=-1;draw()};$(\"cm\").onchange=draw;$(\"t\").oninput=draw;draw();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each transformer part with its job.",
+     "pairs": [
+      [
+       "Query",
+       "what a token looks for"
+      ],
+      [
+       "Key",
+       "what a token offers"
+      ],
+      [
+       "Value",
+       "content passed on"
+      ],
+      [
+       "Causal mask",
+       "hide the future"
+      ],
+      [
+       "BPE",
+       "build subword vocabulary"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Scaled dot-product attention",
+     "intro": "Write sdpa(Q, K, V): for lists of vectors compute softmax(Q K^T / sqrt(d)) V where d is the vector length; return the output vectors rounded to 3 decimals.",
+     "fn": "sdpa",
+     "starter": "def sdpa(Q, K, V):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ]
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        [
+         [
+          10,
+          0
+         ],
+         [
+          0,
+          10
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         6.698,
+         3.302
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          0,
+          0
+         ]
+        ],
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ],
+        [
+         [
+          1,
+          1
+         ],
+         [
+          3,
+          3
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         2.0,
+         2.0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        [
+         [
+          1,
+          0
+         ],
+         [
+          0,
+          1
+         ]
+        ],
+        [
+         [
+          1,
+          2
+         ],
+         [
+          3,
+          4
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1.66,
+         2.66
+        ],
+        [
+         2.34,
+         3.34
+        ]
+       ]
+      }
+     ],
+     "hint": "Scores, softmax, weighted sum of values.",
+     "solution": "import math\ndef sdpa(Q, K, V):\n    d = len(Q[0])\n    out = []\n    for q in Q:\n        sc = [sum([q[i] * k[i] for i in range(d)]) / math.sqrt(d) for k in K]\n        m = max(sc)\n        e = [math.exp(s - m) for s in sc]\n        t = sum(e)\n        w = [x / t for x in e]\n        dv = len(V[0])\n        o = [0.0] * dv\n        for a in range(len(V)):\n            for j in range(dv):\n                o[j] = o[j] + w[a] * V[a][j]\n        out.append([round(x, 3) for x in o])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Causal mask",
+     "intro": "Write causal_mask(L): an L x L matrix of 1 where column j <= row i (allowed) and 0 elsewhere.",
+     "fn": "causal_mask",
+     "starter": "def causal_mask(L):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3
+       ],
+       "expect": [
+        [
+         1,
+         0,
+         0
+        ],
+        [
+         1,
+         1,
+         0
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": [
+        [
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        4
+       ],
+       "expect": [
+        [
+         1,
+         0,
+         0,
+         0
+        ],
+        [
+         1,
+         1,
+         0,
+         0
+        ],
+        [
+         1,
+         1,
+         1,
+         0
+        ],
+        [
+         1,
+         1,
+         1,
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Lower triangle.",
+     "solution": "def causal_mask(L):\n    return [[1 if j <= i else 0 for j in range(L)] for i in range(L)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Masked softmax row",
+     "intro": "Write masked_softmax(scores, mask): softmax of the scores where mask is 1; masked positions get weight 0. Round to 4 decimals.",
+     "fn": "masked_softmax",
+     "starter": "def masked_softmax(scores, mask):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         1,
+         1,
+         0
+        ]
+       ],
+       "expect": [
+        0.2689,
+        0.7311,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         1,
+         0,
+         0
+        ]
+       ],
+       "expect": [
+        1.0,
+        0.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ]
+      }
+     ],
+     "hint": "Ignore masked entries.",
+     "solution": "import math\ndef masked_softmax(scores, mask):\n    vals = [scores[i] for i in range(len(scores)) if mask[i] == 1]\n    m = max(vals)\n    e = [math.exp(scores[i] - m) if mask[i] == 1 else 0.0 for i in range(len(scores))]\n    t = sum(e)\n    return [round(v / t, 4) for v in e]\n"
+    },
+    {
+     "type": "python",
+     "title": "Sinusoidal positions",
+     "intro": "Write pos_encoding(pos, d): the sinusoidal position vector of even length d: for i = 0, 2, 4, ... the pair [sin(pos / 10000^(i/d)), cos(pos / 10000^(i/d))]. Return the flat list rounded to 4 decimals.",
+     "fn": "pos_encoding",
+     "starter": "def pos_encoding(pos, d):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        4
+       ],
+       "expect": [
+        0.0,
+        1.0,
+        0.0,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        1,
+        4
+       ],
+       "expect": [
+        0.8415,
+        0.5403,
+        0.01,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        5,
+        2
+       ],
+       "expect": [
+        -0.9589,
+        0.2837
+       ]
+      },
+      {
+       "args": [
+        3,
+        6
+       ],
+       "expect": [
+        0.1411,
+        -0.99,
+        0.1388,
+        0.9903,
+        0.0065,
+        1.0
+       ]
+      }
+     ],
+     "hint": "Frequencies fall with the index.",
+     "solution": "import math\ndef pos_encoding(pos, d):\n    out = []\n    for i in range(0, d, 2):\n        a = pos / (10000.0 ** (i / float(d)))\n        out.append(round(math.sin(a), 4))\n        out.append(round(math.cos(a), 4))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "One BPE merge",
+     "intro": "Write bpe_merge(words): words is a list of token lists (each word a list of symbols). Find the most frequent adjacent pair across all words (ties: alphabetically first pair) and merge every occurrence into one symbol (the two joined). Return [pair as [a, b], new list of words].",
+     "fn": "bpe_merge",
+     "starter": "def bpe_merge(words):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "l",
+          "o",
+          "w"
+         ],
+         [
+          "l",
+          "o",
+          "w",
+          "e",
+          "r"
+         ],
+         [
+          "n",
+          "e",
+          "w"
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         "l",
+         "o"
+        ],
+        [
+         [
+          "lo",
+          "w"
+         ],
+         [
+          "lo",
+          "w",
+          "e",
+          "r"
+         ],
+         [
+          "n",
+          "e",
+          "w"
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "b",
+          "a",
+          "b"
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         [
+          "ab",
+          "ab"
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "x",
+          "y"
+         ],
+         [
+          "y",
+          "x"
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         "x",
+         "y"
+        ],
+        [
+         [
+          "xy"
+         ],
+         [
+          "y",
+          "x"
+         ]
+        ]
+       ]
+      }
+     ],
+     "hint": "Count pairs, then merge them.",
+     "solution": "def bpe_merge(words):\n    counts = {}\n    for w in words:\n        for i in range(len(w) - 1):\n            k = (w[i], w[i + 1])\n            counts[k] = counts.get(k, 0) + 1\n    best = None\n    for k in sorted(counts.keys()):\n        if best is None or counts[k] > counts[best]:\n            best = k\n    new = []\n    for w in words:\n        out = []\n        i = 0\n        while i < len(w):\n            if i < len(w) - 1 and (w[i], w[i + 1]) == best:\n                out.append(w[i] + w[i + 1])\n                i = i + 2\n            else:\n                out.append(w[i])\n                i = i + 1\n        new.append(out)\n    return [[best[0], best[1]], new]\n"
+    },
+    {
+     "type": "python",
+     "title": "Greedy subword tokenise",
+     "intro": "Write wordpiece(word, vocab): split the word by repeatedly taking the longest prefix that is in vocab (single characters are always allowed). Return the list of pieces.",
+     "fn": "wordpiece",
+     "starter": "def wordpiece(word, vocab):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "unhappiness",
+        [
+         "un",
+         "happi",
+         "ness",
+         "happy"
+        ]
+       ],
+       "expect": [
+        "un",
+        "happi",
+        "ness"
+       ]
+      },
+      {
+       "args": [
+        "lowest",
+        [
+         "low",
+         "est",
+         "lo"
+        ]
+       ],
+       "expect": [
+        "low",
+        "est"
+       ]
+      },
+      {
+       "args": [
+        "xyz",
+        [
+         "xy"
+        ]
+       ],
+       "expect": [
+        "xy",
+        "z"
+       ]
+      }
+     ],
+     "hint": "Longest match first.",
+     "solution": "def wordpiece(word, vocab):\n    out = []\n    i = 0\n    while i < len(word):\n        j = len(word)\n        while j > i + 1 and word[i:j] not in vocab:\n            j = j - 1\n        out.append(word[i:j])\n        i = j\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Parameter count of a block",
+     "intro": "Write block_params(d, ff): the weights (no biases) of one transformer block: four d x d attention matrices (Q, K, V, output) plus a feed-forward network d x ff and ff x d.",
+     "fn": "block_params",
+     "starter": "def block_params(d, ff):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        768,
+        3072
+       ],
+       "expect": 7077888
+      },
+      {
+       "args": [
+        512,
+        2048
+       ],
+       "expect": 3145728
+      },
+      {
+       "args": [
+        4096,
+        11008
+       ],
+       "expect": 157286400
+      }
+     ],
+     "hint": "Attention plus feed-forward.",
+     "solution": "def block_params(d, ff):\n    return 4 * d * d + 2 * d * ff\n"
+    }
+   ]
+  },
+  {
+   "title": "Pretrained language models: BERT, GPT and beyond",
+   "maps": [
+    {
+     "title": "Pretraining",
+     "links": [
+      "Pretraining | learns | From raw text",
+      "Fine-tuning | adapts | To a task",
+      "BERT | is | An encoder",
+      "GPT | is | A decoder",
+      "Masked LM | fills | Blanks",
+      "Next token | predicts | Left to right",
+      "Prompting | steers | Without training"
+     ]
+    }
+   ],
+   "summary": [
+    "Modern NLP follows pretrain then adapt. A transformer is first trained on huge text with a self-supervised goal, then fine-tuned or prompted for tasks. Encoder models like BERT read the whole text both ways and produce contextual embeddings, suited to classification and tagging.",
+    "Decoder models like GPT, Llama and Claude generate text left to right, one token at a time.",
+    "Scaling model size, data and compute improved quality predictably and revealed abilities such as in-context learning, where the model follows examples in its prompt.",
+    "Large models are further aligned with instruction tuning and human feedback so they follow requests helpfully and safely."
+   ],
+   "glossary": [
+    {
+     "term": "Pretraining",
+     "def": "Training a large model on unlabeled data with a self-supervised objective such as predicting masked or next tokens."
+    },
+    {
+     "term": "Masked language modelling",
+     "def": "Hiding some tokens and training the model to recover them from context in both directions."
+    },
+    {
+     "term": "Causal language modelling",
+     "def": "Training the model to predict each token from the ones before it."
+    },
+    {
+     "term": "In-context learning",
+     "def": "Performing a new task from instructions and examples given in the prompt, without weight updates."
+    },
+    {
+     "term": "Instruction tuning and RLHF",
+     "def": "Further training so the model follows instructions, using demonstrations and human preference feedback."
+    }
+   ],
+   "keyPoints": [
+    "Encoder: BERT, bidirectional, masked LM.",
+    "Decoder: GPT, Llama, Claude, causal LM.",
+    "Fine-tune with a small labelled set.",
+    "Prompt: instructions plus examples.",
+    "Temperature, top-k and top-p control sampling."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Before 2018, each NLP task trained its own model from scratch on its own small labelled dataset. Then came a new recipe. Pretrain one large model on enormous amounts of plain text using a goal that needs no labels, then adapt it to each task cheaply.",
+      "This is transfer learning, as in vision, and it lifted every benchmark at once."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "BERT, from Google in 2018, is an encoder. It sees a whole sentence at once with attention flowing both ways. It is pretrained by masking about fifteen percent of the tokens and asking the model to fill them in, which forces it to use left and right context.",
+      "The result is a contextual embedding for every token: the vector for 'bank' differs by sentence. To classify, add a small head on top and fine-tune on a few thousand labelled examples.",
+      "Encoder models and their successors, such as RoBERTa and ModernBERT, remain the efficient workhorses for classification, tagging, search and embeddings."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification\nclf = pipeline('sentiment-analysis')\nprint(clf('The plot was thin but the acting was wonderful.'))\n\ngen = pipeline('text-generation', model='gpt2')\nprint(gen('Natural language processing is', max_new_tokens=20, do_sample=True, temperature=0.8))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "GPT, from OpenAI, is a decoder. It reads left to right under a causal mask and is trained to predict the next token. That one simple goal, applied to a large part of the written internet, teaches grammar, facts, style and a lot of reasoning.",
+      "Scaling up gave GPT-2, GPT-3 and the line of large language models, including Llama and Claude. The surprise was in-context learning: show a big model a few examples in the prompt and it performs the task with no training."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A raw pretrained model continues text; it does not obey. Instruction tuning on prompt and answer pairs, then reinforcement learning from human feedback or similar preference methods, turns it into an assistant that follows requests and refuses harmful ones.",
+      "At generation time, sampling settings matter: temperature scales how adventurous choices are, and top-k or top-p keep only the likeliest tokens. Evaluation is hard, since open-ended answers have no single right text.",
+      "Later in your studies, a dedicated course on decision models looks at a new use of encoders and decoders: instead of writing text, answering fixed questions with calibrated probabilities in one pass."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How does BERT pretrain?",
+     "options": [
+      "By filling in masked tokens",
+      "By predicting the next word only",
+      "By translating",
+      "By labelling images"
+     ],
+     "answer": 0,
+     "explain": "Masked LM."
+    },
+    {
+     "q": "How does GPT pretrain?",
+     "options": [
+      "By predicting the next token",
+      "By masking",
+      "By clustering",
+      "By parsing"
+     ],
+     "answer": 0,
+     "explain": "Causal LM."
+    },
+    {
+     "q": "What is in-context learning?",
+     "options": [
+      "Doing a task from prompt examples without training",
+      "Fine-tuning weights",
+      "Learning in class",
+      "Tokenising"
+     ],
+     "answer": 0,
+     "explain": "Few-shot."
+    },
+    {
+     "q": "What does instruction tuning add?",
+     "options": [
+      "Following instructions",
+      "More vocabulary",
+      "Smaller models",
+      "Image input"
+     ],
+     "answer": 0,
+     "explain": "Assistant behaviour."
+    },
+    {
+     "q": "What does temperature control?",
+     "options": [
+      "How random sampling is",
+      "Model size",
+      "Speed of training",
+      "Vocabulary"
+     ],
+     "answer": 0,
+     "explain": "Higher is more varied."
+    },
+    {
+     "q": "Which models suit classification and tagging?",
+     "options": [
+      "Encoders like BERT",
+      "Only decoders",
+      "Only RNNs",
+      "None"
+     ],
+     "answer": 0,
+     "explain": "Contextual embeddings."
+    }
+   ],
+   "cards": [
+    {
+     "q": "[MASK]",
+     "a": "BERT's blank token"
+    },
+    {
+     "q": "pipeline('text-generation')",
+     "a": "Hugging Face generation"
+    },
+    {
+     "q": "temperature, top_p",
+     "a": "sampling controls"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the model idea",
+     "intro": "Pair each model type with its feature.",
+     "pairs": [
+      [
+       "BERT",
+       "encoder, masked LM"
+      ],
+      [
+       "GPT",
+       "decoder, next token"
+      ],
+      [
+       "RLHF",
+       "learn from human preferences"
+      ],
+      [
+       "Few-shot prompt",
+       "examples in the prompt"
+      ],
+      [
+       "Fine-tuning",
+       "adapt weights to a task"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Mask tokens",
+     "intro": "Write mask_tokens(tokens, positions): replace the tokens at the given positions with '[MASK]'; return the new list and the list of original tokens at those positions as [masked, targets].",
+     "fn": "mask_tokens",
+     "starter": "def mask_tokens(tokens, positions):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "the",
+         "cat",
+         "sat"
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": [
+        [
+         "the",
+         "[MASK]",
+         "sat"
+        ],
+        [
+         "cat"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c",
+         "d"
+        ],
+        [
+         0,
+         3
+        ]
+       ],
+       "expect": [
+        [
+         "[MASK]",
+         "b",
+         "c",
+         "[MASK]"
+        ],
+        [
+         "a",
+         "d"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        []
+       ],
+       "expect": [
+        [
+         "x"
+        ],
+        []
+       ]
+      }
+     ],
+     "hint": "Hide and remember.",
+     "solution": "def mask_tokens(tokens, positions):\n    out = list(tokens)\n    targets = []\n    for p in positions:\n        targets.append(tokens[p])\n        out[p] = '[MASK]'\n    return [out, targets]\n"
+    },
+    {
+     "type": "python",
+     "title": "Temperature",
+     "intro": "Write apply_temperature(logits, T): the softmax of logits divided by T, rounded to 4 decimals.",
+     "fn": "apply_temperature",
+     "starter": "def apply_temperature(logits, T):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         2,
+         1,
+         0
+        ],
+        1
+       ],
+       "expect": [
+        0.6652,
+        0.2447,
+        0.09
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         1,
+         0
+        ],
+        0.5
+       ],
+       "expect": [
+        0.8668,
+        0.1173,
+        0.0159
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         1,
+         0
+        ],
+        2
+       ],
+       "expect": [
+        0.5065,
+        0.3072,
+        0.1863
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         0
+        ],
+        1
+       ],
+       "expect": [
+        0.5,
+        0.5
+       ]
+      }
+     ],
+     "hint": "Low T sharpens, high T flattens.",
+     "solution": "import math\ndef apply_temperature(logits, T):\n    scaled = [v / T for v in logits]\n    m = max(scaled)\n    e = [math.exp(v - m) for v in scaled]\n    t = sum(e)\n    return [round(v / t, 4) for v in e]\n"
+    },
+    {
+     "type": "python",
+     "title": "Top-k filter",
+     "intro": "Write top_k(probs, k): keep the k largest probabilities (ties: lower index first), set the rest to 0 and renormalise; round to 4 decimals.",
+     "fn": "top_k",
+     "starter": "def top_k(probs, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.3,
+         0.2
+        ],
+        2
+       ],
+       "expect": [
+        0.625,
+        0.375,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         0.25,
+         0.25,
+         0.25,
+         0.25
+        ],
+        1
+       ],
+       "expect": [
+        1.0,
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         0.6,
+         0.4
+        ],
+        5
+       ],
+       "expect": [
+        0.6,
+        0.4
+       ]
+      }
+     ],
+     "hint": "Keep the biggest few.",
+     "solution": "def top_k(probs, k):\n    order = sorted(range(len(probs)), key=lambda i: (-probs[i], i))\n    keep = set(order[:k])\n    s = sum([probs[i] for i in keep])\n    return [round(probs[i] / s, 4) if i in keep else 0 for i in range(len(probs))]\n"
+    },
+    {
+     "type": "python",
+     "title": "Top-p (nucleus)",
+     "intro": "Write top_p(probs, p): sort probabilities descending (ties: lower index first) and keep the smallest set whose cumulative probability reaches p; set the others to 0 and renormalise; round to 4 decimals.",
+     "fn": "top_p",
+     "starter": "def top_p(probs, p):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.3,
+         0.2
+        ],
+        0.7
+       ],
+       "expect": [
+        0.625,
+        0.375,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.3,
+         0.2
+        ],
+        0.5
+       ],
+       "expect": [
+        1.0,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         0.4,
+         0.3,
+         0.2,
+         0.1
+        ],
+        0.95
+       ],
+       "expect": [
+        0.4,
+        0.3,
+        0.2,
+        0.1
+       ]
+      }
+     ],
+     "hint": "Smallest set reaching p.",
+     "solution": "def top_p(probs, p):\n    order = sorted(range(len(probs)), key=lambda i: (-probs[i], i))\n    keep = []\n    cum = 0.0\n    for i in order:\n        keep.append(i)\n        cum = cum + probs[i]\n        if cum >= p - 1e-12:\n            break\n    ks = set(keep)\n    s = sum([probs[i] for i in ks])\n    return [round(probs[i] / s, 4) if i in ks else 0 for i in range(len(probs))]\n"
+    },
+    {
+     "type": "python",
+     "title": "Token F1 (QA)",
+     "intro": "Write token_f1(pred, gold): the F1 score between two token lists, counting overlapping tokens with multiplicity (common = sum of min counts); rounded to 3 decimals; 0 if no overlap.",
+     "fn": "token_f1",
+     "starter": "def token_f1(pred, gold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "the",
+         "big",
+         "cat"
+        ],
+        [
+         "a",
+         "big",
+         "cat"
+        ]
+       ],
+       "expect": 0.667,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        [
+         "y"
+        ]
+       ],
+       "expect": 0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         "a",
+         "a",
+         "b"
+        ],
+        [
+         "a",
+         "b",
+         "b"
+        ]
+       ],
+       "expect": 0.667,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Precision and recall of tokens.",
+     "solution": "def token_f1(pred, gold):\n    common = 0\n    used = list(gold)\n    for t in pred:\n        if t in used:\n            common = common + 1\n            used.remove(t)\n    if common == 0:\n        return 0\n    p = common / float(len(pred))\n    r = common / float(len(gold))\n    return round(2 * p * r / (p + r), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Few-shot prompt",
+     "intro": "Write build_prompt(instruction, examples, query): examples is a list of [input, output]; return the string instruction + newline, then for each example 'Input: x' newline 'Output: y' newline, then 'Input: query' newline 'Output:' (exact format).",
+     "fn": "build_prompt",
+     "starter": "def build_prompt(instruction, examples, query):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Classify the sentiment.",
+        [
+         [
+          "great film",
+          "positive"
+         ],
+         [
+          "awful",
+          "negative"
+         ]
+        ],
+        "quite nice"
+       ],
+       "expect": "Classify the sentiment.\nInput: great film\nOutput: positive\nInput: awful\nOutput: negative\nInput: quite nice\nOutput:"
+      },
+      {
+       "args": [
+        "Translate.",
+        [],
+        "hello"
+       ],
+       "expect": "Translate.\nInput: hello\nOutput:"
+      }
+     ],
+     "hint": "Join the pieces with newlines.",
+     "solution": "def build_prompt(instruction, examples, query):\n    s = instruction + '\\n'\n    for x, y in examples:\n        s = s + 'Input: ' + x + '\\n' + 'Output: ' + y + '\\n'\n    s = s + 'Input: ' + query + '\\n' + 'Output:'\n    return s\n"
+    }
+   ]
+  },
+  {
+   "title": "Applications: search, QA, translation and responsible NLP",
+   "maps": [
+    {
+     "title": "Applications",
+     "links": [
+      "BM25 | ranks | Documents for a query",
+      "Inverted index | maps | Words to documents",
+      "RAG | grounds | Generation in documents",
+      "BLEU ROUGE | score | Text overlap",
+      "Machine translation | maps | Language to language",
+      "Hallucination | is | Unsupported output",
+      "Bias | needs | Evaluation"
+     ]
+    }
+   ],
+   "summary": [
+    "Search engines use an inverted index to find documents containing query words and rank them with BM25, a refined TF-IDF. Modern systems add embedding-based dense retrieval and neural rerankers.",
+    "Retrieval-augmented generation (RAG) retrieves relevant passages and puts them in the prompt of a language model so its answer is grounded in sources.",
+    "Machine translation, summarisation and question answering are evaluated with overlap metrics such as BLEU and ROUGE, and increasingly by human or model judges.",
+    "Responsible NLP means checking for hallucination, bias, privacy leaks and misuse, and testing on the people the system will serve."
+   ],
+   "glossary": [
+    {
+     "term": "Inverted index",
+     "def": "A map from each word to the list of documents containing it."
+    },
+    {
+     "term": "BM25",
+     "def": "A ranking function combining term frequency with saturation, length normalisation and IDF."
+    },
+    {
+     "term": "RAG",
+     "def": "Retrieval-augmented generation: fetching documents and giving them to a model to ground its answer."
+    },
+    {
+     "term": "BLEU",
+     "def": "A translation metric measuring n-gram overlap between output and reference translations."
+    },
+    {
+     "term": "Hallucination",
+     "def": "Fluent output that is not supported by the input or facts."
+    }
+   ],
+   "keyPoints": [
+    "Inverted index: word -> document ids.",
+    "BM25 saturates term frequency.",
+    "RAG: retrieve, then generate.",
+    "Chunk long documents with overlap.",
+    "Check facts, bias and privacy."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "When you search a million pages you do not scan them. A search engine builds an inverted index in advance: for each word, the list of documents that contain it. A query is answered by looking up its words and intersecting or merging the lists. Then the candidates are ranked.",
+      "BM25 is the classic ranking function: like TF-IDF, but extra occurrences of a word count for less and less, and long documents are penalised gently."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Embeddings add meaning. Encode documents and queries as dense vectors with an encoder model and retrieve the nearest, so 'cheap flights' also finds 'low-cost airfare'.",
+      "Production search often combines the two, lexical and dense, and finishes with a reranker, a model that reads the query and each candidate together and scores them accurately. Quality is measured by precision at k, recall at k and mean reciprocal rank."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from rank_bm25 import BM25Okapi\ncorpus = [d.lower().split() for d in docs]\nbm25 = BM25Okapi(corpus)\nscores = bm25.get_scores('refund policy'.split())\n\n# RAG skeleton\nhits = retrieve(query, k=4)\ncontext = '\\n\\n'.join(h.text for h in hits)\nprompt = f'Answer using only the context.\\n\\nContext:\\n{context}\\n\\nQuestion: {query}'\nanswer = llm(prompt)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Large language models know a lot but can make things up and cannot know your private or recent documents. Retrieval-augmented generation fixes both: retrieve the relevant passages, paste them into the prompt, and instruct the model to answer from them and cite them.",
+      "Long documents are cut into overlapping chunks so that no answer is split across a boundary. Retrieval quality is usually the limit of such systems."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Other tasks have their own metrics. Machine translation systems are scored by BLEU, the overlap of n-grams with human reference translations, and summaries by ROUGE, which stresses recall. Overlap scores are crude, so human review and carefully validated model judges are used too.",
+      "Finally, responsibility: language models learn from human text and inherit its stereotypes, may leak private data, may state falsehoods with confidence and can be misused.",
+      "Test on the groups and languages your users speak, measure rather than assume, keep humans in the loop for high-stakes uses, and be open about limits."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does an inverted index map?",
+     "options": [
+      "Words to documents",
+      "Documents to words",
+      "Letters to words",
+      "Sentences to labels"
+     ],
+     "answer": 0,
+     "explain": "Look up fast."
+    },
+    {
+     "q": "What does BM25 improve on TF-IDF?",
+     "options": [
+      "Saturating term frequency and length normalisation",
+      "Colours",
+      "Spelling",
+      "Speed of typing"
+     ],
+     "answer": 0,
+     "explain": "Diminishing returns."
+    },
+    {
+     "q": "What is RAG?",
+     "options": [
+      "Retrieve documents then generate with them",
+      "A tokenizer",
+      "A metric",
+      "A stemmer"
+     ],
+     "answer": 0,
+     "explain": "Grounded answers."
+    },
+    {
+     "q": "What does BLEU measure?",
+     "options": [
+      "N-gram overlap with references",
+      "Sentiment",
+      "Speed",
+      "Vocabulary size"
+     ],
+     "answer": 0,
+     "explain": "Translation."
+    },
+    {
+     "q": "What is a hallucination?",
+     "options": [
+      "Fluent but unsupported output",
+      "A slow reply",
+      "A short answer",
+      "A rare word"
+     ],
+     "answer": 0,
+     "explain": "Made-up claims."
+    },
+    {
+     "q": "Why chunk with overlap?",
+     "options": [
+      "Answers may span a boundary",
+      "To save memory",
+      "To remove stopwords",
+      "To stem"
+     ],
+     "answer": 0,
+     "explain": "Avoid splits."
+    }
+   ],
+   "cards": [
+    {
+     "q": "BM25",
+     "a": "lexical ranking"
+    },
+    {
+     "q": "precision@k, MRR",
+     "a": "retrieval metrics"
+    },
+    {
+     "q": "retrieve then generate",
+     "a": "RAG"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each application idea with its meaning.",
+     "pairs": [
+      [
+       "Inverted index",
+       "word to documents"
+      ],
+      [
+       "BM25",
+       "lexical ranking function"
+      ],
+      [
+       "RAG",
+       "ground generation in documents"
+      ],
+      [
+       "BLEU",
+       "translation overlap score"
+      ],
+      [
+       "Reranker",
+       "accurate second-stage scorer"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Build an inverted index",
+     "intro": "Write inverted_index(docs): docs is a list of token lists; return [word, sorted list of document ids containing it] pairs sorted by word.",
+     "fn": "inverted_index",
+     "starter": "def inverted_index(docs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          "b"
+         ],
+         [
+          "b",
+          "c"
+         ],
+         [
+          "a"
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         "a",
+         [
+          0,
+          2
+         ]
+        ],
+        [
+         "b",
+         [
+          0,
+          1
+         ]
+        ],
+        [
+         "c",
+         [
+          1
+         ]
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         []
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "x",
+          "x"
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         "x",
+         [
+          0
+         ]
+        ]
+       ]
+      }
+     ],
+     "hint": "Add each document to each word's list once.",
+     "solution": "def inverted_index(docs):\n    d = {}\n    for i, doc in enumerate(docs):\n        for w in set(doc):\n            d.setdefault(w, []).append(i)\n    return [[w, sorted(d[w])] for w in sorted(d.keys())]\n"
+    },
+    {
+     "type": "python",
+     "title": "Boolean AND query",
+     "intro": "Write search_and(docs, words): the sorted ids of documents containing all the words.",
+     "fn": "search_and",
+     "starter": "def search_and(docs, words):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          "b"
+         ],
+         [
+          "b",
+          "c"
+         ],
+         [
+          "a",
+          "b",
+          "c"
+         ]
+        ],
+        [
+         "b",
+         "c"
+        ]
+       ],
+       "expect": [
+        1,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a"
+         ]
+        ],
+        [
+         "z"
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "a"
+         ]
+        ],
+        []
+       ],
+       "expect": [
+        0
+       ]
+      }
+     ],
+     "hint": "Intersect the conditions.",
+     "solution": "def search_and(docs, words):\n    return [i for i in range(len(docs)) if all([w in docs[i] for w in words])]\n"
+    },
+    {
+     "type": "python",
+     "title": "BM25 score",
+     "intro": "Write bm25(query, doc, docs, k1, b): the BM25 score of a token-list doc for the query tokens, using idf = ln((N - df + 0.5) / (df + 0.5) + 1), the term-frequency part tf (k1 + 1) / (tf + k1 (1 - b + b len(doc) / avgdl)), summed over query terms. Round to 4 decimals.",
+     "fn": "bm25",
+     "starter": "def bm25(query, doc, docs, k1, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "cat"
+        ],
+        [
+         "the",
+         "cat",
+         "sat"
+        ],
+        [
+         [
+          "the",
+          "cat",
+          "sat"
+         ],
+         [
+          "a",
+          "dog"
+         ],
+         [
+          "the",
+          "dog"
+         ]
+        ],
+        1.5,
+        0.75
+       ],
+       "expect": 0.8691,
+       "approx": 0.0005
+      },
+      {
+       "args": [
+        [
+         "dog",
+         "the"
+        ],
+        [
+         "a",
+         "dog"
+        ],
+        [
+         [
+          "the",
+          "cat",
+          "sat"
+         ],
+         [
+          "a",
+          "dog"
+         ],
+         [
+          "the",
+          "dog"
+         ]
+        ],
+        1.2,
+        0.75
+       ],
+       "expect": 0.4992,
+       "approx": 0.0005
+      },
+      {
+       "args": [
+        [
+         "zzz"
+        ],
+        [
+         "a"
+        ],
+        [
+         [
+          "a"
+         ],
+         [
+          "b"
+         ]
+        ],
+        1.5,
+        0.75
+       ],
+       "expect": 0.0,
+       "approx": 0.0005
+      }
+     ],
+     "hint": "Sum over query terms.",
+     "solution": "import math\ndef bm25(query, doc, docs, k1, b):\n    N = len(docs)\n    avgdl = sum([len(d) for d in docs]) / float(N)\n    s = 0.0\n    for q in query:\n        df = len([d for d in docs if q in d])\n        idf = math.log((N - df + 0.5) / (df + 0.5) + 1)\n        tf = doc.count(q)\n        s = s + idf * tf * (k1 + 1) / (tf + k1 * (1 - b + b * len(doc) / avgdl))\n    return round(s, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Precision and recall at k",
+     "intro": "Write pr_at_k(ranked, relevant, k): [precision@k, recall@k] for a ranked list of ids and the set of relevant ids, each rounded to 3 decimals.",
+     "fn": "pr_at_k",
+     "starter": "def pr_at_k(ranked, relevant, k):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         3,
+         1,
+         4,
+         2
+        ],
+        [
+         1,
+         2,
+         9
+        ],
+        3
+       ],
+       "expect": [
+        0.333,
+        0.333
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         1,
+         2
+        ],
+        2
+       ],
+       "expect": [
+        1.0,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         6,
+         7
+        ],
+        [
+         7
+        ],
+        1
+       ],
+       "expect": [
+        0.0,
+        0.0
+       ]
+      }
+     ],
+     "hint": "Count relevant items in the top k.",
+     "solution": "def pr_at_k(ranked, relevant, k):\n    top = ranked[:k]\n    hit = len([d for d in top if d in relevant])\n    return [round(hit / float(k), 3), round(hit / float(len(relevant)), 3)]\n"
+    },
+    {
+     "type": "python",
+     "title": "Mean reciprocal rank",
+     "intro": "Write mrr(rankings, relevants): for each query, 1 / rank of the first relevant id in its ranking (0 if none); return the mean rounded to 3 decimals. rankings is a list of id lists and relevants a list of id lists.",
+     "fn": "mrr",
+     "starter": "def mrr(rankings, relevants):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3
+         ],
+         [
+          4,
+          5,
+          6
+         ]
+        ],
+        [
+         [
+          2
+         ],
+         [
+          4
+         ]
+        ]
+       ],
+       "expect": 0.75,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2
+         ]
+        ],
+        [
+         [
+          9
+         ]
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         [
+          7,
+          8
+         ]
+        ],
+        [
+         [
+          8
+         ]
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Reciprocal of the first hit.",
+     "solution": "def mrr(rankings, relevants):\n    total = 0.0\n    for r, rel in zip(rankings, relevants):\n        score = 0.0\n        for i, d in enumerate(r):\n            if d in rel:\n                score = 1.0 / (i + 1)\n                break\n        total = total + score\n    return round(total / len(rankings), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Chunk text",
+     "intro": "Write chunk(tokens, size, overlap): split the token list into windows of size tokens, each starting size - overlap after the previous one; stop when a window reaches the end.",
+     "fn": "chunk",
+     "starter": "def chunk(tokens, size, overlap):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5,
+         6,
+         7
+        ],
+        3,
+        1
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         3,
+         4,
+         5
+        ],
+        [
+         5,
+         6,
+         7
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        5,
+        2
+       ],
+       "expect": [
+        [
+         1,
+         2
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        2,
+        0
+       ],
+       "expect": [
+        [
+         1,
+         2
+        ],
+        [
+         3,
+         4
+        ]
+       ]
+      }
+     ],
+     "hint": "Slide with overlap.",
+     "solution": "def chunk(tokens, size, overlap):\n    out = []\n    i = 0\n    step = size - overlap\n    while True:\n        out.append(tokens[i:i + size])\n        if i + size >= len(tokens):\n            break\n        i = i + step\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Unigram BLEU precision",
+     "intro": "Write unigram_precision(candidate, reference): the fraction of candidate tokens that appear in the reference, clipped by how many times each appears there, rounded to 3 decimals.",
+     "fn": "unigram_precision",
+     "starter": "def unigram_precision(candidate, reference):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "the",
+         "the",
+         "the",
+         "cat"
+        ],
+        [
+         "the",
+         "cat",
+         "sat"
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         "a",
+         "b"
+        ]
+       ],
+       "expect": 1.0,
+       "approx": 0.002
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        [
+         "y"
+        ]
+       ],
+       "expect": 0.0,
+       "approx": 0.002
+      }
+     ],
+     "hint": "Clip repeated words.",
+     "solution": "def unigram_precision(candidate, reference):\n    ref = list(reference)\n    hit = 0\n    for t in candidate:\n        if t in ref:\n            hit = hit + 1\n            ref.remove(t)\n    return round(hit / float(len(candidate)), 3)\n"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Natural Language Processing",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What is tokenisation?",
+    "options": [
+     "Splitting text into units",
+     "Translating",
+     "Tagging",
+     "Ranking"
+    ],
+    "answer": 0,
+    "explain": "First step."
+   },
+   {
+    "q": "What does stemming do?",
+    "options": [
+     "Chops words to a root form",
+     "Adds suffixes",
+     "Translates",
+     "Sorts"
+    ],
+    "answer": 0,
+    "explain": "Crude normalisation."
+   },
+   {
+    "q": "What does Zipf's law say?",
+    "options": [
+     "A few words are very frequent",
+     "All words are equal",
+     "Words are random",
+     "Sentences are short"
+    ],
+    "answer": 0,
+    "explain": "Long tail."
+   },
+   {
+    "q": "What is a bag of words?",
+    "options": [
+     "Word counts ignoring order",
+     "A sequence",
+     "A tree",
+     "A grammar"
+    ],
+    "answer": 0,
+    "explain": "Order is lost."
+   },
+   {
+    "q": "What does TF-IDF down-weight?",
+    "options": [
+     "Words common across documents",
+     "Rare words",
+     "Numbers",
+     "Long words"
+    ],
+    "answer": 0,
+    "explain": "Inverse document frequency."
+   },
+   {
+    "q": "What does cosine similarity compare?",
+    "options": [
+     "Direction of vectors",
+     "Length only",
+     "Spelling",
+     "Counts only"
+    ],
+    "answer": 0,
+    "explain": "Angle."
+   },
+   {
+    "q": "What does an n-gram model predict?",
+    "options": [
+     "The next word from the last n-1",
+     "A topic",
+     "A tag",
+     "A translation"
+    ],
+    "answer": 0,
+    "explain": "Markov assumption."
+   },
+   {
+    "q": "What does perplexity measure?",
+    "options": [
+     "How surprised a model is by text",
+     "Word length",
+     "Speed",
+     "Accuracy of tags"
+    ],
+    "answer": 0,
+    "explain": "Lower is better."
+   },
+   {
+    "q": "Why smooth counts?",
+    "options": [
+     "Unseen n-grams would get zero probability",
+     "To speed up",
+     "To stem",
+     "To tag"
+    ],
+    "answer": 0,
+    "explain": "Add-one."
+   },
+   {
+    "q": "What does Naive Bayes assume?",
+    "options": [
+     "Words are independent given the class",
+     "Words are ordered",
+     "Classes are equal",
+     "No priors"
+    ],
+    "answer": 0,
+    "explain": "Naive."
+   },
+   {
+    "q": "Why use macro F1?",
+    "options": [
+     "It weights classes equally",
+     "It is faster",
+     "It ignores errors",
+     "It counts only the largest class"
+    ],
+    "answer": 0,
+    "explain": "Imbalance."
+   },
+   {
+    "q": "What does the Viterbi algorithm find?",
+    "options": [
+     "The best tag sequence",
+     "The shortest word",
+     "A vector",
+     "A topic"
+    ],
+    "answer": 0,
+    "explain": "Dynamic programming."
+   },
+   {
+    "q": "What does a CKY parser build?",
+    "options": [
+     "A parse tree",
+     "A vector",
+     "An index",
+     "A tag"
+    ],
+    "answer": 0,
+    "explain": "Chart parsing."
+   },
+   {
+    "q": "What is named-entity recognition?",
+    "options": [
+     "Finding people, places and organisations",
+     "Counting words",
+     "Stemming",
+     "Translating"
+    ],
+    "answer": 0,
+    "explain": "Spans with types."
+   },
+   {
+    "q": "What does word2vec skip-gram predict?",
+    "options": [
+     "Context words from a centre word",
+     "A label",
+     "A sentence",
+     "A tag"
+    ],
+    "answer": 0,
+    "explain": "Embeddings."
+   },
+   {
+    "q": "What does king - man + woman approximate?",
+    "options": [
+     "queen",
+     "man",
+     "kings",
+     "throne"
+    ],
+    "answer": 0,
+    "explain": "Analogy."
+   },
+   {
+    "q": "Why do plain RNNs forget?",
+    "options": [
+     "Vanishing gradients",
+     "Short words",
+     "No weights",
+     "Too few tags"
+    ],
+    "answer": 0,
+    "explain": "Long chains."
+   },
+   {
+    "q": "What does attention compute?",
+    "options": [
+     "A relevance-weighted average",
+     "A count",
+     "A tag",
+     "A stem"
+    ],
+    "answer": 0,
+    "explain": "Softmax weights."
+   },
+   {
+    "q": "What does a causal mask do?",
+    "options": [
+     "Hides later tokens",
+     "Hides earlier tokens",
+     "Removes noise",
+     "Shuffles"
+    ],
+    "answer": 0,
+    "explain": "Left to right."
+   },
+   {
+    "q": "What does BPE merge?",
+    "options": [
+     "The most frequent adjacent pair",
+     "Sentences",
+     "Heads",
+     "Layers"
+    ],
+    "answer": 0,
+    "explain": "Subwords."
+   },
+   {
+    "q": "How does BERT pretrain?",
+    "options": [
+     "Masked language modelling",
+     "Translation",
+     "Parsing",
+     "Sorting"
+    ],
+    "answer": 0,
+    "explain": "Fill the blank."
+   },
+   {
+    "q": "How does GPT pretrain?",
+    "options": [
+     "Next-token prediction",
+     "Masking",
+     "Clustering",
+     "Tagging"
+    ],
+    "answer": 0,
+    "explain": "Causal."
+   },
+   {
+    "q": "What does temperature control?",
+    "options": [
+     "Randomness of sampling",
+     "Model size",
+     "Vocabulary",
+     "Layers"
+    ],
+    "answer": 0,
+    "explain": "Sharper or flatter."
+   },
+   {
+    "q": "What is an inverted index?",
+    "options": [
+     "Word to documents",
+     "Document to words",
+     "Tag to word",
+     "Letter to word"
+    ],
+    "answer": 0,
+    "explain": "Search."
+   },
+   {
+    "q": "What does RAG do?",
+    "options": [
+     "Retrieves documents to ground generation",
+     "Stems words",
+     "Tags parts of speech",
+     "Compresses models"
+    ],
+    "answer": 0,
+    "explain": "Retrieve then generate."
+   },
+   {
+    "q": "What is a hallucination?",
+    "options": [
+     "Fluent output not supported by facts",
+     "A slow answer",
+     "A rare word",
+     "A typo"
+    ],
+    "answer": 0,
+    "explain": "Check claims."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "NLP cheat sheet",
+  "prompt": "nlp>",
+  "intro": "A scripted lookup. Try: tokens, tfidf, cosine, ngram, bayes, viterbi, embed, attention, bert, gpt, bm25, rag, help",
+  "chips": [
+   "tokens",
+   "tfidf",
+   "cosine",
+   "ngram",
+   "bayes",
+   "viterbi",
+   "embed",
+   "attention",
+   "bert",
+   "gpt",
+   "bm25",
+   "rag",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "tokens     Split text into tokens: words, subwords or characters. Norma",
+     "tfidf      tf-idf = tf x log(N / df). Frequent in this document, rare o",
+     "cosine     cos(a, b) = a . b / (|a| |b|). Compares direction, not lengt",
+     "ngram      P(w | previous) = count(previous w) / count(previous). Smoot",
+     "bayes      Pick the class maximising log P(class) + sum log P(word | cl",
+     "viterbi    Dynamic programming over tags: best[t][s] = max over previou",
+     "embed      Dense vectors where similar contexts mean similar words. kin",
+     "attention  softmax(Q K^T / sqrt(d)) V. Causal mask hides future tokens.",
+     "bert       Encoder, bidirectional, pretrained by masked language modell",
+     "gpt        Decoder, causal, pretrained to predict the next token. Promp",
+     "bm25       Lexical ranking: IDF times saturating, length-normalised ter",
+     "rag        Retrieve relevant chunks, put them in the prompt, answer fro"
+    ]
+   },
+   {
+    "re": "^tokens$",
+    "out": [
+     "Split text into tokens: words, subwords or characters. Normalise case and Unicode first."
+    ]
+   },
+   {
+    "re": "^tfidf$",
+    "out": [
+     "tf-idf = tf x log(N / df). Frequent in this document, rare overall."
+    ]
+   },
+   {
+    "re": "^cosine$",
+    "out": [
+     "cos(a, b) = a . b / (|a| |b|). Compares direction, not length."
+    ]
+   },
+   {
+    "re": "^ngram$",
+    "out": [
+     "P(w | previous) = count(previous w) / count(previous). Smooth for unseen pairs. Perplexity measures fit."
+    ]
+   },
+   {
+    "re": "^bayes$",
+    "out": [
+     "Pick the class maximising log P(class) + sum log P(word | class), with add-one smoothing."
+    ]
+   },
+   {
+    "re": "^viterbi$",
+    "out": [
+     "Dynamic programming over tags: best[t][s] = max over previous of best + log transition + log emission."
+    ]
+   },
+   {
+    "re": "^embed$",
+    "out": [
+     "Dense vectors where similar contexts mean similar words. king - man + woman is about queen."
+    ]
+   },
+   {
+    "re": "^attention$",
+    "out": [
+     "softmax(Q K^T / sqrt(d)) V. Causal mask hides future tokens."
+    ]
+   },
+   {
+    "re": "^bert$",
+    "out": [
+     "Encoder, bidirectional, pretrained by masked language modelling. Add a head and fine-tune."
+    ]
+   },
+   {
+    "re": "^gpt$",
+    "out": [
+     "Decoder, causal, pretrained to predict the next token. Prompt it, or tune it to follow instructions."
+    ]
+   },
+   {
+    "re": "^bm25$",
+    "out": [
+     "Lexical ranking: IDF times saturating, length-normalised term frequency."
+    ]
+   },
+   {
+    "re": "^rag$",
+    "out": [
+     "Retrieve relevant chunks, put them in the prompt, answer from them, cite them."
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ }
+}

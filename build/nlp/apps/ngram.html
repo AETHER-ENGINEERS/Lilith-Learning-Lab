@@ -1,0 +1,24 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}
+.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=range]{width:100%;accent-color:#b26bff}
+.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;min-height:60px;line-height:1.6}
+table{border-collapse:collapse;width:100%}td,th{border:1px solid #3a2a5c;padding:3px 5px;text-align:center}
+.tk{display:inline-block;padding:4px 8px;margin:2px;border-radius:8px;background:#2a1b48;cursor:pointer}.tk.on{background:#b26bff;color:#1b0b33;font-weight:700}
+</style></head><body>
+<label>Corpus <select id="c"><option value="0">Nursery rhyme</option><option value="1">Weather talk</option><option value="2">Tiny story</option></select>
+Order <select id="o"><option value="1">Bigram</option><option value="2">Trigram</option></select></label>
+<button id="g">Generate</button><button id="s" class="s">Show counts</button>
+<div id="out" class="box"></div><div id="cnt" class="k"></div><div id="p" class="k"></div>
+<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var CORP=["the cat sat on the mat . the cat saw the dog . the dog sat on the log . the dog saw the cat . the cat ran to the mat .",
+"it is sunny today . it is cold today . it will be sunny tomorrow . it will be rainy tomorrow . today it is sunny and warm . tomorrow it is rainy and cold .",
+"the girl found a key . the key opened a door . the door led to a garden . the garden had a tree . the girl climbed the tree . the tree was tall ."];
+var seed=7;function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff}
+var seen={};
+function model(){var w=CORP[+$("c").value].split(" "),n=+$("o").value,m={},i,k;for(i=0;i+n<w.length;i++){k=w.slice(i,i+n).join(" ");(m[k]=m[k]||[]).push(w[i+n])}return {m:m,w:w,n:n}}
+function pick(a){return a[Math.floor(rnd()*a.length)]}
+$("g").onclick=function(){var M=model(),w=M.w,out=w.slice(0,M.n),i;for(i=0;i<22;i++){var k=out.slice(out.length-M.n).join(" "),nx=M.m[k];if(!nx)break;out.push(pick(nx))}
+ $("out").textContent=out.join(" ");seen[$("c").value+"/"+$("o").value]=1;var n=Object.keys(seen).length;$("p").textContent="Settings tried: "+n+" of 2 needed";if(n>=2)done()};
+$("s").onclick=function(){var M=model(),ks=Object.keys(M.m).slice(0,12),h="<table><tr><th>Context</th><th>Next words seen</th></tr>";ks.forEach(function(k){var c={};M.m[k].forEach(function(x){c[x]=(c[x]||0)+1});h+="<tr><td>"+k+"</td><td>"+Object.keys(c).map(function(x){return x+" x"+c[x]}).join(", ")+"</td></tr>"});$("cnt").innerHTML=h+"</table>"+"<div>Trigrams are more fluent but copy the corpus more.</div>"};
+</script></body></html>
