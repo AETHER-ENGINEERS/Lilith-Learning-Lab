@@ -1,0 +1,18 @@
+FEY = [
+ ("The Bible comes in three languages, like a house with three doors. Hebrew is the old door, Greek the middle door and Latin the door to the west. You can go in through any one and find the same stories.", "why can one verse be read in all three languages?"),
+ ("Hebrew letters are 22 little pictures, and you read them backwards from the right. Each letter is also a number, so every word hides a sum, like a secret code.", "why does a Hebrew book start at the other end?"),
+ ("Hebrew first wrote only the hard sounds, like a text message without vowels. Later people added dots and dashes so everybody could say the words the same way.", "why do some letters wear tiny dots?"),
+ ("A Hebrew noun gets -im for many boys and -ot for many girls. There is no word for a, and the word is is left out, so the man good means the man is good.", "why does Hebrew skip the word is?"),
+ ("A Hebrew verb grows from three letters like a plant from a seed. Add little bits to the front and back and it tells you who did it and when.", "how does one root give you so many words?"),
+ ("Greek has 24 letters, and you know some from maths class: alpha, pi, omega. A little h mark on a vowel tells you to breathe out before you say it.", "which Greek letters do you already know?"),
+ ("In Greek the ending on a word tells you its job, like a name tag. Because of the tags, you can shuffle the words and the meaning stays the same.", "why can Greek shuffle its words?"),
+ ("Greek verbs wear endings for I, you and they. A little e at the front means it happened before. Some verbs even act on themselves, which English cannot do.", "what does the little e at the front mean?"),
+ ("Latin looks friendly because it uses our letters. Nouns have six name tags called cases, and there is no word for the or a, so you have to look at the endings.", "why does Latin need no word for the?"),
+ ("A Latin verb carries its own who. Amamus is we love, all in one word. The verb likes to sit at the end of the sentence, like a period at the end.", "why do Latin verbs have so many endings?"),
+ ("Put the three side by side: I is ego in Greek and Latin, and ani in Hebrew. Hebrew skips is, Greek says eimi, Latin says sum. Numbers like six look the same in Greek and Latin.", "which words match across the languages?"),
+ ("Thirty nouns, each with a picture trick: photo for light, pacify for peace, Bethlehem for bread. Flip flashcards every day and they stick.", "how does a silly picture help you remember?"),
+ ("Verbs are the doing words: say, see, hear, go, give, love. Learn each with a mini phrase like Audi, Israel, and you will remember them in context.", "why learn a verb inside a phrase?"),
+ ("Hello is shalom, chaire or salve, and each one is a little wish: peace, joy or health. Say them out loud to a friend, because words you use stay.", "what are the greetings really wishing?"),
+ ("An interlinear puts a tiny English word under each foreign word, like training wheels. You can read a real verse before you know all the grammar.", "what do the training wheels do?"),
+ ("To translate, find the doing word first, then who did it, then what they did it to. Then say it in good English. For remembering, review a word after one day, two, four and eight.", "why do you wait longer each time you review?"),
+]
