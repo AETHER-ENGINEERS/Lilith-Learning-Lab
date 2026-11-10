@@ -1,0 +1,18 @@
+FEY = [
+ ("A Commodore 64 is a toy box with a brain, a painter, a singer and a few helpers. Each one has a job, and you talk to them with numbers.", None),
+ ("A program is a note with a street address on top. The computer reads the address, goes there, and does what the note says.", None),
+ ("BASIC is like giving a friend numbered instructions on cards. They do card ten, then card twenty, and you can swap cards any time.", None),
+ ("Memory is a long street of mailboxes. Some boxes hold your things and some are locked rooms with the computer's own tools inside.", None),
+ ("The screen is a grid of little windows. Put a letter number in one window and a colour in the matching window, and it lights up.", None),
+ ("Assembly is talking to the tiny brain directly. It has three pockets, A, X and Y, and a little flag that goes up when a number is zero.", None),
+ ("A subroutine is a helper you call and then they come back. The brain leaves a sticky note on a stack so it knows where to return.", None),
+ ("C is a way to write in friendlier words and let a translator turn them into the brain's own little steps.", None),
+ ("A sprite is a sticker you can slide around without touching the picture. Eight stickers, each a little grid of dots.", None),
+ ("The sound chip is three tiny singers. You pick how high they sing, how they swell and fade, then open the gate to let them start.", None),
+ ("An interrupt is a tap on the shoulder. The computer stops, does the quick job, and goes back to exactly where it was.", None),
+ ("A joystick is five little buttons. When you press one, its light goes off instead of on, which is the funny way these chips count.", None),
+ ("The user port is a row of eight little doors. You choose which doors let things out and which let things in.", None),
+ ("Tape stores sounds made of short, medium and long beeps. Two beeps make a one or a zero, and a check bit catches mistakes.", None),
+ ("A disk is a record with circles. Each circle is cut into pieces that each hold a little data, and the middle circle keeps the list.", None),
+ ("Now you can build little games: read the stick, move the sticker, play a sound, and do it all again fifty times every second.", None),
+]
