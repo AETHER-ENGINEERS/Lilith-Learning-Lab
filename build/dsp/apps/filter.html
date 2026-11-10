@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}
+canvas{width:100%;display:block;margin:6px 0;background:#0e0820;border-radius:8px}.k{color:#c9b8e8}input[type=range]{width:100%;accent-color:#b26bff}label{display:block;margin-top:6px}
+</style></head><body>
+<div><button id="ma">Moving average (8)</button><button id="df" >Difference</button><button id="ws">Windowed sinc</button><button id="rs" class="s">Raw signal</button></div>
+<canvas id="w" width="400" height="140"></canvas><canvas id="p" width="400" height="140"></canvas>
+<div id="o" class="k">Signal = 3 Hz tone + 40 Hz tone + noise, sampled at 200 Hz.</div><div id="g" class="k"></div>
+<script>
+var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var FS=200,N=200,x=[],seed=7;function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff-0.5}
+for(var i=0;i<N;i++)x.push(Math.sin(2*Math.PI*3*i/FS)+0.6*Math.sin(2*Math.PI*40*i/FS)+0.2*rnd());
+function conv(b){var y=[];for(var n=0;n<N;n++){var s=0;for(var k=0;k<b.length;k++)if(n-k>=0)s+=b[k]*x[n-k];y.push(s)}return y}
+function spec(y){var X=[];for(var b=0;b<=60;b++){var re=0,im=0;for(var i=0;i<N;i++){var a=2*Math.PI*b*i/N;re+=y[i]*Math.cos(a);im-=y[i]*Math.sin(a)}X.push(Math.sqrt(re*re+im*im)/N*2)}return X}
+function sinc(c,m){var h=[],s=0,cen=(m-1)/2;for(var k=0;k<m;k++){var u=2*c*(k-cen),v=u==0?1:Math.sin(Math.PI*u)/(Math.PI*u);var w=0.5-0.5*Math.cos(2*Math.PI*k/(m-1));h.push(2*c*v*w);s+=2*c*v*w}return h.map(function(a){return a/s})}
+var tried={};
+function show(y,name){var g=$("w").getContext("2d");g.clearRect(0,0,400,140);g.strokeStyle="#b26bff";g.beginPath();for(var i=0;i<N;i++){var X=i/N*400,Y=70-y[i]*35;if(i==0)g.moveTo(X,Y);else g.lineTo(X,Y)}g.stroke();
+ var S=spec(y),p=$("p").getContext("2d");p.clearRect(0,0,400,140);p.fillStyle="#ffd36b";for(var b=0;b<S.length;b++){var h=Math.min(S[b],1.2)/1.2*110;p.fillRect(b/60*385+2,128-h,5,h)}
+ p.fillStyle="#c9b8e8";p.fillText("0 Hz",2,138);p.fillText("60 Hz",360,138);$("g").textContent=name}
+$("rs").onclick=function(){show(x,"Raw signal: peaks at 3 Hz and 40 Hz")};
+$("ma").onclick=function(){show(conv([1,1,1,1,1,1,1,1].map(function(a){return a/8})),"Moving average: the 40 Hz tone is strongly reduced");tried.ma=1;chk()};
+$("df").onclick=function(){show(conv([1,-1]),"Difference: the slow 3 Hz tone is weakened, high content stays");tried.df=1;chk()};
+$("ws").onclick=function(){show(conv(sinc(0.08,31)),"Windowed sinc, cutoff 16 Hz: a clean low-pass");tried.ws=1;chk()};
+function chk(){if(tried.ma&&tried.df&&tried.ws)done()}
+show(x,"Raw signal: peaks at 3 Hz and 40 Hz");
+</script></body></html>

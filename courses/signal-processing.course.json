@@ -1,0 +1,4098 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "signal-processing",
+ "title": "Signal Processing",
+ "subtitle": "Sampling, convolution, the Fourier transform, filters and windows, with runnable Python labs and a spectrum lab",
+ "author": "Lilith Learning Lab",
+ "description": "A hands-on introduction to digital signal processing: signals and systems, sampling, aliasing and quantisation, convolution and impulse responses, the discrete Fourier transform and FFT, FIR and IIR filters with frequency response and the z-transform, windows and spectral leakage, and applications in noise removal, pitch detection, decimation, image filtering and compression. Every chapter has Python labs verified in the built-in interpreter, and two interactive labs let you explore aliasing and filtering with live spectra.",
+ "pronounce": {
+  "Nyquist": "nye kwist",
+  "Shannon": "shan un",
+  "Fourier": "foor ee ay",
+  "Cooley": "koo lee",
+  "Tukey": "too kee",
+  "DFT": "D F T",
+  "FFT": "F F T",
+  "FIR": "F I R",
+  "IIR": "I I R",
+  "LTI": "L T I",
+  "biquad": "bye kwod",
+  "biquads": "bye kwods",
+  "Hann": "han",
+  "Hamming": "ham ing",
+  "sinc": "sink",
+  "quantisation": "kwon tih zay shun",
+  "decimation": "dess ih may shun",
+  "autocorrelation": "aw toe kor uh lay shun",
+  "spectrogram": "spek truh gram",
+  "JPEG": "jay peg",
+  "DCT": "D C T",
+  "hertz": "hurts",
+  "Hz": "hertz",
+  "kHz": "kilohertz",
+  "dB": "decibels",
+  "ELI5": "E L I five"
+ },
+ "chapters": [
+  {
+   "title": "Signals and systems: what we are processing",
+   "maps": [
+    {
+     "title": "Signals",
+     "links": [
+      "Signal | carries | Information",
+      "Analog signal | is | Continuous in time",
+      "Digital signal | is | Sampled and quantised",
+      "System | transforms | Signals",
+      "Amplitude | is | Height",
+      "Frequency | is | Cycles per second",
+      "Phase | is | Shift in time"
+     ]
+    }
+   ],
+   "summary": [
+    "A signal is a quantity that varies, usually with time, and carries information: sound pressure, a heartbeat voltage, a stock price, the brightness along a row of pixels. A system takes a signal in and produces a signal out.",
+    "Analog signals are continuous. Digital signal processing (DSP) works on lists of numbers that were sampled at regular steps, which computers can handle exactly.",
+    "The simplest signal is the sine wave, described by amplitude, frequency and phase. Almost every other signal can be built from sines."
+   ],
+   "glossary": [
+    {
+     "term": "Signal",
+     "def": "A function that carries information, such as a value that changes with time."
+    },
+    {
+     "term": "System",
+     "def": "Anything that turns an input signal into an output signal."
+    },
+    {
+     "term": "Amplitude",
+     "def": "The size of a signal's swing."
+    },
+    {
+     "term": "Frequency",
+     "def": "How many cycles happen per second, measured in hertz (Hz)."
+    },
+    {
+     "term": "Phase",
+     "def": "How far a wave is shifted along the time axis."
+    }
+   ],
+   "keyPoints": [
+    "A sine: A sin(2 pi f t + phase).",
+    "Period T = 1 / f.",
+    "Digital signals are lists of numbers.",
+    "A system maps input signals to output signals.",
+    "Every real signal can be built from sines."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A sound is wiggles in the air. A computer writes down the height of the wiggle again and again, and that list of numbers is a digital signal."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Look at a voice recorded on a phone. Behind the file is a list of numbers, thousands per second, each one the air pressure at a moment. That list is a digital signal. Signal processing is the art of changing, cleaning and understanding such lists."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The sine wave is the building block. Its three numbers are amplitude, how tall it is; frequency, how many times it repeats per second; and phase, where in its cycle it starts. A 440 hertz sine with amplitude one sounds as the note A above middle C."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The period is the time for one cycle, and equals one divided by the frequency. A 100 hertz wave repeats every 0.01 seconds. Signals made of several sines add up, and the sum can look complicated while each part is simple."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A system is anything that acts on signals: an amplifier, an echo, a filter, a microphone. Some systems are linear and time-invariant, called LTI systems. They have a beautiful theory built on convolution and Fourier analysis, which is the core of this course."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Along the way we will use Python to build signals, sample them, filter them and look at their spectra. The same ideas run inside phones, radios, medical scanners, music software and radar."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a signal?",
+     "options": [
+      "A function carrying information",
+      "A kind of cable",
+      "A battery",
+      "A code editor"
+     ],
+     "answer": 0,
+     "explain": "Often varies with time."
+    },
+    {
+     "q": "What is the period of a 100 Hz sine?",
+     "options": [
+      "0.01 s",
+      "100 s",
+      "0.1 s",
+      "1 s"
+     ],
+     "answer": 0,
+     "explain": "1 / f."
+    },
+    {
+     "q": "What does frequency measure?",
+     "options": [
+      "Cycles per second",
+      "Height of the wave",
+      "Position of the wave",
+      "Noise"
+     ],
+     "answer": 0,
+     "explain": "Hertz."
+    },
+    {
+     "q": "What does a system do?",
+     "options": [
+      "Turns an input signal into an output signal",
+      "Stores a file",
+      "Draws a graph",
+      "Prints a number"
+     ],
+     "answer": 0,
+     "explain": "Input to output."
+    },
+    {
+     "q": "What is a digital signal?",
+     "options": [
+      "A list of sampled numbers",
+      "A continuous voltage",
+      "A radio tower",
+      "A cable"
+     ],
+     "answer": 0,
+     "explain": "Discrete."
+    },
+    {
+     "q": "What is phase?",
+     "options": [
+      "A shift along the time axis",
+      "The height",
+      "The speed of sound",
+      "The noise level"
+     ],
+     "answer": 0,
+     "explain": "Where the cycle starts."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Hz",
+     "a": "cycles per second"
+    },
+    {
+     "q": "T = 1/f",
+     "a": "period from frequency"
+    },
+    {
+     "q": "A sin(2 pi f t)",
+     "a": "a sine wave"
+    },
+    {
+     "q": "LTI",
+     "a": "linear time-invariant system"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Amplitude",
+       "size of the swing"
+      ],
+      [
+       "Frequency",
+       "cycles per second"
+      ],
+      [
+       "Phase",
+       "shift along time"
+      ],
+      [
+       "Period",
+       "time for one cycle"
+      ],
+      [
+       "System",
+       "turns a signal into another signal"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Period from frequency",
+     "intro": "Write period(f): the period in seconds of a sine of frequency f hertz, 1 / f, rounded to 6 decimals.",
+     "fn": "period",
+     "starter": "def period(f):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        100
+       ],
+       "expect": 0.01,
+       "approx": 2e-06
+      },
+      {
+       "args": [
+        440
+       ],
+       "expect": 0.002273,
+       "approx": 2e-06
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": 1.0,
+       "approx": 2e-06
+      },
+      {
+       "args": [
+        50
+       ],
+       "expect": 0.02,
+       "approx": 2e-06
+      },
+      {
+       "args": [
+        0.5
+       ],
+       "expect": 2.0,
+       "approx": 2e-06
+      }
+     ],
+     "hint": "One divided by f.",
+     "solution": "def period(f):\n    return round(1.0 / f, 6)\n"
+    },
+    {
+     "type": "python",
+     "title": "Generate a sine",
+     "intro": "Write sine(amp, freq, phase, fs, n): the first n samples of amp x sin(2 pi freq t + phase) sampled at fs samples per second (t = k / fs). Return the list of samples multiplied by 1000 and rounded to integers, so that the values are exact to compare.",
+     "fn": "sine",
+     "starter": "def sine(amp, freq, phase, fs, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        1,
+        0,
+        8,
+        8
+       ],
+       "expect": [
+        0,
+        707,
+        1000,
+        707,
+        0,
+        -707,
+        -1000,
+        -707
+       ]
+      },
+      {
+       "args": [
+        2,
+        2,
+        0,
+        16,
+        8
+       ],
+       "expect": [
+        0,
+        1414,
+        2000,
+        1414,
+        0,
+        -1414,
+        -2000,
+        -1414
+       ]
+      },
+      {
+       "args": [
+        1,
+        1,
+        1.5707963,
+        8,
+        4
+       ],
+       "expect": [
+        1000,
+        707,
+        0,
+        -707
+       ]
+      },
+      {
+       "args": [
+        0.5,
+        10,
+        0,
+        40,
+        4
+       ],
+       "expect": [
+        0,
+        500,
+        0,
+        -500
+       ]
+      }
+     ],
+     "hint": "Loop over sample numbers k and compute the time k over fs.",
+     "solution": "import math\ndef sine(amp, freq, phase, fs, n):\n    out = []\n    for k in range(n):\n        v = amp * math.sin(2 * math.pi * freq * k / fs + phase)\n        out.append(int(round(v * 1000)))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Sum of two sines",
+     "intro": "Write mix(f1, f2, fs, n): the first n samples of sin(2 pi f1 t) + sin(2 pi f2 t) at sample rate fs, multiplied by 1000 and rounded to integers.",
+     "fn": "mix",
+     "starter": "def mix(f1, f2, fs, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        2,
+        16,
+        8
+       ],
+       "expect": [
+        0,
+        1090,
+        1707,
+        1631,
+        1000,
+        217,
+        -293,
+        -324
+       ]
+      },
+      {
+       "args": [
+        5,
+        5,
+        40,
+        4
+       ],
+       "expect": [
+        0,
+        1414,
+        2000,
+        1414
+       ]
+      },
+      {
+       "args": [
+        3,
+        7,
+        32,
+        6
+       ],
+       "expect": [
+        0,
+        1536,
+        1307,
+        149,
+        0,
+        751
+       ]
+      }
+     ],
+     "hint": "Add the two sines at each time.",
+     "solution": "import math\ndef mix(f1, f2, fs, n):\n    out = []\n    for k in range(n):\n        t = k / float(fs)\n        v = math.sin(2 * math.pi * f1 * t) + math.sin(2 * math.pi * f2 * t)\n        out.append(int(round(v * 1000)))\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "Sampling, aliasing and quantisation",
+   "maps": [
+    {
+     "title": "Sampling",
+     "links": [
+      "Sampling | measures | At regular times",
+      "Sample rate | is | Samples per second",
+      "Nyquist | needs | Twice the top frequency",
+      "Aliasing | fakes | Lower frequencies",
+      "Anti-alias filter | removes | High frequencies",
+      "Quantisation | rounds | To levels",
+      "Bit depth | sets | Number of levels"
+     ]
+    }
+   ],
+   "summary": [
+    "To store a continuous signal in a computer we sample it: measure it at regular instants. The sample rate fs is how many samples per second we take.",
+    "The Nyquist-Shannon sampling theorem says that a signal containing no frequency above B can be captured perfectly if fs is more than 2B. Sampling too slowly causes aliasing: a high frequency masquerades as a lower one.",
+    "Each sample is also rounded to one of a finite number of levels, called quantisation. With b bits there are 2^b levels, and the rounding error behaves like a faint noise."
+   ],
+   "glossary": [
+    {
+     "term": "Sample rate",
+     "def": "The number of samples taken per second."
+    },
+    {
+     "term": "Nyquist frequency",
+     "def": "Half the sample rate; the highest frequency that can be represented."
+    },
+    {
+     "term": "Aliasing",
+     "def": "The false appearance of a high frequency as a lower one when sampled too slowly."
+    },
+    {
+     "term": "Quantisation",
+     "def": "Rounding each sample to the nearest of a finite set of levels."
+    },
+    {
+     "term": "Bit depth",
+     "def": "The number of bits per sample; b bits give 2^b levels."
+    }
+   ],
+   "keyPoints": [
+    "Sample faster than 2 times the top frequency.",
+    "Nyquist frequency = fs / 2.",
+    "Alias of f: fold into 0..fs/2.",
+    "CD audio: 44100 Hz, 16 bits.",
+    "6 dB of range per bit."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. If a camera takes pictures too slowly, a spinning wheel looks like it turns the wrong way. Sampling too slowly makes fast wiggles look slow."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine filming a spinning wheel. If the camera takes too few pictures per second, the wheel can seem to turn slowly, or even backwards. That is aliasing. The camera sampled too slowly to follow the true motion, and the samples fit a slower false story."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The rule is the sampling theorem. If the highest frequency in a signal is B, sample at more than twice B. Human hearing reaches about 20,000 hertz, so CD audio uses 44,100 samples per second. Half of that, 22,050 hertz, is the Nyquist frequency."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "What if a frequency above the Nyquist frequency sneaks in? It folds back. A 30 hertz sine sampled at 40 hertz appears as a 10 hertz sine, because 40 minus 30 is 10. To prevent this, real systems put an analog anti-aliasing filter before the sampler to remove frequencies above the limit."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sampling is only half of digitising. Each sample must be stored with a limited number of bits. This is quantisation. With 3 bits there are 8 levels. With 16 bits, as on a CD, there are 65,536 levels.",
+      "The difference between the true value and the rounded one acts like a small noise, and each extra bit improves the signal-to-noise ratio by about 6 decibels."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Choosing rates and bit depths is an engineering trade-off. Speech needs only about 8,000 samples per second. Music needs 44,100 or more. Medical and scientific systems may need many more bits. The labs let you compute aliases and quantise signals yourself."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the Nyquist theorem say about sample rate?",
+     "options": [
+      "It must exceed twice the top frequency",
+      "It must equal the top frequency",
+      "It must be below half",
+      "It does not matter"
+     ],
+     "answer": 0,
+     "explain": "fs > 2B."
+    },
+    {
+     "q": "What is aliasing?",
+     "options": [
+      "A high frequency appearing as a lower one",
+      "A louder sound",
+      "A faster clock",
+      "A gain change"
+     ],
+     "answer": 0,
+     "explain": "Folding."
+    },
+    {
+     "q": "What is the Nyquist frequency at 44100 Hz sampling?",
+     "options": [
+      "22050 Hz",
+      "44100 Hz",
+      "88200 Hz",
+      "11025 Hz"
+     ],
+     "answer": 0,
+     "explain": "fs / 2."
+    },
+    {
+     "q": "How many levels does 16-bit audio have?",
+     "options": [
+      "65536",
+      "256",
+      "16",
+      "1024"
+     ],
+     "answer": 0,
+     "explain": "2 to the 16."
+    },
+    {
+     "q": "What does an anti-alias filter remove?",
+     "options": [
+      "Frequencies above the Nyquist limit",
+      "Low frequencies",
+      "All noise",
+      "DC offset only"
+     ],
+     "answer": 0,
+     "explain": "Before sampling."
+    },
+    {
+     "q": "What does quantisation do?",
+     "options": [
+      "Rounds samples to finite levels",
+      "Samples faster",
+      "Filters noise",
+      "Adds echo"
+     ],
+     "answer": 0,
+     "explain": "Finite precision."
+    }
+   ],
+   "cards": [
+    {
+     "q": "fs > 2B",
+     "a": "Nyquist-Shannon rule"
+    },
+    {
+     "q": "fs / 2",
+     "a": "Nyquist frequency"
+    },
+    {
+     "q": "2^b",
+     "a": "levels in b bits"
+    },
+    {
+     "q": "6 dB per bit",
+     "a": "approximate SNR gain"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Spectrum and aliasing explorer",
+     "intro": "Set two tones and the sample rate, and watch the waveform and spectrum. Push a tone above half the sample rate to see it alias. Do this twice and change the sample rate once to complete this lab.",
+     "height": 760,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\ncanvas{width:100%;display:block;margin:6px 0;background:#0e0820;border-radius:8px}.k{color:#c9b8e8}input[type=range]{width:100%;accent-color:#b26bff}label{display:block;margin-top:6px}\n</style></head><body>\n<label>Tone 1: <b id=\"v1\"></b> Hz<input id=\"f1\" type=\"range\" min=\"1\" max=\"60\" value=\"5\"></label>\n<label>Tone 2: <b id=\"v2\"></b> Hz<input id=\"f2\" type=\"range\" min=\"0\" max=\"60\" value=\"0\"></label>\n<label>Sample rate: <b id=\"vs\"></b> Hz<input id=\"fs\" type=\"range\" min=\"8\" max=\"120\" value=\"100\"></label>\n<canvas id=\"w\" width=\"400\" height=\"150\"></canvas><canvas id=\"p\" width=\"400\" height=\"150\"></canvas>\n<div id=\"o\" class=\"k\"></div><div id=\"g\" class=\"k\"></div>\n<script>\nvar $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar n=0,fsChanged=false;\nfunction sig(t){var a=Math.sin(2*Math.PI*F1*t);if(F2>0)a+=Math.sin(2*Math.PI*F2*t);return a}\nvar F1,F2,FS;\nfunction upd(){F1=+$(\"f1\").value;F2=+$(\"f2\").value;FS=+$(\"fs\").value;$(\"v1\").textContent=F1;$(\"v2\").textContent=F2||\"off\";$(\"vs\").textContent=FS;\n var g=$(\"w\").getContext(\"2d\");g.clearRect(0,0,400,150);g.strokeStyle=\"#5c4a85\";g.beginPath();\n for(var x=0;x<=400;x++){var t=x/400*0.5,y=75-sig(t)*30;if(x==0)g.moveTo(x,y);else g.lineTo(x,y)}g.stroke();\n g.fillStyle=\"#ffd36b\";for(var k=0;k/FS<0.5;k++){var t=k/FS;g.beginPath();g.arc(t/0.5*400,75-sig(t)*30,3,0,7);g.fill()}\n var N=128,X=[],mx=0;for(var b=0;b<=N/2;b++){var re=0,im=0;for(var i=0;i<N;i++){var a=2*Math.PI*b*i/N,s=sig(i/FS);re+=s*Math.cos(a);im-=s*Math.sin(a)}var m=Math.sqrt(re*re+im*im)/N*2;X.push(m)}\n var p=$(\"p\").getContext(\"2d\");p.clearRect(0,0,400,150);p.fillStyle=\"#b26bff\";var peaks=[];\n for(var b=0;b<X.length;b++){var h=Math.min(X[b],1.5)/1.5*120;p.fillRect(b/(N/2)*390+2,140-h,4,h);if(X[b]>0.4)peaks.push((b*FS/N).toFixed(1))}\n p.fillStyle=\"#c9b8e8\";p.fillText(\"0\",2,148);p.fillText((FS/2)+\" Hz (Nyquist)\",300,148);\n var t1=F1,t2=F2,over=(F1>FS/2)||(F2>FS/2);\n $(\"o\").textContent=\"Spectrum peaks seen at: \"+(peaks.join(\", \")||\"none\")+\" Hz\";\n $(\"g\").textContent=over?\"A tone is above \"+(FS/2)+\" Hz, so it aliases to a lower frequency.\":\"Both tones are below Nyquist (\"+(FS/2)+\" Hz): shown correctly.\";\n n++;if(n>6&&fsChanged)done()}\n[\"f1\",\"f2\"].forEach(function(i){$(i).oninput=upd});$(\"fs\").oninput=function(){fsChanged=true;upd()};upd();\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the idea",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Sample rate",
+       "samples per second"
+      ],
+      [
+       "Nyquist frequency",
+       "half the sample rate"
+      ],
+      [
+       "Aliasing",
+       "false lower frequency"
+      ],
+      [
+       "Quantisation",
+       "rounding to levels"
+      ],
+      [
+       "Anti-alias filter",
+       "removes frequencies above fs / 2"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Alias frequency",
+     "intro": "Write alias(f, fs): the apparent frequency in hertz (0 to fs/2) when a sine of frequency f is sampled at rate fs. Fold f into the range: take f modulo fs; if the result is more than fs / 2 return fs minus that result, otherwise the result.",
+     "fn": "alias",
+     "starter": "def alias(f, fs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        30,
+        40
+       ],
+       "expect": 10,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        10,
+        40
+       ],
+       "expect": 10,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        50,
+        40
+       ],
+       "expect": 10,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        20,
+        40
+       ],
+       "expect": 20,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        44100,
+        44100
+       ],
+       "expect": 0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        3000,
+        8000
+       ],
+       "expect": 3000,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        7000,
+        8000
+       ],
+       "expect": 1000,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Fold around fs over two.",
+     "solution": "def alias(f, fs):\n    r = f % fs\n    if r > fs / 2.0:\n        return fs - r\n    return r\n"
+    },
+    {
+     "type": "python",
+     "title": "Quantise",
+     "intro": "Write quantise(x, bits): x is a value from -1 to 1. Quantise it to a signed grid with 2^bits levels spread evenly: levels = 2^bits; step = 2 / (levels - 1); return round((x + 1) / step) x step - 1, rounded to 4 decimals.",
+     "fn": "quantise",
+     "starter": "def quantise(x, bits):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.3,
+        2
+       ],
+       "expect": 0.3333,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        -1,
+        3
+       ],
+       "expect": -1.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        0.5,
+        3
+       ],
+       "expect": 0.4286,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        0.9,
+        1
+       ],
+       "expect": 1.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        0.0,
+        4
+       ],
+       "expect": 0.0667,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Round to the nearest grid point.",
+     "solution": "def quantise(x, bits):\n    levels = 2 ** bits\n    step = 2.0 / (levels - 1)\n    return round(round((x + 1.0) / step) * step - 1.0, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Levels and range",
+     "intro": "Write levels(bits): the number of quantisation levels, 2 to the power bits, and the approximate dynamic range in decibels, 6.02 x bits rounded to 1 decimal. Return the list [levels, range].",
+     "fn": "levels",
+     "starter": "def levels(bits):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        8
+       ],
+       "expect": [
+        256,
+        48.2
+       ],
+       "approx": 0.05
+      },
+      {
+       "args": [
+        16
+       ],
+       "expect": [
+        65536,
+        96.3
+       ],
+       "approx": 0.05
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": [
+        2,
+        6.0
+       ],
+       "approx": 0.05
+      },
+      {
+       "args": [
+        24
+       ],
+       "expect": [
+        16777216,
+        144.5
+       ],
+       "approx": 0.05
+      }
+     ],
+     "hint": "Two powers and six decibels per bit.",
+     "solution": "def levels(bits):\n    return [2 ** bits, round(6.02 * bits, 1)]\n"
+    }
+   ]
+  },
+  {
+   "title": "Discrete systems and convolution",
+   "maps": [
+    {
+     "title": "Systems",
+     "links": [
+      "LTI system | is | Linear and time-invariant",
+      "Impulse | is | A single 1",
+      "Impulse response | defines | The system",
+      "Convolution | gives | The output",
+      "FIR | has | Finite response",
+      "IIR | has | Feedback",
+      "Delay | shifts | In time"
+     ]
+    }
+   ],
+   "summary": [
+    "A discrete system turns an input list x[n] into an output list y[n]. If it is linear (outputs add and scale with inputs) and time-invariant (shifting the input shifts the output), it is an LTI system.",
+    "Feed an LTI system a single impulse, a 1 followed by zeros, and the output is its impulse response h[n]. Every other output is then the convolution of the input with h.",
+    "Convolution slides a flipped copy of h along x, multiplying and adding, and it is the main operation of filtering."
+   ],
+   "glossary": [
+    {
+     "term": "Impulse",
+     "def": "A signal that is 1 at n = 0 and 0 elsewhere."
+    },
+    {
+     "term": "Impulse response",
+     "def": "The output of a system when the input is an impulse, written h[n]."
+    },
+    {
+     "term": "Convolution",
+     "def": "The operation y[n] = sum over k of x[k] h[n - k]."
+    },
+    {
+     "term": "Linear time-invariant (LTI)",
+     "def": "A system whose outputs add and scale with inputs and do not depend on when the input starts."
+    },
+    {
+     "term": "FIR filter",
+     "def": "A filter whose impulse response has finite length."
+    }
+   ],
+   "keyPoints": [
+    "y[n] = sum of x[k] h[n - k].",
+    "Length of x * h = len(x) + len(h) - 1.",
+    "Convolution is commutative and associative.",
+    "Convolving with an impulse leaves a signal unchanged.",
+    "A delay is convolution with a shifted impulse."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A system is a machine that changes a signal. Poke it once and watch what comes out, and you learn how it treats every signal."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Take a simple system: it outputs the average of the current input and the previous one. Give it a single 1 followed by zeros. The output is half, half, zero. That output is the impulse response, and it fully describes the system."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Why? Any input is a sum of scaled and shifted impulses. A linear time-invariant system turns each impulse into a scaled, shifted copy of the impulse response. Adding them up gives the output. That sum is the convolution of the input with the impulse response."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To compute it by hand, flip the impulse response, slide it along the input, and at each position multiply overlapping numbers and add. The output has length of x plus length of h minus one. In code it is a double loop: for each input sample and each tap, add the product to the right output position."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An FIR filter, finite impulse response, has an impulse response that ends. A moving average is a typical example. An IIR filter, infinite impulse response, uses feedback so that the response never quite stops, like the echo of a shout in a canyon. Chapters on filters will build both."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Convolution has handy properties. It is commutative and associative, so cascading two filters gives the same result in either order. Convolving with a single impulse changes nothing, and convolving with a delayed impulse delays the signal. Echo effects in audio are convolution with a few spikes."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is an impulse response?",
+     "options": [
+      "The output when the input is a single 1",
+      "The sum of the input",
+      "A kind of filter",
+      "The sample rate"
+     ],
+     "answer": 0,
+     "explain": "h[n]."
+    },
+    {
+     "q": "What does convolution compute for an LTI system?",
+     "options": [
+      "The output from input and impulse response",
+      "The Fourier transform",
+      "The sample rate",
+      "The noise"
+     ],
+     "answer": 0,
+     "explain": "y = x * h."
+    },
+    {
+     "q": "What is the length of x * h?",
+     "options": [
+      "len(x) + len(h) - 1",
+      "len(x)",
+      "len(h)",
+      "len(x) x len(h)"
+     ],
+     "answer": 0,
+     "explain": "Full convolution."
+    },
+    {
+     "q": "What does an FIR filter have?",
+     "options": [
+      "Finite impulse response",
+      "Feedback",
+      "An infinite memory",
+      "No taps"
+     ],
+     "answer": 0,
+     "explain": "It ends."
+    },
+    {
+     "q": "What does convolving with a delayed impulse do?",
+     "options": [
+      "Delays the signal",
+      "Doubles it",
+      "Filters it",
+      "Removes it"
+     ],
+     "answer": 0,
+     "explain": "Shift."
+    },
+    {
+     "q": "Does the order of cascaded LTI filters matter?",
+     "options": [
+      "No",
+      "Yes always",
+      "Only for FIR",
+      "Only for IIR"
+     ],
+     "answer": 0,
+     "explain": "Commutative."
+    }
+   ],
+   "cards": [
+    {
+     "q": "h[n]",
+     "a": "impulse response"
+    },
+    {
+     "q": "x * h",
+     "a": "convolution"
+    },
+    {
+     "q": "FIR",
+     "a": "finite impulse response"
+    },
+    {
+     "q": "IIR",
+     "a": "infinite impulse response"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Impulse",
+       "a single 1 then zeros"
+      ],
+      [
+       "Impulse response",
+       "output for an impulse"
+      ],
+      [
+       "Convolution",
+       "slide, multiply, add"
+      ],
+      [
+       "FIR",
+       "finite response"
+      ],
+      [
+       "IIR",
+       "uses feedback"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Convolve",
+     "intro": "Write convolve(x, h): the full convolution of two lists of numbers. The result has len(x) + len(h) - 1 entries, y[n] = sum of x[k] x h[n - k]. If either list is empty return an empty list.",
+     "fn": "convolve",
+     "starter": "def convolve(x, h):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        3,
+        5,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         0
+        ],
+        [
+         5,
+         6,
+         7
+        ]
+       ],
+       "expect": [
+        5,
+        6,
+        7,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": [
+        0.5,
+        1.5,
+        2.5,
+        3.5,
+        2.0
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         1
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         2
+        ],
+        [
+         3
+        ]
+       ],
+       "expect": [
+        6
+       ]
+      }
+     ],
+     "hint": "Add each product x[i] h[j] into position i + j.",
+     "solution": "def convolve(x, h):\n    if len(x) == 0 or len(h) == 0:\n        return []\n    y = []\n    for i in range(len(x) + len(h) - 1):\n        y.append(0)\n    for i in range(len(x)):\n        for j in range(len(h)):\n            y[i + j] = y[i + j] + x[i] * h[j]\n    return y\n"
+    },
+    {
+     "type": "python",
+     "title": "Moving average",
+     "intro": "Write moving_average(x, m): the average of each window of m consecutive samples (the 'valid' part only), so the result has len(x) - m + 1 entries, each rounded to 3 decimals. If m is larger than len(x) return an empty list.",
+     "fn": "moving_average",
+     "starter": "def moving_average(x, m):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5
+        ],
+        2
+       ],
+       "expect": [
+        1.5,
+        2.5,
+        3.5,
+        4.5
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5
+        ],
+        3
+       ],
+       "expect": [
+        2.0,
+        3.0,
+        4.0
+       ]
+      },
+      {
+       "args": [
+        [
+         10,
+         0,
+         10,
+         0
+        ],
+        2
+       ],
+       "expect": [
+        5.0,
+        5.0,
+        5.0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        5
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Slide a window along the list.",
+     "solution": "def moving_average(x, m):\n    out = []\n    for i in range(len(x) - m + 1):\n        s = 0\n        for j in range(m):\n            s = s + x[i + j]\n        out.append(round(s / float(m), 3))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Impulse response",
+     "intro": "Write impulse_response(b, n): the first n samples of the output of the FIR filter y[k] = sum of b[j] x[k - j] when the input is the impulse (1, 0, 0, ...). Samples beyond the filter length are zero.",
+     "fn": "impulse_response",
+     "starter": "def impulse_response(b, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        4
+       ],
+       "expect": [
+        0.5,
+        0.5,
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        3
+       ],
+       "expect": [
+        1,
+        2,
+        3
+       ]
+      },
+      {
+       "args": [
+        [
+         1
+        ],
+        2
+       ],
+       "expect": [
+        1,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         -1
+        ],
+        5
+       ],
+       "expect": [
+        1,
+        -1,
+        0,
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "The output equals the coefficients, padded with zeros.",
+     "solution": "def impulse_response(b, n):\n    out = []\n    for k in range(n):\n        if k < len(b):\n            out.append(b[k])\n        else:\n            out.append(0)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Echo",
+     "intro": "Write echo(x, delay, gain): add a delayed, scaled copy of x to itself. The output has len(x) + delay samples: y[n] = x[n] + gain x x[n - delay], where x outside its range is 0.",
+     "fn": "echo",
+     "starter": "def echo(x, delay, gain):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0,
+         0
+        ],
+        2,
+        0.5
+       ],
+       "expect": [
+        1,
+        0,
+        0.5,
+        0.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        1,
+        1
+       ],
+       "expect": [
+        1,
+        3,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         3
+        ],
+        3,
+        2
+       ],
+       "expect": [
+        3,
+        0,
+        0,
+        6
+       ]
+      },
+      {
+       "args": [
+        [],
+        2,
+        1
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      }
+     ],
+     "hint": "Add the original and the delayed copy.",
+     "solution": "def echo(x, delay, gain):\n    y = []\n    for i in range(len(x) + delay):\n        y.append(0)\n    for i in range(len(x)):\n        y[i] = y[i] + x[i]\n        y[i + delay] = y[i + delay] + gain * x[i]\n    return y\n"
+    }
+   ]
+  },
+  {
+   "title": "The Fourier idea and the DFT",
+   "maps": [
+    {
+     "title": "Fourier analysis",
+     "links": [
+      "Fourier | splits | Signals into sines",
+      "Spectrum | shows | Frequency content",
+      "DFT | transforms | N samples",
+      "Bin | covers | A frequency band",
+      "Magnitude | gives | Strength",
+      "Phase | gives | Timing",
+      "Resolution | is | fs over N"
+     ]
+    }
+   ],
+   "summary": [
+    "Fourier's idea is that any signal can be written as a sum of sine waves of different frequencies, amplitudes and phases. The spectrum shows how much of each frequency a signal contains.",
+    "The discrete Fourier transform (DFT) turns N samples into N complex numbers, one for each frequency bin. Bin k corresponds to the frequency k fs / N. The magnitude of the bin tells how strong that frequency is.",
+    "The fast Fourier transform (FFT) computes the same result in about N log N steps instead of N squared, which made digital spectrum analysis practical."
+   ],
+   "glossary": [
+    {
+     "term": "Spectrum",
+     "def": "A description of a signal's strength at each frequency."
+    },
+    {
+     "term": "DFT",
+     "def": "The discrete Fourier transform: X[k] = sum over n of x[n] e^(-2 pi i k n / N)."
+    },
+    {
+     "term": "Bin",
+     "def": "One output of the DFT, covering a narrow band of frequency."
+    },
+    {
+     "term": "Frequency resolution",
+     "def": "The spacing between bins, fs / N."
+    },
+    {
+     "term": "FFT",
+     "def": "A fast algorithm for the DFT, taking about N log N operations."
+    }
+   ],
+   "keyPoints": [
+    "X[k] = sum x[n] (cos - i sin)(2 pi k n / N).",
+    "Bin k is at k fs / N hertz.",
+    "Real signal: bins above N/2 mirror the lower ones.",
+    "Magnitude = sqrt(re^2 + im^2).",
+    "Resolution = fs / N."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A chord is many notes at once. The Fourier transform listens and tells you which notes are in it and how loud each is."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A musical chord sounds like one thing, but your ear can pick out the notes. The Fourier transform does the same for numbers. Give it a list of samples, and it says how much of each pure frequency the list contains."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The recipe for the DFT is simple. For each frequency bin k, multiply the signal by a cosine and a sine that complete k cycles over the N samples, and add up the results. If the signal contains that frequency, the products line up and the sum is large. If not, they cancel and the sum is small."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The cosine sum gives the real part and the minus sine sum gives the imaginary part. The magnitude, the square root of their squares, is the strength of the frequency. The angle gives its phase. To plot a spectrum, you usually plot the magnitude against frequency."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Bin k stands for the frequency k times fs divided by N. If you sample at 1000 hertz and take 100 samples, the bins are 10 hertz apart. A real signal has a mirror-image spectrum, so only bins up to N over two carry new information, up to the Nyquist frequency."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Computing the DFT directly takes N squared multiplications. The fast Fourier transform, popularised by Cooley and Tukey in 1965, splits the sum into even and odd samples and reuses work, getting N log N. For a million samples that is the difference between hours and a fraction of a second."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the Fourier transform show?",
+     "options": [
+      "How much of each frequency a signal has",
+      "The sample rate",
+      "The noise",
+      "The bit depth"
+     ],
+     "answer": 0,
+     "explain": "Spectrum."
+    },
+    {
+     "q": "What frequency does bin k represent?",
+     "options": [
+      "k x fs / N",
+      "k x N / fs",
+      "fs / k",
+      "k"
+     ],
+     "answer": 0,
+     "explain": "Spacing fs / N."
+    },
+    {
+     "q": "With fs = 1000 and N = 100, how far apart are bins?",
+     "options": [
+      "10 Hz",
+      "100 Hz",
+      "1 Hz",
+      "1000 Hz"
+     ],
+     "answer": 0,
+     "explain": "fs / N."
+    },
+    {
+     "q": "What is the magnitude of a bin?",
+     "options": [
+      "sqrt(re^2 + im^2)",
+      "re + im",
+      "re x im",
+      "im"
+     ],
+     "answer": 0,
+     "explain": "Strength."
+    },
+    {
+     "q": "How many operations does a direct DFT need?",
+     "options": [
+      "About N squared",
+      "About N",
+      "About log N",
+      "About 2"
+     ],
+     "answer": 0,
+     "explain": "N times N."
+    },
+    {
+     "q": "What does the FFT achieve?",
+     "options": [
+      "The same result in about N log N steps",
+      "A different result",
+      "Noise removal",
+      "Resampling"
+     ],
+     "answer": 0,
+     "explain": "Cooley and Tukey."
+    }
+   ],
+   "cards": [
+    {
+     "q": "X[k]",
+     "a": "DFT output at bin k"
+    },
+    {
+     "q": "fs / N",
+     "a": "bin spacing"
+    },
+    {
+     "q": "N log N",
+     "a": "FFT cost"
+    },
+    {
+     "q": "|X[k]|",
+     "a": "magnitude"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Spectrum",
+       "strength at each frequency"
+      ],
+      [
+       "Bin",
+       "one DFT output"
+      ],
+      [
+       "Magnitude",
+       "strength of a frequency"
+      ],
+      [
+       "Resolution",
+       "fs divided by N"
+      ],
+      [
+       "FFT",
+       "fast way to compute the DFT"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "DFT magnitude",
+     "intro": "Write dft_mag(x): the magnitude |X[k]| of the DFT of the real list x for k = 0 to N-1, each value rounded to 3 decimals. Use X[k] = sum over n of x[n] (cos(2 pi k n / N) - i sin(2 pi k n / N)), so |X[k]| = sqrt(re^2 + im^2).",
+     "fn": "dft_mag",
+     "starter": "def dft_mag(x):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1,
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        4.0,
+        0.0,
+        0.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         -1,
+         0
+        ]
+       ],
+       "expect": [
+        0.0,
+        2.0,
+        0.0,
+        2.0
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         1,
+         0,
+         -1
+        ]
+       ],
+       "expect": [
+        0.0,
+        2.0,
+        0.0,
+        2.0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ]
+       ],
+       "expect": [
+        10.0,
+        2.83,
+        2.0,
+        2.83
+       ]
+      }
+     ],
+     "hint": "Two nested loops, summing cos and sin terms.",
+     "solution": "import math\ndef dft_mag(x):\n    n = len(x)\n    out = []\n    for k in range(n):\n        re = 0.0\n        im = 0.0\n        for t in range(n):\n            ang = 2 * math.pi * k * t / n\n            re = re + x[t] * math.cos(ang)\n            im = im - x[t] * math.sin(ang)\n        out.append(round(math.sqrt(re * re + im * im), 2))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Bin frequency",
+     "intro": "Write bin_freq(k, fs, n): the centre frequency in hertz of DFT bin k for n samples at sample rate fs, k x fs / n, rounded to 3 decimals.",
+     "fn": "bin_freq",
+     "starter": "def bin_freq(k, fs, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        1000,
+        100
+       ],
+       "expect": 50.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        0,
+        44100,
+        1024
+       ],
+       "expect": 0.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        1,
+        8000,
+        8
+       ],
+       "expect": 1000.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        3,
+        48000,
+        256
+       ],
+       "expect": 562.5,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Multiply by fs and divide by n.",
+     "solution": "def bin_freq(k, fs, n):\n    return round(k * fs / float(n), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Peak frequency",
+     "intro": "Write peak_freq(x, fs): the frequency in hertz of the strongest bin among bins 1 to n//2 of the DFT of the real list x (skip bin 0, the average), computed with the DFT magnitudes. Return the frequency k x fs / n for the first bin with the largest magnitude.",
+     "fn": "peak_freq",
+     "starter": "def peak_freq(x, fs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         1,
+         0,
+         -1,
+         0,
+         1,
+         0,
+         -1
+        ],
+        8
+       ],
+       "expect": 2.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         -1,
+         -1,
+         1,
+         1,
+         -1,
+         -1
+        ],
+        8
+       ],
+       "expect": 2.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         0.0,
+         0.7071,
+         1.0,
+         0.7071,
+         0.0,
+         -0.7071,
+         -1.0,
+         -0.7071
+        ],
+        8
+       ],
+       "expect": 1.0,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Compute the magnitude for each bin and keep the largest.",
+     "solution": "import math\ndef peak_freq(x, fs):\n    n = len(x)\n    best = 1\n    bm = -1.0\n    for k in range(1, n // 2 + 1):\n        re = 0.0\n        im = 0.0\n        for t in range(n):\n            ang = 2 * math.pi * k * t / n\n            re = re + x[t] * math.cos(ang)\n            im = im - x[t] * math.sin(ang)\n        m = math.sqrt(re * re + im * im)\n        if m > bm + 1e-9:\n            bm = m\n            best = k\n    return best * fs / float(n)\n"
+    }
+   ]
+  },
+  {
+   "title": "FIR filters and frequency response",
+   "maps": [
+    {
+     "title": "FIR filters",
+     "links": [
+      "Filter | keeps | Some frequencies",
+      "Low-pass | passes | Low frequencies",
+      "High-pass | passes | High frequencies",
+      "Band-pass | passes | A band",
+      "Frequency response | is | Gain per frequency",
+      "Taps | are | Coefficients",
+      "Cutoff | is | Edge of passband"
+     ]
+    }
+   ],
+   "summary": [
+    "A filter changes how strongly each frequency is passed. A low-pass filter keeps low frequencies and removes high ones; a high-pass does the opposite; a band-pass keeps a range.",
+    "An FIR filter computes each output as a weighted sum of recent inputs, using a list of coefficients called taps. The moving average is the simplest low-pass.",
+    "The frequency response shows the gain at each frequency. For taps b it is H(w) = sum of b[k] e^(-i w k), and its magnitude tells how much of frequency w gets through."
+   ],
+   "glossary": [
+    {
+     "term": "Low-pass filter",
+     "def": "A filter that passes low frequencies and attenuates high ones."
+    },
+    {
+     "term": "Frequency response",
+     "def": "How a system's gain and phase change with frequency."
+    },
+    {
+     "term": "Tap",
+     "def": "One coefficient of an FIR filter, multiplying one delayed sample."
+    },
+    {
+     "term": "Cutoff frequency",
+     "def": "The frequency where the gain starts to fall."
+    },
+    {
+     "term": "Linear phase",
+     "def": "A filter with symmetric taps delays all frequencies equally."
+    }
+   ],
+   "keyPoints": [
+    "y[n] = b0 x[n] + b1 x[n-1] + ... + bM x[n-M].",
+    "H(w) = sum b[k] e^(-i w k).",
+    "Symmetric taps give linear phase.",
+    "Moving average: low-pass.",
+    "Difference [1, -1]: high-pass."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A filter is like a sieve for sound: it lets the slow wiggles through and holds back the fast ones, or the other way round."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine a smudge on a photograph that blends each pixel with its neighbours. A rapidly changing detail gets blurred away, while broad shapes remain. A low-pass filter does this to a signal along time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The moving average over four samples is a low-pass FIR filter with taps one quarter, one quarter, one quarter, one quarter. A slow wave passes almost untouched because neighbouring samples are alike. A rapid wiggle averages to nearly zero because neighbours cancel."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The frequency response tells this precisely. Put the filter taps through the same sort of sum as the DFT: H of w equals the sum of b of k times e to the minus i w k. Its magnitude as a function of w is the gain curve. At w equal to zero it is just the sum of the taps."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Flip the sign of alternate taps and low-pass becomes high-pass. The two-tap filter one, minus one subtracts the previous sample, so it passes changes and removes steady levels. This is also a basic edge detector in images."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Designing a filter means choosing taps to approximate a desired gain curve. A classic method, the windowed sinc, takes the ideal low-pass impulse response, a sinc function, and tapers it with a window. Longer filters have sharper edges but cost more computation and delay."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a low-pass filter do?",
+     "options": [
+      "Passes low frequencies, removes high ones",
+      "Passes only high ones",
+      "Adds noise",
+      "Samples faster"
+     ],
+     "answer": 0,
+     "explain": "Smooths."
+    },
+    {
+     "q": "What are the taps of an FIR filter?",
+     "options": [
+      "Its coefficients",
+      "Its inputs",
+      "Its noise",
+      "Its frequency"
+     ],
+     "answer": 0,
+     "explain": "Weights."
+    },
+    {
+     "q": "What is the gain of a filter at frequency zero?",
+     "options": [
+      "The sum of its taps",
+      "The first tap",
+      "Always one",
+      "Always zero"
+     ],
+     "answer": 0,
+     "explain": "H(0) = sum b."
+    },
+    {
+     "q": "Which taps make a simple high-pass?",
+     "options": [
+      "[1, -1]",
+      "[1, 1]",
+      "[1, 1, 1]",
+      "[0, 0]"
+     ],
+     "answer": 0,
+     "explain": "A difference."
+    },
+    {
+     "q": "Why use longer FIR filters?",
+     "options": [
+      "Sharper cutoffs",
+      "Less delay",
+      "Less computing",
+      "Fewer taps"
+     ],
+     "answer": 0,
+     "explain": "A trade-off."
+    },
+    {
+     "q": "What does symmetric taps give?",
+     "options": [
+      "Linear phase",
+      "Instability",
+      "Aliasing",
+      "No gain"
+     ],
+     "answer": 0,
+     "explain": "Equal delay."
+    }
+   ],
+   "cards": [
+    {
+     "q": "H(w)",
+     "a": "frequency response"
+    },
+    {
+     "q": "b[k]",
+     "a": "FIR taps"
+    },
+    {
+     "q": "H(0) = sum b",
+     "a": "DC gain"
+    },
+    {
+     "q": "[1, -1]",
+     "a": "difference filter"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Filter lab",
+     "intro": "Pick a signal with low and high tones, then try the moving average, a difference and a windowed sinc low-pass. Watch the spectrum before and after. Try all three filters to complete this lab.",
+     "height": 760,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\ncanvas{width:100%;display:block;margin:6px 0;background:#0e0820;border-radius:8px}.k{color:#c9b8e8}input[type=range]{width:100%;accent-color:#b26bff}label{display:block;margin-top:6px}\n</style></head><body>\n<div><button id=\"ma\">Moving average (8)</button><button id=\"df\" >Difference</button><button id=\"ws\">Windowed sinc</button><button id=\"rs\" class=\"s\">Raw signal</button></div>\n<canvas id=\"w\" width=\"400\" height=\"140\"></canvas><canvas id=\"p\" width=\"400\" height=\"140\"></canvas>\n<div id=\"o\" class=\"k\">Signal = 3 Hz tone + 40 Hz tone + noise, sampled at 200 Hz.</div><div id=\"g\" class=\"k\"></div>\n<script>\nvar $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar FS=200,N=200,x=[],seed=7;function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff-0.5}\nfor(var i=0;i<N;i++)x.push(Math.sin(2*Math.PI*3*i/FS)+0.6*Math.sin(2*Math.PI*40*i/FS)+0.2*rnd());\nfunction conv(b){var y=[];for(var n=0;n<N;n++){var s=0;for(var k=0;k<b.length;k++)if(n-k>=0)s+=b[k]*x[n-k];y.push(s)}return y}\nfunction spec(y){var X=[];for(var b=0;b<=60;b++){var re=0,im=0;for(var i=0;i<N;i++){var a=2*Math.PI*b*i/N;re+=y[i]*Math.cos(a);im-=y[i]*Math.sin(a)}X.push(Math.sqrt(re*re+im*im)/N*2)}return X}\nfunction sinc(c,m){var h=[],s=0,cen=(m-1)/2;for(var k=0;k<m;k++){var u=2*c*(k-cen),v=u==0?1:Math.sin(Math.PI*u)/(Math.PI*u);var w=0.5-0.5*Math.cos(2*Math.PI*k/(m-1));h.push(2*c*v*w);s+=2*c*v*w}return h.map(function(a){return a/s})}\nvar tried={};\nfunction show(y,name){var g=$(\"w\").getContext(\"2d\");g.clearRect(0,0,400,140);g.strokeStyle=\"#b26bff\";g.beginPath();for(var i=0;i<N;i++){var X=i/N*400,Y=70-y[i]*35;if(i==0)g.moveTo(X,Y);else g.lineTo(X,Y)}g.stroke();\n var S=spec(y),p=$(\"p\").getContext(\"2d\");p.clearRect(0,0,400,140);p.fillStyle=\"#ffd36b\";for(var b=0;b<S.length;b++){var h=Math.min(S[b],1.2)/1.2*110;p.fillRect(b/60*385+2,128-h,5,h)}\n p.fillStyle=\"#c9b8e8\";p.fillText(\"0 Hz\",2,138);p.fillText(\"60 Hz\",360,138);$(\"g\").textContent=name}\n$(\"rs\").onclick=function(){show(x,\"Raw signal: peaks at 3 Hz and 40 Hz\")};\n$(\"ma\").onclick=function(){show(conv([1,1,1,1,1,1,1,1].map(function(a){return a/8})),\"Moving average: the 40 Hz tone is strongly reduced\");tried.ma=1;chk()};\n$(\"df\").onclick=function(){show(conv([1,-1]),\"Difference: the slow 3 Hz tone is weakened, high content stays\");tried.df=1;chk()};\n$(\"ws\").onclick=function(){show(conv(sinc(0.08,31)),\"Windowed sinc, cutoff 16 Hz: a clean low-pass\");tried.ws=1;chk()};\nfunction chk(){if(tried.ma&&tried.df&&tried.ws)done()}\nshow(x,\"Raw signal: peaks at 3 Hz and 40 Hz\");\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the filter",
+     "intro": "Pair each filter with what it does.",
+     "pairs": [
+      [
+       "Low-pass",
+       "keeps low frequencies"
+      ],
+      [
+       "High-pass",
+       "keeps high frequencies"
+      ],
+      [
+       "Band-pass",
+       "keeps a band"
+      ],
+      [
+       "Moving average",
+       "simple low-pass"
+      ],
+      [
+       "Difference",
+       "simple high-pass"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "FIR filter",
+     "intro": "Write fir(x, b): filter the list x with taps b, y[n] = sum of b[k] x[n - k], using zero for x before the start. Return a list the same length as x, each value rounded to 4 decimals.",
+     "fn": "fir",
+     "starter": "def fir(x, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": [
+        0.5,
+        1.5,
+        2.5,
+        3.5
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         0,
+         0
+        ],
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        1.0,
+        2.0,
+        3.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1,
+         1
+        ],
+        [
+         1,
+         -1
+        ]
+       ],
+       "expect": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         4,
+         6
+        ],
+        [
+         0.25,
+         0.5,
+         0.25
+        ]
+       ],
+       "expect": [
+        0.5,
+        2.0,
+        4.0
+       ]
+      }
+     ],
+     "hint": "Sum over taps, skipping indexes before the start.",
+     "solution": "def fir(x, b):\n    y = []\n    for n in range(len(x)):\n        s = 0.0\n        for k in range(len(b)):\n            if n - k >= 0:\n                s = s + b[k] * x[n - k]\n        y.append(round(s, 4))\n    return y\n"
+    },
+    {
+     "type": "python",
+     "title": "Gain at a frequency",
+     "intro": "Write gain(b, w): the magnitude |H(w)| of the FIR filter with taps b at angular frequency w (radians per sample), where H(w) = sum of b[k] (cos(wk) - i sin(wk)). Round to 4 decimals.",
+     "fn": "gain",
+     "starter": "def gain(b, w):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        0
+       ],
+       "expect": 1.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ],
+        3.14159265
+       ],
+       "expect": 0.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         1,
+         -1
+        ],
+        0
+       ],
+       "expect": 0.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         1,
+         -1
+        ],
+        3.14159265
+       ],
+       "expect": 2.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         0.25,
+         0.25,
+         0.25,
+         0.25
+        ],
+        1.5707963
+       ],
+       "expect": 0.0,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Add real and imaginary parts then take the magnitude.",
+     "solution": "import math\ndef gain(b, w):\n    re = 0.0\n    im = 0.0\n    for k in range(len(b)):\n        re = re + b[k] * math.cos(w * k)\n        im = im - b[k] * math.sin(w * k)\n    return round(math.sqrt(re * re + im * im), 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Windowed sinc taps",
+     "intro": "Write lowpass_taps(cutoff, m): m taps (m odd) of a low-pass FIR filter with normalised cutoff between 0 and 0.5 (fraction of the sample rate), h[k] = 2 c sinc(2 c (k - centre)) where centre = (m - 1) / 2 and sinc(0) = 1, sinc(u) = sin(pi u) / (pi u). Return the taps divided by their sum, rounded to 4 decimals.",
+     "fn": "lowpass_taps",
+     "starter": "def lowpass_taps(cutoff, m):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.25,
+        5
+       ],
+       "expect": [
+        0.0,
+        0.28,
+        0.4399,
+        0.28,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        0.1,
+        7
+       ],
+       "expect": [
+        0.0935,
+        0.1403,
+        0.1734,
+        0.1854,
+        0.1734,
+        0.1403,
+        0.0935
+       ]
+      },
+      {
+       "args": [
+        0.4,
+        3
+       ],
+       "expect": [
+        0.1593,
+        0.6813,
+        0.1593
+       ]
+      }
+     ],
+     "hint": "Compute the sinc, then normalise so that taps add to one.",
+     "solution": "import math\ndef lowpass_taps(cutoff, m):\n    c = (m - 1) / 2.0\n    h = []\n    for k in range(m):\n        u = 2 * cutoff * (k - c)\n        if u == 0:\n            s = 1.0\n        else:\n            s = math.sin(math.pi * u) / (math.pi * u)\n        h.append(2 * cutoff * s)\n    t = sum(h)\n    out = []\n    for v in h:\n        out.append(round(v / t, 4))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Remove the mean",
+     "intro": "Write remove_dc(x): subtract the average of x from every sample (a crude high-pass). Round each result to 4 decimals. An empty list returns an empty list.",
+     "fn": "remove_dc",
+     "starter": "def remove_dc(x):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        -1.0,
+        0.0,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         5,
+         5,
+         5
+        ]
+       ],
+       "expect": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        [
+         0,
+         10
+        ]
+       ],
+       "expect": [
+        -5.0,
+        5.0
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Average first, then subtract.",
+     "solution": "def remove_dc(x):\n    if len(x) == 0:\n        return []\n    m = sum(x) / float(len(x))\n    out = []\n    for v in x:\n        out.append(round(v - m, 4))\n    return out\n"
+    }
+   ]
+  },
+  {
+   "title": "IIR filters, feedback and the z-transform",
+   "maps": [
+    {
+     "title": "IIR filters",
+     "links": [
+      "IIR | uses | Feedback",
+      "z-transform | describes | Systems",
+      "Pole | causes | Resonance",
+      "Zero | causes | Cancellation",
+      "Stability | needs | Poles inside the circle",
+      "Transfer function | is | B over A",
+      "One-pole | is | Exponential smoother"
+     ]
+    }
+   ],
+   "summary": [
+    "An IIR filter feeds past outputs back into the calculation, y[n] = b0 x[n] - a1 y[n-1] and so on. It can achieve a sharp response with very few coefficients but has an impulse response that never exactly ends.",
+    "The z-transform turns a difference equation into algebra. The transfer function H(z) is a ratio of polynomials. Zeros are roots of the top, poles are roots of the bottom.",
+    "A causal filter is stable when every pole lies inside the unit circle, meaning |z| < 1. A pole on or outside the circle makes the output grow without bound."
+   ],
+   "glossary": [
+    {
+     "term": "IIR filter",
+     "def": "A filter that feeds back its own past outputs, so its impulse response is infinite."
+    },
+    {
+     "term": "Transfer function",
+     "def": "The ratio H(z) = B(z) / A(z) describing a filter in the z domain."
+    },
+    {
+     "term": "Pole",
+     "def": "A value of z that makes the denominator of H(z) zero."
+    },
+    {
+     "term": "Zero",
+     "def": "A value of z that makes the numerator of H(z) zero."
+    },
+    {
+     "term": "Stable",
+     "def": "A system whose output stays bounded for bounded input."
+    }
+   ],
+   "keyPoints": [
+    "y[n] = a x[n] + (1 - a) y[n-1] smooths.",
+    "Pole of 1 - p z^-1 is z = p.",
+    "Stable if all |poles| < 1.",
+    "Poles near the unit circle give sharp resonance.",
+    "Zeros on the unit circle null a frequency."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Some filters listen to their own echo. That can make a lovely ring, but if the echo grows each time, the sound runs away."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Think of a bath tap and drain. The water level this minute depends on the level a minute ago plus what the tap adds. That feedback is an IIR filter. It forgets the past gradually, never quite all at once."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The simplest one is a one-pole low-pass: each output is a blend of the new input and the previous output, y of n equals a times x of n plus one minus a times y of n minus one. Small a means heavy smoothing and slow response.",
+      "It is used everywhere to calm noisy sensor readings, because it needs just one stored number."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The z-transform replaces delays by powers of z to the minus one. Then the filter becomes a fraction, H of z equals B of z over A of z.",
+      "Roots of the denominator are the poles, and they decide the character of the filter: where they sit tells whether it rings, how fast it decays, and whether it is stable."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The stability rule is clean. A causal filter is stable when all poles are strictly inside the unit circle. The pole of the one-pole filter is at one minus a. With a between zero and one it lies inside. With a bigger than two it lies outside, and the output explodes."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Compared with FIR, IIR filters are cheaper for a given sharpness, but they are harder to make linear-phase and can be unstable or noisy in fixed-point arithmetic. A common safe design splits high-order filters into small second-order sections called biquads."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is feedback in an IIR filter?",
+     "options": [
+      "Past outputs are used in the calculation",
+      "The input is repeated",
+      "The sample rate changes",
+      "Noise is added"
+     ],
+     "answer": 0,
+     "explain": "y[n-1]."
+    },
+    {
+     "q": "What is a pole?",
+     "options": [
+      "A root of the denominator",
+      "A root of the numerator",
+      "A sample",
+      "A tap"
+     ],
+     "answer": 0,
+     "explain": "Makes H infinite."
+    },
+    {
+     "q": "When is a causal filter stable?",
+     "options": [
+      "All poles inside the unit circle",
+      "All poles outside",
+      "Zeros inside",
+      "No poles"
+     ],
+     "answer": 0,
+     "explain": "|z| < 1."
+    },
+    {
+     "q": "What does a small a do in a one-pole smoother?",
+     "options": [
+      "Heavier smoothing",
+      "Less smoothing",
+      "Instability",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Slow response."
+    },
+    {
+     "q": "Why are biquads used?",
+     "options": [
+      "Small sections are easier to keep stable",
+      "They remove poles",
+      "They are FIR",
+      "They sample faster"
+     ],
+     "answer": 0,
+     "explain": "Second-order sections."
+    },
+    {
+     "q": "What does the z-transform turn a delay into?",
+     "options": [
+      "Multiplication by z^-1",
+      "Addition of 1",
+      "A sine",
+      "A pole"
+     ],
+     "answer": 0,
+     "explain": "Algebra."
+    }
+   ],
+   "cards": [
+    {
+     "q": "H(z) = B/A",
+     "a": "transfer function"
+    },
+    {
+     "q": "z^-1",
+     "a": "one-sample delay"
+    },
+    {
+     "q": "|p| < 1",
+     "a": "stable"
+    },
+    {
+     "q": "y = a x + (1-a) y_prev",
+     "a": "one-pole smoother"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Pole",
+       "root of the denominator"
+      ],
+      [
+       "Zero",
+       "root of the numerator"
+      ],
+      [
+       "IIR",
+       "uses feedback"
+      ],
+      [
+       "Stable",
+       "poles inside the unit circle"
+      ],
+      [
+       "Biquad",
+       "second-order section"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "One-pole smoother",
+     "intro": "Write smooth(x, a): y[n] = a x[n] + (1 - a) y[n-1], with y[-1] = 0 (so y[0] = a x[0]). Return the list rounded to 4 decimals.",
+     "fn": "smooth",
+     "starter": "def smooth(x, a):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1,
+         1,
+         1
+        ],
+        0.5
+       ],
+       "expect": [
+        0.5,
+        0.75,
+        0.875,
+        0.9375
+       ]
+      },
+      {
+       "args": [
+        [
+         10,
+         0,
+         0,
+         0
+        ],
+        0.25
+       ],
+       "expect": [
+        2.5,
+        1.875,
+        1.4062,
+        1.0547
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        1
+       ],
+       "expect": [
+        1.0,
+        2.0,
+        3.0
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         5
+        ],
+        0.1
+       ],
+       "expect": [
+        0.5,
+        0.95
+       ]
+      }
+     ],
+     "hint": "Keep the previous output in a variable.",
+     "solution": "def smooth(x, a):\n    y = []\n    prev = 0.0\n    for v in x:\n        prev = a * v + (1 - a) * prev\n        y.append(round(prev, 4))\n    return y\n"
+    },
+    {
+     "type": "python",
+     "title": "Step response",
+     "intro": "Write iir_impulse(a1, n): the first n samples of the impulse response of y[k] = x[k] - a1 y[k-1] (input 1, 0, 0, ...). Round each to 4 decimals.",
+     "fn": "iir_impulse",
+     "starter": "def iir_impulse(a1, n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        -0.5,
+        5
+       ],
+       "expect": [
+        1.0,
+        0.5,
+        0.25,
+        0.125,
+        0.0625
+       ]
+      },
+      {
+       "args": [
+        0.5,
+        5
+       ],
+       "expect": [
+        1.0,
+        -0.5,
+        0.25,
+        -0.125,
+        0.0625
+       ]
+      },
+      {
+       "args": [
+        -1.0,
+        4
+       ],
+       "expect": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        -1.5,
+        5
+       ],
+       "expect": [
+        1.0,
+        1.5,
+        2.25,
+        3.375,
+        5.0625
+       ]
+      }
+     ],
+     "hint": "Feed the previous output back with a minus sign.",
+     "solution": "def iir_impulse(a1, n):\n    out = []\n    prev = 0.0\n    for k in range(n):\n        xk = 1.0 if k == 0 else 0.0\n        prev = xk - a1 * prev\n        out.append(round(prev, 4))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Is it stable?",
+     "intro": "Write stable(a1): for the filter y[n] = x[n] - a1 y[n-1], return True if the pole z = -a1 lies strictly inside the unit circle, otherwise False.",
+     "fn": "stable",
+     "starter": "def stable(a1):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        -0.9
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        -1
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        1.5
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        0
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Compare the pole's magnitude with 1.",
+     "solution": "def stable(a1):\n    return abs(-a1) < 1\n"
+    },
+    {
+     "type": "python",
+     "title": "Biquad run",
+     "intro": "Write biquad(x, b0, b1, b2, a1, a2): the direct form I filter y[n] = b0 x[n] + b1 x[n-1] + b2 x[n-2] - a1 y[n-1] - a2 y[n-2], with zeros before the start. Return rounded to 4 decimals.",
+     "fn": "biquad",
+     "starter": "def biquad(x, b0, b1, b2, a1, a2):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0,
+         0,
+         0,
+         0
+        ],
+        1,
+        0,
+        0,
+        -0.5,
+        0
+       ],
+       "expect": [
+        1.0,
+        0.5,
+        0.25,
+        0.125,
+        0.0625
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         1,
+         1
+        ],
+        0.5,
+        0.5,
+        0,
+        0,
+        0
+       ],
+       "expect": [
+        0.5,
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         0,
+         0,
+         0
+        ],
+        1,
+        0,
+        0,
+        0,
+        -0.25
+       ],
+       "expect": [
+        1.0,
+        0.0,
+        0.25,
+        0.0,
+        0.0625
+       ]
+      }
+     ],
+     "hint": "Remember two past inputs and two past outputs.",
+     "solution": "def biquad(x, b0, b1, b2, a1, a2):\n    y = []\n    x1 = 0.0\n    x2 = 0.0\n    y1 = 0.0\n    y2 = 0.0\n    for v in x:\n        out = b0 * v + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2\n        y.append(round(out, 4))\n        x2 = x1\n        x1 = v\n        y2 = y1\n        y1 = out\n    return y\n"
+    }
+   ]
+  },
+  {
+   "title": "Windows, leakage and spectrum analysis",
+   "maps": [
+    {
+     "title": "Windowing",
+     "links": [
+      "Window | tapers | The edges",
+      "Leakage | spreads | Energy",
+      "Hann | reduces | Leakage",
+      "Main lobe | is | Peak width",
+      "Side lobes | are | Leakage ripples",
+      "Zero padding | interpolates | The spectrum",
+      "Spectrogram | shows | Time and frequency"
+     ]
+    }
+   ],
+   "summary": [
+    "The DFT assumes the N samples repeat forever. If a sine does not fit a whole number of cycles in the window, the repeat has a jump and energy leaks into many bins.",
+    "A window function tapers the signal smoothly to zero at both edges, cutting the leakage at the price of a wider main peak. The Hann window is a popular compromise.",
+    "To see how a spectrum changes in time, cut the signal into overlapping frames, window each one and take a DFT of each. The picture of those spectra is a spectrogram."
+   ],
+   "glossary": [
+    {
+     "term": "Spectral leakage",
+     "def": "Spreading of a frequency's energy into neighbouring bins because the window cuts the wave mid-cycle."
+    },
+    {
+     "term": "Window function",
+     "def": "A weighting that tapers a frame toward zero at its edges before the DFT."
+    },
+    {
+     "term": "Hann window",
+     "def": "The window w[n] = 0.5 - 0.5 cos(2 pi n / (N-1))."
+    },
+    {
+     "term": "Zero padding",
+     "def": "Appending zeros before the DFT to get a smoother-looking spectrum."
+    },
+    {
+     "term": "Spectrogram",
+     "def": "A plot of spectra over successive frames, showing frequency against time."
+    }
+   ],
+   "keyPoints": [
+    "Hann: w[n] = 0.5 - 0.5 cos(2 pi n / (N-1)).",
+    "Whole cycles in the frame give no leakage.",
+    "Better resolution needs a longer frame.",
+    "Zero padding does not add information.",
+    "Spectrogram = windowed DFTs over time."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. If you cut a note in the middle of a wave, the cut makes a click. Fading the edges in and out hides the click."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Cut a record of a pure tone at a random point and you almost certainly cut the wave mid-cycle. The DFT sees a signal that repeats the chunk end to end, with a sudden jump at the seam. A jump is rich in every frequency, so the clean peak gets skirts of leaked energy."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The remedy is to fade the chunk in and out. A window function multiplies the frame by a smooth hump that starts and ends at zero. The seam disappears and the skirts drop a lot. The cost is a slightly broader peak, because the effective signal is shorter."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Different windows make different trade-offs. The rectangular window, no tapering, has the narrowest peak and the worst leakage. Hann and Hamming reduce leakage a great deal. Blackman reduces it still more with a wider peak. There is no free lunch, only the right compromise for the job."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Resolution is set by the length of the observation. Two tones closer than fs over N cannot be told apart, however much you zero-pad. Padding with zeros only interpolates the same information on a finer grid and makes the plot look smoother."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Real sounds change with time, so we cut the signal into short overlapping frames, window each, take the DFT and stack the magnitudes. The result is the spectrogram: time along one axis, frequency along the other, brightness for strength.",
+      "Speech, birdsong and music look like distinctive patterns on it."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What causes spectral leakage?",
+     "options": [
+      "The frame cuts the wave mid-cycle",
+      "Low sample rate only",
+      "Too many bits",
+      "Silence"
+     ],
+     "answer": 0,
+     "explain": "A jump at the seam."
+    },
+    {
+     "q": "What does a Hann window do?",
+     "options": [
+      "Tapers the frame to zero at the edges",
+      "Doubles the frame",
+      "Adds noise",
+      "Samples faster"
+     ],
+     "answer": 0,
+     "explain": "Smooth hump."
+    },
+    {
+     "q": "What is the cost of a window?",
+     "options": [
+      "A wider main peak",
+      "More leakage",
+      "A lower sample rate",
+      "Aliasing"
+     ],
+     "answer": 0,
+     "explain": "Trade-off."
+    },
+    {
+     "q": "Does zero padding improve resolution?",
+     "options": [
+      "No, it only interpolates",
+      "Yes, fully",
+      "Only for noise",
+      "Only for audio"
+     ],
+     "answer": 0,
+     "explain": "No new information."
+    },
+    {
+     "q": "What is a spectrogram?",
+     "options": [
+      "Spectra over time",
+      "A filter",
+      "A window",
+      "A sample"
+     ],
+     "answer": 0,
+     "explain": "Frequency against time."
+    },
+    {
+     "q": "How do you resolve two close tones?",
+     "options": [
+      "Observe for longer",
+      "Pad with zeros",
+      "Lower gain",
+      "Sample slower"
+     ],
+     "answer": 0,
+     "explain": "Bigger N."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Hann",
+     "a": "0.5 - 0.5 cos(2 pi n / (N-1))"
+    },
+    {
+     "q": "fs / N",
+     "a": "frequency resolution"
+    },
+    {
+     "q": "STFT",
+     "a": "short-time Fourier transform"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "Leakage",
+       "energy spread to other bins"
+      ],
+      [
+       "Window",
+       "tapers the frame edges"
+      ],
+      [
+       "Zero padding",
+       "finer grid, no new information"
+      ],
+      [
+       "Spectrogram",
+       "spectra over time"
+      ],
+      [
+       "Resolution",
+       "fs over N"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Hann window",
+     "intro": "Write hann(n): the n-point Hann window w[k] = 0.5 - 0.5 cos(2 pi k / (n - 1)) for k = 0 to n-1, rounded to 4 decimals. For n = 1 return [1.0].",
+     "fn": "hann",
+     "starter": "def hann(n):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1
+       ],
+       "expect": [
+        1.0
+       ]
+      },
+      {
+       "args": [
+        2
+       ],
+       "expect": [
+        0.0,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": [
+        0.0,
+        0.5,
+        1.0,
+        0.5,
+        0.0
+       ]
+      },
+      {
+       "args": [
+        8
+       ],
+       "expect": [
+        0.0,
+        0.1883,
+        0.6113,
+        0.9505,
+        0.9505,
+        0.6113,
+        0.1883,
+        0.0
+       ]
+      }
+     ],
+     "hint": "Zero at both ends, one in the middle.",
+     "solution": "import math\ndef hann(n):\n    if n == 1:\n        return [1.0]\n    out = []\n    for k in range(n):\n        out.append(round(0.5 - 0.5 * math.cos(2 * math.pi * k / (n - 1)), 4))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Apply a window",
+     "intro": "Write windowed(x, w): multiply each sample of x by the matching window value and round to 4 decimals. Assume equal lengths.",
+     "fn": "windowed",
+     "starter": "def windowed(x, w):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1,
+         1,
+         1
+        ],
+        [
+         0,
+         0.75,
+         0.75,
+         0
+        ]
+       ],
+       "expect": [
+        0,
+        0.75,
+        0.75,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         2,
+         4,
+         6
+        ],
+        [
+         0,
+         1,
+         0
+        ]
+       ],
+       "expect": [
+        0,
+        4,
+        0
+       ]
+      },
+      {
+       "args": [
+        [
+         3
+        ],
+        [
+         1
+        ]
+       ],
+       "expect": [
+        3
+       ]
+      }
+     ],
+     "hint": "Multiply element by element.",
+     "solution": "def windowed(x, w):\n    out = []\n    for i in range(len(x)):\n        out.append(round(x[i] * w[i], 4))\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Frames",
+     "intro": "Write frames(x, size, hop): cut x into frames of the given size, starting every hop samples, keeping only complete frames. Return a list of lists.",
+     "fn": "frames",
+     "starter": "def frames(x, size, hop):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5,
+         6
+        ],
+        4,
+        2
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        [
+         3,
+         4,
+         5,
+         6
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5
+        ],
+        2,
+        2
+       ],
+       "expect": [
+        [
+         1,
+         2
+        ],
+        [
+         3,
+         4
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        5,
+        1
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ],
+        3,
+        1
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         2,
+         3,
+         4
+        ]
+       ]
+      }
+     ],
+     "hint": "Move the start by hop each time.",
+     "solution": "def frames(x, size, hop):\n    out = []\n    i = 0\n    while i + size <= len(x):\n        out.append(x[i:i + size])\n        i = i + hop\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Frame energy",
+     "intro": "Write energy(x): the sum of the squares of the samples, rounded to 4 decimals.",
+     "fn": "energy",
+     "starter": "def energy(x):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": 14.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         0.5,
+         0.5
+        ]
+       ],
+       "expect": 0.5,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": 0.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         -2,
+         2
+        ]
+       ],
+       "expect": 8.0,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Squares are never negative.",
+     "solution": "def energy(x):\n    s = 0.0\n    for v in x:\n        s = s + v * v\n    return round(s, 4)\n"
+    }
+   ]
+  },
+  {
+   "title": "Applications: noise, pitch, images and compression",
+   "maps": [
+    {
+     "title": "Applications",
+     "links": [
+      "Median filter | removes | Spikes",
+      "Autocorrelation | finds | Period",
+      "Pitch | is | Fundamental frequency",
+      "Decimation | lowers | Sample rate",
+      "Image | is | 2D signal",
+      "Compression | drops | Small parts",
+      "Modulation | shifts | Frequency"
+     ]
+    }
+   ],
+   "summary": [
+    "The same tools serve many jobs. A median filter erases spikes without blurring edges. Autocorrelation finds the repeat period of a signal, which gives pitch. Decimation lowers the sample rate after low-pass filtering.",
+    "An image is a two-dimensional signal; blurring, sharpening and edge detection are 2D convolutions with small kernels.",
+    "Compression such as JPEG and MP3 transforms the signal to the frequency domain, discards small or inaudible parts, and stores the rest."
+   ],
+   "glossary": [
+    {
+     "term": "Median filter",
+     "def": "A nonlinear filter that replaces each sample by the median of its neighbourhood."
+    },
+    {
+     "term": "Autocorrelation",
+     "def": "The similarity of a signal with a delayed copy of itself, as a function of delay."
+    },
+    {
+     "term": "Decimation",
+     "def": "Lowering the sample rate by keeping every Mth sample after low-pass filtering."
+    },
+    {
+     "term": "Kernel",
+     "def": "A small grid of weights convolved with an image."
+    },
+    {
+     "term": "Modulation",
+     "def": "Shifting a signal's frequencies by multiplying it by a carrier wave."
+    }
+   ],
+   "keyPoints": [
+    "Autocorrelation peak at lag L: period L, pitch fs / L.",
+    "Decimate by M: low-pass first, then keep every Mth.",
+    "Median kills spikes, mean smears them.",
+    "Blur kernel: all positive and sums to 1.",
+    "Edge kernel: positive and negative parts."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Cleaning a noisy sensor, finding the pitch of a voice, blurring a picture and squeezing a song into a small file all use the same tools."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A sensor reading with an occasional wild spike is a headache for averaging, because the spike drags the mean. The median ignores outliers: sort the neighbourhood and take the middle. A three-point median filter removes isolated spikes and keeps sharp steps in place."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "How do you find the pitch of a note? Compare the signal with delayed copies of itself. When the delay equals the period, the copy lines up with the original and the match is strong. The first strong peak of this autocorrelation gives the period in samples, and fs divided by that gives the frequency."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To store a signal at a lower rate, you cannot just throw samples away, or high frequencies alias. First low-pass filter to the new Nyquist limit, then keep every Mth sample. Raising the rate, interpolation, works by inserting zeros and then low-pass filtering."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Pictures are signals in two dimensions. Blurring slides a small kernel of positive weights over the image. A kernel with a positive side and a negative side picks out edges. A convolutional neural network is built from layers of such kernels, whose weights are learned rather than designed."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Compression exploits the frequency domain. JPEG cuts an image into small blocks, takes a discrete cosine transform and rounds away the small high-frequency coefficients that the eye barely notices. MP3 does similar things with a model of what the ear cannot hear.",
+      "Radio uses modulation to place a message on a carrier frequency so many stations share the air."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which filter best removes isolated spikes?",
+     "options": [
+      "Median",
+      "Mean",
+      "Difference",
+      "Hann"
+     ],
+     "answer": 0,
+     "explain": "Ignores outliers."
+    },
+    {
+     "q": "What does autocorrelation help find?",
+     "options": [
+      "The period of a signal",
+      "The sample rate",
+      "The bit depth",
+      "The gain"
+     ],
+     "answer": 0,
+     "explain": "Pitch."
+    },
+    {
+     "q": "What must precede decimation?",
+     "options": [
+      "A low-pass filter",
+      "A high-pass filter",
+      "More samples",
+      "Zero padding"
+     ],
+     "answer": 0,
+     "explain": "Avoid aliasing."
+    },
+    {
+     "q": "What is an image in signal processing?",
+     "options": [
+      "A 2D signal",
+      "A filter",
+      "A window",
+      "A spectrum"
+     ],
+     "answer": 0,
+     "explain": "Rows and columns."
+    },
+    {
+     "q": "What does JPEG discard?",
+     "options": [
+      "Small high-frequency coefficients",
+      "All colours",
+      "Half the pixels",
+      "The header"
+     ],
+     "answer": 0,
+     "explain": "DCT blocks."
+    },
+    {
+     "q": "What does modulation do?",
+     "options": [
+      "Places a message on a carrier frequency",
+      "Removes noise",
+      "Samples faster",
+      "Counts bits"
+     ],
+     "answer": 0,
+     "explain": "Radio."
+    }
+   ],
+   "cards": [
+    {
+     "q": "fs / lag",
+     "a": "pitch from autocorrelation"
+    },
+    {
+     "q": "keep every Mth",
+     "a": "decimation"
+    },
+    {
+     "q": "DCT",
+     "a": "used by JPEG"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the tool to the job",
+     "intro": "Pair each tool with its use.",
+     "pairs": [
+      [
+       "Median filter",
+       "remove spikes"
+      ],
+      [
+       "Autocorrelation",
+       "find pitch"
+      ],
+      [
+       "Decimation",
+       "lower the sample rate"
+      ],
+      [
+       "Blur kernel",
+       "smooth an image"
+      ],
+      [
+       "DCT",
+       "image compression"
+      ]
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Median filter",
+     "intro": "Write median3(x): a 3-point median filter. The first and last samples are kept as they are; every interior sample becomes the median of itself and its two neighbours.",
+     "fn": "median3",
+     "starter": "def median3(x):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         1,
+         9,
+         1,
+         1
+        ]
+       ],
+       "expect": [
+        1,
+        1,
+        1,
+        1,
+        1
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4
+        ]
+       ],
+       "expect": [
+        1,
+        2,
+        3,
+        4
+       ]
+      },
+      {
+       "args": [
+        [
+         5,
+         0,
+         5,
+         0,
+         5
+        ]
+       ],
+       "expect": [
+        5,
+        5,
+        0,
+        5,
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         7,
+         8
+        ]
+       ],
+       "expect": [
+        7,
+        8
+       ]
+      }
+     ],
+     "hint": "Sort three values and take the middle.",
+     "solution": "def median3(x):\n    if len(x) < 3:\n        return list(x)\n    out = [x[0]]\n    for i in range(1, len(x) - 1):\n        t = sorted([x[i - 1], x[i], x[i + 1]])\n        out.append(t[1])\n    out.append(x[-1])\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Autocorrelation",
+     "intro": "Write autocorr(x, lag): the sum of x[i] x x[i + lag] for all valid i. Round to 4 decimals.",
+     "fn": "autocorr",
+     "starter": "def autocorr(x, lag):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0,
+         -1,
+         0,
+         1,
+         0,
+         -1,
+         0
+        ],
+        0
+       ],
+       "expect": 4.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         -1,
+         0,
+         1,
+         0,
+         -1,
+         0
+        ],
+        2
+       ],
+       "expect": -3.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         1,
+         0,
+         -1,
+         0,
+         1,
+         0,
+         -1,
+         0
+        ],
+        4
+       ],
+       "expect": 2.0,
+       "approx": 0.001
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3
+        ],
+        1
+       ],
+       "expect": 8.0,
+       "approx": 0.001
+      }
+     ],
+     "hint": "Multiply the signal with its shifted copy and add.",
+     "solution": "def autocorr(x, lag):\n    s = 0.0\n    for i in range(len(x) - lag):\n        s = s + x[i] * x[i + lag]\n    return round(s, 4)\n"
+    },
+    {
+     "type": "python",
+     "title": "Pitch period",
+     "intro": "Write pitch(x, fs, min_lag, max_lag): the frequency fs / L where L is the lag in min_lag..max_lag with the largest autocorrelation (the first such lag if tied). Return the frequency rounded to 2 decimals.",
+     "fn": "pitch",
+     "starter": "def pitch(x, fs, min_lag, max_lag):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         0,
+         -1,
+         0,
+         1,
+         0,
+         -1,
+         0,
+         1,
+         0,
+         -1,
+         0
+        ],
+        8000,
+        2,
+        6
+       ],
+       "expect": 2000.0,
+       "approx": 0.01
+      },
+      {
+       "args": [
+        [
+         1,
+         1,
+         -1,
+         -1,
+         1,
+         1,
+         -1,
+         -1,
+         1,
+         1,
+         -1,
+         -1,
+         1,
+         1,
+         -1,
+         -1
+        ],
+        1000,
+        2,
+        6
+       ],
+       "expect": 250.0,
+       "approx": 0.01
+      }
+     ],
+     "hint": "Try each lag and keep the best.",
+     "solution": "def pitch(x, fs, min_lag, max_lag):\n    best = min_lag\n    bv = None\n    for lag in range(min_lag, max_lag + 1):\n        s = 0.0\n        for i in range(len(x) - lag):\n            s = s + x[i] * x[i + lag]\n        if bv is None or s > bv + 1e-9:\n            bv = s\n            best = lag\n    return round(fs / float(best), 2)\n"
+    },
+    {
+     "type": "python",
+     "title": "Decimate",
+     "intro": "Write decimate(x, m): average each group of m consecutive samples (a crude low-pass) and keep one output per group, ignoring an incomplete final group. Round to 4 decimals.",
+     "fn": "decimate",
+     "starter": "def decimate(x, m):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5,
+         6
+        ],
+        2
+       ],
+       "expect": [
+        1.5,
+        3.5,
+        5.5
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2,
+         3,
+         4,
+         5
+        ],
+        2
+       ],
+       "expect": [
+        1.5,
+        3.5
+       ]
+      },
+      {
+       "args": [
+        [
+         4,
+         4,
+         4
+        ],
+        3
+       ],
+       "expect": [
+        4.0
+       ]
+      },
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        3
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Average before dropping samples.",
+     "solution": "def decimate(x, m):\n    out = []\n    i = 0\n    while i + m <= len(x):\n        s = 0.0\n        for j in range(m):\n            s = s + x[i + j]\n        out.append(round(s / m, 4))\n        i = i + m\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Image blur",
+     "intro": "Write blur(img): replace each interior pixel of the 2D list img with the average of itself and its four neighbours (up, down, left, right), rounded to 3 decimals. Edge pixels stay as they are.",
+     "fn": "blur",
+     "starter": "def blur(img):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          0,
+          0,
+          0
+         ],
+         [
+          0,
+          5,
+          0
+         ],
+         [
+          0,
+          0,
+          0
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         1.0,
+         0
+        ],
+        [
+         0,
+         0,
+         0
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          2,
+          3
+         ],
+         [
+          4,
+          5,
+          6
+         ],
+         [
+          7,
+          8,
+          9
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5.0,
+         6
+        ],
+        [
+         7,
+         8,
+         9
+        ]
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          1,
+          1
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       ],
+       "expect": [
+        [
+         1,
+         1
+        ],
+        [
+         1,
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Leave the border pixels alone.",
+     "solution": "def blur(img):\n    h = len(img)\n    w = len(img[0]) if h else 0\n    out = []\n    for r in range(h):\n        row = []\n        for c in range(w):\n            if r == 0 or c == 0 or r == h - 1 or c == w - 1:\n                row.append(img[r][c])\n            else:\n                s = img[r][c] + img[r - 1][c] + img[r + 1][c] + img[r][c - 1] + img[r][c + 1]\n                row.append(round(s / 5.0, 3))\n        out.append(row)\n    return out\n"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Signal Processing",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What is the Nyquist frequency?",
+    "options": [
+     "Half the sample rate",
+     "The sample rate",
+     "Twice the sample rate",
+     "The lowest frequency"
+    ],
+    "answer": 0,
+    "explain": "fs / 2."
+   },
+   {
+    "q": "What is aliasing?",
+    "options": [
+     "A high frequency appearing as a lower one",
+     "A gain change",
+     "A delay",
+     "Added noise"
+    ],
+    "answer": 0,
+    "explain": "Sampling too slowly."
+   },
+   {
+    "q": "A 30 Hz sine sampled at 40 Hz appears at what frequency?",
+    "options": [
+     "10 Hz",
+     "30 Hz",
+     "70 Hz",
+     "20 Hz"
+    ],
+    "answer": 0,
+    "explain": "40 - 30."
+   },
+   {
+    "q": "How many levels does 8-bit audio have?",
+    "options": [
+     "256",
+     "8",
+     "128",
+     "65536"
+    ],
+    "answer": 0,
+    "explain": "2 to the 8."
+   },
+   {
+    "q": "What does an anti-alias filter do?",
+    "options": [
+     "Removes frequencies above fs / 2 before sampling",
+     "Adds bits",
+     "Speeds up sampling",
+     "Removes DC"
+    ],
+    "answer": 0,
+    "explain": "Analog low-pass."
+   },
+   {
+    "q": "What is the period of a 50 Hz wave?",
+    "options": [
+     "0.02 s",
+     "0.5 s",
+     "50 s",
+     "0.2 s"
+    ],
+    "answer": 0,
+    "explain": "1 / f."
+   },
+   {
+    "q": "What is an impulse response?",
+    "options": [
+     "Output for a single 1 input",
+     "A sum of inputs",
+     "A window",
+     "A bin"
+    ],
+    "answer": 0,
+    "explain": "h[n]."
+   },
+   {
+    "q": "What operation gives an LTI system's output?",
+    "options": [
+     "Convolution",
+     "Division",
+     "Squaring",
+     "Sorting"
+    ],
+    "answer": 0,
+    "explain": "y = x * h."
+   },
+   {
+    "q": "Length of the full convolution of lists of lengths 5 and 3?",
+    "options": [
+     "7",
+     "8",
+     "15",
+     "5"
+    ],
+    "answer": 0,
+    "explain": "5 + 3 - 1."
+   },
+   {
+    "q": "What does the DFT reveal?",
+    "options": [
+     "Frequency content",
+     "Sample rate",
+     "Bit depth",
+     "Timing only"
+    ],
+    "answer": 0,
+    "explain": "Spectrum."
+   },
+   {
+    "q": "At what frequency is DFT bin k?",
+    "options": [
+     "k fs / N",
+     "k N / fs",
+     "fs / k",
+     "k"
+    ],
+    "answer": 0,
+    "explain": "Bin spacing fs / N."
+   },
+   {
+    "q": "What is the cost of the FFT?",
+    "options": [
+     "About N log N",
+     "About N squared",
+     "About N",
+     "About 1"
+    ],
+    "answer": 0,
+    "explain": "Cooley and Tukey."
+   },
+   {
+    "q": "What is H(0) of an FIR filter?",
+    "options": [
+     "The sum of the taps",
+     "Always 1",
+     "Always 0",
+     "The first tap"
+    ],
+    "answer": 0,
+    "explain": "DC gain."
+   },
+   {
+    "q": "Which FIR taps make a simple high-pass?",
+    "options": [
+     "[1, -1]",
+     "[1, 1]",
+     "[1, 1, 1, 1]",
+     "[0.5, 0.5]"
+    ],
+    "answer": 0,
+    "explain": "A difference."
+   },
+   {
+    "q": "What gives an FIR filter linear phase?",
+    "options": [
+     "Symmetric taps",
+     "Feedback",
+     "Zero taps",
+     "Large gain"
+    ],
+    "answer": 0,
+    "explain": "Equal delay."
+   },
+   {
+    "q": "What is a pole of a transfer function?",
+    "options": [
+     "A root of the denominator",
+     "A root of the numerator",
+     "A sample",
+     "A window"
+    ],
+    "answer": 0,
+    "explain": "Makes H infinite."
+   },
+   {
+    "q": "When is a causal IIR filter stable?",
+    "options": [
+     "All poles inside the unit circle",
+     "All poles outside it",
+     "No zeros",
+     "Taps sum to 1"
+    ],
+    "answer": 0,
+    "explain": "|z| < 1."
+   },
+   {
+    "q": "What does a smaller a do in y = a x + (1-a) y_prev?",
+    "options": [
+     "Smooths more",
+     "Smooths less",
+     "Adds gain",
+     "Makes it FIR"
+    ],
+    "answer": 0,
+    "explain": "Slower response."
+   },
+   {
+    "q": "What causes spectral leakage?",
+    "options": [
+     "Cutting the wave mid-cycle",
+     "Too many bits",
+     "Silence",
+     "A low gain"
+    ],
+    "answer": 0,
+    "explain": "Seam jump."
+   },
+   {
+    "q": "What does a window function do?",
+    "options": [
+     "Tapers the frame edges",
+     "Adds samples",
+     "Raises the pitch",
+     "Removes the DC"
+    ],
+    "answer": 0,
+    "explain": "Smooth hump."
+   },
+   {
+    "q": "Does zero padding improve resolution?",
+    "options": [
+     "No, it only interpolates",
+     "Yes",
+     "Only for audio",
+     "Only above Nyquist"
+    ],
+    "answer": 0,
+    "explain": "No new information."
+   },
+   {
+    "q": "What is a spectrogram?",
+    "options": [
+     "Spectra over successive frames",
+     "A single DFT",
+     "A filter",
+     "A window"
+    ],
+    "answer": 0,
+    "explain": "STFT."
+   },
+   {
+    "q": "Which filter best removes isolated spikes?",
+    "options": [
+     "Median",
+     "Mean",
+     "Difference",
+     "Sinc"
+    ],
+    "answer": 0,
+    "explain": "Ignores outliers."
+   },
+   {
+    "q": "What does autocorrelation help find?",
+    "options": [
+     "The period or pitch",
+     "The sample rate",
+     "The bit depth",
+     "The gain"
+    ],
+    "answer": 0,
+    "explain": "Peak at the period."
+   },
+   {
+    "q": "What must you do before decimating?",
+    "options": [
+     "Low-pass filter",
+     "High-pass filter",
+     "Add noise",
+     "Zero pad"
+    ],
+    "answer": 0,
+    "explain": "Avoid aliasing."
+   },
+   {
+    "q": "What does JPEG do to image blocks?",
+    "options": [
+     "DCT and drop small coefficients",
+     "Sort pixels",
+     "Blur the whole image",
+     "Double the size"
+    ],
+    "answer": 0,
+    "explain": "Lossy compression."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "DSP cheat sheet",
+  "prompt": "dsp>",
+  "intro": "A scripted lookup. Try: nyquist, alias, conv, dft, fir, iir, window, bins, help",
+  "chips": [
+   "nyquist",
+   "alias",
+   "conv",
+   "dft",
+   "fir",
+   "iir",
+   "window",
+   "bins",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "nyquist    Sample faster than twice the highest frequency. Nyquist freq",
+     "alias      Fold f into 0..fs/2: r = f mod fs; if r > fs/2 use fs - r.",
+     "conv       y[n] = sum of x[k] h[n-k]. Length = len(x) + len(h) - 1.",
+     "dft        X[k] = sum x[n] e^(-2 pi i k n / N). Bin k is at k fs / N he",
+     "fir        Weighted sum of recent inputs. Symmetric taps give linear ph",
+     "iir        Uses past outputs. Stable when all poles are inside the unit",
+     "window     Taper the frame to cut leakage: Hann w[n] = 0.5 - 0.5 cos(2 ",
+     "bins       Resolution = fs / N. Zero padding does not improve it."
+    ]
+   },
+   {
+    "re": "^nyquist$",
+    "out": [
+     "Sample faster than twice the highest frequency. Nyquist frequency = fs / 2."
+    ]
+   },
+   {
+    "re": "^alias$",
+    "out": [
+     "Fold f into 0..fs/2: r = f mod fs; if r > fs/2 use fs - r."
+    ]
+   },
+   {
+    "re": "^conv$",
+    "out": [
+     "y[n] = sum of x[k] h[n-k]. Length = len(x) + len(h) - 1."
+    ]
+   },
+   {
+    "re": "^dft$",
+    "out": [
+     "X[k] = sum x[n] e^(-2 pi i k n / N). Bin k is at k fs / N hertz."
+    ]
+   },
+   {
+    "re": "^fir$",
+    "out": [
+     "Weighted sum of recent inputs. Symmetric taps give linear phase."
+    ]
+   },
+   {
+    "re": "^iir$",
+    "out": [
+     "Uses past outputs. Stable when all poles are inside the unit circle."
+    ]
+   },
+   {
+    "re": "^window$",
+    "out": [
+     "Taper the frame to cut leakage: Hann w[n] = 0.5 - 0.5 cos(2 pi n/(N-1))."
+    ]
+   },
+   {
+    "re": "^bins$",
+    "out": [
+     "Resolution = fs / N. Zero padding does not improve it."
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Hardware and Embedded",
+ "level": "Intermediate",
+ "tags": [
+  "signals",
+  "dsp",
+  "fourier",
+  "filters",
+  "python"
+ ]
+}
