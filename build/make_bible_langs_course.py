@@ -5,10 +5,10 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "blc"))
-import cmk, bl1, bl2, make_apps  # noqa: E402
+import cmk, bl1, bl2, make_apps, native  # noqa: E402
 
 make_apps.main()
-CHS = bl1.CHS + bl2.CHS
+CHS = native.apply(bl1.CHS + bl2.CHS)
 
 PRONOUNCE = {"Septuagint": "sep too a gint", "Vulgate": "vul gate", "Koine": "coy nay", "Masoretes": "mass oh reets", "Masoretic": "mass oh ret ic",
     "niqqud": "nee kood", "shva": "shwah", "dagesh": "dah gesh", "gematria": "geh may tree uh", "isopsephy": "eye sop sef ee", "alef": "ah lef",
