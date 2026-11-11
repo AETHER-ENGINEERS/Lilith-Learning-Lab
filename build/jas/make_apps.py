@@ -1,0 +1,48 @@
+# -*- coding: utf-8 -*-
+import os
+HERE = os.path.dirname(os.path.abspath(__file__))
+HEAD = """<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}
+.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}
+.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}
+</style></head><body>"""
+COMMON = """var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}"""
+APPROVE = HEAD + """
+<div class="k">Allow patterns (one per line, * matches anything)</div><textarea id="al" rows="3">record_*:bookings
+collection_*:*</textarea>
+<div class="k">Deny patterns</div><textarea id="dn" rows="2">collection_delete:*</textarea>
+<label>Target <input type="text" id="t" value="collection_delete:users"></label>
+<label><input type="checkbox" id="d"> Destructive tool</label>
+<button id="go">Decide</button><div id="o" class="box"></div><div id="p" class="k"></div>
+<script>""" + COMMON + """
+function glob(p,t){var parts=p.split("*");if(parts.length===1)return p===t;if(t.indexOf(parts[0])!==0)return false;var pos=parts[0].length,i;for(i=1;i<parts.length-1;i++){var f=t.indexOf(parts[i],pos);if(f<0)return false;pos=f+parts[i].length}var l=parts[parts.length-1];return t.length-pos>=l.length&&t.slice(t.length-l.length)===l}
+function lines(id){return $(id).value.split("\\n").map(function(s){return s.trim()}).filter(function(s){return s})}
+var seen={};
+$("go").onclick=function(){var t=$("t").value.trim(),al=lines("al"),dn=lines("dn"),r,why;
+ var denied=dn.filter(function(p){return glob(p,t)}),allowed=al.filter(function(p){return glob(p,t)});
+ if(denied.length){r="deny";why="deny rule "+denied[0]+" matches, and deny always wins"}
+ else if(allowed.length&&!$("d").checked){r="allow";why="allow rule "+allowed[0]+" matches"}
+ else if(allowed.length){r="confirm";why="allowed, but destructive tools still need a person"}
+ else{r="confirm";why="no rule covers it, so a person must confirm (or --yolo, logged)"}
+ $("o").innerHTML='<b class="'+(r==="allow"?"ok":r==="deny"?"bad":"un")+'">'+r.toUpperCase()+'</b><br>'+why;seen[r]=1;var n=Object.keys(seen).length;$("p").textContent="Decision kinds seen: "+n+" of 3";if(n>=3)done()};
+</script></body></html>"""
+RUN = HEAD + """
+<div class="k">Tasks: create collection, load records, publish site. Pick which one fails.</div>
+<label>Failing task <select id="f"><option value="-1">none</option><option value="0">1 create collection</option><option value="1" selected>2 load records</option><option value="2">3 publish site</option></select></label>
+<label>Fail mode <select id="m"><option value="stop">stop</option><option value="continue">continue</option><option value="rollback">rollback</option></select></label>
+<button id="go">Run</button><div id="o" class="box ev"></div><div id="p" class="k"></div>
+<script>""" + COMMON + """
+var T=[["create collection",true],["load records",false],["publish site",true]],seen={};
+$("go").onclick=function(){var f=+$("f").value,mode=$("m").value,ev=[],doneT=[],i,stop=false;
+ for(i=0;i<T.length&&!stop;i++){if(i===f){ev.push('<span class="bad">failed: '+T[i][0]+'</span>');
+   if(mode==="stop")stop=true;else if(mode==="rollback"){doneT.slice().reverse().forEach(function(n){ev.push('<span class="un">undo: '+n+'</span>')});stop=true}}
+  else{ev.push('<span class="ok">ran: '+T[i][0]+'</span>');doneT.push(T[i][0])}}
+ ev.push("<b>run "+(f<0||mode==="continue"?(f<0?"completed":"completed with a failure"):"ended")+"</b>");
+ $("o").innerHTML=ev.join("<br>");if(f>=0){seen[mode]=1}var n=Object.keys(seen).length;$("p").textContent="Failure modes tried: "+n+" of 3";if(n>=3)done()};
+</script></body></html>"""
+def main():
+    d = os.path.join(HERE, "apps")
+    os.makedirs(d, exist_ok=True)
+    open(os.path.join(d, "approve.html"), "w").write(APPROVE)
+    open(os.path.join(d, "run.html"), "w").write(RUN)
