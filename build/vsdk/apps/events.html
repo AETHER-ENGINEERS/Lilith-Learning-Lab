@@ -5,11 +5,11 @@ button,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;backgrou
 .box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}
 </style></head><body>
 <div class="k">Pick an event and see where it goes</div>
-<label>Event <select id="ev"><option>Message</option><option>MessageUpdate</option><option>Delete</option><option>MemberJoin</option><option>MemberLeave</option><option>Typing</option><option>Invite</option><option>Removed</option></select></label>
+<label>Event <select id="ev"><option>Message</option><option>Edit</option><option>Reaction</option><option>Delete</option><option>MemberJoin</option><option>MemberLeave</option><option>Typing</option><option>Invite</option><option>Removed</option><option>CommunityChange</option></select></label>
 <label><input type="checkbox" id="mine"> The message was sent by the bot itself</label>
 <button id="go">Dispatch</button><div id="o" class="box"></div><div id="p" class="k"></div>
 <script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
-var R={Message:"on_message handler: chat",MessageUpdate:"on_event: chat edit",Delete:"on_event: moderation",MemberJoin:"on_event: welcome the member",MemberLeave:"on_event: update the member list",Typing:"on_event: usually ignore (expires in 30 s)",Invite:"on_event: apply the invite policy",Removed:"on_event: forget the community"};
+var R={Message:"on_message handler: chat",Edit:"on_event: a message was edited; the new text is in message.content",Reaction:"on_event: someone reacted; reaction.author_id says who",CommunityChange:"on_event: roles, channels, bans or pins changed; change.by names who",Delete:"on_event: moderation",MemberJoin:"on_event: welcome the member",MemberLeave:"on_event: update the member list",Typing:"on_event: usually ignore (expires in 30 s)",Invite:"on_event: apply the invite policy",Removed:"on_event: forget the community"};
 var seen={};
 $("go").onclick=function(){var e=$("ev").value,r=R[e],c="ok";
  if(e==="Message"&&$("mine").checked){r="skipped: is_mine() is true, so no loop";c="un"}

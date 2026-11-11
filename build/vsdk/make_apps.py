@@ -23,11 +23,11 @@ $("go").onclick=function(){var pol=$("pol").value,s=$("snd").value,off=$("off").
 </script></body></html>"""
 EVENTS = HEAD + """
 <div class="k">Pick an event and see where it goes</div>
-<label>Event <select id="ev"><option>Message</option><option>MessageUpdate</option><option>Delete</option><option>MemberJoin</option><option>MemberLeave</option><option>Typing</option><option>Invite</option><option>Removed</option></select></label>
+<label>Event <select id="ev"><option>Message</option><option>Edit</option><option>Reaction</option><option>Delete</option><option>MemberJoin</option><option>MemberLeave</option><option>Typing</option><option>Invite</option><option>Removed</option><option>CommunityChange</option></select></label>
 <label><input type="checkbox" id="mine"> The message was sent by the bot itself</label>
 <button id="go">Dispatch</button><div id="o" class="box"></div><div id="p" class="k"></div>
 <script>""" + COMMON + """
-var R={Message:"on_message handler: chat",MessageUpdate:"on_event: chat edit",Delete:"on_event: moderation",MemberJoin:"on_event: welcome the member",MemberLeave:"on_event: update the member list",Typing:"on_event: usually ignore (expires in 30 s)",Invite:"on_event: apply the invite policy",Removed:"on_event: forget the community"};
+var R={Message:"on_message handler: chat",Edit:"on_event: a message was edited; the new text is in message.content",Reaction:"on_event: someone reacted; reaction.author_id says who",CommunityChange:"on_event: roles, channels, bans or pins changed; change.by names who",Delete:"on_event: moderation",MemberJoin:"on_event: welcome the member",MemberLeave:"on_event: update the member list",Typing:"on_event: usually ignore (expires in 30 s)",Invite:"on_event: apply the invite policy",Removed:"on_event: forget the community"};
 var seen={};
 $("go").onclick=function(){var e=$("ev").value,r=R[e],c="ok";
  if(e==="Message"&&$("mine").checked){r="skipped: is_mine() is true, so no loop";c="un"}
