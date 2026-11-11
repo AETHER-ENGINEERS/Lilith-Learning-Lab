@@ -1,0 +1,4433 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "discord-py",
+ "title": "discord.py: Building Discord Bots",
+ "subtitle": "Clients, intents, commands, cogs, slash commands, views, modals, tasks and deployment, with Python labs",
+ "author": "Lilith Learning Lab",
+ "description": "A hands-on course based on the open-source discord.py library (github.com/Rapptz/discord.py, MIT), documented here as of its 2.8.0a development version. Learn how a bot connects, which intents it needs, how prefix and slash commands work, how to organise code with cogs and extensions, build buttons, selects and modals, run background tasks, log and handle errors, and keep tokens and permissions safe. Labs run offline and simulate the library's rules in Python, so no Discord account is needed.",
+ "pronounce": {
+  "discord.py": "discord dot pie",
+  "Discord": "discord",
+  "asyncio": "a sink eye oh",
+  "async": "a sink",
+  "await": "a wait",
+  "coroutine": "co roo teen",
+  "Cog": "cog",
+  "cogs": "cogs",
+  "snowflake": "snow flake",
+  "Snowflake": "snow flake",
+  "ephemeral": "eh fem er al",
+  "ephemeral=True": "ephemeral equals true",
+  "Intents": "in tents",
+  "intents": "in tents",
+  "Modal": "moh dul",
+  "setup_hook": "setup hook",
+  "on_ready": "on ready",
+  "on_message": "on message",
+  "systemd": "system D",
+  "bitmask": "bit mask",
+  "Embed": "em bed",
+  "embed": "em bed",
+  "MemberCacheFlags": "member cache flags",
+  "Rapptz": "rapps",
+  "HTTP": "H T T P",
+  "API": "A P I",
+  "JSON": "jay son",
+  "UI": "you eye",
+  "CommandTree": "command tree",
+  "nsec": "en sec",
+  "ELI5": "E L I five"
+ },
+ "chapters": [
+  {
+   "title": "The client, events and the gateway",
+   "maps": [
+    {
+     "title": "discord.py basics",
+     "links": [
+      "Client | connects to | Gateway",
+      "Gateway | sends | Events",
+      "Event | calls | Coroutine handler",
+      "on_ready | fires after | Cache is filled",
+      "on_message | needs | message_content intent",
+      "client.run | blocks until | Bot stops",
+      "Token | identifies | Your bot"
+     ]
+    }
+   ],
+   "summary": [
+    "discord.py is an asynchronous Python library for the Discord API. You create a Client, give it intents, register event handlers, and call run with your bot token.",
+    "The client keeps a websocket connection, called the gateway, open to Discord. Discord pushes events down it, such as a message being sent, and the library calls your matching coroutine.",
+    "The repository at github.com/Rapptz/discord.py was at version 2.8.0a in its development branch when this course was written. The quickstart says to avoid naming your own file discord.py."
+   ],
+   "glossary": [
+    {
+     "term": "Client",
+     "def": "The object that connects to Discord and dispatches events to your handlers."
+    },
+    {
+     "term": "Gateway",
+     "def": "The websocket connection over which Discord pushes events to the bot."
+    },
+    {
+     "term": "Event handler",
+     "def": "An async function named on_<event>, registered with client.event."
+    },
+    {
+     "term": "Coroutine",
+     "def": "A function defined with async def, run by the event loop and paused with await."
+    },
+    {
+     "term": "Snowflake",
+     "def": "A 64-bit id used for users, guilds, channels and messages; its top bits hold a timestamp."
+    }
+   ],
+   "keyPoints": [
+    "Create intents, then Client(intents=intents), then client.run(token).",
+    "Handlers are coroutines named on_ready, on_message and so on.",
+    "Always ignore your own messages so the bot does not reply to itself.",
+    "Never name your script discord.py.",
+    "Snowflake time = (id >> 22) + 1420070400000 milliseconds."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Your bot is a kid with a walkie-talkie. Discord talks on it all day, and the kid only answers the messages it was told to listen for."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Think of the bot as a person sitting by a telephone. The Client dials Discord once and keeps the line open. Whenever something happens in a server, Discord speaks down the line, and the library turns each sentence into a call to one of your functions."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Your functions are coroutines. They are defined with async def, and they pause with await when they need to wait for the network, so one bot can handle many events at once on a single thread without blocking."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import discord\n\nintents = discord.Intents.default()\nintents.message_content = True\n\nclient = discord.Client(intents=intents)\n\n@client.event\nasync def on_ready():\n    print('Logged on as', client.user)\n\n@client.event\nasync def on_message(message):\n    if message.author == client.user:\n        return\n    if message.content.startswith('$hello'):\n        await message.channel.send('Hello!')\n\nclient.run('your token here')"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is the quickstart bot. The first lines build the intents, the next create the client, and the two decorated functions are event handlers. The check on the author matters: without it the bot could answer its own replies forever."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "on_ready fires once the client has logged in and filled its cache, but it can fire more than once after reconnects, so do not start one-time work there. A later chapter shows setup_hook, which runs exactly once."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Every id in Discord is a snowflake. The top bits are the number of milliseconds since the Discord epoch, 1 January 2015, so you can read when something was created from its id alone. Shift right by 22 bits and add the epoch."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Client",
+       "The object that connects to Discord and dispatches events to your handlers."
+      ],
+      [
+       "Gateway",
+       "The websocket connection over which Discord pushes events to the bot."
+      ],
+      [
+       "Event handler",
+       "An async function named on_<event>, registered with client.event."
+      ],
+      [
+       "Coroutine",
+       "A function defined with async def, run by the event loop and paused with await."
+      ],
+      [
+       "Snowflake",
+       "A 64-bit id used for users, guilds, channels and messages; its top bits hold a timestamp."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which call starts the bot?",
+     "options": [
+      "client.run(token)",
+      "client.start_event()",
+      "discord.go()",
+      "client.print()"
+     ],
+     "answer": 0,
+     "explain": "run blocks."
+    },
+    {
+     "q": "Why check message.author == client.user?",
+     "options": [
+      "To avoid the bot replying to itself",
+      "To speed it up",
+      "To find the token",
+      "To get intents"
+     ],
+     "answer": 0,
+     "explain": "Loops."
+    },
+    {
+     "q": "What is the gateway?",
+     "options": [
+      "The websocket that pushes events",
+      "A REST endpoint for files",
+      "A database",
+      "A command prefix"
+     ],
+     "answer": 0,
+     "explain": "Live connection."
+    },
+    {
+     "q": "Why not name your file discord.py?",
+     "options": [
+      "It shadows the library when you import it",
+      "It is too long",
+      "It is reserved by Discord",
+      "It breaks the token"
+     ],
+     "answer": 0,
+     "explain": "Import shadowing."
+    },
+    {
+     "q": "A handler is registered with:",
+     "options": [
+      "@client.event",
+      "@client.token",
+      "@client.guild",
+      "@client.wait"
+     ],
+     "answer": 0,
+     "explain": "Decorator."
+    },
+    {
+     "q": "What does a snowflake contain in its top bits?",
+     "options": [
+      "A timestamp",
+      "The token",
+      "The guild name",
+      "A password"
+     ],
+     "answer": 0,
+     "explain": "Creation time."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Client",
+     "a": "Connects to Discord and dispatches events"
+    },
+    {
+     "q": "on_ready",
+     "a": "Fires after login and cache fill; may repeat on reconnect"
+    },
+    {
+     "q": "Snowflake",
+     "a": "64-bit id with a timestamp in the top bits"
+    },
+    {
+     "q": "Discord epoch",
+     "a": "1 January 2015, 1420070400000 ms"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the piece",
+     "intro": "Pair each term with its job.",
+     "pairs": [
+      [
+       "Client",
+       "connects and dispatches"
+      ],
+      [
+       "Gateway",
+       "websocket event stream"
+      ],
+      [
+       "on_message",
+       "runs when a message arrives"
+      ],
+      [
+       "Snowflake",
+       "id carrying a timestamp"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Basics",
+     "text": "A function defined with async def is a {{coroutine}}. The websocket connection to Discord is the {{gateway}}. Handlers are registered with the {{event}} decorator, and the bot starts with client.{{run}}(token)."
+    },
+    {
+     "type": "python",
+     "title": "Handler name",
+     "intro": "Write handler_name(event): return 'on_' followed by the event name, for example 'message' gives 'on_message'.",
+     "fn": "handler_name",
+     "starter": "def handler_name(event):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "message"
+       ],
+       "expect": "on_message"
+      },
+      {
+       "args": [
+        "ready"
+       ],
+       "expect": "on_ready"
+      },
+      {
+       "args": [
+        "member_join"
+       ],
+       "expect": "on_member_join"
+      }
+     ],
+     "hint": "Concatenate the prefix.",
+     "solution": "def handler_name(event):\n    return 'on_' + event\n"
+    },
+    {
+     "type": "python",
+     "title": "Reply to a message?",
+     "intro": "Write should_reply(author_id, bot_id, content, prefix): return True only when the author is not the bot and the content starts with the prefix.",
+     "fn": "should_reply",
+     "starter": "def should_reply(author_id, bot_id, content, prefix):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        2,
+        "$hello",
+        "$"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        2,
+        2,
+        "$hello",
+        "$"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        1,
+        2,
+        "hello",
+        "$"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        1,
+        2,
+        "",
+        "$"
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Check the author first.",
+     "solution": "def should_reply(author_id, bot_id, content, prefix):\n    if author_id == bot_id:\n        return False\n    return content.startswith(prefix)\n"
+    },
+    {
+     "type": "python",
+     "title": "Snowflake time",
+     "intro": "Write snowflake_seconds(sid): return the creation time of a snowflake as whole unix seconds. Shift sid right by 22 bits, add 1420070400000, divide by 1000 using //.",
+     "fn": "snowflake_seconds",
+     "starter": "def snowflake_seconds(sid):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        175928847299117063
+       ],
+       "expect": 1462015105
+      },
+      {
+       "args": [
+        0
+       ],
+       "expect": 1420070400
+      },
+      {
+       "args": [
+        4194304
+       ],
+       "expect": 1420070400
+      },
+      {
+       "args": [
+        1000000000000000000
+       ],
+       "expect": 1658488979
+      }
+     ],
+     "hint": "Shift, add, divide.",
+     "solution": "def snowflake_seconds(sid):\n    ms = (sid >> 22) + 1420070400000\n    return ms // 1000\n"
+    },
+    {
+     "type": "python",
+     "title": "Safe script name",
+     "intro": "Write name_ok(filename): return False when the filename (ignoring case) is exactly 'discord.py' or 'discord', otherwise True.",
+     "fn": "name_ok",
+     "starter": "def name_ok(filename):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "bot.py"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "discord.py"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "Discord.PY"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "discord"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "main.py"
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Shadowing.",
+     "solution": "def name_ok(filename):\n    n = filename.lower()\n    return not (n == 'discord.py' or n == 'discord')\n"
+    },
+    {
+     "type": "order",
+     "title": "Starting a bot",
+     "intro": "Put these in order.",
+     "items": [
+      "Create intents",
+      "Create the Client",
+      "Register event handlers",
+      "Call client.run(token)",
+      "Gateway connects and on_ready fires"
+     ]
+    }
+   ],
+   "references": [
+    {
+     "title": "discord.py quickstart",
+     "url": "https://discordpy.readthedocs.io/en/stable/quickstart.html",
+     "note": "the minimal bot"
+    }
+   ]
+  },
+  {
+   "title": "Intents and the developer portal",
+   "maps": [
+    {
+     "title": "Intents",
+     "links": [
+      "Intent | selects | Event groups",
+      "Privileged intent | needs | Portal switch",
+      "members | is | Privileged",
+      "presences | is | Privileged",
+      "message_content | is | Privileged",
+      "100 guilds | triggers | Verification",
+      "Missing intent | causes | Missing events"
+     ]
+    }
+   ],
+   "summary": [
+    "Intents tell Discord which groups of events your bot wants. Fewer intents mean less data, less memory, and fewer events to process.",
+    "Three intents are privileged: presences, members and message_content. You must switch each on in the Bot tab of the developer portal and also enable it in code. Enabling only one side fails.",
+    "Bots in more than 100 guilds need verification and approval before they can use privileged intents. Intents.default() turns on everything except the privileged three."
+   ],
+   "glossary": [
+    {
+     "term": "Intents",
+     "def": "Flags that choose which events Discord sends to the bot."
+    },
+    {
+     "term": "Privileged intent",
+     "def": "An intent that must be enabled in the developer portal: presences, members, message content."
+    },
+    {
+     "term": "Member cache",
+     "def": "The library's stored copy of guild members; controlled by the members intent and MemberCacheFlags."
+    },
+    {
+     "term": "Developer portal",
+     "def": "The Discord website where you create the application, the bot user and its token."
+    },
+    {
+     "term": "Verification",
+     "def": "Discord's review required once a bot is in more than 100 guilds."
+    }
+   ],
+   "keyPoints": [
+    "Intents.default() leaves out presences, members and message_content.",
+    "Privileged intents need the portal toggle and the code flag.",
+    "Without message_content, message.content is empty for most messages.",
+    "Intents.none() plus the ones you need is the leanest start.",
+    "Over 100 guilds: apply for verification."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Intents are like choosing which TV channels you get. The grown-up has to say yes to the three special channels first."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine a mailroom that sorts mail into bins. Intents are the bins you ask to receive. If you ask only for guild messages and guild changes, the mailroom never sends you reactions, typing notices or member updates. That saves your bot work and saves Discord bandwidth."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Three bins hold sensitive material. presences shows who is online and what they are playing, members shows join and leave events and fills the member list, and message_content lets you read the text of messages. These are privileged, which means a person must approve them."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import discord\n\nintents = discord.Intents.none()\nintents.guilds = True\nintents.guild_messages = True\nintents.message_content = True   # also enable in the portal\n\n# or start from the default set\nintents = discord.Intents.default()\nintents.members = True           # privileged\n\nclient = discord.Client(intents=intents)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "If you forget the portal switch the bot fails to connect with a privileged intents error. If you forget the code flag, events silently never arrive. When on_message fires but message.content is empty, the cause is nearly always a missing message_content intent."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The member cache needs the members intent. Without it the library cannot list everyone, but the author of a message is still given as a Member, built from the data in the message itself. You can narrow what is cached with MemberCacheFlags."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Choose intents from the events you handle. A moderation bot wants members and message_content; a slash command bot often needs neither, because interactions arrive without them."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Intents",
+       "Flags that choose which events Discord sends to the bot."
+      ],
+      [
+       "Privileged intent",
+       "An intent that must be enabled in the developer portal: presences, members, message content."
+      ],
+      [
+       "Member cache",
+       "The library's stored copy of guild members; controlled by the members intent and MemberCacheFlags."
+      ],
+      [
+       "Developer portal",
+       "The Discord website where you create the application, the bot user and its token."
+      ],
+      [
+       "Verification",
+       "Discord's review required once a bot is in more than 100 guilds."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which is a privileged intent?",
+     "options": [
+      "message_content",
+      "guilds",
+      "guild_messages",
+      "reactions"
+     ],
+     "answer": 0,
+     "explain": "Also members and presences."
+    },
+    {
+     "q": "Where do you enable privileged intents?",
+     "options": [
+      "Portal Bot tab and in code",
+      "Only in code",
+      "Only in the portal",
+      "In the token"
+     ],
+     "answer": 0,
+     "explain": "Both."
+    },
+    {
+     "q": "What does Intents.default() exclude?",
+     "options": [
+      "The three privileged intents",
+      "Guilds",
+      "Messages",
+      "Everything"
+     ],
+     "answer": 0,
+     "explain": "Safe defaults."
+    },
+    {
+     "q": "message.content is empty. Likely cause?",
+     "options": [
+      "message_content intent missing",
+      "Wrong prefix",
+      "Bad token",
+      "Old Python"
+     ],
+     "answer": 0,
+     "explain": "Check the intent."
+    },
+    {
+     "q": "At how many guilds is verification needed?",
+     "options": [
+      "More than 100",
+      "More than 10",
+      "More than 1000",
+      "Any"
+     ],
+     "answer": 0,
+     "explain": "100."
+    },
+    {
+     "q": "Do slash commands need message_content?",
+     "options": [
+      "No, interactions do not",
+      "Yes always",
+      "Only in DMs",
+      "Only with views"
+     ],
+     "answer": 0,
+     "explain": "Interactions carry their own data."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Privileged intents",
+     "a": "presences, members, message_content"
+    },
+    {
+     "q": "Intents.none()",
+     "a": "Start empty, enable what you need"
+    },
+    {
+     "q": "100 guilds",
+     "a": "Verification threshold for privileged intents"
+    },
+    {
+     "q": "MemberCacheFlags",
+     "a": "Tunes what the member cache stores"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Intents explorer",
+     "intro": "Switch intents on and off and see which events your bot would receive.",
+     "height": 700,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}\n</style></head><body>\n<div class=\"k\">Intents your bot enables</div>\n<label><input type=\"checkbox\" id=\"guilds\" checked> guilds</label>\n<label><input type=\"checkbox\" id=\"gm\" checked> guild_messages</label>\n<label><input type=\"checkbox\" id=\"mc\"> message_content (privileged)</label>\n<label><input type=\"checkbox\" id=\"mem\"> members (privileged)</label>\n<label><input type=\"checkbox\" id=\"pres\"> presences (privileged)</label>\n<label><input type=\"checkbox\" id=\"rx\"> reactions</label>\n<label><input type=\"checkbox\" id=\"portal\"> Also switched on in the developer portal</label>\n<button id=\"go\">Connect</button><div id=\"o\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar EV=[[\"on_ready\",\"guilds\"],[\"on_message (author, channel)\",\"gm\"],[\"message.content has text\",\"mc\"],[\"on_member_join\",\"mem\"],[\"on_presence_update\",\"pres\"],[\"on_reaction_add\",\"rx\"]];\nvar seen={};\n$(\"go\").onclick=function(){var priv=$(\"mc\").checked||$(\"mem\").checked||$(\"pres\").checked,out=[],i;\n if(priv&&!$(\"portal\").checked){$(\"o\").innerHTML='<b class=\"bad\">Connection refused</b><br>A privileged intent is enabled in code but not in the developer portal.';seen.refused=1}\n else{for(i=0;i<EV.length;i++){var on=$(EV[i][1]).checked;out.push((on?'<span class=\"ok\">receives</span> ':'<span class=\"bad\">silent</span> ')+EV[i][0])}\n  $(\"o\").innerHTML=out.join(\"<br>\");seen[priv?\"priv\":\"plain\"]=1}\n var n=Object.keys(seen).length;$(\"p\").textContent=\"Situations seen: \"+n+\" of 3\";if(n>=3)done()};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the intent",
+     "intro": "Pair each event with the intent it needs.",
+     "pairs": [
+      [
+       "on_member_join",
+       "members"
+      ],
+      [
+       "on_presence_update",
+       "presences"
+      ],
+      [
+       "reading message text",
+       "message_content"
+      ],
+      [
+       "on_guild_join",
+       "guilds"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Intents",
+     "text": "The three {{privileged}} intents are presences, members and message content. They must be switched on in the {{portal}} and in {{code}}. Over {{100}} guilds a bot needs verification."
+    },
+    {
+     "type": "python",
+     "title": "Privileged ones",
+     "intro": "Write privileged(intents): intents is a list of names; return the sorted list of those that are privileged ('presences', 'members', 'message_content'), without duplicates.",
+     "fn": "privileged",
+     "starter": "def privileged(intents):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "guilds",
+         "members"
+        ]
+       ],
+       "expect": [
+        "members"
+       ]
+      },
+      {
+       "args": [
+        [
+         "message_content",
+         "presences",
+         "members"
+        ]
+       ],
+       "expect": [
+        "members",
+        "message_content",
+        "presences"
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "members",
+         "members"
+        ]
+       ],
+       "expect": [
+        "members"
+       ]
+      }
+     ],
+     "hint": "Filter and sort.",
+     "solution": "def privileged(intents):\n    p = ['presences', 'members', 'message_content']\n    out = []\n    for i in intents:\n        if i in p and i not in out:\n            out.append(i)\n    out.sort()\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Event to intent",
+     "intro": "Write intent_for(event): 'on_member_join' and 'on_member_remove' give 'members'; 'on_presence_update' gives 'presences'; 'on_message' gives 'guild_messages'; 'on_reaction_add' gives 'reactions'; anything else gives 'guilds'.",
+     "fn": "intent_for",
+     "starter": "def intent_for(event):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "on_member_join"
+       ],
+       "expect": "members"
+      },
+      {
+       "args": [
+        "on_message"
+       ],
+       "expect": "guild_messages"
+      },
+      {
+       "args": [
+        "on_presence_update"
+       ],
+       "expect": "presences"
+      },
+      {
+       "args": [
+        "on_ready"
+       ],
+       "expect": "guilds"
+      },
+      {
+       "args": [
+        "on_reaction_add"
+       ],
+       "expect": "reactions"
+      }
+     ],
+     "hint": "A small lookup.",
+     "solution": "def intent_for(event):\n    if event in ('on_member_join', 'on_member_remove'):\n        return 'members'\n    if event == 'on_presence_update':\n        return 'presences'\n    if event == 'on_message':\n        return 'guild_messages'\n    if event == 'on_reaction_add':\n        return 'reactions'\n    return 'guilds'\n"
+    },
+    {
+     "type": "python",
+     "title": "Can the bot connect?",
+     "intro": "Write can_connect(code_flags, portal_flags): both are lists of privileged intent names. Return True when every name in code_flags is also in portal_flags.",
+     "fn": "can_connect",
+     "starter": "def can_connect(code_flags, portal_flags):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "members"
+        ],
+        [
+         "members",
+         "presences"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "members"
+        ],
+        []
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [],
+        []
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "message_content",
+         "members"
+        ],
+        [
+         "members"
+        ]
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Subset check.",
+     "solution": "def can_connect(code_flags, portal_flags):\n    for f in code_flags:\n        if f not in portal_flags:\n            return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Verification needed?",
+     "intro": "Write needs_verification(guilds, uses_privileged): True when the bot is in more than 100 guilds and uses a privileged intent.",
+     "fn": "needs_verification",
+     "starter": "def needs_verification(guilds, uses_privileged):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        50,
+        true
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        101,
+        true
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        101,
+        false
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        100,
+        true
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        5000,
+        true
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Both conditions.",
+     "solution": "def needs_verification(guilds, uses_privileged):\n    return guilds > 100 and uses_privileged\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Gateway intents guide",
+     "url": "https://discordpy.readthedocs.io/en/stable/intents.html",
+     "note": "privileged intents and the portal"
+    }
+   ]
+  },
+  {
+   "title": "commands.Bot and prefix commands",
+   "maps": [
+    {
+     "title": "Prefix commands",
+     "links": [
+      "commands.Bot | extends | Client",
+      "Prefix | triggers | Commands",
+      "@bot.command | registers | Command",
+      "Context | wraps | Message and channel",
+      "Converter | turns | Text into objects",
+      "Check | guards | A command",
+      "CommandError | reports | Failures"
+     ]
+    }
+   ],
+   "summary": [
+    "The commands extension adds a Bot class that extends Client with a command system. Messages that start with a prefix are parsed into a command name and arguments.",
+    "Each command is a coroutine whose first parameter is a Context. Annotations such as int or discord.Member convert the text arguments for you, and checks decide who may run the command.",
+    "Errors raised by conversion or checks arrive in an error handler as subclasses of CommandError, so you can answer with a friendly message instead of a traceback."
+   ],
+   "glossary": [
+    {
+     "term": "Bot",
+     "def": "A Client subclass from discord.ext.commands that parses commands from messages."
+    },
+    {
+     "term": "Context",
+     "def": "An object passed to a command holding the message, author, channel and a send method."
+    },
+    {
+     "term": "Converter",
+     "def": "A type annotation or class that turns an argument string into a Python object."
+    },
+    {
+     "term": "Check",
+     "def": "A predicate that must pass before a command runs, such as has_permissions."
+    },
+    {
+     "term": "Cooldown",
+     "def": "A limit on how often a command may be used."
+    }
+   ],
+   "keyPoints": [
+    "commands.Bot(command_prefix='!', intents=intents).",
+    "A command is async def name(ctx, ...) with @bot.command().",
+    "Quote arguments with spaces: !say \"hello world\".",
+    "Annotations convert: int, float, discord.Member, discord.TextChannel.",
+    "Handle on_command_error for BadArgument and MissingPermissions."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A prefix command is like a secret word at the start of a sentence. If a sentence starts with the secret word, the bot knows you are talking to it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Bot class does the parsing a person would do by hand. It watches every message, checks whether it begins with your prefix, splits off the command name, then splits the rest into arguments, respecting quotation marks."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import discord\nfrom discord.ext import commands\n\nintents = discord.Intents.default()\nintents.message_content = True\nbot = commands.Bot(command_prefix='!', intents=intents)\n\n@bot.command()\nasync def add(ctx, a: int, b: int):\n    await ctx.send(str(a + b))\n\n@bot.command()\n@commands.has_permissions(kick_members=True)\nasync def warn(ctx, member: discord.Member, *, reason: str):\n    await ctx.send(member.display_name + ' warned: ' + reason)\n\nbot.run('token')"
+    },
+    {
+     "type": "text",
+     "items": [
+      "In add, the annotations int make the library convert both arguments, and if the text is not a number it raises BadArgument. In warn, a bare star means the last parameter swallows the rest of the message as one string, so reasons can contain spaces."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Checks are decorators. has_permissions tests the author's permissions, is_owner tests the bot owner, and cooldown limits use. A failed check raises a CommandError that you can catch in one central handler."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "@bot.event\nasync def on_command_error(ctx, error):\n    if isinstance(error, commands.BadArgument):\n        await ctx.send('That is not a valid value.')\n    elif isinstance(error, commands.MissingPermissions):\n        await ctx.send('You lack permission.')\n    elif isinstance(error, commands.CommandOnCooldown):\n        await ctx.send('Try again in %.1f seconds.' % error.retry_after)\n    else:\n        raise error"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A prefix can be a list or a function, and commands.when_mentioned_or('!') lets people either type the prefix or mention the bot. Because prefix commands read message text, they depend on the message_content intent, which is why many new bots prefer slash commands."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Bot",
+       "A Client subclass from discord.ext.commands that parses commands from messages."
+      ],
+      [
+       "Context",
+       "An object passed to a command holding the message, author, channel and a send method."
+      ],
+      [
+       "Converter",
+       "A type annotation or class that turns an argument string into a Python object."
+      ],
+      [
+       "Check",
+       "A predicate that must pass before a command runs, such as has_permissions."
+      ],
+      [
+       "Cooldown",
+       "A limit on how often a command may be used."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What makes the last parameter take the whole rest of the line?",
+     "options": [
+      "A bare * before it",
+      "A decorator",
+      "An int hint",
+      "A cooldown"
+     ],
+     "answer": 0,
+     "explain": "Keyword-only star."
+    },
+    {
+     "q": "What does int in a parameter do?",
+     "options": [
+      "Converts and raises BadArgument on failure",
+      "Rounds",
+      "Nothing",
+      "Makes it optional"
+     ],
+     "answer": 0,
+     "explain": "Converter."
+    },
+    {
+     "q": "What is the first parameter of a command?",
+     "options": [
+      "ctx",
+      "self only",
+      "message_content",
+      "bot token"
+     ],
+     "answer": 0,
+     "explain": "Context."
+    },
+    {
+     "q": "How do you send errors a friendly reply?",
+     "options": [
+      "on_command_error",
+      "print",
+      "restart",
+      "intents"
+     ],
+     "answer": 0,
+     "explain": "Central handler."
+    },
+    {
+     "q": "Prefix commands depend on which intent?",
+     "options": [
+      "message_content",
+      "presences",
+      "members",
+      "none"
+     ],
+     "answer": 0,
+     "explain": "They read text."
+    },
+    {
+     "q": "What does has_permissions do?",
+     "options": [
+      "Checks the invoking user's permissions",
+      "Grants permissions",
+      "Kicks users",
+      "Mutes"
+     ],
+     "answer": 0,
+     "explain": "A check."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Context",
+     "a": "Message, author, channel and send"
+    },
+    {
+     "q": "commands.when_mentioned_or",
+     "a": "Accept a mention or a prefix"
+    },
+    {
+     "q": "BadArgument",
+     "a": "Conversion failed"
+    },
+    {
+     "q": "CommandOnCooldown",
+     "a": "Used too soon; has retry_after"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Command router",
+     "intro": "Type messages and see how a prefix bot parses them into a command and arguments.",
+     "height": 700,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}\n</style></head><body>\n<label>Prefix <input type=\"text\" id=\"pf\" value=\"!\"></label>\n<label>Message <input type=\"text\" id=\"msg\" value=\"!add 2 3\"></label>\n<button id=\"go\">Send</button><div id=\"o\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nfunction split(s){var out=[],cur=\"\",inq=false,i,ch;for(i=0;i<s.length;i++){ch=s[i];if(ch==='\"')inq=!inq;else if(ch===\" \"&&!inq){if(cur)out.push(cur);cur=\"\"}else cur+=ch}if(cur)out.push(cur);return out}\nvar seen={};\n$(\"go\").onclick=function(){var pf=$(\"pf\").value,m=$(\"msg\").value,r,k;\n if(m.indexOf(pf)!==0){r=\"Not a command: the message does not start with the prefix.\";k=\"ignored\"}\n else{var w=split(m.slice(pf.length)),n=w[0],a=w.slice(1);\n  if(n===\"add\"){if(a.length<2){r=\"MissingRequiredArgument\";k=\"error\"}else if(isNaN(+a[0])||isNaN(+a[1])){r=\"BadArgument: not a number\";k=\"error\"}else{r=\"ctx.send(\"+(+a[0]+ +a[1])+\")\";k=\"ok\"}}\n  else if(n===\"say\"){r=\"ctx.send(\"+a.join(\" \")+\")\";k=\"ok\"}\n  else{r=\"CommandNotFound: \"+n;k=\"error\"}}\n $(\"o\").innerHTML='<b>'+k+'</b><br>'+r.replace(/</g,\"&lt;\");seen[k]=1;var c=Object.keys(seen).length;$(\"p\").textContent=\"Outcome kinds seen: \"+c+\" of 3\";if(c>=3)done()};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the error",
+     "intro": "Pair each situation with the error.",
+     "pairs": [
+      [
+       "text is not a number",
+       "BadArgument"
+      ],
+      [
+       "author lacks a permission",
+       "MissingPermissions"
+      ],
+      [
+       "used again too soon",
+       "CommandOnCooldown"
+      ],
+      [
+       "no such command",
+       "CommandNotFound"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Commands",
+     "text": "A command receives a {{ctx}} first. A bare {{star}} makes the last parameter take the rest of the line. A failed conversion raises {{BadArgument}}, and a cooldown error offers {{retry_after}}."
+    },
+    {
+     "type": "python",
+     "title": "Split a command",
+     "intro": "Write parse(content, prefix): if content does not start with the prefix return []. Otherwise return the words after the prefix split on spaces, ignoring empty words.",
+     "fn": "parse",
+     "starter": "def parse(content, prefix):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "!add 1 2",
+        "!"
+       ],
+       "expect": [
+        "add",
+        "1",
+        "2"
+       ]
+      },
+      {
+       "args": [
+        "hello",
+        "!"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "!  ping",
+        "!"
+       ],
+       "expect": [
+        "ping"
+       ]
+      },
+      {
+       "args": [
+        "!",
+        "!"
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Strip the prefix first.",
+     "solution": "def parse(content, prefix):\n    if not content.startswith(prefix):\n        return []\n    rest = content[len(prefix):]\n    return [w for w in rest.split(' ') if w != '']\n"
+    },
+    {
+     "type": "python",
+     "title": "Quoted arguments",
+     "intro": "Write split_args(s): split s on spaces, but keep text inside double quotes together as one argument (without the quote characters). Return a list of strings.",
+     "fn": "split_args",
+     "starter": "def split_args(s):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "say \"hello world\" now"
+       ],
+       "expect": [
+        "say",
+        "hello world",
+        "now"
+       ]
+      },
+      {
+       "args": [
+        "a b c"
+       ],
+       "expect": [
+        "a",
+        "b",
+        "c"
+       ]
+      },
+      {
+       "args": [
+        "\"one two\""
+       ],
+       "expect": [
+        "one two"
+       ]
+      },
+      {
+       "args": [
+        "  x   y "
+       ],
+       "expect": [
+        "x",
+        "y"
+       ]
+      }
+     ],
+     "hint": "Track whether you are inside quotes.",
+     "solution": "def split_args(s):\n    out = []\n    cur = ''\n    inq = False\n    for ch in s:\n        if ch == '\"':\n            inq = not inq\n        elif ch == ' ' and not inq:\n            if cur != '':\n                out.append(cur)\n            cur = ''\n        else:\n            cur += ch\n    if cur != '':\n        out.append(cur)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Convert an int",
+     "intro": "Write to_int(text): return the integer if text is made of digits with an optional leading minus, otherwise return the string 'BadArgument'.",
+     "fn": "to_int",
+     "starter": "def to_int(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "42"
+       ],
+       "expect": 42
+      },
+      {
+       "args": [
+        "-7"
+       ],
+       "expect": -7
+      },
+      {
+       "args": [
+        "abc"
+       ],
+       "expect": "BadArgument"
+      },
+      {
+       "args": [
+        "3.5"
+       ],
+       "expect": "BadArgument"
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": "BadArgument"
+      }
+     ],
+     "hint": "Check every character.",
+     "solution": "def to_int(text):\n    t = text\n    if t.startswith('-'):\n        t = t[1:]\n    if t == '':\n        return 'BadArgument'\n    for ch in t:\n        if ch not in '0123456789':\n            return 'BadArgument'\n    return int(text)\n"
+    },
+    {
+     "type": "python",
+     "title": "Cooldown",
+     "intro": "Write retry_after(last_used, now, rate_seconds): return 0 if enough time passed since last_used, else the remaining seconds (as a number rounded to 1 decimal).",
+     "fn": "retry_after",
+     "starter": "def retry_after(last_used, now, rate_seconds):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10.0,
+        12.5,
+        5.0
+       ],
+       "expect": 2.5
+      },
+      {
+       "args": [
+        10.0,
+        20.0,
+        5.0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        0.0,
+        0.0,
+        3.0
+       ],
+       "expect": 3.0
+      },
+      {
+       "args": [
+        100.0,
+        100.25,
+        2.0
+       ],
+       "expect": 1.8
+      }
+     ],
+     "hint": "Remaining time, never negative.",
+     "solution": "def retry_after(last_used, now, rate_seconds):\n    left = rate_seconds - (now - last_used)\n    if left <= 0:\n        return 0\n    return round(left, 1)\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "ext.commands introduction",
+     "url": "https://discordpy.readthedocs.io/en/stable/ext/commands/commands.html",
+     "note": "commands, converters, checks"
+    }
+   ]
+  },
+  {
+   "title": "Cogs, extensions and setup_hook",
+   "maps": [
+    {
+     "title": "Structure",
+     "links": [
+      "Cog | groups | Commands and listeners",
+      "Extension | is | A module with setup",
+      "load_extension | imports | Extension",
+      "setup | adds | Cog",
+      "setup_hook | runs | Once at start",
+      "reload_extension | applies | Code changes",
+      "Listener | handles | Events in a cog"
+     ]
+    }
+   ],
+   "summary": [
+    "As a bot grows, one file becomes unmanageable. Cogs are classes that group related commands and listeners, and extensions are modules that can be loaded, unloaded and reloaded while the bot runs.",
+    "An extension defines an async setup function that receives the bot and adds cogs. You load it with bot.load_extension('cogs.fun'), usually inside setup_hook, which runs once before the bot connects.",
+    "Reloading an extension picks up new code without a restart, which makes development fast. A cog may also define cog-wide checks and an error handler."
+   ],
+   "glossary": [
+    {
+     "term": "Cog",
+     "def": "A class deriving from commands.Cog that groups commands, listeners and state."
+    },
+    {
+     "term": "Extension",
+     "def": "A Python module with a setup function that registers cogs on the bot."
+    },
+    {
+     "term": "setup_hook",
+     "def": "A coroutine on the Client or Bot that runs once, before connecting, ideal for loading extensions."
+    },
+    {
+     "term": "Listener",
+     "def": "A method in a cog decorated with commands.Cog.listener() that handles an event."
+    },
+    {
+     "term": "Reload",
+     "def": "Unload and load an extension again to apply edited code."
+    }
+   ],
+   "keyPoints": [
+    "class Fun(commands.Cog) holds commands; add it with await bot.add_cog(Fun(bot)).",
+    "Extension file defines async def setup(bot).",
+    "Load in setup_hook: await self.load_extension('cogs.fun').",
+    "Use @commands.Cog.listener() for events inside cogs.",
+    "load, unload and reload raise errors if already or not loaded."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A cog is a toy box for one game. The bot has many boxes, and you can take one out and put a fixed one back in without stopping the whole party."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Picture a shop where every department has its own team. A cog is one team: it owns some commands, some event listeners and any state they share, such as a counter. The bot is the shop that hires the teams."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# cogs/fun.py\nfrom discord.ext import commands\n\nclass Fun(commands.Cog):\n    def __init__(self, bot):\n        self.bot = bot\n        self.count = 0\n\n    @commands.command()\n    async def ping(self, ctx):\n        self.count += 1\n        await ctx.send('pong %d' % self.count)\n\n    @commands.Cog.listener()\n    async def on_member_join(self, member):\n        print('welcome', member)\n\nasync def setup(bot):\n    await bot.add_cog(Fun(bot))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Inside a cog, commands take self first and then ctx. Events use the Cog.listener decorator instead of client.event, so many cogs can listen to the same event without replacing one another."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# main.py\nclass MyBot(commands.Bot):\n    async def setup_hook(self):\n        for ext in ('cogs.fun', 'cogs.admin'):\n            await self.load_extension(ext)\n\nbot = MyBot(command_prefix='!', intents=intents)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "setup_hook runs once, before the websocket connects, so it is the right place to load extensions, open a database or start background tasks. on_ready is the wrong place for those because it can fire again after a reconnect."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "While developing, call await bot.reload_extension('cogs.fun') from an owner-only command. Loading a name twice raises ExtensionAlreadyLoaded, and unloading one that is not loaded raises ExtensionNotLoaded."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Cog",
+       "A class deriving from commands.Cog that groups commands, listeners and state."
+      ],
+      [
+       "Extension",
+       "A Python module with a setup function that registers cogs on the bot."
+      ],
+      [
+       "setup_hook",
+       "A coroutine on the Client or Bot that runs once, before connecting, ideal for loading extensions."
+      ],
+      [
+       "Listener",
+       "A method in a cog decorated with commands.Cog.listener() that handles an event."
+      ],
+      [
+       "Reload",
+       "Unload and load an extension again to apply edited code."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does a cog group?",
+     "options": [
+      "Commands, listeners and state",
+      "Only tokens",
+      "Only embeds",
+      "Only intents"
+     ],
+     "answer": 0,
+     "explain": "A class."
+    },
+    {
+     "q": "What must an extension define?",
+     "options": [
+      "async def setup(bot)",
+      "def main()",
+      "class Bot",
+      "token"
+     ],
+     "answer": 0,
+     "explain": "The entry point."
+    },
+    {
+     "q": "Where should extensions be loaded?",
+     "options": [
+      "setup_hook",
+      "on_ready",
+      "on_message",
+      "a loop"
+     ],
+     "answer": 0,
+     "explain": "Runs once."
+    },
+    {
+     "q": "How do cogs handle events?",
+     "options": [
+      "commands.Cog.listener()",
+      "client.event",
+      "bot.token",
+      "ctx.send"
+     ],
+     "answer": 0,
+     "explain": "Many listeners allowed."
+    },
+    {
+     "q": "Loading the same extension twice raises:",
+     "options": [
+      "ExtensionAlreadyLoaded",
+      "BadArgument",
+      "Forbidden",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Error."
+    },
+    {
+     "q": "What does reload_extension do?",
+     "options": [
+      "Re-imports edited code live",
+      "Restarts Python",
+      "Logs out",
+      "Deletes the cog"
+     ],
+     "answer": 0,
+     "explain": "No restart."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Cog.listener",
+     "a": "Event handler inside a cog"
+    },
+    {
+     "q": "add_cog",
+     "a": "Registers a cog on the bot"
+    },
+    {
+     "q": "ExtensionNotLoaded",
+     "a": "Tried to unload or reload what is not loaded"
+    },
+    {
+     "q": "setup_hook",
+     "a": "One-time async startup"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the piece",
+     "intro": "Pair each term with its role.",
+     "pairs": [
+      [
+       "Cog",
+       "class grouping commands"
+      ],
+      [
+       "Extension",
+       "module with setup"
+      ],
+      [
+       "setup_hook",
+       "one-time startup"
+      ],
+      [
+       "Cog.listener",
+       "event handler in a cog"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Cogs",
+     "text": "A {{cog}} is a class that groups related commands. An extension module must define {{setup}}. Load extensions in {{setup_hook}}, and use {{reload_extension}} to apply edits."
+    },
+    {
+     "type": "order",
+     "title": "Startup",
+     "intro": "Order these.",
+     "items": [
+      "Construct the Bot",
+      "setup_hook runs",
+      "load_extension imports a module",
+      "setup adds the cog",
+      "Gateway connects",
+      "on_ready fires"
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Module path",
+     "intro": "Write ext_name(path): turn a file path such as 'cogs/fun.py' into the extension name 'cogs.fun'. Replace '/' with '.' and drop a trailing '.py'.",
+     "fn": "ext_name",
+     "starter": "def ext_name(path):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "cogs/fun.py"
+       ],
+       "expect": "cogs.fun"
+      },
+      {
+       "args": [
+        "admin.py"
+       ],
+       "expect": "admin"
+      },
+      {
+       "args": [
+        "a/b/c.py"
+       ],
+       "expect": "a.b.c"
+      },
+      {
+       "args": [
+        "cogs/fun"
+       ],
+       "expect": "cogs.fun"
+      }
+     ],
+     "hint": "String edits.",
+     "solution": "def ext_name(path):\n    p = path\n    if p.endswith('.py'):\n        p = p[:-3]\n    return p.replace('/', '.')\n"
+    },
+    {
+     "type": "python",
+     "title": "Who hears the event",
+     "intro": "Write listeners_for(listeners, event): listeners is a list of [cog_name, event_name]. Return the sorted cog names that listen to that event.",
+     "fn": "listeners_for",
+     "starter": "def listeners_for(listeners, event):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "Fun",
+          "on_message"
+         ],
+         [
+          "Mod",
+          "on_message"
+         ],
+         [
+          "Fun",
+          "on_ready"
+         ]
+        ],
+        "on_message"
+       ],
+       "expect": [
+        "Fun",
+        "Mod"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "A",
+          "x"
+         ]
+        ],
+        "y"
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Many cogs may listen.",
+     "solution": "def listeners_for(listeners, event):\n    out = []\n    for cog, ev in listeners:\n        if ev == event:\n            out.append(cog)\n    out.sort()\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Extension manager",
+     "intro": "Write manage(commands): start with nothing loaded. Each item is [action, name] with action load, unload or reload. Return a list of results: 'ok' normally; for load of a loaded name 'ExtensionAlreadyLoaded'; for unload or reload of a name that is not loaded 'ExtensionNotLoaded'. Reload keeps it loaded.",
+     "fn": "manage",
+     "starter": "def manage(commands):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "load",
+          "a"
+         ],
+         [
+          "load",
+          "a"
+         ],
+         [
+          "reload",
+          "a"
+         ],
+         [
+          "unload",
+          "a"
+         ],
+         [
+          "unload",
+          "a"
+         ]
+        ]
+       ],
+       "expect": [
+        "ok",
+        "ExtensionAlreadyLoaded",
+        "ok",
+        "ok",
+        "ExtensionNotLoaded"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "reload",
+          "x"
+         ]
+        ]
+       ],
+       "expect": [
+        "ExtensionNotLoaded"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "load",
+          "a"
+         ],
+         [
+          "load",
+          "b"
+         ],
+         [
+          "unload",
+          "a"
+         ],
+         [
+          "load",
+          "a"
+         ]
+        ]
+       ],
+       "expect": [
+        "ok",
+        "ok",
+        "ok",
+        "ok"
+       ]
+      }
+     ],
+     "hint": "Keep a list of loaded names.",
+     "solution": "def manage(commands):\n    loaded = []\n    out = []\n    for action, name in commands:\n        if action == 'load':\n            if name in loaded:\n                out.append('ExtensionAlreadyLoaded')\n            else:\n                loaded.append(name)\n                out.append('ok')\n        elif action == 'unload':\n            if name not in loaded:\n                out.append('ExtensionNotLoaded')\n            else:\n                loaded.remove(name)\n                out.append('ok')\n        else:\n            if name not in loaded:\n                out.append('ExtensionNotLoaded')\n            else:\n                out.append('ok')\n    return out\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Cogs",
+     "url": "https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html",
+     "note": "cogs and extensions"
+    }
+   ]
+  },
+  {
+   "title": "Slash commands and the command tree",
+   "maps": [
+    {
+     "title": "Application commands",
+     "links": [
+      "CommandTree | holds | Slash commands",
+      "tree.sync | publishes | Commands to Discord",
+      "Interaction | replaces | Context",
+      "response.send_message | answers | Interaction",
+      "describe | documents | Parameters",
+      "Guild sync | is | Instant",
+      "Global sync | takes | Up to an hour"
+     ]
+    }
+   ],
+   "summary": [
+    "Slash commands are registered with Discord, so users see them in a menu with descriptions and typed options. They arrive as interactions, not as messages, so they need no message content intent.",
+    "You keep them in an app_commands.CommandTree, decorate functions with tree.command, and call tree.sync to publish them. Syncing to one test guild is instant, while global commands can take up to an hour to appear.",
+    "Your handler receives an Interaction. You must respond within three seconds, either with response.send_message, or by deferring first if the work takes longer."
+   ],
+   "glossary": [
+    {
+     "term": "CommandTree",
+     "def": "The container that stores and syncs application commands."
+    },
+    {
+     "term": "Interaction",
+     "def": "The object received for a slash command, button or modal; used to respond."
+    },
+    {
+     "term": "Sync",
+     "def": "Sending the command definitions to Discord so they appear to users."
+    },
+    {
+     "term": "Defer",
+     "def": "Telling Discord you need more time; you then answer with a followup."
+    },
+    {
+     "term": "Ephemeral",
+     "def": "A response visible only to the user who triggered it."
+    }
+   ],
+   "keyPoints": [
+    "Create self.tree = app_commands.CommandTree(self) in your Client.",
+    "Sync in setup_hook: copy_global_to(guild=...), then sync(guild=...).",
+    "Respond to an interaction within 3 seconds.",
+    "Use describe and rename for friendly options.",
+    "Use ephemeral=True for private replies."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A slash command is a form with blanks that Discord draws for you, so you cannot write a silly answer in the wrong box."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A prefix command is plain chat text that the bot reads. A slash command is a form that Discord itself draws. Discord checks the options before your code runs, so you get typed values, and users get autocomplete for free."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import discord\nfrom discord import app_commands\n\nMY_GUILD = discord.Object(id=0)  # replace with your guild id\n\nclass MyClient(discord.Client):\n    def __init__(self, *, intents):\n        super().__init__(intents=intents)\n        self.tree = app_commands.CommandTree(self)\n\n    async def setup_hook(self):\n        self.tree.copy_global_to(guild=MY_GUILD)\n        await self.tree.sync(guild=MY_GUILD)\n\nclient = MyClient(intents=discord.Intents.default())\n\n@client.tree.command()\n@app_commands.describe(first='The first value', second='The second value')\nasync def add(interaction: discord.Interaction, first: int, second: int):\n    await interaction.response.send_message(str(first + second))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This follows the project's own example. Copying the global commands to your test guild and syncing there makes changes appear immediately, which is the way to develop. For release you sync globally and wait."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The type hints define the option types. A parameter with a default of None, or annotated Optional, becomes an optional option. Required options must come before optional ones, and descriptions are limited to 100 characters."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "@client.tree.command()\nasync def slow(interaction: discord.Interaction):\n    await interaction.response.defer(ephemeral=True)\n    # ... work that takes a while ...\n    await interaction.followup.send('Done!')"
+    },
+    {
+     "type": "text",
+     "items": [
+      "If you do not respond within three seconds Discord shows the user that the application did not respond. Calling defer buys up to fifteen minutes, after which you send the real answer with followup.send."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "CommandTree",
+       "The container that stores and syncs application commands."
+      ],
+      [
+       "Interaction",
+       "The object received for a slash command, button or modal; used to respond."
+      ],
+      [
+       "Sync",
+       "Sending the command definitions to Discord so they appear to users."
+      ],
+      [
+       "Defer",
+       "Telling Discord you need more time; you then answer with a followup."
+      ],
+      [
+       "Ephemeral",
+       "A response visible only to the user who triggered it."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which intent do slash commands need to be read?",
+     "options": [
+      "None for the command itself",
+      "message_content",
+      "members",
+      "presences"
+     ],
+     "answer": 0,
+     "explain": "Interactions."
+    },
+    {
+     "q": "Where do slash commands live?",
+     "options": [
+      "app_commands.CommandTree",
+      "commands.Cog only",
+      "the token",
+      "on_ready"
+     ],
+     "answer": 0,
+     "explain": "The tree."
+    },
+    {
+     "q": "What publishes the commands?",
+     "options": [
+      "tree.sync",
+      "client.run",
+      "copy_global",
+      "describe"
+     ],
+     "answer": 0,
+     "explain": "Sync."
+    },
+    {
+     "q": "How long to answer an interaction?",
+     "options": [
+      "3 seconds, or defer",
+      "1 hour",
+      "10 minutes",
+      "No limit"
+     ],
+     "answer": 0,
+     "explain": "Defer for more."
+    },
+    {
+     "q": "Fastest way to test a command?",
+     "options": [
+      "Sync to one guild",
+      "Sync globally and wait",
+      "Restart Discord",
+      "Use prefix"
+     ],
+     "answer": 0,
+     "explain": "Guild sync is instant."
+    },
+    {
+     "q": "What does ephemeral=True do?",
+     "options": [
+      "Only the user sees the reply",
+      "Deletes the bot",
+      "Pins it",
+      "Mentions everyone"
+     ],
+     "answer": 0,
+     "explain": "Private."
+    }
+   ],
+   "cards": [
+    {
+     "q": "tree.sync",
+     "a": "Publish command definitions"
+    },
+    {
+     "q": "copy_global_to",
+     "a": "Copy global commands to a guild for fast testing"
+    },
+    {
+     "q": "defer",
+     "a": "Ask for more time to respond"
+    },
+    {
+     "q": "followup",
+     "a": "Send a message after deferring"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the call",
+     "intro": "Pair each need with the call.",
+     "pairs": [
+      [
+       "answer right now",
+       "response.send_message"
+      ],
+      [
+       "need more time",
+       "response.defer"
+      ],
+      [
+       "describe an option",
+       "app_commands.describe"
+      ],
+      [
+       "publish commands",
+       "tree.sync"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Slash",
+     "text": "Slash commands are stored in a {{CommandTree}}. You publish them with tree.{{sync}}. Answer within {{3}} seconds, or call {{defer}} first."
+    },
+    {
+     "type": "python",
+     "title": "Valid command name",
+     "intro": "Write name_ok(name): True when 1 to 32 characters, all lowercase letters, digits, '-' or '_'.",
+     "fn": "name_ok",
+     "starter": "def name_ok(name):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "add"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "Add"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "a-b_c1"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "two words"
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Check length and characters.",
+     "solution": "def name_ok(name):\n    if len(name) < 1 or len(name) > 32:\n        return False\n    for ch in name:\n        if not (ch in 'abcdefghijklmnopqrstuvwxyz0123456789-_'):\n            return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Option order",
+     "intro": "Write order_ok(params): params is a list of [name, required]. Return True when no required parameter comes after an optional one.",
+     "fn": "order_ok",
+     "starter": "def order_ok(params):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          true
+         ],
+         [
+          "b",
+          false
+         ]
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          false
+         ],
+         [
+          "b",
+          true
+         ]
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          true
+         ],
+         [
+          "b",
+          true
+         ]
+        ]
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Once optional, always optional.",
+     "solution": "def order_ok(params):\n    seen_optional = False\n    for name, required in params:\n        if not required:\n            seen_optional = True\n        elif seen_optional:\n            return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Description length",
+     "intro": "Write describe_ok(text): True when the description has 1 to 100 characters.",
+     "fn": "describe_ok",
+     "starter": "def describe_ok(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "The first value"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Bounds.",
+     "solution": "def describe_ok(text):\n    return 1 <= len(text) <= 100\n"
+    },
+    {
+     "type": "python",
+     "title": "When will it appear",
+     "intro": "Write appears(scope, minutes_since_sync): scope is 'guild' or 'global'. Return True for guild always; for global True only when minutes_since_sync is at least 60 (the worst case).",
+     "fn": "appears",
+     "starter": "def appears(scope, minutes_since_sync):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "guild",
+        0
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "global",
+        5
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "global",
+        60
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "global",
+        120
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Guild sync is instant.",
+     "solution": "def appears(scope, minutes_since_sync):\n    if scope == 'guild':\n        return True\n    return minutes_since_sync >= 60\n"
+    },
+    {
+     "type": "python",
+     "title": "Respond in time",
+     "intro": "Write reply_plan(seconds_needed): return 'send' when the work takes under 3 seconds, otherwise 'defer'.",
+     "fn": "reply_plan",
+     "starter": "def reply_plan(seconds_needed):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0.5
+       ],
+       "expect": "send"
+      },
+      {
+       "args": [
+        2.9
+       ],
+       "expect": "send"
+      },
+      {
+       "args": [
+        3
+       ],
+       "expect": "defer"
+      },
+      {
+       "args": [
+        30
+       ],
+       "expect": "defer"
+      }
+     ],
+     "hint": "Three seconds.",
+     "solution": "def reply_plan(seconds_needed):\n    if seconds_needed < 3:\n        return 'send'\n    return 'defer'\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Application commands examples",
+     "url": "https://github.com/Rapptz/discord.py/tree/master/examples/app_commands",
+     "note": "basic.py and transformers.py"
+    }
+   ]
+  },
+  {
+   "title": "Views, buttons and select menus",
+   "maps": [
+    {
+     "title": "Components",
+     "links": [
+      "View | holds | Components",
+      "Button | calls | Callback",
+      "Select | offers | Choices",
+      "timeout | disables | View",
+      "custom_id | makes | View persistent",
+      "5 per row | limits | Buttons",
+      "edit_message | updates | The message"
+     ]
+    }
+   ],
+   "summary": [
+    "A View is a container for interactive components such as buttons and select menus. You attach it to a message, and each component calls one of your coroutines when a user presses it.",
+    "Views time out after 180 seconds by default, after which the buttons stop working. A persistent view sets timeout to None, gives every item a custom_id and is registered at startup so it survives restarts.",
+    "Discord limits a message to five rows with five buttons each, so at most 25 buttons, and a select menu takes a whole row."
+   ],
+   "glossary": [
+    {
+     "term": "View",
+     "def": "A discord.ui.View: a set of components attached to one message."
+    },
+    {
+     "term": "Button",
+     "def": "A clickable component declared with the discord.ui.button decorator."
+    },
+    {
+     "term": "Select",
+     "def": "A dropdown menu component with up to 25 options."
+    },
+    {
+     "term": "custom_id",
+     "def": "A string of up to 100 characters that identifies a component across restarts."
+    },
+    {
+     "term": "Persistent view",
+     "def": "A view with timeout None and fixed custom ids, re-registered when the bot starts."
+    }
+   ],
+   "keyPoints": [
+    "Subclass discord.ui.View and decorate methods with discord.ui.button.",
+    "Handler signature: (self, interaction, button).",
+    "Respond with interaction.response.edit_message(view=self).",
+    "Default timeout is 180 seconds; use None plus custom_id for persistence.",
+    "Maximum 25 buttons: five rows of five."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A button on a message is a little remote control. If nobody uses it for a while the remote goes to sleep, unless you give it a special name tag."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A message can carry little controls, like a remote control stuck to it. In discord.py each control is a component and the whole set is a View. When someone presses a button Discord sends an interaction, and the library calls the method you decorated."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import discord\n\nclass Counter(discord.ui.View):\n    @discord.ui.button(label='0', style=discord.ButtonStyle.red)\n    async def count(self, interaction: discord.Interaction, button: discord.ui.Button):\n        number = int(button.label) if button.label else 0\n        button.label = str(number + 1)\n        if number + 1 >= 5:\n            button.style = discord.ButtonStyle.green\n        await interaction.response.edit_message(view=self)\n\n# in a command:  await ctx.send('Press!', view=Counter())"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This mirrors the project's counter example. The button changes its own label, and edit_message redraws the message with the updated view. Notice that the button is a parameter, so the same method can change its own style and label."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A view only lives as long as the bot's memory and its timeout. When the timeout passes, on_timeout is called and the buttons stop responding. For menus that must live forever, give timeout=None, set a custom_id on each item and call bot.add_view in setup_hook."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Use interaction_check to limit who may press: return False for anyone except the person who started the command. That stops other users from confirming someone else's action."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Layout is automatic, filling rows left to right, but you can set row explicitly. A select menu occupies a full row, so a message can hold five selects, or four selects and a row of buttons, up to five rows in total."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "View",
+       "A discord.ui.View: a set of components attached to one message."
+      ],
+      [
+       "Button",
+       "A clickable component declared with the discord.ui.button decorator."
+      ],
+      [
+       "Select",
+       "A dropdown menu component with up to 25 options."
+      ],
+      [
+       "custom_id",
+       "A string of up to 100 characters that identifies a component across restarts."
+      ],
+      [
+       "Persistent view",
+       "A view with timeout None and fixed custom ids, re-registered when the bot starts."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How many buttons fit in one message?",
+     "options": [
+      "25",
+      "5",
+      "100",
+      "10"
+     ],
+     "answer": 0,
+     "explain": "Five rows of five."
+    },
+    {
+     "q": "Default view timeout?",
+     "options": [
+      "180 seconds",
+      "5 seconds",
+      "1 hour",
+      "Never"
+     ],
+     "answer": 0,
+     "explain": "Three minutes."
+    },
+    {
+     "q": "What makes a view persistent?",
+     "options": [
+      "timeout=None and custom_ids, added at startup",
+      "Only a bigger timeout",
+      "ephemeral=True",
+      "A cog"
+     ],
+     "answer": 0,
+     "explain": "Survives restarts."
+    },
+    {
+     "q": "How to update the message after a click?",
+     "options": [
+      "interaction.response.edit_message",
+      "print",
+      "ctx.reload",
+      "bot.sync"
+     ],
+     "answer": 0,
+     "explain": "Edit."
+    },
+    {
+     "q": "Which method limits who can press?",
+     "options": [
+      "interaction_check",
+      "on_ready",
+      "describe",
+      "defer"
+     ],
+     "answer": 0,
+     "explain": "Return False to block."
+    },
+    {
+     "q": "How wide is a select menu in the layout?",
+     "options": [
+      "A whole row",
+      "One slot",
+      "Half a row",
+      "Two rows"
+     ],
+     "answer": 0,
+     "explain": "Full row."
+    }
+   ],
+   "cards": [
+    {
+     "q": "custom_id",
+     "a": "Stable identifier, up to 100 characters"
+    },
+    {
+     "q": "on_timeout",
+     "a": "Called when a view expires"
+    },
+    {
+     "q": "interaction_check",
+     "a": "Gate who may use the view"
+    },
+    {
+     "q": "add_view",
+     "a": "Re-register a persistent view"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Intents explorer",
+     "intro": "A second look at how intents choose events; try a reaction bot configuration.",
+     "height": 700,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}\n</style></head><body>\n<div class=\"k\">Intents your bot enables</div>\n<label><input type=\"checkbox\" id=\"guilds\" checked> guilds</label>\n<label><input type=\"checkbox\" id=\"gm\" checked> guild_messages</label>\n<label><input type=\"checkbox\" id=\"mc\"> message_content (privileged)</label>\n<label><input type=\"checkbox\" id=\"mem\"> members (privileged)</label>\n<label><input type=\"checkbox\" id=\"pres\"> presences (privileged)</label>\n<label><input type=\"checkbox\" id=\"rx\"> reactions</label>\n<label><input type=\"checkbox\" id=\"portal\"> Also switched on in the developer portal</label>\n<button id=\"go\">Connect</button><div id=\"o\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar EV=[[\"on_ready\",\"guilds\"],[\"on_message (author, channel)\",\"gm\"],[\"message.content has text\",\"mc\"],[\"on_member_join\",\"mem\"],[\"on_presence_update\",\"pres\"],[\"on_reaction_add\",\"rx\"]];\nvar seen={};\n$(\"go\").onclick=function(){var priv=$(\"mc\").checked||$(\"mem\").checked||$(\"pres\").checked,out=[],i;\n if(priv&&!$(\"portal\").checked){$(\"o\").innerHTML='<b class=\"bad\">Connection refused</b><br>A privileged intent is enabled in code but not in the developer portal.';seen.refused=1}\n else{for(i=0;i<EV.length;i++){var on=$(EV[i][1]).checked;out.push((on?'<span class=\"ok\">receives</span> ':'<span class=\"bad\">silent</span> ')+EV[i][0])}\n  $(\"o\").innerHTML=out.join(\"<br>\");seen[priv?\"priv\":\"plain\"]=1}\n var n=Object.keys(seen).length;$(\"p\").textContent=\"Situations seen: \"+n+\" of 3\";if(n>=3)done()};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the setting",
+     "intro": "Pair each need with the setting.",
+     "pairs": [
+      [
+       "buttons survive restarts",
+       "timeout=None and custom_id"
+      ],
+      [
+       "only the author may press",
+       "interaction_check"
+      ],
+      [
+       "redraw after a click",
+       "edit_message"
+      ],
+      [
+       "limit of buttons",
+       "25"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Views",
+     "text": "A {{View}} holds components. The default {{timeout}} is 180 seconds. A persistent view needs a {{custom_id}} on every item. A message holds at most {{25}} buttons."
+    },
+    {
+     "type": "python",
+     "title": "Rows needed",
+     "intro": "Write rows_needed(buttons): each row holds 5 buttons. Return the number of rows needed, or -1 if more than 25 buttons.",
+     "fn": "rows_needed",
+     "starter": "def rows_needed(buttons):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        5
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        6
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        25
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        26
+       ],
+       "expect": -1
+      }
+     ],
+     "hint": "Ceiling division.",
+     "solution": "def rows_needed(buttons):\n    if buttons > 25:\n        return -1\n    return (buttons + 4) // 5\n"
+    },
+    {
+     "type": "python",
+     "title": "Counter button",
+     "intro": "Write press(label, presses): the label is the current number as text. Apply the given number of presses and return [new_label, style] where style is 'green' when the new number is 5 or more, otherwise 'red'.",
+     "fn": "press",
+     "starter": "def press(label, presses):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "0",
+        1
+       ],
+       "expect": [
+        "1",
+        "red"
+       ]
+      },
+      {
+       "args": [
+        "4",
+        1
+       ],
+       "expect": [
+        "5",
+        "green"
+       ]
+      },
+      {
+       "args": [
+        "0",
+        5
+       ],
+       "expect": [
+        "5",
+        "green"
+       ]
+      },
+      {
+       "args": [
+        "7",
+        0
+       ],
+       "expect": [
+        "7",
+        "green"
+       ]
+      }
+     ],
+     "hint": "Add, then choose the style.",
+     "solution": "def press(label, presses):\n    n = int(label) + presses\n    style = 'green' if n >= 5 else 'red'\n    return [str(n), style]\n"
+    },
+    {
+     "type": "python",
+     "title": "Persistent?",
+     "intro": "Write is_persistent(timeout, ids): ids is a list of custom_id values (None where unset). Return True only when timeout is None and every id is a non-empty string.",
+     "fn": "is_persistent",
+     "starter": "def is_persistent(timeout, ids):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        null,
+        [
+         "a",
+         "b"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        180,
+        [
+         "a"
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        null,
+        [
+         "a",
+         null
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        null,
+        []
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        null,
+        [
+         ""
+        ]
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Both conditions.",
+     "solution": "def is_persistent(timeout, ids):\n    if timeout is not None:\n        return False\n    for i in ids:\n        if i is None or i == '':\n            return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Who may press",
+     "intro": "Write may_press(user_id, owner_id, allow_all): True when allow_all is true or the user is the owner.",
+     "fn": "may_press",
+     "starter": "def may_press(user_id, owner_id, allow_all):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        1,
+        false
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        2,
+        1,
+        false
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        2,
+        1,
+        true
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Like interaction_check.",
+     "solution": "def may_press(user_id, owner_id, allow_all):\n    return allow_all or user_id == owner_id\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Views examples",
+     "url": "https://github.com/Rapptz/discord.py/tree/master/examples/views",
+     "note": "counter, persistent, confirm"
+    }
+   ]
+  },
+  {
+   "title": "Modals, embeds and message limits",
+   "maps": [
+    {
+     "title": "Rich messages",
+     "links": [
+      "Modal | collects | Text input",
+      "TextInput | has | max_length",
+      "Embed | formats | Rich content",
+      "Embed total | limit is | 6000 characters",
+      "Message | limit is | 2000 characters",
+      "Fields | limit is | 25",
+      "on_submit | receives | Answers"
+     ]
+    }
+   ],
+   "summary": [
+    "A Modal is a popup form. You declare TextInput fields on a class, show the modal in response to an interaction, and receive the typed answers in on_submit.",
+    "An Embed is a formatted card with a title, description, fields, colour and footer. Discord limits sizes: a description up to 4096 characters, field values up to 1024, a footer up to 2048, at most 25 fields, and 6000 characters across the whole embed.",
+    "Ordinary message text is limited to 2000 characters, so long output must be split."
+   ],
+   "glossary": [
+    {
+     "term": "Modal",
+     "def": "A popup form with text inputs, shown in response to an interaction."
+    },
+    {
+     "term": "TextInput",
+     "def": "A modal field with a label, placeholder, style and length limits."
+    },
+    {
+     "term": "Embed",
+     "def": "A rich card attached to a message."
+    },
+    {
+     "term": "Field",
+     "def": "A name and value pair inside an embed, optionally inline."
+    },
+    {
+     "term": "Chunking",
+     "def": "Splitting long text into pieces that fit the message limit."
+    }
+   ],
+   "keyPoints": [
+    "Modal subclass with title and TextInput attributes.",
+    "Show it with interaction.response.send_modal(Feedback()).",
+    "Embed limits: 4096 description, 1024 field value, 25 fields, 6000 total.",
+    "Message text limit is 2000 characters.",
+    "A modal can only be opened from an interaction, not from a plain message."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A modal is a pop-up worksheet. You fill in the boxes, press submit, and the bot reads all your answers at once. Messages and cards also have size limits, like a postcard."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A modal asks several questions at once. You write a class with one TextInput per question, and when the user presses submit Discord sends all the answers back together so your on_submit method can read them."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import discord\n\nclass Feedback(discord.ui.Modal, title='Feedback'):\n    name = discord.ui.TextInput(label='Name', placeholder='Your name here...')\n    feedback = discord.ui.TextInput(\n        label='What do you think?',\n        style=discord.TextStyle.long,\n        placeholder='Type your feedback here...',\n        required=False,\n        max_length=300)\n\n    async def on_submit(self, interaction: discord.Interaction):\n        await interaction.response.send_message('Thanks, %s!' % self.name.value, ephemeral=True)\n\n# await interaction.response.send_modal(Feedback())"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This follows the repository's modal example. Each TextInput is a class attribute, and after submission its value property holds what the person typed. Use max_length and required to validate on the client side."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "embed = discord.Embed(title='Server stats', description='Updated hourly', colour=discord.Colour.blurple())\nembed.add_field(name='Members', value='120', inline=True)\nembed.add_field(name='Online', value='34', inline=True)\nembed.set_footer(text='Powered by discord.py')\nawait ctx.send(embed=embed)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Embeds are rejected if any limit is exceeded, and the total of all text across the embed may not pass 6000 characters. The library exposes len(embed) so you can check before sending."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Plain messages are limited to 2000 characters. To send longer text, split it at line breaks so no piece exceeds the limit, and send the pieces in order. Never split in the middle of a word if you can avoid it."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Modal",
+       "A popup form with text inputs, shown in response to an interaction."
+      ],
+      [
+       "TextInput",
+       "A modal field with a label, placeholder, style and length limits."
+      ],
+      [
+       "Embed",
+       "A rich card attached to a message."
+      ],
+      [
+       "Field",
+       "A name and value pair inside an embed, optionally inline."
+      ],
+      [
+       "Chunking",
+       "Splitting long text into pieces that fit the message limit."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How do you open a modal?",
+     "options": [
+      "interaction.response.send_modal",
+      "ctx.send",
+      "bot.run",
+      "embed.add_field"
+     ],
+     "answer": 0,
+     "explain": "From an interaction."
+    },
+    {
+     "q": "Where do typed values appear?",
+     "options": [
+      "TextInput.value in on_submit",
+      "ctx.args",
+      "embed",
+      "intents"
+     ],
+     "answer": 0,
+     "explain": "Read after submit."
+    },
+    {
+     "q": "Maximum embed fields?",
+     "options": [
+      "25",
+      "5",
+      "100",
+      "10"
+     ],
+     "answer": 0,
+     "explain": "Twenty-five."
+    },
+    {
+     "q": "Maximum message length?",
+     "options": [
+      "2000 characters",
+      "500",
+      "4096",
+      "10000"
+     ],
+     "answer": 0,
+     "explain": "Ordinary text."
+    },
+    {
+     "q": "Total embed text limit?",
+     "options": [
+      "6000 characters",
+      "2000",
+      "100",
+      "1024"
+     ],
+     "answer": 0,
+     "explain": "Across all parts."
+    },
+    {
+     "q": "Can a plain message open a modal?",
+     "options": [
+      "No, only an interaction",
+      "Yes",
+      "Only in DMs",
+      "Only with views"
+     ],
+     "answer": 0,
+     "explain": "Needs an interaction."
+    }
+   ],
+   "cards": [
+    {
+     "q": "discord.TextStyle.long",
+     "a": "Multi-line modal input"
+    },
+    {
+     "q": "add_field",
+     "a": "Adds a name/value field to an embed"
+    },
+    {
+     "q": "Colour.blurple",
+     "a": "Discord's brand colour"
+    },
+    {
+     "q": "len(embed)",
+     "a": "Total text length for the limit check"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the limit",
+     "intro": "Pair each item with its limit.",
+     "pairs": [
+      [
+       "message text",
+       "2000"
+      ],
+      [
+       "embed description",
+       "4096"
+      ],
+      [
+       "field value",
+       "1024"
+      ],
+      [
+       "fields per embed",
+       "25"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Rich",
+     "text": "A popup form is a {{Modal}}. Answers arrive in {{on_submit}}. Plain text is limited to {{2000}} characters, and an embed may hold {{25}} fields."
+    },
+    {
+     "type": "python",
+     "title": "Embed problems",
+     "intro": "Write embed_problems(description, field_count, field_value_lengths): return a sorted list of problem names: 'description' if description is longer than 4096; 'fields' if field_count is over 25; 'value' if any field value length is over 1024. Empty list if all fine.",
+     "fn": "embed_problems",
+     "starter": "def embed_problems(description, field_count, field_value_lengths):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "hi",
+        3,
+        [
+         10,
+         20
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        26,
+        [
+         2000
+        ]
+       ],
+       "expect": [
+        "description",
+        "fields",
+        "value"
+       ]
+      },
+      {
+       "args": [
+        "ok",
+        25,
+        [
+         1024
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "",
+        0,
+        []
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Three independent checks.",
+     "solution": "def embed_problems(description, field_count, field_value_lengths):\n    out = []\n    if len(description) > 4096:\n        out.append('description')\n    if field_count > 25:\n        out.append('fields')\n    for n in field_value_lengths:\n        if n > 1024:\n            if 'value' not in out:\n                out.append('value')\n    out.sort()\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Chunk a message",
+     "intro": "Write chunk(text, limit): split text into pieces each at most limit characters, breaking only at newline characters where possible. Lines are separated by '\\n'. A piece is built by adding whole lines; a single line longer than limit is cut into limit sized parts. Return the list of pieces (without trailing newlines).",
+     "fn": "chunk",
+     "starter": "def chunk(text, limit):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "aaa\nbbb\nccc",
+        7
+       ],
+       "expect": [
+        "aaa\nbbb",
+        "ccc"
+       ]
+      },
+      {
+       "args": [
+        "abcdefghij",
+        4
+       ],
+       "expect": [
+        "abcd",
+        "efgh",
+        "ij"
+       ]
+      },
+      {
+       "args": [
+        "x",
+        10
+       ],
+       "expect": [
+        "x"
+       ]
+      },
+      {
+       "args": [
+        "one\ntwo",
+        3
+       ],
+       "expect": [
+        "one",
+        "two"
+       ]
+      }
+     ],
+     "hint": "Fill each piece with whole lines.",
+     "solution": "def chunk(text, limit):\n    out = []\n    cur = ''\n    for line in text.split('\\n'):\n        while len(line) > limit:\n            if cur != '':\n                out.append(cur)\n                cur = ''\n            out.append(line[:limit])\n            line = line[limit:]\n        if cur == '':\n            cur = line\n        elif len(cur) + 1 + len(line) <= limit:\n            cur = cur + '\\n' + line\n        else:\n            out.append(cur)\n            cur = line\n    if cur != '':\n        out.append(cur)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Modal check",
+     "intro": "Write modal_ok(values, required, max_len): values and required are dicts name to text and name to bool; max_len is a number. Return the sorted list of field names that fail: required but empty, or longer than max_len.",
+     "fn": "modal_ok",
+     "starter": "def modal_ok(values, required, max_len):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "name": "Ann",
+         "feedback": ""
+        },
+        {
+         "name": true,
+         "feedback": false
+        },
+        300
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        {
+         "name": "",
+         "feedback": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        },
+        {
+         "name": true,
+         "feedback": false
+        },
+        300
+       ],
+       "expect": [
+        "feedback",
+        "name"
+       ]
+      }
+     ],
+     "hint": "Two rules per field.",
+     "solution": "def modal_ok(values, required, max_len):\n    bad = []\n    for name in values:\n        v = values[name]\n        if required.get(name, False) and v == '':\n            bad.append(name)\n        elif len(v) > max_len:\n            bad.append(name)\n    bad.sort()\n    return bad\n"
+    },
+    {
+     "type": "python",
+     "title": "Embed fields layout",
+     "intro": "Write inline_rows(count): inline fields show up to 3 per row. Return the number of rows needed for count inline fields.",
+     "fn": "inline_rows",
+     "starter": "def inline_rows(count):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        1
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        3
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        4
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        7
+       ],
+       "expect": 3
+      }
+     ],
+     "hint": "Ceiling division by 3.",
+     "solution": "def inline_rows(count):\n    return (count + 2) // 3\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Modals examples",
+     "url": "https://github.com/Rapptz/discord.py/tree/master/examples/modals",
+     "note": "basic.py and report.py"
+    }
+   ]
+  },
+  {
+   "title": "Background tasks, logging and error handling",
+   "maps": [
+    {
+     "title": "Reliability",
+     "links": [
+      "tasks.loop | repeats | Coroutine",
+      "before_loop | waits for | Ready",
+      "Logging | records | Library activity",
+      "log_handler | configures | client.run",
+      "Backoff | spaces | Retries",
+      "Forbidden | means | Missing access",
+      "HTTPException | wraps | API errors"
+     ]
+    }
+   ],
+   "summary": [
+    "The tasks extension runs a coroutine on a fixed schedule, such as every 60 seconds. You start it in setup_hook and make it wait until the bot is ready before it touches channels.",
+    "discord.py uses the standard logging module. By default client.run sets up a handler and a level for you; you can pass your own log_handler and log_level, or pass log_handler=None to configure logging yourself.",
+    "Network calls fail in predictable ways. Forbidden means the bot lacks access, NotFound means the object is gone, and HTTPException covers other API errors. Retrying should back off instead of hammering Discord."
+   ],
+   "glossary": [
+    {
+     "term": "tasks.loop",
+     "def": "A decorator that repeats a coroutine on an interval."
+    },
+    {
+     "term": "before_loop",
+     "def": "A hook that runs before the loop begins, often awaiting wait_until_ready."
+    },
+    {
+     "term": "Logging",
+     "def": "Python's standard logging; discord.py logs its gateway and HTTP activity under 'discord'."
+    },
+    {
+     "term": "Forbidden",
+     "def": "The error raised when the bot lacks permission or access."
+    },
+    {
+     "term": "Backoff",
+     "def": "Waiting longer after each failed attempt."
+    }
+   ],
+   "keyPoints": [
+    "@tasks.loop(seconds=60) repeats; start with .start() in setup_hook.",
+    "@loop.before_loop: await self.wait_until_ready().",
+    "client.run(token, log_handler=handler, log_level=logging.DEBUG).",
+    "log_handler=None disables the default setup.",
+    "Catch Forbidden, NotFound and HTTPException around API calls."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A background task is a cuckoo clock: it does a job at the same time every minute. Waiting until the house is ready stops it from looking for a room that is not built yet."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Some jobs must happen on a schedule, such as posting a daily summary. The tasks extension wraps a coroutine in a loop that sleeps between runs and recovers from many transient errors for you."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import discord\nfrom discord.ext import tasks\n\nclass MyClient(discord.Client):\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n        self.counter = 0\n\n    async def setup_hook(self):\n        self.my_background_task.start()\n\n    @tasks.loop(seconds=60)\n    async def my_background_task(self):\n        channel = self.get_channel(1234567)  # replace with a channel id\n        self.counter += 1\n        await channel.send(str(self.counter))\n\n    @my_background_task.before_loop\n    async def before_my_task(self):\n        await self.wait_until_ready()"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is the project's background task example. before_loop waits until the cache is ready, because get_channel returns None until the guilds are loaded. Also remember that a loop keeps running until you call cancel on it."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import logging\nhandler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')\nclient.run(token, log_handler=handler, log_level=logging.DEBUG)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The documentation also describes discord.utils.setup_logging for use when you do not call run, and a root_logger option if you want your own modules to share the same handler. Raise the level to DEBUG while diagnosing a problem."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When an API call fails, catch the narrowest error you can. Forbidden means fix permissions, not retry. For a transient HTTPException, wait, double the wait on each failure, cap it, and give up after a few tries."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "tasks.loop",
+       "A decorator that repeats a coroutine on an interval."
+      ],
+      [
+       "before_loop",
+       "A hook that runs before the loop begins, often awaiting wait_until_ready."
+      ],
+      [
+       "Logging",
+       "Python's standard logging; discord.py logs its gateway and HTTP activity under 'discord'."
+      ],
+      [
+       "Forbidden",
+       "The error raised when the bot lacks permission or access."
+      ],
+      [
+       "Backoff",
+       "Waiting longer after each failed attempt."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How often does tasks.loop(seconds=60) run?",
+     "options": [
+      "Every 60 seconds",
+      "Once",
+      "Every hour",
+      "On every message"
+     ],
+     "answer": 0,
+     "explain": "Interval."
+    },
+    {
+     "q": "Why await wait_until_ready in before_loop?",
+     "options": [
+      "get_channel is None until cached",
+      "To log in",
+      "To sync commands",
+      "To hide the token"
+     ],
+     "answer": 0,
+     "explain": "Cache."
+    },
+    {
+     "q": "How to stop the default logging setup?",
+     "options": [
+      "log_handler=None",
+      "log_level=0",
+      "intents.none()",
+      "Delete discord.log"
+     ],
+     "answer": 0,
+     "explain": "Configure yourself."
+    },
+    {
+     "q": "Forbidden means:",
+     "options": [
+      "The bot lacks access",
+      "The server is down",
+      "The token expired",
+      "A typo"
+     ],
+     "answer": 0,
+     "explain": "Fix permissions."
+    },
+    {
+     "q": "Good retry strategy?",
+     "options": [
+      "Exponential backoff with a cap",
+      "Retry instantly forever",
+      "Never retry",
+      "Restart the bot"
+     ],
+     "answer": 0,
+     "explain": "Be polite."
+    },
+    {
+     "q": "Where to start a loop?",
+     "options": [
+      "setup_hook",
+      "on_message",
+      "a view",
+      "the portal"
+     ],
+     "answer": 0,
+     "explain": "Once."
+    }
+   ],
+   "cards": [
+    {
+     "q": "tasks.loop",
+     "a": "Repeating coroutine"
+    },
+    {
+     "q": "wait_until_ready",
+     "a": "Await the cache being filled"
+    },
+    {
+     "q": "log_level",
+     "a": "Minimum severity logged"
+    },
+    {
+     "q": "NotFound",
+     "a": "The object does not exist"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the error",
+     "intro": "Pair each error with the right response.",
+     "pairs": [
+      [
+       "Forbidden",
+       "fix permissions"
+      ],
+      [
+       "NotFound",
+       "skip or clean up"
+      ],
+      [
+       "HTTPException 5xx",
+       "retry with backoff"
+      ],
+      [
+       "BadArgument",
+       "tell the user"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Reliability",
+     "text": "A repeating job uses {{tasks}}.loop. Wait for the cache with {{wait_until_ready}}. Turn off the default logging with log_handler={{None}}. Spacing retries out is called {{backoff}}."
+    },
+    {
+     "type": "python",
+     "title": "Loop runs",
+     "intro": "Write loop_runs(elapsed, interval): the loop runs once immediately at start, then every interval seconds. Return how many runs happened after elapsed seconds.",
+     "fn": "loop_runs",
+     "starter": "def loop_runs(elapsed, interval):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        60
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        59,
+        60
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        60,
+        60
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        185,
+        60
+       ],
+       "expect": 4
+      }
+     ],
+     "hint": "Floor division plus the first run.",
+     "solution": "def loop_runs(elapsed, interval):\n    return elapsed // interval + 1\n"
+    },
+    {
+     "type": "python",
+     "title": "Backoff schedule",
+     "intro": "Write backoff(attempts, base, cap): return the list of waits for that many retries; the first wait is base, each next doubles, and no wait exceeds cap.",
+     "fn": "backoff",
+     "starter": "def backoff(attempts, base, cap):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        1,
+        8
+       ],
+       "expect": [
+        1,
+        2,
+        4,
+        8,
+        8
+       ]
+      },
+      {
+       "args": [
+        3,
+        2,
+        100
+       ],
+       "expect": [
+        2,
+        4,
+        8
+       ]
+      },
+      {
+       "args": [
+        0,
+        1,
+        5
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        4,
+        10,
+        25
+       ],
+       "expect": [
+        10,
+        20,
+        25,
+        25
+       ]
+      }
+     ],
+     "hint": "Double, then clamp.",
+     "solution": "def backoff(attempts, base, cap):\n    out = []\n    w = base\n    for i in range(attempts):\n        out.append(min(w, cap))\n        w = w * 2\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Log filter",
+     "intro": "Write visible(records, level): records is a list of [severity, text] with severity one of DEBUG, INFO, WARNING, ERROR in rising order. Return the texts whose severity is at or above level, keeping order.",
+     "fn": "visible",
+     "starter": "def visible(records, level):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "DEBUG",
+          "a"
+         ],
+         [
+          "INFO",
+          "b"
+         ],
+         [
+          "ERROR",
+          "c"
+         ]
+        ],
+        "INFO"
+       ],
+       "expect": [
+        "b",
+        "c"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "WARNING",
+          "x"
+         ]
+        ],
+        "ERROR"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         [
+          "DEBUG",
+          "a"
+         ]
+        ],
+        "DEBUG"
+       ],
+       "expect": [
+        "a"
+       ]
+      }
+     ],
+     "hint": "Compare positions in the list.",
+     "solution": "def visible(records, level):\n    order = ['DEBUG', 'INFO', 'WARNING', 'ERROR']\n    min_i = order.index(level)\n    out = []\n    for sev, text in records:\n        if order.index(sev) >= min_i:\n            out.append(text)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Pick a response",
+     "intro": "Write on_error(name): 'Forbidden' gives 'fix permissions'; 'NotFound' gives 'skip'; 'HTTPException' gives 'retry'; 'BadArgument' gives 'tell user'; anything else gives 'raise'.",
+     "fn": "on_error",
+     "starter": "def on_error(name):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Forbidden"
+       ],
+       "expect": "fix permissions"
+      },
+      {
+       "args": [
+        "NotFound"
+       ],
+       "expect": "skip"
+      },
+      {
+       "args": [
+        "HTTPException"
+       ],
+       "expect": "retry"
+      },
+      {
+       "args": [
+        "BadArgument"
+       ],
+       "expect": "tell user"
+      },
+      {
+       "args": [
+        "KeyError"
+       ],
+       "expect": "raise"
+      }
+     ],
+     "hint": "A lookup with a default.",
+     "solution": "def on_error(name):\n    table = {'Forbidden': 'fix permissions', 'NotFound': 'skip', 'HTTPException': 'retry', 'BadArgument': 'tell user'}\n    return table.get(name, 'raise')\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "ext.tasks",
+     "url": "https://discordpy.readthedocs.io/en/stable/ext/tasks/index.html",
+     "note": "background tasks"
+    },
+    {
+     "title": "Setting up logging",
+     "url": "https://discordpy.readthedocs.io/en/stable/logging.html",
+     "note": "log handlers and levels"
+    }
+   ]
+  },
+  {
+   "title": "Permissions, tokens and deployment",
+   "maps": [
+    {
+     "title": "Security",
+     "links": [
+      "Token | is | A password",
+      "Permissions | are | A bitmask",
+      "Administrator | overrides | All checks",
+      "Least privilege | limits | Damage",
+      "Environment | holds | Secrets",
+      "Reset token | after | A leak",
+      "Hosting | needs | Restart policy"
+     ]
+    }
+   ],
+   "summary": [
+    "Your bot token is a password. Anyone who has it can act as your bot. Keep it out of source control and out of screenshots, and read it from an environment variable or a secrets file.",
+    "Discord permissions are bit flags combined in one integer. Administrator overrides all of the others. Ask for the minimum your bot needs when you generate the invite link, and check the bot's own permissions before you act.",
+    "If a token leaks, regenerate it in the developer portal at once. A deployed bot needs a process manager or container that restarts it after a crash and keeps logs."
+   ],
+   "glossary": [
+    {
+     "term": "Token",
+     "def": "The secret string that logs your bot in."
+    },
+    {
+     "term": "Permission bitmask",
+     "def": "An integer where each bit is one permission."
+    },
+    {
+     "term": "Least privilege",
+     "def": "Granting only the permissions the bot needs."
+    },
+    {
+     "term": "Environment variable",
+     "def": "A process setting used to pass secrets without writing them in code."
+    },
+    {
+     "term": "Process manager",
+     "def": "A tool such as systemd or a container runtime that restarts the bot."
+    }
+   ],
+   "keyPoints": [
+    "Never hardcode or commit the token; read it from the environment.",
+    "If it leaks, reset it in the developer portal immediately.",
+    "Permissions are bits: administrator is 1 << 3, send_messages 1 << 11.",
+    "Administrator overrides every other permission.",
+    "Run under a supervisor with logs and a restart policy."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The token is your bot's secret password. Anyone with it can pretend to be your bot, so you keep it in a locked drawer, never taped to the front door."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A token is like the key to a building. If it is pasted into a public repository, bots scan for it within minutes and use it. Discord scans too and may reset leaked tokens, but do not rely on that. Treat the token like a password."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import os\nimport discord\n\ntoken = os.environ['DISCORD_TOKEN']\nintents = discord.Intents.default()\nclient = discord.Client(intents=intents)\nclient.run(token)\n\n# shell:\n#   export DISCORD_TOKEN='...'\n#   python bot.py"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Add your .env file or secrets file to .gitignore, and keep a template without values in the repository. If the token ever appears in a log, a chat message or a commit, reset it and update the deployment."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Permissions are an integer where each bit is one capability, for example kick_members is bit one, administrator is bit three, view_channel is bit ten, send_messages is bit eleven and manage_messages is bit thirteen. You test one with a bitwise and."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Request only what you use. A music bot needs to connect and speak, not to ban members. When a command acts on a member, also check that the bot's role is above the target's role, or Discord will refuse with Forbidden."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "In production run the bot under systemd, Docker or a hosting platform that restarts it and captures logs. Handle signals so it can close cleanly, and monitor for repeated reconnects, which can mean rate limits or a bad token."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Token",
+       "The secret string that logs your bot in."
+      ],
+      [
+       "Permission bitmask",
+       "An integer where each bit is one permission."
+      ],
+      [
+       "Least privilege",
+       "Granting only the permissions the bot needs."
+      ],
+      [
+       "Environment variable",
+       "A process setting used to pass secrets without writing them in code."
+      ],
+      [
+       "Process manager",
+       "A tool such as systemd or a container runtime that restarts the bot."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Where should the token live?",
+     "options": [
+      "An environment variable or secrets file",
+      "In the source file",
+      "In a screenshot",
+      "In the README"
+     ],
+     "answer": 0,
+     "explain": "Not in code."
+    },
+    {
+     "q": "What do you do after a token leak?",
+     "options": [
+      "Reset it in the portal",
+      "Ignore it",
+      "Rename the bot",
+      "Add a prefix"
+     ],
+     "answer": 0,
+     "explain": "Regenerate."
+    },
+    {
+     "q": "Which permission overrides the rest?",
+     "options": [
+      "administrator",
+      "send_messages",
+      "view_channel",
+      "embed_links"
+     ],
+     "answer": 0,
+     "explain": "All-powerful."
+    },
+    {
+     "q": "How do you test a permission bit?",
+     "options": [
+      "Bitwise and with the mask",
+      "String compare",
+      "Addition",
+      "A coroutine"
+     ],
+     "answer": 0,
+     "explain": "Mask."
+    },
+    {
+     "q": "Why a process manager?",
+     "options": [
+      "Restarts the bot and keeps logs",
+      "Makes it faster",
+      "Hides the token",
+      "Syncs commands"
+     ],
+     "answer": 0,
+     "explain": "Uptime."
+    },
+    {
+     "q": "Kick fails with Forbidden. Why?",
+     "options": [
+      "Bot role is not above the target",
+      "Wrong prefix",
+      "No embed",
+      "Old Python"
+     ],
+     "answer": 0,
+     "explain": "Role order."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Bitwise and",
+     "a": "Tests whether a flag is set"
+    },
+    {
+     "q": "systemd",
+     "a": "A Linux service manager that can restart a bot"
+    },
+    {
+     "q": ".gitignore",
+     "a": "Keeps secret files out of git"
+    },
+    {
+     "q": "Role hierarchy",
+     "a": "A bot can only manage roles and members below its highest role"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Command router",
+     "intro": "Final practice: route a few messages through prefix and slash handling.",
+     "height": 700,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}\n</style></head><body>\n<label>Prefix <input type=\"text\" id=\"pf\" value=\"!\"></label>\n<label>Message <input type=\"text\" id=\"msg\" value=\"!add 2 3\"></label>\n<button id=\"go\">Send</button><div id=\"o\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nfunction split(s){var out=[],cur=\"\",inq=false,i,ch;for(i=0;i<s.length;i++){ch=s[i];if(ch==='\"')inq=!inq;else if(ch===\" \"&&!inq){if(cur)out.push(cur);cur=\"\"}else cur+=ch}if(cur)out.push(cur);return out}\nvar seen={};\n$(\"go\").onclick=function(){var pf=$(\"pf\").value,m=$(\"msg\").value,r,k;\n if(m.indexOf(pf)!==0){r=\"Not a command: the message does not start with the prefix.\";k=\"ignored\"}\n else{var w=split(m.slice(pf.length)),n=w[0],a=w.slice(1);\n  if(n===\"add\"){if(a.length<2){r=\"MissingRequiredArgument\";k=\"error\"}else if(isNaN(+a[0])||isNaN(+a[1])){r=\"BadArgument: not a number\";k=\"error\"}else{r=\"ctx.send(\"+(+a[0]+ +a[1])+\")\";k=\"ok\"}}\n  else if(n===\"say\"){r=\"ctx.send(\"+a.join(\" \")+\")\";k=\"ok\"}\n  else{r=\"CommandNotFound: \"+n;k=\"error\"}}\n $(\"o\").innerHTML='<b>'+k+'</b><br>'+r.replace(/</g,\"&lt;\");seen[k]=1;var c=Object.keys(seen).length;$(\"p\").textContent=\"Outcome kinds seen: \"+c+\" of 3\";if(c>=3)done()};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the practice",
+     "intro": "Pair each risk with the safeguard.",
+     "pairs": [
+      [
+       "leaked token",
+       "reset it"
+      ],
+      [
+       "too many powers",
+       "least privilege"
+      ],
+      [
+       "crash at night",
+       "process manager restart"
+      ],
+      [
+       "secret in git",
+       ".gitignore and env vars"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Security",
+     "text": "The bot token is like a {{password}}. Store it in an {{environment}} variable. Ask for {{least}} privilege. The {{administrator}} permission overrides all others."
+    },
+    {
+     "type": "python",
+     "title": "Has a permission",
+     "intro": "Write has_perm(mask, name): name is one of kick_members (bit 1), ban_members (2), administrator (3), view_channel (10), send_messages (11), manage_messages (13), manage_roles (28). Return True if the bit is set or if the administrator bit is set; False for an unknown name.",
+     "fn": "has_perm",
+     "starter": "def has_perm(mask, name):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2048,
+        "send_messages"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        8,
+        "ban_members"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        0,
+        "kick_members"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        1024,
+        "send_messages"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        1024,
+        "nothing"
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Shift and mask; administrator first.",
+     "solution": "def has_perm(mask, name):\n    bits = {'kick_members': 1, 'ban_members': 2, 'administrator': 3, 'view_channel': 10, 'send_messages': 11, 'manage_messages': 13, 'manage_roles': 28}\n    if name not in bits:\n        return False\n    if (mask >> 3) & 1:\n        return True\n    return ((mask >> bits[name]) & 1) == 1\n"
+    },
+    {
+     "type": "python",
+     "title": "Build a mask",
+     "intro": "Write make_mask(names): combine the permissions into one integer using these bits: kick_members 1, ban_members 2, administrator 3, view_channel 10, send_messages 11, manage_messages 13, manage_roles 28. Ignore unknown names.",
+     "fn": "make_mask",
+     "starter": "def make_mask(names):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "view_channel",
+         "send_messages"
+        ]
+       ],
+       "expect": 3072
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        [
+         "administrator"
+        ]
+       ],
+       "expect": 8
+      },
+      {
+       "args": [
+        [
+         "kick_members",
+         "nope",
+         "manage_roles"
+        ]
+       ],
+       "expect": 268435458
+      }
+     ],
+     "hint": "OR the bits together.",
+     "solution": "def make_mask(names):\n    bits = {'kick_members': 1, 'ban_members': 2, 'administrator': 3, 'view_channel': 10, 'send_messages': 11, 'manage_messages': 13, 'manage_roles': 28}\n    m = 0\n    for n in names:\n        if n in bits:\n            m = m | (1 << bits[n])\n    return m\n"
+    },
+    {
+     "type": "python",
+     "title": "Missing permissions",
+     "intro": "Write missing(mask, needed): needed is a list of permission names from the same table (kick_members 1, ban_members 2, administrator 3, view_channel 10, send_messages 11, manage_messages 13, manage_roles 28). Return the sorted list of names not granted. Administrator grants all.",
+     "fn": "missing",
+     "starter": "def missing(mask, needed):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3072,
+        [
+         "view_channel",
+         "send_messages",
+         "manage_messages"
+        ]
+       ],
+       "expect": [
+        "manage_messages"
+       ]
+      },
+      {
+       "args": [
+        8,
+        [
+         "ban_members"
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        0,
+        [
+         "kick_members",
+         "ban_members"
+        ]
+       ],
+       "expect": [
+        "ban_members",
+        "kick_members"
+       ]
+      }
+     ],
+     "hint": "Check each needed bit.",
+     "solution": "def missing(mask, needed):\n    bits = {'kick_members': 1, 'ban_members': 2, 'administrator': 3, 'view_channel': 10, 'send_messages': 11, 'manage_messages': 13, 'manage_roles': 28}\n    if (mask >> 3) & 1:\n        return []\n    out = []\n    for n in needed:\n        if ((mask >> bits[n]) & 1) == 0 and n not in out:\n            out.append(n)\n    out.sort()\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Config source",
+     "intro": "Write get_token(env, file_value): return env['DISCORD_TOKEN'] if present and non-empty; otherwise file_value if non-empty; otherwise the string 'missing'.",
+     "fn": "get_token",
+     "starter": "def get_token(env, file_value):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "DISCORD_TOKEN": "abc"
+        },
+        "zzz"
+       ],
+       "expect": "abc"
+      },
+      {
+       "args": [
+        {},
+        "zzz"
+       ],
+       "expect": "zzz"
+      },
+      {
+       "args": [
+        {},
+        ""
+       ],
+       "expect": "missing"
+      },
+      {
+       "args": [
+        {
+         "DISCORD_TOKEN": ""
+        },
+        "f"
+       ],
+       "expect": "f"
+      }
+     ],
+     "hint": "Environment first.",
+     "solution": "def get_token(env, file_value):\n    t = env.get('DISCORD_TOKEN', '')\n    if t != '':\n        return t\n    if file_value != '':\n        return file_value\n    return 'missing'\n"
+    },
+    {
+     "type": "python",
+     "title": "Role above target",
+     "intro": "Write can_act(bot_top, target_top, bot_has_perm): True only when the bot has the permission and its highest role position is greater than the target's.",
+     "fn": "can_act",
+     "starter": "def can_act(bot_top, target_top, bot_has_perm):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        3,
+        true
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        3,
+        3,
+        true
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        5,
+        3,
+        false
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        1,
+        9,
+        true
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Hierarchy.",
+     "solution": "def can_act(bot_top, target_top, bot_has_perm):\n    return bot_has_perm and bot_top > target_top\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Discord permissions reference",
+     "url": "https://discord.com/developers/docs/topics/permissions",
+     "note": "bit values"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: discord.py: Building Discord Bots",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What does client.run do?",
+    "options": [
+     "Logs in, connects and blocks until the bot stops",
+     "Prints the token",
+     "Syncs commands",
+     "Creates intents"
+    ],
+    "answer": 0,
+    "explain": "Blocking."
+   },
+   {
+    "q": "Why ignore your own messages?",
+    "options": [
+     "Avoid reply loops",
+     "Save memory",
+     "Find the token",
+     "Sync faster"
+    ],
+    "answer": 0,
+    "explain": "Loops."
+   },
+   {
+    "q": "Which intents are privileged?",
+    "options": [
+     "presences, members, message_content",
+     "guilds, messages, reactions",
+     "only guilds",
+     "none"
+    ],
+    "answer": 0,
+    "explain": "Three."
+   },
+   {
+    "q": "Where are privileged intents enabled?",
+    "options": [
+     "Portal and code",
+     "Only code",
+     "Only portal",
+     "The token"
+    ],
+    "answer": 0,
+    "explain": "Both."
+   },
+   {
+    "q": "What is a snowflake?",
+    "options": [
+     "A 64-bit id with a timestamp",
+     "A token",
+     "A command",
+     "A cog"
+    ],
+    "answer": 0,
+    "explain": "Ids."
+   },
+   {
+    "q": "What does an int hint do in a prefix command?",
+    "options": [
+     "Converts or raises BadArgument",
+     "Nothing",
+     "Rounds",
+     "Makes it private"
+    ],
+    "answer": 0,
+    "explain": "Converter."
+   },
+   {
+    "q": "What does a bare * do in a signature?",
+    "options": [
+     "Last argument takes the rest of the line",
+     "Multiplies",
+     "Skips",
+     "Makes it optional"
+    ],
+    "answer": 0,
+    "explain": "Keyword-only."
+   },
+   {
+    "q": "An extension must define:",
+    "options": [
+     "async def setup(bot)",
+     "def main",
+     "class Bot",
+     "a token"
+    ],
+    "answer": 0,
+    "explain": "Entry point."
+   },
+   {
+    "q": "Best place to load extensions?",
+    "options": [
+     "setup_hook",
+     "on_ready",
+     "on_message",
+     "a view"
+    ],
+    "answer": 0,
+    "explain": "Once."
+   },
+   {
+    "q": "Event handlers inside a cog use:",
+    "options": [
+     "Cog.listener()",
+     "client.event",
+     "ctx.send",
+     "bot.run"
+    ],
+    "answer": 0,
+    "explain": "Decorator."
+   },
+   {
+    "q": "Slash commands live in:",
+    "options": [
+     "CommandTree",
+     "Cog only",
+     "Embed",
+     "Modal"
+    ],
+    "answer": 0,
+    "explain": "Tree."
+   },
+   {
+    "q": "Fastest way to test slash commands?",
+    "options": [
+     "Sync to one guild",
+     "Global sync",
+     "Prefix",
+     "Restart"
+    ],
+    "answer": 0,
+    "explain": "Guild."
+   },
+   {
+    "q": "How long to respond to an interaction?",
+    "options": [
+     "3 seconds, or defer",
+     "1 minute",
+     "1 hour",
+     "Forever"
+    ],
+    "answer": 0,
+    "explain": "Defer."
+   },
+   {
+    "q": "Default view timeout?",
+    "options": [
+     "180 seconds",
+     "5 seconds",
+     "1 hour",
+     "None"
+    ],
+    "answer": 0,
+    "explain": "Three minutes."
+   },
+   {
+    "q": "Max buttons per message?",
+    "options": [
+     "25",
+     "5",
+     "10",
+     "100"
+    ],
+    "answer": 0,
+    "explain": "5 x 5."
+   },
+   {
+    "q": "Persistent view needs:",
+    "options": [
+     "timeout None and custom_id, added at startup",
+     "ephemeral",
+     "a cog",
+     "a modal"
+    ],
+    "answer": 0,
+    "explain": "Survives restart."
+   },
+   {
+    "q": "Message text limit?",
+    "options": [
+     "2000 characters",
+     "500",
+     "4096",
+     "256"
+    ],
+    "answer": 0,
+    "explain": "Chunk."
+   },
+   {
+    "q": "Embed total limit?",
+    "options": [
+     "6000 characters",
+     "2000",
+     "10000",
+     "100"
+    ],
+    "answer": 0,
+    "explain": "Total."
+   },
+   {
+    "q": "Modal values are read in:",
+    "options": [
+     "on_submit via TextInput.value",
+     "on_ready",
+     "ctx.args",
+     "intents"
+    ],
+    "answer": 0,
+    "explain": "Submit."
+   },
+   {
+    "q": "Why wait_until_ready in before_loop?",
+    "options": [
+     "Cache is empty before then",
+     "To log in",
+     "To sync",
+     "To hide token"
+    ],
+    "answer": 0,
+    "explain": "get_channel."
+   },
+   {
+    "q": "log_handler=None means:",
+    "options": [
+     "Library does not set up logging",
+     "No output ever",
+     "Debug mode",
+     "Log to file"
+    ],
+    "answer": 0,
+    "explain": "Your choice."
+   },
+   {
+    "q": "Forbidden means:",
+    "options": [
+     "Missing access",
+     "Server down",
+     "Bad type",
+     "Typo"
+    ],
+    "answer": 0,
+    "explain": "Permissions."
+   },
+   {
+    "q": "Token leaked. What now?",
+    "options": [
+     "Reset it in the portal",
+     "Ignore",
+     "Rename bot",
+     "Add prefix"
+    ],
+    "answer": 0,
+    "explain": "Reset."
+   },
+   {
+    "q": "Which overrides all permissions?",
+    "options": [
+     "administrator",
+     "send_messages",
+     "view_channel",
+     "embed_links"
+    ],
+    "answer": 0,
+    "explain": "Admin."
+   },
+   {
+    "q": "Why least privilege?",
+    "options": [
+     "Limits damage if abused or leaked",
+     "Faster",
+     "Prettier",
+     "Required by Python"
+    ],
+    "answer": 0,
+    "explain": "Safety."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "discord.py cheat sheet",
+  "prompt": "bot>",
+  "intro": "A scripted lookup. Try: install, minimal, intents, command, cog, slash, view, modal, task, logging, token, errors, help",
+  "chips": [
+   "install",
+   "minimal",
+   "intents",
+   "command",
+   "cog",
+   "slash",
+   "view",
+   "modal",
+   "task",
+   "logging",
+   "token",
+   "errors",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "install    python3 -m pip install -U discord.py. Python 3.8 or newer. D",
+     "minimal    intents = discord.Intents.default(); intents.message_content",
+     "intents    Privileged: presences, members, message_content. Enable in t",
+     "command    bot = commands.Bot(command_prefix='!', intents=intents); @bo",
+     "cog        class X(commands.Cog) with commands and Cog.listener(); exte",
+     "slash      self.tree = app_commands.CommandTree(self); @client.tree.com",
+     "view       class V(discord.ui.View) with @discord.ui.button; timeout 18",
+     "modal      class M(discord.ui.Modal, title='...') with TextInput fields",
+     "task       @tasks.loop(seconds=60); start in setup_hook; @loop.before_l",
+     "logging    client.run(token, log_handler=handler, log_level=logging.DEB",
+     "token      Read from the environment. Never commit it. If it leaks, res",
+     "errors     Forbidden: permissions. NotFound: gone. HTTPException: other"
+    ]
+   },
+   {
+    "re": "^install$",
+    "out": [
+     "python3 -m pip install -U discord.py. Python 3.8 or newer. Do not name your script discord.py."
+    ]
+   },
+   {
+    "re": "^minimal$",
+    "out": [
+     "intents = discord.Intents.default(); intents.message_content = True; client = discord.Client(intents=intents); client.run(token)."
+    ]
+   },
+   {
+    "re": "^intents$",
+    "out": [
+     "Privileged: presences, members, message_content. Enable in the portal Bot tab and in code. Over 100 guilds needs verification."
+    ]
+   },
+   {
+    "re": "^command$",
+    "out": [
+     "bot = commands.Bot(command_prefix='!', intents=intents); @bot.command() async def x(ctx, a: int): await ctx.send(...)"
+    ]
+   },
+   {
+    "re": "^cog$",
+    "out": [
+     "class X(commands.Cog) with commands and Cog.listener(); extension defines async def setup(bot): await bot.add_cog(X(bot))."
+    ]
+   },
+   {
+    "re": "^slash$",
+    "out": [
+     "self.tree = app_commands.CommandTree(self); @client.tree.command(); sync in setup_hook; respond within 3 seconds or defer."
+    ]
+   },
+   {
+    "re": "^view$",
+    "out": [
+     "class V(discord.ui.View) with @discord.ui.button; timeout 180 s; persistent: timeout None plus custom_id plus add_view."
+    ]
+   },
+   {
+    "re": "^modal$",
+    "out": [
+     "class M(discord.ui.Modal, title='...') with TextInput fields; open with interaction.response.send_modal; read in on_submit."
+    ]
+   },
+   {
+    "re": "^task$",
+    "out": [
+     "@tasks.loop(seconds=60); start in setup_hook; @loop.before_loop await self.wait_until_ready()."
+    ]
+   },
+   {
+    "re": "^logging$",
+    "out": [
+     "client.run(token, log_handler=handler, log_level=logging.DEBUG); log_handler=None to configure yourself."
+    ]
+   },
+   {
+    "re": "^token$",
+    "out": [
+     "Read from the environment. Never commit it. If it leaks, reset it in the developer portal."
+    ]
+   },
+   {
+    "re": "^errors$",
+    "out": [
+     "Forbidden: permissions. NotFound: gone. HTTPException: other API error. BadArgument: conversion. MissingPermissions: check failed."
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Computer Science",
+ "level": "Intermediate",
+ "tags": [
+  "discord",
+  "python",
+  "bots",
+  "asyncio",
+  "slash commands",
+  "cogs"
+ ]
+}
