@@ -143,6 +143,36 @@
       "A note about this course. The labs here run on the app's built-in Python, which does not include these libraries.",
       "So the lessons show you real library code to read and copy into your own notebook, while each lab rebuilds the core idea in plain Python: a dot product, a small table, a nearest-neighbour classifier, a neural neuron. Knowing how the machinery works makes you far better at using the libraries."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Machine learning",
+       "Methods in which a program improves at a task by learning patterns from data."
+      ],
+      [
+       "Feature",
+       "An input variable used to make a prediction, such as age or price."
+      ],
+      [
+       "Label (target)",
+       "The value we want to predict."
+      ],
+      [
+       "Supervised learning",
+       "Learning from examples that include the correct answer (regression and classification)."
+      ],
+      [
+       "Unsupervised learning",
+       "Finding structure in data without labels, such as clusters."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -534,6 +564,13 @@
      "hint": "Split each row.",
      "solution": "def split_xy(rows, target):\n    X = []\n    y = []\n    for r in rows:\n        cols = sorted([k for k in r.keys() if k != target])\n        X.append([r[k] for k in cols])\n        y.append(r[target])\n    return [X, y]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -632,6 +669,36 @@
      "type": "text",
      "items": [
       "Boolean masks pick elements by condition. The expression a greater than 3 gives an array of true and false, and using it as an index keeps only the true entries. The labs build these operations by hand so you see what the array library does for you."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Array",
+       "A grid of numbers of one type, indexed by position."
+      ],
+      [
+       "Shape",
+       "The tuple of dimension sizes, such as (3, 4) for 3 rows and 4 columns."
+      ],
+      [
+       "Vectorisation",
+       "Applying an operation to a whole array at once instead of with a Python loop."
+      ],
+      [
+       "Broadcasting",
+       "The rule that lets arrays of different shapes be combined by stretching the smaller one."
+      ],
+      [
+       "Axis",
+       "A dimension of an array; axis 0 runs down the rows, axis 1 across the columns."
+      ]
      ]
     }
    ],
@@ -1284,6 +1351,13 @@
      "hint": "Slice a row at a time.",
      "solution": "def reshape(flat, rows, cols):\n    out = []\n    for i in range(rows):\n        out.append(flat[i * cols:(i + 1) * cols])\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1376,6 +1450,36 @@
      "type": "text",
      "items": [
       "Merge joins two tables that share a key, like a customers table and an orders table. An inner join keeps only matching keys. The labs here use a list of dictionaries as a tiny DataFrame, one dictionary per row, so you can build selection, groupby, filling and merge yourself."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "DataFrame",
+       "A two-dimensional labelled table of data with columns of possibly different types."
+      ],
+      [
+       "Series",
+       "A one-dimensional labelled array, such as one column of a DataFrame."
+      ],
+      [
+       "groupby",
+       "Splitting rows into groups by a key, applying a function to each, and combining the results."
+      ],
+      [
+       "NaN",
+       "Not a number; the marker for a missing value."
+      ],
+      [
+       "merge",
+       "Combining two tables by matching values in a key column."
+      ]
      ]
     }
    ],
@@ -1888,6 +1992,13 @@
      "hint": "Use sorted with a key function.",
      "solution": "def sort_by(rows, col, descending):\n    return sorted([r[col] for r in rows], reverse=descending)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1976,6 +2087,36 @@
      "items": [
       "Outliers can be mistakes, such as an age of 999, or real rare events. A common rule flags values more than one and a half interquartile ranges beyond the quartiles. Decide case by case whether to fix, remove or keep them, and write down why.",
       "In the plot explorer you can look at several datasets and see correlation and outliers directly."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "EDA",
+       "Exploratory data analysis: summarising and visualising data to understand it."
+      ],
+      [
+       "Histogram",
+       "A chart that counts how many values fall in each bin."
+      ],
+      [
+       "Correlation",
+       "A number from -1 to 1 measuring how closely two variables move together in a straight line."
+      ],
+      [
+       "Quartile",
+       "A value that splits sorted data into quarters; Q1 is the 25th percentile, Q3 the 75th."
+      ],
+      [
+       "Outlier",
+       "A value far from the rest, often defined as beyond 1.5 times the interquartile range from the quartiles."
+      ]
      ]
     }
    ],
@@ -2440,6 +2581,13 @@
      "hint": "Population standard deviation divides by n.",
      "solution": "import math\ndef describe(x):\n    n = len(x)\n    m = sum(x) / float(n)\n    var = sum([(v - m) ** 2 for v in x]) / float(n)\n    return [n, round(m, 3), round(math.sqrt(var), 3), round(min(x), 3), round(max(x), 3)]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2528,6 +2676,36 @@
      "type": "text",
      "items": [
       "A pipeline chains the steps and the model into one object, so that fitting happens in the right order and, with cross-validation, in every fold. It also makes your work repeatable. The labs implement encoders, scalers, a seeded shuffle and a split, so you can see that they are only a few lines each."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "One-hot encoding",
+       "Turning a categorical column into several 0/1 columns, one per category."
+      ],
+      [
+       "Scaling",
+       "Rescaling a feature, for example to mean 0 and standard deviation 1, or to the range 0 to 1."
+      ],
+      [
+       "Training set",
+       "The data a model learns from."
+      ],
+      [
+       "Test set",
+       "Held-out data used once at the end to estimate performance on new data."
+      ],
+      [
+       "Data leakage",
+       "Using information in training that would not be available at prediction time."
+      ]
      ]
     }
    ],
@@ -3046,6 +3224,13 @@
      "hint": "Median of the known values.",
      "solution": "def impute_median(x):\n    v = sorted([a for a in x if a is not None])\n    n = len(v)\n    if n % 2 == 1:\n        m = v[n // 2]\n    else:\n        m = (v[n // 2 - 1] + v[n // 2]) / 2.0\n    return [m if a is None else a for a in x]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3134,6 +3319,36 @@
      "items": [
       "Gradient descent deserves a picture: stand on a hillside in fog and take small steps downhill. The loss as a function of the slope and intercept is a bowl, and each step moves along the steepest descent, scaled by the learning rate. Too small a rate is slow, too large overshoots.",
       "The regression lab lets you click points and watch the line settle, and the labs have you compute every step by hand."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Linear regression",
+       "A model predicting y = w x + b, fitted by minimising squared error."
+      ],
+      [
+       "Mean squared error (MSE)",
+       "The average of the squared differences between predictions and truth."
+      ],
+      [
+       "R squared",
+       "One minus the ratio of the model's squared error to that of always predicting the mean; 1 is perfect, 0 is no better than the mean."
+      ],
+      [
+       "Gradient descent",
+       "Repeatedly nudging the parameters opposite to the gradient of the loss to reduce it."
+      ],
+      [
+       "Estimator",
+       "A scikit-learn object with fit and predict methods."
+      ]
      ]
     }
    ],
@@ -3647,6 +3862,13 @@
      "hint": "Weighted sum plus intercept.",
      "solution": "def predict_multi(X, weights, bias):\n    out = []\n    for row in X:\n        s = bias\n        for j in range(len(weights)):\n            s = s + weights[j] * row[j]\n        out.append(round(s, 3))\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3743,6 +3965,36 @@
      "items": [
       "Which matters more depends on the cost. In cancer screening a missed case is far worse than a false alarm, so we want high recall. For a spam filter, losing a real email is worse than seeing some spam, so we want high precision. Move the decision threshold and you trade one for the other.",
       "The k-NN lab lets you see boundaries change with k."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Sigmoid",
+       "The function 1 / (1 + e^(-z)) that squashes any number into the range 0 to 1."
+      ],
+      [
+       "k-nearest neighbours",
+       "A method that classifies a point by majority vote among the k closest training points."
+      ],
+      [
+       "Decision tree",
+       "A model of nested yes/no questions on features that ends in a prediction."
+      ],
+      [
+       "Precision",
+       "Of the items predicted positive, the fraction that truly are positive."
+      ],
+      [
+       "Recall",
+       "Of the truly positive items, the fraction the model found."
+      ]
      ]
     }
    ],
@@ -4339,6 +4591,13 @@
      "hint": "Scan candidate thresholds.",
      "solution": "def best_threshold(values, labels):\n    def g(ls):\n        n = len(ls)\n        if n == 0:\n            return 0.0\n        s = 0.0\n        for k in set(ls):\n            s = s + (ls.count(k) / float(n)) ** 2\n        return 1 - s\n    vs = sorted(set(values))\n    best = None\n    bt = None\n    for i in range(len(vs) - 1):\n        t = (vs[i] + vs[i + 1]) / 2.0\n        left = [labels[j] for j in range(len(values)) if values[j] <= t]\n        right = [labels[j] for j in range(len(values)) if values[j] > t]\n        w = (len(left) * g(left) + len(right) * g(right)) / float(len(values))\n        if best is None or w < best - 1e-9:\n            best = w\n            bt = t\n    return round(bt, 3)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4429,6 +4688,36 @@
      "items": [
       "Last, always set a baseline. For regression, predict the training mean; for classification, predict the most common class. If your model scores barely above, the features probably carry little information, or the pipeline has a bug.",
       "Regularisation, simpler models and more data are the main cures for overfitting."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Overfitting",
+       "When a model learns the training data too closely, including noise, and generalises poorly."
+      ],
+      [
+       "Underfitting",
+       "When a model is too simple to capture the real pattern."
+      ],
+      [
+       "Cross-validation",
+       "Estimating performance by training and scoring on several different splits and averaging."
+      ],
+      [
+       "Hyperparameter",
+       "A setting chosen before training, such as k or tree depth, rather than learned from data."
+      ],
+      [
+       "Baseline",
+       "A simple reference model that any useful model should beat."
+      ]
      ]
     }
    ],
@@ -4953,6 +5242,13 @@
      "hint": "More powers give a more flexible model.",
      "solution": "def poly_features(x, degree):\n    out = []\n    for v in x:\n        out.append([v ** p for p in range(1, degree + 1)])\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5042,6 +5338,36 @@
      "items": [
       "Many datasets have dozens of features, but the interesting variation lies along a few directions. PCA finds the direction of greatest spread, then the next, perpendicular to it, and so on. Keeping the first two or three gives a picture you can plot and a compact input for other models.",
       "The ratio of variance each component explains tells you how much you lose."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Clustering",
+       "Grouping items so that those in a group are more similar to each other than to those in other groups."
+      ],
+      [
+       "k-means",
+       "A clustering algorithm that alternates assigning points to the nearest centroid and recomputing centroids."
+      ],
+      [
+       "Inertia",
+       "The sum of squared distances from each point to its cluster centre."
+      ],
+      [
+       "PCA",
+       "Principal component analysis: a rotation of the data to directions of greatest variance."
+      ],
+      [
+       "Explained variance ratio",
+       "The fraction of total variance captured by a principal component."
+      ]
      ]
     }
    ],
@@ -5704,6 +6030,13 @@
      "hint": "Average product of deviations.",
      "solution": "def covariance(x, y):\n    n = len(x)\n    mx = sum(x) / float(n)\n    my = sum(y) / float(n)\n    return round(sum([(x[i] - mx) * (y[i] - my) for i in range(n)]) / n, 3)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5800,6 +6133,36 @@
      "items": [
       "Neural networks shine on images, text and audio, where there are huge datasets and no good hand-made features. For small tables, simpler models such as gradient-boosted trees often win.",
       "Use the playground to train a tiny network on a spiral, change the hidden units and the learning rate, and watch the boundary bend into shape."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Neuron",
+       "A unit that computes activation(w . x + b)."
+      ],
+      [
+       "Activation function",
+       "A non-linear function applied to a neuron's sum, such as ReLU, sigmoid or softmax."
+      ],
+      [
+       "Loss function",
+       "A number measuring how wrong the predictions are, which training tries to minimise."
+      ],
+      [
+       "Backpropagation",
+       "An algorithm that computes the gradient of the loss with respect to every weight using the chain rule."
+      ],
+      [
+       "Epoch",
+       "One complete pass through the training data."
+      ]
      ]
     }
    ],
@@ -6364,6 +6727,13 @@
      "hint": "Chain rule through the sigmoid.",
      "solution": "import math\ndef step(w, b, x, y, lr):\n    p = 1.0 / (1.0 + math.exp(-(w * x + b)))\n    g = (p - y) * p * (1 - p)\n    return [round(w - lr * g * x, 4), round(b - lr * g, 4)]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -6454,6 +6824,36 @@
      "items": [
       "Finally, reproducibility and communication. Set random seeds, record library versions, keep the code in version control and write a short model card: what the model is for, what data it saw, how well it works, where it fails. Present results with plain words and honest uncertainty.",
       "A model nobody trusts or understands will not be used."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Reproducibility",
+       "Being able to rerun an analysis and get the same results, using fixed seeds, recorded versions and clean code."
+      ],
+      [
+       "Bias (fairness sense)",
+       "Systematic unfairness in data or model outputs that disadvantages some groups."
+      ],
+      [
+       "Selection rate",
+       "The fraction of a group that receives a positive prediction."
+      ],
+      [
+       "Model card",
+       "A short document describing a model's purpose, data, performance and limits."
+      ],
+      [
+       "Deployment",
+       "Putting a trained model to work on new data in a real system."
+      ]
      ]
     }
    ],
@@ -6872,6 +7272,13 @@
      ],
      "hint": "Build the string piece by piece.",
      "solution": "def summarise(name, train_score, test_score, baseline):\n    def f(v):\n        return '%.2f' % v\n    verdict = 'yes' if test_score > baseline else 'no'\n    return name + ': train ' + f(train_score) + ', test ' + f(test_score) + ', baseline ' + f(baseline) + ', beats baseline: ' + verdict\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

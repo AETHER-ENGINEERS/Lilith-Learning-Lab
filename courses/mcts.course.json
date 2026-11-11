@@ -147,6 +147,40 @@
      "items": [
       "The labs use Nim as a test game. A pile of n stones; players alternate taking one, two or three; whoever takes the last stone wins. It is small enough to check every answer by hand, and rich enough to show every idea."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Monte Carlo method",
+       "Estimating a quantity by averaging random samples."
+      ],
+      [
+       "Search tree",
+       "A tree whose nodes are game states and whose edges are moves."
+      ],
+      [
+       "Simulation (rollout)",
+       "Playing a game to the end with random or simple moves."
+      ],
+      [
+       "UCT",
+       "Upper Confidence bounds applied to Trees: MCTS with the UCB1 selection rule."
+      ],
+      [
+       "Anytime algorithm",
+       "One that can be stopped at any moment and still return its best answer so far."
+      ],
+      [
+       "Iteration",
+       "One pass of the four MCTS steps."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -257,6 +291,13 @@
      "title": "Basics",
      "text": "MCTS repeats {{selection}}, expansion, simulation and {{backpropagation|back propagation}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -355,6 +396,40 @@
      "type": "text",
      "items": [
       "MCTS takes a different route. It does not try to cover the tree. It samples it, and focuses the samples. In the labs below you write exact solvers for Nim first, because they give the ground truth against which the sampled estimates can be judged."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Game tree",
+       "A tree of all positions reachable by legal play."
+      ],
+      [
+       "Branching factor",
+       "The average number of legal moves in a position."
+      ],
+      [
+       "Minimax",
+       "Exact evaluation: you pick the best move, the opponent picks the worst for you."
+      ],
+      [
+       "Terminal state",
+       "A position where the game is over."
+      ],
+      [
+       "Win or loss for the player to move",
+       "The exact value of a position under perfect play."
+      ],
+      [
+       "Nim",
+       "A take-away game; here you remove 1 to 3 stones and taking the last wins."
+      ]
      ]
     }
    ],
@@ -674,6 +749,13 @@
      "title": "Search",
      "text": "Minimax is exact but the tree has about b to the {{d|depth}} leaves, where b is the {{branching}} factor."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -773,6 +855,40 @@
      "items": [
       "For repeatable labs we need random numbers that are reproducible. A linear congruential generator updates a number by x to (a times x plus c) modulo m. The labs use a tiny one with m of 65537, a of 75 and c of 74, so everything stays far below the integer limit.",
       "Its quality is poor for serious work but fine for teaching."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Playout",
+       "A simulated game from a position to its end."
+      ],
+      [
+       "Win rate",
+       "Wins divided by playouts."
+      ],
+      [
+       "Standard error",
+       "The typical size of the estimate's error."
+      ],
+      [
+       "Pseudo-random generator",
+       "A deterministic formula producing numbers that look random."
+      ],
+      [
+       "LCG",
+       "Linear congruential generator: x becomes (a x + c) mod m."
+      ],
+      [
+       "Seed",
+       "The starting value of a generator."
+      ]
      ]
     }
    ],
@@ -1079,6 +1195,13 @@
      "title": "Sampling",
      "text": "The error of a Monte Carlo average shrinks like one over the square {{root}} of the number of {{playouts|samples}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1179,6 +1302,40 @@
      "type": "text",
      "items": [
       "The labs write the UCB1 score, choose the best arm, and measure regret in a small deterministic bandit."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Multi-armed bandit",
+       "A problem of repeatedly choosing among arms with unknown reward distributions."
+      ],
+      [
+       "Exploitation",
+       "Choosing the arm that has looked best so far."
+      ],
+      [
+       "Exploration",
+       "Choosing an arm to learn about it."
+      ],
+      [
+       "UCB1",
+       "Choose the arm maximising mean + c sqrt(2 ln N / n_i)."
+      ],
+      [
+       "Regret",
+       "The reward lost by not always playing the best arm."
+      ],
+      [
+       "Confidence bonus",
+       "The term that grows when an arm has been tried few times."
+      ]
      ]
     }
    ],
@@ -1561,6 +1718,13 @@
      "title": "UCB1",
      "text": "UCB1 adds a confidence {{bonus}} that is large for arms pulled {{rarely|few times|seldom}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1665,6 +1829,40 @@
      "type": "text",
      "items": [
       "The loop then repeats, thousands or millions of times. The visit counts concentrate on strong moves, and the final choice reads them off. The labs implement each step on a small tree stored in lists."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Tree policy",
+       "The rule used to pick children while inside the tree."
+      ],
+      [
+       "Default policy",
+       "The rule used to play moves in the simulation, often random."
+      ],
+      [
+       "Visit count N",
+       "How many iterations passed through a node."
+      ],
+      [
+       "Total reward W",
+       "The sum of results backed up through a node."
+      ],
+      [
+       "Untried move",
+       "A legal move with no child node yet."
+      ],
+      [
+       "Frontier",
+       "The boundary between the tree and the unexplored part."
+      ]
      ]
     }
    ],
@@ -2131,6 +2329,13 @@
      "title": "Cycle",
      "text": "A node stores the visit count {{N}} and total reward {{W}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2229,6 +2434,40 @@
      "type": "text",
      "items": [
       "Because the search tree carries over, a program can keep the subtree of the move actually played and reuse its statistics on the next turn. And because the search is anytime, the program can think for as long as the clock allows."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "UCT score",
+       "mean + C sqrt(ln N_parent / n_child), in the survey's form with a constant."
+      ],
+      [
+       "Search budget",
+       "The number of iterations or the time allowed."
+      ],
+      [
+       "Root move",
+       "The move chosen from the root after the search."
+      ],
+      [
+       "Most visited child",
+       "The child with the highest visit count."
+      ],
+      [
+       "Fully expanded",
+       "A node with a child for every legal move."
+      ],
+      [
+       "Convergence",
+       "With enough iterations UCT's choice approaches the optimal move."
+      ]
      ]
     }
    ],
@@ -2540,6 +2779,13 @@
      "title": "Search",
      "text": "UCT picks the child with the highest mean plus an exploration {{bonus}}; at the end we play the most {{visited}} child."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2638,6 +2884,40 @@
      "type": "text",
      "items": [
       "A last practical point is ties. Several children can have the same visit count, particularly in short searches. Pick by a fixed rule such as the highest mean, then the lowest index, so that behaviour is repeatable."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Max child",
+       "The child with the highest mean reward."
+      ],
+      [
+       "Robust child",
+       "The child with the most visits."
+      ],
+      [
+       "Max-robust child",
+       "A child that is both max and robust."
+      ],
+      [
+       "Secure child",
+       "The child maximising mean minus a multiple of its standard error."
+      ],
+      [
+       "Lower confidence bound",
+       "A pessimistic estimate: mean minus a margin."
+      ],
+      [
+       "Tie-breaking",
+       "A fixed rule for equal scores."
+      ]
      ]
     }
    ],
@@ -3085,6 +3365,13 @@
      "title": "Choice",
      "text": "The {{robust}} child has the most visits; a child with few visits has an unreliable {{mean|average}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3190,6 +3477,40 @@
      "type": "text",
      "items": [
       "Finally, parallelism. Several threads can share the tree. Virtual loss temporarily counts a visit as a loss on the path being explored, which discourages other threads from following it. The labs implement an AMAF update, first-play urgency and progressive widening."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "AMAF",
+       "All moves as first: credit a move when it appears anywhere later in the playout."
+      ],
+      [
+       "RAVE",
+       "Rapid Action Value Estimation: blends AMAF and ordinary statistics in the tree."
+      ],
+      [
+       "First-play urgency",
+       "A value assigned to unvisited children in place of infinity."
+      ],
+      [
+       "Progressive widening",
+       "Allow only a growing number of children as the parent's visits increase."
+      ],
+      [
+       "Transposition",
+       "Different move orders reaching the same position."
+      ],
+      [
+       "Virtual loss",
+       "A temporary penalty that steers parallel threads to different branches."
+      ]
      ]
     }
    ],
@@ -3640,6 +3961,13 @@
      "title": "Variants",
      "text": "{{RAVE}} blends AMAF with tree statistics, and progressive {{widening}} grows the child set."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3740,6 +4068,40 @@
      "items": [
       "Bias in the playouts is a further risk. If the default policy is biased, so are the estimates. Domain knowledge can help and can also hurt.",
       "A broader point: since 2016, programs such as AlphaGo and AlphaZero keep the MCTS tree but evaluate leaves with neural networks and steer selection with a learned policy, as described in the sister courses."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Perspective",
+       "The player from whose viewpoint a reward is measured."
+      ],
+      [
+       "Negamax",
+       "A form of minimax where each level negates the value."
+      ],
+      [
+       "Alpha-beta",
+       "A pruning method that skips branches that cannot affect the minimax result."
+      ],
+      [
+       "Evaluation function",
+       "A hand-written estimate of a position's value."
+      ],
+      [
+       "Normalised reward",
+       "A reward scaled into the range 0 to 1."
+      ],
+      [
+       "Trap",
+       "A position where one precise move refutes an attractive line."
+      ]
      ]
     }
    ],
@@ -4055,6 +4417,13 @@
      "title": "Two players",
      "text": "At each level of the tree the reward flips to one {{minus|-}} the result, and a draw counts as {{one half|0.5|half}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4161,6 +4530,40 @@
      "items": [
       "Where to go next: read the Browne survey for the long list of variants, implement MCTS for a game of your choice such as tic-tac-toe or Connect Four, and compare it with your own alpha-beta program.",
       "In the labs, you will build the pieces of the PUCT rule, measure tree statistics and write a simple tournament."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "General game playing",
+       "Playing any game given only its rules."
+      ],
+      [
+       "Sparse reward",
+       "A signal that appears only at the very end."
+      ],
+      [
+       "PUCT",
+       "A UCT variant that adds a prior probability from a neural network."
+      ],
+      [
+       "MuZero",
+       "A system that also learns a model of the environment for the search."
+      ],
+      [
+       "Planning",
+       "Choosing actions by looking ahead in a model."
+      ],
+      [
+       "Learned value",
+       "A neural network estimate of a position's value, used instead of a playout."
+      ]
      ]
     }
    ],
@@ -4505,6 +4908,13 @@
      "type": "fill",
      "title": "Legacy",
      "text": "AlphaGo kept the {{tree}} search and replaced random playouts with a {{value}} network."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

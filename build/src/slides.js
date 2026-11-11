@@ -94,6 +94,11 @@
           if (opts.readCode) say(ci, 0, 'Code', 'Code example. ' + lines.slice(c * per2, c * per2 + per2).join('. '));
           else say(ci, 0, 'Code', c === 0 ? 'Here is an example. Read it on screen, or turn on read code in settings.' : 'The example continues.');
         }
+      } else if (b.type === 'table') {
+        flushText();
+        var ti = slide({ type: 'table', stage: 'lesson', heading: b.title || 'Table', head: b.head, rows: b.rows });
+        say(ti, 0, 'Table', 'Table' + (b.title ? ': ' + b.title : '') + '. Columns: ' + b.head.join(', ') + '.');
+        b.rows.slice(0, 8).forEach(function (r, k) { say(ti, 0, 'Table', 'Row ' + (k + 1) + '. ' + r.map(function (x, j) { return b.head[j] + ': ' + x; }).join('. ') + '.'); });
       } else if (b.type === 'map') {
         flushText();
         var map2 = M.parseMaps(require_mapblock(b.map))[0];

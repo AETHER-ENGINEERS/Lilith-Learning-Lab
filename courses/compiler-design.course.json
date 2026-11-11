@@ -184,6 +184,40 @@
      "items": [
       "In the practice section you write a tiny linker. It follows references from a main module, collects the modules it needs, and reports an unresolved symbol if one is missing."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Compiler",
+       "A program that translates a program in one language into an equivalent program in another."
+      ],
+      [
+       "Preprocessor",
+       "Runs before the compiler: expands macros, includes files and removes comments."
+      ],
+      [
+       "Interpreter",
+       "Reads a statement, converts it to intermediate code and executes it, then takes the next."
+      ],
+      [
+       "Assembler",
+       "Translates assembly language into machine code in an object file."
+      ],
+      [
+       "Linker",
+       "Merges object files and resolves references between them to make an executable."
+      ],
+      [
+       "Loader",
+       "Part of the operating system that loads an executable into memory and starts it."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -401,6 +435,13 @@
      "title": "Overview",
      "text": "A compiler reads the {{whole}} program, while an {{interpreter}} runs one statement at a time. A {{cross}}-compiler runs on one platform and targets another."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -500,6 +541,40 @@
      "type": "text",
      "items": [
       "For example, a one-pass compiler might do lexing, parsing and code generation together while reading the file once. A multi-pass compiler builds a tree in the first pass and optimizes it in later passes."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Analysis phase",
+       "The front end: reads the source and checks it, producing an intermediate representation and a symbol table."
+      ],
+      [
+       "Synthesis phase",
+       "The back end: generates the target program from the intermediate representation and the symbol table."
+      ],
+      [
+       "Front end",
+       "Machine independent analysis of the source language."
+      ],
+      [
+       "Back end",
+       "Target dependent generation and optimization."
+      ],
+      [
+       "Pass",
+       "A traversal of the compiler through the entire program."
+      ],
+      [
+       "Phase",
+       "A distinguishable stage that takes input from the previous stage and produces output for the next."
+      ]
      ]
     }
    ],
@@ -683,6 +758,13 @@
      "title": "Architecture",
      "text": "The {{front}} end is the analysis phase and the {{back}} end is the synthesis phase. A {{pass}} traverses the entire program."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -801,6 +883,40 @@
      "type": "text",
      "items": [
       "Here is one statement through the first phases. The text x = a + 2 becomes the tokens id, equals, id, plus and number. The parser groups them into an assignment with a sum. The semantic analyzer checks that x and a are declared and compatible. The later chapters implement each phase in turn."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Lexeme",
+       "A sequence of characters in the source that matches the pattern of a token."
+      ],
+      [
+       "Token",
+       "A pair of token name and attribute value, produced by the lexical analyzer."
+      ],
+      [
+       "Parse tree",
+       "A tree showing how the tokens match the grammar."
+      ],
+      [
+       "Annotated syntax tree",
+       "The syntax tree with semantic information attached, output of semantic analysis."
+      ],
+      [
+       "Intermediate code",
+       "A program for an abstract machine, between the source language and machine language."
+      ],
+      [
+       "Symbol table",
+       "A data structure holding identifiers and their types, used by all phases."
+      ]
      ]
     }
    ],
@@ -963,6 +1079,13 @@
      "title": "Phases",
      "text": "The {{lexical}} analyzer produces tokens, the {{semantic}} analyzer checks types, and the {{symbol}} table is used by every phase."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1104,6 +1227,40 @@
      "type": "text",
      "items": [
       "In the practice section you write a real tokenizer. It applies the longest match rule, gives keywords priority, skips whitespace, and handles two-character operators like double equals."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Lexeme",
+       "The actual characters matched in the source, such as value."
+      ],
+      [
+       "Pattern",
+       "A rule describing what lexemes belong to a token, given by a regular expression."
+      ],
+      [
+       "Token",
+       "A category of lexeme such as identifier or keyword, with an optional attribute."
+      ],
+      [
+       "Alphabet",
+       "Any finite set of symbols."
+      ],
+      [
+       "String",
+       "A finite sequence of symbols from an alphabet. The empty string is written epsilon."
+      ],
+      [
+       "Language",
+       "A set of strings over an alphabet."
+      ]
      ]
     }
    ],
@@ -1393,6 +1550,13 @@
      "title": "Scanning",
      "text": "The scanner takes the {{longest}} match, so intvalue is one {{identifier}}. A reserved word such as int is a {{keyword}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1525,6 +1689,40 @@
      "type": "text",
      "items": [
       "The one problem left is how to verify the validity of a regular expression used to specify patterns. The well-accepted solution is finite automata, the next chapter. In the practice section you test these two token patterns by hand and list a Kleene closure."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Regular expression",
+       "A notation for patterns; each denotes a set of strings."
+      ],
+      [
+       "Union",
+       "L union M is the set of strings in L or in M."
+      ],
+      [
+       "Concatenation",
+       "LM is the set of strings st with s in L and t in M."
+      ],
+      [
+       "Kleene closure",
+       "L star is zero or more occurrences of strings from L."
+      ],
+      [
+       "Regular language",
+       "A language defined by a regular expression."
+      ],
+      [
+       "Plus",
+       "x plus means one or more occurrences of x."
+      ]
      ]
     }
    ],
@@ -1774,6 +1972,13 @@
      "title": "Regular expressions",
      "text": "The Kleene {{closure}} means zero or more. The operator with the lowest precedence is {{union}}. An optional sign is written {{sign}}?."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1896,6 +2101,40 @@
      "type": "text",
      "items": [
       "Rule priority fits the same picture. If two token automata both accept the same lexeme, the one listed first, for example the keyword, wins. In the practice section you write the runner, then the longest accepted prefix."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Finite automaton",
+       "A state machine with states, an alphabet, a start state, final states and a transition function."
+      ],
+      [
+       "State",
+       "A circle in the diagram; the machine is in exactly one state at a time."
+      ],
+      [
+       "Start state",
+       "The state where the machine begins, marked with an arrow."
+      ],
+      [
+       "Final state",
+       "A state where the input is accepted; drawn with a double circle."
+      ],
+      [
+       "Transition",
+       "A move from one state to another on an input symbol; it may stay in the same state."
+      ],
+      [
+       "Transition function",
+       "The mapping delta from a state and a symbol to the next state."
+      ]
      ]
     }
    ],
@@ -2393,6 +2632,13 @@
      "title": "Automata",
      "text": "A finite automaton accepts when the input is consumed and the state is {{final}}. The function delta is the {{transition}} function. A final state is drawn as a {{double}} circle."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2617,6 +2863,40 @@
      "type": "text",
      "items": [
       "The practice section tests the palindrome grammar, counts the parse trees of an ambiguous grammar, removes left recursion, factors a common prefix, and computes FIRST and FOLLOW for the standard expression grammar."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Context-free grammar",
+       "A grammar with non-terminals V, terminals, productions P and a start symbol S."
+      ],
+      [
+       "Non-terminal",
+       "A syntactic variable standing for a set of strings."
+      ],
+      [
+       "Terminal",
+       "A basic symbol (token) from which strings are formed."
+      ],
+      [
+       "Production",
+       "A rule: a non-terminal, an arrow and a sequence of terminals and non-terminals."
+      ],
+      [
+       "Derivation",
+       "A sequence of production applications that yields the input string."
+      ],
+      [
+       "Parse tree",
+       "A graphical depiction of a derivation; leaves are terminals, interior nodes non-terminals."
+      ]
      ]
     }
    ],
@@ -3261,6 +3541,13 @@
      "title": "Grammar",
      "text": "A grammar with two parse trees for one string is {{ambiguous}}. A top-down parser can loop on {{left}} recursion. Pulling out a common prefix is left {{factoring}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3375,6 +3662,36 @@
      "type": "text",
      "items": [
       "In the practice section you write the backtracking recognizer and count how many productions it tries. Then the next chapters take the top-down and bottom-up families apart."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Top-down parsing",
+       "Builds the parse tree from the start symbol down to the input."
+      ],
+      [
+       "Bottom-up parsing",
+       "Builds the parse tree from the input symbols up to the start symbol."
+      ],
+      [
+       "Recursive descent parsing",
+       "A top-down parser with one recursive procedure per non-terminal."
+      ],
+      [
+       "Backtracking",
+       "Trying the next production when one fails, possibly reading input more than once."
+      ],
+      [
+       "Reduction",
+       "Replacing the right side of a production found in the input with its left side."
+      ]
      ]
     }
    ],
@@ -3597,6 +3914,13 @@
      "title": "Parsing",
      "text": "A {{top}}-down parser starts at the start symbol. A {{bottom}}-up parser works by {{reductions}}. Trying another production after a failure is {{backtracking}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3732,6 +4056,36 @@
      "items": [
       "The standard expression table is built from the FIRST and FOLLOW sets of the earlier chapter: put the production A to alpha in M[A, a] for each a in FIRST of alpha, and if alpha can vanish, for each a in FOLLOW of A.",
       "In the practice section you get that table as data and write the algorithm, plus a recursive descent evaluator."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Predictive parser",
+       "A recursive descent parser that chooses the production by look-ahead and never backtracks."
+      ],
+      [
+       "LL(k) grammar",
+       "A grammar a predictive parser can handle with k symbols of look-ahead."
+      ],
+      [
+       "Look-ahead",
+       "The next input symbol(s) the parser examines before choosing a production."
+      ],
+      [
+       "Parsing table",
+       "A table M[A, a] giving the production to use for non-terminal A and look-ahead a."
+      ],
+      [
+       "End marker",
+       "The symbol $ at the bottom of the stack and the end of the input."
+      ]
      ]
     }
    ],
@@ -4255,6 +4609,13 @@
      "title": "Top-down",
      "text": "A {{predictive}} parser never backtracks. In LL(1) the number of look-ahead symbols is {{1|one}}. The stack and input both end with the marker {{$}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4386,6 +4747,40 @@
      "items": [
       "LL builds the tree top-down, continuously popping a non-terminal and pushing its right side; it expands non-terminals and reads terminals when it pops them.",
       "LR builds bottom-up, recognizes a right side on the stack, pops it and pushes the non-terminal; it reduces, and reads terminals while pushing them. The LL parser corresponds to a pre-order traversal of the parse tree, LR to a post-order one."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Shift",
+       "Move the next input symbol onto the stack."
+      ],
+      [
+       "Reduce",
+       "Replace a handle on the stack top by the left side of its production."
+      ],
+      [
+       "Handle",
+       "A right side of a production that sits on top of the stack and can be reduced."
+      ],
+      [
+       "LR parser",
+       "A table-driven shift-reduce parser: Left-to-right scan, Right-most derivation in reverse."
+      ],
+      [
+       "SLR(1)",
+       "Simple LR: smallest class of grammars, few states, simple and fast to build."
+      ],
+      [
+       "LR(1)",
+       "Canonical LR: complete set of LR(1) grammars, large table, slow construction."
+      ]
      ]
     }
    ],
@@ -4810,6 +5205,13 @@
      "title": "Bottom-up",
      "text": "In shift-{{reduce}} parsing, the {{shift}} step pushes an input symbol. LR stands for left-to-right scan and {{right}}-most derivation in reverse."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4934,6 +5336,40 @@
      "type": "text",
      "items": [
       "The practice section has three labs: panic mode recovery that reports one error per statement and moves on, the stack-based parenthesis check that regular expressions cannot do, and building an AST with precedence from a token list."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Panic mode",
+       "On an error, skip input until a delimiter such as a semicolon, then resume."
+      ],
+      [
+       "Statement mode",
+       "Make a local fix, such as inserting a missing semicolon, so the rest of the statement can parse."
+      ],
+      [
+       "Error production",
+       "A grammar rule added for a common mistake so the parser can recognize and report it."
+      ],
+      [
+       "Global correction",
+       "Find the closest error-free program to the erroneous one; not used in practice."
+      ],
+      [
+       "Abstract syntax tree",
+       "A tree with the essential structure only: operators as nodes and operands as children."
+      ],
+      [
+       "Lexical error",
+       "Such as an identifier typed incorrectly."
+      ]
      ]
     }
    ],
@@ -5199,6 +5635,13 @@
      "title": "Errors",
      "text": "{{Panic}} mode skips to a delimiter. A missing semicolon is a {{syntactic|syntax|syntactical}} error. An {{abstract}} syntax tree hides unneeded detail."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5360,6 +5803,40 @@
      "type": "text",
      "items": [
       "In the practice section you write a small type checker with a symbol table, evaluate synthesized attributes on an expression tree, and pass an inherited type down a declaration list."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Semantics",
+       "The meaning of the constructs: tokens and syntax structure."
+      ],
+      [
+       "Syntax directed definition",
+       "A context-free grammar together with semantic rules."
+      ],
+      [
+       "Attribute",
+       "A named value, with a domain such as integer or string, attached to a grammar symbol."
+      ],
+      [
+       "Synthesized attribute",
+       "An attribute whose value comes from the node's children."
+      ],
+      [
+       "Inherited attribute",
+       "An attribute whose value comes from the parent or siblings."
+      ],
+      [
+       "S-attributed SDT",
+       "Uses only synthesized attributes; evaluated bottom-up."
+      ]
      ]
     }
    ],
@@ -5704,6 +6181,13 @@
      "title": "Semantics",
      "text": "A {{synthesized}} attribute takes values from children. An {{inherited}} attribute takes values from the parent or siblings. {{S}}-attributed definitions use only synthesized attributes."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5916,6 +6400,40 @@
      "type": "text",
      "items": [
       "The practice section builds an activation tree from call and return events and runs the parameter modes."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Runtime environment",
+       "The state of the target machine while the program runs: libraries, variables and memory."
+      ],
+      [
+       "Activation",
+       "One execution of a procedure."
+      ],
+      [
+       "Activation record",
+       "The data needed for one call: temporaries, locals, machine status, links, parameters, return value."
+      ],
+      [
+       "Control stack",
+       "The stack on which activation records are kept."
+      ],
+      [
+       "Activation tree",
+       "A tree showing how procedure calls nest."
+      ],
+      [
+       "r-value",
+       "The value of an expression."
+      ]
      ]
     }
    ],
@@ -6247,6 +6765,13 @@
      "title": "Runtime",
      "text": "Activation records are stored on the {{stack}}. A constant has an r-value but no {{l-value|lvalue|l value}}. With pass by {{reference}} the callee works on the caller's variable."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -6377,6 +6902,40 @@
      "type": "text",
      "items": [
       "This is what the practice section builds: a scoped table driven by a list of operations. You will see shadowing, where an inner declaration hides an outer one, and the hash function that a real implementation uses."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Symbol table",
+       "A table of the names in a program with their types and attributes."
+      ],
+      [
+       "insert",
+       "Adds a new name with its attributes to the table."
+      ],
+      [
+       "lookup",
+       "Searches for a name; returns its attributes, or 0 if not present."
+      ],
+      [
+       "Scope",
+       "The region of a program in which a name is visible."
+      ],
+      [
+       "Global symbol table",
+       "The table accessible by all procedures."
+      ],
+      [
+       "Scope symbol table",
+       "A table created for one scope."
+      ]
      ]
     }
    ],
@@ -6643,6 +7202,13 @@
      "title": "Symbol table",
      "text": "Lookup of a missing name returns {{0|zero}}. A name in an inner scope that hides an outer one is {{shadowing|shadowed}}. Most symbol tables are {{hash}} tables."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -6808,6 +7374,40 @@
      "type": "text",
      "items": [
       "To enter a name in the symbol table, a procedure called enter is used, with the name, its type and its offset, which is the relative address in the data area. The practice section writes the three-address code generator, the triples generator and the offset allocator."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Intermediate representation",
+       "A program for an abstract machine, between the source and the target."
+      ],
+      [
+       "High-level IR",
+       "Close to the source language; easy to generate and to modify."
+      ],
+      [
+       "Low-level IR",
+       "Close to the target machine; good for register and instruction selection."
+      ],
+      [
+       "Three-address code",
+       "Instructions with at most three addresses, such as x = y op z."
+      ],
+      [
+       "Quadruple",
+       "An instruction with four fields: operator, arg1, arg2 and result."
+      ],
+      [
+       "Triple",
+       "An instruction with three fields; the result is referred to by its position."
+      ]
      ]
     }
    ],
@@ -7200,6 +7800,13 @@
      "title": "Intermediate code",
      "text": "Three-address code has at most {{three}} addresses. A {{quadruple}} has four fields. A {{triple}} refers to results by position."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -7372,6 +7979,40 @@
      "type": "text",
      "items": [
       "The practice section writes four peephole passes, a DAG counter that finds common sub-expressions, and a small code generator with descriptors."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "DAG",
+       "A directed acyclic graph of a basic block: leaves are names or constants, interior nodes are operators."
+      ],
+      [
+       "Peephole optimization",
+       "A local optimization over a small portion of code."
+      ],
+      [
+       "Redundant instruction",
+       "An instruction whose effect is already achieved by others."
+      ],
+      [
+       "Unreachable code",
+       "Code that can never be executed because of the control structure."
+      ],
+      [
+       "Strength reduction",
+       "Replacing an expensive operation by a cheaper one with the same result."
+      ],
+      [
+       "Register descriptor",
+       "Records what value each register holds."
+      ]
      ]
     }
    ],
@@ -7809,6 +8450,13 @@
      "title": "Code generation",
      "text": "A {{DAG|dag}} exposes common sub-expressions. Replacing x * 2 by a shift is strength {{reduction}}. The {{address}} descriptor records where each name's value is."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -7991,6 +8639,40 @@
      "type": "text",
      "items": [
       "The practice section finds basic blocks, removes dead assignments with a backward pass, and detects loop-invariant statements for code motion."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Machine-independent optimization",
+       "Transforms intermediate code without using CPU registers or absolute memory locations."
+      ],
+      [
+       "Machine-dependent optimization",
+       "Done after target code is generated; uses registers and the memory hierarchy."
+      ],
+      [
+       "Basic block",
+       "A sequence of instructions always executed in order, with no jumps in or out except at its ends."
+      ],
+      [
+       "Control flow graph",
+       "A graph of basic blocks showing how control passes between them."
+      ],
+      [
+       "Loop-invariant code",
+       "Code in a loop that computes the same value on every iteration."
+      ],
+      [
+       "Induction variable",
+       "A variable altered in a loop by a loop-invariant amount."
+      ]
      ]
     }
    ],
@@ -8376,6 +9058,13 @@
      "type": "fill",
      "title": "Optimization",
      "text": "A basic {{block}} has no jumps inside it. Code that computes the same value every iteration is loop-{{invariant}}. Moving shared computation so it runs once is code {{motion}}."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

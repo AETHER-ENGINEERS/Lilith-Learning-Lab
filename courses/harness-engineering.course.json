@@ -129,6 +129,40 @@
       "A note on sources. The material here is drawn from several 2026 practitioner articles and documentation pages, plus general software engineering practice. The field is young, terms vary and some are marketing. I label background knowledge as such.",
       "The labs use tiny deterministic examples, so you can test your understanding without calling a real model."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Harness",
+       "Everything around the model: prompts, tools, memory, loop, permissions, logs."
+      ],
+      [
+       "Agent",
+       "A model that acts toward a goal by calling tools in a loop, inside a harness."
+      ],
+      [
+       "Prompt engineering",
+       "Writing and tuning instructions for the model."
+      ],
+      [
+       "Context engineering",
+       "Choosing what information goes into the model's context window at each step."
+      ],
+      [
+       "Harness engineering",
+       "Designing the whole system around the model, including tools, state, guardrails and evaluation."
+      ],
+      [
+       "Scripted model",
+       "A fake model that returns canned replies, used to test the harness."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -240,6 +274,13 @@
      "title": "Idea",
      "text": "An agent is a model plus a {{harness}}. The model by itself only turns {{text}} into text."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -338,6 +379,40 @@
      "type": "text",
      "items": [
       "In the labs the reply format is simple text. A reply starting with CALL has a tool name and one argument. A reply starting with FINAL ends the loop. Anything else is a parse error."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Agent loop",
+       "Repeat: ask the model, run any requested tool, add the result to the history."
+      ],
+      [
+       "Action",
+       "A reply that asks the harness to run a tool."
+      ],
+      [
+       "Observation",
+       "The result of running a tool, fed back to the model."
+      ],
+      [
+       "Trajectory",
+       "The full sequence of model replies and observations."
+      ],
+      [
+       "Step limit",
+       "A maximum number of loop iterations."
+      ],
+      [
+       "Parse error",
+       "A reply the harness cannot understand."
+      ]
      ]
     }
    ],
@@ -680,6 +755,13 @@
      "title": "Loop",
      "text": "The loop ends on a {{final}} answer or when the step {{limit}} is reached."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -777,6 +859,40 @@
      "type": "text",
      "items": [
       "The Model Context Protocol, introduced by Anthropic in late 2024, standardises how tools and data sources are described and called, so a tool written once can be used by many harnesses. I mention it as background knowledge; the labs use simple local tools."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Tool schema",
+       "A description of a tool's arguments: names, types and which are required."
+      ],
+      [
+       "Validation",
+       "Checking that the arguments match the schema before running."
+      ],
+      [
+       "Dispatch",
+       "Looking up a tool by name and calling it."
+      ],
+      [
+       "MCP",
+       "Model Context Protocol: a standard interface for connecting tools and data sources to models."
+      ],
+      [
+       "Idempotent",
+       "Safe to repeat: running twice has the same effect as once."
+      ],
+      [
+       "Error message",
+       "Text returned when a call fails; written to help the model fix its next try."
+      ]
      ]
     }
    ],
@@ -1084,6 +1200,13 @@
      "title": "Tools",
      "text": "The model sees a tool's name, {{description}} and {{schema|argument schema}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1182,6 +1305,40 @@
      "type": "text",
      "items": [
       "Practitioners also warn that long contexts can hurt even when everything fits: stale or contradictory material distracts the model. The term context rot is used for this. Treat it as a practical warning rather than a precise measurement. The lesson is to keep the context small, current and relevant."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Context window",
+       "The maximum number of tokens the model can read at once."
+      ],
+      [
+       "Token budget",
+       "A limit the harness sets on prompt size."
+      ],
+      [
+       "Pinned message",
+       "A message that is never dropped, such as the system prompt."
+      ],
+      [
+       "Summarization",
+       "Replacing many old messages by a short summary."
+      ],
+      [
+       "Retrieval",
+       "Looking up relevant material on demand."
+      ],
+      [
+       "Context rot",
+       "Quality loss as the context fills with stale or irrelevant material."
+      ]
      ]
     }
    ],
@@ -1468,6 +1625,13 @@
      "title": "Context",
      "text": "The harness enforces a token {{budget}} and {{pins|pinned|pin}} the instructions."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1566,6 +1730,40 @@
      "type": "text",
      "items": [
       "In the labs we implement a small key-value memory with remember, recall and forget, and a checkpoint that serialises the state to a string and restores it."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Working memory",
+       "What is in the context window right now."
+      ],
+      [
+       "Long-term memory",
+       "Information stored outside the model and fetched later."
+      ],
+      [
+       "Notes file",
+       "A file the agent writes to record plans and facts."
+      ],
+      [
+       "Checkpoint",
+       "A saved snapshot of the run state."
+      ],
+      [
+       "Resume",
+       "Continuing a run from a checkpoint."
+      ],
+      [
+       "State",
+       "Everything needed to continue: history, memory, step count."
+      ]
      ]
     }
    ],
@@ -1867,6 +2065,13 @@
      "title": "Memory",
      "text": "The model is {{stateless}}, so the harness keeps state and saves a {{checkpoint}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1967,6 +2172,40 @@
      "type": "text",
      "items": [
       "Finally, log everything. An audit log of every tool call, its arguments, the decision and the outcome lets you review what happened and find what to fix."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Allowlist",
+       "A list of permitted tools or commands; everything else is refused."
+      ],
+      [
+       "Approval",
+       "A human confirmation required before a risky action."
+      ],
+      [
+       "Sandbox",
+       "An isolated environment limiting what the agent can touch."
+      ],
+      [
+       "Least privilege",
+       "Granting only the access the task needs."
+      ],
+      [
+       "Prompt injection",
+       "Instructions placed in content the model reads, trying to steer it."
+      ],
+      [
+       "Audit log",
+       "A record of every action and decision."
+      ]
      ]
     }
    ],
@@ -2280,6 +2519,13 @@
      "title": "Safety",
      "text": "Rules are enforced in the {{harness}}, with default {{deny}} for unknown tools."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2378,6 +2624,40 @@
      "type": "text",
      "items": [
       "A final design point: keep the orchestration in ordinary code where possible. Deciding which tasks are ready, collecting results and enforcing limits does not need a model. The labs implement exactly this part."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Orchestrator",
+       "The agent that plans and coordinates others."
+      ],
+      [
+       "Sub-agent",
+       "An agent given one subtask and its own context."
+      ],
+      [
+       "Context firewall",
+       "Isolation so that a sub-agent's working detail does not enter the parent's context."
+      ],
+      [
+       "Handoff",
+       "Passing a task and the needed context to another agent."
+      ],
+      [
+       "Fan-out",
+       "Starting several sub-agents on independent pieces."
+      ],
+      [
+       "Merge",
+       "Combining sub-agent results."
+      ]
      ]
     }
    ],
@@ -2750,6 +3030,13 @@
      "title": "Delegation",
      "text": "A sub-agent has its own {{context}} and returns a short {{summary}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2847,6 +3134,40 @@
      "type": "text",
      "items": [
       "Fallbacks give a second route: if the preferred search tool fails, try another; if a long operation fails, fall back to a simpler one. Combined with idempotent tools and checkpoints, they let a long run survive the small failures that are bound to happen."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Transient error",
+       "A failure that may succeed if tried again, such as a timeout."
+      ],
+      [
+       "Exponential backoff",
+       "Waiting longer after each failed attempt, for example doubling."
+      ],
+      [
+       "Timeout",
+       "A limit on how long to wait for a step."
+      ],
+      [
+       "Loop detection",
+       "Noticing that the agent repeats the same action without progress."
+      ],
+      [
+       "Cost limit",
+       "A cap on tokens, time or money for a run."
+      ],
+      [
+       "Fallback",
+       "An alternative way to proceed after a failure."
+      ]
      ]
     }
    ],
@@ -3210,6 +3531,13 @@
      "title": "Retries",
      "text": "Retry only {{transient}} errors, waiting longer each time with exponential {{backoff}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3310,6 +3638,40 @@
      "type": "text",
      "items": [
       "Run evals in isolated environments, a fresh copy of the project or a container, so one run's side effects do not affect the next. And watch cost and latency as well as success: a harness that wins by taking ten times as many tokens may not be an improvement."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Trace",
+       "A structured record of the steps of a run."
+      ],
+      [
+       "Eval",
+       "A set of tasks with graders that measure agent performance."
+      ],
+      [
+       "Grader",
+       "Code or a model that decides whether a run succeeded."
+      ],
+      [
+       "Regression eval",
+       "A test that checks previously solved tasks still pass."
+      ],
+      [
+       "Capability eval",
+       "A test of harder tasks to measure progress."
+      ],
+      [
+       "pass@k",
+       "The chance that at least one of k attempts succeeds."
+      ]
      ]
     }
    ],
@@ -3679,6 +4041,13 @@
      "title": "Eval",
      "text": "A {{trace}} records each step; a {{regression}} suite checks that old fixes still work."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3785,6 +4154,40 @@
      "items": [
       "The last labs pull the pieces together: a guarded run of a scripted agent that applies the allowlist, the step limit and the budget, and a harness scorecard.",
       "Where to go next: build a small harness around a real model of your choice, using your own tasks as the eval, and read the documentation of the agent frameworks you use, since the details change quickly."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Harness checklist",
+       "A list of properties a production harness should have."
+      ],
+      [
+       "Scaffolding",
+       "Harness code that compensates for model weaknesses and may become unnecessary."
+      ],
+      [
+       "Complexity budget",
+       "The idea that every added component has a cost to understand and maintain."
+      ],
+      [
+       "Ablation",
+       "Removing a component to see if it matters."
+      ],
+      [
+       "Human in the loop",
+       "A person who approves or corrects at key points."
+      ],
+      [
+       "Observability",
+       "Being able to see what the system did and why."
+      ]
      ]
     }
    ],
@@ -4141,6 +4544,13 @@
      "type": "fill",
      "title": "Design",
      "text": "Add a component only when a {{trace}} shows a need, and confirm with an {{eval}}."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

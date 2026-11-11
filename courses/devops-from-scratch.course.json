@@ -146,6 +146,32 @@
      "items": [
       "DevOps is not a job title or a single tool. Tools such as Git, Docker, Kubernetes and Terraform help, but the heart of it is culture: blameless reviews, shared ownership and a habit of automating pain away. The rest of this course takes the tools one at a time, in the order a change travels."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Pipeline",
+       "An automated path that takes a change from commit to production."
+      ],
+      [
+       "Toil",
+       "Repetitive manual work that grows with the service and could be automated."
+      ],
+      [
+       "Lead time",
+       "The time from a commit to that change running in production."
+      ],
+      [
+       "Change failure rate",
+       "The share of deployments that cause a problem needing a fix or rollback."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -297,6 +323,13 @@
      "hint": "Scale deployments to a week, divide failures by deployments, and take the middle of the sorted lead times.",
      "solution": "def dora(deploys, failed, days, lead_hours):\n    per_week = round(deploys / days * 7, 2)\n    pct = round(failed / deploys * 100, 1) if deploys else 0.0\n    s = sorted(lead_hours)\n    n = len(s)\n    if n == 0:\n        med = 0\n    elif n % 2 == 1:\n        med = s[n // 2]\n    else:\n        med = (s[n // 2 - 1] + s[n // 2]) / 2\n    return [per_week, pct, med]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -372,6 +405,32 @@
      "type": "text",
      "items": [
       "Every commit has a unique id, a long hash of its contents and its parent. Because the id depends on the history before it, nobody can change an old commit without changing all the ids after it. That makes the history trustworthy and lets two people compare their copies by comparing ids."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Commit",
+       "A saved snapshot of the tracked files, with a message and a parent."
+      ],
+      [
+       "Staging area",
+       "Also called the index: the changes you have selected for the next commit."
+      ],
+      [
+       "Working tree",
+       "The actual files in your folder."
+      ],
+      [
+       "Remote",
+       "Another copy of the repository, for example on a server."
+      ]
      ]
     }
    ],
@@ -471,6 +530,13 @@
       ]
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -547,6 +613,32 @@
      "type": "code",
      "lang": "text",
      "code": "<<<<<<< HEAD\ntitle: Main\n=======\ntitle: Feature\n>>>>>>> feature"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Branch",
+       "A named pointer to a commit that moves forward as you commit."
+      ],
+      [
+       "Merge",
+       "Combining the work of two branches into one."
+      ],
+      [
+       "Conflict",
+       "Overlapping changes that git cannot combine automatically."
+      ],
+      [
+       "Pull request",
+       "A request to merge a branch, with discussion and review."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -614,6 +706,13 @@
      "type": "fill",
      "title": "Merging",
      "text": "A {{branch}} is a pointer to a commit. If main has not changed, merging does a {{fast-forward}}. If the same lines changed on both sides, git reports a {{conflict}} that you must resolve."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   },
@@ -691,6 +790,32 @@
      "type": "text",
      "items": [
       "A pipeline you cannot trust is worse than none. A flaky test that fails one run in twenty teaches people to press retry and ignore red. Fix it or delete it. Treat a failing main branch as an emergency, because everyone's work is now blocked."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Pipeline",
+       "The automated sequence of stages run for each change."
+      ],
+      [
+       "Stage",
+       "One step of a pipeline, such as build or test."
+      ],
+      [
+       "Runner",
+       "The machine that executes a pipeline's jobs."
+      ],
+      [
+       "Flaky test",
+       "A test that sometimes fails for no real reason and erodes trust."
+      ]
      ]
     }
    ],
@@ -839,6 +964,13 @@
      "hint": "Repeat: pick the alphabetically first stage whose dependencies are all done.",
      "solution": "def stage_order(stages):\n    deps = {}\n    for name, d in stages:\n        deps[name] = list(d)\n    done = []\n    while len(done) < len(deps):\n        ready = []\n        for n in deps:\n            if n not in done:\n                ok = True\n                for d in deps[n]:\n                    if d not in done:\n                        ok = False\n                if ok:\n                    ready.append(n)\n        ready.sort()\n        done.append(ready[0])\n    return done\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -915,6 +1047,32 @@
      "items": [
       "Tests are a pyramid. At the bottom are unit tests: fast, many, each checking one small thing. Above them are integration tests that check parts working together. At the top are a few end-to-end tests that drive the whole system.",
       "The higher you go, the slower and more fragile the tests, so keep the top thin."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Artifact",
+       "A built output stored for deployment, such as a package or image."
+      ],
+      [
+       "Semantic versioning",
+       "A MAJOR.MINOR.PATCH scheme where each part signals the kind of change."
+      ],
+      [
+       "Registry",
+       "A server that stores and serves artifacts."
+      ],
+      [
+       "Reproducible build",
+       "A build that gives the same result from the same inputs."
+      ]
      ]
     }
    ],
@@ -1064,6 +1222,13 @@
      "hint": "Compare the major, then the minor, then the patch as integers, not as text.",
      "solution": "def newer(a, b):\n    x = [int(p) for p in a.split('.')]\n    y = [int(p) for p in b.split('.')]\n    for i in range(3):\n        if x[i] > y[i]:\n            return 1\n        if x[i] < y[i]:\n            return -1\n    return 0\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1140,6 +1305,32 @@
      "type": "text",
      "items": [
       "Treat containers as disposable. When you need a change, you build a new image and replace the container rather than logging in and patching it. Anything that must survive, such as a database's files, goes in a volume outside the container. This is what makes containers easy to scale and replace."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Image",
+       "A read-only template containing a filesystem and settings."
+      ],
+      [
+       "Container",
+       "A running (or stopped) instance of an image."
+      ],
+      [
+       "Docker",
+       "The most common tool for building and running containers."
+      ],
+      [
+       "Port mapping",
+       "Connecting a host port to a port inside a container, such as -p 8080:80."
+      ]
      ]
     }
    ],
@@ -1231,6 +1422,13 @@
       ]
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1307,6 +1505,32 @@
      "type": "code",
      "lang": "text",
      "code": "docker build -t myapp:1 .     # build and tag\ndocker images                  # list local images\ndocker run -d --name app myapp:1\ndocker logs app"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Dockerfile",
+       "A text file of instructions that builds an image."
+      ],
+      [
+       "Layer",
+       "The filesystem change made by one instruction; layers stack."
+      ],
+      [
+       "Build cache",
+       "Stored layers reused when a step and its predecessors are unchanged."
+      ],
+      [
+       "Base image",
+       "The starting image named in FROM."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -1437,6 +1661,13 @@
      "hint": "Compare step by step and stop at the first difference.",
      "solution": "def cache_hits(old, new):\n    n = 0\n    for i in range(min(len(old), len(new))):\n        if old[i] != new[i]:\n            break\n        n += 1\n    return n\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1512,6 +1743,32 @@
      "items": [
       "A rolling update replaces pods a few at a time, so the service stays up. If the new version is broken, for example the image cannot be pulled, the new pods never become ready and the old ones keep serving. rollout undo returns to the previous version.",
       "get pods shows STATUS values such as Running and ImagePullBackOff, and describe pod shows the events that explain them."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Pod",
+       "The smallest deployable unit: one or more containers sharing a network."
+      ],
+      [
+       "Deployment",
+       "A controller that keeps a desired number of identical pods running."
+      ],
+      [
+       "Service",
+       "A stable address and load balancer in front of pods."
+      ],
+      [
+       "Manifest",
+       "A YAML file that declares a desired object."
+      ]
      ]
     }
    ],
@@ -1599,6 +1856,13 @@
       ]
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1674,6 +1938,32 @@
      "type": "text",
      "items": [
       "Drift happens when someone changes a resource by hand. The next plan shows the difference and apply corrects it. Many teams go further and forbid manual changes entirely. Servers become cattle, not pets: if one is wrong you replace it from code instead of nursing it."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Declarative",
+       "Describing the end state you want rather than the steps to reach it."
+      ],
+      [
+       "State",
+       "The tool's record of the resources it created."
+      ],
+      [
+       "Drift",
+       "When real infrastructure differs from the code, usually after a manual change."
+      ],
+      [
+       "Immutable infrastructure",
+       "Replacing servers with new ones instead of modifying them."
+      ]
      ]
     }
    ],
@@ -1799,6 +2089,13 @@
      "hint": "Check three cases: new, changed and removed. Sort the finished list.",
      "solution": "def plan(want, have):\n    out = []\n    for k in want:\n        if k not in have:\n            out.append('+ ' + k)\n        elif want[k] != have[k]:\n            out.append('~ ' + k)\n    for k in have:\n        if k not in want:\n            out.append('- ' + k)\n    return sorted(out)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1874,6 +2171,32 @@
      "type": "text",
      "items": [
       "If a secret does leak, the fix is not to delete the commit but to revoke the secret and issue a new one. Make this easy by rotating secrets on a schedule, scoping each one to the least access it needs and keeping an audit log of who used it."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Environment variable",
+       "A named value passed to a process by its environment."
+      ],
+      [
+       "Secret",
+       "A credential such as a password, token or private key."
+      ],
+      [
+       "Secrets manager",
+       "A service that stores secrets, controls access and logs use."
+      ],
+      [
+       "Rotation",
+       "Regularly replacing a secret so a leaked one stops working."
+      ]
      ]
     }
    ],
@@ -1996,6 +2319,13 @@
      "hint": "Copy defaults first, then file, then env, so later values win.",
      "solution": "def resolve(defaults, file, env):\n    out = {}\n    for layer in (defaults, file, env):\n        for k in layer:\n            out[k] = layer[k]\n    return [[k, out[k]] for k in sorted(out)]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2072,6 +2402,32 @@
      "type": "text",
      "items": [
       "Rollouts need data to be safe. A pipeline should check health after each step and stop on its own when the error rate rises. Database changes are the hard part: make them backward compatible, in small steps, so both versions can run at once."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Canary release",
+       "Sending a small percentage of traffic to a new version before everyone."
+      ],
+      [
+       "Blue-green deployment",
+       "Running old and new environments side by side and switching traffic."
+      ],
+      [
+       "Feature flag",
+       "A switch that turns a feature on or off without deploying."
+      ],
+      [
+       "Rollback",
+       "Returning to the previous known good version."
+      ]
      ]
     }
    ],
@@ -2180,6 +2536,13 @@
      "hint": "Compute both error rates as fractions and compare with the margin.",
      "solution": "def canary(new_requests, new_errors, base_requests, base_errors, margin):\n    if new_requests < 100:\n        return 'wait'\n    new_rate = new_errors / new_requests\n    base_rate = base_errors / base_requests if base_requests else 0.0\n    if new_rate <= base_rate + margin:\n        return 'promote'\n    return 'rollback'\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2257,6 +2620,32 @@
      "items": [
       "An alert should mean a human must act now. Page on symptoms, such as the error rate is above the target or the site is slow, rather than causes, such as CPU is at 80 percent, which may be harmless. Every alert needs a runbook, a short document that says what it means and what to do.",
       "If an alert fires often and nobody acts, delete it or fix its cause."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Metric",
+       "A numeric measurement sampled over time, such as requests per second."
+      ],
+      [
+       "Log",
+       "A timestamped record of something that happened."
+      ],
+      [
+       "Trace",
+       "The path and timing of one request across services."
+      ],
+      [
+       "Percentile",
+       "The value below which a given share of measurements fall."
+      ]
      ]
     }
    ],
@@ -2398,6 +2787,13 @@
      "hint": "Nearest rank: round the position up, then subtract one for zero-based indexing.",
      "solution": "def percentile(values, p):\n    if not values:\n        return 0\n    s = sorted(values)\n    n = len(s)\n    r = p * n / 100\n    k = int(r)\n    if k < r:\n        k += 1\n    if k < 1:\n        k = 1\n    return s[k - 1]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2474,6 +2870,32 @@
      "items": [
       "During an incident, name an incident lead, open a channel, tell users what you know, and focus on restoring service, often by rolling back, before hunting the root cause. Afterwards, write a postmortem.",
       "A good one describes the timeline, the impact and the contributing causes, and ends with concrete actions. It asks what in the system allowed this to happen, not who made the mistake. Blame teaches people to hide problems, and hidden problems come back bigger."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "SLI",
+       "Service level indicator: a measured value such as the success rate."
+      ],
+      [
+       "SLO",
+       "Service level objective: the target for an SLI."
+      ],
+      [
+       "Error budget",
+       "The amount of failure the SLO allows in a period."
+      ],
+      [
+       "Postmortem",
+       "A written, blameless review of an incident and what to change."
+      ]
      ]
     }
    ],
@@ -2586,6 +3008,13 @@
      "hint": "Allowed failures are the non-SLO share of the total; remaining is allowed minus failed.",
      "solution": "def error_budget(slo, total, failed):\n    allowed = int(round((100 - slo) * total / 100.0, 6))\n    return [allowed, allowed - failed]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2662,6 +3091,32 @@
      "type": "text",
      "items": [
       "Attackers also target the build. Use short-lived credentials rather than long-lived keys, give each pipeline job only the access it needs, require review for changes to pipeline files, and sign artifacts so that production can check that an image really came from your pipeline."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Shift left",
+       "Doing security checks earlier in the process, nearer to the commit."
+      ],
+      [
+       "SBOM",
+       "Software bill of materials: a list of the components in a build."
+      ],
+      [
+       "CVE",
+       "A public identifier for a known vulnerability."
+      ],
+      [
+       "Supply chain attack",
+       "Compromising software by attacking something it depends on or the way it is built."
+      ]
      ]
     }
    ],
@@ -2783,6 +3238,13 @@
      "hint": "Parse each advisory into a name and a limit, then compare version lists.",
      "solution": "def ver(s):\n    return [int(x) for x in s.split('.')]\n\n\ndef vulnerable(deps, advisories):\n    limit = {}\n    for a in advisories:\n        name, v = a.split('<')\n        limit[name] = ver(v)\n    out = []\n    for d in deps:\n        name, v = d.split('==')\n        if name in limit and ver(v) < limit[name]:\n            out.append(name)\n    return sorted(out)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2853,6 +3315,32 @@
      "type": "text",
      "items": [
       "You now have the shape of modern delivery. The next steps are practice on real tools: set up a pipeline in a hosted service, deploy a container to a small cluster and watch its metrics. The ideas will carry over to every tool you meet."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Release",
+       "A specific version of the software made available to users."
+      ],
+      [
+       "Rollout",
+       "The process of replacing the running version with a new one."
+      ],
+      [
+       "Provenance",
+       "A record of how and from what an artifact was built."
+      ],
+      [
+       "Toil",
+       "Manual repeated work that a pipeline should do instead."
+      ]
      ]
     }
    ],
@@ -2928,6 +3416,13 @@
       "kubectl apply -f deploy.yaml",
       "kubectl get pods"
      ]
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

@@ -200,6 +200,40 @@
      "type": "code",
      "lang": "python",
      "code": "used = {}\n\ndef alloc(name, size):\n    used[name] = size\n\ndef free(name):\n    used.pop(name, None)\n\nalloc(\"P1\", 100); alloc(\"P2\", 50); free(\"P1\")\nprint(used)          # {'P2': 50}"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Operating system",
+       "Software that acts as an interface between the user and the hardware and controls the execution of programs."
+      ],
+      [
+       "Main memory",
+       "A large array of words or bytes, each with its own address, that the CPU can access directly."
+      ],
+      [
+       "Process scheduling",
+       "Deciding which process gets the processor, when and for how long."
+      ],
+      [
+       "Traffic controller",
+       "The OS component that tracks the processor and the status of each process."
+      ],
+      [
+       "I/O controller",
+       "The OS component that tracks all devices."
+      ],
+      [
+       "File system",
+       "The facilities that organize, locate and protect files, usually arranged into directories."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -359,6 +393,13 @@
      "title": "Definitions",
      "text": "An operating system is an {{interface}} between the user and the computer hardware. Main memory is a large array of words or bytes where each has its own {{address}}. Deciding which process gets the processor is called process {{scheduling}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -516,6 +557,40 @@
      "type": "text",
      "items": [
       "To feel the difference between batch and time-sharing, simulate them. The Python below runs jobs in submission order, as a batch would. In the practice section you will group similar jobs into batches, which is what the operator did."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Batch operating system",
+       "A system where users submit jobs to an operator, who groups similar jobs and runs them without user interaction."
+      ],
+      [
+       "Time-sharing",
+       "Letting many users at terminals use a computer at the same time, by giving each a short quantum of CPU time."
+      ],
+      [
+       "Quantum",
+       "The short burst of computation given to one user program before the CPU moves on."
+      ],
+      [
+       "Distributed system",
+       "Several processors, called sites or nodes, that communicate over lines and are loosely coupled."
+      ],
+      [
+       "Network operating system",
+       "An OS on a server that manages data, users, groups, security and shared file and printer access."
+      ],
+      [
+       "Real-time system",
+       "A system with rigid time requirements, where the response time is so small that it controls the environment."
+      ]
      ]
     }
    ],
@@ -694,6 +769,13 @@
      "title": "Real time",
      "text": "A {{hard}} real-time system guarantees that critical tasks finish on time, while a {{soft}} real-time system only gives a critical task priority. A time-sharing system gives each user a short {{quantum|time slice}} of CPU time."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -834,6 +916,40 @@
      "type": "text",
      "items": [
       "File permission is a clean example of protection plus a service. The practice section has you write the check that decides whether a user may read or write a file, using the permissions idea from this chapter."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Process",
+       "The encapsulation of one activity, including its code, data, registers and OS resources in use."
+      ],
+      [
+       "Driver",
+       "Software that hides the peculiarities of a specific hardware device from users."
+      ],
+      [
+       "Permission",
+       "The right a program has on a file: read-only, read-write, denied and so on."
+      ],
+      [
+       "Shared memory",
+       "Communication where processes read and write a common memory area."
+      ],
+      [
+       "Message passing",
+       "Communication where processes send messages to each other, possibly over a network."
+      ],
+      [
+       "Resource management",
+       "Allocating memory, CPU cycles and file storage among users and jobs using schedulers."
+      ]
      ]
     }
    ],
@@ -991,6 +1107,13 @@
      "type": "fill",
      "title": "Services",
      "text": "Processes communicate by {{shared memory}} or {{message passing}}. The OS manages resources using {{schedulers}}. Checking for errors in the CPU, I/O devices and memory is called error {{detection|handling}}."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   },
@@ -1151,6 +1274,40 @@
      "type": "code",
      "lang": "python",
      "code": "# jobs: [name, arrival, print_time]  (one printer, first come first served)\nt = 0\nfor name, arrival, dur in [[\"A\", 0, 3], [\"B\", 1, 2]]:\n    t = max(t, arrival) + dur\n    print(name, \"finishes at\", t)     # A at 3, B at 5"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Batch processing",
+       "Collecting programs and data into a batch before processing starts; jobs run in submission order without manual intervention."
+      ],
+      [
+       "Multitasking",
+       "Executing multiple jobs by switching between them so often that users can interact with each while it runs."
+      ],
+      [
+       "Multiprogramming",
+       "Two or more programs residing in memory at the same time, sharing one processor."
+      ],
+      [
+       "Job pool",
+       "The set of jobs waiting on disk; the jobs in memory are a subset of it."
+      ],
+      [
+       "Interactivity",
+       "The ability of users to interact with the system through input and output devices."
+      ],
+      [
+       "Spooling",
+       "Simultaneous peripheral operations on line: putting I/O job data into a buffer on memory or disk."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -1339,6 +1496,13 @@
      "title": "Properties",
      "text": "{{Multiprogramming}} keeps several jobs in memory so the CPU always has one to run. {{Spooling}} uses a disk as a very large buffer. Multitasking systems are also known as {{time-sharing}} systems."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1497,6 +1661,40 @@
      "type": "code",
      "lang": "python",
      "code": "NEXT = {\n    (\"new\", \"admit\"): \"ready\",\n    (\"ready\", \"dispatch\"): \"running\",\n    (\"running\", \"timeout\"): \"ready\",\n    (\"running\", \"wait\"): \"waiting\",\n    (\"waiting\", \"io_done\"): \"ready\",\n    (\"running\", \"exit\"): \"terminated\",\n}\nprint(NEXT[(\"running\", \"wait\")])      # waiting"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Process",
+       "A program in execution; the basic unit of work implemented in the system."
+      ],
+      [
+       "Program",
+       "A collection of instructions that performs a specific task when executed."
+      ],
+      [
+       "Stack",
+       "Process section holding temporary data: function parameters, return address and local variables."
+      ],
+      [
+       "Heap",
+       "Memory dynamically allocated to a process during its run time."
+      ],
+      [
+       "Text section",
+       "The code, along with the program counter value and processor registers."
+      ],
+      [
+       "Data section",
+       "Global and static variables."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -1674,6 +1872,13 @@
      "title": "PCB",
      "text": "The OS keeps a {{process control block|PCB}} for every process, identified by an integer {{process ID|PID}}. A process waiting for the processor is in the {{ready}} state."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1844,6 +2049,40 @@
      "type": "text",
      "items": [
       "Because switching costs time with no useful work, the quantum should be long compared with the switch cost. The practice section asks you to compute the efficiency, which is the share of the CPU that does real work, and to move PCBs between queues."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Process scheduling",
+       "Removing the running process from the CPU and selecting another by a chosen strategy."
+      ],
+      [
+       "Job queue",
+       "The queue that keeps all processes in the system."
+      ],
+      [
+       "Ready queue",
+       "Processes in main memory that are ready and waiting to execute. A new process is always put here."
+      ],
+      [
+       "Device queue",
+       "Processes blocked because an I/O device is not available."
+      ],
+      [
+       "Long-term scheduler",
+       "The job scheduler: it admits programs into the system and controls the degree of multiprogramming."
+      ],
+      [
+       "Short-term scheduler",
+       "The CPU scheduler or dispatcher: it picks a ready process and gives it the CPU."
+      ]
      ]
     }
    ],
@@ -2110,6 +2349,13 @@
      "title": "Queues",
      "text": "The {{job}} queue holds all processes. The {{ready}} queue holds processes in main memory waiting for the CPU. Saving one process's state and loading another's is a context {{switch}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2267,6 +2513,40 @@
      "type": "text",
      "items": [
       "The practice section implements four of these in Python and compares them. The Scheduler Gantt app lets you see the timelines. Note that the best average wait does not mean the best system: SJN can starve long jobs, and round robin trades waiting time for responsiveness."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Non-preemptive",
+       "Once a process is running it keeps the CPU until it completes its allotted time."
+      ],
+      [
+       "Preemptive",
+       "The scheduler may take the CPU from a running process, for example when a higher-priority process becomes ready."
+      ],
+      [
+       "Burst time",
+       "The CPU time a process needs to finish."
+      ],
+      [
+       "Waiting time",
+       "Time spent in the ready queue: the time at which the process starts, minus its arrival time, plus any waits between runs."
+      ],
+      [
+       "FCFS",
+       "First come, first served: jobs run in arrival order from a FIFO queue."
+      ],
+      [
+       "SJN / SJF",
+       "Shortest job next (or first): run the process with the smallest CPU time."
+      ]
      ]
     }
    ],
@@ -2684,6 +2964,13 @@
       ]
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2860,6 +3147,40 @@
       "The danger of shared data deserves a demonstration. If two threads both do counter = counter + 1, each does three steps: load the counter into a register, add one, store it back. If the steps interleave badly, an update is lost.",
       "The practice section lets you replay an interleaving and see the result."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Thread",
+       "A flow of execution through process code with its own program counter, registers and stack."
+      ],
+      [
+       "Lightweight process",
+       "Another name for a thread; it uses fewer resources than a classical process."
+      ],
+      [
+       "User-level thread",
+       "A thread managed by a thread library in user space; the kernel does not know about it."
+      ],
+      [
+       "Kernel-level thread",
+       "A thread managed directly by the operating system kernel."
+      ],
+      [
+       "Many-to-one model",
+       "Many user threads map to one kernel thread."
+      ],
+      [
+       "One-to-one model",
+       "Each user thread maps to its own kernel thread."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -3005,6 +3326,13 @@
      "type": "fill",
      "title": "Thread facts",
      "text": "A thread has its own program {{counter}}, registers and {{stack}}. Threads of a process share the code segment, the data segment and open {{files}}. A thread is also called a {{lightweight}} process."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   },
@@ -3216,6 +3544,40 @@
      "type": "text",
      "items": [
       "The practice section has you implement the relocation and limit check, the three classic placement strategies, page-table translation and the swap-time calculation."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Logical address",
+       "An address generated by a program; the set of them is the logical address space."
+      ],
+      [
+       "Physical address",
+       "A location in main memory; the set of them is the physical address space."
+      ],
+      [
+       "MMU",
+       "The memory management unit, hardware that maps virtual addresses to physical addresses at run time."
+      ],
+      [
+       "Swapping",
+       "Moving a process temporarily out of main memory to disk and back later."
+      ],
+      [
+       "Relocation and limit registers",
+       "Hardware that adds a base to each logical address and checks it against a range."
+      ],
+      [
+       "External fragmentation",
+       "Enough total free memory exists, but not contiguously."
+      ]
      ]
     }
    ],
@@ -3536,6 +3898,13 @@
       ]
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3725,6 +4094,40 @@
      "items": [
       "On the classic reference string 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1 with three frames, FIFO has 15 faults, LRU 12 and OPT 9. You can check those numbers in the practice section.",
       "FIFO even has a surprise called Belady's anomaly: on 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5 it faults 9 times with 3 frames and 10 times with 4."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Virtual memory",
+       "A section of disk set up to emulate RAM so programs can be larger than physical memory."
+      ],
+      [
+       "Demand paging",
+       "Loading pages only when they are referenced, not in advance."
+      ],
+      [
+       "Page fault",
+       "A reference to a page that is not in main memory, handled by the OS."
+      ],
+      [
+       "Page replacement algorithm",
+       "The policy that decides which page to swap out when a frame is needed."
+      ],
+      [
+       "Reference string",
+       "The sequence of page numbers a program references, used to evaluate algorithms."
+      ],
+      [
+       "FIFO",
+       "Replace the oldest page in memory."
+      ]
      ]
     }
    ],
@@ -4031,6 +4434,13 @@
      "title": "Demand paging",
      "text": "In demand paging, pages are loaded only when {{referenced|needed|demanded}}. A reference to a page not in memory causes a page {{fault}}. The string of page references used to compare algorithms is the {{reference}} string."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4166,6 +4576,40 @@
      "type": "text",
      "items": [
       "Here are the numbers. Transferring a 4096-byte block with a 4-byte word and one interrupt per word needs 1024 interrupts. With DMA it needs one. The practice section lets you count and compare polling cost too."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Block device",
+       "A device that stores data in fixed-size blocks, each addressable. A disk is an example."
+      ],
+      [
+       "Character device",
+       "A device that delivers or accepts a stream of characters, such as a keyboard or serial port."
+      ],
+      [
+       "Device controller",
+       "The electronic part that operates a device and connects it to the computer."
+      ],
+      [
+       "Polling",
+       "The CPU repeatedly checks a status bit to see if the device is ready."
+      ],
+      [
+       "Interrupt",
+       "A signal from a device that makes the CPU stop and run a handler."
+      ],
+      [
+       "DMA",
+       "Direct memory access: a controller transfers data between memory and a device without CPU involvement per word."
+      ]
      ]
     }
    ],
@@ -4344,6 +4788,13 @@
      "title": "I/O vocabulary",
      "text": "A {{DMA}} controller moves a block of data without the CPU handling each word. Busy-waiting on a status bit is called {{polling}}. A device signals the CPU with an {{interrupt}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4479,6 +4930,40 @@
      "items": [
       "I/O can also be synchronous or asynchronous. With synchronous I/O the process waits until the operation is complete. With asynchronous I/O the process carries on and is notified later.",
       "The practice section has you build the bounded buffer between a producer and a consumer, and a spool queue for a printer."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Device driver",
+       "Software that knows how to operate one kind of device and presents a standard interface to the OS."
+      ],
+      [
+       "Interrupt handler",
+       "Code that runs when a device interrupts. It saves state, services the device and wakes the waiting driver."
+      ],
+      [
+       "Device-independent I/O software",
+       "The OS layer providing uniform interfacing, buffering, error reporting, allocation and protection."
+      ],
+      [
+       "Buffering",
+       "Storing data temporarily in memory while it moves between two places."
+      ],
+      [
+       "Caching",
+       "Keeping a copy of data in faster memory."
+      ],
+      [
+       "Spooling",
+       "Placing jobs for a device in a queue (on disk) and serving them one at a time."
+      ]
      ]
     }
    ],
@@ -4711,6 +5196,13 @@
      "title": "I/O layers",
      "text": "A device {{driver}} contains device-specific code. A {{spooler|daemon}} lets many processes share a printer by queueing jobs. Data held in memory while moving between two places is a {{buffer}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4858,6 +5350,40 @@
      "type": "text",
      "items": [
       "In practice you can compute the block a byte lives in, follow a linked chain, and allocate a contiguous run. That is what the practice section asks you to code."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "File",
+       "A named collection of related information recorded on secondary storage."
+      ],
+      [
+       "File system",
+       "The part of the OS that names, stores, organizes and protects files."
+      ],
+      [
+       "Directory",
+       "A structure that holds information about files."
+      ],
+      [
+       "Sequential access",
+       "Records are read in order, one after another."
+      ],
+      [
+       "Direct access",
+       "Any block can be read or written directly by its number."
+      ],
+      [
+       "Contiguous allocation",
+       "A file occupies a set of adjacent blocks."
+      ]
      ]
     }
    ],
@@ -5172,6 +5698,13 @@
      "title": "File system facts",
      "text": "Reading a file's blocks in order is {{sequential}} access. In {{linked}} allocation each block points to the next. A single block that lists all of a file's blocks is an {{index}} block."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5321,6 +5854,40 @@
      "type": "text",
      "items": [
       "The practice section codes a one-time password check, an access-matrix lookup and a threat classifier. It also asks you to rank security classes. These are small, but they show the logic that real systems use."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Authentication",
+       "Verifying the identity of a user or process."
+      ],
+      [
+       "One-time password",
+       "A password valid for one use only, so a captured password is useless later."
+      ],
+      [
+       "Trojan horse",
+       "A program that appears useful but performs hidden harmful actions."
+      ],
+      [
+       "Trap door",
+       "A hidden entry point left in a program that bypasses normal security."
+      ],
+      [
+       "Logic bomb",
+       "Code that does harm only when a condition occurs."
+      ],
+      [
+       "Virus",
+       "Code that attaches to other programs and replicates."
+      ]
      ]
     }
    ],
@@ -5587,6 +6154,13 @@
      "hint": "Use a list of the classes in order and pick the one with the largest index.",
      "solution": "def best_class(classes):\n    order = ['D', 'C1', 'C2', 'B1', 'B2', 'B3', 'A']\n    if not classes:\n        return 'none'\n    return max(classes, key=lambda c: order.index(c))\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5721,6 +6295,40 @@
      "type": "text",
      "items": [
       "That is the course. To review: processes are programs in execution described by PCBs and moved among queues; schedulers choose who runs; memory management, paging and virtual memory give each process a private view; I/O software and file systems hide devices behind files; and security protects all of it. Linux is one real system that puts these ideas to work."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Linux",
+       "An open source Unix-like operating system built around the Linux kernel."
+      ],
+      [
+       "Kernel",
+       "The core of the OS. It abstracts hardware, manages memory, processes and devices, and runs in kernel mode."
+      ],
+      [
+       "System library",
+       "Special functions through which applications reach kernel features without needing kernel code access rights."
+      ],
+      [
+       "System utility",
+       "A program performing a specialized task, such as listing processes or managing files."
+      ],
+      [
+       "Kernel mode",
+       "The privileged mode with unrestricted access to hardware and memory."
+      ],
+      [
+       "User mode",
+       "The restricted mode in which applications run."
+      ]
      ]
     }
    ],
@@ -5952,6 +6560,13 @@
      "type": "fill",
      "title": "Linux basics",
      "text": "Linux has a {{kernel}}, system libraries and system utilities. The kernel runs in {{kernel}} mode, while applications run in {{user}} mode. The {{shell}} interprets user commands."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

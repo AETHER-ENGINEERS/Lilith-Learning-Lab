@@ -84,6 +84,17 @@ const server = http.createServer((req, res) => {
   const probs = AI.chapterProblems({ title: 'x', summary: [], lesson: [{ type: 'text' }], quiz: [{ q: 'q', options: ['a', 'b'], answer: 2 }], maps: [{ links: ['A - B'] }], practice: [{ type: 'fill', text: 'no braces' }, { type: 'match', pairs: [['a']] }] });
   ['summary', 'items', 'index (0 to 1)', 'A | relation | B', '{{double braces}}', 'pairs'].forEach(w => assert(probs.some(p => p.includes(w)), 'problem mentions ' + w + ': ' + probs));
   assert.deepStrictEqual(AI.chapterProblems(null), ['the chapter must be a JSON object']);
+  /* tables and references: required by the agent's check, repaired by assembleCourse */
+  const bare = { title: 'x', summary: ['s'], lesson: [{ type: 'text', items: ['p'] }], quiz: [{ q: 'q', options: ['a', 'b'], answer: 0 }], glossary: [{ term: 'a', def: 'b' }, { term: 'c', def: 'd' }] };
+  assert.strictEqual(AI.chapterProblems(bare).length, 0, 'lenient check passes');
+  assert(AI.chapterProblems(bare, true).some(m => /table/.test(m)) && AI.chapterProblems(bare, true).some(m => /references/.test(m)), 'strict check asks for a table and references');
+  const asm = AI.assembleCourse({ title: 'T' }, [bare], [{ url: 'https://e.com/a', title: 'A' }], 'Beginner');
+  assert(asm.chapters[0].lesson.some(b => b.type === 'table' && b.rows.length === 2), 'a table is added from the glossary');
+  assert.strictEqual(asm.chapters[0].references[0].url, 'https://e.com/a', 'chapter references come from the sources');
+  /* a different model per job on the same provider */
+  AI.setCfg({ provider: 'ollama', ollamaModel: 'base', builderModel: 'big', officeModel: 'fast' });
+  assert.strictEqual(AI.model(), 'base'); assert.strictEqual(AI.model('builder'), 'big'); assert.strictEqual(AI.model('office'), 'fast');
+  AI.setCfg({ builderModel: '', officeModel: '' }); assert.strictEqual(AI.model('office'), 'base', 'blank means the main model');
   // settings export/import: keys only on request, types and values checked, unknown keys ignored
   AI.setCfg({ provider: 'cloud', cloudKey: 'sk-secret', cloudModel: 'gpt-oss:120b' });
   assert(!('cloudKey' in AI.exportCfg(false)) && AI.exportCfg(true).cloudKey === 'sk-secret');

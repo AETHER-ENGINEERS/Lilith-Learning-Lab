@@ -137,6 +137,40 @@
       "This course follows the paper. We build each piece in small Python labs with plain lists: positional encoding, attention, heads, masks, layer normalization, the encoder and decoder layers, the learning rate schedule and decoding.",
       "Facts about later models such as BERT and GPT are marked as background knowledge."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Transformer",
+       "A neural network for sequences that uses attention instead of recurrence."
+      ],
+      [
+       "Encoder",
+       "The stack that turns the source sequence into context vectors."
+      ],
+      [
+       "Decoder",
+       "The stack that generates the target sequence using the encoder output."
+      ],
+      [
+       "Attention",
+       "A weighted average of values, with weights from query-key similarity."
+      ],
+      [
+       "Recurrence",
+       "Processing a sequence one step at a time, passing a hidden state."
+      ],
+      [
+       "Token",
+       "One unit of text, such as a word or word piece."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -248,6 +282,13 @@
      "title": "Basics",
      "text": "The Transformer uses {{attention}} instead of recurrence. The base model has {{6}} layers in each stack."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -345,6 +386,40 @@
      "type": "text",
      "items": [
       "In the labs, we build the encoding for a small model width, check its first values and add it to embeddings. Because the sine and cosine values are floating point, results are rounded to six decimals."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Embedding",
+       "A learned table that maps each token id to a vector."
+      ],
+      [
+       "d_model",
+       "The width of the vectors flowing through the model; 512 in the base model."
+      ],
+      [
+       "Positional encoding",
+       "A vector added to the embedding that depends on the position."
+      ],
+      [
+       "Sinusoid",
+       "A sine or cosine wave."
+      ],
+      [
+       "Wavelength",
+       "The distance over which a wave repeats."
+      ],
+      [
+       "Permutation invariance",
+       "Giving the same answer when the input order is shuffled."
+      ]
      ]
     }
    ],
@@ -654,6 +729,13 @@
      "title": "Position",
      "text": "Attention ignores order, so a {{positional}} encoding built from sine and {{cosine}} waves is added."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -760,6 +842,40 @@
      "type": "text",
      "items": [
       "In the labs we write softmax, the scaled scores for one query and the full attention output for lists of vectors."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Query",
+       "A vector that says what a position is looking for."
+      ],
+      [
+       "Key",
+       "A vector that describes what a position offers."
+      ],
+      [
+       "Value",
+       "The vector that is actually passed on."
+      ],
+      [
+       "Softmax",
+       "Turns scores into positive weights that sum to one."
+      ],
+      [
+       "d_k",
+       "The dimension of keys and queries; 64 in the base model."
+      ],
+      [
+       "Attention weights",
+       "The softmax output: how much each position contributes."
+      ]
      ]
     }
    ],
@@ -1305,6 +1421,13 @@
      "title": "Formula",
      "text": "Attention is softmax of Q K transposed over the square root of {{d_k|dk}}, times {{V}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1408,6 +1531,40 @@
      "type": "text",
      "items": [
       "The labs split a vector into heads, merge heads again and run a tiny two-head attention with fixed projections."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Head",
+       "One attention operation with its own projection matrices."
+      ],
+      [
+       "Projection",
+       "Multiplying by a learned matrix to change dimension."
+      ],
+      [
+       "Concatenate",
+       "Join vectors end to end."
+      ],
+      [
+       "W^O",
+       "The final output projection after concatenation."
+      ],
+      [
+       "h",
+       "The number of heads; 8 in the base model."
+      ],
+      [
+       "Subspace",
+       "A lower-dimensional view of the vector."
+      ]
      ]
     }
    ],
@@ -1908,6 +2065,13 @@
      "title": "Heads",
      "text": "The base model has {{8}} heads of dimension {{64}}; their outputs are concatenated."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2013,6 +2177,40 @@
      "type": "text",
      "items": [
       "In the labs we build the causal mask, apply it to a score matrix, and compute weights that respect both masks."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Padding",
+       "Filler tokens added to make sequences the same length."
+      ],
+      [
+       "Causal mask",
+       "A triangular mask that blocks attention to later positions."
+      ],
+      [
+       "Mask",
+       "A pattern that decides which scores are allowed."
+      ],
+      [
+       "Teacher forcing",
+       "Feeding the true previous tokens during training."
+      ],
+      [
+       "Autoregressive",
+       "Generating one token at a time from earlier ones."
+      ],
+      [
+       "Minus infinity",
+       "A value whose exponential is zero."
+      ]
      ]
     }
    ],
@@ -2478,6 +2676,13 @@
      "title": "Masks",
      "text": "The decoder uses a {{causal}} mask so position i sees only positions up to {{i}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2580,6 +2785,40 @@
      "type": "text",
      "items": [
       "The paper also applies dropout with rate 0.1 to the output of each sublayer before it is added and normalized, and to the sums of embeddings and positional encodings. Later work often moves the normalization before the sublayer, a variant known as pre-norm. This is background knowledge."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Feed-forward network",
+       "Two linear maps with a ReLU; applied to each position independently."
+      ],
+      [
+       "ReLU",
+       "max(0, x)."
+      ],
+      [
+       "Residual connection",
+       "Adding a sublayer's input to its output."
+      ],
+      [
+       "Layer normalization",
+       "Rescaling each vector to zero mean and unit variance, then a learned scale and shift."
+      ],
+      [
+       "d_ff",
+       "The inner width of the feed-forward network; 2048 in the base model."
+      ],
+      [
+       "Dropout",
+       "Randomly zeroing activations during training; rate 0.1 in the base model."
+      ]
      ]
     }
    ],
@@ -3044,6 +3283,13 @@
      "title": "Layer",
      "text": "Each sublayer is wrapped as LayerNorm(x + {{Sublayer|sublayer}}(x)). The inner width d_ff is {{2048}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3148,6 +3394,40 @@
      "type": "text",
      "items": [
       "In the labs we build a tiny encoder layer with fixed weights from the pieces of earlier chapters: self-attention with identity projections, a residual layer-normalization and a stack."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Encoder layer",
+       "Self-attention sublayer plus feed-forward sublayer."
+      ],
+      [
+       "Memory",
+       "The encoder's final output, read by the decoder's cross-attention."
+      ],
+      [
+       "Bidirectional",
+       "Each position sees both earlier and later positions."
+      ],
+      [
+       "Stack",
+       "Layers applied one after another."
+      ],
+      [
+       "N",
+       "The number of layers; 6 in the base model."
+      ],
+      [
+       "Source sequence",
+       "The input sentence to be translated."
+      ]
      ]
     }
    ],
@@ -3610,6 +3890,13 @@
      "title": "Encoder",
      "text": "The encoder is a stack of {{6|six}} layers and its final output is called the {{memory}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3715,6 +4002,40 @@
      "type": "text",
      "items": [
       "In the labs we compute the output distribution from a decoder vector, a cross-attention step and the greedy next token."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Masked self-attention",
+       "Self-attention with a causal mask, so a position sees only earlier ones."
+      ],
+      [
+       "Cross-attention",
+       "Attention whose queries come from the decoder and whose keys and values come from the encoder."
+      ],
+      [
+       "Logits",
+       "Raw scores over the vocabulary before the softmax."
+      ],
+      [
+       "Vocabulary",
+       "The set of tokens the model can produce."
+      ],
+      [
+       "Weight tying",
+       "Sharing the embedding matrix with the output projection."
+      ],
+      [
+       "Shifted right",
+       "The decoder input is the target moved one step later."
+      ]
      ]
     }
    ],
@@ -4127,6 +4448,13 @@
      "title": "Decoder",
      "text": "In cross-attention the queries come from the {{decoder}} and the keys and values from the {{encoder}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4238,6 +4566,40 @@
      "type": "text",
      "items": [
       "The labs compute the schedule, the smoothed target and the loss with and without smoothing."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Cross-entropy",
+       "Minus the log probability assigned to the correct token."
+      ],
+      [
+       "Label smoothing",
+       "Replacing the one-hot target by a slightly flattened distribution."
+      ],
+      [
+       "Adam",
+       "An optimizer with per-parameter adaptive step sizes."
+      ],
+      [
+       "Warmup",
+       "A period of increasing learning rate at the start."
+      ],
+      [
+       "BLEU",
+       "A score comparing machine translations with references by n-gram overlap."
+      ],
+      [
+       "Perplexity",
+       "Exponential of the average cross-entropy."
+      ]
      ]
     }
    ],
@@ -4575,6 +4937,13 @@
      "title": "Training",
      "text": "The learning rate rises for {{4000}} steps then decays with the inverse square {{root}} of the step."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4682,6 +5051,40 @@
      "type": "text",
      "items": [
       "The labs below implement a greedy decoding loop with a small table as the model, length-normalized beam scoring, and a final check of sizes. Where to go next: read the paper itself, then implement a small Transformer in your favourite library and train it on a toy copy task."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Greedy decoding",
+       "Choose the highest-probability token at each step."
+      ],
+      [
+       "Beam search",
+       "Keep the k best partial outputs at each step."
+      ],
+      [
+       "Beam size",
+       "The number k of hypotheses kept."
+      ],
+      [
+       "Length penalty",
+       "A correction so that longer outputs are not unfairly penalized by log probabilities."
+      ],
+      [
+       "End symbol",
+       "A special token that stops generation."
+      ],
+      [
+       "BLEU",
+       "An n-gram overlap score between output and references."
+      ]
      ]
     }
    ],
@@ -5037,6 +5440,13 @@
      "type": "fill",
      "title": "Decoding",
      "text": "Beam search keeps several {{hypotheses|candidates|partial outputs}}. The paper used beam size {{4|four}}."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

@@ -146,6 +146,40 @@
      "items": [
       "You can also load features yourself with kit.use, preload them in createKit, or import single modules without createKit at all. Shared code sits in common chunk files so nothing downloads twice, and you can self-host by copying the dist and assets folders together."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Kit",
+       "The object that createKit returns; every feature hangs off it."
+      ],
+      [
+       "Feature",
+       "An optional module such as shell, python, sqlite or agent."
+      ],
+      [
+       "kit.use",
+       "Loads one or more features and returns them."
+      ],
+      [
+       "Lean loading",
+       "Downloading a feature only when it is first used."
+      ],
+      [
+       "Pinning",
+       "Importing a fixed version so the code never changes under you."
+      ],
+      [
+       "VFS",
+       "The virtual file system, kit.vfs."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -279,6 +313,13 @@
      "hint": "Start at the core and add each feature.",
      "solution": "def total_kb(features):\n    cost = {'shell': 12.6 + 5.0 + 300, 'python': 8.5 + 500, 'sqlite': 9.0 + 900, 'bm25': 2.1}\n    t = 6.6\n    for f in features:\n        t += cost[f]\n    return round(t, 1)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -371,6 +412,40 @@
      "type": "text",
      "items": [
       "Because everything shares the VFS, it is also the meeting point between tools. The agent can write a CSV, Python can read it with open, SQLite can load it, and the shell can count its lines with wc. No copying between systems is needed."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Path",
+       "A slash-separated name such as /logs/run.txt."
+      ],
+      [
+       "mkdirp",
+       "Create a folder and any missing parents."
+      ],
+      [
+       "flush",
+       "Save to IndexedDB right now."
+      ],
+      [
+       "snapshot",
+       "A copy of the current state."
+      ],
+      [
+       "import",
+       "Load files from an object mapping paths to contents."
+      ],
+      [
+       "on",
+       "Subscribe to changes."
+      ]
      ]
     }
    ],
@@ -585,6 +660,13 @@
      "hint": "Strip the prefix; take the first segment.",
      "solution": "def list_dir(paths, dir):\n    prefix = dir\n    if not prefix.endswith('/'):\n        prefix += '/'\n    names = set()\n    for p in paths:\n        if p.startswith(prefix):\n            rest = p[len(prefix):]\n            names.add(rest.split('/')[0])\n    return sorted(names)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -682,6 +764,40 @@
      "items": [
       "A custom command receives a context. It has argv for the arguments, stdin for piped input, o for standard output, e for standard error, and sh.cwd for the working directory. It returns an exit code, and 0 means success.",
       "The engine setting can be auto, wasm or js; auto uses BusyBox when it has loaded."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "BusyBox",
+       "A single program that provides many Unix commands."
+      ],
+      [
+       "Pipe",
+       "Sends one command's output into the next as input."
+      ],
+      [
+       "Session",
+       "A shell with its own cwd and env."
+      ],
+      [
+       "stdout and stderr",
+       "Normal output and error output."
+      ],
+      [
+       "Exit code",
+       "0 means success; other numbers mean failure."
+      ],
+      [
+       "Glob",
+       "A pattern such as *.md that matches file names."
+      ]
      ]
     }
    ],
@@ -917,6 +1033,13 @@
      "hint": "Track the exit code of the last command that ran.",
      "solution": "def run_chain(steps):\n    ran = []\n    last = 0\n    for i in range(len(steps)):\n        op, code = steps[i]\n        go = False\n        if op == '':\n            go = True\n        elif op == '&&':\n            go = last == 0\n        elif op == '||':\n            go = last != 0\n        if go:\n            ran.append(i)\n            last = code\n    return ran\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1018,6 +1141,40 @@
      "type": "text",
      "items": [
       "With the sqlite-vec extension a vec0 table stores vectors of a fixed size, and a match query returns the nearest rows with their distance. The next chapters use this for meaning-based search."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "MicroPython",
+       "A small Python for constrained environments."
+      ],
+      [
+       "Worker",
+       "A background thread in the browser."
+      ],
+      [
+       "require",
+       "Node's way to load a module."
+      ],
+      [
+       "Parameterised query",
+       "SQL with ? placeholders and values passed separately."
+      ],
+      [
+       "db.save",
+       "Writes the database back to the VFS."
+      ],
+      [
+       "vec0",
+       "The sqlite-vec virtual table type."
+      ]
      ]
     }
    ],
@@ -1126,6 +1283,13 @@
      "hint": "Walk the string; swap each ?.",
      "solution": "def bind(sql, params):\n    out = ''\n    i = 0\n    for ch in sql:\n        if ch == '?':\n            v = params[i]\n            i += 1\n            if isinstance(v, str):\n                out += \"'\" + v.replace(\"'\", \"''\") + \"'\"\n            else:\n                out += str(v)\n        else:\n            out += ch\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1222,6 +1386,40 @@
      "type": "text",
      "items": [
       "The agent's search_files tool is built on searchFiles. Given a folder, it returns the best matching lines with their file path, which lets an agent find the right place in a big workspace without reading everything."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Term frequency",
+       "How many times a word appears in a document."
+      ],
+      [
+       "Document frequency",
+       "How many documents contain the word."
+      ],
+      [
+       "IDF",
+       "Inverse document frequency: rarer words weigh more."
+      ],
+      [
+       "k1 and b",
+       "BM25's saturation and length-normalisation parameters."
+      ],
+      [
+       "Index",
+       "A prepared structure for quick searching."
+      ],
+      [
+       "Snippet",
+       "The matching line returned by searchFiles."
+      ]
      ]
     }
    ],
@@ -1364,6 +1562,13 @@
      "hint": "Compute idf per word, then sum per document.",
      "solution": "import math\ndef bm25(docs, query):\n    toks = [d.lower().split() for d in docs]\n    N = len(docs)\n    avg = sum(len(t) for t in toks) / N\n    k1 = 1.5\n    b = 0.75\n    scores = []\n    for t in toks:\n        s = 0.0\n        for q in query.lower().split():\n            n = 0\n            for u in toks:\n                if q in u:\n                    n += 1\n            if n == 0:\n                continue\n            idf = math.log(1 + (N - n + 0.5) / (n + 0.5))\n            f = t.count(q)\n            s += idf * f * (k1 + 1) / (f + k1 * (1 - b + b * len(t) / avg))\n        scores.append(round(s, 6))\n    return scores\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1460,6 +1665,40 @@
      "type": "text",
      "items": [
       "The memory and skills parts of the agent brain can use the same embeddings to find the most relevant facts or skills for each prompt, which is covered in a later chapter."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Embedding",
+       "A vector that captures meaning."
+      ],
+      [
+       "Cosine similarity",
+       "Closeness of direction of two vectors."
+      ],
+      [
+       "Nearest neighbour",
+       "The stored vector closest to the query."
+      ],
+      [
+       "Hybrid search",
+       "Combining semantic and keyword rankings."
+      ],
+      [
+       "Store",
+       "A vector database opened with kit.vectors.open."
+      ],
+      [
+       "Rank fusion",
+       "Merging rankings by position."
+      ]
      ]
     }
    ],
@@ -1693,6 +1932,13 @@
      "hint": "Add reciprocal ranks.",
      "solution": "def fuse(a, b, k):\n    score = {}\n    order = []\n    for lst in (a, b):\n        for i in range(len(lst)):\n            x = lst[i]\n            if x not in score:\n                score[x] = 0.0\n                order.append(x)\n            score[x] += 1.0 / (k + i + 1)\n    ranked = sorted(range(len(order)), key=lambda j: (-round(score[order[j]], 12), j))\n    return [order[j] for j in ranked]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1791,6 +2037,40 @@
      "type": "text",
      "items": [
       "Most of the other built-ins are tools you have already met: python, javascript and sqlite run code, search_files uses BM25, decide asks a decision model, and tasks, schedule and sentry manage lists, jobs and rules. The search and fetch tools use Ollama Cloud and need a cloud key."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Tool",
+       "A function the model may ask to run."
+      ],
+      [
+       "JSON Schema",
+       "A standard way to describe the shape of arguments."
+      ],
+      [
+       "Dispatcher",
+       "Code that runs a tool by name."
+      ],
+      [
+       "Tool call",
+       "The model's request: a name and arguments."
+      ],
+      [
+       "Tool result",
+       "Text returned to the model."
+      ],
+      [
+       "Subset",
+       "A chosen list of tools to offer."
+      ]
      ]
     }
    ],
@@ -2055,6 +2335,13 @@
      "hint": "Rearrange the fields.",
      "solution": "def to_openai(tool):\n    return ['function', tool[0], tool[1], sorted(tool[2])]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2152,6 +2439,40 @@
      "type": "text",
      "items": [
       "Because everything happens in the shared virtual file system, an agent task like write fizzbuzz.py, run it and show me the output is just three tool calls: write, bash, then a final reply. Nothing leaves the browser except the model calls."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Agent",
+       "A model plus a loop plus tools."
+      ],
+      [
+       "Turn",
+       "One prompt and everything the agent does to answer it."
+      ],
+      [
+       "Step",
+       "One model call in the loop."
+      ],
+      [
+       "Event",
+       "A message sent to onEvent while the agent works."
+      ],
+      [
+       "Provider",
+       "Where the model runs: cloud or local."
+      ],
+      [
+       "Messages",
+       "The conversation so far, agent.messages."
+      ]
      ]
     }
    ],
@@ -2383,6 +2704,13 @@
      "hint": "Emit per reply.",
      "solution": "def events(script):\n    out = []\n    for r in script:\n        if r[0] == 'tool':\n            out.append('tool_call')\n            out.append('tool_result')\n        else:\n            out.append('text')\n            out.append('turn_end')\n            out.append('done')\n            break\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2490,6 +2818,40 @@
      "type": "text",
      "items": [
       "Delegate hands a sub-task to a fresh sub-agent that is read-only by default, limited in steps and time, and returns one report. Think explores several approaches and verifies each by running code, a shell command, a file check or a rubric; a failed hard check removes that branch."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Context window",
+       "How much text the model can read at once."
+      ],
+      [
+       "Compaction",
+       "Replacing older turns with a summary."
+      ],
+      [
+       "Skill",
+       "A folder with a SKILL.md of instructions."
+      ],
+      [
+       "Plugin",
+       "Code that hooks into the agent loop."
+      ],
+      [
+       "Journal",
+       "A short note written after each prompt."
+      ],
+      [
+       "Router",
+       "Chooses tools or models for each prompt."
+      ]
      ]
     }
    ],
@@ -2763,6 +3125,13 @@
      "hint": "Core plus keyword matches.",
      "solution": "def route(message, core, hints):\n    m = message.lower()\n    chosen = set(core)\n    for kw, tool in hints:\n        if kw in m:\n            chosen.add(tool)\n    return sorted(chosen)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2855,6 +3224,40 @@
      "type": "text",
      "items": [
       "Because the answer includes probabilities, you can build rules like: if confidence is below 70 percent, ask the agent or the user. This pattern, a cheap fast check first and a larger model only when unsure, is a good way to make an agent both quick and careful."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Decision model",
+       "A small model trained to give probabilities for a choice."
+      ],
+      [
+       "Calibrated",
+       "Probabilities that match how often the answer is right."
+      ],
+      [
+       "Option",
+       "One possible answer."
+      ],
+      [
+       "Confidence",
+       "The probability of the chosen answer."
+      ],
+      [
+       "Triage",
+       "Sorting items by type or urgency."
+      ],
+      [
+       "Server",
+       "Where the decision model runs."
+      ]
      ]
     }
    ],
@@ -3054,6 +3457,13 @@
      "hint": "Compare the best against the threshold.",
      "solution": "def act(probs, options, threshold):\n    best = 0\n    for i in range(len(probs)):\n        if probs[i] > probs[best]:\n            best = i\n    if probs[best] >= threshold:\n        return options[best]\n    return 'ask'\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3150,6 +3560,40 @@
      "type": "text",
      "items": [
       "Tasks give the agent and the user a shared checklist. The agent can add, start and finish tasks through the tasks tool, and your page can show the same list with kit.tasks.on. Give an agent both with tools set to the defaults plus tasks and schedule."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Cron",
+       "A five-field schedule: minute, hour, day of month, month, day of week."
+      ],
+      [
+       "Job",
+       "A saved action with a when."
+      ],
+      [
+       "Missed run",
+       "A scheduled time that passed while the page was closed."
+      ],
+      [
+       "Task",
+       "A to-do with status and optional notes and due date."
+      ],
+      [
+       "runNow",
+       "Run a job immediately."
+      ],
+      [
+       "Interval",
+       "A repeat step such as */5."
+      ]
      ]
     }
    ],
@@ -3392,6 +3836,13 @@
      "hint": "Keep ids increasing.",
      "solution": "def run_tasks(cmds):\n    tasks = []\n    nid = 1\n    for c, a in cmds:\n        if c == 'add':\n            tasks.append([nid, a, 'pending'])\n            nid += 1\n        elif c == 'start' or c == 'done':\n            for t in tasks:\n                if t[0] == a:\n                    t[2] = 'active' if c == 'start' else 'done'\n        elif c == 'clear':\n            tasks = [t for t in tasks if t[2] != 'done']\n    return tasks\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3489,6 +3940,40 @@
      "type": "text",
      "items": [
       "Senses connect the workspace to the outside. HTTP calls can use secrets without exposing them. MCP servers add more tools. Camera, microphone, location and other sensors give the agent input, and the look tool lets it see an image. Backups compress the workspace and can encrypt it."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Sentry rule",
+       "A watch on a source with a condition and an action."
+      ],
+      [
+       "Wiki link",
+       "A [[Note name]] reference to another note."
+      ],
+      [
+       "Backlink",
+       "A note that links to this one."
+      ],
+      [
+       "Tag",
+       "A #word that groups notes."
+      ],
+      [
+       "MCP",
+       "Model Context Protocol: a standard way to connect tools."
+      ],
+      [
+       "Sensitive system",
+       "A source that needs the app's permission, like location."
+      ]
      ]
     }
    ],
@@ -3783,6 +4268,13 @@
      "hint": "Check each rule per event.",
      "solution": "def sentry(rules, events):\n    out = []\n    for src, val in events:\n        for r in rules:\n            if r[0] == src:\n                if (r[1] == '<' and val < r[2]) or (r[1] == '>' and val > r[2]):\n                    out.append(r[3])\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3889,6 +4381,40 @@
      "items": [
       "A design checklist to finish. Start lean and load only what you use. Persist the kit if work must survive. Give the agent only the tools it needs. Make the human the approver for anything unattended. Keep secrets out of files. Allow sensitive senses deliberately.",
       "Prefer many small, checked steps to one large leap."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Flow",
+       "A saved workflow of steps with a trigger."
+      ],
+      [
+       "Playbook",
+       "An approved task list that runs without a model."
+      ],
+      [
+       "Approval gate",
+       "A human or app decision required before running."
+      ],
+      [
+       "Budget",
+       "A limit on steps per hour or per day."
+      ],
+      [
+       "Heartbeat",
+       "A periodic check of /.kit/HEARTBEAT.md."
+      ],
+      [
+       "Secret",
+       "A value kept out of files and logs."
+      ]
      ]
     }
    ],
@@ -4157,6 +4683,13 @@
      ],
      "hint": "Spend the budget task by task.",
      "solution": "def run_queue(tasks, per_hour, quiet, hour):\n    if quiet:\n        return []\n    left = per_hour\n    out = []\n    for name, steps in tasks:\n        if steps <= left:\n            out.append(name)\n            left -= steps\n    return out\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

@@ -133,6 +133,36 @@
       "Counting words reveals Zipf's law: the most frequent word occurs about twice as often as the second, three times as often as the third, and so on, leaving a long tail of rare words, many appearing once.",
       "This is why word-level vocabularies struggle with unseen words, and why modern systems split text into subword pieces. Regular expressions, patterns such as digits followed by a percent sign, remain the Swiss army knife for extracting dates, prices and codes."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Token",
+       "A unit of text produced by tokenisation: a word, subword, punctuation mark or character."
+      ],
+      [
+       "Corpus",
+       "A large collection of texts used for analysis or training."
+      ],
+      [
+       "Stemming",
+       "Cutting off word endings by rule, so 'running' and 'runs' become 'run'."
+      ],
+      [
+       "Lemmatisation",
+       "Reducing a word to its dictionary form using vocabulary and grammar, so 'better' becomes 'good'."
+      ],
+      [
+       "Regular expression",
+       "A compact pattern language for matching text."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -605,6 +635,13 @@
      "hint": "Rank starts at 1.",
      "solution": "def zipf(counts):\n    return [counts[i] * (i + 1) for i in range(len(counts))]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -695,6 +732,36 @@
      "items": [
       "A different kind of similarity is between spellings. The Levenshtein edit distance counts the fewest single-character insertions, deletions and substitutions that turn one string into another: 'kitten' to 'sitting' is three. A table filled by dynamic programming computes it.",
       "Spell checkers suggest the dictionary words within one or two edits of what you typed."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Bag of words",
+       "A representation of text as word counts, discarding order."
+      ],
+      [
+       "TF-IDF",
+       "Term frequency times inverse document frequency; high for words frequent in a document but rare overall."
+      ],
+      [
+       "Cosine similarity",
+       "The cosine of the angle between two vectors; 1 means the same direction."
+      ],
+      [
+       "Sparse vector",
+       "A vector with mostly zeros, as in bag-of-words with a large vocabulary."
+      ],
+      [
+       "Levenshtein distance",
+       "The minimum number of single-character edits to turn one string into another."
+      ]
      ]
     }
    ],
@@ -1269,6 +1336,13 @@
      "hint": "Overlap over union.",
      "solution": "def jaccard(a, b):\n    sa = set(a)\n    sb = set(b)\n    if len(sa | sb) == 0:\n        return 1.0\n    return round(len(sa & sb) / float(len(sa | sb)), 4)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1358,6 +1432,36 @@
      "items": [
       "To judge a language model, compute how surprised it is by text it has not seen. The perplexity is the exponential of the average negative log probability per word. A perplexity of 100 means the model is as unsure as if it had to choose among 100 equally likely words at each step.",
       "You can also run the model forwards: pick a next word from its distribution, append, repeat. N-gram generation gives locally sensible but globally rambling text, as the playground shows."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Language model",
+       "A model that assigns probabilities to sequences of words or predicts the next word."
+      ],
+      [
+       "Bigram",
+       "A pair of consecutive words; a bigram model conditions each word on the one before."
+      ],
+      [
+       "Smoothing",
+       "Adjusting counts so unseen events get non-zero probability."
+      ],
+      [
+       "Perplexity",
+       "The exponential of the average negative log-probability per word; roughly the effective number of choices."
+      ],
+      [
+       "Markov assumption",
+       "The assumption that the future depends only on a limited recent past."
+      ]
      ]
     }
    ],
@@ -1840,6 +1944,13 @@
      "hint": "Follow the most common next word.",
      "solution": "def generate(tokens, start, n):\n    out = [start]\n    for step in range(n):\n        d = {}\n        for i in range(len(tokens) - 1):\n            if tokens[i] == out[-1]:\n                d[tokens[i + 1]] = d.get(tokens[i + 1], 0) + 1\n        if not d:\n            break\n        best = None\n        for w in sorted(d.keys()):\n            if best is None or d[w] > d[best]:\n                best = w\n        out.append(best)\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1931,6 +2042,36 @@
      "items": [
       "Measure on data the model has not seen. Accuracy can mislead with imbalanced classes. Precision, recall and their balance, F1, per class, and the macro average of them show where the model fails.",
       "Pre-trained transformers, which you meet in later chapters, now beat these classical models on most benchmarks, but Naive Bayes and logistic regression remain fast, cheap, explainable baselines."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Naive Bayes",
+       "A classifier that picks the class maximising prior times the product of word likelihoods, assuming conditional independence."
+      ],
+      [
+       "Prior",
+       "The probability of a class before seeing the document."
+      ],
+      [
+       "Likelihood",
+       "The probability of the words given a class."
+      ],
+      [
+       "Sentiment analysis",
+       "Determining whether text expresses a positive, negative or neutral opinion."
+      ],
+      [
+       "Macro F1",
+       "The average of the F1 scores of each class."
+      ]
      ]
     }
    ],
@@ -2499,6 +2640,13 @@
      "hint": "Count matching letters.",
      "solution": "def detect(text, profiles):\n    best = None\n    bs = -1\n    for lang, chars in profiles:\n        s = 0\n        for ch in text.lower():\n            if ch != \" \" and ch in chars:\n                s = s + 1\n        if s > bs:\n            bs = s\n            best = lang\n    return best\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2589,6 +2737,36 @@
      "items": [
       "Dependency grammars take another view. Instead of nested phrases, each word depends on exactly one head word, with a labelled link such as subject or object, giving a tree of word-to-word arrows. Named entity recognition finds mentions of people, organisations, places and dates.",
       "It is usually treated as tagging with BIO labels: B marks the beginning of an entity, I its continuation, O everything outside. Today these tasks are done by neural networks trained on annotated treebanks, and later chapters show how pre-trained transformers made them much more accurate."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Part of speech (POS)",
+       "The grammatical category of a word, such as noun, verb or adjective."
+      ],
+      [
+       "Hidden Markov model",
+       "A model with hidden states (tags) that emit observed words and move by transition probabilities."
+      ],
+      [
+       "Viterbi algorithm",
+       "A dynamic programming method that finds the most probable hidden state sequence."
+      ],
+      [
+       "Context-free grammar",
+       "A set of rewrite rules such as S -> NP VP that generate sentences."
+      ],
+      [
+       "Named entity recognition",
+       "Finding and classifying names of people, organisations, locations and so on in text."
+      ]
      ]
     }
    ],
@@ -3259,6 +3437,13 @@
      "hint": "Count agreements.",
      "solution": "def tag_accuracy(gold, pred):\n    ok = 0\n    for i in range(len(gold)):\n        if gold[i] == pred[i]:\n            ok = ok + 1\n    return round(ok / float(len(gold)), 3)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3351,6 +3536,36 @@
       "The resulting space has remarkable regularities. Differences between vectors capture relations, so the vector for king minus man plus woman lies near queen, and Paris minus France plus Italy lies near Rome.",
       "But the space also absorbs the prejudice of its training text: 'doctor' sits closer to 'he' and 'nurse' closer to 'she'. Static embeddings give one vector per word, even for 'bank' of a river and 'bank' of money.",
       "Chapters ahead replace them with contextual embeddings from transformers, which give each occurrence its own vector."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Distributional hypothesis",
+       "The idea that words used in similar contexts have similar meanings."
+      ],
+      [
+       "Word embedding",
+       "A dense vector of real numbers representing a word, learned from text."
+      ],
+      [
+       "PPMI",
+       "Positive pointwise mutual information: how much more often two words co-occur than chance, floored at zero."
+      ],
+      [
+       "Skip-gram",
+       "A word2vec training task: predict the context words around a given word."
+      ],
+      [
+       "Out-of-vocabulary",
+       "A word not seen in training and so lacking a vector."
+      ]
      ]
     }
    ],
@@ -3975,6 +4190,13 @@
      "hint": "Difference of two cosines.",
      "solution": "import math\ndef bias_score(word, a, b, vocab, vectors):\n    def cos(u, v):\n        dot = sum([u[i] * v[i] for i in range(len(u))])\n        return dot / (math.sqrt(sum([x * x for x in u])) * math.sqrt(sum([x * x for x in v])))\n    w = vectors[vocab.index(word)]\n    return round(cos(w, vectors[vocab.index(a)]) - cos(w, vectors[vocab.index(b)]), 3)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4065,6 +4287,36 @@
      "items": [
       "Squeezing a long sentence into one vector was a bottleneck. Bahdanau, Cho and Bengio proposed in 2014 that the decoder, at each step, look back over all encoder states and take a weighted average, with weights from a learned score of how relevant each source word is right now. This is attention.",
       "It sharply improved translation and also produced pleasing alignment pictures. Within three years, researchers asked what would happen if attention were the only mechanism and the recurrence was thrown out. The answer was the transformer."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Recurrent neural network",
+       "A network that processes a sequence step by step, passing a hidden state from one step to the next."
+      ],
+      [
+       "LSTM",
+       "Long short-term memory: an RNN with gates that decide what to forget, write and output."
+      ],
+      [
+       "Seq2seq",
+       "An encoder-decoder model that maps an input sequence to an output sequence."
+      ],
+      [
+       "Beam search",
+       "A decoding method keeping the k best partial outputs at each step."
+      ],
+      [
+       "Attention",
+       "A mechanism that computes a weighted average of states, with weights depending on relevance to the current need."
+      ]
      ]
     }
    ],
@@ -4745,6 +4997,13 @@
      "hint": "Always take the arg max.",
      "solution": "def greedy(table, start, steps):\n    out = [start]\n    for s in range(steps):\n        row = table[out[-1]]\n        best = 0\n        for i in range(len(row)):\n            if row[i] > row[best]:\n                best = i\n        out.append(best)\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4838,6 +5097,36 @@
       "How does text become the model's input? Word-level vocabularies fail on rare words and typos; character-level sequences are too long. Byte-pair encoding splits the difference. Start with characters.",
       "Count adjacent pairs, merge the most frequent into a new symbol, and repeat tens of thousands of times. Common words become single tokens, rare ones split into pieces, and anything can be spelled with bytes.",
       "The model never sees spelling directly, which explains odd failures such as counting the letters of a word."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Self-attention",
+       "A layer where each token's output is a weighted mix of all tokens' values, with weights from query-key similarity."
+      ],
+      [
+       "Multi-head attention",
+       "Several attention operations in parallel, each with its own projections, whose outputs are concatenated."
+      ],
+      [
+       "Positional encoding",
+       "Extra information added to token embeddings so the model knows their order."
+      ],
+      [
+       "Causal mask",
+       "A mask that prevents a position from attending to later positions, used for left-to-right generation."
+      ],
+      [
+       "Byte-pair encoding",
+       "A tokenisation method that repeatedly merges the most frequent pair of symbols."
+      ]
      ]
     }
    ],
@@ -5478,6 +5767,13 @@
      "hint": "Attention plus feed-forward.",
      "solution": "def block_params(d, ff):\n    return 4 * d * d + 2 * d * ff\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5571,6 +5867,36 @@
       "A raw pretrained model continues text; it does not obey. Instruction tuning on prompt and answer pairs, then reinforcement learning from human feedback or similar preference methods, turns it into an assistant that follows requests and refuses harmful ones.",
       "At generation time, sampling settings matter: temperature scales how adventurous choices are, and top-k or top-p keep only the likeliest tokens. Evaluation is hard, since open-ended answers have no single right text.",
       "Later in your studies, a dedicated course on decision models looks at a new use of encoders and decoders: instead of writing text, answering fixed questions with calibrated probabilities in one pass."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Pretraining",
+       "Training a large model on unlabeled data with a self-supervised objective such as predicting masked or next tokens."
+      ],
+      [
+       "Masked language modelling",
+       "Hiding some tokens and training the model to recover them from context in both directions."
+      ],
+      [
+       "Causal language modelling",
+       "Training the model to predict each token from the ones before it."
+      ],
+      [
+       "In-context learning",
+       "Performing a new task from instructions and examples given in the prompt, without weight updates."
+      ],
+      [
+       "Instruction tuning and RLHF",
+       "Further training so the model follows instructions, using demonstrations and human preference feedback."
+      ]
      ]
     }
    ],
@@ -6031,6 +6357,13 @@
      "hint": "Join the pieces with newlines.",
      "solution": "def build_prompt(instruction, examples, query):\n    s = instruction + '\\n'\n    for x, y in examples:\n        s = s + 'Input: ' + x + '\\n' + 'Output: ' + y + '\\n'\n    s = s + 'Input: ' + query + '\\n' + 'Output:'\n    return s\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -6123,6 +6456,36 @@
       "Other tasks have their own metrics. Machine translation systems are scored by BLEU, the overlap of n-grams with human reference translations, and summaries by ROUGE, which stresses recall. Overlap scores are crude, so human review and carefully validated model judges are used too.",
       "Finally, responsibility: language models learn from human text and inherit its stereotypes, may leak private data, may state falsehoods with confidence and can be misused.",
       "Test on the groups and languages your users speak, measure rather than assume, keep humans in the loop for high-stakes uses, and be open about limits."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Inverted index",
+       "A map from each word to the list of documents containing it."
+      ],
+      [
+       "BM25",
+       "A ranking function combining term frequency with saturation, length normalisation and IDF."
+      ],
+      [
+       "RAG",
+       "Retrieval-augmented generation: fetching documents and giving them to a model to ground its answer."
+      ],
+      [
+       "BLEU",
+       "A translation metric measuring n-gram overlap between output and reference translations."
+      ],
+      [
+       "Hallucination",
+       "Fluent output that is not supported by the input or facts."
+      ]
      ]
     }
    ],
@@ -6741,6 +7104,13 @@
      ],
      "hint": "Clip repeated words.",
      "solution": "def unigram_precision(candidate, reference):\n    ref = list(reference)\n    hit = 0\n    for t in candidate:\n        if t in ref:\n            hit = hit + 1\n            ref.remove(t)\n    return round(hit / float(len(candidate)), 3)\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

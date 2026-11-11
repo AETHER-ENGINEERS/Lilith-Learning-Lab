@@ -11,9 +11,10 @@
         "glossary": [ { "term": "...", "def": "..." } ],
         "keyPoints":["..."],
         "lesson":   [ {"type":"text","items":["..."]}, {"type":"code","lang":"bash","code":"..."},
-                      {"type":"figure","image":"fig.svg","caption":"..."}, {"type":"math","tex":"\\frac{a}{b}"}, {"type":"map","title":"...","links":[...]} ],
+                      {"type":"figure","image":"fig.svg","caption":"..."}, {"type":"table","title":"...","head":["A","B"],"rows":[["x","y"]]}, {"type":"math","tex":"\\frac{a}{b}"}, {"type":"map","title":"...","links":[...]} ],
         "quiz":     [ { "q": "...", "options": ["a","b","c"], "answer": 1, "explain": "..." } ],
         "cards":    [ { "q": "...", "a": "..." } ],
+        "references": [ { "title": "...", "url": "https://...", "note": "what it covers" } ],   (every chapter should have 1+; a table is expected in every lesson)
         "practice": [ labs: fill | order | match | write | code | python | terminal | webxdc ]
      } ],
      "finalExam": { "title": "Final exam", "passMark": 70, "size": 20, "questions": [ same shape as quiz ] },   (optional; a plain list of questions also works.
@@ -52,6 +53,14 @@
     return out;
   }
 
+  function normRefs(x) {
+    return arr(x).map(function (r) {
+      if (typeof r === 'string') return /^https?:/i.test(r) ? { title: r, url: r, note: '' } : { title: r.trim(), url: '', note: '' };
+      if (!r || typeof r !== 'object') return null;
+      var url = s(r.url).trim(); if (url && !/^https?:\/\//i.test(url)) url = '';
+      var title = s(r.title || r.name).trim() || url; return title ? { title: title.slice(0, 200), url: url, note: s(r.note).trim().slice(0, 300) } : null;
+    }).filter(Boolean).slice(0, 12);
+  }
   function normBlock(b, w, where) {
     if (typeof b === 'string') return { type: 'text', items: [b] };
     if (!b || typeof b !== 'object') return null;
@@ -59,6 +68,14 @@
     if (t === 'text') { var it = strs(b.items !== undefined ? b.items : b.text); return it.length ? { type: 'text', items: it } : null; }
     if (t === 'math') { var tex = s(b.tex !== undefined ? b.tex : b.text).trim(); return tex ? { type: 'text', items: ['$$' + tex + '$$'] } : null; }
     if (t === 'code') { var code = s(b.code).replace(/\s+$/, ''); return code ? { type: 'code', lang: s(b.lang) || 'text', code: code } : null; }
+    if (t === 'table') {
+      var head = strs(b.head !== undefined ? b.head : b.columns), rows = arr(b.rows).map(function (r) { return arr(r).map(function (x) { return s(x).replace(/\|/g, '/').trim(); }); }).filter(function (r) { return r.length; });
+      if (!head.length && rows.length) head = rows.shift();
+      head = head.map(function (x) { return x.replace(/\|/g, '/'); });
+      if (!head.length || !rows.length) { w.push(where + ': table needs "head" (column names) and "rows"'); return null; }
+      rows = rows.map(function (r) { while (r.length < head.length) r.push(''); return r.slice(0, head.length); });
+      return { type: 'table', title: s(b.title).trim(), head: head, rows: rows.slice(0, 40) };
+    }
     if (t === 'figure') { return b.image ? { type: 'figure', image: s(b.image), caption: s(b.caption) } : null; }
     if (t === 'map') { var ms = normMaps({ maps: [b] }, w, where); return ms.length ? { type: 'map', map: ms[0] } : null; }
     w.push(where + ': unknown lesson block type "' + t + '" skipped');
@@ -131,7 +148,7 @@
     if (errors.length) return { ok: false, errors: errors, warnings: warnings };
     var course = {
       format: FORMAT, version: VERSION, id: slug(raw.id || raw.title), title: s(raw.title).trim(), subtitle: s(raw.subtitle).trim(),
-      author: s(raw.author).trim(), description: s(raw.description).trim(), teacher: s(raw.teacher).trim(), images: {}, pronounce: {}, chapters: [], sandbox: null, apps: [], exam: null
+      author: s(raw.author).trim(), description: s(raw.description).trim(), teacher: s(raw.teacher).trim(), category: s(raw.category).trim().slice(0, 40), level: s(raw.level).trim().slice(0, 20), tags: Array.isArray(raw.tags) ? raw.tags.filter(function (t) { return typeof t === 'string'; }).slice(0, 12) : [], images: {}, pronounce: {}, chapters: [], sandbox: null, apps: [], exam: null
     };
     if (raw.images && typeof raw.images === 'object') Object.keys(raw.images).forEach(function (k) { if (typeof raw.images[k] === 'string' && /<svg[\s>]/i.test(raw.images[k])) course.images[k] = raw.images[k]; });
     if (raw.pronounce && typeof raw.pronounce === 'object') Object.keys(raw.pronounce).forEach(function (k) { if (typeof raw.pronounce[k] === 'string') course.pronounce[k] = raw.pronounce[k]; });
@@ -150,8 +167,11 @@
         lesson: arr(c.lesson).map(function (b) { return normBlock(b, warnings, where); }).filter(Boolean),
         quiz: arr(c.quiz).map(function (q) { return normQuiz(q, warnings, where); }).filter(Boolean),
         cards: arr(c.cards).filter(function (q) { return q && s(q.q) && s(q.a); }).map(function (q) { return { q: s(q.q), a: s(q.a) }; }),
-        practice: arr(c.practice).map(function (l, k) { return normLab(l, warnings, where, k); }).filter(Boolean)
+        practice: arr(c.practice).map(function (l, k) { return normLab(l, warnings, where, k); }).filter(Boolean),
+        references: normRefs(c.references)
       };
+      if (!ch.lesson.some(function (b) { return b.type === 'table'; })) warnings.push(where + ': no table in the lesson (add {"type":"table","title":"...","head":[...],"rows":[[...]]})');
+      if (!ch.references.length) warnings.push(where + ': no references (add "references": [{"title":"...","url":"https://...","note":"..."}])');
       // unique lab ids inside a chapter
       var seen = {}; ch.practice.forEach(function (l, k) { var id = l.id; while (seen[id]) id = id + '_' + k; seen[id] = 1; l.id = id; });
       ch.lesson.forEach(function (b) { if (b.type === 'figure' && !course.images[b.image]) warnings.push(where + ': figure "' + b.image + '" is not in "images"'); });
@@ -180,13 +200,14 @@
     ch.lesson.forEach(function (b) {
       if (b.type === 'text') b.items.forEach(function (t) { ex.push('- ' + t); });
       else if (b.type === 'code') ex.push('```' + b.lang + '\n' + b.code + '\n```');
+      else if (b.type === 'table') { if (b.title) { ex.push('Table: ' + b.title); ex.push(''); } ex.push('| ' + b.head.join(' | ') + ' |'); ex.push('| ' + b.head.map(function () { return '---'; }).join(' | ') + ' |'); b.rows.forEach(function (r) { ex.push('| ' + r.join(' | ') + ' |'); }); }
       else if (b.type === 'figure') ex.push('![' + b.caption + '](images/' + b.image + ')');
       else if (b.type === 'map') ex.push(mapBlock(b.map));
       ex.push('');
     });
     return {
       n: ch.n, id: ch.id, title: ch.title, summary: ch.summary.join('\n\n'), points: ch.keyPoints.map(function (t) { return '- ' + t; }).join('\n'),
-      examples: ex.join('\n'), glossary: ch.glossary, cards: ch.cards, maps: ch.maps, quiz: ch.quiz, practice: ch.practice, raw: ch
+      examples: ex.join('\n'), glossary: ch.glossary, cards: ch.cards, references: ch.references, maps: ch.maps, quiz: ch.quiz, practice: ch.practice, raw: ch
     };
   }
 
@@ -200,7 +221,8 @@
         summary: ['Say in two or three sentences what this chapter teaches.'],
         glossary: [{ term: 'Term', def: 'A short definition.' }],
         keyPoints: ['The first thing to remember.', 'The second thing to remember.'],
-        lesson: [{ type: 'text', items: ['A worked point or example.'] }, { type: 'code', lang: 'text', code: 'an example line' }],
+        lesson: [{ type: 'text', items: ['A worked point or example.'] }, { type: 'table', title: 'Key terms', head: ['Term', 'Meaning'], rows: [['first term', 'what it means'], ['second term', 'what it means']] }, { type: 'code', lang: 'text', code: 'an example line' }],
+        references: [{ title: 'A source you used', url: 'https://example.com', note: 'what it covers' }],
         quiz: [{ q: 'Which option is right?', options: ['Wrong', 'Right', 'Wrong too'], answer: 1, explain: 'Why the right one is right.' }],
         cards: [{ q: 'Question for a flashcard?', a: 'Answer.' }],
         practice: [

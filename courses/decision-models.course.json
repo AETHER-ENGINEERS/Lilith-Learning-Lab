@@ -122,6 +122,36 @@
       "The course has four parts. First the building blocks: encoder models such as ModernBERT, and how a generalised classifier works. Then the typed-question interface and two architectures, a masked-token encoder design and a prefill-only decoder design.",
       "Then calibration, evaluation and how to build your own test. Last, putting decision models into systems with routing, thresholds, guardrails and cost maths. Each chapter has labs in plain Python that implement the key calculations."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Classifier",
+       "A model mapping an input to one of a fixed set of labels."
+      ],
+      [
+       "Decision model",
+       "A compact model that answers a typed question about an input in one pass and returns a calibrated probability or score."
+      ],
+      [
+       "System one",
+       "Fast, automatic judgement, borrowed from psychology to describe one-pass models."
+      ],
+      [
+       "System two",
+       "Slow, deliberate reasoning, here meaning large reasoning models that think step by step."
+      ],
+      [
+       "Calibration",
+       "Agreement between stated confidence and how often the answer is right."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -466,6 +496,13 @@
      "hint": "Abstain when unsure.",
      "solution": "def answer_or_none(options, probs, threshold):\n    b = 0\n    for i in range(len(probs)):\n        if probs[i] > probs[b]:\n            b = i\n    return options[b] if probs[b] >= threshold else None\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -563,6 +600,36 @@
      "items": [
       "Why does this matter for decision models? A decision model needs to read an input, understand a question and options, and produce calibrated scores. An encoder reads everything both ways in one pass and is small, so it is a natural base.",
       "The next chapters show how option markers and typed heads turn an encoder into a general decision maker, and how the same idea carries over to decoder models."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Encoder",
+       "A transformer that reads the whole input with attention in both directions and outputs a vector for every token."
+      ],
+      [
+       "Classification head",
+       "A small layer on top of an encoder that maps a vector to label scores."
+      ],
+      [
+       "Zero-shot classification",
+       "Choosing among labels never seen in training, usually by testing each label as an entailment hypothesis."
+      ],
+      [
+       "Cross-encoder",
+       "A model that reads a text and a candidate together and outputs a relevance or match score."
+      ],
+      [
+       "ModernBERT",
+       "A 2024 update of BERT with longer context and faster, more modern components."
+      ]
      ]
     }
    ],
@@ -1041,6 +1108,13 @@
      "hint": "Training loss for a classifier.",
      "solution": "import math\ndef cross_entropy(probs, target_index):\n    return round(-math.log(probs[target_index]), 4)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1136,6 +1210,36 @@
      "items": [
       "Then you decide what to do with the answer, and that policy belongs to you, not to the model. Typical policies: act automatically above a high threshold, escalate in a grey zone, and reject or defer below.",
       "Different mistakes cost different amounts, so thresholds should be set from your own data, as a later chapter shows. Keep a log of questions, probabilities and outcomes; it is your evaluation set for tomorrow."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Typed question",
+       "A request whose answer type is fixed in advance: boolean, one of several options, or a numeric score."
+      ],
+      [
+       "Criteria",
+       "A short statement of the rules or standards the decision should follow."
+      ],
+      [
+       "State",
+       "Extra context passed with the input, such as user history or the current step of a workflow."
+      ],
+      [
+       "Option set",
+       "The list of allowed answers for a choice question."
+      ],
+      [
+       "Abstention",
+       "Declining to answer, or flagging low confidence, instead of forcing a choice."
+      ]
      ]
     }
    ],
@@ -1504,6 +1608,13 @@
      "hint": "High entropy means unsure.",
      "solution": "import math\ndef entropy(probs):\n    return round(-sum([p * math.log(p, 2) for p in probs if p > 0]), 3)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1594,6 +1705,36 @@
      "items": [
       "Temperature deserves a note. Raw softmax outputs from a neural network are often overconfident. A single number, the temperature, divides the logits before the softmax. Above one it flattens probabilities, below one it sharpens them. You choose it on held-out data to make confidence match accuracy.",
       "The calibration chapter makes this precise. Meanwhile, remember that a decision model's probabilities are only useful if they are trustworthy."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Option marker",
+       "A mask token placed after each candidate option so the encoder produces one vector per option."
+      ],
+      [
+       "Joint encoding",
+       "Reading the input and all options together so each option's vector is informed by the others."
+      ],
+      [
+       "Scoring head",
+       "A small layer that turns each option vector into a score."
+      ],
+      [
+       "Temperature scaling",
+       "Dividing logits by a constant before softmax to soften or sharpen probabilities."
+      ],
+      [
+       "Fine-tuning",
+       "Further training on your own labelled decisions."
+      ]
      ]
     }
    ],
@@ -2003,6 +2144,13 @@
      "hint": "A close call has a small margin.",
      "solution": "def margin(probs):\n    if len(probs) < 2:\n        return 0\n    s = sorted(probs, reverse=True)\n    return round(s[0] - s[1], 3)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2096,6 +2244,36 @@
       "Because many requests share a long prefix, such as the same instructions, tool list or document, serving systems keep the attention keys and values of the shared part in a KV cache, so only the new suffix needs computing.",
       "For decision models that ask many questions about the same document this can make a large difference. You can run such models yourself: open weights and runtimes such as Unsloth and Ollama-style servers are mentioned in the project documentation.",
       "Remember the caveat that this category is only weeks old, and sources disagree on details."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Prefill",
+       "The phase where a decoder processes the whole prompt in parallel before generating; a decision model stops here."
+      ],
+      [
+       "KV cache",
+       "Stored attention keys and values from earlier tokens, reusable when the prompt shares a prefix."
+      ],
+      [
+       "Joint schema head",
+       "A head that outputs several typed fields, such as a boolean, a choice and a score, from one pass."
+      ],
+      [
+       "Pointer head",
+       "A head that picks a position or item in the input rather than a label from a fixed set."
+      ],
+      [
+       "Multimodal",
+       "Handling more than text, for example images with text."
+      ]
      ]
     }
    ],
@@ -2437,6 +2615,13 @@
      "hint": "Generation dominates.",
      "solution": "def latency_ms(prefill_tokens, ms_per_prefill_token, gen_tokens, ms_per_gen_token):\n    return round(prefill_tokens * ms_per_prefill_token + gen_tokens * ms_per_gen_token, 2)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2528,6 +2713,36 @@
       "Some decision-model vendors describe training with a calibration-aware reinforcement objective, reported under the name RLCD, to make confidence honest from the start.",
       "Whether that works for your data is an empirical question, and the answer depends on the shift between their training data and your inputs.",
       "Always check calibration on your own held-out cases, re-check after fine-tuning or changing the question wording, and monitor it in production, because the world changes."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Calibration",
+       "The match between predicted probabilities and observed frequencies."
+      ],
+      [
+       "Expected calibration error",
+       "The weighted average gap between confidence and accuracy across confidence bins."
+      ],
+      [
+       "Brier score",
+       "The mean squared difference between predicted probability and the 0 or 1 outcome."
+      ],
+      [
+       "Log loss",
+       "The mean negative log probability assigned to the true outcome."
+      ],
+      [
+       "Temperature scaling",
+       "Dividing logits by a fitted constant to repair over- or under-confidence."
+      ]
      ]
     }
    ],
@@ -3065,6 +3280,13 @@
      "hint": "Pick an operating point.",
      "solution": "def threshold_for_precision(conf, correct, target):\n    for t in sorted(set(conf)):\n        idx = [i for i in range(len(conf)) if conf[i] >= t]\n        if sum([correct[i] for i in idx]) / float(len(idx)) >= target:\n            return t\n    return None\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3155,6 +3377,36 @@
      "items": [
       "Finally compare options fairly. A keyword baseline tells you what the model adds. A large LLM given the same question is the quality ceiling and the cost reference.",
       "Fine-tune the decision model on part of your data to see headroom; if a few hundred examples lift accuracy a lot, the base model was not enough alone. Re-run the test whenever the model, the options wording or the input mix changes, and keep sampling live traffic for new labels."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Test set",
+       "Labelled examples held out from all training and tuning, used to estimate real performance."
+      ],
+      [
+       "Cost matrix",
+       "A table giving the cost of each kind of mistake, used to choose thresholds."
+      ],
+      [
+       "Baseline",
+       "A simple reference such as the majority class or keyword rules, to show the added value."
+      ],
+      [
+       "Contamination",
+       "Test data leaking into training, which inflates scores."
+      ],
+      [
+       "Decision Index",
+       "A reported composite benchmark for decision models; treat as a vendor measure until independently checked."
+      ]
      ]
     }
    ],
@@ -3638,6 +3890,13 @@
      "hint": "Tail latency matters more than the mean.",
      "solution": "import math\ndef percentile(values, q):\n    s = sorted(values)\n    k = int(math.ceil(q / 100.0 * len(s)))\n    return s[max(k, 1) - 1]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3728,6 +3987,36 @@
      "items": [
       "Plan for failure. Inputs drift, so watch accuracy and calibration on a sample of live traffic. Adversarial users will write inputs that fool a classifier, so guardrails need layers and monitoring. Confidence can be misleading outside the training distribution.",
       "Keep a human path for high-stakes cases, record why decisions were made, and be open with users about automation. This is a young technology: use it where mistakes are cheap and reversible first, measure, and expand carefully."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Cascade",
+       "A chain of models from cheap and fast to expensive and accurate, with each stage answering only when confident."
+      ],
+      [
+       "Guardrail",
+       "A check placed before or after a model to enforce policy, safety or format."
+      ],
+      [
+       "Router",
+       "A component that sends each request to the best model or tool."
+      ],
+      [
+       "Distribution shift",
+       "A change in the inputs over time, so past accuracy no longer holds."
+      ],
+      [
+       "Human in the loop",
+       "A person reviews or decides cases the system is unsure about or that carry high risk."
+      ]
      ]
     }
    ],
@@ -4110,6 +4399,13 @@
      ],
      "hint": "Everyone pays for the small model, so the savings must exceed it.",
      "solution": "def break_even(small_cost, big_cost):\n    return round(min(1.0, small_cost / float(big_cost)), 4)\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

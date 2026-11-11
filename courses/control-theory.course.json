@@ -118,6 +118,36 @@
      "items": [
       "Designers judge a loop by four things: stability, meaning it settles; accuracy, meaning it ends near the target; speed, meaning how quickly; and robustness, meaning it still works when the plant differs from the model. This course builds the maths and the code to reason about all four."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Plant",
+       "The system being controlled."
+      ],
+      [
+       "Setpoint",
+       "The desired value of the output, also called the reference."
+      ],
+      [
+       "Error",
+       "The setpoint minus the measured output."
+      ],
+      [
+       "Feedback",
+       "Using the measured output to adjust the input."
+      ],
+      [
+       "Disturbance",
+       "An unwanted outside influence on the plant."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -417,6 +447,13 @@
      "hint": "Compute u each step from the current error.",
      "solution": "def p_room(start, setpoint, kp, steps):\n    t = float(start)\n    out = []\n    for k in range(steps):\n        u = kp * (setpoint - t)\n        t = t + 0.1 * u - 0.05 * (t - 10)\n        out.append(round(t, 2))\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -505,6 +542,36 @@
      "type": "text",
      "items": [
       "Real systems are nonlinear: friction, saturation, trigonometry. Near an operating point, though, a straight-line approximation works, and linear theory is rich and powerful. This is linearisation, and it is why linear control theory is so widely useful."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "State",
+       "The smallest set of numbers that fully describes the system at a moment."
+      ],
+      [
+       "Time constant",
+       "For a first-order system, tau, the time to complete 63.2 percent of a step change."
+      ],
+      [
+       "Steady state",
+       "The value the output settles to."
+      ],
+      [
+       "Euler method",
+       "A simple simulation rule: x_next = x + dt times dx/dt."
+      ],
+      [
+       "Linearisation",
+       "Approximating a nonlinear model by a straight-line model near an operating point."
+      ]
      ]
     }
    ],
@@ -846,6 +913,13 @@
      "hint": "Rate is minus k times the gap.",
      "solution": "def cooling(T0, room, k, dt, steps):\n    T = float(T0)\n    out = []\n    for i in range(steps):\n        T = T + dt * (-k * (T - room))\n        out.append(round(T, 3))\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -933,6 +1007,36 @@
      "type": "text",
      "items": [
       "These formulas let designers work backwards. If the specification says less than ten percent overshoot and settle in two seconds, we compute the needed zeta and wn, and then choose controller gains that place the closed-loop poles accordingly. The poles lab lets you see the connection yourself."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Natural frequency",
+       "wn, the frequency at which an undamped system would oscillate."
+      ],
+      [
+       "Damping ratio",
+       "zeta, how strongly oscillations are suppressed."
+      ],
+      [
+       "Percent overshoot",
+       "How far the peak goes beyond the final value, as a percentage of it."
+      ],
+      [
+       "Settling time",
+       "The time after which the response stays within a small band, often 2 percent, of the final value."
+      ],
+      [
+       "Rise time",
+       "The time to go from 10 percent to 90 percent of the final value."
+      ]
      ]
     }
    ],
@@ -1264,6 +1368,13 @@
      "hint": "Update the velocity, then the position.",
      "solution": "def sim2(zeta, wn, dt, steps):\n    y = 0.0\n    v = 0.0\n    out = []\n    for k in range(steps):\n        a = wn * wn * (1.0 - y) - 2 * zeta * wn * v\n        v = v + dt * a\n        y = y + dt * v\n        out.append(round(y, 3))\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1353,6 +1464,36 @@
      "items": [
       "Finding roots of a high-order polynomial is hard by hand, so Routh and Hurwitz found a way to tell whether any root lies in the right half-plane directly from the coefficients. For a second-order polynomial the rule is easy: all coefficients must be positive.",
       "For third order, a2 a1 must exceed a3 a0 as well."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Transfer function",
+       "G(s) = Y(s) / U(s), the ratio of output to input in the Laplace domain."
+      ],
+      [
+       "Left half-plane",
+       "The region of the s-plane where the real part is negative; poles there mean decay."
+      ],
+      [
+       "Characteristic equation",
+       "The denominator of the closed-loop transfer function set to zero; its roots are the closed-loop poles."
+      ],
+      [
+       "Routh-Hurwitz criterion",
+       "A table test of stability using only polynomial coefficients."
+      ],
+      [
+       "Final value theorem",
+       "A steady-state output equals G(0) times the input for a stable system and a unit step."
+      ]
      ]
     }
    ],
@@ -1635,6 +1776,13 @@
      "hint": "Solve 9 > 1 + k.",
      "solution": "def max_gain():\n    a2 = 3\n    a1 = 3\n    return a2 * a1 - 1\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1724,6 +1872,36 @@
      "items": [
       "Two practical fixes matter. First, the actuator has limits; a heater cannot go below off. If the integrator keeps accumulating while saturated, it takes a long time to unwind afterwards. Anti-windup stops it from accumulating then.",
       "Second, derivative kick: use the derivative of the measurement, not the error, so a setpoint jump does not cause a spike."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Proportional term",
+       "Kp times the current error."
+      ],
+      [
+       "Integral term",
+       "Ki times the accumulated error over time; removes steady-state error."
+      ],
+      [
+       "Derivative term",
+       "Kd times the rate of change of the error; adds damping."
+      ],
+      [
+       "Integrator windup",
+       "Excessive growth of the integral term while the actuator is saturated."
+      ],
+      [
+       "Steady-state error",
+       "The remaining error after transients have died."
+      ]
      ]
     }
    ],
@@ -2094,6 +2272,13 @@
      "hint": "Skip the integral update when out of range.",
      "solution": "def pid_aw(errors, kp, ki, dt, lo, hi):\n    integ = 0.0\n    out = []\n    for e in errors:\n        trial = integ + e * dt\n        raw = kp * e + ki * trial\n        if lo <= raw <= hi:\n            integ = trial\n        u = kp * e + ki * integ\n        if u < lo:\n            u = lo\n        if u > hi:\n            u = hi\n        out.append(round(u, 3))\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2183,6 +2368,36 @@
      "type": "text",
      "items": [
       "Root locus complements this view. Plot the poles as gain k rises. Branches start at the open-loop poles and head toward the zeros or to infinity. If a branch crosses into the right half-plane at some k, that k is the stability limit. Together, Bode and root locus are the classical design toolbox."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Root locus",
+       "The set of closed-loop pole positions as a gain varies."
+      ],
+      [
+       "Bode plot",
+       "A graph of a system's gain (in decibels) and phase against frequency."
+      ],
+      [
+       "Gain crossover",
+       "The frequency where the loop gain magnitude equals 1 (0 dB)."
+      ],
+      [
+       "Phase margin",
+       "How much extra phase lag at gain crossover would make the loop marginally stable."
+      ],
+      [
+       "Gain margin",
+       "How much the gain could rise before instability, measured where the phase is minus 180 degrees."
+      ]
      ]
     }
    ],
@@ -2479,6 +2694,13 @@
      "hint": "A smaller m means more margin.",
      "solution": "import math\ndef gain_margin_db(m):\n    return round(-20 * math.log10(m), 2)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2568,6 +2790,36 @@
      "items": [
       "When a state cannot be measured, an observer runs a copy of the model alongside the plant and corrects it using the measured output. The Kalman filter does so optimally when noise is Gaussian.",
       "Combine an observer and state feedback and you have an output-feedback controller, widely used in aircraft, spacecraft and robots."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "State-space model",
+       "x' = A x + B u, y = C x, a first-order matrix description of a linear system."
+      ],
+      [
+       "Controllability",
+       "Whether the input can move the state to any desired value."
+      ],
+      [
+       "Observability",
+       "Whether the state can be deduced from the outputs."
+      ],
+      [
+       "Pole placement",
+       "Choosing the feedback gain K so that A - B K has chosen eigenvalues."
+      ],
+      [
+       "Observer",
+       "A model-based estimator of the internal state from inputs and outputs."
+      ]
      ]
     }
    ],
@@ -2980,6 +3232,13 @@
      "hint": "Form the 2x2 matrix from B and AB.",
      "solution": "def controllable(A, B):\n    ab0 = A[0][0] * B[0] + A[0][1] * B[1]\n    ab1 = A[1][0] * B[0] + A[1][1] * B[1]\n    det = B[0] * ab1 - B[1] * ab0\n    return abs(det) > 1e-9\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3068,6 +3327,36 @@
      "items": [
       "Finally, test the design against reality: change the plant gain by plus or minus thirty percent, add noise, add delay, saturate the actuator. A controller that survives is robust.",
       "Advanced methods such as model predictive control optimise the plan over a horizon within the constraints, and are now common in industry, though PID remains the workhorse."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Sample time",
+       "The period T between controller updates."
+      ],
+      [
+       "Zero-order hold",
+       "Holding the controller output constant between samples."
+      ],
+      [
+       "Dead time",
+       "A pure delay between input and output effects."
+      ],
+      [
+       "Robustness",
+       "Ability to keep performance despite model error and disturbances."
+      ],
+      [
+       "Feedforward",
+       "Adding a command based on the known setpoint or disturbance instead of waiting for error."
+      ]
      ]
     }
    ],
@@ -3390,6 +3679,13 @@
      ],
      "hint": "Add the feedforward and the feedback parts.",
      "solution": "def ff_sim(r, kp, steps, start):\n    y = float(start)\n    out = []\n    for k in range(steps):\n        u = r + kp * (r - y)\n        y = y + 0.2 * (u - y)\n        out.append(round(y, 4))\n    return out\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

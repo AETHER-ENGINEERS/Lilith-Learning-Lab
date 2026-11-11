@@ -126,6 +126,36 @@
       "Because Base keeps the authoritative audit log, even a compromised or confused agent leaves a trail that it cannot edit. Because credentials are short and narrow, a stolen one is worth little. Because Vault owns the transcript, Base never stores conversations on its behalf.",
       "Throughout this course, watch for how each design choice limits the damage a mistaken or manipulated agent can do."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Control plane",
+       "The part that decides and schedules: here Jade Vault, with the agent loop, schedules, approvals and the person."
+      ],
+      [
+       "Resource plane",
+       "The part that holds and serves resources: here Jade Agent Base, with identity, database, model gateway, billing and audit log."
+      ],
+      [
+       "Jade Agent Kit",
+       "The embeddable subset of Vault, an agent in any web page."
+      ],
+      [
+       "Task credential",
+       "A short-lived, least-privilege credential minted for one task."
+      ],
+      [
+       "Audit log",
+       "Base's authoritative record of every tool call and refusal, which agents cannot change."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -488,6 +518,28 @@
      "hint": "Least privilege.",
      "solution": "def allowed_by_scope(granted, required):\n    return all([r in granted for r in required])\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Jade Agent Stack repository and documentation",
+     "url": "https://github.com/lucky-edgelord/jade-agent-stack",
+     "note": "README, CONTRACT.md, STACK.md and docs/md pages"
+    },
+    {
+     "title": "Jade Agent Stack docs site",
+     "url": "https://lucky-edgelord.github.io/jade-agent-stack/",
+     "note": "guides and generated reference"
+    },
+    {
+     "title": "Jade Vault",
+     "url": "https://github.com/lucky-edgelord/jade-vault",
+     "note": "the control plane"
+    },
+    {
+     "title": "Jade Agent Base",
+     "url": "https://github.com/lucky-edgelord/jade-agent-base",
+     "note": "the resource plane"
+    }
    ]
   },
   {
@@ -579,6 +631,36 @@
      "items": [
       "Every one of these choices is about keeping secrets out of places where they leak: files committed to version control, shell histories, log lines and error messages. Output and errors are redacted of registered secrets.",
       "The habit to take away is that configuration describes where things are, and secrets are only ever fetched at the moment of use."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "jade.config.yaml",
+       "The toolkit's configuration file: targets, models, approvals, defaults and routes, with no secrets."
+      ],
+      [
+       "OS keyring",
+       "The operating system's secret store, used under the service name jade."
+      ],
+      [
+       "Header-only authentication",
+       "Sending tokens in an Authorization header, never in the URL."
+      ],
+      [
+       "jade doctor",
+       "A command that checks configuration, secrets and each target."
+      ],
+      [
+       "Resumable wizard",
+       "A setup wizard that remembers earlier answers and can be restarted or run headless."
+      ]
      ]
     }
    ],
@@ -934,6 +1016,28 @@
      "hint": "Typos become errors.",
      "solution": "def unknown_keys(cfg_keys, allowed):\n    return sorted([k for k in cfg_keys if k not in allowed])\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Jade Agent Stack repository and documentation",
+     "url": "https://github.com/lucky-edgelord/jade-agent-stack",
+     "note": "README, CONTRACT.md, STACK.md and docs/md pages"
+    },
+    {
+     "title": "Jade Agent Stack docs site",
+     "url": "https://lucky-edgelord.github.io/jade-agent-stack/",
+     "note": "guides and generated reference"
+    },
+    {
+     "title": "Jade Vault",
+     "url": "https://github.com/lucky-edgelord/jade-vault",
+     "note": "the control plane"
+    },
+    {
+     "title": "Jade Agent Base",
+     "url": "https://github.com/lucky-edgelord/jade-agent-base",
+     "note": "the resource plane"
+    }
    ]
   },
   {
@@ -1026,6 +1130,36 @@
      "items": [
       "The third safeguard is the task credential. A with-block over a task mints a Base credential, valid fifteen minutes by default, scoped to what the task needs, and revokes it afterwards. Even a hijacked task cannot do more than its scopes allow, and not for long.",
       "If Base answers credential_refused the run stops and is not retried. Compatibility is checked as well: a major version mismatch with a target is refused. Together, approvals limit what may be asked, keys limit repeats, and credentials limit power."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Harness",
+       "The in-process layer that checks every call: approvals, idempotency, credentials and compatibility."
+      ],
+      [
+       "Approval rule",
+       "A pattern permitting or denying a capability on a target, where deny always beats allow."
+      ],
+      [
+       "Idempotency key",
+       "An identifier ensuring a mutation runs once; a repeat gets the first answer."
+      ],
+      [
+       "Task credential",
+       "A short-lived token with limited scopes minted for one task."
+      ],
+      [
+       "Yolo",
+       "A flag that skips confirmation, always recorded in the approvals log."
+      ]
      ]
     }
    ],
@@ -1479,6 +1613,28 @@
      "hint": "A subset of the agent's scopes.",
      "solution": "def narrow(requested, agent_scopes):\n    return sorted([s for s in set(requested) if s in agent_scopes])\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Jade Agent Stack repository and documentation",
+     "url": "https://github.com/lucky-edgelord/jade-agent-stack",
+     "note": "README, CONTRACT.md, STACK.md and docs/md pages"
+    },
+    {
+     "title": "Jade Agent Stack docs site",
+     "url": "https://lucky-edgelord.github.io/jade-agent-stack/",
+     "note": "guides and generated reference"
+    },
+    {
+     "title": "Jade Vault",
+     "url": "https://github.com/lucky-edgelord/jade-vault",
+     "note": "the control plane"
+    },
+    {
+     "title": "Jade Agent Base",
+     "url": "https://github.com/lucky-edgelord/jade-agent-base",
+     "note": "the resource plane"
+    }
    ]
   },
   {
@@ -1570,6 +1726,36 @@
      "items": [
       "Versions are the other source of trouble, so the toolkit declares what it works with in STACK.md: Base from 0.6.0, Vault from 2.18.3, Kit from 3.1.0 and UI from 1.2.0 in version 0.1.0. Doctor compares what each target reports.",
       "A different major version is refused, since interfaces changed incompatibly. An older minor version only warns. Because JADE102 treats a Vault that still accepts tokens in query strings as unsafe, a too-old Vault is refused for security reasons as well."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Stable error code",
+       "An identifier that never changes meaning, so tools can react to it."
+      ],
+      [
+       "Remediation",
+       "A sentence telling the reader how to fix the problem."
+      ],
+      [
+       "Exit code",
+       "The number a command returns to the shell: 0 success, nonzero failure."
+      ],
+      [
+       "Major version",
+       "The first number of a version; a change means incompatible interfaces."
+      ],
+      [
+       "Doctor",
+       "The health check comparing target versions with STACK.md."
+      ]
      ]
     }
    ],
@@ -1985,6 +2171,28 @@
      "hint": "JADE102.",
      "solution": "def vault_status(accepts_url_token, accept_legacy):\n    if accepts_url_token:\n        return 'warn' if accept_legacy else 'refused'\n    return 'ok'\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Jade Agent Stack repository and documentation",
+     "url": "https://github.com/lucky-edgelord/jade-agent-stack",
+     "note": "README, CONTRACT.md, STACK.md and docs/md pages"
+    },
+    {
+     "title": "Jade Agent Stack docs site",
+     "url": "https://lucky-edgelord.github.io/jade-agent-stack/",
+     "note": "guides and generated reference"
+    },
+    {
+     "title": "Jade Vault",
+     "url": "https://github.com/lucky-edgelord/jade-vault",
+     "note": "the control plane"
+    },
+    {
+     "title": "Jade Agent Base",
+     "url": "https://github.com/lucky-edgelord/jade-agent-base",
+     "note": "the resource plane"
+    }
    ]
   },
   {
@@ -2076,6 +2284,36 @@
       "Every mutating call gets an idempotency key, by default a hash of the playbook name, task name and variables, so running again is safe. The run state is recorded locally.",
       "If a phone sleeps or a network breaks, running again with the same variables resumes: finished tasks are skipped, unfinished ones are sent with the same keys, and Base replays anything that had already arrived.",
       "Expressions in arguments use a small sandboxed language with comparisons, and, or, not, in, and a few filters like default, lower and length. An unknown name is an error unless a default is given."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Playbook",
+       "A YAML file with apiVersion jade/v1, kind Playbook, metadata and a spec of ordered tasks."
+      ],
+      [
+       "Plan",
+       "A listing of every call a playbook would make, produced without making any."
+      ],
+      [
+       "Rollback",
+       "A failure mode that runs each finished task's undo in reverse order and then stops."
+      ],
+      [
+       "Register",
+       "Saving a task's result under a name for later tasks to use."
+      ],
+      [
+       "Expression",
+       "A sandboxed template such as double braces around a name, with no calls, imports or I/O."
+      ]
      ]
     }
    ],
@@ -2656,6 +2894,28 @@
      "hint": "Any edit changes the hash (a toy hash here).",
      "solution": "def simple_hash(text):\n    return sum([ord(c) for c in text]) % 65521\ndef approval_ok(approved_text, current_text):\n    return simple_hash(approved_text) == simple_hash(current_text)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Jade Agent Stack repository and documentation",
+     "url": "https://github.com/lucky-edgelord/jade-agent-stack",
+     "note": "README, CONTRACT.md, STACK.md and docs/md pages"
+    },
+    {
+     "title": "Jade Agent Stack docs site",
+     "url": "https://lucky-edgelord.github.io/jade-agent-stack/",
+     "note": "guides and generated reference"
+    },
+    {
+     "title": "Jade Vault",
+     "url": "https://github.com/lucky-edgelord/jade-vault",
+     "note": "the control plane"
+    },
+    {
+     "title": "Jade Agent Base",
+     "url": "https://github.com/lucky-edgelord/jade-agent-base",
+     "note": "the resource plane"
+    }
    ]
   },
   {
@@ -2747,6 +3007,36 @@
      "items": [
       "Deploy is where the earlier chapters pay off. Plan prints the calls as a list with secret placeholders; secrets come from environment variables the spec names, never from the file.",
       "Deploy then runs as a generated playbook under the harness: approvals apply, every mutation has a content-hash key so deploying twice changes nothing, the task credential carries only the scopes needed, and an interrupted deploy resumes where it stopped."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Site spec",
+       "The YAML description of a site: name, tagline, template, theme, pages and backend."
+      ],
+      [
+       "Template",
+       "A starting set of pages and backend defaults that the spec can override."
+      ],
+      [
+       "Section",
+       "A page building block such as nav, hero, features, pricing or form."
+      ],
+      [
+       "Backend",
+       "The part of the spec that sets up Base: modules, auth, collections, models, plans and billing."
+      ],
+      [
+       "Field shorthand",
+       "A compact text form for collection fields, such as email:email! for a required email."
+      ]
      ]
     }
    ],
@@ -3246,6 +3536,28 @@
      "hint": "A spec names variables, never values.",
      "solution": "def secret_refs(spec_keys):\n    return sorted([k for k, v in spec_keys if k.endswith('_env')])\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Jade Agent Stack repository and documentation",
+     "url": "https://github.com/lucky-edgelord/jade-agent-stack",
+     "note": "README, CONTRACT.md, STACK.md and docs/md pages"
+    },
+    {
+     "title": "Jade Agent Stack docs site",
+     "url": "https://lucky-edgelord.github.io/jade-agent-stack/",
+     "note": "guides and generated reference"
+    },
+    {
+     "title": "Jade Vault",
+     "url": "https://github.com/lucky-edgelord/jade-vault",
+     "note": "the control plane"
+    },
+    {
+     "title": "Jade Agent Base",
+     "url": "https://github.com/lucky-edgelord/jade-agent-base",
+     "note": "the resource plane"
+    }
    ]
   },
   {
@@ -3338,6 +3650,36 @@
       "What may an agent not do? It must not widen its own permissions. Over MCP, HTTP and JSON lines, changing approvals, target URLs, secret storage options or legacy acceptance, storing or deleting secrets, approving a playbook, and deploying with yes are refused with JADE302 and need a person.",
       "Everything else an agent can do, including running the init wizard from an answers file. One honest caveat in the docs: this guard holds on those surfaces. An agent with a shell running as you can do what you can, so run agents as a user with less.",
       "The recipes for agents are short: start from a template, list sections before guessing parameters, plan before deploy, and treat JADE103 or JADE30x as stop signs."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Command registry",
+       "The single list of commands from which every surface is generated."
+      ],
+      [
+       "JSON envelope",
+       "The standard result object with schema jade.v1, an ok flag, the command and the data or error."
+      ],
+      [
+       "JSON lines",
+       "A protocol of one request per line in and one answer per line out, with an id."
+      ],
+      [
+       "MCP server",
+       "A process exposing the commands as tools over the Model Context Protocol."
+      ],
+      [
+       "Loopback",
+       "The local-only address 127.0.0.1; other hosts need a token."
+      ]
      ]
     }
    ],
@@ -3764,6 +4106,28 @@
      "hint": "Ambiguity is an error unless routed.",
      "solution": "def pick_target(tool, owners, routes):\n    own = [t for t, tools in owners if tool in tools]\n    if len(own) == 1:\n        return own[0]\n    if len(own) == 0:\n        return 'JADE403'\n    for k, v in routes:\n        if k == tool:\n            return v\n    return 'JADE404'\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Jade Agent Stack repository and documentation",
+     "url": "https://github.com/lucky-edgelord/jade-agent-stack",
+     "note": "README, CONTRACT.md, STACK.md and docs/md pages"
+    },
+    {
+     "title": "Jade Agent Stack docs site",
+     "url": "https://lucky-edgelord.github.io/jade-agent-stack/",
+     "note": "guides and generated reference"
+    },
+    {
+     "title": "Jade Vault",
+     "url": "https://github.com/lucky-edgelord/jade-vault",
+     "note": "the control plane"
+    },
+    {
+     "title": "Jade Agent Base",
+     "url": "https://github.com/lucky-edgelord/jade-agent-base",
+     "note": "the resource plane"
+    }
    ]
   },
   {
@@ -3856,6 +4220,36 @@
       "Judgement still matters. The scopes schema, hooks and settings let a holder change structure, run server code or alter configuration, which is close to full control, so give them sparingly and prefer scoping a task to read and write.",
       "Run agents as an operating-system user with little access, because the guards cover the toolkit's surfaces and not a shell. Keep a person in the loop for irreversible actions. Read the audit log, since a log nobody reads protects nobody.",
       "And if you find a vulnerability, report it privately through the security advisories of the repository concerned, not in a public issue."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Prompt injection",
+       "Text in data an agent reads that tries to give the agent new instructions."
+      ],
+      [
+       "Least privilege",
+       "Giving a task only the access it needs, for only as long as it needs."
+      ],
+      [
+       "Redaction",
+       "Removing secrets from output, logs and errors."
+      ],
+      [
+       "Exfiltration",
+       "Leaking data out of a system, for example through a tool call to a hostile server."
+      ],
+      [
+       "Defence in depth",
+       "Using several independent protections so that one failure is not fatal."
+      ]
      ]
     }
    ],
@@ -4238,6 +4632,28 @@
      ],
      "hint": "Real defences limit capability instead.",
      "solution": "def looks_like_injection(text):\n    t = text.lower()\n    for p in ('ignore previous instructions', 'ignore all previous', 'you must now'):\n        if p in t:\n            return True\n    return False\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Jade Agent Stack repository and documentation",
+     "url": "https://github.com/lucky-edgelord/jade-agent-stack",
+     "note": "README, CONTRACT.md, STACK.md and docs/md pages"
+    },
+    {
+     "title": "Jade Agent Stack docs site",
+     "url": "https://lucky-edgelord.github.io/jade-agent-stack/",
+     "note": "guides and generated reference"
+    },
+    {
+     "title": "Jade Vault",
+     "url": "https://github.com/lucky-edgelord/jade-vault",
+     "note": "the control plane"
+    },
+    {
+     "title": "Jade Agent Base",
+     "url": "https://github.com/lucky-edgelord/jade-agent-base",
+     "note": "the resource plane"
     }
    ]
   }

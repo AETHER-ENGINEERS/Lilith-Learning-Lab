@@ -137,6 +137,40 @@
      "items": [
       "PPO is on-policy. After a round of updates the old data is thrown away and new data is collected with the improved policy. It later became very widely used, including for fine-tuning language models from human feedback, which chapter 9 covers as background knowledge."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Policy",
+       "A rule giving the probability of each action in a state."
+      ],
+      [
+       "Policy gradient",
+       "Improving the policy by gradient ascent on expected return."
+      ],
+      [
+       "TRPO",
+       "Trust Region Policy Optimization: a constrained policy update using a KL limit."
+      ],
+      [
+       "Surrogate objective",
+       "A stand-in objective whose gradient guides the policy update."
+      ],
+      [
+       "On-policy",
+       "Learning from data collected by the current policy."
+      ],
+      [
+       "Epoch",
+       "One pass over the collected batch."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -248,6 +282,13 @@
      "title": "Idea",
      "text": "PPO keeps the new policy {{close|near}} to the old one by {{clipping|clip}} the probability ratio."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -347,6 +388,40 @@
      "type": "text",
      "items": [
       "Everything in PPO builds on this. The next chapters improve the weight multiplying the score function (the advantage) and limit the step (the ratio and clipping)."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Return",
+       "The discounted sum of future rewards, G_t."
+      ],
+      [
+       "Discount factor gamma",
+       "A number below one that makes later rewards count less."
+      ],
+      [
+       "Softmax policy",
+       "pi(a) = exp(theta_a) / sum_b exp(theta_b)."
+      ],
+      [
+       "Score function",
+       "The gradient of the log-probability of an action."
+      ],
+      [
+       "Baseline",
+       "A number subtracted from the return to reduce variance without bias."
+      ],
+      [
+       "Logits",
+       "The raw scores before the softmax."
+      ]
      ]
     }
    ],
@@ -761,6 +836,13 @@
      "title": "Gradient",
      "text": "The gradient of the log-probability for a softmax policy is the one-hot vector minus the {{probabilities|probability vector}}. A {{baseline}} reduces variance."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -864,6 +946,40 @@
      "type": "text",
      "items": [
       "Finally, many implementations normalise the advantages in each batch: subtract the mean, divide by the standard deviation. This keeps the scale of the gradient steady between batches. It is an implementation habit, not part of the theory."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Advantage",
+       "A(s, a) = Q(s, a) - V(s): how much better than average an action is."
+      ],
+      [
+       "Value function",
+       "V(s): the expected return from state s under the policy."
+      ],
+      [
+       "TD residual",
+       "delta_t = r_t + gamma V(s_{t+1}) - V(s_t)."
+      ],
+      [
+       "GAE",
+       "A_t = sum_l (gamma lambda)^l delta_{t+l}."
+      ],
+      [
+       "Bootstrapping",
+       "Using a value estimate in place of the rest of the return."
+      ],
+      [
+       "Advantage normalisation",
+       "Subtracting the batch mean and dividing by the standard deviation."
+      ]
      ]
     }
    ],
@@ -1291,6 +1407,13 @@
      "title": "Advantages",
      "text": "The advantage is Q minus {{V|the value}}; GAE blends estimates with the parameter {{lambda}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1394,6 +1517,40 @@
      "type": "text",
      "items": [
       "In practice we store the log-probabilities of the actions under the old policy at collection time. The ratio is then the exponential of the difference of log-probabilities, which is numerically stable."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Probability ratio",
+       "r(theta) = pi_theta(a/s) / pi_old(a/s)."
+      ],
+      [
+       "Importance sampling",
+       "Reweighting samples from one distribution to estimate an average under another."
+      ],
+      [
+       "KL divergence",
+       "A measure of how different one distribution is from another."
+      ],
+      [
+       "Trust region",
+       "The neighbourhood of the current policy in which the surrogate can be trusted."
+      ],
+      [
+       "Surrogate objective",
+       "L(theta) = E[ r(theta) * A ]."
+      ],
+      [
+       "Monotonic improvement",
+       "TRPO's theory: a bounded KL step guarantees no (large) decrease."
+      ]
      ]
     }
    ],
@@ -1764,6 +1921,13 @@
      "title": "Ratio",
      "text": "The ratio is the {{new}} probability over the {{old}} probability."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1863,6 +2027,40 @@
      "items": [
       "The value of epsilon sets how far a single update can go. The paper compared several values and found 0.2 worked well on its continuous control tasks. Many later implementations also use 0.1 to 0.3.",
       "The fraction of samples falling outside the band, the clip fraction, is a useful diagnostic during training."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Clipping",
+       "Limiting a value to a range: clip(x, lo, hi)."
+      ],
+      [
+       "Epsilon",
+       "The clip range hyperparameter; 0.2 is a common value."
+      ],
+      [
+       "Pessimistic bound",
+       "Taking the smaller of two estimates."
+      ],
+      [
+       "Clip fraction",
+       "The share of samples whose ratio was outside the band."
+      ],
+      [
+       "Dead zone",
+       "A region where the gradient is zero."
+      ],
+      [
+       "Per-sample loss",
+       "The negative of the clipped term, averaged over a minibatch."
+      ]
      ]
     }
    ],
@@ -2239,6 +2437,13 @@
      "title": "Clip",
      "text": "The objective takes the {{min|minimum|smaller}} of the clipped and unclipped terms, with epsilon about {{0.2}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2338,6 +2543,40 @@
      "type": "text",
      "items": [
       "The labs compute the entropy, the value loss, the combined loss and one full gradient step for a tiny softmax policy with a clipped objective."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Value loss",
+       "Squared error between V(s) and the target return."
+      ],
+      [
+       "Entropy",
+       "H(pi) = -sum pi log pi: how spread out the policy is."
+      ],
+      [
+       "Entropy bonus",
+       "A term added to the objective to encourage exploration."
+      ],
+      [
+       "Shared parameters",
+       "Policy and value heads using the same body network."
+      ],
+      [
+       "Combined loss",
+       "The weighted sum used for one optimiser step."
+      ],
+      [
+       "Minibatch",
+       "A random subset of the collected batch."
+      ]
      ]
     }
    ],
@@ -2737,6 +2976,13 @@
      "title": "Loss",
      "text": "The total loss adds the clip loss and the {{value}} loss and subtracts an {{entropy}} bonus."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2839,6 +3085,40 @@
      "type": "text",
      "items": [
       "Finally, RL results vary a lot between random seeds. A single good run says little. Report the mean and spread over several seeds."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Rollout",
+       "A fixed number of environment steps collected with the current policy."
+      ],
+      [
+       "Actor",
+       "A copy of the environment (or process) generating experience."
+      ],
+      [
+       "Minibatch",
+       "A subset of the batch used for one gradient step."
+      ],
+      [
+       "Gradient clipping",
+       "Rescaling the gradient if its norm exceeds a limit."
+      ],
+      [
+       "Annealing",
+       "Gradually reducing a hyperparameter such as the learning rate."
+      ],
+      [
+       "Early stopping on KL",
+       "Ending the epochs early if the policy has moved too far."
+      ]
      ]
     }
    ],
@@ -3209,6 +3489,13 @@
      "title": "Loop",
      "text": "PPO reuses each {{batch}} for K {{epochs|epoch}} of minibatch updates."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3311,6 +3598,40 @@
      "type": "text",
      "items": [
       "In the labs, the penalty and the shaped reward are computed per token on small lists, and then fed to the GAE routine of chapter 3."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "RLHF",
+       "Reinforcement learning from human feedback."
+      ],
+      [
+       "Reward model",
+       "A network trained on human preference data to score responses."
+      ],
+      [
+       "Reference model",
+       "The frozen starting model that the policy is kept close to."
+      ],
+      [
+       "KL penalty",
+       "A cost on the per-token log-probability gap to the reference."
+      ],
+      [
+       "Reward hacking",
+       "Exploiting flaws in the reward model to get a high score without real quality."
+      ],
+      [
+       "Response",
+       "The sequence of tokens generated for a prompt."
+      ]
      ]
     }
    ],
@@ -3719,6 +4040,13 @@
      "title": "RLHF",
      "text": "The reward model scores the whole {{response}}, and a {{KL|kl}} penalty to a reference model limits drift."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3819,6 +4147,40 @@
      "type": "text",
      "items": [
       "Where to go next: read the PPO paper itself, then the generalized advantage estimation paper, then implement PPO on a small environment with your favourite library and plot the five diagnostics. The final labs here compute them from small arrays."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Explained variance",
+       "1 - Var(return - value) / Var(return): how much of the return the critic explains."
+      ],
+      [
+       "Entropy collapse",
+       "Policy entropy falling to near zero too early."
+      ],
+      [
+       "Reward hacking",
+       "Exploiting the reward function rather than solving the task."
+      ],
+      [
+       "A2C",
+       "Advantage actor-critic: a synchronous, simpler on-policy actor-critic."
+      ],
+      [
+       "SAC",
+       "Soft actor-critic: an off-policy method with an entropy objective."
+      ],
+      [
+       "GRPO",
+       "Group relative policy optimization: PPO-like, with advantages from groups of samples (background)."
+      ]
      ]
     }
    ],
@@ -4180,6 +4542,13 @@
      "type": "fill",
      "title": "Diagnostics",
      "text": "Low explained {{variance}} means a poor critic, and falling {{entropy}} may signal collapse."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

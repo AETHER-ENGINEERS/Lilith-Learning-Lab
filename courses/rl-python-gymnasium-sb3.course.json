@@ -143,6 +143,40 @@
      "items": [
       "Course plan. First the ideas: Gymnasium environments, the Markov decision process, exploration, and tabular Q-learning. Then deep RL with neural networks. Then Stable-Baselines3: PPO, DQN, SAC, evaluation, callbacks, logging and your own environments."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Agent",
+       "The learner and decision maker. In code it is usually a policy plus a learning algorithm."
+      ],
+      [
+       "Environment",
+       "Everything the agent interacts with. It reacts to actions and produces observations and rewards."
+      ],
+      [
+       "Observation",
+       "What the agent actually sees at a step. Often called the state when it contains everything that matters."
+      ],
+      [
+       "Action",
+       "A choice the agent makes, such as push left or push right."
+      ],
+      [
+       "Reward",
+       "A single number the environment sends after each step. It says how good that step was."
+      ],
+      [
+       "Policy",
+       "The agent's rule for choosing actions from observations. Learning means improving the policy."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -253,6 +287,13 @@
      "type": "fill",
      "title": "Fill the loop",
      "text": "In the loop, the agent picks an {{action}} from a {{policy}}. The environment sends back a {{reward}} and the next {{observation|state}}. The agent wants the highest total {{return}}."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   },
@@ -366,6 +407,40 @@
      "type": "text",
      "items": [
       "Spaces matter. Discrete(2) means two actions. Box(low, high, shape) means an array of real numbers, for example a torque between minus two and two. Value-based methods such as DQN need discrete actions. Algorithms such as SAC and TD3 are for continuous Box actions. PPO handles both."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Gymnasium",
+       "The Python library that defines the standard environment interface and ships many example environments."
+      ],
+      [
+       "gym.make",
+       "Function that builds an environment from its name, for example CartPole-v1."
+      ],
+      [
+       "reset",
+       "Starts a new episode and returns the first observation and an info dictionary."
+      ],
+      [
+       "step",
+       "Applies an action and returns observation, reward, terminated, truncated and info."
+      ],
+      [
+       "terminated",
+       "True when the episode ended because of the task itself, such as falling over or reaching the goal."
+      ],
+      [
+       "truncated",
+       "True when the episode was stopped by a limit such as a maximum number of steps, not by the task."
+      ]
      ]
     }
    ],
@@ -525,6 +600,13 @@
      ],
      "solution": "if terminated or truncated: break"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -634,6 +716,40 @@
      "type": "text",
      "items": [
       "Finally, a policy can be deterministic (one action per state) or stochastic (a probability for each action). Stochastic policies help exploration and are used by PPO and A2C. Deterministic ones are often used at test time."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "MDP",
+       "Markov decision process: states, actions, transitions, rewards and a discount factor."
+      ],
+      [
+       "Markov property",
+       "The future depends only on the current state and action, not on how you got there."
+      ],
+      [
+       "Transition",
+       "The rule, possibly random, for which state comes next after an action."
+      ],
+      [
+       "Discount factor (gamma)",
+       "A number from 0 to 1 that shrinks future rewards. Close to 1 means far-sighted."
+      ],
+      [
+       "Return",
+       "Sum of discounted rewards: r0 + gamma r1 + gamma squared r2 and so on."
+      ],
+      [
+       "State value V(s)",
+       "Expected return starting in state s and following the policy."
+      ]
      ]
     }
    ],
@@ -795,6 +911,13 @@
      "title": "Bellman in words",
      "text": "The value of a state equals the immediate {{reward}} plus gamma times the value of the {{next state|next}}. A gamma close to {{1}} makes the agent far-sighted."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -888,6 +1011,40 @@
      "type": "text",
      "items": [
       "Try the Bandit Lab in the practice section. Pull the arms by hand first, then switch on epsilon-greedy and watch the estimates settle."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Exploration",
+       "Trying actions to learn more about them, even if they look worse right now."
+      ],
+      [
+       "Exploitation",
+       "Choosing the action that currently looks best to collect reward."
+      ],
+      [
+       "Bandit",
+       "A problem with one state and several actions, each with an unknown reward distribution."
+      ],
+      [
+       "Epsilon-greedy",
+       "With probability epsilon act randomly, otherwise act greedily."
+      ],
+      [
+       "Greedy action",
+       "The action with the highest current value estimate."
+      ],
+      [
+       "Sample average",
+       "Estimate of an action's value: the mean of the rewards seen so far for that action."
+      ]
      ]
     }
    ],
@@ -1073,6 +1230,13 @@
      "height": 430,
      "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px 3px 3px 0}\nbutton.t{background:#2d2046;color:#e7d9ff}.row{display:flex;flex-wrap:wrap;align-items:center;gap:4px}\n.bar{height:10px;border-radius:5px;background:#261b3b;overflow:hidden}.bar i{display:block;height:100%;background:#b26bff;width:0}\nsmall,.m{color:#c9b8e8}input[type=range]{width:140px}.arm button{white-space:nowrap}.arm{display:grid;grid-template-columns:84px 1fr 78px;gap:8px;align-items:center;margin:6px 0}</style></head><body>\n<div class=\"m\">Five slot machines with hidden average payouts. Pull to learn. The bars are your running estimates.</div>\n<div id=\"arms\"></div>\n<div class=\"row\"><label class=\"m\">epsilon <input id=\"e\" type=\"range\" min=\"0\" max=\"100\" value=\"10\"> <b id=\"ev\">0.10</b></label>\n<button id=\"auto\" class=\"t\">Auto pull x10 (epsilon-greedy)</button><button id=\"rst\" class=\"t\">New machines</button></div>\n<div class=\"m\" id=\"st\"></div><div class=\"bar\"><i id=\"pg\"></i></div><div class=\"m\">Make 40 pulls to finish.</div><script>\nfunction done(){try{if(window.lilith)lilith.complete()}catch(e){}}\n\nvar N=5,mu,Q,C,total,pulls;\nfunction init(){mu=[];for(var i=0;i<N;i++)mu.push(Math.random());Q=Array(N).fill(0);C=Array(N).fill(0);total=0;pulls=0;draw()}\nfunction gauss(){return (Math.random()+Math.random()+Math.random()-1.5)/0.5}\nfunction pull(a){var r=mu[a]+0.25*gauss();C[a]++;Q[a]+=(r-Q[a])/C[a];total+=r;pulls++;draw();if(pulls>=40)done()}\nfunction greedy(){var b=0;for(var i=1;i<N;i++)if(Q[i]>Q[b])b=i;return b}\nfunction eps(){return +document.getElementById('e').value/100}\nfunction draw(){var h='';for(var i=0;i<N;i++){var w=Math.max(0,Math.min(100,Q[i]*100));h+='<div class=\"arm\"><button data-a=\"'+i+'\">Arm '+(i+1)+'</button><div class=\"bar\"><i style=\"width:'+w+'%\"></i></div><small>'+Q[i].toFixed(2)+' ('+C[i]+')</small></div>'}\ndocument.getElementById('arms').innerHTML=h;document.getElementById('ev').textContent=eps().toFixed(2);\nvar best=0;for(var j=1;j<N;j++)if(mu[j]>mu[best])best=j;\ndocument.getElementById('st').textContent='Pulls: '+pulls+'   total reward: '+total.toFixed(1)+(pulls>=8?'   (the truly best arm is Arm '+(best+1)+' when you want to check)':'');\ndocument.getElementById('pg').style.width=Math.min(100,pulls/40*100)+'%';\nArray.prototype.forEach.call(document.querySelectorAll('[data-a]'),function(b){b.onclick=function(){pull(+b.dataset.a)}})}\ndocument.getElementById('e').oninput=draw;\ndocument.getElementById('auto').onclick=function(){for(var k=0;k<10;k++){pull(Math.random()<eps()?Math.floor(Math.random()*N):greedy())}};\ndocument.getElementById('rst').onclick=init;init();</script></body></html>"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1172,6 +1336,40 @@
      "type": "text",
      "items": [
       "Open the Gridworld Lab in the practice section. Train the agent for a few hundred episodes and watch the arrows turn toward the goal."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Q-table",
+       "An array of shape (number of states, number of actions) holding the current Q estimates."
+      ],
+      [
+       "Q-learning",
+       "A method that updates Q toward reward plus gamma times the maximum Q of the next state."
+      ],
+      [
+       "Learning rate (alpha)",
+       "How far each update moves the estimate toward the target. Between 0 and 1."
+      ],
+      [
+       "TD target",
+       "The value r + gamma * max Q(s', a') that the old estimate is nudged toward."
+      ],
+      [
+       "TD error",
+       "Target minus current estimate. The size of the surprise."
+      ],
+      [
+       "Off-policy",
+       "Learning about one policy (greedy) while following another (exploring)."
+      ]
      ]
     }
    ],
@@ -1313,6 +1511,13 @@
      "height": 520,
      "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:15px system-ui,Roboto,sans-serif;margin:0;padding:12px;background:#150d27;color:#f1ebff}\nbutton{font:inherit;border:0;border-radius:20px;padding:8px 14px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px 3px 3px 0}\nbutton.t{background:#2d2046;color:#e7d9ff}.row{display:flex;flex-wrap:wrap;align-items:center;gap:4px}\n.bar{height:10px;border-radius:5px;background:#261b3b;overflow:hidden}.bar i{display:block;height:100%;background:#b26bff;width:0}\nsmall,.m{color:#c9b8e8}input[type=range]{width:140px}table{border-collapse:collapse;margin:8px 0}td{width:52px;height:52px;border:1px solid #3a2a5c;text-align:center;font-size:24px;padding:0}.g{background:#2c4a1f}.p{background:#5a1a2a}.s{background:#2a1f4a}.path{outline:2px solid #b26bff;outline-offset:-3px}</style></head><body>\n<div class=\"m\">Start is S, goal is the star, the pit is the red cell. Arrows show the best action learned so far.</div>\n<table id=\"t\"></table>\n<div class=\"row\"><button id=\"b1\">Train 20 episodes</button><button id=\"b2\">Train 300</button><button id=\"b3\" class=\"t\">Reset</button></div>\n<div class=\"m\" id=\"st\"></div><script>\nfunction done(){try{if(window.lilith)lilith.complete()}catch(e){}}\n\nvar R=5,Cc=5,A=4,goal=[4,4],pit=[2,2],wall=[[1,1],[3,2]],Q,ep,rng=Math.random;\nvar DX=[-1,0,1,0],DY=[0,1,0,-1],AR=['\\u2190','\\u2193','\\u2192','\\u2191'];\nfunction id(r,c){return r*Cc+c}function isWall(r,c){return wall.some(function(w){return w[0]===r&&w[1]===c})}\nfunction reset(){Q=[];for(var i=0;i<R*Cc;i++)Q.push([0,0,0,0]);ep=0;draw([])}\nfunction step(r,c,a){var nr=r+DY[a],nc=c+DX[a];if(nr<0||nr>=R||nc<0||nc>=Cc||isWall(nr,nc)){nr=r;nc=c}\nvar rew=-0.01,fin=false;if(nr===goal[0]&&nc===goal[1]){rew=1;fin=true}else if(nr===pit[0]&&nc===pit[1]){rew=-1;fin=true}return [nr,nc,rew,fin]}\nfunction best(s){var b=0;for(var i=1;i<A;i++)if(Q[s][i]>Q[s][b])b=i;return b}\nfunction train(n){var alpha=0.5,gamma=0.95,eps=0.2;for(var e=0;e<n;e++){var r=0,c=0;for(var t=0;t<60;t++){var s=id(r,c),a=rng()<eps?Math.floor(rng()*A):best(s);\nvar o=step(r,c,a),s2=id(o[0],o[1]);var tgt=o[3]?o[2]:o[2]+gamma*Math.max.apply(null,Q[s2]);Q[s][a]+=alpha*(tgt-Q[s][a]);r=o[0];c=o[1];if(o[3])break}ep++}\nvar p=greedyPath();draw(p.cells);var ok=p.ok;document.getElementById('st').textContent='Episodes: '+ep+(ok?'   Greedy path reaches the goal in '+p.cells.length+' cells.':'   Greedy path does not reach the goal yet.');if(ok)done()}\nfunction greedyPath(){var r=0,c=0,cells=[[0,0]];for(var t=0;t<30;t++){var o=step(r,c,best(id(r,c)));r=o[0];c=o[1];cells.push([r,c]);if(o[3])return {cells:cells,ok:r===goal[0]&&c===goal[1]}}return {cells:cells,ok:false}}\nfunction draw(path){var h='';for(var r=0;r<R;r++){h+='<tr>';for(var c=0;c<Cc;c++){var cl='',tx='';var onp=path.some(function(p){return p[0]===r&&p[1]===c});\nif(r===goal[0]&&c===goal[1]){cl='g';tx='\\u2605'}else if(r===pit[0]&&c===pit[1]){cl='p'}else if(isWall(r,c)){cl='s';tx='\\u25A0'}\nelse if(r===0&&c===0&&ep===0){cl='s';tx='S'}else if(ep>0){tx=AR[best(id(r,c))]}else tx='\\u00B7';\nh+='<td class=\"'+cl+(onp?' path':'')+'\">'+tx+'</td>'}h+='</tr>'}document.getElementById('t').innerHTML=h;if(!ep)document.getElementById('st').textContent='Episodes: 0'}\ndocument.getElementById('b1').onclick=function(){train(20)};document.getElementById('b2').onclick=function(){train(300)};document.getElementById('b3').onclick=reset;reset();</script></body></html>"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1421,6 +1626,40 @@
      "type": "text",
      "items": [
       "Common bugs: observation dtype float64 when the space says float32, a reset that forgets to return info, a step that returns four values, and a Box with bounds the data goes outside. check_env finds most of these."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "gym.Env",
+       "Base class for environments. You subclass it and implement reset and step."
+      ],
+      [
+       "observation_space",
+       "Attribute describing the shape, type and bounds of observations."
+      ],
+      [
+       "action_space",
+       "Attribute describing the valid actions."
+      ],
+      [
+       "check_env",
+       "SB3 helper that runs sanity checks on an environment and warns about problems."
+      ],
+      [
+       "Wrapper",
+       "A class that wraps an environment and changes its inputs, outputs or rules."
+      ],
+      [
+       "TimeLimit",
+       "A wrapper that truncates episodes after a maximum number of steps. Applied via max_episode_steps."
+      ]
      ]
     }
    ],
@@ -1545,6 +1784,13 @@
      ],
      "solution": "return obs, reward, terminated, truncated, info"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1639,6 +1885,40 @@
      "items": [
       "Hyperparameters to know: the learning rate, the buffer size, the batch size, how often to update the target, how long epsilon decays, and learning_starts. In Stable-Baselines3 they are all constructor arguments of DQN.",
       "Limits: DQN overestimates values (Double DQN reduces this), it is sample hungry, and it only handles a discrete action set. For robots with continuous controls you need a different family, which chapter 9 introduces."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Function approximation",
+       "Using a parametric model, such as a neural network, instead of a table to represent values or policies."
+      ],
+      [
+       "DQN",
+       "Deep Q-Network: Q-learning with a neural network, a replay buffer and a target network."
+      ],
+      [
+       "Replay buffer",
+       "A memory of past transitions from which random mini-batches are sampled for training."
+      ],
+      [
+       "Target network",
+       "A delayed copy of the Q network used to compute stable training targets."
+      ],
+      [
+       "Mini-batch",
+       "A small random group of transitions used for one gradient step."
+      ],
+      [
+       "Off-policy",
+       "Able to learn from old data collected by older versions of the policy, which is why a replay buffer works."
+      ]
      ]
     }
    ],
@@ -1855,6 +2135,13 @@
       ]
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1969,6 +2256,40 @@
      "type": "text",
      "items": [
       "Treat total_timesteps as a budget and judge the model by evaluation, not by the training log alone. Always check how the reward curve changes with different seeds. RL results vary a lot from run to run."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Stable-Baselines3",
+       "A PyTorch library of RL algorithms such as PPO, A2C, DQN, SAC, TD3 and DDPG."
+      ],
+      [
+       "MlpPolicy",
+       "The default network for vector observations: a multilayer perceptron."
+      ],
+      [
+       "learn",
+       "Method that trains the model for total_timesteps environment steps."
+      ],
+      [
+       "predict",
+       "Returns an action for an observation. Use deterministic=True when evaluating."
+      ],
+      [
+       "evaluate_policy",
+       "Helper that runs episodes and returns the mean and standard deviation of the episode reward."
+      ],
+      [
+       "total_timesteps",
+       "Number of environment steps used for training, not the number of episodes."
+      ]
      ]
     }
    ],
@@ -2127,6 +2448,13 @@
       }
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2246,6 +2574,40 @@
      "type": "text",
      "items": [
       "SB3 gives all of these under the same interface. Extra algorithms live in the sb3-contrib package, for example recurrent PPO, TRPO and QR-DQN."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Policy gradient",
+       "A method that adjusts policy parameters in the direction that increases expected return."
+      ],
+      [
+       "Actor",
+       "The part of the agent that chooses actions, the policy network."
+      ],
+      [
+       "Critic",
+       "The part that estimates values, used to judge the actor's actions."
+      ],
+      [
+       "Advantage",
+       "How much better an action was than the average action in that state: Q minus V."
+      ],
+      [
+       "PPO",
+       "Proximal Policy Optimization. Policy gradient with a clipped objective that keeps updates small."
+      ],
+      [
+       "On-policy",
+       "Learns only from data gathered by the current policy, so old data is thrown away."
+      ]
      ]
     }
    ],
@@ -2432,6 +2794,13 @@
       ]
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2550,6 +2919,40 @@
      "type": "text",
      "items": [
       "Reproducibility. Pass seed to the algorithm and to make_vec_env, and expect small differences anyway on GPU. For reporting, run several seeds and show the mean with its spread. Compare algorithms with the same budget of timesteps."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "make_vec_env",
+       "Helper that builds several copies of an environment, each wrapped with a Monitor."
+      ],
+      [
+       "DummyVecEnv",
+       "Runs several environments one after another in a single process."
+      ],
+      [
+       "SubprocVecEnv",
+       "Runs each environment in its own process for real parallelism."
+      ],
+      [
+       "Callback",
+       "An object whose methods are called during training, for example to evaluate or save."
+      ],
+      [
+       "EvalCallback",
+       "Evaluates the model every eval_freq steps and can save the best model."
+      ],
+      [
+       "TensorBoard",
+       "A web dashboard for training curves. Enable it with tensorboard_log."
+      ]
      ]
     }
    ],
@@ -2705,6 +3108,13 @@
      ],
      "solution": "eval_freq = max(10_000 // n_envs, 1)"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2812,6 +3222,40 @@
      "items": [
       "Other pitfalls. Reporting one lucky seed. Evaluating with exploration noise on. Mixing up terminated and truncated in a custom environment. Training for too few steps: CartPole takes thousands, Atari takes millions. Using a policy trained with VecNormalize without the saved statistics. A reward whose scale is so large that gradients explode.",
       "Finally, remember the safety side: an agent in the real world will exploit unexpected loopholes in the real world. Test in simulation, add limits and keep a human in the loop."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Reward shaping",
+       "Adding extra reward signals that guide the agent toward the goal."
+      ],
+      [
+       "Sparse reward",
+       "A reward that is zero almost everywhere and nonzero only on success."
+      ],
+      [
+       "Reward hacking",
+       "When the agent exploits a loophole in the reward to score high without solving the task."
+      ],
+      [
+       "Potential-based shaping",
+       "Shaping of the form gamma * phi(s') - phi(s). It does not change the best policy."
+      ],
+      [
+       "Curriculum",
+       "Starting with easy versions of a task and making it harder as the agent improves."
+      ],
+      [
+       "Overfitting to a seed",
+       "Performing well only on the starting states or random numbers seen in training."
+      ]
      ]
     }
    ],
@@ -2963,6 +3407,13 @@
       "Tune hyperparameters"
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3055,6 +3506,40 @@
      "items": [
       "How to keep learning. Keep a notebook of experiments: environment version, algorithm, hyperparameters, seed and result. Reproduce a published result before inventing your own. When you hit something odd, shrink the problem until you can explain it.",
       "Thank you for learning with Lilith. Use the final exam to check yourself, and revisit the chapters where your score was lowest."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "RL Zoo",
+       "A training framework with tuned hyperparameters and scripts for many environments, built on SB3."
+      ],
+      [
+       "sb3-contrib",
+       "A companion package with additional algorithms such as RecurrentPPO, TRPO and QR-DQN."
+      ],
+      [
+       "Frame stacking",
+       "Giving the agent the last few frames as one observation so it can sense motion."
+      ],
+      [
+       "Multi-agent RL",
+       "Several agents learn at once in a shared environment, cooperating or competing."
+      ],
+      [
+       "Offline RL",
+       "Learning a policy from a fixed dataset without interacting with the environment."
+      ],
+      [
+       "Sim-to-real",
+       "Training in simulation and transferring the policy to a physical system."
+      ]
      ]
     }
    ],
@@ -3150,6 +3635,13 @@
       }
      ],
      "solution": "I will try Pendulum-v1 with SAC and compare it to PPO over three seeds."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

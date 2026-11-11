@@ -47,6 +47,7 @@ figcaption{font-size:12px;color:var(--dim);margin-top:4px}
 .qa .a{display:none;margin-top:8px;color:var(--g2)}.qa.open .a{display:block}
 input[type=text],input[type=search],textarea,select{width:100%;background:#07040d;color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:10px;font:16px ui-monospace,Menlo,Consolas,monospace}
 textarea{min-height:190px;font-size:14px;line-height:1.45;resize:vertical}
+.tblw{overflow-x:auto;margin:10px 0}table.tb{border-collapse:collapse;width:100%;font-size:13.5px}table.tb th,table.tb td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}table.tb th{background:rgba(178,107,255,.16)}
 .muted{color:var(--dim);font-size:13px}.hide{display:none!important}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
 .gl dt{font-weight:600;color:var(--g2);margin-top:10px}.gl dd{margin:2px 0 0}
@@ -695,6 +696,11 @@ function md(src) {
       if (f[1] === 'conceptmap') html += '<div class="muted">Concept map: ' + esc((buf[0] || '').replace('title:', '').trim()) + ' (see the Maps tab)</div>';
       else html += '<pre><span class="lang">' + esc(f[1] || 'text') + '</span><code>' + esc(code) + '</code><button class="cp" data-copy="' + esc(code) + '">copy</button></pre>';
     } else if (im) { flushP(); closeL(); html += '<figure>' + figImg(im[2]) + '<figcaption>' + esc(im[1]) + '</figcaption></figure>'; }
+    else if (/^\s*\|.*\|\s*$/.test(ln) && i + 1 < lines.length && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i + 1])) {
+      flushP(); closeL(); const cells = l => l.trim().replace(/^\||\|$/g, '').split('|').map(x => x.trim()); const hd = cells(ln); i += 2; const rws = [];
+      while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) { rws.push(cells(lines[i])); i++; }
+      i--; html += '<div class="tblw"><table class="tb"><thead><tr>' + hd.map(x => '<th>' + inline(x) + '</th>').join('') + '</tr></thead><tbody>' + rws.map(r => '<tr>' + r.map(x => '<td>' + inline(x) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+    }
     else if (/^\s*-\s+/.test(ln)) { flushP(); if (!list) { html += '<ul>'; list = true; } html += '<li>' + inline(ln.replace(/^\s*-\s+/, '')) + '</li>'; }
     else if (!ln.trim()) { flushP(); closeL(); } else { closeL(); para.push(ln.trim()); }
     i++;
@@ -805,6 +811,7 @@ function slideHTML(s, idx) {
     case 'bullets': return '<h3 class="sh">' + esc(s.heading) + '</h3><ul class="bl">' + s.bullets.map((b, i) => '<li class="b hid" data-i="' + i + '"><span class="dot"></span><div><b class="bh">' + inline(b.head) + '</b>' + (b.detail ? '<span class="bd">' + inline(b.detail) + '</span>' : '') + '</div></li>').join('') + '</ul>';
     case 'figure': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="fig">' + figImg(s.file) + '<div class="cap">' + esc(s.caption) + '</div></div>';
     case 'code': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="codeblk">' + chartLines(s.code) + '</div>';
+    case 'table': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="tblw"><table class="tb"><thead><tr>' + s.head.map(x => '<th>' + inline(x) + '</th>').join('') + '</tr></thead><tbody>' + s.rows.map(r => '<tr>' + r.map(x => '<td>' + inline(x) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
     case 'map': return '<h3 class="sh">' + esc(s.heading) + '</h3><div style="flex:1;min-height:0">' + mapSVG(s.layout, false) + '</div>';
     case 'quiz': return '<h3 class="sh">' + esc(s.heading) + '</h3><div class="q">' + inline(s.q) + '</div><div class="opts">' + s.options.map((o, k) => '<button class="opt" data-k="' + k + '"><b>' + LET[k] + '</b><span>' + inline(o) + '</span></button>').join('') + '</div><div class="fb hid" id="fb"></div>';
     case 'office': return '<h3 class="sh">Office hours</h3><div class="muted">Questions about ' + esc(s.sub) + '? Ask Teacher, or continue when you are ready.</div><div class="row" style="margin-top:14px">' + btn('askhere', 'help_outline', 'Ask Teacher', 'pri') + '</div>';
@@ -937,6 +944,7 @@ function renderChapter(n) {
   if (c.examples.trim()) h += '<div class="card"><h3>Lesson</h3>' + md(c.examples) + '</div>';
   if (c.quiz.length) { const q = P().q[c.id]; h += '<div class="card"><h3>Quiz</h3><div class="muted">' + c.quiz.length + ' questions' + (q ? '. Best score ' + q.best + ' / ' + q.total : '') + '</div><div class="row" style="margin-top:8px">' + btn('doquiz', 'quiz', q ? 'Take it again' : 'Take the quiz', 'pri') + '</div></div>'; }
   if (c.practice.length) h += '<div class="card"><h3>Practice</h3><div class="pl">' + c.practice.map(l => '<button class="btn tonal" data-lab="' + esc(l.id) + '">' + ic(l.type === 'terminal' ? 'terminal' : (l.type === 'code' || l.type === 'python') ? 'code' : 'extension') + '<span>' + esc(l.title) + '</span><span class="kind">' + KIND[l.type] + '</span>' + (P().lab[c.id + '/' + l.id] ? ic('check_circle', 'okc') : '') + '</button>').join('') + '</div></div>';
+  if (c.references && c.references.length) h += '<div class="card"><h3>References</h3><ul class="refs">' + c.references.map(r => '<li>' + (r.url ? '<a href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(r.title) + '</a>' : esc(r.title)) + (r.note ? ' <span class="muted">' + esc(r.note) + '</span>' : '') + '</li>').join('') + '</ul></div>';
   if (c.cards.length) { h += '<div class="card"><h3>Check yourself</h3>'; c.cards.forEach(q => { h += '<div class="qa"><div>' + inline(q.q) + '</div><div class="a">' + inline(q.a) + '</div><button class="btn sm" style="margin-top:6px">Show answer</button></div>'; }); h += '</div>'; }
   h += '<div class="row" style="margin:14px 0">' + btn('mark', 'done_all', 'Mark text sections as read', 'tonal') + btn('askch', 'help_outline', 'Office hours: ask Teacher', 'tonal') + '</div>';
   h += '<div class="row">' + (i > 0 ? btn('prev', 'chevron_left', 'Previous', '') : '') + (i < CUR.ch.length - 1 ? btn('next', 'chevron_right', 'Next', 'pri') : '') + '</div>';
@@ -1369,7 +1377,7 @@ function mountOffice(el, S) {
       const msgs = [{ role: 'system', content: AIx.teacherSystem({ course: CUR.course.title, chapter: S.c && S.c.title, passages: officeContext(S) + (hits ? '\n\nOther related passages:\n' + hits : '') }) + (verdict ? '\nThe learner just explained the idea in their own words. ' + verdict + ' Give kind, specific feedback: what they got right, the one gap to fix, and one question to try again.' : '') }]
         .concat(th.slice(-13, -1).map(m => ({ role: m.role, content: m.content })), [{ role: 'user', content: tb === false && verdict ? 'My explanation: ' + text : text }]);
       status(ad, 'Thinking...');
-      const out = await AIx.agent(msgs, { tools: ['search_course', 'web_search', 'web_fetch', 'deep_research', 'python'], courseIndex: courseIdx(), signal: ctl.signal,
+      const out = await AIx.agent(msgs, { role: 'office', tools: ['search_course', 'web_search', 'web_fetch', 'deep_research', 'python'], courseIndex: courseIdx(), signal: ctl.signal,
         onDelta: d => { reply += d; $('.st', ad) && $('.st', ad).remove(); bt.innerHTML = mdAI(reply); box.scrollTop = box.scrollHeight; },
         onTool: (n, a) => status(ad, AIx.friendly(n, a)) });
       if (!reply && out) { reply = out; bt.innerHTML = mdAI(reply); }
@@ -1408,6 +1416,7 @@ function openAISettings() {
     '<div class="row" style="margin:8px 0" id="aipv">' + [['ollama', 'Ollama (local)'], ['cloud', 'Ollama Cloud'], ['openai', 'OpenAI-compatible']].map(p => '<button class="chip ' + (c.provider === p[0] ? 'on' : '') + '" data-p="' + p[0] + '">' + p[1] + '</button>').join('') + '</div>' +
     '<div id="aif"></div>' +
     sw('search', 'Web search and fetch', c.search) + sw('decide', 'Decisions API (graded explanations)', c.decide) + sw('office', 'Pause for office hours after each lecture section', ST.set.office !== false) + sw('verbose', 'Verbose log (every request and tool call)', c.verbose) +
+    '<div class="muted" style="margin-top:8px">Optional: use a different model for each job. Leave blank to use the model above. The provider stays the same.</div>' + field('aibm', 'Course generation model', c.builderModel, 'same as above', 'text') + field('aiom', 'Office hours model', c.officeModel, 'same as above', 'text') +
     '<label class="fl">Decision model (Ollama; cloud default: clef)<input type="text" id="aidm" list="aidms" value="' + esc(c.decideModel || '') + '" placeholder="clef" autocapitalize="off" spellcheck="false"></label><datalist id="aidms"></datalist>' + (isWeb ? field('aicp', 'CORS proxy (web version: needed for Ollama Cloud)', c.corsProxy, 'https://your-worker.workers.dev/?{url}') + '<div class="muted">Ollama Cloud does not let web pages call it directly. Deploy the small proxy in docs/proxy/cloudflare-worker.js (free) and paste its address, or use the Android app, which needs none.</div>' : '') +
     '<div class="out hide" id="aires"></div><div class="row" style="margin-top:10px">' + btn('ailog', 'format_list_bulleted', 'Log', 'sm') + btn('aiexp', 'share', 'Export settings', 'sm') + btn('aiimp', 'upload_file', 'Import settings', 'sm') + '</div><div class="row end" style="margin-top:8px">' + btn('aitest', 'play_arrow', 'Test', '') + btn('aiok', 'check', 'Save', 'pri') + '</div>');
   let cfg = Object.assign({}, c);
@@ -1424,7 +1433,7 @@ function openAISettings() {
     if (p === 'ollama') { cfg.ollamaUrl = g('aiurl') || cfg.ollamaUrl; cfg.ollamaModel = g('aimodel') || ''; }
     else if (p === 'cloud') { cfg.cloudKey = g('aikey') || ''; cfg.cloudModel = g('aimodel') || ''; }
     else { cfg.openaiUrl = g('aiurl') || cfg.openaiUrl; cfg.openaiKey = g('aikey') || ''; cfg.openaiModel = g('aimodel') || ''; }
-    cfg.decideModel = g('aidm') || ''; if (isWeb) cfg.corsProxy = g('aicp') || '';
+    cfg.decideModel = g('aidm') || ''; cfg.builderModel = g('aibm') || ''; cfg.officeModel = g('aiom') || ''; if (isWeb) cfg.corsProxy = g('aicp') || '';
     AIx.setCfg(cfg);
   };
   const out = (t, bad) => { const o = $('#aires', d); o.classList.remove('hide'); o.textContent = t; o.style.color = bad ? 'var(--err)' : ''; };
@@ -1432,6 +1441,7 @@ function openAISettings() {
     pull(); out('Scanning...');
     try {
       const m = await AIx.listModels(); $('#aimods', d).innerHTML = m.map(x => '<option value="' + esc(x) + '">').join('');
+      ['aibm', 'aiom'].forEach(id => { const e = $('#' + id, d); if (e) e.setAttribute('list', 'aimods'); });
       let dm = []; try { dm = await AIx.listDecisionModels(); $('#aidms', d).innerHTML = dm.map(x => '<option value="' + esc(x) + '">').join(''); } catch (e) { AIx.log('warn', 'Decision model scan: ' + e.message); }
       out(m.length + ' chat model(s): ' + m.slice(0, 12).join(', ') + (m.length > 12 ? ', ...' : '') + (dm.length ? '\n' + dm.length + ' decision model(s): ' + dm.join(', ') : '') + '\nTap the Model box to pick one.');
       const mi = $('#aimodel', d); if (mi && !mi.value && m.length) mi.value = m[0];
@@ -1476,7 +1486,7 @@ function openBuilder() {
     const unlock = () => { clearInterval(tick); $('#bgo', d).disabled = false; ['#bt', '#bl', '#bn', '#bm'].forEach(x => { const e = $(x, d); if (e) e.disabled = false; }); };
     try {
       const mode = $('#bm', d).value; AIx.setCfg({ builder: mode });
-      const course = await AIx.buildCourse({ topic, docs, level: $('#bl', d).value, chapters: +$('#bn', d).value, mode, courseIndex: courseIdx(), onProgress, signal: ctl.signal });
+      const course = await AIx.buildCourse({ role: 'builder', topic, docs, level: $('#bl', d).value, chapters: +$('#bn', d).value, mode, courseIndex: courseIdx(), onProgress, signal: ctl.signal });
       clearInterval(tick); closeModal(); importText(JSON.stringify(course), course.title + '.course.json');
     } catch (e) {
       unlock(); $('#bprog', d).classList.add('hide');

@@ -132,6 +132,40 @@
      "items": [
       "A note on sources. This course follows the DPO paper and standard descriptions of it. Later variants and comparisons are marked as background knowledge. The labs use tiny numerical examples, not a real language model."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Preference pair",
+       "A prompt with a chosen (preferred) response and a rejected one."
+      ],
+      [
+       "RLHF",
+       "Reinforcement learning from human feedback."
+      ],
+      [
+       "Reference model",
+       "A frozen copy of the starting model."
+      ],
+      [
+       "Implicit reward",
+       "The reward that the policy itself defines: beta times the log-ratio to the reference."
+      ],
+      [
+       "Beta",
+       "A coefficient controlling how far the policy may move from the reference."
+      ],
+      [
+       "Binary cross-entropy",
+       "The loss for a yes-or-no prediction."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -243,6 +277,13 @@
      "title": "Idea",
      "text": "DPO trains the policy directly on {{preference|preferences}} pairs, with no separate {{reward}} model."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -343,6 +384,40 @@
      "type": "text",
      "items": [
       "DPO keeps exactly this loss. What changes is what plays the role of the reward. The next chapters show that the policy itself can define it."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Bradley-Terry model",
+       "p(A beats B) = sigmoid(r_A - r_B)."
+      ],
+      [
+       "Sigmoid",
+       "sigma(z) = 1 / (1 + exp(-z)); maps any number into (0, 1)."
+      ],
+      [
+       "Log-sigmoid",
+       "log sigma(z): the log-probability of the observed choice."
+      ],
+      [
+       "Reward gap",
+       "The difference r_w - r_l between winner and loser."
+      ],
+      [
+       "Log-likelihood",
+       "The sum of log-probabilities of the data."
+      ],
+      [
+       "Annotator agreement",
+       "How often different people make the same choice."
+      ]
      ]
     }
    ],
@@ -705,6 +780,13 @@
      "title": "Bradley-Terry",
      "text": "The chance that A wins is the {{sigmoid}} of the reward {{gap|difference}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -801,6 +883,40 @@
      "type": "text",
      "items": [
       "The trouble is Z of x. It is a sum over every possible response, an astronomically large set for a language model. So we cannot evaluate the optimal policy directly, and RLHF falls back on RL sampling to approach it. DPO instead keeps the formula and uses it algebraically."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "KL-regularised objective",
+       "E[r(x, y)] - beta * KL(pi // pi_ref)."
+      ],
+      [
+       "Optimal policy",
+       "pi*(y/x) = pi_ref(y/x) exp(r(x,y)/beta) / Z(x)."
+      ],
+      [
+       "Partition function",
+       "Z(x) = sum_y pi_ref(y/x) exp(r(x,y)/beta), the normaliser."
+      ],
+      [
+       "Tilting",
+       "Reweighting a distribution by an exponential factor."
+      ],
+      [
+       "Temperature",
+       "Here beta plays the role of a temperature on the reward."
+      ],
+      [
+       "Support",
+       "The set of responses with nonzero probability."
+      ]
      ]
     }
    ],
@@ -1237,6 +1353,13 @@
      "title": "Optimal",
      "text": "The optimal policy tilts the {{reference}} by exp(r over {{beta}}) and normalises."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1339,6 +1462,40 @@
      "items": [
       "It is worth saying what is assumed. The derivation relies on the Bradley-Terry model being a good description of the preferences, and on the policy class being flexible enough to represent the optimum. Where these fail, DPO and RLHF can differ in practice.",
       "The labs below compute the implicit reward, the margin and the loss."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Reward reparameterisation",
+       "r(x,y) = beta log(pi*(y/x)/pi_ref(y/x)) + beta log Z(x)."
+      ],
+      [
+       "Cancellation",
+       "log Z(x) appears in both rewards of a pair and drops out of their difference."
+      ],
+      [
+       "Implicit reward",
+       "r_hat(x,y) = beta log(pi_theta(y/x)/pi_ref(y/x))."
+      ],
+      [
+       "Log-ratio",
+       "log pi_theta(y/x) - log pi_ref(y/x)."
+      ],
+      [
+       "Margin",
+       "The implicit reward gap between winner and loser."
+      ],
+      [
+       "Closed-form",
+       "Given by a formula, without iterative search."
+      ]
      ]
     }
    ],
@@ -1682,6 +1839,13 @@
      "title": "Derivation",
      "text": "The partition function {{cancels|drops out}} because both responses answer the same {{prompt}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1782,6 +1946,40 @@
      "type": "text",
      "items": [
       "The labs use a tabular policy, with one logit per response, to see these effects without a neural network. For a softmax over a few candidate responses, the gradient of the log-probability with respect to the logits is the one-hot vector minus the probabilities, as you saw in the PPO course."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Gradient weight",
+       "sigma(r_hat_l - r_hat_w): how wrongly the implicit reward orders the pair."
+      ],
+      [
+       "Log-probability gradient",
+       "The direction that raises or lowers log pi_theta of a response."
+      ],
+      [
+       "Implicit ranking error",
+       "A pair where the loser has the higher implicit reward."
+      ],
+      [
+       "Degeneration",
+       "Output quality collapsing when the loss lacks the weighting."
+      ],
+      [
+       "Tabular policy",
+       "A policy stored as a table of logits, used in the labs."
+      ],
+      [
+       "Learning rate",
+       "The size of each gradient step."
+      ]
      ]
     }
    ],
@@ -2128,6 +2326,13 @@
      "title": "Weights",
      "text": "Pairs the model ranks {{wrongly|incorrectly}} get a {{large|big|high}} weight."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2229,6 +2434,40 @@
      "items": [
       "One known subtlety is length. A longer response has a more negative total log-probability simply because it has more tokens, so the log-ratios can interact with length. Several later methods normalise by length. I come back to this in the chapter on variants.",
       "The labs compute sequence log-probabilities with masks and build one batch of DPO inputs."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Sequence log-probability",
+       "The sum over response tokens of log pi(token / context)."
+      ],
+      [
+       "Masking",
+       "Excluding prompt (and padding) tokens from the sum."
+      ],
+      [
+       "Precomputing",
+       "Calculating reference log-probabilities once before training."
+      ],
+      [
+       "SFT",
+       "Supervised fine-tuning, usually done before DPO."
+      ],
+      [
+       "Beta",
+       "A typical value is 0.1; chosen by experiment."
+      ],
+      [
+       "Length bias",
+       "A tendency for sums of log-probabilities to favour shorter or longer responses."
+      ]
      ]
     }
    ],
@@ -2656,6 +2895,13 @@
      "title": "Code",
      "text": "A response log-probability is the {{sum}} of token log-probabilities over the {{response|generated}} tokens."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2756,6 +3002,40 @@
      "items": [
       "To monitor training, log the loss, the reward accuracy, the average margin, the implicit rewards of the chosen and rejected responses, and an estimate of the KL divergence to the reference.",
       "For the final judgement use held-out prompts and compare responses against a baseline, by human raters or by a model judge, and report the win rate."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Likelihood displacement",
+       "Chosen and rejected log-probabilities both fall while their gap grows."
+      ],
+      [
+       "Offline training",
+       "Learning from a fixed dataset without sampling new responses."
+      ],
+      [
+       "Distribution shift",
+       "Mismatch between the data and what the model would generate."
+      ],
+      [
+       "Win rate",
+       "The share of comparisons in which one model's response is preferred."
+      ],
+      [
+       "Overfitting",
+       "Fitting the training pairs too closely; the margin keeps growing."
+      ],
+      [
+       "Reward accuracy",
+       "The share of pairs with a positive implicit reward margin."
+      ]
      ]
     }
    ],
@@ -3088,6 +3368,13 @@
      "title": "Tuning",
      "text": "A larger {{beta}} keeps the policy {{closer|close|near}} to the reference."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3189,6 +3476,40 @@
      "items": [
       "How to choose? DPO is a strong default when you have a good preference dataset and limited compute. PPO-like methods give more control when you have a reliable reward signal and can afford sampling. Whatever you pick, evaluate on held-out prompts.",
       "Where to go next: read the DPO paper, then try the loss on a small open model with a preference dataset, and plot the diagnostics from chapter 7."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "IPO",
+       "Identity Preference Optimization: squared-error loss on the margin, aimed at reducing overfitting."
+      ],
+      [
+       "KTO",
+       "Kahneman-Tversky Optimization: learns from labels on single responses."
+      ],
+      [
+       "ORPO",
+       "Odds Ratio Preference Optimization: no reference model."
+      ],
+      [
+       "SimPO",
+       "Simple Preference Optimization: average log-probability as the reward."
+      ],
+      [
+       "Online DPO",
+       "DPO with fresh samples from the current policy, labelled by a judge."
+      ],
+      [
+       "GRPO",
+       "Group Relative Policy Optimization: PPO-like with group-normalised advantages."
+      ]
      ]
     }
    ],
@@ -3514,6 +3835,13 @@
      "type": "fill",
      "title": "Family",
      "text": "{{GRPO}} drops the value model; {{online|iterative}} DPO samples new responses."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

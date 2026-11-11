@@ -134,6 +134,36 @@
       "Today most headline AI uses learned models, but the symbolic ideas have not vanished. Search runs in route planners and game engines. Logic checks hardware and software. Knowledge graphs power web search. And recent work called neuro-symbolic AI tries to combine learning with reasoning.",
       "Knowing GOFAI helps you see what each approach is good at."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "GOFAI",
+       "Good Old-Fashioned AI: intelligence built from explicit symbols and rules."
+      ],
+      [
+       "Symbol",
+       "A token that stands for something, such as a fact, object or action."
+      ],
+      [
+       "Knowledge base",
+       "A collection of facts and rules a program can reason over."
+      ],
+      [
+       "Physical symbol system hypothesis",
+       "Newell and Simon's claim that a system that manipulates symbols has what is needed for general intelligence."
+      ],
+      [
+       "Connectionism",
+       "The approach that models intelligence with networks of simple units that learn from data."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -314,6 +344,13 @@
      "hint": "Check the limits in order.",
      "solution": "def era(year):\n    if year < 1950:\n        return \"before\"\n    if year < 1970:\n        return \"foundations\"\n    if year < 1990:\n        return \"knowledge\"\n    if year < 2000:\n        return \"winter\"\n    return \"modern\"\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -401,6 +438,36 @@
      "type": "text",
      "items": [
       "Modern systems store such knowledge as triples, subject, relation, object, in a knowledge graph. Wikidata and the graphs behind web search work this way. An ontology fixes the vocabulary, so different programs mean the same thing by the same word. The Semantic Web is this idea at scale."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Semantic network",
+       "A graph with concepts as nodes and labelled relations as links."
+      ],
+      [
+       "Frame",
+       "A structure of slots and values describing a typical object or situation."
+      ],
+      [
+       "Inheritance",
+       "A property passing from a category down to its members."
+      ],
+      [
+       "Default reasoning",
+       "Assuming a typical property unless there is information against it."
+      ],
+      [
+       "Triple",
+       "A fact in the form subject, relation, object."
+      ]
      ]
     }
    ],
@@ -773,6 +840,13 @@
      "hint": "Skip any triple that fails a given test.",
      "solution": "def query(triples, s, r, o):\n    out = []\n    for t in triples:\n        if s is not None and t[0] != s:\n            continue\n        if r is not None and t[1] != r:\n            continue\n        if o is not None and t[2] != o:\n            continue\n        out.append(t)\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -862,6 +936,36 @@
      "items": [
       "To prove that premises entail a goal by resolution, add the negation of the goal to the clauses and see if you can reach the empty clause. This refutation proof is complete, which means it always finds a proof when one exists.",
       "It underlies automated theorem provers and the SAT solvers used in chip design."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Tautology",
+       "A formula true under every assignment."
+      ],
+      [
+       "Satisfiable",
+       "True under at least one assignment."
+      ],
+      [
+       "Entailment",
+       "A conclusion follows from premises if every assignment making the premises true makes it true."
+      ],
+      [
+       "Clause",
+       "A disjunction of literals, such as A or not B."
+      ],
+      [
+       "Resolution",
+       "From (A or X) and (not A or Y) derive (X or Y)."
+      ]
      ]
     }
    ],
@@ -1204,6 +1308,13 @@
      "hint": "Find a literal whose negation is in the other clause.",
      "solution": "def neg(l):\n    if l[0] == \"-\":\n        return l[1:]\n    return \"-\" + l\ndef resolve(c1, c2):\n    for l in c1:\n        if neg(l) in c2:\n            rest = {}\n            for x in c1:\n                if x != l:\n                    rest[x] = 1\n            for x in c2:\n                if x != neg(l):\n                    rest[x] = 1\n            return sorted(rest.keys())\n    return None\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1294,6 +1405,36 @@
      "type": "text",
      "items": [
       "Unification gives GOFAI much of its power. Resolution for predicate logic unifies a literal with a negated literal, then resolves. Prolog does the same in a fixed order, which makes logic into a programming language. Planners and parsers use it to match patterns against facts."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Predicate",
+       "A property or relation applied to objects, such as Human(Socrates)."
+      ],
+      [
+       "Quantifier",
+       "For all or there exists, binding a variable."
+      ],
+      [
+       "Substitution",
+       "A mapping from variables to terms."
+      ],
+      [
+       "Unifier",
+       "A substitution that makes two terms identical."
+      ],
+      [
+       "Occurs check",
+       "A test that stops a variable being bound to a term containing itself."
+      ]
      ]
     }
    ],
@@ -1571,6 +1712,13 @@
      "hint": "Resolve each variable down to a term, then recurse into lists.",
      "solution": "def apply_sub(t, s):\n    if isinstance(t, str):\n        n = 0\n        while t in s and n < 50:\n            t = s[t]\n            n = n + 1\n        if isinstance(t, list):\n            return apply_sub(t, s)\n        return t\n    return [apply_sub(x, s) for x in t]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1659,6 +1807,36 @@
      "type": "text",
      "items": [
       "To avoid loops, keep a set of visited states and never expand one twice. To avoid blind exploration, use extra knowledge to guide the search, which is the idea of heuristics in the next chapter. The widget in this chapter lets you see the difference between the strategies on a grid."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "State space",
+       "The set of all states reachable from the start by applying operators."
+      ],
+      [
+       "Frontier",
+       "The states that have been found but not yet expanded."
+      ],
+      [
+       "Breadth-first search",
+       "Search that expands the shallowest states first, using a queue."
+      ],
+      [
+       "Depth-first search",
+       "Search that expands the deepest state first, using a stack."
+      ],
+      [
+       "Branching factor",
+       "The average number of operators applicable in a state."
+      ]
      ]
     }
    ],
@@ -2013,6 +2191,13 @@
      "hint": "Add up the powers of b.",
      "solution": "def states(b, d):\n    total = 0\n    p = 1\n    for i in range(d + 1):\n        total = total + p\n        p = p * b\n    return total\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2100,6 +2285,36 @@
      "type": "text",
      "items": [
       "Designing heuristics is a classic GOFAI skill. For the sliding-tile puzzle, the number of misplaced tiles and the sum of Manhattan distances of tiles are both admissible, and the second is stronger. A stronger admissible heuristic means fewer states to search."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Heuristic",
+       "An estimate of the remaining cost from a state to the goal."
+      ],
+      [
+       "Admissible heuristic",
+       "A heuristic that never overestimates the true remaining cost."
+      ],
+      [
+       "A* search",
+       "Best-first search that expands the state with the lowest g plus h."
+      ],
+      [
+       "Priority queue",
+       "A queue that always returns the item with the lowest key."
+      ],
+      [
+       "Manhattan distance",
+       "The sum of the absolute differences in x and y."
+      ]
      ]
     }
    ],
@@ -2449,6 +2664,13 @@
      "hint": "Compare each position, skipping the blank.",
      "solution": "def misplaced(board, goal):\n    n = 0\n    for i in range(len(board)):\n        if board[i] != 0 and board[i] != goal[i]:\n            n = n + 1\n    return n\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2538,6 +2760,36 @@
      "type": "text",
      "items": [
       "This approach reached its peak with IBM's Deep Blue, which beat world champion Garry Kasparov in 1997 with special chips searching hundreds of millions of positions per second. It was brute force guided by hand-built evaluation, a showpiece for GOFAI. Later programs used learning instead."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Minimax",
+       "A rule that chooses the move maximising the worst-case outcome against a best-playing opponent."
+      ],
+      [
+       "Evaluation function",
+       "A function that scores a non-final position for one side."
+      ],
+      [
+       "Alpha-beta pruning",
+       "Minimax with cut-offs for branches that cannot change the result."
+      ],
+      [
+       "Horizon effect",
+       "Misjudging a position because a threat lies just past the search depth."
+      ],
+      [
+       "Zero-sum game",
+       "A game in which one player's gain equals the other's loss."
+      ]
      ]
     }
    ],
@@ -2874,6 +3126,13 @@
      "hint": "Add for capitals and subtract for lowercase.",
      "solution": "def material(pieces):\n    vals = {\"p\": 1, \"n\": 3, \"b\": 3, \"r\": 5, \"q\": 9}\n    total = 0\n    for ch in pieces:\n        v = vals.get(ch.lower(), 0)\n        if ch.isupper():\n            total = total + v\n        else:\n            total = total - v\n    return total\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2962,6 +3221,36 @@
      "items": [
       "Expert systems met limits. Collecting rules from experts was slow, called the knowledge acquisition bottleneck. Large rule sets became hard to maintain and interact in unexpected ways. The systems failed ungracefully outside their narrow domain.",
       "Even so, the rule-based approach lives on in business rules and decision engines."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Production rule",
+       "A statement of the form IF conditions THEN conclusions."
+      ],
+      [
+       "Working memory",
+       "The set of facts currently believed true."
+      ],
+      [
+       "Forward chaining",
+       "Reasoning from facts to conclusions by firing rules."
+      ],
+      [
+       "Backward chaining",
+       "Reasoning from a goal to the facts needed to support it."
+      ],
+      [
+       "Knowledge engineer",
+       "A person who turns an expert's knowledge into rules."
+      ]
      ]
     }
    ],
@@ -3328,6 +3617,13 @@
      "hint": "Record the index each time a rule adds a fact.",
      "solution": "def explain(rules, facts, goal):\n    known = {}\n    for f in facts:\n        known[f] = 1\n    used = []\n    while goal not in known:\n        fired = False\n        for i in range(len(rules)):\n            r = rules[i]\n            ok = True\n            for c in r[0]:\n                if c not in known:\n                    ok = False\n            if ok and r[1] not in known:\n                known[r[1]] = 1\n                used.append(i)\n                fired = True\n                break\n        if not fired:\n            return None\n    return used\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3417,6 +3713,36 @@
      "items": [
       "STRIPS sidesteps it by assuming that anything not in the add or delete lists stays unchanged. That works in tidy worlds, but fails when actions have indirect effects or when the world changes by itself.",
       "Modern planners such as those using PDDL, a descendant of STRIPS, power logistics, scheduling and robotics, with heuristics that make them fast."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "STRIPS",
+       "The Stanford Research Institute Problem Solver, and the action format it introduced."
+      ],
+      [
+       "Precondition",
+       "A fact that must hold before an action can be applied."
+      ],
+      [
+       "Add and delete lists",
+       "The facts an action makes true and the facts it makes false."
+      ],
+      [
+       "Frame problem",
+       "The problem of representing what does not change when an action occurs."
+      ],
+      [
+       "Means-ends analysis",
+       "Reducing the difference between current state and goal, as in GPS."
+      ]
      ]
     }
    ],
@@ -3763,6 +4089,13 @@
      "hint": "Check every goal fact.",
      "solution": "def satisfied(state, goal):\n    for g in goal:\n        if g not in state:\n            return False\n    return True\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3854,6 +4187,36 @@
      "items": [
       "Prolog, created by Colmerauer and Kowalski in the early 1970s, was chosen for Japan's Fifth Generation Computer project in the 1980s.",
       "That project did not deliver the expected breakthroughs, but Prolog and constraint solvers are still used in scheduling, configuration and language processing, and its ideas live on in modern solvers."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "CSP",
+       "A problem defined by variables, domains and constraints."
+      ],
+      [
+       "Backtracking",
+       "A depth-first search that undoes assignments that lead to a violation."
+      ],
+      [
+       "Constraint propagation",
+       "Using constraints to remove impossible values from domains."
+      ],
+      [
+       "Horn clause",
+       "A clause with at most one positive literal, the form used by Prolog."
+      ],
+      [
+       "Prolog",
+       "A logic programming language based on Horn clauses and backward chaining."
+      ]
      ]
     }
    ],
@@ -4187,6 +4550,13 @@
      "hint": "Join the parent facts on the middle person.",
      "solution": "def grandparents(parents, person):\n    out = {}\n    for p in parents:\n        if p[1] == person:\n            for q in parents:\n                if q[1] == p[0]:\n                    out[q[0]] = 1\n    return sorted(out.keys())\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4279,6 +4649,36 @@
      "items": [
       "So the symbolic ideas are far from dead. Search guides game programs and route planners. Logic verifies chips and software. Knowledge graphs power search engines and assistants. Neuro-symbolic systems pair neural perception with a reasoning step, or let language models call a solver.",
       "Studying GOFAI gives you the other half of the toolbox."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Common-sense knowledge",
+       "Everyday facts and expectations that people share, such as water making things wet."
+      ],
+      [
+       "Cyc",
+       "A long-running project to encode common-sense knowledge in formal logic."
+      ],
+      [
+       "Symbol grounding problem",
+       "The question of how symbols get meaning beyond other symbols."
+      ],
+      [
+       "Brittleness",
+       "The tendency of rule systems to fail sharply outside their narrow domain."
+      ],
+      [
+       "Neuro-symbolic AI",
+       "Approaches that combine neural networks with symbolic reasoning."
+      ]
      ]
     }
    ],
@@ -4532,6 +4932,13 @@
      ],
      "hint": "A case is covered if any rule fires on it.",
      "solution": "def coverage(rules, cases):\n    n = 0\n    for case in cases:\n        hit = False\n        for r in rules:\n            ok = True\n            for c in r[0]:\n                if c not in case:\n                    ok = False\n            if ok:\n                hit = True\n        if hit:\n            n = n + 1\n    return n\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

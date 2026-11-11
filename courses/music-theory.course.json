@@ -130,6 +130,36 @@
      "items": [
       "A pitch is named by a letter and an octave number. Middle C is C4. The C above it is C5. Computers number the keys from 0 to 127 in MIDI, where middle C is 60 and A4 is 69. A frequency follows from the MIDI number with one formula: 440 times two to the power of (number minus 69) over twelve."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Frequency",
+       "The number of vibrations per second, measured in hertz."
+      ],
+      [
+       "Pitch",
+       "How high or low a note sounds, set mostly by its frequency."
+      ],
+      [
+       "Octave",
+       "The interval between a note and the one with double its frequency."
+      ],
+      [
+       "Semitone",
+       "The smallest step in Western music; twelve of them make an octave."
+      ],
+      [
+       "Accidental",
+       "A sign that changes a note by a semitone: sharp (♯), flat (♭) or natural (♮)."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -361,6 +391,13 @@
      "hint": "Use the formula directly.",
      "solution": "def midi_to_hz(n):\n    return round(440.0 * (2 ** ((n - 69) / 12.0)), 2)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -448,6 +485,36 @@
      "type": "text",
      "items": [
       "A rest is silence with a length. It has a shape for every note value, so a whole rest, half rest and so on. In 4/4, a quarter note, a quarter rest and a half note add up to four beats, filling exactly one measure."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Staff",
+       "Five horizontal lines on which notes are written."
+      ],
+      [
+       "Clef",
+       "A sign at the start of the staff that fixes the pitch of the lines."
+      ],
+      [
+       "Measure",
+       "A group of beats between two bar lines."
+      ],
+      [
+       "Time signature",
+       "Two numbers: beats per measure over the note value that gets one beat."
+      ],
+      [
+       "Rest",
+       "A sign for a silence of a given length."
+      ]
      ]
     }
    ],
@@ -704,6 +771,13 @@
      "hint": "Compare the total with top times four over bottom.",
      "solution": "def fills(notes, top, bottom):\n    vals = {\"w\": 4.0, \"h\": 2.0, \"q\": 1.0, \"e\": 0.5, \"s\": 0.25}\n    total = 0.0\n    for n in notes:\n        v = vals[n[0]]\n        if len(n) > 1 and n[1] == \".\":\n            v = v * 1.5\n        total = total + v\n    return total == top * 4.0 / bottom\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -797,6 +871,36 @@
      "type": "text",
      "items": [
       "Songs make useful anchors. The first two notes of the Star Wars theme is a perfect fifth. A major third is the start of 'When the Saints Go Marching In'. A minor second is the shark theme from Jaws. Pick your own song for each interval."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Interval",
+       "The distance between two notes."
+      ],
+      [
+       "Perfect interval",
+       "Unison, fourth, fifth or octave in their normal size."
+      ],
+      [
+       "Major and minor",
+       "The two normal sizes of seconds, thirds, sixths and sevenths; minor is a semitone smaller."
+      ],
+      [
+       "Tritone",
+       "An interval of six semitones, halfway through the octave."
+      ],
+      [
+       "Inversion",
+       "Moving the lower note up an octave; intervals of n and 9 - n then swap."
+      ]
      ]
     }
    ],
@@ -1106,6 +1210,13 @@
      "hint": "The numbers add to nine and the semitones to twelve.",
      "solution": "def invert(number, semitones):\n    if number == 1:\n        number = 8\n        if semitones == 0:\n            semitones = 12\n    return [9 - number, 12 - semitones]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1193,6 +1304,36 @@
      "type": "text",
      "items": [
       "To read a key signature of sharps, take the last sharp and go up a half step: that is the major tonic. With one sharp (F-sharp) the key is G. For flats, the second last flat is the key, and with one flat the key is F. Each major key shares its signature with a relative minor, a minor third below."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Scale",
+       "A set of notes arranged by pitch, such as the major scale."
+      ],
+      [
+       "Tonic",
+       "The first and most important note of a key."
+      ],
+      [
+       "Key signature",
+       "The sharps or flats at the start of the staff that apply to the whole piece."
+      ],
+      [
+       "Circle of fifths",
+       "A diagram of the keys ordered by fifths, showing how many sharps or flats each has."
+      ],
+      [
+       "Relative minor",
+       "The minor key that shares a key signature with a major key, starting on its sixth degree."
+      ]
      ]
     }
    ],
@@ -1510,6 +1651,13 @@
      "hint": "A minor third below the major tonic is nine semitones above it.",
      "solution": "def relative_minor(tonic):\n    return (tonic + 9) % 12\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1597,6 +1745,36 @@
      "type": "text",
      "items": [
       "A pentatonic scale leaves out the notes that clash. Major pentatonic is 1 2 3 5 6, as in C D E G A. Minor pentatonic is 1 flat3 4 5 flat7. With only five notes, every combination sounds good together, which is why guitarists start there."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Natural minor",
+       "A scale with the pattern W H W W H W W; also called the Aeolian mode."
+      ],
+      [
+       "Harmonic minor",
+       "Natural minor with a raised seventh degree."
+      ],
+      [
+       "Melodic minor",
+       "A scale that raises the sixth and seventh when ascending."
+      ],
+      [
+       "Mode",
+       "A scale made by starting a parent scale on a different note."
+      ],
+      [
+       "Pentatonic scale",
+       "A five-note scale found in folk, blues and rock music."
+      ]
      ]
     }
    ],
@@ -1976,6 +2154,13 @@
      "hint": "Pick the offsets, then add the tonic.",
      "solution": "def pentatonic(tonic, kind):\n    if kind == \"major\":\n        offs = [0, 2, 4, 7, 9]\n    else:\n        offs = [0, 3, 5, 7, 10]\n    return [(tonic + o) % 12 for o in offs]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2063,6 +2248,36 @@
      "type": "text",
      "items": [
       "Chord symbols write all this down. C means C major, Cm or C-minus is minor, Cdim is diminished, Caug or C+ is augmented. Guitarists read symbols above the lyrics, and pianists often see them above a melody. In the Nashville system the numbers stand in for any key."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Chord",
+       "Three or more notes played together."
+      ],
+      [
+       "Triad",
+       "A three-note chord of root, third and fifth."
+      ],
+      [
+       "Root",
+       "The note a chord is built on and named after."
+      ],
+      [
+       "Chord quality",
+       "Whether a triad is major, minor, diminished or augmented."
+      ],
+      [
+       "Diatonic",
+       "Using only the notes of the key."
+      ]
      ]
     }
    ],
@@ -2383,6 +2598,13 @@
      "hint": "Take every other scale note, wrapping around the list.",
      "solution": "def diatonic_triads(tonic):\n    steps = [2, 2, 1, 2, 2, 2]\n    scale = [tonic % 12]\n    n = tonic\n    for s in steps:\n        n = n + s\n        scale.append(n % 12)\n    out = []\n    for i in range(7):\n        a = scale[i]\n        b = scale[(i + 2) % 7]\n        c = scale[(i + 4) % 7]\n        x = (b - a) % 12\n        y = (c - b) % 12\n        if x == 4 and y == 3:\n            out.append(\"major\")\n        elif x == 3 and y == 4:\n            out.append(\"minor\")\n        else:\n            out.append(\"dim\")\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2470,6 +2692,36 @@
      "type": "text",
      "items": [
       "Inversions are named by the interval above the bass. In figured bass, the first inversion of a triad is 6 and the second is 6/4. Pop music writes a slash chord instead: C/E means C major over an E in the bass. Walking basslines often use slash chords."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Seventh chord",
+       "A four-note chord made by stacking three thirds."
+      ],
+      [
+       "Dominant seventh",
+       "A major triad with a minor seventh; the V7 chord."
+      ],
+      [
+       "Inversion",
+       "A voicing of a chord with a note other than the root on the bottom."
+      ],
+      [
+       "Figured bass",
+       "Numbers such as 6 and 6/4 that show the inversion of a chord."
+      ],
+      [
+       "Slash chord",
+       "A chord symbol like C/E, showing the bass note after a slash."
+      ]
      ]
     }
    ],
@@ -2815,6 +3067,13 @@
      "hint": "Find the position of the bass note.",
      "solution": "def inversion_of(notes, bass):\n    for i in range(len(notes)):\n        if notes[i] == bass:\n            return i\n    return -1\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2904,6 +3163,36 @@
      "type": "text",
      "items": [
       "Minor keys work the same way with different chords. In A minor, the harmonic minor scale gives i, ii-dim, III, iv, V, VI and vii-dim. The raised seventh makes V major, so minor keys can still end with a strong V to i cadence. Writing the progression in numerals lets you move it to any key."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Roman numeral analysis",
+       "Naming chords by the scale degree of their root."
+      ],
+      [
+       "Tonic function",
+       "Chords that feel stable and at rest, such as I and vi."
+      ],
+      [
+       "Dominant function",
+       "Chords that create tension needing resolution, such as V and vii-dim."
+      ],
+      [
+       "Cadence",
+       "A closing chord pair at the end of a phrase."
+      ],
+      [
+       "Progression",
+       "A sequence of chords."
+      ]
      ]
     }
    ],
@@ -3235,6 +3524,13 @@
      "hint": "Check the specific pairs in order.",
      "solution": "def cadence(a, b):\n    if a == \"V\" and b == \"I\":\n        return \"authentic\"\n    if a == \"IV\" and b == \"I\":\n        return \"plagal\"\n    if a == \"V\" and b == \"vi\":\n        return \"deceptive\"\n    if b == \"V\" and a != \"V\":\n        return \"half\"\n    return \"none\"\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3322,6 +3618,36 @@
      "type": "text",
      "items": [
       "Counterpoint means point against point. Two melodies played together, each good by itself, make good harmony together. Bach's fugues are the classic example, where a subject enters in one voice after another. The basic rules are to move mostly in contrary motion and treat parallel fifths with care."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Motif",
+       "A short musical idea that is repeated and developed."
+      ],
+      [
+       "Phrase",
+       "A musical sentence, usually ending in a cadence."
+      ],
+      [
+       "Syncopation",
+       "Stress on a normally weak beat or between beats."
+      ],
+      [
+       "Binary and ternary form",
+       "Two-part AB and three-part ABA structures."
+      ],
+      [
+       "Counterpoint",
+       "Combining independent melodies that fit together."
+      ]
      ]
     }
    ],
@@ -3608,6 +3934,13 @@
      "hint": "Odd positions are the off-beats.",
      "solution": "def syncopated(onsets):\n    n = 0\n    for o in onsets:\n        if o % 2 == 1:\n            n = n + 1\n    return n\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3695,6 +4028,36 @@
      "type": "text",
      "items": [
       "Theory describes what music does. It does not decide what is good. Use it to understand what you like, to find what a piece is doing, and to get ideas when you are stuck. The best next step is to play and listen to music with a theory ear, and to keep notes of what you find."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Transposition",
+       "Moving music up or down by a fixed interval."
+      ],
+      [
+       "Solfege",
+       "Syllables do re mi fa sol la ti used to name scale degrees."
+      ],
+      [
+       "Ear training",
+       "Practice that links sounds with their names."
+      ],
+      [
+       "Chord tone",
+       "A note that belongs to the chord sounding at that moment."
+      ],
+      [
+       "Lead sheet",
+       "A melody with chord symbols above it."
+      ]
      ]
     }
    ],
@@ -3992,6 +4355,13 @@
      ],
      "hint": "Use 2 ** (x / 12.0).",
      "solution": "def ratio(semitones):\n    return round(2 ** (semitones / 12.0), 4)\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

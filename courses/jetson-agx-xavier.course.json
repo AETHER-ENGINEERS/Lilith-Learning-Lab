@@ -118,6 +118,28 @@
      "type": "code",
      "lang": "bash",
      "code": "# The first three commands to run on any Jetson, to learn what you have\n$ cat /etc/nv_tegra_release        # the Jetson Linux (L4T) release\n$ sudo nvpmodel -q                 # the current power mode\n$ tegrastats                       # live CPU/GPU/memory load (Ctrl+C to stop)"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Concept map",
+       "A diagram of ideas joined by labeled links such as \"has\" or \"runs\"."
+      ],
+      [
+       "Jetson",
+       "NVIDIA's family of small computers for AI at the edge."
+      ],
+      [
+       "(from memory)",
+       "A marker for a claim that was not re-checked against NVIDIA documentation."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -179,6 +201,13 @@
      ],
      "hint": "Hardware first, then software, then compute, then design."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -236,6 +265,28 @@
      "type": "code",
      "lang": "text",
      "code": "Jetson AGX Xavier family at a glance (typical)\n  GPU            Volta, 512 CUDA cores, 64 Tensor Cores\n  CPU            8-core NVIDIA Carmel (Arm v8.2)\n  DLA            2 x NVDLA\n  PVA            2 x PVA v1\n  Memory         16 / 32 / 64 GB LPDDR4x, 256-bit, ~136.5 GB/s\n  Storage        32 GB eMMC 5.1 on the module (64 GB on Industrial)\n  Power modes    10 W, 15 W, 30 W (plus MAXN on dev kits)"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "AGX Xavier",
+       "NVIDIA's 2018-generation Jetson module with a Volta GPU, Carmel CPU, two DLAs and two PVAs."
+      ],
+      [
+       "SoC / SoM",
+       "System-on-chip and system-on-module."
+      ],
+      [
+       "TOPS",
+       "Tera-operations per second (trillions), used for INT8 throughput."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -312,6 +363,13 @@
      "title": "Not a PC",
      "intro": "Complete the sentence.",
      "text": "The Xavier is not a PC: there is no {{BIOS}} setup menu, so you {{flash|flash images}} images onto it from a host PC."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   },
@@ -392,6 +450,32 @@
      "type": "code",
      "lang": "bash",
      "code": "# See the CPU cores and the GPU from software\n$ lscpu | head -20\n$ /usr/local/cuda/extras/demo_suite/deviceQuery   # if the CUDA samples are installed"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "BPMP",
+       "Boot and power management processor, a small Arm core that manages clocks and power (from memory)."
+      ],
+      [
+       "Carmel",
+       "NVIDIA's custom 64-bit Arm CPU core used in Xavier."
+      ],
+      [
+       "Tensor Core",
+       "GPU unit for fast matrix math in FP16/INT8."
+      ],
+      [
+       "Volta",
+       "The GPU architecture generation used in Xavier."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -491,6 +575,13 @@
      "title": "GPU facts",
      "text": "The Xavier GPU has compute capability {{7.2}}, so you compile with -arch={{sm_72}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -571,6 +662,40 @@
      "type": "code",
      "lang": "cuda",
      "code": "// Zero-copy-style memory: one allocation visible to both CPU and GPU\nfloat *x;\ncudaMallocManaged(&x, n * sizeof(float));   // unified memory\nfor (int i = 0; i < n; i++) x[i] = i;       // CPU writes\nkernel<<<blocks, threads>>>(x, n);          // GPU uses the same buffer\ncudaDeviceSynchronize();                    // wait before the CPU reads again"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Carrier board",
+       "The board that holds the module and provides connectors."
+      ],
+      [
+       "eMMC",
+       "On-module flash storage."
+      ],
+      [
+       "LPDDR4x",
+       "The low-power memory type used on the module."
+      ],
+      [
+       "MIPI CSI-2",
+       "The camera interface standard."
+      ],
+      [
+       "Unified memory",
+       "One memory pool shared by CPU, GPU and accelerators."
+      ],
+      [
+       "zero-copy",
+       "Sharing a buffer between processors with no memory copy."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -624,6 +749,13 @@
      "title": "Memory facts",
      "text": "Memory is 256-bit {{LPDDR4x}} at about {{136.5}} GB/s, and it is {{shared}} by every processor.",
      "hint": "One pool for CPU, GPU, DLAs, PVAs and media blocks."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   },
@@ -686,6 +818,28 @@
      "type": "code",
      "lang": "text",
      "code": "Choosing a mode\n  Battery or passive cooling, modest models  -> 10 W / 15 W\n  Fixed-power vehicle or robot, multiple nets -> 30 W\n  Benchmarking and development                -> MAXN + jetson_clocks, then re-test at your real mode"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "jetson_clocks",
+       "Script that locks clocks to their maximum for the power mode."
+      ],
+      [
+       "MAXN",
+       "The power mode with no power cap on dev kits."
+      ],
+      [
+       "nvpmodel",
+       "Tool that selects the power mode."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -1442,6 +1596,13 @@
      ],
      "notFound": "{{0}}: command not found. Type help."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1508,6 +1669,28 @@
      "type": "code",
      "lang": "text",
      "code": "The stack (top to bottom)\n  Your application (Python / C++)\n  Frameworks: PyTorch, ONNX Runtime, DeepStream\n  Libraries:  TensorRT  cuDNN  CUDA  VPI  GStreamer  Argus\n  Jetson Linux (L4T): Ubuntu userland + kernel + drivers\n  Boot firmware: bootloader, BPMP, safety firmware\n  Hardware: CPU  GPU  DLA x2  PVA x2  ISP  NVENC/NVDEC  VIC"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "cuDNN",
+       "NVIDIA's deep-learning primitives library for the GPU."
+      ],
+      [
+       "JetPack",
+       "NVIDIA's software bundle for Jetson (OS, CUDA, TensorRT, and more)."
+      ],
+      [
+       "L4T (Jetson Linux)",
+       "The Ubuntu-based OS, kernel and drivers for Jetson."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -1595,6 +1778,13 @@
       "Frameworks and your application"
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1658,6 +1848,24 @@
      "type": "code",
      "lang": "bash",
      "code": "# On the Jetson after first boot\n$ sudo apt update\n$ sudo apt install nvidia-jetpack          # CUDA, cuDNN, TensorRT, VPI, samples...\n$ sudo apt install python3-pip\n$ sudo pip3 install -U jetson-stats        # provides jtop\n$ sudo reboot"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Recovery mode",
+       "Boot state in which the Jetson accepts a flash over USB."
+      ],
+      [
+       "SDK Manager",
+       "NVIDIA's host-side tool to flash and set up Jetson devices."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -1719,6 +1927,13 @@
       "First boot: license, user, network"
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1776,6 +1991,24 @@
      "type": "code",
      "lang": "python",
      "code": "# Quick programmatic stats with jetson-stats\nfrom jtop import jtop\nwith jtop() as jetson:\n    while jetson.ok():\n        print(jetson.stats)     # dict of CPU/GPU/RAM/temperatures\n        break"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "EMC",
+       "External memory controller; its load shows memory bandwidth use."
+      ],
+      [
+       "tegrastats",
+       "Command-line tool printing live system statistics."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -2568,6 +2801,13 @@
      ],
      "notFound": "{{0}}: command not found. Type help."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2626,6 +2866,24 @@
      "type": "code",
      "lang": "bash",
      "code": "$ export PATH=/usr/local/cuda/bin:$PATH\n$ nvcc -arch=sm_72 -O2 vector_add.cu -o vector_add && ./vector_add\nc[0] = 3.000000 (expected 3.0)"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "CUDA",
+       "NVIDIA's programming model for running parallel code on the GPU."
+      ],
+      [
+       "sm_72",
+       "The CUDA architecture code for the Xavier GPU (compute capability 7.2)."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -2745,6 +3003,13 @@
      "hint": "nvcc -arch=sm_72 file.cu -o name",
      "solution": "nvcc -arch=sm_72 -O2 vector_add.cu -o vector_add"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2830,6 +3095,40 @@
      "type": "code",
      "lang": "python",
      "code": "# Build an engine in Python (TensorRT 8.5 style API)\nimport tensorrt as trt\nlogger = trt.Logger(trt.Logger.INFO)\nbuilder = trt.Builder(logger)\nnetwork = builder.create_network(1 << int(trt.NetworkDefinitionCreationFlag.EXPLICIT_BATCH))\nparser = trt.OnnxParser(network, logger)\nwith open(\"model.onnx\", \"rb\") as f:\n    assert parser.parse(f.read()), [parser.get_error(i) for i in range(parser.num_errors)]\nconfig = builder.create_builder_config()\nconfig.max_workspace_size = 1 << 31\nconfig.set_flag(trt.BuilderFlag.FP16)\nengine_bytes = builder.build_serialized_network(network, config)\nopen(\"model_fp16.engine\", \"wb\").write(engine_bytes)"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Calibration",
+       "Running sample data through a model to choose INT8 scaling factors."
+      ],
+      [
+       "Engine",
+       "A TensorRT optimized network built for a specific device and version."
+      ],
+      [
+       "FP16 / INT8",
+       "16-bit floating point and 8-bit integer precisions."
+      ],
+      [
+       "ONNX",
+       "Open Neural Network Exchange, the usual model format passed to TensorRT."
+      ],
+      [
+       "TensorRT",
+       "NVIDIA's inference optimizer and runtime."
+      ],
+      [
+       "trtexec",
+       "TensorRT's command-line build and benchmark tool."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -3612,6 +3911,13 @@
      ],
      "notFound": "{{0}}: command not found. Type help."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3687,6 +3993,28 @@
      "type": "code",
      "lang": "text",
      "code": "Reading a DLA build log (illustrative)\n  [layer conv1 ... ] -> DLA\n  [layer conv2 ... ] -> DLA\n  [layer upsample] -> DLA            (nearest, integer scale)\n  [layer softmax ] -> GPU fallback   (not supported on Xavier DLA)\n  [layer argmax  ] -> GPU fallback\n  Result: 1 DLA subgraph, 2 fallback layers at the end. Good: the tail is cheap."
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "cuDLA",
+       "API for running DLA loadables directly, outside the full TensorRT runtime."
+      ],
+      [
+       "DLA / NVDLA",
+       "Deep Learning Accelerator, a fixed-function inference engine."
+      ],
+      [
+       "Fallback (GPU fallback)",
+       "Running layers on the GPU that the DLA cannot run."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -4472,6 +4800,13 @@
      "xdc": "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",
      "height": 560
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4542,6 +4877,24 @@
      "type": "code",
      "lang": "python",
      "code": "# PPO: export a deterministic actor (no value head, no sampling)\nclass DeterministicActor(nn.Module):\n    def __init__(self, policy, obs_mean, obs_std):\n        super().__init__()\n        self.policy = policy                       # outputs action mean or logits\n        self.register_buffer(\"m\", obs_mean.view(1, -1, 1, 1))\n        self.register_buffer(\"s\", obs_std.view(1, -1, 1, 1))\n    def forward(self, obs):                        # obs: [N, D, 1, 1]\n        return torch.tanh(self.policy((obs - self.m) / self.s))   # continuous: mean in [-1, 1]\n# Discrete: return logits and run argmax on the CPU after the engine."
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "PPO",
+       "Proximal Policy Optimization, a reinforcement-learning algorithm."
+      ],
+      [
+       "VAE / VQ-VAE",
+       "Variational autoencoder, and its vector-quantized variant with a discrete codebook."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -5010,6 +5363,13 @@
      "title": "VAE at deployment",
      "text": "At deployment a VAE ignores the variance and passes the {{mean|mu}} to the decoder, so there is no {{sampling|sample|noise}} step."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5067,6 +5427,24 @@
      "type": "code",
      "lang": "text",
      "code": "Choosing a VPI backend\n  Needs to run when GPU is busy or asleep      -> PVA\n  Image resize / color convert / crop          -> VIC\n  Algorithm not on PVA, or custom work         -> CUDA\n  Debugging, tiny inputs                       -> CPU"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "PVA",
+       "Programmable Vision Accelerator for classic vision algorithms."
+      ],
+      [
+       "VPI",
+       "Vision Programming Interface, library to run vision algorithms on CPU, GPU, PVA or VIC."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -5119,6 +5497,13 @@
      "type": "fill",
      "title": "PVA and VPI",
      "text": "The PVA is programmed through {{VPI}} by choosing the {{PVA}} backend. It does not run {{neural networks|neural network}}."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   },
@@ -5204,6 +5589,40 @@
      "type": "code",
      "lang": "python",
      "code": "# Camera to OpenCV, resized in hardware first\nimport cv2\npipe = (\"nvarguscamerasrc ! video/x-raw(memory:NVMM),width=1920,height=1080,framerate=30/1 ! \"\n        \"nvvidconv ! video/x-raw,width=256,height=256,format=BGRx ! videoconvert ! \"\n        \"video/x-raw,format=BGR ! appsink drop=1\")\ncap = cv2.VideoCapture(pipe, cv2.CAP_GSTREAMER)\nok, frame = cap.read()          # 256x256 BGR frame, cheap to copy"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Argus",
+       "NVIDIA's camera API that uses the ISP; used by `nvarguscamerasrc`."
+      ],
+      [
+       "DeepStream",
+       "NVIDIA's GStreamer-based framework for multi-stream video analytics."
+      ],
+      [
+       "GStreamer",
+       "Multimedia pipeline framework used for camera and video on Jetson."
+      ],
+      [
+       "ISP",
+       "Image signal processor turning raw sensor data into images."
+      ],
+      [
+       "NVDEC / NVENC",
+       "Hardware video decoder and encoder."
+      ],
+      [
+       "NVMM",
+       "NVIDIA's device memory type for video frames shared between hardware blocks."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -5270,6 +5689,13 @@
      "title": "GStreamer",
      "text": "MIPI cameras use {{nvarguscamerasrc}}, USB cameras use {{v4l2src}}, and (memory:{{NVMM}}) keeps frames in hardware memory."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5330,6 +5756,28 @@
      "type": "code",
      "lang": "bash",
      "code": "# Add swap on NVMe for big builds (adjust path/size)\n$ sudo fallocate -l 8G /mnt/nvme/swapfile && sudo chmod 600 /mnt/nvme/swapfile\n$ sudo mkswap /mnt/nvme/swapfile && sudo swapon /mnt/nvme/swapfile"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Container",
+       "A packaged, isolated environment that carries a program and its libraries; on Jetson it must match your L4T release."
+      ],
+      [
+       "Wheel",
+       "A prebuilt Python package file; Jetson needs wheels built for Arm and your JetPack."
+      ],
+      [
+       "NVIDIA runtime",
+       "The Docker runtime (--runtime nvidia) that gives a container access to the GPU."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -5382,6 +5830,13 @@
      "type": "fill",
      "title": "Containers",
      "text": "Run containers with --runtime {{nvidia}}; the image tag must match your {{L4T}} release."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   },
@@ -5450,6 +5905,28 @@
      "type": "code",
      "lang": "text",
      "code": "Bandwidth sanity check (illustrative)\n  256x256x3 FP16 frame  = 0.39 MB\n  moves: camera->VIC, VIC->DLA in, DLA->DLA out, DLA->CPU  ~ 4 moves\n  30 fps  => 0.39 * 4 * 30 = ~47 MB/s    (tiny next to 136 GB/s)\n  Full-res 4K frames moved 10x per frame at 30 fps = ~ 3 GB/s    (starts to matter)"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "CUDA stream",
+       "An ordered queue of GPU work; separate streams let work overlap."
+      ],
+      [
+       "Watchdog",
+       "A check that notices a stalled engine and switches to a fallback."
+      ],
+      [
+       "Bandwidth budget",
+       "Bytes per frame times frames per second times how often each tensor moves."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -5545,6 +6022,13 @@
      "hint": "bytes per frame = width*height*channels*bytesPerValue; multiply by moves and fps; divide by 1e6.",
      "solution": "function mbPerSecond(width, height, channels, bytesPerValue, moves, fps) {\n  return width * height * channels * bytesPerValue * moves * fps / 1e6;\n}"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5609,6 +6093,28 @@
      "type": "code",
      "lang": "text",
      "code": "Tuning loop\n  1. Baseline: FP16 on GPU, record latency + power (tegrastats)\n  2. Try DLA: count fallbacks; if many, redesign layers (chapter 11)\n  3. Try INT8: calibrate, compare accuracy and latency\n  4. Pipeline: overlap stages (DLA0 + DLA1 + GPU), measure end-to-end\n  5. Lower the power mode to the real target and re-measure"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Warm-up",
+       "Running an engine a few times before timing, to skip initialization and clock ramp-up."
+      ],
+      [
+       "Layer fusion",
+       "Merging layers such as conv, batchnorm and ReLU into one unit."
+      ],
+      [
+       "Pinned memory",
+       "Memory that stays in place so transfers are faster."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -5680,6 +6186,13 @@
       ]
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5742,6 +6255,28 @@
      "type": "code",
      "lang": "bash",
      "code": "$ dmesg | tail -50                       # kernel messages (OOM, USB, thermal)\n$ journalctl -b -p warning | tail -50    # warnings since boot\n$ sudo systemctl restart nvargus-daemon  # reset the camera service"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "dmesg",
+       "A command that prints the kernel log, where out-of-memory kills and USB or thermal messages show up."
+      ],
+      [
+       "Brownout",
+       "A short voltage drop, often from a weak power supply, that causes throttling or reboots."
+      ],
+      [
+       "Out of memory (OOM)",
+       "The kernel kills a process because CPU and GPU together used all the shared RAM."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -5813,6 +6348,13 @@
       ]
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5869,6 +6411,28 @@
      "type": "code",
      "lang": "text",
      "code": "Decision guide\n  Existing Xavier product, stable          -> stay on JetPack 5.1.x, freeze versions\n  Learning the Jetson ecosystem            -> Xavier is fine; skills transfer to Orin\n  New design needing DLA                   -> Orin family (verify DLA support in your TensorRT version)\n  Needs newest CUDA / TensorRT features    -> not on Xavier"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "End of life (EOL)",
+       "A vendor notice that a product will no longer be sold, with a last-time-buy date."
+      ],
+      [
+       "Orin",
+       "The newer Jetson generation with second-generation DLAs and an Ampere GPU."
+      ],
+      [
+       "Sustaining release",
+       "A software update that fixes problems but adds no new features."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -5922,6 +6486,13 @@
      "title": "What comes next",
      "text": "JetPack {{5}}.x is the last line for the Xavier. Orin has a {{second|2nd}}-generation DLA, and Jetson Thor has {{no}} DLA."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5972,6 +6543,28 @@
      "type": "code",
      "lang": "bash",
      "code": "# Identify\ncat /etc/nv_tegra_release\nsudo apt-cache show nvidia-jetpack | grep -i version\n# Power and clocks\nsudo nvpmodel -q ; sudo nvpmodel -m 0 ; sudo jetson_clocks ; sudo jetson_clocks --show\n# Monitor\ntegrastats --interval 1000\nsudo pip3 install -U jetson-stats && jtop\n# TensorRT\n/usr/src/tensorrt/bin/trtexec --onnx=m.onnx --fp16 --saveEngine=m.engine\n/usr/src/tensorrt/bin/trtexec --onnx=m.onnx --fp16 --useDLACore=0 --allowGPUFallback --saveEngine=m_dla0.engine\n/usr/src/tensorrt/bin/trtexec --loadEngine=m_dla0.engine --useDLACore=0\n# CUDA\nnvcc -arch=sm_72 -O2 prog.cu -o prog\n# Camera\ngst-launch-1.0 nvarguscamerasrc ! 'video/x-raw(memory:NVMM),width=1920,height=1080,framerate=30/1' ! nvvidconv ! 'video/x-raw,format=BGRx' ! videoconvert ! xvimagesink"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "nv_tegra_release",
+       "The file /etc/nv_tegra_release; it names your L4T release."
+      ],
+      [
+       "jtop",
+       "A monitoring app from the jetson-stats package."
+      ],
+      [
+       "nvarguscamerasrc",
+       "The GStreamer element that reads MIPI cameras through the ISP."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -6052,6 +6645,13 @@
       }
      ],
      "solution": "--fp16 --useDLACore=1 --allowGPUFallback"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   },
@@ -6267,6 +6867,40 @@
      "type": "code",
      "lang": "text",
      "code": "Reading a sentence with the glossary\n\"Build an engine with trtexec at FP16 on DLA core 0 with GPU fallback.\"\n  engine = optimized network; trtexec = build tool; FP16 = precision;\n  DLA core 0 = first accelerator; fallback = unsupported layers run on the GPU."
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "AGX Xavier",
+       "NVIDIA's 2018-generation Jetson module with a Volta GPU, Carmel CPU, two DLAs and two PVAs."
+      ],
+      [
+       "Argus",
+       "NVIDIA's camera API that uses the ISP; used by `nvarguscamerasrc`."
+      ],
+      [
+       "BPMP",
+       "Boot and power management processor, a small Arm core that manages clocks and power (from memory)."
+      ],
+      [
+       "Calibration",
+       "Running sample data through a model to choose INT8 scaling factors."
+      ],
+      [
+       "Carmel",
+       "NVIDIA's custom 64-bit Arm CPU core used in Xavier."
+      ],
+      [
+       "Carrier board",
+       "The board that holds the module and provides connectors."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -6342,6 +6976,13 @@
       ]
      ]
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -6399,6 +7040,24 @@
       "EDOM Tech, Jetson AGX Xavier 64GB specifications: https://edomtech.com/en/product-detail/jetson-agx-xavier-64gb",
       "Connect Tech, Jetson AGX Xavier module page (specs and end-of-life notice): https://connecttech.com/product/nvidia-jetson-agx-xavier-module-900-82888-0040-000/"
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Verification note",
+       "A record of which claims were checked against sources and which were not."
+      ],
+      [
+       "Source",
+       "A document or page that supports a claim."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -6447,6 +7106,13 @@
      "type": "fill",
      "title": "Trust but verify",
      "text": "Claims marked {{(from memory)|from memory}} were not re-checked. Where this course disagrees with the {{documentation|docs}} for your release, trust that."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   },
@@ -6554,7 +7220,26 @@
     "Each node can carry a chapter tag such as `[ch10]`, which the app turns into a link.",
     "A good habit: cover the link words, then say the sentence \"A <link> B\" aloud for every line."
    ],
-   "lesson": [],
+   "lesson": [
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Node",
+       "A box in a concept map holding one idea."
+      ],
+      [
+       "Link",
+       "A labeled line between two nodes, read as \"A link B\"."
+      ]
+     ]
+    }
+   ],
    "quiz": [
     {
      "q": "What does a concept map show?",
@@ -6627,6 +7312,13 @@
        "How modes, clocks, heat and bandwidth affect speed"
       ]
      ]
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

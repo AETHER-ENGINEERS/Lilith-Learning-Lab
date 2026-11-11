@@ -16,7 +16,7 @@ srv = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Q, dir
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 port = srv.server_address[1]
 
-CH = {"title": "Tiny", "summary": ["One."], "lesson": [{"type": "text", "items": ["Para."]}], "quiz": [{"q": "Q?", "options": ["a", "b"], "answer": 0, "explain": "e"}],
+CH = {"title": "Tiny", "summary": ["One."], "lesson": [{"type": "text", "items": ["Para."]}, {"type": "table", "title": "T", "head": ["A", "B"], "rows": [["1", "2"], ["3", "4"]]}], "references": [{"title": "R", "url": "https://example.com"}], "quiz": [{"q": "Q?", "options": ["a", "b"], "answer": 0, "explain": "e"}],
       "practice": [{"type": "fill", "title": "F", "text": "The {{word}}."}]}
 JS = """async (ch) => {
   const A = window.LilithAI, out = {};

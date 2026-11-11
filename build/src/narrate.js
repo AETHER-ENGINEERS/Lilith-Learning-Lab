@@ -90,6 +90,14 @@
         flush(); var buf = []; i++;
         while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; }
         out.push({ type: 'code', lang: f[1], text: buf.join('\n') });
+      } else if (/^\s*\|.*\|\s*$/.test(ln)) {
+        flush(); var rows = [];
+        while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) { if (!/^\s*\|[\s:|-]+\|\s*$/.test(lines[i])) rows.push(lines[i].trim().replace(/^\||\|$/g, '').split('|').map(function (x) { return x.trim(); })); i++; }
+        i--;
+        if (rows.length) {
+          out.push({ type: 'p', text: 'Table with columns: ' + rows[0].join(', ') + '.' });
+          rows.slice(1, 9).forEach(function (r, k) { out.push({ type: 'p', text: 'Row ' + (k + 1) + '. ' + r.map(function (x, j) { return rows[0][j] + ': ' + x; }).join('. ') + '.' }); });
+        }
       } else if (/^!\[/.test(ln.trim())) { flush(); out.push({ type: 'img', text: ln.trim() }); }
       else if (/^\s*-\s+/.test(ln)) { flush(); out.push({ type: 'li', text: ln.replace(/^\s*-\s+/, '') }); }
       else if (!ln.trim()) flush();

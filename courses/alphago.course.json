@@ -172,6 +172,40 @@
       "The course path. Chapter 2 explains Go and its rules. Chapter 3 covers the programs that came before. Chapters 4 to 8 build the four learned components.",
       "Chapter 9 sets out the search, chapter 10 the engineering and ratings, chapter 11 a miniature version in code, and chapter 12 the matches, successors and criticisms."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Go",
+       "A two-player board game of surrounding territory, played on a 19 by 19 grid."
+      ],
+      [
+       "Policy network",
+       "A neural network giving a probability for each move."
+      ],
+      [
+       "Value network",
+       "A neural network estimating who is winning from a position."
+      ],
+      [
+       "Monte Carlo tree search",
+       "A search that grows a tree from many simulated games."
+      ],
+      [
+       "Supervised learning",
+       "Learning to copy labelled examples, here the moves of human experts."
+      ],
+      [
+       "Reinforcement learning",
+       "Learning from outcomes, here from winning and losing self-play games."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -310,6 +344,13 @@
      "title": "Basics",
      "text": "AlphaGo combines {{neural networks|deep neural networks}} with Monte Carlo {{tree search|tree-search}}. The {{policy}} network reduces breadth and the {{value}} network reduces depth."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -422,6 +463,40 @@
      "type": "text",
      "items": [
       "The practice section builds the fundamental operations on a small board: neighbours, groups and liberties, playing a move with captures, and area scoring. A board is a list of strings, one per row, with X for Black, O for White and a dot for empty."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Liberty",
+       "An empty point next to a stone or group."
+      ],
+      [
+       "Group",
+       "Stones of one colour connected along grid lines."
+      ],
+      [
+       "Capture",
+       "Removing a group that has no liberties."
+      ],
+      [
+       "Ko",
+       "A situation where players could repeat a position forever; repeating is forbidden."
+      ],
+      [
+       "Komi",
+       "Points added to White's score to compensate for Black's first move."
+      ],
+      [
+       "Area scoring",
+       "Score = stones plus surrounded empty points; used with Chinese rules."
+      ]
      ]
     }
    ],
@@ -989,6 +1064,13 @@
      "title": "Rules",
      "text": "A group with no {{liberties}} is captured. The {{ko}} rule forbids repeating a position. White receives {{komi}} because Black moves first."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1102,6 +1184,40 @@
      "type": "text",
      "items": [
       "The practice section builds the UCB score and a flat Monte Carlo evaluator on a simple stone-taking game, with a tiny deterministic random generator so that results are reproducible."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Alpha-beta search",
+       "A pruned minimax search used by chess engines."
+      ],
+      [
+       "Rollout",
+       "A game played to the end, usually with fast or random moves, to estimate a position's value."
+      ],
+      [
+       "Monte Carlo",
+       "Estimating by random sampling."
+      ],
+      [
+       "UCB1 and UCT",
+       "A bandit rule adding an exploration bonus, applied to tree search."
+      ],
+      [
+       "Win rate",
+       "Wins divided by simulations."
+      ],
+      [
+       "Pachi",
+       "An open-source Monte Carlo Go program ranked about two amateur dan in the paper."
+      ]
      ]
     }
    ],
@@ -1404,6 +1520,13 @@
      "title": "Monte Carlo",
      "text": "A {{rollout}} plays a game to the end. {{UCT|UCB}} adds an exploration bonus that shrinks as a move is tried more. Even the best Monte Carlo programs could not beat a {{professional}} without a handicap."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1516,6 +1639,40 @@
      "type": "text",
      "items": [
       "In the practice section you write the softmax, the legal mask, three stone planes and the temperature operation."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Feature plane",
+       "A 19 by 19 grid of zeros and ones describing one property of the position."
+      ],
+      [
+       "Convolutional network",
+       "A network whose layers apply the same small filters at every board position."
+      ],
+      [
+       "Softmax",
+       "Turns scores into probabilities: exp(z_i) divided by the sum of exp(z_j)."
+      ],
+      [
+       "Legal mask",
+       "Setting illegal moves to probability zero and renormalizing."
+      ],
+      [
+       "Liberties plane",
+       "Binary planes marking groups with 1, 2, 3 and so on liberties."
+      ],
+      [
+       "Temperature",
+       "An exponent applied to probabilities to sharpen or flatten the distribution."
+      ]
      ]
     }
    ],
@@ -2038,6 +2195,13 @@
      "title": "Policy",
      "text": "The policy network takes {{48}} planes and ends with a {{softmax}}. Illegal moves are removed by a {{mask|legal mask}} and the rest renormalized."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2150,6 +2314,40 @@
      "type": "text",
      "items": [
       "The practice section writes cross-entropy, the accuracy metrics, the softmax gradient, one training step for a linear softmax model and a small training loop."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Supervised learning",
+       "Learning to predict labels, here the expert's move for each position."
+      ],
+      [
+       "Cross-entropy",
+       "The loss minus the log of the probability given to the correct label."
+      ],
+      [
+       "Log likelihood",
+       "The log of the probability the model assigned to the data."
+      ],
+      [
+       "Gradient",
+       "The direction in which a function increases fastest."
+      ],
+      [
+       "Top-1 accuracy",
+       "How often the highest-probability move equals the expert's move."
+      ],
+      [
+       "Overfitting",
+       "Fitting training data but failing on new data."
+      ]
      ]
     }
    ],
@@ -2757,6 +2955,13 @@
      "title": "Imitation",
      "text": "The SL network is trained to maximize the {{log likelihood|likelihood}} of the human move. For a softmax the gradient is the probabilities minus a {{one-hot|onehot}} vector."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2871,6 +3076,40 @@
      "type": "text",
      "items": [
       "In the practice section you score moves with a linear softmax, encode a three by three pattern as a number, compute throughput and the speed ratio, and sample a rollout move deterministically."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Rollout policy",
+       "A fast linear softmax policy used to play out games to the end."
+      ],
+      [
+       "Pattern feature",
+       "A feature describing the local stones around a point, such as a 3 by 3 neighbourhood."
+      ],
+      [
+       "Linear softmax",
+       "Score each move as a weighted sum of its features, then softmax."
+      ],
+      [
+       "Tree policy",
+       "A slightly richer linear policy used for provisional priors."
+      ],
+      [
+       "Microsecond",
+       "One millionth of a second."
+      ],
+      [
+       "Throughput",
+       "How many games can be played per second."
+      ]
      ]
     }
    ],
@@ -3298,6 +3537,13 @@
      "title": "Speed",
      "text": "The rollout policy is a {{linear}} softmax of pattern features. It takes about {{2}} microseconds per move, trading {{accuracy}} for speed."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3411,6 +3657,40 @@
      "type": "text",
      "items": [
       "The practice section implements the REINFORCE update on a tiny softmax policy, the expected update when the game outcomes are known, a training loop that watches the policy shift toward winning moves, and the pool schedule."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Self-play",
+       "The program plays games against itself or earlier copies."
+      ],
+      [
+       "Policy gradient",
+       "Adjust a policy's parameters to increase the expected reward."
+      ],
+      [
+       "REINFORCE",
+       "The simplest policy gradient: reward times the gradient of the log probability of the action taken."
+      ],
+      [
+       "Opponent pool",
+       "A set of earlier versions to play against, for stability."
+      ],
+      [
+       "Outcome z",
+       "Plus one for a win, minus one for a loss, at the end of the game."
+      ],
+      [
+       "Baseline",
+       "A number subtracted from the reward to reduce noise; the simplest choice is zero."
+      ]
      ]
     }
    ],
@@ -3809,6 +4089,13 @@
      "title": "Self-play",
      "text": "Winning games make their moves {{more}} probable and losing games make them {{less}} probable. The RL network is initialized from the {{SL|supervised}} network."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3924,6 +4211,40 @@
      "type": "text",
      "items": [
       "In the practice section you compute the squared-error loss, the target from the winner, the sampling schedule used for the self-play data set, and the gap that reveals overfitting."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Value function",
+       "The expected outcome of the game from a position under good play."
+      ],
+      [
+       "Regression",
+       "Training a network to output a number close to a target, here the game outcome."
+      ],
+      [
+       "Mean squared error",
+       "The average of squared differences between prediction and target."
+      ],
+      [
+       "Overfitting",
+       "Memorizing training data instead of learning general patterns."
+      ],
+      [
+       "Correlated data",
+       "Samples that are not independent, such as many positions from one game."
+      ],
+      [
+       "Target z",
+       "The final result of the game, +1 or -1, from the viewpoint of the player to move."
+      ]
      ]
     }
    ],
@@ -4321,6 +4642,13 @@
      "title": "Value",
      "text": "The value network is trained by {{regression}} on the game {{outcome|result}}. Each of the 30 million positions came from a {{separate|different}} game."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4437,6 +4765,40 @@
      "items": [
       "Other numbers from the methods. The SL policy network supplies the priors, with a softmax temperature of 0.67. A node is expanded only once its edge has been visited forty times; before that the cheaper tree policy provides the priors.",
       "Parallel threads use a virtual loss of three to avoid all following the same path. In the end the program plays the most visited move at the root, and it resigns if its best estimated win probability drops below ten percent."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Prior P(s, a)",
+       "The policy network's probability for move a in position s."
+      ],
+      [
+       "Visit count N(s, a)",
+       "How many simulations passed through the edge."
+      ],
+      [
+       "Action value Q(s, a)",
+       "The mean of the evaluations of all simulations through the edge."
+      ],
+      [
+       "Bonus u(s, a)",
+       "An exploration term, proportional to P divided by 1 plus N."
+      ],
+      [
+       "Mixing parameter lambda",
+       "The weight on the rollout in the leaf evaluation; 0.5 in the paper."
+      ],
+      [
+       "Virtual loss",
+       "A temporary penalty added to a path being explored, so parallel threads spread out."
+      ]
      ]
     }
    ],
@@ -4910,6 +5272,13 @@
      "title": "Search",
      "text": "The leaf value mixes the {{value network|value}} with a {{rollout}}. The program plays the {{most visited|most-visited}} move."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5023,6 +5392,40 @@
      "type": "text",
      "items": [
       "In the practice section you convert between Elo and win rates, build a rating table, compute the cost of the rollouts, and decide handicaps from rating differences."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Elo rating",
+       "A rating scale where the expected score depends on the rating difference."
+      ],
+      [
+       "Expected score",
+       "1 / (1 + 10^(-d/400)) for a rating advantage d."
+      ],
+      [
+       "Asynchronous search",
+       "Many simulations run at the same time and share the tree."
+      ],
+      [
+       "Search thread",
+       "One of the parallel workers."
+      ],
+      [
+       "Handicap",
+       "Extra stones given to the weaker player at the start."
+      ],
+      [
+       "Distributed version",
+       "AlphaGo running across a cluster of machines."
+      ]
      ]
     }
    ],
@@ -5393,6 +5796,13 @@
      "title": "Strength",
      "text": "A {{400|four hundred}} point Elo advantage gives about {{91}} percent expected score. Virtual loss helps {{parallel|multiple}} threads explore different paths."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5506,6 +5916,40 @@
      "type": "text",
      "items": [
       "In the practice section you first write the board helpers and the prior, then the rollout, and finally the whole search, comparing it with a position where the win is easy to see."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Prior",
+       "The preference over moves before any search; here a hand-made table."
+      ],
+      [
+       "Stub value",
+       "A placeholder value network that returns zero."
+      ],
+      [
+       "Rollout",
+       "A random game played to the end from the leaf."
+      ],
+      [
+       "Sign flip",
+       "The value of a child is the negative of its value for the parent."
+      ],
+      [
+       "Visit counts",
+       "The result of the search; the most visited move is played."
+      ],
+      [
+       "Seed",
+       "The start of the pseudo-random generator, fixing the results."
+      ]
      ]
     }
    ],
@@ -5908,6 +6352,13 @@
      "title": "Capstone",
      "text": "Values flip {{sign}} going up the tree. The final move is the {{most visited|most-visited}} one. The stub value network always says {{zero|0}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -6030,6 +6481,40 @@
      "items": [
       "What changed in the world? Professional players studied AlphaGo's moves and revised long-held opening habits. Fan Hui, who lost to it, said the experience taught him to see things he had not seen before, and his ranking climbed afterwards.",
       "A film about the preparation for the Lee match, directed by Greg Kohs, was released."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "AlphaGo Fan",
+       "The October 2015 version that beat Fan Hui."
+      ],
+      [
+       "AlphaGo Lee",
+       "The March 2016 version that beat Lee Sedol."
+      ],
+      [
+       "AlphaGo Master",
+       "The 2017 version that won 60-0 online and beat Ke Jie."
+      ],
+      [
+       "AlphaGo Zero",
+       "A version trained from scratch by self-play with no human data."
+      ],
+      [
+       "Move 78",
+       "Lee Sedol's move in game four, called the divine move."
+      ],
+      [
+       "Honorary dan",
+       "A professional rank awarded by Go associations to AlphaGo."
+      ]
      ]
     }
    ],
@@ -6359,6 +6844,13 @@
      "type": "fill",
      "title": "Legacy",
      "text": "Lee Sedol won game {{four|4}} with move {{78}}. AlphaGo {{Zero}} learned from self-play without human data."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

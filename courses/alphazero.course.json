@@ -175,6 +175,40 @@
      "items": [
       "Be realistic about scale. The published training used thousands of specialized chips. The labs here are tiny versions that teach the mechanics; they are not meant to reach master strength."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Tabula rasa",
+       "Latin for blank slate: learning without human data or hand-written knowledge."
+      ],
+      [
+       "Self-play",
+       "The program plays games against itself and learns from the results."
+      ],
+      [
+       "Policy",
+       "A probability distribution over moves."
+      ],
+      [
+       "Value",
+       "A number estimating how good a position is; here the expected game outcome."
+      ],
+      [
+       "MCTS",
+       "Monte Carlo tree search: a search that builds a tree from many simulated games."
+      ],
+      [
+       "Reinforcement learning",
+       "Learning from outcomes of actions rather than from labelled examples."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -285,6 +319,13 @@
      "type": "fill",
      "title": "Basics",
      "text": "AlphaZero learns {{tabula rasa|from scratch}} using only the game {{rules}}. A network gives move probabilities and a {{value}}. Games against itself are called {{self-play}}."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   },
@@ -409,6 +450,40 @@
      "type": "text",
      "items": [
       "The practice section implements the fundamentals on tic-tac-toe: detect a winner, compute negamax values, and count how many nodes minimax and alpha-beta visit. Boards are strings of nine characters, X, O or a dot for empty, read row by row."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "State",
+       "A complete description of the game position, including whose turn it is."
+      ],
+      [
+       "Zero-sum",
+       "One player's win is exactly the other's loss."
+      ],
+      [
+       "Game tree",
+       "A tree of positions connected by legal moves."
+      ],
+      [
+       "Minimax",
+       "Choose the move that is best assuming the opponent also plays best."
+      ],
+      [
+       "Negamax",
+       "Minimax written as value(s) = max over moves of minus value(child)."
+      ],
+      [
+       "Alpha-beta pruning",
+       "Skip branches that cannot affect the final minimax value."
+      ]
      ]
     }
    ],
@@ -655,6 +730,13 @@
      "title": "Search",
      "text": "In a {{zero-sum|zero sum}} game, one player's gain is the other's loss. Negamax flips the {{sign}} at each level. Alpha-beta {{pruning|prunes}} branches that cannot change the result."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -776,6 +858,40 @@
      "type": "text",
      "items": [
       "In the practice section you compute the UCB1 score and write the selection step."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Simulation",
+       "One pass of the search: select down the tree, expand, evaluate, back up."
+      ],
+      [
+       "Rollout",
+       "Playing a game to the end, often with random moves, to estimate a position's value."
+      ],
+      [
+       "Exploitation",
+       "Choosing the move that looks best so far."
+      ],
+      [
+       "Exploration",
+       "Trying moves with little data in case they are better."
+      ],
+      [
+       "UCB1",
+       "Upper confidence bound rule: mean reward plus a bonus that falls with visits."
+      ],
+      [
+       "Multi-armed bandit",
+       "Repeated choice among options with unknown payoffs, balancing learning and earning."
+      ]
      ]
     }
    ],
@@ -1037,6 +1153,13 @@
      "title": "MCTS",
      "text": "UCB1 adds an {{exploration}} bonus to the mean value. The final move is chosen from the root {{visit}} counts. AlphaZero replaces rollouts with the network's {{value}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1159,6 +1282,40 @@
      "type": "text",
      "items": [
       "In the practice section you implement the softmax, the legal-move mask, and the queen-move plane numbering. The compass order used in the lab is my own convention; the paper does not fix an order in its text."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Policy",
+       "A probability for each move, written p."
+      ],
+      [
+       "Value",
+       "A number v between -1 and +1: expected outcome for the player to move."
+      ],
+      [
+       "Softmax",
+       "A function that turns any list of scores into positive numbers summing to 1."
+      ],
+      [
+       "Legal-move mask",
+       "Setting the probability of illegal moves to zero and renormalizing."
+      ],
+      [
+       "Residual block",
+       "A group of convolutional layers with a skip connection; AlphaGo Zero and AlphaZero stack many."
+      ],
+      [
+       "Plane",
+       "One 8 by 8 layer of the input or the output."
+      ]
      ]
     }
    ],
@@ -1494,6 +1651,13 @@
      "title": "Network",
      "text": "The chess output has 8 x 8 x {{73}} = 4,672 move slots. The value is between -1 and {{+1|1|plus one}}. A {{softmax}} turns scores into probabilities."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1614,6 +1778,40 @@
      "items": [
       "Cost and speed. The papers report AlphaZero searching about 80 thousand positions per second in chess, 40 thousand in shogi and 16 thousand in Go. Stockfish searched about 70 million per second, and the shogi program Elmo about 35 million.",
       "AlphaZero examines roughly a thousand times fewer positions, but each is judged by a much better evaluator. In the practice section you will implement the score, the selection and the backup."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Edge statistics",
+       "For each move from a position: visit count N, total value W, mean value Q = W/N, prior P."
+      ],
+      [
+       "PUCT",
+       "Polynomial upper confidence trees: the selection rule Q + c * P * sqrt(sum N) / (1 + N)."
+      ],
+      [
+       "Prior",
+       "The network's probability for a move, used to guide search before the move has been tried."
+      ],
+      [
+       "Leaf expansion",
+       "Creating the edges for a new position, with priors from the network."
+      ],
+      [
+       "Backup",
+       "Updating counts and values along the path from leaf to root."
+      ],
+      [
+       "Search policy",
+       "The distribution over root moves given by visit counts."
+      ]
      ]
     }
    ],
@@ -2034,6 +2232,13 @@
      "title": "PUCT",
      "text": "The exploration bonus is proportional to the {{prior}} and shrinks with {{visits|visit counts}}. The value is {{negated|flipped}} at each level because the players alternate. Training used {{800}} simulations."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2151,6 +2356,40 @@
      "type": "text",
      "items": [
       "In the practice section you turn visit counts into a policy at a given temperature, mix noise into priors, set the schedule, and sample from a distribution given a random number."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Dirichlet noise",
+       "A random probability vector added to the root priors to force some exploration."
+      ],
+      [
+       "Concentration alpha",
+       "A Dirichlet parameter; small values give spiky vectors favouring a few moves."
+      ],
+      [
+       "Epsilon",
+       "The mixing weight of the noise; 0.25 in AlphaGo Zero."
+      ],
+      [
+       "Temperature tau",
+       "Exponent 1/tau applied to visit counts before normalizing."
+      ],
+      [
+       "Greedy play",
+       "Always choosing the move with the most visits."
+      ],
+      [
+       "Sampling",
+       "Choosing a move at random according to a probability distribution."
+      ]
      ]
     }
    ],
@@ -2546,6 +2785,13 @@
      "title": "Exploration",
      "text": "Noise is added to the root {{priors|prior probabilities}}. The temperature turns {{visit}} counts into move probabilities. AlphaGo Zero used temperature 1 for the first {{30}} moves."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2665,6 +2911,40 @@
      "type": "text",
      "items": [
       "In the practice section you build the outcome list for a game, form the training triples, and count the distinct symmetric copies of a tic-tac-toe board."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Training example",
+       "A triple (s, pi, z): position, search probabilities and outcome."
+      ],
+      [
+       "Search probabilities pi",
+       "The distribution over moves produced by MCTS at that position."
+      ],
+      [
+       "Outcome z",
+       "-1, 0 or +1 from the point of view of the player to move."
+      ],
+      [
+       "Replay data",
+       "Recent self-play games from which training batches are drawn."
+      ],
+      [
+       "Symmetry augmentation",
+       "Using rotated and reflected copies of a position as extra examples."
+      ],
+      [
+       "Terminal position",
+       "A position where the game is over and can be scored by the rules."
+      ]
      ]
     }
    ],
@@ -3007,6 +3287,13 @@
      "title": "Data",
      "text": "Each record is a {{state|position}}, search probabilities pi and an {{outcome|result}} z. AlphaZero does not use symmetry {{augmentation}}. A draw has z equal to {{0|zero}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3131,6 +3418,40 @@
      "type": "text",
      "items": [
       "In the practice section you compute the policy loss, the whole loss, the KL divergence and the learning rate schedule."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Loss function",
+       "A number that measures the network's error; training lowers it."
+      ],
+      [
+       "Mean squared error",
+       "The average of squared differences, used for the value."
+      ],
+      [
+       "Cross-entropy",
+       "-sum pi log p: how well p matches the target distribution pi."
+      ],
+      [
+       "L2 regularization",
+       "A penalty c times the squared size of the weights."
+      ],
+      [
+       "Mini-batch",
+       "A small random sample of training positions used for one gradient step."
+      ],
+      [
+       "Learning rate",
+       "The size of each update step; AlphaZero lowered it in stages."
+      ]
      ]
     }
    ],
@@ -3532,6 +3853,13 @@
      "title": "Training",
      "text": "The policy target is the search {{visit|visit count}} distribution. The value target is the game {{outcome|result}}. Training moves the network toward a {{better|improved}} policy found by the search."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3652,6 +3980,40 @@
      "type": "text",
      "items": [
       "In the practice section you implement the gating decision and a simple replay buffer."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Gating",
+       "Only letting a newly trained network replace the best one if it wins a match by enough margin; used in AlphaGo Zero."
+      ],
+      [
+       "Expected outcome",
+       "The average result including draws, as opposed to a win probability."
+      ],
+      [
+       "Bayesian optimization",
+       "A method for tuning hyperparameters; AlphaGo Zero used it, AlphaZero did not."
+      ],
+      [
+       "TPU",
+       "Tensor processing unit: Google's chip for neural network computation."
+      ],
+      [
+       "Replay of recent games",
+       "Training batches are sampled from recent self-play positions."
+      ],
+      [
+       "Hyperparameter",
+       "A setting of the algorithm that is chosen, not learned."
+      ]
      ]
     }
    ],
@@ -3886,6 +4248,13 @@
      "title": "Differences",
      "text": "AlphaGo Zero used {{gating}} of new networks. AlphaZero optimizes the expected {{outcome}}. Only the noise {{scale|alpha}} differed between games."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4009,6 +4378,40 @@
      "type": "text",
      "items": [
       "A fair summary: the evidence that a general self-learning method can reach top-engine strength in a day is solid. Claims about exactly how much stronger it was depend on hardware and settings, and should be read with the conditions attached."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Elo rating",
+       "A rating system where the expected score depends on the rating difference."
+      ],
+      [
+       "Match score",
+       "(wins + half the draws) divided by games."
+      ],
+      [
+       "Hash table",
+       "Memory a chess engine uses to remember positions it has searched."
+      ],
+      [
+       "Tablebase",
+       "A precomputed database of perfect play for endgames with few pieces."
+      ],
+      [
+       "Time odds",
+       "Giving one side more thinking time than the other."
+      ],
+      [
+       "TCEC",
+       "Top Chess Engine Championship, where engines play under fixed conditions."
+      ]
      ]
     }
    ],
@@ -4248,6 +4651,13 @@
      "title": "Debate",
      "text": "The first match was criticized for little {{hash}} memory and no opening {{book}}. The 2018 match had {{1000}} games. {{Elo}} converts a match score to a rating gap."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4369,6 +4779,40 @@
      "type": "text",
      "items": [
       "Finally, remember the limits of the miniature. It has no learning at all. Chapter 12 describes what is missing from a full system, and where later research went."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Stub network",
+       "A stand-in for the network: uniform policy and zero value for unknown positions."
+      ],
+      [
+       "Terminal value",
+       "+1 for a win, 0 for a draw, -1 for a loss, from the mover's view, given by the rules."
+      ],
+      [
+       "Simulation count",
+       "How many times the root is searched; more simulations give better visit counts."
+      ],
+      [
+       "Visit counts",
+       "How often each root move was chosen during the search."
+      ],
+      [
+       "Forced win",
+       "A move that wins by force against any reply."
+      ],
+      [
+       "Block",
+       "A move that stops the opponent from completing a line."
+      ]
      ]
     }
    ],
@@ -4645,6 +5089,13 @@
      "title": "Tiny search",
      "text": "The stub network gives a {{uniform}} policy and value {{zero|0}}. Exact results at {{terminal}} positions flow back up the tree. The child's value is {{negated|flipped}} for the parent."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4761,6 +5212,40 @@
      "type": "text",
      "items": [
       "You have now built and run the parts. The final exam covers the whole course. A closing reminder of the honesty rules: numbers here come from the papers and reports named in chapter 1, the capstone is a teaching miniature, and claims about the strength of AlphaZero versus current engines depend on the conditions of each match."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Leela Zero",
+       "An open-source Go program based on AlphaGo Zero, trained by distributed volunteer effort."
+      ],
+      [
+       "Leela Chess Zero",
+       "An open-source chess program based on the AlphaZero paper, also trained by volunteers."
+      ],
+      [
+       "KataGo",
+       "An open-source Go program in the AlphaZero family."
+      ],
+      [
+       "MuZero",
+       "A successor that learns its own model of the environment instead of being given the rules."
+      ],
+      [
+       "Gumbel AlphaZero",
+       "A variant that uses Gumbel noise to guarantee policy improvement, even with few simulations."
+      ],
+      [
+       "Perfect information",
+       "A game where all players see the full state."
+      ]
      ]
     }
    ],
@@ -4911,6 +5396,13 @@
      "type": "fill",
      "title": "Limits",
      "text": "AlphaZero needs a fast, exact {{simulator}} of the rules. It assumes {{perfect}} information. {{MuZero}} learns a model instead of being given the rules."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

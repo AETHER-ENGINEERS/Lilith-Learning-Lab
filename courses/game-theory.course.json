@@ -120,6 +120,36 @@
      "items": [
       "The assumptions matter. We say players are rational, meaning each tries to get the highest payoff, and that rationality is common knowledge: I know you are rational, you know that I know, and so on. Later chapters relax this, with evolution and learning, but we begin with the clean case."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Game",
+       "A model of strategic interaction: players, strategies and payoffs."
+      ],
+      [
+       "Strategy",
+       "A complete plan of action for a player."
+      ],
+      [
+       "Payoff",
+       "The number a player receives for an outcome, expressing how much they like it."
+      ],
+      [
+       "Normal form",
+       "A game described by a matrix of payoffs for every combination of strategies."
+      ],
+      [
+       "Zero-sum game",
+       "A game in which one player's gain is exactly the other's loss."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -583,6 +613,13 @@
      "hint": "Compare the first payoff in each row of that column.",
      "solution": "def best_response(game, col):\n    best = 0\n    for r in range(len(game)):\n        if game[r][col][0] > game[best][col][0]:\n            best = r\n    return best\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -673,6 +710,36 @@
      "items": [
       "John Nash proved in 1950 that every finite game has at least one equilibrium if mixed strategies are allowed, which the next chapter explains. He won the Nobel Prize in 1994 for it.",
       "A stable outcome is not the same as a good one: in the prisoner's dilemma, the unique equilibrium is worse for both than another outcome."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Dominant strategy",
+       "A strategy that is at least as good as all alternatives whatever the others do, and better in some case."
+      ],
+      [
+       "Best response",
+       "The strategy that maximises a player's payoff given the others' choices."
+      ],
+      [
+       "Nash equilibrium",
+       "A profile of strategies in which each is a best response to the others."
+      ],
+      [
+       "Pure strategy",
+       "A strategy chosen with certainty, without randomisation."
+      ],
+      [
+       "Iterated elimination",
+       "Repeatedly deleting strictly dominated strategies."
+      ]
      ]
     }
    ],
@@ -1236,6 +1303,13 @@
      "hint": "Search all cells for the best total.",
      "solution": "def welfare(game, r, c):\n    best = None\n    for row in game:\n        for cell in row:\n            s = cell[0] + cell[1]\n            if best is None or s > best:\n                best = s\n    return [best, game[r][c][0] + game[r][c][1]]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1325,6 +1399,36 @@
      "type": "text",
      "items": [
       "If a cell is both the smallest in its row and the largest in its column, it is a saddle point and the game is solved with pure strategies. Otherwise the solution mixes, and for bigger games it is found by linear programming, one of the great practical algorithms."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Mixed strategy",
+       "A probability distribution over pure strategies."
+      ],
+      [
+       "Indifference principle",
+       "In a mixed equilibrium each player's mixing makes the other indifferent among the strategies they use."
+      ],
+      [
+       "Maximin",
+       "The strategy that maximises the worst-case payoff."
+      ],
+      [
+       "Value of a game",
+       "The payoff both players can guarantee in a zero-sum game under optimal play."
+      ],
+      [
+       "Saddle point",
+       "A cell that is the minimum in its row and maximum in its column, giving a pure solution."
+      ]
      ]
     }
    ],
@@ -1690,6 +1794,13 @@
      "hint": "They agree exactly when a saddle exists.",
      "solution": "def has_saddle(M):\n    mm = max([min(row) for row in M])\n    cols = []\n    for c in range(len(M[0])):\n        cols.append(max([M[r][c] for r in range(len(M))]))\n    return mm == min(cols)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1782,6 +1893,36 @@
      "items": [
       "In the battle of the sexes, a couple wants to spend the evening together but one prefers the opera and the other the football. Both would rather go together to either than apart. This is a pure coordination game with two good equilibria and a fight about which.",
       "Conventions such as driving on the right solve this on a large scale."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Prisoner's dilemma",
+       "A game where defection is a dominant strategy but mutual cooperation gives both a better payoff."
+      ],
+      [
+       "Stag hunt",
+       "A coordination game with a risky high-payoff equilibrium and a safe low-payoff one."
+      ],
+      [
+       "Chicken",
+       "An anti-coordination game where each prefers to go straight if the other swerves."
+      ],
+      [
+       "Pareto optimal",
+       "An outcome where no player can be made better off without making another worse off."
+      ],
+      [
+       "Tragedy of the commons",
+       "Overuse of a shared resource because each user bears only a share of the cost."
+      ]
      ]
     }
    ],
@@ -2111,6 +2252,13 @@
      "hint": "More harvest by everyone lowers the price.",
      "solution": "def profit(n, h):\n    return h * max(0, 10 - n * h)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2203,6 +2351,36 @@
      "items": [
       "The ultimatum game tests the theory. One person proposes how to split ten pounds, and the other accepts or rejects, in which case both get nothing. Theory says offer the smallest amount and the other accepts.",
       "In experiments people often offer nearly half and reject offers under about thirty percent. Fairness and emotion are part of the payoffs."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Extensive form",
+       "A game represented as a tree of decisions in order, with payoffs at the leaves."
+      ],
+      [
+       "Backward induction",
+       "Solving a finite sequential game by reasoning from the last move to the first."
+      ],
+      [
+       "Subgame perfect equilibrium",
+       "A strategy profile that is a Nash equilibrium in every subgame."
+      ],
+      [
+       "Empty threat",
+       "A threat that would not be in the threatener's interest to carry out."
+      ],
+      [
+       "Commitment",
+       "Limiting your own future options in order to change others' behaviour."
+      ]
      ]
     }
    ],
@@ -2547,6 +2725,13 @@
      "hint": "A rejection leaves nothing.",
      "solution": "def ultimatum(offer, total, threshold):\n    if offer / float(total) >= threshold:\n        return [True, total - offer]\n    return [False, 0]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2638,6 +2823,36 @@
      "items": [
       "The folk theorem is the general result. When players are patient enough, any outcome that gives each player more than their worst-case payoff can be an equilibrium of the repeated game. Cooperation is possible, but so are many other outcomes.",
       "Which one emerges depends on norms, history and institutions. The lab lets you run a tournament of strategies yourself."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Repeated game",
+       "A game in which the same stage game is played many times."
+      ],
+      [
+       "Tit for tat",
+       "Cooperate on the first round, then do whatever the opponent did last round."
+      ],
+      [
+       "Grim trigger",
+       "Cooperate until the opponent defects once, then defect forever."
+      ],
+      [
+       "Discount factor",
+       "The weight delta between 0 and 1 on payoffs one round later."
+      ],
+      [
+       "Folk theorem",
+       "In infinitely repeated games with patient players, many outcomes can be sustained in equilibrium."
+      ]
      ]
     }
    ],
@@ -2971,6 +3186,13 @@
      "hint": "Compare cooperating forever with defecting once.",
      "solution": "def min_delta(T, R, P):\n    return round((T - R) / float(T - P), 4)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3061,6 +3283,36 @@
      "items": [
       "Evolutionary game theory explains the persistence of altruism, signalling and conventions. It also reveals that cooperation in the prisoner's dilemma dies out in a well-mixed population but can survive when like meets like, through kinship, reputation or local neighbourhoods.",
       "The lab shows the dynamics for several games."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Evolutionarily stable strategy",
+       "A strategy that, if adopted by most of a population, cannot be displaced by a rare mutant."
+      ],
+      [
+       "Replicator dynamics",
+       "Equations in which a strategy's share grows when its payoff is above the population average."
+      ],
+      [
+       "Hawk-dove game",
+       "A contest over a resource in which hawks fight and doves share or retreat."
+      ],
+      [
+       "Fitness",
+       "The payoff a strategy earns against the current population, interpreted as reproductive success."
+      ],
+      [
+       "Frequency dependence",
+       "A strategy's success depends on how common each strategy is."
+      ]
      ]
     }
    ],
@@ -3452,6 +3704,13 @@
      "hint": "Repeat the step.",
      "solution": "def evolve(x0, A, dt, steps):\n    x = float(x0)\n    for i in range(steps):\n        f1 = A[0][0] * x + A[0][1] * (1 - x)\n        f2 = A[1][0] * x + A[1][1] * (1 - x)\n        avg = x * f1 + (1 - x) * f2\n        x = x + dt * x * (f1 - avg)\n    return round(x, 2)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3543,6 +3802,36 @@
      "items": [
       "Mechanism design asks: what rules make people reveal what we need to know? Besides auctions, it covers matching students to schools, kidneys to patients and the design of voting rules.",
       "Bargaining theory covers the two-person case: Nash's solution splits the surplus to maximise the product of gains, and Rubinstein's alternating offers model shows that patience gives bargaining power."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Vickrey auction",
+       "A sealed-bid auction in which the highest bidder wins and pays the second-highest bid."
+      ],
+      [
+       "Bid shading",
+       "Bidding less than your true value in a first-price auction."
+      ],
+      [
+       "Winner's curse",
+       "In common-value auctions the winner tends to have overestimated the value."
+      ],
+      [
+       "Mechanism design",
+       "Designing rules of a game so that self-interested behaviour achieves a desired goal."
+      ],
+      [
+       "Nash bargaining solution",
+       "The split that maximises the product of the players' gains over their disagreement payoffs."
+      ]
      ]
     }
    ],
@@ -3859,6 +4148,13 @@
      "hint": "Share the surplus above disagreement equally.",
      "solution": "def nash_split(S, d1, d2):\n    gain = (S - d1 - d2) / 2.0\n    return [round(d1 + gain, 3), round(d2 + gain, 3)]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3950,6 +4246,36 @@
      "items": [
       "Kenneth Arrow proved in 1951 that no voting method that ranks three or more options can satisfy a short list of reasonable conditions: unanimity, independence of irrelevant options, and no dictator.",
       "Gibbard and Satterthwaite later showed that any reasonable method can be manipulated by insincere voting. Every voting system has trade-offs, and choosing one means choosing which flaws to accept."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Coalition",
+       "A subset of players who agree to act together."
+      ],
+      [
+       "Characteristic function",
+       "A function v(S) giving the value a coalition S can secure."
+      ],
+      [
+       "Shapley value",
+       "A player's average marginal contribution across all orders of joining the coalition."
+      ],
+      [
+       "Core",
+       "The allocations that no coalition can improve upon by breaking away."
+      ],
+      [
+       "Condorcet paradox",
+       "A situation where majority preferences form a cycle: A beats B, B beats C, C beats A."
+      ]
      ]
     }
    ],
@@ -4411,6 +4737,13 @@
      ],
      "hint": "Count which comes earlier on each ballot.",
      "solution": "def majority(ballots, a, b):\n    na = 0\n    nb = 0\n    for r in ballots:\n        if r.index(a) < r.index(b):\n            na = na + 1\n        else:\n            nb = nb + 1\n    if na > nb:\n        return a\n    if nb > na:\n        return b\n    return 'tie'\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

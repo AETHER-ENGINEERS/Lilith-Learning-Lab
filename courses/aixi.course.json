@@ -159,6 +159,40 @@
       "A note on sources. This course follows Hutter's 2007 survey Universal Algorithmic Intelligence, the Veness and colleagues 2011 paper in the Journal of Artificial Intelligence Research, Legg and Hutter's universal intelligence paper, and papers by Leike and Hutter and by Orseau on the weaknesses.",
       "The toy programs are my own teaching examples, not code from those papers."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "AIXI",
+       "Hutter's universal reinforcement learning agent: Solomonoff prediction plus expectimax planning. Pronounced eye-ksee."
+      ],
+      [
+       "Agent",
+       "Whatever chooses actions: it reads percepts and writes actions."
+      ],
+      [
+       "Environment",
+       "Everything outside the agent; it answers each action with a percept."
+      ],
+      [
+       "Percept",
+       "What the agent receives each step: an observation and a reward."
+      ],
+      [
+       "Solomonoff induction",
+       "Prediction that mixes all computable hypotheses, weighted by 2 to the minus program length."
+      ],
+      [
+       "Expectimax",
+       "Planning that maximizes over your actions and averages over the environment's replies."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -354,6 +388,13 @@
      "title": "Basics",
      "text": "AIXI joins {{Solomonoff induction|Solomonoff}} prediction with {{expectimax}} planning. It is {{incomputable|not computable}}, so it serves as an ideal to approximate."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -470,6 +511,40 @@
      "type": "text",
      "items": [
       "The practice section builds a small deterministic environment with memory, so you can see how the reply depends on the history. You then run a policy in it and add up the reward."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Action",
+       "A symbol the agent sends, from a finite set."
+      ],
+      [
+       "Observation",
+       "The non-reward part of a percept."
+      ],
+      [
+       "Reward",
+       "A number the agent wants to accumulate."
+      ],
+      [
+       "History",
+       "The sequence of past actions and percepts."
+      ],
+      [
+       "Policy",
+       "A rule choosing actions from histories."
+      ],
+      [
+       "Chronological",
+       "Replies depend only on actions taken so far, never on future ones."
+      ]
      ]
     }
    ],
@@ -707,6 +782,13 @@
      "title": "Setting",
      "text": "A {{policy}} maps histories to actions. An environment is {{chronological}} when its replies never depend on future actions. A percept is an observation and a {{reward}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -813,6 +895,40 @@
      "type": "text",
      "items": [
       "In the practice section you evaluate small expectimax trees, then plan in a stochastic environment whose reward chances depend on the previous action."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Expectimax",
+       "Game-tree search with max nodes for the agent and expectation nodes for chance."
+      ],
+      [
+       "Value function",
+       "The expected total future reward under a policy or the best policy."
+      ],
+      [
+       "Optimal policy",
+       "A policy that attains the highest value."
+      ],
+      [
+       "Bellman equation",
+       "The recursion value = max over actions of the expectation of reward plus next value."
+      ],
+      [
+       "Horizon",
+       "The number of future steps counted."
+      ],
+      [
+       "Chance node",
+       "A node where the environment draws the next percept."
+      ]
      ]
     }
    ],
@@ -1147,6 +1263,13 @@
      "title": "Planning",
      "text": "Expectimax takes a {{maximum|max}} over actions and an {{expectation|average}} over percepts. The number of leaves grows {{exponentially}} with the horizon."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1258,6 +1381,40 @@
      "type": "text",
      "items": [
       "The practice section implements Bayes updating, the mixture prediction and the regret bound for coin-flip hypotheses."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Hypothesis class",
+       "The set of environments the agent considers possible."
+      ],
+      [
+       "Prior",
+       "Weights on hypotheses before seeing data; they sum to at most one."
+      ],
+      [
+       "Posterior",
+       "Weights after seeing data, by Bayes rule."
+      ],
+      [
+       "Mixture",
+       "A weighted average of the hypotheses' probabilities; written xi."
+      ],
+      [
+       "Dominance",
+       "xi(x) is at least w times nu(x) for every member nu with weight w."
+      ],
+      [
+       "Likelihood",
+       "The probability a hypothesis gave to the data actually seen."
+      ]
      ]
     }
    ],
@@ -1687,6 +1844,13 @@
      "title": "Mixtures",
      "text": "The {{mixture}} probability is a weighted sum. {{Dominance}} says it is at least the prior weight times each member's probability. A model that gave the data probability zero has weight {{zero|0}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1806,6 +1970,40 @@
      "items": [
       "The practice section uses a toy machine, my own illustration. A program is n ones, then a zero, then a pattern of exactly n bits; the machine repeats the pattern forever. The program length is two n plus one.",
       "You can run it, compute the shortest program for a string, check that the set is prefix-free and compute the prior over a finite set of programs."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Kolmogorov complexity",
+       "K(x): the length of the shortest program that outputs x on a given universal machine."
+      ],
+      [
+       "Universal Turing machine",
+       "A machine that can simulate any other machine given its description as part of the program."
+      ],
+      [
+       "Invariance theorem",
+       "For two universal machines, complexities differ by at most a constant not depending on x."
+      ],
+      [
+       "Prefix-free",
+       "No program is the beginning of another program."
+      ],
+      [
+       "Kraft inequality",
+       "For a prefix-free set of programs, the sum of 2^-length is at most 1."
+      ],
+      [
+       "Universal prior",
+       "Probability of a string = sum of 2^-length over programs that produce it."
+      ]
      ]
     }
    ],
@@ -2172,6 +2370,13 @@
      "title": "Complexity",
      "text": "Kolmogorov complexity is the {{length}} of the shortest program. It is {{incomputable|not computable}}. Programs are weighted by two to the minus their {{length}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2286,6 +2491,40 @@
      "type": "text",
      "items": [
       "The practice section computes the toy prior's prediction, and simulates the weighted-majority argument with a bound on mistakes."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Solomonoff prior M",
+       "The universal prior over sequences, a mixture of all lower semicomputable semimeasures."
+      ],
+      [
+       "Semimeasure",
+       "A probability-like function whose probabilities may add to less than one."
+      ],
+      [
+       "Prediction",
+       "M(x a) divided by M(x) for the next symbol a."
+      ],
+      [
+       "Dominance",
+       "M(x) is at least 2^-K(mu) times mu(x) for every computable mu, up to a constant."
+      ],
+      [
+       "Convergence",
+       "On data from computable mu, M's predictions approach mu's."
+      ],
+      [
+       "Lower semicomputable",
+       "Approximable from below, but without a known error bound."
+      ]
      ]
     }
    ],
@@ -2574,6 +2813,13 @@
      "title": "Prediction",
      "text": "Solomonoff prediction is the {{ratio}} M(xa)/M(x). On computable data the total error is bounded by a multiple of the {{complexity|Kolmogorov complexity}} of the source. M is only {{lower semicomputable|lower-semicomputable}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2681,6 +2927,40 @@
      "type": "text",
      "items": [
       "In the app you see the filtered class, the posterior weights and the action chosen, step by step, in a small world. In the practice section you write the same pieces as functions."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "AIXI equation",
+       "The rule a_k = argmax over actions of an alternating max-sum expression over future percepts, weighted by 2^-length of consistent programs."
+      ],
+      [
+       "Program q",
+       "A program for the universal machine standing for a candidate environment."
+      ],
+      [
+       "Consistent",
+       "Producing exactly the percepts seen so far when given the actions taken."
+      ],
+      [
+       "Horizon m",
+       "The last step counted in the reward sum."
+      ],
+      [
+       "Lifetime",
+       "The total number of steps the agent will act, here m."
+      ],
+      [
+       "Reference machine",
+       "The universal Turing machine U used to read programs."
+      ]
      ]
     }
    ],
@@ -3480,6 +3760,13 @@
      "title": "Equation",
      "text": "AIXI weights each consistent program by two to the minus its {{length}}. It maximizes the expected {{reward}} sum up to the {{horizon}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3592,6 +3879,40 @@
      "type": "text",
      "items": [
       "The practice section computes tails of geometric sums, effective horizons and the discounted value of a reward stream, plus the growing harmonic horizon."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Horizon",
+       "How many future steps count."
+      ],
+      [
+       "Geometric discount",
+       "Step k is weighted by gamma^k with gamma below one."
+      ],
+      [
+       "Effective horizon",
+       "The number of steps after which the remaining weight is negligible."
+      ],
+      [
+       "Harmonic discount",
+       "Weights proportional to 1/(k(k+1)); the effective horizon grows with age."
+      ],
+      [
+       "Summability",
+       "The total of all weights must be finite for an infinite sum of rewards to make sense."
+      ],
+      [
+       "Lazy agent",
+       "An agent so patient that postponing a reward never costs it anything."
+      ]
      ]
     }
    ],
@@ -3864,6 +4185,13 @@
      "title": "Horizons",
      "text": "A {{geometric}} discount gives a fixed effective horizon. A {{harmonic}} discount makes the horizon grow with age. Without discounting, immortal agents are {{lazy}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3978,6 +4306,40 @@
      "items": [
       "A careful reader should note two things. The measure rewards breadth, since simple environments are numerous and heavy. And the weights depend on the reference machine used for complexity, so what counts as general intelligence is relative to that choice.",
       "Chapter 12 explains how bad the dependence can get."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Pareto optimal",
+       "No other policy is at least as good everywhere and strictly better somewhere."
+      ],
+      [
+       "Balanced Pareto optimal",
+       "Maximizes the prior-weighted sum of values over environments."
+      ],
+      [
+       "Self-optimizing",
+       "Its average value approaches the maximum possible as the lifetime grows, in every environment where some policy can do so."
+      ],
+      [
+       "Universal intelligence",
+       "Upsilon(pi) = sum over environments of 2^-K(mu) times the value of pi in mu."
+      ],
+      [
+       "Value",
+       "Expected total reward of a policy in an environment."
+      ],
+      [
+       "Informal definition",
+       "Intelligence measures an agent's ability to achieve goals in a wide range of environments."
+      ]
      ]
     }
    ],
@@ -4464,6 +4826,13 @@
      "title": "Universal",
      "text": "Universal intelligence weighs each environment by two to the minus its {{complexity|Kolmogorov complexity}}. AIXI maximizes it, but the measure is {{incomputable|not computable}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4580,6 +4949,40 @@
      "items": [
       "Schmidhuber's speed prior, mentioned in a 2003 survey that discusses AIXI, replaces the incomputable prior by one that is approximable by also penalizing running time. The survey says one can modify the AIXI model to use it.",
       "It is an example of the general move: when the ideal is out of reach, change the prior to favour things that can be computed."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Halting problem",
+       "Deciding whether a program ever stops; undecidable."
+      ],
+      [
+       "AIXItl",
+       "A time- and length-bounded version of AIXI: policies of length at most l, at most t steps per cycle."
+      ],
+      [
+       "Levin search",
+       "Run all programs in parallel, giving program p a share of time proportional to 2^-length(p)."
+      ],
+      [
+       "Speed prior",
+       "A prior that favors programs that are both short and fast."
+      ],
+      [
+       "Arithmetical hierarchy",
+       "A classification of undecidable problems by quantifier alternations."
+      ],
+      [
+       "Limit computable",
+       "The value is the limit of a computable sequence of guesses."
+      ]
      ]
     }
    ],
@@ -4990,6 +5393,13 @@
      "title": "Bounds",
      "text": "AIXItl costs about t times {{2^l|two to the l|2 to the l}} per cycle. Levin search gives program p a time share of two to the minus its {{length}}. Exact AIXI hits the {{halting}} problem."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5111,6 +5521,40 @@
      "type": "text",
      "items": [
       "The practice section builds the pieces: the KT estimator, a depth-one context tree weighting, the UCB selection rule, and finally a tiny model-based agent that learns an environment with KT counts and chooses actions by its predictions. The agent is my own teaching miniature, not the paper's code."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Context tree weighting (CTW)",
+       "A method that predicts the next bit by mixing all context trees up to a depth, efficiently."
+      ],
+      [
+       "KT estimator",
+       "Krichevsky-Trofimov: next bit is 1 with probability (b + 1/2) / (a + b + 1) after a zeros and b ones."
+      ],
+      [
+       "Prediction suffix tree",
+       "A tree whose paths are recent history suffixes and whose leaves hold bit statistics."
+      ],
+      [
+       "rho-UCT",
+       "A Monte Carlo tree search for the agent setting that samples histories from the learned model."
+      ],
+      [
+       "UCB",
+       "A bandit rule choosing the action with the best average plus an exploration bonus."
+      ],
+      [
+       "Factored CTW",
+       "A variant that predicts each bit of a structured percept."
+      ]
      ]
     }
    ],
@@ -5548,6 +5992,13 @@
      "title": "MC-AIXI",
      "text": "{{Context tree weighting|CTW}} replaces the mixture over programs, and {{rho-UCT|rho UCT|UCT}} replaces exact expectimax. The KT estimator uses the counts of {{zeros}} and ones."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5667,6 +6118,40 @@
      "items": [
       "The honest summary is this. AIXI remains a clear formalization of the learning problem and of Occam's razor in sequential decisions, and its approximations show that pieces of the idea can work.",
       "But optimality claims must be stated relative to a prior, exploration needs care, and the agent-in-the-world problem is open."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Dualism",
+       "Treating the agent as separate from the environment, interacting only through action and percept channels."
+      ],
+      [
+       "Reference machine",
+       "The universal Turing machine that fixes which programs are short."
+      ],
+      [
+       "Dogmatic prior",
+       "A prior believing that deviating from a particular policy is punished forever."
+      ],
+      [
+       "Indifference prior",
+       "A prior under which all actions look equally good to AIXI in a finite horizon."
+      ],
+      [
+       "Asymptotic optimality",
+       "The agent's value approaches the best possible value in the true environment."
+      ],
+      [
+       "Thompson sampling",
+       "Sample one environment from the posterior and act as if it were true for a while."
+      ]
      ]
     }
    ],
@@ -6034,6 +6519,13 @@
      "type": "fill",
      "title": "Weaknesses",
      "text": "AIXI is {{dualistic|dualist}}: it treats itself as outside the world. Its optimality claims depend on the {{prior}}. {{Thompson sampling}} restores asymptotic optimality."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

@@ -35,6 +35,9 @@ def main():
     import apply_eli5  # add the ELI5 block to every chapter first
     for f in sorted(glob.glob(os.path.join(ROOT, 'courses', '*.course.json'))):
         apply_eli5.apply(f)
+    import apply_tables  # a table and references in every chapter
+    for f in sorted(glob.glob(os.path.join(ROOT, 'courses', '*.course.json'))):
+        apply_tables.apply(f)
     out = []
     for p in sorted(glob.glob(os.path.join(ROOT, "courses", "*.course.json"))):
         raw = open(p, encoding="utf-8").read()

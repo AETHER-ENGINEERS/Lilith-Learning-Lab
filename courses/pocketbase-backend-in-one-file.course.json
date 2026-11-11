@@ -176,6 +176,40 @@
      "items": [
       "Be aware of the version. PocketBase is still below 1.0 and its authors say backward compatibility is not guaranteed before then. Version 0.23 made large changes, for example admins became superusers. Always read the release notes, and the program can update itself with ./pocketbase update."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Backend",
+       "The server side of an app: data, accounts, rules."
+      ],
+      [
+       "Embedded database",
+       "A database that runs inside your program instead of a separate server."
+      ],
+      [
+       "SQLite",
+       "A small database stored in one file."
+      ],
+      [
+       "Dashboard",
+       "The admin web page, served at /_/."
+      ],
+      [
+       "Superuser",
+       "An admin account that bypasses all access rules."
+      ],
+      [
+       "pb_data",
+       "The folder where PocketBase keeps its database and uploaded files."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -361,6 +395,13 @@
      "hint": "Strip each prefix.",
      "solution": "def parse_serve(args):\n    http = '127.0.0.1:8090'\n    d = 'pb_data'\n    for a in args:\n        if a.startswith('--http='):\n            http = a[7:]\n        elif a.startswith('--dir='):\n            d = a[6:]\n    return [http, d]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -459,6 +500,40 @@
      "items": [
       "Fields have types: text, editor for rich text, number, bool, email, url, date, select, file, relation, json, password and geoPoint, among others. Each type has its own options, such as required, a maximum length, or the allowed values of a select.",
       "Add indexes on the fields you filter and sort by, in the same way you would in any SQL database."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Collection",
+       "A named set of records, backed by a SQLite table."
+      ],
+      [
+       "Record",
+       "One row in a collection."
+      ],
+      [
+       "Base collection",
+       "The default type for general data."
+      ],
+      [
+       "Auth collection",
+       "A base collection with sign-in features."
+      ],
+      [
+       "View collection",
+       "A read-only collection defined by a SQL query."
+      ],
+      [
+       "Relation",
+       "A field that points to a record in another collection."
+      ]
      ]
     }
    ],
@@ -696,6 +771,13 @@
      "hint": "Loop over the fields.",
      "solution": "def validate(fields, record):\n    errors = []\n    for name, kind, req in fields:\n        if name not in record or record[name] is None or record[name] == '':\n            if req:\n                errors.append(name + ': required')\n            continue\n        v = record[name]\n        if kind == 'text':\n            ok = isinstance(v, str)\n        elif kind == 'number':\n            ok = isinstance(v, (int, float)) and not isinstance(v, bool)\n        else:\n            ok = isinstance(v, bool)\n        if not ok:\n            errors.append(name + ': wrong type')\n    return sorted(errors)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -793,6 +875,40 @@
      "type": "text",
      "items": [
       "You will use these calls through the SDK in the next chapter, but they are plain HTTP, so any language can call them, including curl."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Pagination",
+       "Returning a long list in pages."
+      ],
+      [
+       "perPage",
+       "How many records come back in one page."
+      ],
+      [
+       "Sort",
+       "The order of results, such as -created for newest first."
+      ],
+      [
+       "Filter",
+       "An expression that keeps only matching records."
+      ],
+      [
+       "Expand",
+       "A query option that loads related records inside the response."
+      ],
+      [
+       "Fields",
+       "A query option that returns only some fields."
+      ]
      ]
     }
    ],
@@ -1054,6 +1170,13 @@
      "hint": "A leading minus means descending.",
      "solution": "def parse_sort(s):\n    out = []\n    for part in s.split(','):\n        part = part.strip()\n        if not part:\n            continue\n        if part.startswith('-'):\n            out.append([part[1:], 'desc'])\n        else:\n            out.append([part, 'asc'])\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1146,6 +1269,40 @@
      "type": "text",
      "items": [
       "The SDK also keeps the signed-in user in pb.authStore, which holds the token and the record and can be saved in local storage. You will use it in the next chapters. In a browser, the SDK cancels an older request when you send a new identical one, which you can turn off with autoCancellation."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "SDK",
+       "A library that wraps the HTTP API."
+      ],
+      [
+       "getList",
+       "Fetches one page of records."
+      ],
+      [
+       "getFullList",
+       "Fetches every record by requesting pages in a loop."
+      ],
+      [
+       "getFirstListItem",
+       "Fetches the first record matching a filter."
+      ],
+      [
+       "authStore",
+       "Where the SDK keeps the sign-in token and record."
+      ],
+      [
+       "Placeholder",
+       "A named slot like {:name} that is filled with an escaped value."
+      ]
      ]
     }
    ],
@@ -1319,6 +1476,13 @@
      "hint": "Round up, but never below one.",
      "solution": "def requests_needed(total, batch):\n    n = (total + batch - 1) // batch\n    return max(1, n)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1419,6 +1583,40 @@
      "items": [
       "Modifiers add checks. The :isset modifier asks whether the client sent a field. The :changed modifier asks whether a submitted value differs from the stored one. The :length modifier counts items in a multiple field, and :each applies a condition to every item.",
       "Operators include =, !=, comparisons, ~ for like, and a question mark variant such as ?= that means any item matches. Macros such as @now and @todayStart are in UTC."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "API rule",
+       "A filter expression that decides who may do an action."
+      ],
+      [
+       "Locked rule",
+       "A null rule: only superusers may act."
+      ],
+      [
+       "Open rule",
+       "An empty string: anyone may act."
+      ],
+      [
+       "@request.auth",
+       "The signed-in record making the request."
+      ],
+      [
+       "@request.body",
+       "The data submitted with the request."
+      ],
+      [
+       "Modifier",
+       "A suffix such as :isset, :changed, :length or :each."
+      ]
      ]
     }
    ],
@@ -1714,6 +1912,13 @@
      "hint": "Split on || then &&.",
      "solution": "def check(rule, record, auth):\n    def val(tok):\n        tok = tok.strip()\n        if tok[:1] == '\"' or tok[:1] == \"'\":\n            return tok[1:-1]\n        if tok == 'true':\n            return True\n        if tok == 'false':\n            return False\n        if tok.startswith('@request.auth.'):\n            return auth.get(tok[14:], '')\n        try:\n            return float(tok) if '.' in tok else int(tok)\n        except ValueError:\n            pass\n        return record.get(tok, '')\n\n    def like(a, b):\n        s = str(a).lower()\n        p = str(b).lower()\n        core = p.strip('%')\n        if p.startswith('%') and p.endswith('%') and len(p) > 1:\n            return core in s\n        if p.endswith('%'):\n            return s.startswith(core)\n        if p.startswith('%'):\n            return s.endswith(core)\n        return core in s\n\n    def clause(c):\n        c = c.strip()\n        for op in ['!=', '>=', '<=', '!~', '=', '>', '<', '~']:\n            parts = c.split(' ' + op + ' ', 1)\n            if len(parts) == 2:\n                a = val(parts[0])\n                b = val(parts[1])\n                if op == '=':\n                    return a == b\n                if op == '!=':\n                    return a != b\n                if op == '~':\n                    return like(a, b)\n                if op == '!~':\n                    return not like(a, b)\n                try:\n                    if op == '>':\n                        return a > b\n                    if op == '>=':\n                        return a >= b\n                    if op == '<':\n                        return a < b\n                    return a <= b\n                except TypeError:\n                    return False\n        return False\n\n    for alt in rule.split('||'):\n        ok = True\n        for c in alt.split('&&'):\n            if not clause(c):\n                ok = False\n                break\n        if ok:\n            return True\n    return False\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1814,6 +2019,40 @@
      "type": "text",
      "items": [
       "Verification is separate: it confirms that a user controls an email address, by sending a link. A rule can then require @request.auth.verified = true. Next to sign-in there are helpers for password reset and for changing an email address."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "JWT",
+       "A signed token with three parts: header, payload and signature."
+      ],
+      [
+       "authStore",
+       "The SDK's storage for the token and the signed-in record."
+      ],
+      [
+       "OAuth2",
+       "Signing in through another service like Google or GitHub."
+      ],
+      [
+       "OTP",
+       "A one-time password sent by email."
+      ],
+      [
+       "MFA",
+       "Multi-factor authentication: two methods in a row."
+      ],
+      [
+       "Verification",
+       "Confirming that a user owns their email address."
+      ]
      ]
     }
    ],
@@ -1987,6 +2226,13 @@
      "hint": "Check the time first.",
      "solution": "def otp_check(stored, entered, issued, now, ttl):\n    if now - issued >= ttl:\n        return 'expired'\n    if stored == entered:\n        return 'ok'\n    return 'wrong'\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2085,6 +2331,40 @@
      "type": "text",
      "items": [
       "When you need aggregates, such as a post and its comment count, create a view collection. It is a SQL query, so joins and GROUP BY are available. It is read-only and sends no realtime events, but it can have list and view rules like any other collection."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Relation field",
+       "A field holding the id or ids of other records."
+      ],
+      [
+       "Expand",
+       "Loading related records into record.expand."
+      ],
+      [
+       "Back-relation",
+       "The records in another collection that point at this one."
+      ],
+      [
+       "Cascade delete",
+       "Deleting dependent records when the parent is deleted."
+      ],
+      [
+       "Multiple relation",
+       "A relation field that holds a list of ids."
+      ],
+      [
+       "Join",
+       "Combining rows of two tables by a shared value."
+      ]
      ]
     }
    ],
@@ -2382,6 +2662,13 @@
      "hint": "Group posts by author.",
      "solution": "def back_relations(users, posts):\n    by = {}\n    for u in users:\n        by[u] = []\n    for pid, aid in posts:\n        if aid in by:\n            by[aid].append(pid)\n    out = []\n    for u in sorted(by):\n        out.append([u, sorted(by[u])])\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2479,6 +2766,40 @@
      "type": "text",
      "items": [
       "You can also publish your own topics from JavaScript or Go on the server, and the browser subscribes with pb.realtime.subscribe. Remember that every open client is a connection: for large audiences raise the open file limit of the host, as the production chapter explains."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "SSE",
+       "Server-Sent Events: a long-lived HTTP response that streams messages to the client."
+      ],
+      [
+       "Subscription",
+       "A request to receive events for a topic."
+      ],
+      [
+       "Topic",
+       "What you follow: a collection (star) or one record id."
+      ],
+      [
+       "Event",
+       "A message with an action and the changed record."
+      ],
+      [
+       "PB_CONNECT",
+       "The first event, carrying the client id."
+      ],
+      [
+       "Custom topic",
+       "A topic you publish yourself from server code."
+      ]
      ]
     }
    ],
@@ -2737,6 +3058,13 @@
      "hint": "Handle each action in turn.",
      "solution": "def apply_event(items, event):\n    action, rid, title = event\n    out = []\n    if action == 'create':\n        for it in items:\n            out.append([it[0], it[1]])\n        out.append([rid, title])\n        return out\n    for it in items:\n        if it[0] == rid:\n            if action == 'update':\n                out.append([rid, title])\n        else:\n            out.append([it[0], it[1]])\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2835,6 +3163,40 @@
      "type": "text",
      "items": [
       "If you run several servers or want cheap storage, switch to an S3 compatible store in the settings. Backups can go to S3 too. Remember that local files live in pb_data, so back them up with the database."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "File field",
+       "A field that holds one or more uploaded file names."
+      ],
+      [
+       "Multipart form",
+       "An HTTP body format that can carry files."
+      ],
+      [
+       "Thumb",
+       "A resized copy of an image, requested as WxH."
+      ],
+      [
+       "Protected file",
+       "A file that can only be fetched with a token and a passing rule."
+      ],
+      [
+       "S3 storage",
+       "Storing uploads in an object store instead of on local disk."
+      ],
+      [
+       "MIME type",
+       "The kind of a file, such as image/png."
+      ]
      ]
     }
    ],
@@ -3077,6 +3439,13 @@
      "hint": "Two independent checks.",
      "solution": "def upload_errors(mime, size, allowed, max_size):\n    errors = []\n    if size > max_size:\n        errors.append('too large')\n    if allowed and mime not in allowed:\n        errors.append('type not allowed')\n    return sorted(errors)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3176,6 +3545,40 @@
      "type": "text",
      "items": [
       "The hook engine is for small amounts of logic. Each file is loaded in a sandbox, and handlers do not share mutable state, so keep shared data in the database. If your logic grows, you can move to the Go framework in the next chapter."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Hook",
+       "A function that runs when something happens."
+      ],
+      [
+       "Event",
+       "The object a hook receives, with the app and the record or request."
+      ],
+      [
+       "e.next()",
+       "Passes control to the next handler and then to the action itself."
+      ],
+      [
+       "routerAdd",
+       "Registers a custom HTTP route."
+      ],
+      [
+       "cronAdd",
+       "Registers a job on a cron schedule."
+      ],
+      [
+       "goja",
+       "The JavaScript engine inside PocketBase."
+      ]
      ]
     }
    ],
@@ -3430,6 +3833,13 @@
      "hint": "Check each field in turn.",
      "solution": "def cron_match(expr, minute, hour, dom, month, dow):\n    fields = expr.split()\n    values = [minute, hour, dom, month, dow]\n    starts = [0, 0, 1, 1, 0]\n    for i in range(5):\n        v = values[i]\n        ok = False\n        for part in fields[i].split(','):\n            if part == '*':\n                ok = True\n            elif part.startswith('*/'):\n                if (v - starts[i]) % int(part[2:]) == 0:\n                    ok = True\n            elif '-' in part:\n                a, b = part.split('-')\n                if int(a) <= v <= int(b):\n                    ok = True\n            elif int(part) == v:\n                ok = True\n        if not ok:\n            return False\n    return True\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3528,6 +3938,40 @@
      "type": "code",
      "lang": "bash",
      "code": "./pocketbase serve                       # run the server\n./pocketbase superuser create a@b.com pw   # create an admin\n./pocketbase migrate                       # apply pending migrations\n./pocketbase update                        # update the prebuilt binary\n./pocketbase --dir=./mydata serve          # use a different data folder"
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Go framework",
+       "Using PocketBase as a Go library to build your own backend."
+      ],
+      [
+       "Migration",
+       "A file that changes the schema in a repeatable way."
+      ],
+      [
+       "Auto migrate",
+       "Writing migration files automatically when collections change."
+      ],
+      [
+       "CLI",
+       "The command line: serve, superuser, migrate, update."
+      ],
+      [
+       "Static binary",
+       "An executable with no outside dependencies."
+      ],
+      [
+       "Superuser create",
+       "A command to make an admin account."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -3760,6 +4204,13 @@
      "hint": "Compare in both directions.",
      "solution": "def schema_diff(old, new):\n    added = []\n    removed = []\n    for f in new:\n        if f not in old:\n            added.append(f)\n    for f in old:\n        if f not in new:\n            removed.append(f)\n    return [sorted(added), sorted(removed)]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3860,6 +4311,40 @@
      "type": "text",
      "items": [
       "Many open realtime clients are many open connections. If you see too many open files errors, raise the file limit for the process. Setting GOMEMLIMIT gives Go a soft memory limit on a small server. If storage grows, move uploads to S3."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Reverse proxy",
+       "A web server in front of PocketBase, such as Nginx or Caddy."
+      ],
+      [
+       "Backup",
+       "A copy of pb_data that you can restore."
+      ],
+      [
+       "cronMaxKeep",
+       "How many scheduled backups to keep before removing older ones."
+      ],
+      [
+       "Rate limiter",
+       "A rule that limits requests per time window."
+      ],
+      [
+       "Encryption key",
+       "A secret used to encrypt the settings stored in the database."
+      ],
+      [
+       "Open file limit",
+       "The operating system limit on simultaneous connections and files."
+      ]
      ]
     }
    ],
@@ -4069,6 +4554,13 @@
      "hint": "Count requests per window.",
      "solution": "def rate_limit(times, max_requests, duration):\n    counts = {}\n    out = []\n    for t in times:\n        w = t // duration\n        counts[w] = counts.get(w, 0) + 1\n        out.append(counts[w] <= max_requests)\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4168,6 +4660,40 @@
      "type": "text",
      "items": [
       "Also remember the version. PocketBase is pre-1.0, with breaking changes allowed. Pin the version in your deployment, read the release notes, keep migrations in git, and test an upgrade on a copy of pb_data first. With those habits you have a backend that is small, fast to build on, and easy to run."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Owner field",
+       "A relation to users that marks who owns a record."
+      ],
+      [
+       "Least privilege",
+       "Giving each action only the access it needs."
+      ],
+      [
+       "Vertical scaling",
+       "Making one server bigger instead of adding more."
+      ],
+      [
+       "Single writer",
+       "SQLite lets one write happen at a time."
+      ],
+      [
+       "Audit",
+       "Reviewing rules for actions that are too open."
+      ],
+      [
+       "Pre-1.0",
+       "Not yet stable: changes may break things."
+      ]
      ]
     }
    ],
@@ -4366,6 +4892,13 @@
      ],
      "hint": "Only null locks.",
      "solution": "def is_locked(rule, is_superuser):\n    if is_superuser:\n        return False\n    return rule is None\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

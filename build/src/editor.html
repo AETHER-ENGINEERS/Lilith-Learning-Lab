@@ -86,7 +86,7 @@ var K = window.LilithCourse;
 var DRAFT = 'lilith.editor.draft', HANDOFF = 'lilith.handoff';
 var RAW = 'https://raw.githubusercontent.com/lucky-edgelord/Lilith-Learning-Lab/main/courses/';
 var LABS = ['fill', 'order', 'match', 'python', 'write', 'code', 'terminal', 'webxdc'];
-var BLOCKS = ['text', 'code', 'math', 'figure', 'map'];
+var BLOCKS = ['text', 'table', 'code', 'math', 'figure', 'map'];
 var MARK = 'ELI5.', OLDMARK = 'Explain it simply.', LEGACY = /^Teach it back\./;
 var $ = function (s, r) { return (r || document).querySelector(s); };
 
@@ -207,13 +207,21 @@ function blockItem(b, i, ch) {
   var type = b.type || 'text', body = h('div');
   body.appendChild(select('Type', b, 'type', BLOCKS, function () {
     var t = b.type; Object.keys(b).forEach(function (k) { if (k !== 'type') delete b[k]; });
-    if (t === 'text') b.items = []; if (t === 'code') { b.lang = 'python'; b.code = ''; } if (t === 'math') b.tex = ''; if (t === 'figure') { b.image = ''; b.caption = ''; } if (t === 'map') { b.title = ''; b.links = []; }
+    if (t === 'text') b.items = []; if (t === 'code') { b.lang = 'python'; b.code = ''; } if (t === 'math') b.tex = ''; if (t === 'figure') { b.image = ''; b.caption = ''; } if (t === 'map') { b.title = ''; b.links = []; } if (t === 'table') { b.title = ''; b.head = ['Term', 'Meaning']; b.rows = [['', '']]; }
     structural();
   }));
   if (type === 'text') body.appendChild(lines('Paragraphs', b, 'items', { paras: true, rows: 6, hint: 'Each paragraph is read aloud as one part of the lecture (keep each under about 450 characters). $...$ is inline math.' }));
   else if (type === 'code') { body.appendChild(field('Language', b, 'lang', { ph: 'python' })); body.appendChild(field('Code', b, 'code', { rows: 8, mono: true })); }
   else if (type === 'math') body.appendChild(field('Formula (LaTeX)', b, 'tex', { rows: 2, mono: true, ph: '\\frac{a}{b}' }));
   else if (type === 'figure') { body.appendChild(field('Image name (an SVG in the course "images")', b, 'image')); body.appendChild(field('Caption', b, 'caption')); }
+  else if (type === 'table') {
+    body.appendChild(field('Caption', b, 'title'));
+    body.appendChild(lines('Columns', b, 'head', { rows: 2, hint: 'One column name per line.' }));
+    var rta = h('textarea', { rows: 6, placeholder: 'One row per line, cells separated by |' });
+    rta.value = (Array.isArray(b.rows) ? b.rows : []).map(function (r) { return r.join(' | '); }).join('\n');
+    rta.oninput = function () { b.rows = rta.value.split(/\n/).map(function (l) { return l.split('|').map(function (x) { return x.trim(); }); }).filter(function (r) { return r.join('') !== ''; }); changed(); };
+    body.appendChild(h('label', { cls: 'f' }, 'Rows', h('div', { cls: 'hint', text: 'Each row: cell | cell | cell. Keep cells short.' }), rta));
+  }
   else if (type === 'map') { body.appendChild(field('Title', b, 'title')); body.appendChild(lines('Links', b, 'links', { hint: 'One per line: A | relation | B' })); }
   return body;
 }
@@ -307,8 +315,9 @@ function renderChapter(m, i) {
   var lessonStart = f.has ? 1 : 0;
   m.appendChild(sec('Lesson', arrOf(ch, 'lesson').length - lessonStart, [list('Block', ch.lesson, function (b, k) { return k === 0 && f.has ? h('div', { cls: 'muted', text: 'The ELI5 block (edit it above).' }) : blockItem(b, k, ch); },
     function () { return { type: 'text', items: [] }; }, { label: function (b, k) { return k === 0 && f.has ? 'ELI5' : 'Block ' + (k + 1 - lessonStart) + ': ' + ((b && b.type) || 'text'); },
-      adders: [['Text', function () { return { type: 'text', items: [] }; }], ['Code', function () { return { type: 'code', lang: 'python', code: '' }; }], ['Math', function () { return { type: 'math', tex: '' }; }], ['Map', function () { return { type: 'map', title: '', links: [] }; }]] })], true));
+      adders: [['Text', function () { return { type: 'text', items: [] }; }], ['Table', function () { return { type: 'table', title: '', head: ['Term', 'Meaning'], rows: [['', '']] }; }], ['Code', function () { return { type: 'code', lang: 'python', code: '' }; }], ['Math', function () { return { type: 'math', tex: '' }; }], ['Map', function () { return { type: 'map', title: '', links: [] }; }]] })], true));
   m.appendChild(sec('Quiz', arrOf(ch, 'quiz').length, [list('Question', ch.quiz, quizItem, newQuiz)]));
+  m.appendChild(sec('References', arrOf(ch, 'references').length, [list('Reference', ch.references = ch.references || [], function (r) { return h('div', { cls: 'grid2' }, field('Title', r, 'title'), field('URL', r, 'url', { ph: 'https://' }), field('Note', r, 'note')); }, function () { return { title: '', url: '', note: '' }; })]));
   m.appendChild(sec('Flashcards', arrOf(ch, 'cards').length, [list('Card', ch.cards, function (c) { return h('div', { cls: 'grid2' }, field('Front', c, 'q', { rows: 2 }), field('Back', c, 'a', { rows: 2 })); }, function () { return { q: '', a: '' }; })]));
   m.appendChild(sec('Concept maps', arrOf(ch, 'maps').length, [list('Map', ch.maps, function (mp) { return h('div', null, field('Title', mp, 'title'), lines('Links', mp, 'links', { hint: 'One per line: A | relation | B (add [ch2] after a concept to link to chapter 2)' })); }, function () { return { title: '', links: [] }; })]));
   m.appendChild(sec('Practice labs', arrOf(ch, 'practice').length, [list('Lab', ch.practice, labItem, null, { label: function (l) { return (l.title || 'Lab') + ' (' + l.type + ')'; }, adders: LABS.map(function (t) { return [t, LAB_NEW[t]]; }) })]));

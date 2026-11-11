@@ -60,6 +60,14 @@ with sync_playwright() as p:
     C = pg.evaluate('__editor.C'); ch = C['chapters'][0]
     check('chapter written', ch['title'] == 'The hive' and ch['summary'] == ['Bees live in hives.', 'A hive has one queen.'] and ch['quiz'][0]['answer'] == 1 and ch['quiz'][0]['options'] == ['Workers', 'The queen', 'Drones'], ch)
     check('ELI5 block first, in the standard wording', ch['lesson'][0]['items'][0].startswith('ELI5. A hive') and len(ch['lesson'][0]['items']) == 1 and ch['lesson'][1]['items'] == ['Worker bees collect nectar.', 'The queen lays eggs.'], ch['lesson'])
+    check('missing table and references are warned about', 'no table' in pg.inner_text('#issues') and 'no references' in pg.inner_text('#issues'), pg.inner_text('#issues'))
+    pg.click('button:has-text("+ Table")'); pg.wait_for_selector('label.f:has-text("Rows") >> textarea')
+    pg.fill('label.f:has-text("Rows") >> textarea', 'Worker | collects nectar\nQueen | lays eggs'); pg.wait_for_timeout(300)
+    pg.click('summary:has-text("References")') if not pg.is_visible('button:has-text("+ Add reference")') else None
+    pg.click('button:has-text("+ Add reference")'); pg.wait_for_selector('.item label.f:has-text("URL") >> input')
+    pg.fill('.item label.f:has-text("Title") >> input', 'Bee biology'); pg.fill('.item label.f:has-text("URL") >> input', 'https://example.com/bees'); pg.wait_for_timeout(800)
+    C = pg.evaluate('__editor.C'); ch = C['chapters'][0]
+    check('table and reference written', any(b.get('type') == 'table' and b['rows'] == [['Worker', 'collects nectar'], ['Queen', 'lays eggs']] for b in ch['lesson']) and ch['references'][0]['url'] == 'https://example.com/bees', ch)
     check('course is ready', pg.inner_text('#vstat') == 'Ready', pg.inner_text('#vstat') + ' ' + pg.inner_text('#issues'))
     shot(pg, 'editor1_chapter')
     # add, duplicate, reorder, delete chapters; undo

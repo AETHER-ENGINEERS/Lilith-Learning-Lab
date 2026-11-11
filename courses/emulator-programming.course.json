@@ -184,6 +184,40 @@
      "items": [
       "Through this course we build up a tiny imaginary computer called TOY8 and write pieces of its emulator as labs. You will meet the same ideas that real emulators use: a fetch-decode-execute loop, a memory map, cycle timing, interrupts, video and sound, and testing."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Emulator",
+       "Software or hardware that imitates another system."
+      ],
+      [
+       "Host",
+       "The real machine the emulator runs on."
+      ],
+      [
+       "Guest",
+       "The machine being imitated."
+      ],
+      [
+       "Simulation",
+       "A model of behavior, not necessarily running real binaries."
+      ],
+      [
+       "Compatibility layer",
+       "A translator of one system's calls into another's, without imitating its hardware."
+      ],
+      [
+       "ROM image",
+       "A file copy of a program or chip's contents."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -367,6 +401,13 @@
      "hint": "A dictionary lookup with a default.",
      "solution": "def translate(calls, table):\n    out = []\n    for c in calls:\n        out.append(table.get(c, 'unsupported'))\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -458,6 +499,40 @@
      "type": "text",
      "items": [
       "Keep the core of the emulator separate from the frontend, the part that opens windows and plays sound. The core only works on memory and numbers, so it can be tested without a screen and moved between platforms. The frontend asks the core to run one frame, then shows the picture and plays the sound."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Module",
+       "A separable part of the emulator, such as the CPU."
+      ],
+      [
+       "Bus",
+       "The wires and rules that connect chips."
+      ],
+      [
+       "Address decoding",
+       "Deciding which chip answers an address."
+      ],
+      [
+       "Open bus",
+       "What a read returns when no chip answers."
+      ],
+      [
+       "Frontend",
+       "The part that talks to the host's window, audio and input."
+      ],
+      [
+       "Core",
+       "The emulation part, kept apart from the frontend."
+      ]
      ]
     }
    ],
@@ -673,6 +748,13 @@
      "hint": "RAM, then ROM, then open bus.",
      "solution": "def bus_run(rom, ops):\n    ram = [0] * 256\n    out = []\n    for op in ops:\n        addr = op[1]\n        if op[0] == 'w':\n            if addr < 256:\n                ram[addr] = op[2] & 255\n        else:\n            if addr < 256:\n                out.append(ram[addr])\n            elif addr - 256 < len(rom):\n                out.append(rom[addr - 256])\n            else:\n                out.append(255)\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -769,6 +851,40 @@
      "type": "text",
      "items": [
       "Another modern habit is fixed-width types. Instead of relying on how big an int is, use uint8_t, uint16_t and so on in C, or u8 and u16 in Rust. Then your masks and wraparound do exactly what you expect, on every compiler."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Wraparound",
+       "A result is cut to the register size, so 255 plus 1 gives 0."
+      ],
+      [
+       "Flag",
+       "A single bit recording something about the last result."
+      ],
+      [
+       "Carry",
+       "Set when an addition overflows the register."
+      ],
+      [
+       "Two's complement",
+       "The common way to store negative numbers."
+      ],
+      [
+       "Endianness",
+       "Whether the low byte or the high byte comes first."
+      ],
+      [
+       "Mask",
+       "A bit pattern used with AND to keep chosen bits."
+      ]
      ]
     }
    ],
@@ -1065,6 +1181,13 @@
      "hint": "Shift and mask each half.",
      "solution": "def swap16(w):\n    return ((w & 0xFF) << 8) | ((w >> 8) & 0xFF)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1156,6 +1279,40 @@
      "type": "text",
      "items": [
       "Here is a program that counts down: load 3, then loop: output A, subtract 1, and jump back while A is not zero. Running it on the emulator gives 3, 2, 1. Try it in the first lab below."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Program counter (PC)",
+       "The register holding the address of the next instruction."
+      ],
+      [
+       "Fetch",
+       "Reading the opcode (and operands) from memory."
+      ],
+      [
+       "Decode",
+       "Working out which instruction it is."
+      ],
+      [
+       "Execute",
+       "Doing what the instruction says."
+      ],
+      [
+       "Accumulator",
+       "A register that most arithmetic uses."
+      ],
+      [
+       "Opcode",
+       "The number that names an instruction."
+      ]
      ]
     }
    ],
@@ -1470,6 +1627,13 @@
      "hint": "Reuse the loop.",
      "solution": "LEN = [1, 2, 2, 2, 2, 2, 2, 2, 1]\nNAMES = ['HLT', 'LDI', 'ADD', 'SUB', 'STA', 'LDA', 'JMP', 'JNZ', 'OUT']\nCYC = [1, 2, 2, 2, 3, 3, 3, 3, 2]\n\ndef run_toy(program, max_steps):\n    mem = list(program) + [0] * (256 - len(program))\n    pc = 0\n    a = 0\n    z = False\n    out = []\n    cycles = 0\n    halted = 0\n    for _ in range(max_steps):\n        op = mem[pc & 255]\n        n = mem[(pc + 1) & 255]\n        pc = (pc + LEN[op]) & 255 if op < 9 else pc\n        cycles += CYC[op]\n        if op == 0:\n            halted = 1\n            break\n        elif op == 1:\n            a = n\n            z = a == 0\n        elif op == 2:\n            a = (a + n) & 255\n            z = a == 0\n        elif op == 3:\n            a = (a - n) & 255\n            z = a == 0\n        elif op == 4:\n            mem[n] = a\n        elif op == 5:\n            a = mem[n]\n            z = a == 0\n        elif op == 6:\n            pc = n\n        elif op == 7:\n            if not z:\n                pc = n\n            else:\n                cycles -= 1\n        elif op == 8:\n            out.append(a)\n    return [out, cycles, a, halted]\n\ndef cycles_for(program):\n    return run_toy(program, 1000)[1]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1563,6 +1727,40 @@
      "type": "text",
      "items": [
       "CHIP-8 is a friendly practice target. Its instructions are two bytes, and the first hex digit picks the family. For example, 6XNN means set register X to NN, and 7XNN means add NN to register X. Many people write a CHIP-8 emulator as their first project."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Bit field",
+       "A group of bits within an opcode that has one meaning."
+      ],
+      [
+       "Addressing mode",
+       "How an instruction finds its operand: immediate, absolute, indexed and so on."
+      ],
+      [
+       "Dispatch",
+       "Choosing which code to run for an opcode."
+      ],
+      [
+       "Jump table",
+       "An array of addresses indexed by opcode."
+      ],
+      [
+       "Prefix byte",
+       "An opcode that changes the meaning of the next one."
+      ],
+      [
+       "Undocumented opcode",
+       "An instruction the maker never described but that works."
+      ]
      ]
     }
    ],
@@ -1861,6 +2059,13 @@
      "hint": "Handle the carry in VF.",
      "solution": "def chip8_exec(ops):\n    v = [0] * 16\n    for op in ops:\n        t = op >> 12\n        x = (op >> 8) & 15\n        y = (op >> 4) & 15\n        nn = op & 255\n        if t == 6:\n            v[x] = nn\n        elif t == 7:\n            v[x] = (v[x] + nn) & 255\n        elif t == 8 and (op & 15) == 4:\n            s = v[x] + v[y]\n            v[x] = s & 255\n            v[15] = 1 if s > 255 else 0\n    return v\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1952,6 +2157,40 @@
      "type": "text",
      "items": [
       "Memory-mapped I/O means a device register lives at an address. Reading a status register might clear a flag. Writing a control register might start a sound. So your read function can have side effects. Remember that when you add a debugger, since peeking must not trigger them."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Mirroring",
+       "The same memory appearing at several addresses."
+      ],
+      [
+       "Bank switching",
+       "Swapping which block of memory appears in a window."
+      ],
+      [
+       "Memory-mapped I/O",
+       "Device registers placed in the address space."
+      ],
+      [
+       "Side effect",
+       "An action caused by a memory access, beyond the data."
+      ],
+      [
+       "Address window",
+       "A range of addresses showing a selected bank."
+      ],
+      [
+       "Paged lookup",
+       "Using high address bits to pick a block."
+      ]
      ]
     }
    ],
@@ -2257,6 +2496,13 @@
      "hint": "High bits pick the page.",
      "solution": "def page_lookup(page_map, addr):\n    p = addr >> 8\n    if p >= len(page_map):\n        return 'open bus'\n    return page_map[p]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2352,6 +2598,40 @@
      "type": "text",
      "items": [
       "To run at real speed, measure host time with a monotonic clock. Work out how many frames are due, run them, show the picture, and wait if you are early. Cap the number of frames you catch up in one go, or a slow moment will make the emulator run harder and fall further behind."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Clock rate",
+       "Cycles per second, such as 1.79 million for an old CPU."
+      ],
+      [
+       "Frame",
+       "One complete picture, 50 or 60 times a second on many systems."
+      ],
+      [
+       "Scanline",
+       "One horizontal line of the picture."
+      ],
+      [
+       "Cycle counter",
+       "A number that counts down to the next event."
+      ],
+      [
+       "Pacing",
+       "Slowing the emulator to match real time."
+      ],
+      [
+       "Drift",
+       "Error that builds up when leftovers are dropped."
+      ]
      ]
     }
    ],
@@ -2638,6 +2918,13 @@
      "hint": "Clamp between 0 and the cap.",
      "solution": "def frames_due(elapsed_ms, fps, emulated, cap):\n    due = int(elapsed_ms * fps // 1000) - emulated\n    return max(0, min(cap, due))\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2730,6 +3017,40 @@
      "type": "text",
      "items": [
       "This design handles odd cases well. If a timer is set for 37 cycles from now, the CPU runs exactly 37 cycles, with no slack. Event schedulers also make it easy to add new chips: each chip posts its next event. Many accurate modern emulators are built around such a scheduler."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Interrupt",
+       "A signal that makes the CPU run a handler."
+      ],
+      [
+       "IRQ",
+       "A maskable interrupt request."
+      ],
+      [
+       "NMI",
+       "A non-maskable interrupt, often triggered by an edge."
+      ],
+      [
+       "Mask",
+       "A flag that tells the CPU to ignore IRQs."
+      ],
+      [
+       "Scheduler",
+       "A list of future events ordered by time."
+      ],
+      [
+       "Vertical blank",
+       "The short gap between frames."
+      ]
      ]
     }
    ],
@@ -3095,6 +3416,13 @@
      "hint": "Divide twice.",
      "solution": "def raster(cycle, per_line, lines):\n    frame_len = per_line * lines\n    return [cycle // frame_len, (cycle % frame_len) // per_line, cycle % per_line]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3188,6 +3516,40 @@
      "items": [
       "Sound is simpler than it sounds. The hardware makes tones, often square waves, and noise. The emulator creates a sample for each tick of the audio clock, say 44,100 a second, adds the channels and sends the result to the sound card.",
       "If the samples arrive late, you hear clicks, so timing matters again."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Framebuffer",
+       "A block of memory holding the pixels of the picture."
+      ],
+      [
+       "Tile",
+       "A small block of pixels reused many times."
+      ],
+      [
+       "Sprite",
+       "A movable object drawn over the background."
+      ],
+      [
+       "Palette",
+       "A table that turns small numbers into colors."
+      ],
+      [
+       "Sample",
+       "One measurement of a sound wave."
+      ],
+      [
+       "Mixer",
+       "Code that adds several sound channels together."
+      ]
      ]
     }
    ],
@@ -3643,6 +4005,13 @@
      "hint": "Add, then clamp.",
      "solution": "def mix(a, b):\n    n = max(len(a), len(b))\n    out = []\n    for i in range(n):\n        x = a[i] if i < len(a) else 0\n        y = b[i] if i < len(b) else 0\n        s = x + y\n        out.append(max(-32768, min(32767, s)))\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3734,6 +4103,40 @@
      "type": "text",
      "items": [
       "DMA is a way to copy memory without running CPU instructions. On some machines the CPU is stopped for the duration, so a copy of 256 bytes costs hundreds of cycles. If you forget to charge them, timing-sensitive games break. When a device is the source of surprise, check the cost first."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Joypad register",
+       "A byte whose bits show which buttons are down."
+      ],
+      [
+       "Key matrix",
+       "Keys wired in rows and columns, read by selecting rows."
+      ],
+      [
+       "Timer",
+       "A counter that decrements at a fixed rate."
+      ],
+      [
+       "DMA",
+       "Direct memory access: copying without the CPU."
+      ],
+      [
+       "Polling",
+       "Reading a device again and again."
+      ],
+      [
+       "Latch",
+       "A register that holds a value until read."
+      ]
      ]
     }
    ],
@@ -4074,6 +4477,13 @@
      "hint": "Snapshot the source first.",
      "solution": "def dma(mem, src, dst, length):\n    m = list(mem)\n    data = m[src:src + length]\n    for i in range(length):\n        m[dst + i] = data[i]\n    return [m, 4 + 2 * length]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4174,6 +4584,40 @@
      "items": [
       "New constraints have arrived too. Some platforms refuse to run memory that is both writable and executable, or forbid JITs altogether, so a fast interpreter is still valuable. Multi-core hosts rarely help a single emulated CPU, but a separate thread for audio or video can.",
       "And the best news is testing: hardware-derived test suites now exist for many classic CPUs, as the next chapter shows."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Basic block",
+       "A run of instructions with one entry and one exit, ending in a jump."
+      ],
+      [
+       "JIT",
+       "Just-in-time compilation: translating code while the program runs."
+      ],
+      [
+       "Code cache",
+       "Storage for already translated blocks."
+      ],
+      [
+       "Static recompilation",
+       "Translating the whole guest program before it runs."
+      ],
+      [
+       "Profiler",
+       "A tool that shows where a program spends its time."
+      ],
+      [
+       "Hardware assist",
+       "Using the host CPU's own features, such as virtualization, to run guest code."
+      ]
      ]
     }
    ],
@@ -4661,6 +5105,13 @@
      "hint": "A JIT pays once and runs cheaply.",
      "solution": "def jit_total(trace, sizes, interp_cost, compile_cost, run_cost):\n    seen = set()\n    interp = 0\n    jit = 0\n    for b in trace:\n        n = sizes[b]\n        interp += n * interp_cost\n        if b not in seen:\n            seen.add(b)\n            jit += n * compile_cost\n        jit += n * run_cost\n    return [interp, jit]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4756,6 +5207,40 @@
      "items": [
       "Save states copy the whole machine to a file: registers, memory, device state. They need the core to be a pure function of its state and inputs.",
       "A deterministic core also lets you record the buttons pressed each frame and replay the exact same run, which is a huge help when you hunt a bug that appears after twenty minutes."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Instruction accurate",
+       "Gets the same results per instruction but not necessarily the same timing."
+      ],
+      [
+       "Cycle accurate",
+       "Matches the guest's timing cycle by cycle."
+      ],
+      [
+       "High-level emulation",
+       "Reproducing a chip's job instead of its inner workings."
+      ],
+      [
+       "Test ROM",
+       "A program that checks parts of a machine and reports pass or fail."
+      ],
+      [
+       "Single-step test",
+       "A record of a state before one instruction and the expected state after."
+      ],
+      [
+       "Save state",
+       "A snapshot of the whole emulated machine."
+      ]
      ]
     }
    ],
@@ -5206,6 +5691,13 @@
      "hint": "Same seed, same values.",
      "solution": "def lcg(seed, n):\n    x = seed\n    out = []\n    for _ in range(n):\n        x = (x * 1103515245 + 12345) & 0x7FFFFFFF\n        out.append(x % 256)\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5300,6 +5792,40 @@
      "items": [
       "Where next? Pick a small system, such as CHIP-8, the Game Boy or the NES. Read its public documentation, write the CPU, test it with the hardware-derived suites, then add video, sound and input. Look at open-source emulators for ideas, use the community wikis for details, and share your findings.",
       "The HOWTO you may have read years ago was a great start, and now you have the modern map."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Debugger",
+       "A tool to run a program step by step and inspect its state."
+      ],
+      [
+       "Breakpoint",
+       "An address where execution pauses."
+      ],
+      [
+       "Disassembler",
+       "A tool turning bytes into instruction names."
+      ],
+      [
+       "Trace",
+       "A log of executed instructions and states."
+      ],
+      [
+       "Preservation",
+       "Keeping old software and data usable."
+      ],
+      [
+       "Homebrew",
+       "New programs written for old systems."
+      ]
      ]
     }
    ],
@@ -5712,6 +6238,13 @@
      ],
      "hint": "Record before and after.",
      "solution": "LEN = [1, 2, 2, 2, 2, 2, 2, 2, 1]\nNAMES = ['HLT', 'LDI', 'ADD', 'SUB', 'STA', 'LDA', 'JMP', 'JNZ', 'OUT']\n\ndef toy_step(mem, st):\n    pc = st[0]\n    a = st[1]\n    z = st[2]\n    op = mem[pc & 255]\n    n = mem[(pc + 1) & 255]\n    out = None\n    npc = (pc + LEN[op]) & 255\n    if op == 0:\n        st[3] = 1\n        npc = pc\n    elif op == 1:\n        a = n\n        z = a == 0\n    elif op == 2:\n        a = (a + n) & 255\n        z = a == 0\n    elif op == 3:\n        a = (a - n) & 255\n        z = a == 0\n    elif op == 4:\n        mem[n] = a\n    elif op == 5:\n        a = mem[n]\n        z = a == 0\n    elif op == 6:\n        npc = n\n    elif op == 7:\n        if not z:\n            npc = n\n    elif op == 8:\n        out = a\n    st[0] = npc\n    st[1] = a\n    st[2] = z\n    return out\n\ndef trace(program, n):\n    mem = list(program) + [0] * (256 - len(program))\n    st = [0, 0, False, 0]\n    out = []\n    for _ in range(n):\n        pc = st[0]\n        op = mem[pc]\n        toy_step(mem, st)\n        out.append([pc, NAMES[op], st[1]])\n        if st[3]:\n            break\n    return out\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

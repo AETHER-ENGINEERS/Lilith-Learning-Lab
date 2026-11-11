@@ -121,6 +121,36 @@
      "items": [
       "Along the way we will use Python to build signals, sample them, filter them and look at their spectra. The same ideas run inside phones, radios, medical scanners, music software and radar."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Signal",
+       "A function that carries information, such as a value that changes with time."
+      ],
+      [
+       "System",
+       "Anything that turns an input signal into an output signal."
+      ],
+      [
+       "Amplitude",
+       "The size of a signal's swing."
+      ],
+      [
+       "Frequency",
+       "How many cycles happen per second, measured in hertz (Hz)."
+      ],
+      [
+       "Phase",
+       "How far a wave is shifted along the time axis."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -421,6 +451,13 @@
      "hint": "Add the two sines at each time.",
      "solution": "import math\ndef mix(f1, f2, fs, n):\n    out = []\n    for k in range(n):\n        t = k / float(fs)\n        v = math.sin(2 * math.pi * f1 * t) + math.sin(2 * math.pi * f2 * t)\n        out.append(int(round(v * 1000)))\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -509,6 +546,36 @@
      "type": "text",
      "items": [
       "Choosing rates and bit depths is an engineering trade-off. Speech needs only about 8,000 samples per second. Music needs 44,100 or more. Medical and scientific systems may need many more bits. The labs let you compute aliases and quantise signals yourself."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Sample rate",
+       "The number of samples taken per second."
+      ],
+      [
+       "Nyquist frequency",
+       "Half the sample rate; the highest frequency that can be represented."
+      ],
+      [
+       "Aliasing",
+       "The false appearance of a high frequency as a lower one when sampled too slowly."
+      ],
+      [
+       "Quantisation",
+       "Rounding each sample to the nearest of a finite set of levels."
+      ],
+      [
+       "Bit depth",
+       "The number of bits per sample; b bits give 2^b levels."
+      ]
      ]
     }
    ],
@@ -802,6 +869,13 @@
      "hint": "Two powers and six decibels per bit.",
      "solution": "def levels(bits):\n    return [2 ** bits, round(6.02 * bits, 1)]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -889,6 +963,36 @@
      "type": "text",
      "items": [
       "Convolution has handy properties. It is commutative and associative, so cascading two filters gives the same result in either order. Convolving with a single impulse changes nothing, and convolving with a delayed impulse delays the signal. Echo effects in audio are convolution with a few spikes."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Impulse",
+       "A signal that is 1 at n = 0 and 0 elsewhere."
+      ],
+      [
+       "Impulse response",
+       "The output of a system when the input is an impulse, written h[n]."
+      ],
+      [
+       "Convolution",
+       "The operation y[n] = sum over k of x[k] h[n - k]."
+      ],
+      [
+       "Linear time-invariant (LTI)",
+       "A system whose outputs add and scale with inputs and do not depend on when the input starts."
+      ],
+      [
+       "FIR filter",
+       "A filter whose impulse response has finite length."
+      ]
      ]
     }
    ],
@@ -1311,6 +1415,13 @@
      "hint": "Add the original and the delayed copy.",
      "solution": "def echo(x, delay, gain):\n    y = []\n    for i in range(len(x) + delay):\n        y.append(0)\n    for i in range(len(x)):\n        y[i] = y[i] + x[i]\n        y[i + delay] = y[i + delay] + gain * x[i]\n    return y\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1398,6 +1509,36 @@
      "type": "text",
      "items": [
       "Computing the DFT directly takes N squared multiplications. The fast Fourier transform, popularised by Cooley and Tukey in 1965, splits the sum into even and odd samples and reuses work, getting N log N. For a million samples that is the difference between hours and a fraction of a second."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Spectrum",
+       "A description of a signal's strength at each frequency."
+      ],
+      [
+       "DFT",
+       "The discrete Fourier transform: X[k] = sum over n of x[n] e^(-2 pi i k n / N)."
+      ],
+      [
+       "Bin",
+       "One output of the DFT, covering a narrow band of frequency."
+      ],
+      [
+       "Frequency resolution",
+       "The spacing between bins, fs / N."
+      ],
+      [
+       "FFT",
+       "A fast algorithm for the DFT, taking about N log N operations."
+      ]
      ]
     }
    ],
@@ -1699,6 +1840,13 @@
      "hint": "Compute the magnitude for each bin and keep the largest.",
      "solution": "import math\ndef peak_freq(x, fs):\n    n = len(x)\n    best = 1\n    bm = -1.0\n    for k in range(1, n // 2 + 1):\n        re = 0.0\n        im = 0.0\n        for t in range(n):\n            ang = 2 * math.pi * k * t / n\n            re = re + x[t] * math.cos(ang)\n            im = im - x[t] * math.sin(ang)\n        m = math.sqrt(re * re + im * im)\n        if m > bm + 1e-9:\n            bm = m\n            best = k\n    return best * fs / float(n)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1786,6 +1934,36 @@
      "type": "text",
      "items": [
       "Designing a filter means choosing taps to approximate a desired gain curve. A classic method, the windowed sinc, takes the ideal low-pass impulse response, a sinc function, and tapers it with a window. Longer filters have sharper edges but cost more computation and delay."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Low-pass filter",
+       "A filter that passes low frequencies and attenuates high ones."
+      ],
+      [
+       "Frequency response",
+       "How a system's gain and phase change with frequency."
+      ],
+      [
+       "Tap",
+       "One coefficient of an FIR filter, multiplying one delayed sample."
+      ],
+      [
+       "Cutoff frequency",
+       "The frequency where the gain starts to fall."
+      ],
+      [
+       "Linear phase",
+       "A filter with symmetric taps delays all frequencies equally."
+      ]
      ]
     }
    ],
@@ -2178,6 +2356,13 @@
      "hint": "Average first, then subtract.",
      "solution": "def remove_dc(x):\n    if len(x) == 0:\n        return []\n    m = sum(x) / float(len(x))\n    out = []\n    for v in x:\n        out.append(round(v - m, 4))\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2267,6 +2452,36 @@
      "type": "text",
      "items": [
       "Compared with FIR, IIR filters are cheaper for a given sharpness, but they are harder to make linear-phase and can be unstable or noisy in fixed-point arithmetic. A common safe design splits high-order filters into small second-order sections called biquads."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "IIR filter",
+       "A filter that feeds back its own past outputs, so its impulse response is infinite."
+      ],
+      [
+       "Transfer function",
+       "The ratio H(z) = B(z) / A(z) describing a filter in the z domain."
+      ],
+      [
+       "Pole",
+       "A value of z that makes the denominator of H(z) zero."
+      ],
+      [
+       "Zero",
+       "A value of z that makes the numerator of H(z) zero."
+      ],
+      [
+       "Stable",
+       "A system whose output stays bounded for bounded input."
+      ]
      ]
     }
    ],
@@ -2644,6 +2859,13 @@
      "hint": "Remember two past inputs and two past outputs.",
      "solution": "def biquad(x, b0, b1, b2, a1, a2):\n    y = []\n    x1 = 0.0\n    x2 = 0.0\n    y1 = 0.0\n    y2 = 0.0\n    for v in x:\n        out = b0 * v + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2\n        y.append(round(out, 4))\n        x2 = x1\n        x1 = v\n        y2 = y1\n        y1 = out\n    return y\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2732,6 +2954,36 @@
      "items": [
       "Real sounds change with time, so we cut the signal into short overlapping frames, window each, take the DFT and stack the magnitudes. The result is the spectrogram: time along one axis, frequency along the other, brightness for strength.",
       "Speech, birdsong and music look like distinctive patterns on it."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Spectral leakage",
+       "Spreading of a frequency's energy into neighbouring bins because the window cuts the wave mid-cycle."
+      ],
+      [
+       "Window function",
+       "A weighting that tapers a frame toward zero at its edges before the DFT."
+      ],
+      [
+       "Hann window",
+       "The window w[n] = 0.5 - 0.5 cos(2 pi n / (N-1))."
+      ],
+      [
+       "Zero padding",
+       "Appending zeros before the DFT to get a smoother-looking spectrum."
+      ],
+      [
+       "Spectrogram",
+       "A plot of spectra over successive frames, showing frequency against time."
+      ]
      ]
     }
    ],
@@ -3112,6 +3364,13 @@
      "hint": "Squares are never negative.",
      "solution": "def energy(x):\n    s = 0.0\n    for v in x:\n        s = s + v * v\n    return round(s, 4)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3200,6 +3459,36 @@
      "items": [
       "Compression exploits the frequency domain. JPEG cuts an image into small blocks, takes a discrete cosine transform and rounds away the small high-frequency coefficients that the eye barely notices. MP3 does similar things with a model of what the ear cannot hear.",
       "Radio uses modulation to place a message on a carrier frequency so many stations share the air."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Median filter",
+       "A nonlinear filter that replaces each sample by the median of its neighbourhood."
+      ],
+      [
+       "Autocorrelation",
+       "The similarity of a signal with a delayed copy of itself, as a function of delay."
+      ],
+      [
+       "Decimation",
+       "Lowering the sample rate by keeping every Mth sample after low-pass filtering."
+      ],
+      [
+       "Kernel",
+       "A small grid of weights convolved with an image."
+      ],
+      [
+       "Modulation",
+       "Shifting a signal's frequencies by multiplying it by a carrier wave."
+      ]
      ]
     }
    ],
@@ -3701,6 +3990,13 @@
      ],
      "hint": "Leave the border pixels alone.",
      "solution": "def blur(img):\n    h = len(img)\n    w = len(img[0]) if h else 0\n    out = []\n    for r in range(h):\n        row = []\n        for c in range(w):\n            if r == 0 or c == 0 or r == h - 1 or c == w - 1:\n                row.append(img[r][c])\n            else:\n                s = img[r][c] + img[r - 1][c] + img[r + 1][c] + img[r][c - 1] + img[r][c + 1]\n                row.append(round(s / 5.0, 3))\n        out.append(row)\n    return out\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

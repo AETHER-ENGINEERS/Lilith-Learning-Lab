@@ -144,6 +144,40 @@
       "A note on sources. This course follows the 2017 paper, and is supplemented by later descriptions of the method, for example the common implementations and the many tutorials. Numbers such as the commitment weight of 0.25 are the usual settings. Later work is labelled as background knowledge.",
       "The labs are tiny teaching examples in plain Python, with no neural network library."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Autoencoder",
+       "A network that compresses its input into a code and rebuilds the input from it."
+      ],
+      [
+       "Latent",
+       "The hidden representation between encoder and decoder."
+      ],
+      [
+       "Codebook",
+       "A table of K learned vectors; each is a possible discrete code."
+      ],
+      [
+       "Quantization",
+       "Replacing a continuous vector by its nearest codebook vector."
+      ],
+      [
+       "Prior",
+       "A model of how the codes are distributed, used to generate new samples."
+      ],
+      [
+       "Straight-through estimator",
+       "A trick that copies gradients across the non-differentiable quantizer."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -255,6 +289,13 @@
      "title": "Basics",
      "text": "VQ-VAE replaces each encoder output by its nearest {{codebook}} vector. Gradients are copied across the quantizer by the {{straight-through|straight through}} estimator."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -362,6 +403,40 @@
      "type": "text",
      "items": [
       "The labs in this chapter write the reconstruction error and count the bits and the compression ratio."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Reconstruction loss",
+       "A measure of how different the output is from the input, often mean squared error."
+      ],
+      [
+       "Bottleneck",
+       "A layer much smaller than the input, limiting information."
+      ],
+      [
+       "VAE",
+       "A variational autoencoder with a random latent and a prior."
+      ],
+      [
+       "Posterior collapse",
+       "The decoder ignores the latent and the encoder outputs the prior."
+      ],
+      [
+       "Bit",
+       "A unit of information: one yes-or-no choice."
+      ],
+      [
+       "Compression ratio",
+       "Input size divided by code size."
+      ]
      ]
     }
    ],
@@ -645,6 +720,13 @@
      "title": "Autoencoders",
      "text": "A narrow {{bottleneck}} forces the network to keep important information. A code with 512 values carries {{9}} bits per position."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -751,6 +833,40 @@
      "type": "text",
      "items": [
       "The labs find the nearest code, quantize a batch of vectors and count the usage of each row."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Codebook",
+       "A table of K embedding vectors e_1 to e_K, each of dimension D."
+      ],
+      [
+       "Nearest neighbour",
+       "The codebook entry with the smallest distance to the input."
+      ],
+      [
+       "Squared Euclidean distance",
+       "The sum of squared differences between two vectors."
+      ],
+      [
+       "Index",
+       "The position k of the chosen codebook row; the discrete code."
+      ],
+      [
+       "Latent grid",
+       "The spatial arrangement of indices; 32 by 32 in the paper for ImageNet."
+      ],
+      [
+       "Code usage",
+       "How often each codebook row is chosen."
+      ]
      ]
     }
    ],
@@ -1183,6 +1299,13 @@
      "title": "Quantizer",
      "text": "The quantizer picks the {{nearest}} codebook vector. The discrete code is its {{index}}. Unused rows waste {{capacity}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1290,6 +1413,40 @@
      "items": [
       "The codebook itself gets no gradient from reconstruction. The decoder's input is a copy, and the straight-through path ends at the encoder. So the codebook learns from separate loss terms, the subject of the next chapter.",
       "The labs here measure the derivative of the staircase with a finite difference, copy a gradient and train a toy encoder with the trick."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Stop-gradient",
+       "sg[x]: equals x in the forward pass and has zero gradient in the backward pass."
+      ],
+      [
+       "Straight-through estimator",
+       "Copy the gradient of the quantized output to the unquantized input."
+      ],
+      [
+       "Staircase function",
+       "A function that is flat between jumps; its derivative is zero almost everywhere."
+      ],
+      [
+       "Backpropagation",
+       "Computing gradients backwards through the network."
+      ],
+      [
+       "Bias",
+       "A systematic error of an estimate."
+      ],
+      [
+       "Identity",
+       "The function f(x) = x with derivative 1."
+      ]
      ]
     }
    ],
@@ -1611,6 +1768,13 @@
      "title": "Trick",
      "text": "The quantizer has a {{zero}} derivative almost everywhere, so the {{straight-through|straight through}} estimator copies the gradient from z_q to z_e."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1718,6 +1882,40 @@
      "items": [
       "Be careful with a detail. Many implementations use means over elements rather than sums, so the numbers differ by a constant factor, and some swap which term carries beta. The labs use the mean squared error for each of the three, matching common code.",
       "Next you compute them and the matching gradients."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Codebook loss",
+       "//sg[z_e] - e//^2: moves the codebook vector toward the encoder output."
+      ],
+      [
+       "Commitment loss",
+       "beta //z_e - sg[e]//^2: keeps the encoder output close to its codebook vector."
+      ],
+      [
+       "beta",
+       "The weight of the commitment loss; 0.25 in the paper."
+      ],
+      [
+       "Stop-gradient",
+       "sg[.]: a constant in the backward pass."
+      ],
+      [
+       "Embedding space",
+       "The space in which the codebook vectors live."
+      ],
+      [
+       "Volume growth",
+       "The encoder outputs can grow without bound if not committed."
+      ]
      ]
     }
    ],
@@ -2143,6 +2341,13 @@
      "title": "Loss",
      "text": "The {{codebook}} loss moves the code toward the encoder output; the {{commitment}} loss moves the encoder toward the code. The paper used beta equal to {{0.25}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2249,6 +2454,40 @@
      "type": "text",
      "items": [
       "In the practice section you write a k-means step, the EMA step on two-dimensional vectors, a dead-code detector and a repair that copies batch vectors."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "K-means",
+       "Alternate assigning points to the nearest centre and moving each centre to the mean of its points."
+      ],
+      [
+       "EMA",
+       "Exponential moving average: new = decay * old + (1 - decay) * observation."
+      ],
+      [
+       "Dead code",
+       "A codebook entry that no encoder output is nearest to."
+      ],
+      [
+       "Reinitialisation",
+       "Replacing a dead code by a vector from the data."
+      ],
+      [
+       "Decay",
+       "The EMA memory, for example 0.99."
+      ],
+      [
+       "Cluster size",
+       "The running count of vectors assigned to a code."
+      ]
      ]
     }
    ],
@@ -2865,6 +3104,13 @@
      "title": "Codebook",
      "text": "The codebook loss is like {{k-means|kmeans|k means}}. An {{EMA|exponential moving average}} update uses a decay such as {{0.99}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2969,6 +3215,40 @@
      "type": "text",
      "items": [
       "The labs compute entropy and perplexity from counts, the utilisation fraction, and the rate in bits for a whole grid."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Entropy",
+       "The average information of a distribution: minus the sum of p log p."
+      ],
+      [
+       "Perplexity",
+       "2 to the entropy in bits (or e to the entropy in nats); the effective number of codes."
+      ],
+      [
+       "Rate",
+       "The number of bits needed to send the code."
+      ],
+      [
+       "Distribution of usage",
+       "The fraction of positions assigned to each code."
+      ],
+      [
+       "Effective codebook size",
+       "The perplexity of the usage distribution."
+      ],
+      [
+       "Codebook utilisation",
+       "The fraction of codes ever used."
+      ]
      ]
     }
    ],
@@ -3313,6 +3593,13 @@
      "title": "Usage",
      "text": "Perplexity is two to the {{entropy}} of the code usage. A low perplexity signals a wasted {{codebook}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3418,6 +3705,40 @@
      "type": "text",
      "items": [
       "The labs flatten a grid in raster order, estimate a smoothed bigram table, score a sequence and sample from the table with given random numbers."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Prior",
+       "A model of the probability of code grids."
+      ],
+      [
+       "Autoregressive",
+       "Predicting each element given the earlier ones."
+      ],
+      [
+       "Raster order",
+       "Reading a grid row by row, left to right."
+      ],
+      [
+       "PixelCNN",
+       "An autoregressive convolutional network for images."
+      ],
+      [
+       "WaveNet",
+       "An autoregressive convolutional network for audio."
+      ],
+      [
+       "Negative log likelihood",
+       "Minus the log probability of the data; the training loss of a prior."
+      ]
      ]
     }
    ],
@@ -3934,6 +4255,13 @@
      "title": "Prior",
      "text": "An {{autoregressive}} prior predicts each code from the earlier ones in {{raster}} order. The autoencoder is {{frozen}} during prior training."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4040,6 +4368,40 @@
      "type": "text",
      "items": [
       "The labs implement residual quantization and product quantization on small vectors, and count capacity."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "VQ-VAE-2",
+       "A 2019 hierarchical extension by Razavi, van den Oord and Vinyals."
+      ],
+      [
+       "Hierarchical codes",
+       "Several grids of codes at different resolutions."
+      ],
+      [
+       "Residual quantization",
+       "Quantize, subtract the result, then quantize the remainder with the next codebook."
+      ],
+      [
+       "Product quantization",
+       "Split a vector into pieces and quantize each piece separately."
+      ],
+      [
+       "Capacity",
+       "How many distinct vectors the code can represent."
+      ],
+      [
+       "Token",
+       "A discrete symbol fed to a sequence model."
+      ]
      ]
     }
    ],
@@ -4474,6 +4836,13 @@
      "title": "Capacity",
      "text": "Residual quantization quantizes the {{remainder|residual}}. With m codebooks of K entries the capacity is K to the {{m}}."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4582,6 +4951,40 @@
      "type": "text",
      "items": [
       "Where to go next: read the 2017 paper itself, then VQ-VAE-2, then the work on residual and finite scalar quantization. Implement a small VQ-VAE on a toy image set in your favourite deep-learning library and plot the perplexity during training."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Codebook collapse",
+       "Only a small part of the codebook is ever used."
+      ],
+      [
+       "Bias",
+       "The straight-through gradient is not the true gradient."
+      ],
+      [
+       "Two-stage training",
+       "First the autoencoder, then the prior."
+      ],
+      [
+       "Blurry reconstruction",
+       "Squared error alone tends to average away fine detail."
+      ],
+      [
+       "Perceptual loss",
+       "A loss based on features of a pretrained network, used to sharpen results."
+      ],
+      [
+       "Quantization error",
+       "The distance between the encoder output and its code."
+      ]
      ]
     }
    ],
@@ -4927,6 +5330,13 @@
      "type": "fill",
      "title": "Problems",
      "text": "Codebook {{collapse}} wastes capacity. The straight-through gradient is {{biased|an approximation}}. Training happens in {{two}} stages."
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

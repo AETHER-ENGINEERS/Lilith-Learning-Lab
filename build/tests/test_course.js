@@ -104,6 +104,22 @@ ok(files.length >= 2, 'two course files');
     }
     console.log(f, c.chapters.length, 'chapters,', nlabs, 'labs,', nq, 'quiz questions');
   }
+  // tables and references: normalised, exported as markdown, narrated and shown as a slide
+  {
+    const v = K.validate({ title: 'T', chapters: [{ title: 'C', summary: ['s'], lesson: [{ type: 'table', title: 'Cap', head: ['A', 'B'], rows: [['1', '2|x'], ['3']] }, { type: 'text', items: ['p'] }], references: [{ title: 'R', url: 'https://e.com' }, 'https://x.org', { title: 'No url' }, { title: 'bad', url: 'javascript:1' }], quiz: [{ q: 'q', options: ['a', 'b'], answer: 0 }] }] });
+    ok(v.ok, 'table course validates');
+    const ch = v.course.chapters[0], tb = ch.lesson[0];
+    ok(tb.type === 'table' && tb.head.length === 2 && tb.rows.length === 2 && tb.rows[1].length === 2 && tb.rows[0][1] === '2/x', 'table normalised (padded rows, no pipes in cells)');
+    ok(ch.references.length === 4 && ch.references[3].url === '' && ch.references[1].url === 'https://x.org', 'references normalised, unsafe urls dropped');
+    const view = K.chapterView(ch, v.course);
+    ok(/\| A \| B \|\n\| --- \| --- \|\n\| 1 \| 2\/x \|/.test(view.examples) && view.references.length === 4, 'table exported as markdown');
+    const sp = N.blocks ? N.blocks(view.examples).map(b => b.text).join(' ') : 'Table with columns: A, B. Row 1.';
+    ok(/Table with columns: A, B/.test(sp) && /Row 1\. A: 1\. B: 2\/x/.test(sp), 'table is spoken row by row: ' + sp.slice(0, 80));
+    const lec = S.buildLecture(view, { readCode: false });
+    ok(lec.slides.some(x => x.type === 'table' && x.rows.length === 2), 'table slide built');
+    const bad = K.validate({ title: 'T', chapters: [{ title: 'C', lesson: [{ type: 'table', head: ['A'] }], quiz: [{ q: 'q', options: ['a', 'b'], answer: 0 }] }] });
+    ok(bad.warnings.some(m => /table needs/.test(m)), 'a table without rows is reported');
+  }
   // xdc: zip round trip with a stored + deflated entry
   const zlib = require('zlib');
   console.log(fails ? 'FAILURES: ' + fails : 'ALL COURSE TESTS PASSED'); process.exit(fails ? 1 : 0);

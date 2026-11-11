@@ -5,7 +5,7 @@
   'use strict';
   var AI = {};
   var DEF = { provider: 'ollama', ollamaUrl: 'http://localhost:11434', ollamaModel: '', cloudKey: '', cloudModel: '', openaiUrl: 'https://api.openai.com/v1', openaiKey: '', openaiModel: '',
-              search: true, decide: true, decideModel: '', corsProxy: '', verbose: false, builder: 'agent' };
+              search: true, decide: true, decideModel: '', builderModel: '', officeModel: '', corsProxy: '', verbose: false, builder: 'agent' };
   var store = (function () { try { return root.localStorage; } catch (e) { return null; } })();
   AI.cfg = function () { var c = {}; try { c = JSON.parse((store && store.getItem('lilith.ai')) || '{}'); } catch (e) {} var o = {}; for (var k in DEF) o[k] = c[k] === undefined ? DEF[k] : c[k]; return o; };
   AI.setCfg = function (patch) { var c = AI.cfg(); for (var k in patch) c[k] = patch[k]; try { store && store.setItem('lilith.ai', JSON.stringify(c)); } catch (e) {} return c; };
@@ -63,7 +63,8 @@
     if (c.provider === 'openai' && c.openaiKey) h.Authorization = 'Bearer ' + c.openaiKey;
     return h;
   }
-  AI.model = function () { var c = AI.cfg(); return c.provider === 'openai' ? c.openaiModel : c.provider === 'cloud' ? c.cloudModel : c.ollamaModel; };
+  /* role: 'builder' (course generation) or 'office' (office hours) may use their own model on the same provider */
+  AI.model = function (role) { var c = AI.cfg(); var r = role === 'builder' ? c.builderModel : role === 'office' ? c.officeModel : ''; if (r) return r; return c.provider === 'openai' ? c.openaiModel : c.provider === 'cloud' ? c.cloudModel : c.ollamaModel; };
   AI.listModels = async function () {
     try { var m = await listModels0(); AI.log('info', 'Found ' + m.length + ' model(s) on ' + AI.cfg().provider); return m; }
     catch (e) { AI.log('error', 'Model scan failed (' + AI.cfg().provider + '): ' + e.message); throw e; }
@@ -110,12 +111,12 @@
   /* one model turn: returns { content, toolCalls:[{name,args}] } and streams text through onDelta */
   AI.chat = async function (messages, o) {
     var t0 = Date.now(), c0 = AI.cfg();
-    AI.log('debug', 'chat ' + c0.provider + ' ' + ((o && o.model) || AI.model()) + ': ' + messages.length + ' messages' + (o && o.tools && o.tools.length ? ', ' + o.tools.length + ' tools' : ''));
+    AI.log('debug', 'chat ' + c0.provider + ' ' + ((o && o.model) || AI.model(o && o.role)) + ': ' + messages.length + ' messages' + (o && o.tools && o.tools.length ? ', ' + o.tools.length + ' tools' : ''));
     try { var r = await chatOnce(messages, o); AI.log('debug', 'chat done in ' + (Date.now() - t0) + ' ms: ' + r.content.length + ' chars, ' + r.toolCalls.length + ' tool call(s)'); return r; }
     catch (e) { if (!(e && e.name === 'AbortError')) AI.log('error', 'chat failed: ' + (e && e.message || e)); throw e; }
   };
   async function chatOnce(messages, o) {
-    o = o || {}; var c = AI.cfg(), content = '', calls = [], model = o.model || AI.model();
+    o = o || {}; var c = AI.cfg(), content = '', calls = [], model = o.model || AI.model(o.role);
     if (!model) throw new Error('No AI model is selected (Settings > AI).');
     if (c.provider === 'openai') {
       var body = { model: model, messages: toOpenAI(messages), stream: true, temperature: o.temperature === undefined ? 0.4 : o.temperature };
@@ -270,7 +271,7 @@
       '2. If DIR/sources exists, the learner uploaded their own documents: they are THE source. `read` them (long ones in parts) and use `search_files` for details; plan chapters that follow their structure, and take every fact from them. Skip web research unless they are clearly incomplete. Otherwise read DIR/research.md first: background research on the whole topic was done for you (notes with URLs in DIR/research/notes.md). If it is missing, research the topic yourself (the deep-research steps, quicker): 2-3 searches, 3-5 good pages, notes in DIR/notes.md with URLs.',
       '3. Plan: `write` DIR/plan.json = {"title","subtitle","description","category","tags":[...],"chapters":[{"title","focus"}]} in teaching order (simple to hard). Add one `tasks` entry per chapter.',
       '4. For each chapter in order: if the research does not cover it well, do 1 search and read 1-2 pages; then `write` DIR/chNN.json (ch01.json, ch02.json, ...), then `check_chapter`. If it reports problems, fix them with `edit` and check again. Mark the task done.',
-      '5. Keep DIR/sources.json = [{"title","url"}] of the pages you read.',
+      '5. Keep DIR/sources.json = [{"title","url"}] of the pages you read. Every chapter also needs its own "references" (1-3 of those pages) and one "table" lesson block (see the lilith-course skill). `check_chapter` reports a missing table or references: add them with `edit`.',
       '6. When every chapter passes, call `finish_course` with dir=DIR. If it reports problems, fix them and call it again.',
       '7. Reply with one line: the course title and chapter count.', '',
       'Facts come from your notes, not memory; no numbers you did not read. Plain words, short sentences, no copied passages. Do not paste chapter JSON into your replies: write files.'
@@ -283,6 +284,8 @@
       ' "keyPoints": ["", ""],                             4-6 points',
       ' "lesson": [{"type": "text", "items": ["paragraph", "paragraph"]}],   5-6 short paragraphs; also {"type":"code","lang":"python","code":"..."} or {"type":"math","tex":"..."}',
       ' "maps": [{"title": "", "links": ["A | relation | B"]}],             5-7 links',
+      ' "lesson" ALSO needs one table: {"type":"table","title":"Short caption","head":["Term","Meaning","Example"],"rows":[["a","b","c"],["d","e","f"]]}   3-6 rows, 2-4 columns, short cells, no "|" inside cells. Compare things, list steps with their purpose, or give facts with units.',
+      ' "references": [{"title": "Page or book title", "url": "https://page you actually read", "note": "what it covers"}],   1-3 per chapter; only URLs you read (or got from search results); if from memory use {"title": "...", "note": "from memory, unverified"} with no url',
       ' "quiz": [{"q": "", "options": ["", "", ""], "answer": 0, "explain": ""}],   4 questions; answer = index of the right option',
       ' "cards": [{"q": "", "a": ""}],                     4 flashcards',
       ' "practice": [',
@@ -327,10 +330,10 @@
       if (name === 'search_course') { var hits = ctx.courseIndex ? ctx.courseIndex.idx.search(String(args.query || ''), 4) : []; out = hits.length ? hits.map(function (h, i) { return (i + 1) + '. ' + h.doc.head + ' (' + h.doc.kind + ')\n' + clip(h.doc.body, 700); }).join('\n\n') : 'No matching passage in the installed courses.'; }
       else if (name === 'web_search') { var r = await AI.webSearch(String(args.query || '')); out = r.map(function (x, i) { return (i + 1) + '. ' + x.title + '\n   ' + x.url + '\n   ' + String(x.snippet).replace(/\s+/g, ' ').trim(); }).join('\n\n'); }
       else if (name === 'web_fetch') { var u = String(args.url || ''); out = clip(await AI.webFetch(u), ctx.fetchChars || 6000); if (ctx.sources && !ctx.sources.some(function (s) { return s.url === u; })) ctx.sources.push({ url: u, title: (out.match(/^#\s*(.+)/) || [])[1] || u }); }
-      else if (name === 'deep_research') { out = clip(await AI.research({ question: String(args.question || ''), courseIndex: ctx.courseIndex, signal: ctx.signal, maxRounds: 16, sources: ctx.sources }), 5000); }
+      else if (name === 'deep_research') { out = clip(await AI.research({ question: String(args.question || ''), courseIndex: ctx.courseIndex, signal: ctx.signal, maxRounds: 16, sources: ctx.sources, role: ctx.role || undefined }), 5000); }
       else if (name === 'skill') { var sk = AI.SKILLS[String(args.name || '').replace(/^\/?skills\//, '').replace(/\/SKILL\.md$/, '')]; out = sk || 'Error: no skill "' + args.name + '". Skills: ' + Object.keys(AI.SKILLS).join(', '); }
       else if (name === 'python') { var k = await AI.workspace(); var pr = await k.python.run(String(args.code || ''), { timeoutMs: 30000 }); out = clip((pr.output || '').trimEnd() || '(no output)', 8000) + (pr.code ? '\n[exit code ' + pr.code + ']' : ''); }
-      else if (name === 'check_chapter') { var k2 = await AI.workspace(); var ch = readJson(k2, String(args.path || '')); var probs = AI.chapterProblems(ch); out = probs.length ? 'Problems:\n- ' + probs.join('\n- ') : 'OK: ' + (ch.title || 'chapter') + ' passes.'; }
+      else if (name === 'check_chapter') { var k2 = await AI.workspace(); var ch = readJson(k2, String(args.path || '')); var probs = AI.chapterProblems(ch, true); out = probs.length ? 'Problems:\n- ' + probs.join('\n- ') : 'OK: ' + (ch.title || 'chapter') + ' passes.'; }
       else if (name === 'finish_course') { out = await finishCourse(String(args.dir || '').replace(/\/+$/, ''), ctx); }
       else if (KIT_TOOLS.indexOf(name) >= 0) { var k3 = await AI.workspace(); out = await k3.tools.call(name, args, { signal: ctx.signal }); }
       else out = 'Error: unknown tool ' + name;
@@ -369,7 +372,7 @@
     for (var round = 0; round < max; round++) {
       if (o.signal && o.signal.aborted) throw new DOMException('stopped', 'AbortError');
       var res;
-      try { res = await AI.chat(msgs, { tools: noTools ? null : defs, onDelta: o.onDelta, signal: o.signal, temperature: o.temperature }); }
+      try { res = await AI.chat(msgs, { role: o.role, tools: noTools ? null : defs, onDelta: o.onDelta, signal: o.signal, temperature: o.temperature }); }
       catch (e) {
         if (defs && !noTools && /tool|function/i.test(e.message)) { AI.log('warn', 'The model rejected tools, answering without them: ' + e.message); noTools = true; round--; continue; }
         AI.log('error', 'chat failed in round ' + (round + 1) + ': ' + e.message); throw e;
@@ -386,7 +389,7 @@
         msgs.push({ role: 'tool', name: t.name, content: out });
       }
       if (o.ctx && o.ctx.result) { final = 'done'; break; }
-      if (round === max - 1) { AI.log('warn', 'agent reached ' + max + ' rounds'); var last = await AI.chat(msgs.concat([{ role: 'user', content: 'Stop using tools now and give your best answer from what you have.' }]), { onDelta: o.onDelta, signal: o.signal }); final = last.content; }
+      if (round === max - 1) { AI.log('warn', 'agent reached ' + max + ' rounds'); var last = await AI.chat(msgs.concat([{ role: 'user', content: 'Stop using tools now and give your best answer from what you have.' }]), { role: o.role, onDelta: o.onDelta, signal: o.signal }); final = last.content; }
     }
     AI.log('debug', 'agent end after ' + (round + 1) + ' round(s)');
     return final;
@@ -395,11 +398,11 @@
   /* deep research in the workspace: returns the report text */
   AI.research = async function (o) {
     var q = String(o.question || '').trim(); if (!q) throw new Error('Ask a question to research.');
-    var folder = o.dir || ('/research/' + AI.slug(q).slice(0, 40)), ctx = { sources: o.sources || [], courseIndex: o.courseIndex, signal: o.signal, fetchChars: 5000 };
+    var folder = o.dir || ('/research/' + AI.slug(q).slice(0, 40)), ctx = { sources: o.sources || [], courseIndex: o.courseIndex, signal: o.signal, fetchChars: 5000, role: o.role };
     AI.log('info', 'Deep research: ' + q.slice(0, 200));
     var sys = 'You are Teacher\'s research agent in a private workspace (the learner never sees it). Load the deep-research skill with the skill tool first and follow it. Work folder: ' + folder + ' (notes in ' + folder + '/notes.md, report in ' + folder + '/report.md).';
     var text = await AI.agent([{ role: 'system', content: sys }, { role: 'user', content: q }], {
-      tools: ['skill', 'search_course', 'web_search', 'web_fetch', 'read', 'write', 'edit', 'search_files', 'tasks', 'python'], maxRounds: o.maxRounds || 24, signal: o.signal, ctx: ctx,
+      tools: ['skill', 'search_course', 'web_search', 'web_fetch', 'read', 'write', 'edit', 'search_files', 'tasks', 'python'], maxRounds: o.maxRounds || 24, signal: o.signal, ctx: ctx, role: o.role,
       onTool: function (n, a) { AI.log('debug', 'research: ' + friendly(n, a)); o.onTool && o.onTool(n, a); }, temperature: 0.3 });
     if (!String(text || '').trim() || text === 'done') { try { var k = await AI.workspace(); var rp = folder + '/report.md'; if (k.vfs.exists(rp)) text = k.vfs.read(rp); } catch (e) {} }
     if (!String(text || '').trim()) throw new Error('the research agent gave no answer');
@@ -570,7 +573,7 @@
 
   /* ---------- the research-based course builder ---------- */
   var SCHEMA = 'A chapter object: {"title":"", "maps":[{"title":"","links":["A | relation | B", ...]}], "summary":["2-3 short sentences"], "glossary":[{"term":"","def":""}], "keyPoints":["",...], ' +
-    '"lesson":[{"type":"text","items":["short paragraphs"]}], "quiz":[{"q":"","options":["","",""],"answer":0,"explain":""}], "cards":[{"q":"","a":""}], ' +
+    '"lesson":[{"type":"text","items":["short paragraphs"]},{"type":"table","title":"caption","head":["Term","Meaning"],"rows":[["",""],["",""]]}], "references":[{"title":"","url":"https://page from the notes","note":"what it covers"}], "quiz":[{"q":"","options":["","",""],"answer":0,"explain":""}], "cards":[{"q":"","a":""}], ' +
     '"practice":[{"type":"fill","title":"","text":"The word is {{answer}}."},{"type":"order","title":"","items":["first","second","third"]},{"type":"match","title":"","pairs":[["term","meaning"],["",""]]}], ' +
     '"eli5":{"analogy":"an ELI5: a plain-words analogy of under 330 characters, as if for a five-year-old"}}';
   /* progress for the learner: one plain line and a percentage that only moves forward; details go to the log */
@@ -609,7 +612,7 @@
     var dir = '/build/' + AI.slug(topic), kit = await AI.workspace();
     try { kit.vfs.rm(dir, true); } catch (e) {}
     kit.vfs.mkdirp(dir);
-    var ctx = { sources: [], result: null, topic: topic, level: level, courseIndex: o.courseIndex, signal: o.signal, fetchChars: 5000 };
+    var ctx = { role: o.role || 'builder', sources: [], result: null, topic: topic, level: level, courseIndex: o.courseIndex, signal: o.signal, fetchChars: 5000 };
     var hasDocs = !!(o.docs && o.docs.length);
     if (hasDocs) {
       kit.vfs.mkdirp(dir + '/sources');
@@ -622,7 +625,7 @@
       var reads = 0;
       try {
         var rep = await AI.research({ question: 'Background research for a ' + n + '-chapter ' + level + ' course on "' + topic + '": the core ideas, a good teaching order, simple analogies and worked examples, common misconceptions, and key facts and numbers with their sources.',
-          dir: dir + '/research', sources: ctx.sources, courseIndex: o.courseIndex, signal: o.signal, maxRounds: o.researchRounds || 18,
+          dir: dir + '/research', role: ctx.role, sources: ctx.sources, courseIndex: o.courseIndex, signal: o.signal, maxRounds: o.researchRounds || 18,
           onTool: function (name) { if (name === 'web_fetch') { reads++; step('Researching the topic (' + reads + ' source' + (reads === 1 ? '' : 's') + ' read)', 2 + Math.min(26, reads * 4)); } } });
         kit.vfs.write(dir + '/research.md', rep);
       } catch (e) {
@@ -637,7 +640,7 @@
     var written = {};
     await AI.agent([{ role: 'system', content: sys }, { role: 'user', content: user }], {
       tools: ['skill', 'search_course', 'web_search', 'web_fetch', 'read', 'write', 'edit', 'search_files', 'tasks', 'python', 'check_chapter', 'finish_course'],
-      maxRounds: o.maxRounds || 14 + n * 7, signal: o.signal, ctx: ctx, temperature: 0.35, keepGoing: true,
+      maxRounds: o.maxRounds || 14 + n * 7, signal: o.signal, ctx: ctx, role: ctx.role, temperature: 0.35, keepGoing: true,
       nudge: 'The course is not finished yet: continue with the next step of the course-builder skill, and call finish_course with dir=' + dir + ' when every chapter passes check_chapter.',
       onTool: function (name, a) {
         var f = String(a && a.path || '').split('/').pop(), m = /^ch(\d+)\.json$/.exec(f);
@@ -673,8 +676,8 @@
     step('Planning the chapters', 30);
     var outlineTxt = await AI.complete([{ role: 'system', content: 'You design short online courses. Reply with JSON only.' }, { role: 'user', content:
       'Design a ' + n + '-chapter course on "' + topic + '" for ' + level + ' learners, in a logical teaching order. Use these research notes if present.\n\nNotes:\n' + clip(overview, 7000) +
-      '\n\nReply as {"title":"","subtitle":"","description":"2 sentences","category":"","tags":["",...],"chapters":[{"title":"","focus":"what it teaches","queries":["one web search query"]}]}' }], { temperature: 0.3, signal: sig });
-    var plan; try { plan = AI.extractJson(outlineTxt); } catch (e) { AI.log('warn', 'outline was not JSON, retrying', outlineTxt.slice(0, 500)); plan = AI.extractJson(await AI.complete([{ role: 'user', content: 'Turn this into valid JSON only, same content:\n' + outlineTxt }], { temperature: 0, signal: sig })); }
+      '\n\nReply as {"title":"","subtitle":"","description":"2 sentences","category":"","tags":["",...],"chapters":[{"title":"","focus":"what it teaches","queries":["one web search query"]}]}' }], { role: o.role || 'builder', temperature: 0.3, signal: sig });
+    var plan; try { plan = AI.extractJson(outlineTxt); } catch (e) { AI.log('warn', 'outline was not JSON, retrying', outlineTxt.slice(0, 500)); plan = AI.extractJson(await AI.complete([{ role: 'user', content: 'Turn this into valid JSON only, same content:\n' + outlineTxt }], { role: o.role || 'builder', temperature: 0, signal: sig })); }
     if (!plan.chapters || !plan.chapters.length) throw new Error('The model did not return an outline.');
     plan.chapters = plan.chapters.slice(0, n);
     var chapters = [];
@@ -684,11 +687,11 @@
       var pc = plan.chapters[ci]; step('Writing chapter ' + (ci + 1) + ' of ' + plan.chapters.length, 32 + 63 * ci / plan.chapters.length);
       var notes = hasDocs ? didx.search(pc.title + ' ' + (pc.focus || ''), 7).map(function (r) { return '[' + dchunks[r.i].name + '] ' + dchunks[r.i].text; }).join('\n\n') : AI.cfg().search ? await research([(pc.queries && pc.queries[0]) || (topic + ' ' + pc.title)], 2) : '';
       var prompt = 'Write chapter ' + (ci + 1) + ' of the course "' + plan.title + '" (' + level + '): "' + pc.title + '" (' + (pc.focus || '') + '). Base the facts on the notes (they come from' + (hasDocs ? ' the learner\'s own documents; follow them closely' : ' research') + '); do not invent facts or numbers. Plain words, short sentences, no copied passages. ' +
-        'Include 5-6 lesson paragraphs, 4 quiz questions with 3-4 options each, 4 flashcards, 4-6 glossary terms, a concept map with 5-7 links, and three practice labs (fill, order, match).\n\nNotes:\n' + clip(notes, 8000) + '\n\nReply with JSON only. ' + SCHEMA;
+        'Include 5-6 lesson paragraphs, 4 quiz questions with 3-4 options each, 4 flashcards, 4-6 glossary terms, a concept map with 5-7 links, one lesson table (3-6 rows), 1-3 references taken from the notes (real URLs only), and three practice labs (fill, order, match).\n\nNotes:\n' + clip(notes, 8000) + '\n\nReply with JSON only. ' + SCHEMA;
       var ch = null, lastErr = '';
       for (var attempt = 0; attempt < 3 && !ch; attempt++) {
-        var txt = await AI.complete([{ role: 'system', content: 'You write accurate, friendly course chapters as JSON.' }, { role: 'user', content: prompt + (lastErr ? '\n\nYour previous reply was invalid: ' + lastErr + '. Fix it.' : '') }], { temperature: 0.4, signal: sig });
-        try { var cand = AI.extractJson(txt); AI.checkChapter(cand); ch = cand; } catch (e) { lastErr = e.message; AI.log('warn', 'chapter ' + (ci + 1) + ' invalid: ' + e.message); log('Repairing chapter ' + (ci + 1) + ': ' + e.message); }
+        var txt = await AI.complete([{ role: 'system', content: 'You write accurate, friendly course chapters as JSON.' }, { role: 'user', content: prompt + (lastErr ? '\n\nYour previous reply was invalid: ' + lastErr + '. Fix it.' : '') }], { role: o.role || 'builder', temperature: 0.4, signal: sig });
+        try { var cand = AI.extractJson(txt); AI.checkChapter(cand, attempt < 2); ch = cand; } catch (e) { lastErr = e.message; AI.log('warn', 'chapter ' + (ci + 1) + ' invalid: ' + e.message); log('Repairing chapter ' + (ci + 1) + ': ' + e.message); }
       }
       if (!ch) throw new Error('Chapter ' + (ci + 1) + ' could not be written: ' + lastErr);
       chapters.push(ch);
@@ -696,7 +699,7 @@
     return AI.assembleCourse(plan, chapters, sources, level);
   };
   /* every problem with a chapter, as short sentences a model can act on */
-  AI.chapterProblems = function (c) {
+  AI.chapterProblems = function (c, strict) {
     var p = [];
     if (!c || typeof c !== 'object' || Array.isArray(c)) return ['the chapter must be a JSON object'];
     if (!c.title || typeof c.title !== 'string') p.push('missing "title"');
@@ -705,6 +708,13 @@
     else c.lesson.forEach(function (b, i) { if (typeof b === 'string') return; if (!b || typeof b !== 'object') p.push('lesson block ' + (i + 1) + ' is not an object'); else if ((b.type || 'text') === 'text' && !Array.isArray(b.items)) p.push('lesson block ' + (i + 1) + ' needs "items" (a list of paragraphs)'); });
     if (!Array.isArray(c.quiz) || !c.quiz.length) p.push('"quiz" must have questions');
     else c.quiz.forEach(function (q, i) { if (!q || !q.q || !Array.isArray(q.options) || q.options.length < 2) p.push('quiz question ' + (i + 1) + ' needs "q" and at least 2 "options"'); else if (typeof q.answer !== 'number' || q.answer < 0 || q.answer >= q.options.length || q.answer % 1) p.push('quiz question ' + (i + 1) + ': "answer" must be the index (0 to ' + (q.options.length - 1) + ') of the right option'); });
+    if (Array.isArray(c.lesson)) {
+      var tbl = c.lesson.filter(function (b) { return b && typeof b === 'object' && b.type === 'table'; });
+      tbl.forEach(function (b, i) { if (!Array.isArray(b.head) || !b.head.length || !Array.isArray(b.rows) || !b.rows.length || b.rows.some(function (r) { return !Array.isArray(r); })) p.push('table ' + (i + 1) + ' needs "head" (list of column names) and "rows" (list of lists of cells)'); });
+      if (strict && !tbl.length) p.push('add one lesson block {"type":"table","title":"...","head":["Term","Meaning"],"rows":[["a","b"],["c","d"]]} (3-6 rows)');
+    }
+    if (c.references !== undefined && (!Array.isArray(c.references) || c.references.some(function (r) { return !r || typeof r !== 'object' || !r.title; }))) p.push('"references" items need "title" (and "url" if you read the page)');
+    if (strict && (!Array.isArray(c.references) || !c.references.length)) p.push('add "references": [{"title":"...","url":"https://...","note":"what it covers"}] (1-3 pages you read)');
     if (c.glossary !== undefined && (!Array.isArray(c.glossary) || c.glossary.some(function (g) { return !g || !g.term || !g.def; }))) p.push('"glossary" items need "term" and "def"');
     if (c.cards !== undefined && (!Array.isArray(c.cards) || c.cards.some(function (g) { return !g || !g.q || !g.a; }))) p.push('"cards" items need "q" and "a"');
     if (c.keyPoints !== undefined && !Array.isArray(c.keyPoints)) p.push('"keyPoints" must be a list');
@@ -718,15 +728,17 @@
     if (c.practice !== undefined && !Array.isArray(c.practice)) p.push('"practice" must be a list');
     return p;
   };
-  AI.checkChapter = function (c) { var p = AI.chapterProblems(c); if (p.length) throw new Error(p.join('; ')); };
+  AI.checkChapter = function (c, strict) { var p = AI.chapterProblems(c, strict !== false); if (p.length) throw new Error(p.join('; ')); };
   AI.assembleCourse = function (plan, chapters, sources, level) {
     var out = chapters.map(function (c) {
       var ch = {}; for (var k in c) if (k !== 'eli5') ch[k] = c[k];
       ch.lesson = (c.lesson || []).map(function (b) { return typeof b === 'string' ? { type: 'text', items: [b] } : b; });
+      if (!ch.lesson.some(function (b) { return b && b.type === 'table'; }) && (c.glossary || []).length) ch.lesson.push({ type: 'table', title: 'Key terms at a glance', head: ['Term', 'Meaning'], rows: c.glossary.slice(0, 6).map(function (g) { return [g.term, g.def]; }) });
+      if (!Array.isArray(ch.references) || !ch.references.length) ch.references = sources.slice(0, 3).map(function (s) { return { title: s.title, url: /^https?:/.test(s.url) ? s.url : '', note: /^https?:/.test(s.url) ? '' : s.url }; });
       var f = c.eli5; if (f && f.analogy) ch.lesson.unshift({ type: 'text', items: ['ELI5. ' + String(f.analogy).slice(0, 380)] });
       return ch;
     });
-    if (sources.length) out.push({ title: 'Sources', summary: ['Where the facts in this course came from. Check them for yourself.'], keyPoints: ['Read the sources, because a summary can be wrong.'], lesson: [{ type: 'text', items: sources.slice(0, 30).map(function (s) { return s.title + ': ' + s.url; }) }],
+    if (sources.length) out.push({ title: 'Sources', references: sources.slice(0, 30).map(function (s) { return { title: s.title, url: /^https?:/.test(s.url) ? s.url : '', note: /^https?:/.test(s.url) ? '' : s.url }; }), summary: ['Where the facts in this course came from. Check them for yourself.'], keyPoints: ['Read the sources, because a summary can be wrong.'], lesson: [{ type: 'text', items: sources.slice(0, 30).map(function (s) { return s.title + ': ' + s.url; }) }, { type: 'table', title: 'Sources', head: ['Source', 'Where'], rows: sources.slice(0, 20).map(function (s) { return [s.title, s.url]; }) }],
       quiz: [{ q: 'Why check the sources?', options: ['A summary can contain mistakes', 'They are always perfect', 'They are decoration'], answer: 0, explain: 'AI-written courses can be wrong; the sources are how you verify.' }] });
     return { format: 'lilith-course', version: 1, id: AI.slug(plan.title) + '-ai', title: plan.title, subtitle: plan.subtitle || '', author: 'Lilith Learning Lab (AI-built)', description: (plan.description || '') + ' Built from web research; verify the facts with the Sources chapter.',
       category: plan.category || 'Other', level: level, tags: (plan.tags || []).concat(['ai-built']).slice(0, 8), chapters: out };

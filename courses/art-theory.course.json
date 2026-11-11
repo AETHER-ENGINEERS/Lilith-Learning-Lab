@@ -125,6 +125,36 @@
      "items": [
       "This course mixes ideas with small calculations. Python labs turn colour and composition into numbers, so you can see how a warm tone is built or where the golden section falls. Two interactive tools let you pick colour harmonies and try composition grids on your own canvas."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Element of art",
+       "A basic ingredient of an image, such as line, shape, form, space, value, texture or colour."
+      ],
+      [
+       "Principle of design",
+       "A way of organising elements, such as balance, contrast, emphasis, movement, rhythm and unity."
+      ],
+      [
+       "Composition",
+       "The arrangement of elements within the picture."
+      ],
+      [
+       "Critique",
+       "A structured look at a work: describe, analyse, interpret, judge."
+      ],
+      [
+       "Study",
+       "A small practice drawing or painting made to learn one thing."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -253,6 +283,13 @@
      "title": "Seeing",
      "text": "The {{elements}} are the ingredients and the {{principles}} are how you arrange them."
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -340,6 +377,36 @@
      "type": "text",
      "items": [
       "Texture is how a surface feels or seems to feel: rough, smooth, soft, hard. Real texture is thick paint or paper grain. Implied texture is drawn marks that make you imagine touching fur or stone. Contrasting textures next to each other, like silk and rock, make a picture feel alive."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Line",
+       "A mark that connects points; it can show edge, movement or direction."
+      ],
+      [
+       "Shape",
+       "A flat, enclosed area, geometric or organic."
+      ],
+      [
+       "Form",
+       "A three-dimensional shape with height, width and depth."
+      ],
+      [
+       "Negative space",
+       "The empty area around and between subjects."
+      ],
+      [
+       "Value",
+       "The lightness or darkness of a colour or tone."
+      ]
      ]
     }
    ],
@@ -585,6 +652,13 @@
      "hint": "Subtract the used area from the canvas area.",
      "solution": "def negative_ratio(canvas_w, canvas_h, shapes):\n    area = canvas_w * canvas_h\n    used = 0\n    for s in shapes:\n        used = used + s[0] * s[1]\n    return round((area - used) / float(area), 3)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -672,6 +746,36 @@
      "type": "text",
      "items": [
       "Printers subtract light instead. Cyan, magenta and yellow inks soak up parts of white light, and black ink adds depth. This is CMYK. Colours that look fine on screen can look duller in print, because ink cannot reach every colour that light can."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Hue",
+       "The pure colour name, such as red or blue."
+      ],
+      [
+       "Saturation",
+       "How vivid or grey a colour is."
+      ],
+      [
+       "Tint, shade, tone",
+       "A hue mixed with white, black or grey."
+      ],
+      [
+       "Primary colours",
+       "Colours that cannot be mixed from others; traditionally red, yellow, blue."
+      ],
+      [
+       "Complementary colours",
+       "Colours opposite each other on the wheel."
+      ]
      ]
     }
    ],
@@ -1017,6 +1121,13 @@
      "hint": "Move each channel part of the way to the other colour.",
      "solution": "def mix_with(rgb, other, amount):\n    out = []\n    for i in range(3):\n        out.append(int(round(rgb[i] + (other[i] - rgb[i]) * amount)))\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1106,6 +1217,36 @@
      "items": [
       "Do not forget value. Two bright colours of the same value, like red and green at the same lightness, seem to vibrate and are hard to read together. Convert a picture to grey to test it. If shapes vanish, the values are too close.",
       "Design tools measure it with a contrast ratio, and good body text needs a ratio of at least 4.5 to 1."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Complementary harmony",
+       "Two hues opposite each other on the colour wheel."
+      ],
+      [
+       "Analogous harmony",
+       "Hues that sit next to each other on the wheel."
+      ],
+      [
+       "Triadic harmony",
+       "Three hues evenly spaced around the wheel, 120 degrees apart."
+      ],
+      [
+       "Palette",
+       "The set of colours chosen for a work."
+      ],
+      [
+       "Contrast ratio",
+       "A number comparing the lightness of two colours; higher means easier to read."
+      ]
      ]
     }
    ],
@@ -1393,6 +1534,13 @@
      "hint": "Compute the luminance of each colour, then divide.",
      "solution": "def contrast(a, b):\n    def lum(c):\n        vals = []\n        for v in c:\n            x = v / 255.0\n            if x <= 0.03928:\n                vals.append(x / 12.92)\n            else:\n                vals.append(((x + 0.055) / 1.055) ** 2.4)\n        return 0.2126 * vals[0] + 0.7152 * vals[1] + 0.0722 * vals[2]\n    la = lum(a)\n    lb = lum(b)\n    if la < lb:\n        la, lb = lb, la\n    return round((la + 0.05) / (lb + 0.05), 2)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1481,6 +1629,36 @@
      "items": [
       "Proportion relates sizes, such as head to body, or a figure to its landscape. Unity ties it together by repeating colour, shape or style. Variety keeps it from being dull. The best work has both: a limited palette and a few changes of scale.",
       "Test any picture by asking: what leads, what supports, and what could go."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Balance",
+       "An even distribution of visual weight across the picture."
+      ],
+      [
+       "Focal point",
+       "The place that grabs attention first."
+      ],
+      [
+       "Rhythm",
+       "A visual beat made by repeating elements."
+      ],
+      [
+       "Proportion",
+       "The size relationship between parts and the whole."
+      ],
+      [
+       "Unity and variety",
+       "The tension between sameness that holds a work together and differences that keep it interesting."
+      ]
      ]
     }
    ],
@@ -1720,6 +1898,13 @@
      "hint": "Track whether the list is all equal, always rising or always falling.",
      "solution": "def rhythm(sizes):\n    same = True\n    up = True\n    down = True\n    for i in range(1, len(sizes)):\n        if sizes[i] != sizes[i - 1]:\n            same = False\n        if sizes[i] <= sizes[i - 1]:\n            up = False\n        if sizes[i] >= sizes[i - 1]:\n            down = False\n    if same:\n        return \"regular\"\n    if up or down:\n        return \"progressive\"\n    return \"varied\"\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1808,6 +1993,36 @@
      "type": "text",
      "items": [
       "The shape of the canvas matters too. Landscape format suits wide scenes and calm. Portrait suits a standing figure and height. A square is neutral and centred. Crop a photo to different shapes and you will see how the mood changes, which is a quick way to practise."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Rule of thirds",
+       "A guide that divides the frame into thirds in each direction, with the strongest points at the four intersections."
+      ],
+      [
+       "Golden ratio",
+       "The proportion of about 1.618 to 1, also written phi."
+      ],
+      [
+       "Leading line",
+       "A line in the picture that leads the eye toward the focal point."
+      ],
+      [
+       "Format",
+       "The shape and orientation of the canvas, such as portrait, landscape or square."
+      ],
+      [
+       "Framing",
+       "Using elements inside the picture to surround the subject."
+      ]
      ]
     }
    ],
@@ -2156,6 +2371,13 @@
      "hint": "Compare squared distances to all four points.",
      "solution": "def nearest_third(w, h, x, y):\n    pts = [[w / 3.0, h / 3.0], [2 * w / 3.0, h / 3.0], [w / 3.0, 2 * h / 3.0], [2 * w / 3.0, 2 * h / 3.0]]\n    best = 0\n    bestd = (pts[0][0] - x) ** 2 + (pts[0][1] - y) ** 2\n    for i in range(1, 4):\n        d = (pts[i][0] - x) ** 2 + (pts[i][1] - y) ** 2\n        if d < bestd:\n            bestd = d\n            best = i\n    return best\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2245,6 +2467,36 @@
      "items": [
       "Even without lines, painters hint at depth. Overlap shows what is in front. Objects higher on the page seem farther away when they stand on the ground. Atmospheric perspective makes far hills pale, blue and soft. Warm, sharp, dark details come forward.",
       "Combining these cues feels more natural than lines alone."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Horizon line",
+       "The line at the viewer's eye level where sky and ground appear to meet."
+      ],
+      [
+       "Vanishing point",
+       "A point on the horizon where parallel lines going away appear to meet."
+      ],
+      [
+       "One-point perspective",
+       "A system with one vanishing point, used for views straight on."
+      ],
+      [
+       "Atmospheric perspective",
+       "Distant objects look paler, bluer and softer because of the air."
+      ],
+      [
+       "Foreshortening",
+       "The shortening of forms that point toward the viewer."
+      ]
      ]
     }
    ],
@@ -2584,6 +2836,13 @@
      "hint": "Reuse the mixing idea with a limit at 1.",
      "solution": "def haze(colour, sky, distance, max_distance):\n    t = distance / float(max_distance)\n    if t > 1:\n        t = 1.0\n    out = []\n    for i in range(3):\n        out.append(int(round(colour[i] + (sky[i] - colour[i]) * t)))\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2671,6 +2930,36 @@
      "type": "text",
      "items": [
       "Rembrandt and Caravaggio pushed this to the extreme, with figures emerging from deep darkness into a pool of light. The technique is called chiaroscuro, Italian for light-dark. You can use it with a single lamp and a dark background for striking still lifes."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Highlight",
+       "The brightest spot where light reflects most strongly."
+      ],
+      [
+       "Core shadow",
+       "The darkest band on the form, away from the light source."
+      ],
+      [
+       "Cast shadow",
+       "The shadow an object throws onto another surface."
+      ],
+      [
+       "Reflected light",
+       "A faint light bounced back into the shadow side from nearby surfaces."
+      ],
+      [
+       "Chiaroscuro",
+       "A strong use of light and dark to model form and create drama."
+      ]
      ]
     }
    ],
@@ -2935,6 +3224,13 @@
      "hint": "Pick the nearest of the evenly spaced greys.",
      "solution": "def posterize(values, levels):\n    out = []\n    for v in values:\n        idx = int(round(v / 255.0 * (levels - 1)))\n        out.append(int(round(idx * 255.0 / (levels - 1))))\n    return out\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3022,6 +3318,36 @@
      "type": "text",
      "items": [
       "Today art uses nearly every medium: photography, video, installation, digital tools. The elements and principles remain. A good way to learn them is to copy a small study from each movement, to feel the choices that artist made, and then make your own."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Renaissance",
+       "A period from the 14th to 16th century that revived classical ideas and developed linear perspective."
+      ],
+      [
+       "Baroque",
+       "A 17th-century style of drama, movement and strong light and dark."
+      ],
+      [
+       "Impressionism",
+       "A 19th-century movement that painted light and colour with quick visible brushstrokes."
+      ],
+      [
+       "Cubism",
+       "An early 20th-century movement that showed subjects from several viewpoints at once."
+      ],
+      [
+       "Abstract art",
+       "Art that does not try to show the visible world."
+      ]
      ]
     }
    ],
@@ -3214,6 +3540,13 @@
      "hint": "Check each range in turn.",
      "solution": "def movement(year):\n    if 1400 <= year <= 1599:\n        return \"Renaissance\"\n    if 1600 <= year <= 1749:\n        return \"Baroque\"\n    if 1860 <= year <= 1889:\n        return \"Impressionism\"\n    if 1907 <= year <= 1919:\n        return \"Cubism\"\n    if 1924 <= year <= 1950:\n        return \"Surrealism\"\n    return \"other\"\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3301,6 +3634,36 @@
      "type": "text",
      "items": [
       "Review your work every month. Lay out the pages side by side and use the four-step critique. What improved? What keeps going wrong? Pick one thing to focus on next. Over a year, you will have a record of your progress, and a clearer sense of your own style."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Thumbnail",
+       "A tiny quick sketch used to test a composition."
+      ],
+      [
+       "Study",
+       "A small focused exercise on one problem, such as value or colour."
+      ],
+      [
+       "Reference",
+       "A photo or object you draw from."
+      ],
+      [
+       "Master copy",
+       "A copy of a work by an artist you admire, done to learn their choices."
+      ],
+      [
+       "Sketchbook",
+       "A book where you practise and record ideas."
+      ]
      ]
     }
    ],
@@ -3534,6 +3897,13 @@
      ],
      "hint": "Multiply days by minutes and add.",
      "solution": "def total_minutes(sessions):\n    t = 0\n    for s in sessions:\n        t = t + s[0] * s[1]\n    return t\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

@@ -145,6 +145,40 @@
      "items": [
       "Modern AI mostly follows the standard model: build a machine that optimises an objective we give it. This works only if the objective is right. A very capable machine with a slightly wrong objective can do real harm, which is why later chapters return to uncertainty about objectives and to ethics."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Agent",
+       "Anything that perceives its environment through sensors and acts through actuators."
+      ],
+      [
+       "Percept sequence",
+       "Everything the agent has perceived so far."
+      ],
+      [
+       "Rational agent",
+       "An agent that chooses the action with the best expected performance."
+      ],
+      [
+       "Performance measure",
+       "The score that says how well the environment is doing."
+      ],
+      [
+       "PEAS",
+       "Performance measure, Environment, Actuators, Sensors."
+      ],
+      [
+       "Fully observable",
+       "The sensors give the whole relevant state."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -359,6 +393,13 @@
      "hint": "Three condition-action rules.",
      "solution": "def reflex_action(percept):\n    loc, status = percept[0], percept[1]\n    if status == 'dirty':\n        return 'suck'\n    if loc == 'A':\n        return 'right'\n    return 'left'\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -461,6 +502,40 @@
      "type": "text",
      "items": [
       "Where do heuristics come from? Often from a relaxed version of the problem. In the sliding tile puzzle, pretend tiles can pass through each other; the number of moves needed is the sum of tile distances, the Manhattan distance, which is admissible."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "State space",
+       "All states reachable from the start by any actions."
+      ],
+      [
+       "Frontier",
+       "Nodes that are generated but not yet expanded."
+      ],
+      [
+       "Heuristic",
+       "An estimate h(n) of the cost from n to the goal."
+      ],
+      [
+       "Admissible",
+       "A heuristic that never overestimates the true cost."
+      ],
+      [
+       "Branching factor",
+       "The number of successors per state, b."
+      ],
+      [
+       "Optimal",
+       "A search that always finds a cheapest solution."
+      ]
      ]
     }
    ],
@@ -703,6 +778,13 @@
      "hint": "Always expand the lowest f.",
      "solution": "def astar_cost(graph, h, start, goal):\n    best = {start: 0}\n    frontier = [(h[start], start)]\n    while frontier:\n        k = 0\n        for i in range(len(frontier)):\n            if frontier[i][0] < frontier[k][0]:\n                k = i\n        f, n = frontier.pop(k)\n        if n == goal:\n            return best[n]\n        if f > best[n] + h[n]:\n            continue\n        for m in graph[n]:\n            g = best[n] + graph[n][m]\n            if m not in best or g < best[m]:\n                best[m] = g\n                frontier.append((g + h[m], m))\n    return -1\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -801,6 +883,40 @@
      "type": "text",
      "items": [
       "Games with chance, such as backgammon, add chance nodes with expected values. Games with hidden information, such as poker, need reasoning about belief states."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Local search",
+       "Search that keeps only the current state."
+      ],
+      [
+       "Hill climbing",
+       "Repeatedly move to the best neighbour."
+      ],
+      [
+       "Simulated annealing",
+       "Hill climbing that sometimes accepts worse moves, less often over time."
+      ],
+      [
+       "Minimax",
+       "Best move assuming optimal play by both sides."
+      ],
+      [
+       "Alpha-beta pruning",
+       "Skipping branches that cannot matter."
+      ],
+      [
+       "Evaluation function",
+       "An estimate of a position's value."
+      ]
      ]
     }
    ],
@@ -1047,6 +1163,13 @@
      "hint": "Stop when no neighbour is higher.",
      "solution": "def hill_climb(values, start):\n    i = start\n    while True:\n        best = i\n        for j in (i - 1, i + 1):\n            if 0 <= j < len(values) and values[j] > values[best]:\n                best = j\n        if best == i:\n            return i\n        i = best\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1146,6 +1269,40 @@
      "type": "text",
      "items": [
       "Structure helps. If the constraint graph is a tree, the problem can be solved in time linear in the number of variables. Otherwise we can cut the graph into a tree by assigning a few variables first."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Variable",
+       "A thing to assign a value to."
+      ],
+      [
+       "Domain",
+       "The set of allowed values for a variable."
+      ],
+      [
+       "Constraint",
+       "A restriction on combinations of values."
+      ],
+      [
+       "Arc consistency",
+       "Every value has a supporting value in each neighbour."
+      ],
+      [
+       "MRV",
+       "Choose the variable with the fewest remaining values."
+      ],
+      [
+       "Min-conflicts",
+       "Local search that reassigns a conflicted variable."
+      ]
      ]
     }
    ],
@@ -1406,6 +1563,13 @@
      "hint": "Recurse over regions; undo on failure.",
      "solution": "def colour_map(regions, edges, colors):\n    nb = {r: [] for r in regions}\n    for a, b in edges:\n        nb[a].append(b)\n        nb[b].append(a)\n    assign = {}\n    def go(i):\n        if i == len(regions):\n            return True\n        r = regions[i]\n        for c in colors:\n            ok = True\n            for m in nb[r]:\n                if assign.get(m) == c:\n                    ok = False\n            if ok:\n                assign[r] = c\n                if go(i + 1):\n                    return True\n                del assign[r]\n        return False\n    if go(0):\n        return [assign[r] for r in regions]\n    return []\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1508,6 +1672,40 @@
      "type": "text",
      "items": [
       "The Wumpus world is a small cave game used to show these ideas. Pits cause breezes in adjacent squares; the Wumpus causes a stench. By combining percepts with rules, the agent can prove which squares are safe."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Knowledge base",
+       "A set of sentences held true."
+      ],
+      [
+       "Model",
+       "An assignment of true or false to every symbol."
+      ],
+      [
+       "Entailment",
+       "KB entails a when a holds in every model of KB."
+      ],
+      [
+       "Sound",
+       "Derives only what is entailed."
+      ],
+      [
+       "Complete",
+       "Can derive everything that is entailed."
+      ],
+      [
+       "Horn clause",
+       "A clause with at most one positive literal."
+      ]
      ]
     }
    ],
@@ -1782,6 +1980,13 @@
      "hint": "Keep firing rules until nothing new.",
      "solution": "def forward_chain(rules, facts, query):\n    known = set(facts)\n    changed = True\n    while changed:\n        changed = False\n        for prem, concl in rules:\n            if concl not in known:\n                ok = True\n                for p in prem:\n                    if p not in known:\n                        ok = False\n                if ok:\n                    known.add(concl)\n                    changed = True\n    return query in known\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1880,6 +2085,40 @@
      "type": "text",
      "items": [
       "Building a knowledge base is knowledge engineering. Decide the vocabulary, encode general axioms, add the specific problem, and test by asking queries. Large shared vocabularies, called ontologies, organise categories such as events, time and substances."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Predicate",
+       "A relation over objects, such as Brother(x, y)."
+      ],
+      [
+       "Quantifier",
+       "For all (∀) or there exists (∃)."
+      ],
+      [
+       "Term",
+       "An expression that names an object."
+      ],
+      [
+       "Unifier",
+       "A substitution that makes two expressions the same."
+      ],
+      [
+       "Skolem constant",
+       "A new name that stands for an existential witness."
+      ],
+      [
+       "Ontology",
+       "A structured vocabulary of categories and relations."
+      ]
      ]
     }
    ],
@@ -2125,6 +2364,13 @@
      "hint": "Recurse into lists; chase bindings.",
      "solution": "def subst(term, s):\n    if isinstance(term, list):\n        return [term[0]] + [subst(t, s) for t in term[1:]]\n    if term[0].islower() and term in s:\n        return subst(s[term], s)\n    return term\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2223,6 +2469,40 @@
      "type": "text",
      "items": [
       "Knowledge representation also asks how to organise categories. Objects belong to categories, categories form hierarchies and properties are inherited. Defaults such as birds fly are useful even though penguins are exceptions, so reasoning must be able to withdraw a conclusion."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Fact",
+       "An atomic statement that is true in a state."
+      ],
+      [
+       "Precondition",
+       "Facts that must hold for an action to apply."
+      ],
+      [
+       "Effect",
+       "Facts added and deleted by an action."
+      ],
+      [
+       "PDDL",
+       "A standard language for describing planning problems."
+      ],
+      [
+       "HTN",
+       "Hierarchical task network planning."
+      ],
+      [
+       "Default reasoning",
+       "Concluding something unless told otherwise."
+      ]
      ]
     }
    ],
@@ -2505,6 +2785,13 @@
      "hint": "BFS on sets of facts.",
      "solution": "def plan_length(state, goal, actions):\n    start = tuple(sorted(set(state)))\n    seen = {start: 0}\n    queue = [start]\n    i = 0\n    while i < len(queue):\n        cur = queue[i]\n        i += 1\n        ok = True\n        for g in goal:\n            if g not in cur:\n                ok = False\n        if ok:\n            return seen[cur]\n        for pre, add, dele in actions:\n            good = True\n            for p in pre:\n                if p not in cur:\n                    good = False\n            if good:\n                s = set(cur)\n                for d in dele:\n                    s.discard(d)\n                for a in add:\n                    s.add(a)\n                nxt = tuple(sorted(s))\n                if nxt not in seen:\n                    seen[nxt] = seen[cur] + 1\n                    queue.append(nxt)\n    return -1\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2602,6 +2889,40 @@
      "type": "text",
      "items": [
       "Full joint tables are too large, so we use independence. Naive Bayes assumes the effects are independent given the cause, so the joint is the prior times a product of simple likelihoods. It is crude, but works well for tasks like spam filtering."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Prior",
+       "Belief before seeing evidence."
+      ],
+      [
+       "Posterior",
+       "Belief after seeing evidence."
+      ],
+      [
+       "Conditional probability",
+       "P(a / b) = P(a and b) / P(b)."
+      ],
+      [
+       "Independence",
+       "Knowing one tells nothing about the other."
+      ],
+      [
+       "Likelihood",
+       "P(evidence / hypothesis)."
+      ],
+      [
+       "Base rate",
+       "How common the hypothesis is overall."
+      ]
      ]
     }
    ],
@@ -2789,6 +3110,13 @@
      "hint": "Multiply prior by each likelihood.",
      "solution": "def nb_classify(priors, likes, features):\n    best = None\n    bs = -1.0\n    for c in priors:\n        s = priors[c]\n        for f in features:\n            s = s * likes[c][f]\n        if s > bs:\n            bs = s\n            best = c\n    return best\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2886,6 +3214,40 @@
      "items": [
       "Variable elimination avoids repeating work by storing intermediate tables and summing out variables one at a time.",
       "When exact inference is too costly, approximate methods draw samples: likelihood weighting fixes the evidence and weights each sample, and Gibbs sampling walks through states by resampling one variable at a time."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Node",
+       "A random variable."
+      ],
+      [
+       "CPT",
+       "Conditional probability table for a node given its parents."
+      ],
+      [
+       "Parent",
+       "A node with an arrow into another."
+      ],
+      [
+       "Hidden variable",
+       "A variable that is neither evidence nor the query."
+      ],
+      [
+       "Markov blanket",
+       "Parents, children and the children's other parents."
+      ],
+      [
+       "Explaining away",
+       "Evidence for one cause lowers belief in another."
+      ]
      ]
     }
    ],
@@ -3089,6 +3451,13 @@
      "hint": "Enumerate e and a; normalise over b.",
      "solution": "def p_burglary(pb, pe, pa, pj, pm):\n    tot = {}\n    for b in (True, False):\n        s = 0.0\n        for e in (True, False):\n            for a in (True, False):\n                p = pb if b else 1 - pb\n                p = p * (pe if e else 1 - pe)\n                key = ('T' if b else 'F') + ('T' if e else 'F')\n                p = p * (pa[key] if a else 1 - pa[key])\n                ak = 'T' if a else 'F'\n                p = p * pj[ak] * pm[ak]\n                s += p\n        tot[b] = s\n    return round(tot[True] / (tot[True] + tot[False]), 6)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3185,6 +3554,40 @@
      "type": "text",
      "items": [
       "When the state is continuous, a Kalman filter keeps a Gaussian belief and is exact for linear dynamics. For nonlinear or multimodal problems, a particle filter keeps many samples: it moves each, weights it by the evidence, and resamples. Robots use particle filters to locate themselves on maps."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Hidden state",
+       "What we want to know but cannot see."
+      ],
+      [
+       "Transition model",
+       "P(next state / current state)."
+      ],
+      [
+       "Sensor model",
+       "P(observation / state)."
+      ],
+      [
+       "Filtering",
+       "Estimating the current state from all evidence."
+      ],
+      [
+       "HMM",
+       "Hidden Markov model with one discrete state variable."
+      ],
+      [
+       "Particle filter",
+       "Filtering by tracking weighted samples."
+      ]
      ]
     }
    ],
@@ -3467,6 +3870,13 @@
      "hint": "Predict, weight, normalise.",
      "solution": "def filter_step(belief, trans, sensor, obs):\n    n = len(belief)\n    pred = []\n    for j in range(n):\n        s = 0.0\n        for i in range(n):\n            s += belief[i] * trans[i][j]\n        pred.append(s)\n    w = [pred[j] * sensor[j][obs] for j in range(n)]\n    tot = sum(w)\n    return [round(x / tot, 9) for x in w]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3563,6 +3973,40 @@
      "items": [
       "This is the Bellman equation. The utility of a state is its reward plus the discounted expected utility of the best action. Value iteration starts with all utilities at zero and applies the equation to every state again and again.",
       "It converges because the update shrinks differences by the factor gamma. The best policy then picks the action that achieves the maximum."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Utility",
+       "A number that says how much an outcome is preferred."
+      ],
+      [
+       "Expected utility",
+       "Probability-weighted average of utilities."
+      ],
+      [
+       "MDP",
+       "Markov decision process."
+      ],
+      [
+       "Policy",
+       "A rule that gives an action for each state."
+      ],
+      [
+       "Discount factor",
+       "Gamma below one: how much future rewards count."
+      ],
+      [
+       "Bellman equation",
+       "U(s) = R(s) + gamma max over a of sum P(s' / s, a) U(s')."
+      ]
      ]
     }
    ],
@@ -3794,6 +4238,13 @@
      "hint": "Update from the previous round's values.",
      "solution": "def value_iteration(P, R, gamma, iters):\n    n = len(R)\n    U = [0.0] * n\n    for _ in range(iters):\n        new = []\n        for s in range(n):\n            best = None\n            for a in P[s]:\n                q = 0.0\n                for p, s2 in a:\n                    q += p * U[s2]\n                if best is None or q > best:\n                    best = q\n            if best is None:\n                best = 0.0\n            new.append(R[s] + gamma * best)\n        U = new\n    return [round(x, 6) for x in U]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3894,6 +4345,40 @@
      "type": "text",
      "items": [
       "When people vote, the picture is hard. Arrow's theorem shows that no ranked voting rule satisfies a short list of fairness conditions at the same time. The best we can do is choose which compromises to accept."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Strategy",
+       "A rule for choosing actions."
+      ],
+      [
+       "Payoff",
+       "What a player receives from an outcome."
+      ],
+      [
+       "Dominant strategy",
+       "Best whatever others do."
+      ],
+      [
+       "Nash equilibrium",
+       "No player can gain by changing alone."
+      ],
+      [
+       "Mechanism",
+       "The rules of an interaction."
+      ],
+      [
+       "Vickrey auction",
+       "Highest bidder wins and pays the second-highest bid."
+      ]
      ]
     }
    ],
@@ -4136,6 +4621,13 @@
      "hint": "Find the max, then the best of the rest.",
      "solution": "def vickrey(bids):\n    w = 0\n    for i in range(len(bids)):\n        if bids[i] > bids[w]:\n            w = i\n    second = None\n    for i in range(len(bids)):\n        if i != w and (second is None or bids[i] > second):\n            second = bids[i]\n    return [w, second]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4234,6 +4726,40 @@
      "items": [
       "Other models include nearest neighbours, which predict from the closest training examples, and support vector machines, which find a wide margin and use kernels for curved boundaries. Regularisation adds a penalty on weights to resist overfitting.",
       "Ensembles, such as random forests and boosted trees, combine many weak models and often win on tabular data."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Training set",
+       "Examples used to fit the model."
+      ],
+      [
+       "Test set",
+       "Held-out examples used to estimate performance."
+      ],
+      [
+       "Overfitting",
+       "Low training error but high error on new data."
+      ],
+      [
+       "Entropy",
+       "A measure of uncertainty in a distribution."
+      ],
+      [
+       "Information gain",
+       "Reduction in entropy from a split."
+      ],
+      [
+       "Regularisation",
+       "A penalty that discourages complex models."
+      ]
      ]
     }
    ],
@@ -4549,6 +5075,13 @@
      "hint": "Average the gradients.",
      "solution": "def gd_line(xs, ys, w, b, lr, steps):\n    n = len(xs)\n    for _ in range(steps):\n        gw = 0.0\n        gb = 0.0\n        for x, y in zip(xs, ys):\n            e = w * x + b - y\n            gw += 2 * e * x / n\n            gb += 2 * e / n\n        w -= lr * gw\n        b -= lr * gb\n    return [round(w, 6), round(b, 6)]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4649,6 +5182,40 @@
      "items": [
       "Q-learning applies this update after each step. The bracket is the temporal-difference error: the gap between what we just observed plus the best estimate afterwards, and what we predicted. Deep Q-networks use a neural network in place of a table.",
       "Policy-gradient methods adjust a policy directly, and human feedback can train the reward itself."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Activation function",
+       "A nonlinearity such as ReLU or sigmoid."
+      ],
+      [
+       "Back-propagation",
+       "Chain-rule gradient computation, output to input."
+      ],
+      [
+       "Convolution",
+       "A small filter slid over an image."
+      ],
+      [
+       "Attention",
+       "A weighted focus on relevant inputs."
+      ],
+      [
+       "Reward",
+       "A scalar signal of how well the agent is doing."
+      ],
+      [
+       "Q-value",
+       "The expected return of taking an action in a state."
+      ]
      ]
     }
    ],
@@ -4920,6 +5487,13 @@
      "hint": "Move toward target by alpha.",
      "solution": "def q_update(Q, s, a, r, s2, alpha, gamma):\n    best = max(Q[s2].values())\n    Q[s][a] += alpha * (r + gamma * best - Q[s][a])\n    return round(Q[s][a], 9)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5020,6 +5594,40 @@
      "type": "text",
      "items": [
       "The textbook closes with a proposal: build machines that are uncertain about human preferences and learn them from our behaviour. Such a machine has a reason to ask, to defer, and to allow itself to be switched off. The field's future depends on technical progress and on wise governance."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Language model",
+       "A probability distribution over text."
+      ],
+      [
+       "n-gram",
+       "A model that predicts a word from the previous n minus one words."
+      ],
+      [
+       "Perplexity",
+       "How surprised a model is by test text; lower is better."
+      ],
+      [
+       "IoU",
+       "Intersection over union of two boxes."
+      ],
+      [
+       "Configuration space",
+       "One axis per joint of the robot."
+      ],
+      [
+       "Value alignment",
+       "Making a machine's goals match human values."
+      ]
      ]
     }
    ],
@@ -5290,6 +5898,13 @@
      ],
      "hint": "One formula.",
      "solution": "def depth(f, baseline, disparity):\n    return round(f * baseline / disparity, 6)\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }

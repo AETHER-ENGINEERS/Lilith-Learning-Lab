@@ -193,6 +193,40 @@
      "items": [
       "A note on versions. The course follows the repository at version 2.28.1. The documentation was written across many releases, so some pages name an older version. When a feature has a version, it is mentioned."
      ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Vault",
+       "The virtual file system of notes and files that everything shares."
+      ],
+      [
+       "Jade",
+       "The agent: a model, a prompt, tools and memory."
+      ],
+      [
+       "Turn",
+       "One message from you through to her final reply."
+      ],
+      [
+       "Tool",
+       "A function Jade can call, such as reading a note or running a shell command."
+      ],
+      [
+       "Provider",
+       "The server that runs the model: Ollama, Groq, OpenRouter and so on."
+      ],
+      [
+       "Steering files",
+       "Plain notes such as SOUL.md and AGENTS.md that shape her behaviour."
+      ]
+     ]
     }
    ],
    "quiz": [
@@ -328,6 +362,13 @@
      "hint": "Start with chat, then add switched-on sources.",
      "solution": "def active_sources(switches):\n    out = ['chat']\n    for name in switches:\n        if switches[name] and name != 'chat':\n            out.append(name)\n    return sorted(out)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -427,6 +468,40 @@
      "type": "text",
      "items": [
       "Jade keeps her own files in a folder named Jade. The file SOUL.md is her persona, AGENTS.md holds your standing instructions, Memory.md holds durable facts, and skills, flows and playbooks have their own folders. Since they are ordinary notes, you can read, edit and back them up like anything else."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Wiki link",
+       "A link to another note, written [[Note name]]."
+      ],
+      [
+       "Backlink",
+       "A note that links to this one."
+      ],
+      [
+       "Embed",
+       "Showing a note or image inside another with ![[...]]."
+      ],
+      [
+       "Frontmatter",
+       "Key value data at the top of a note between --- lines."
+      ],
+      [
+       "Tag",
+       "A word starting with # used to group notes."
+      ],
+      [
+       "Template",
+       "A note in /Templates that fills in dates and titles when inserted."
+      ]
      ]
     }
    ],
@@ -715,6 +790,13 @@
      "hint": "Split on whitespace.",
      "solution": "def tags(text):\n    found = set()\n    for tok in text.split():\n        if tok.startswith('#') and len(tok) > 1 and tok[1].isalpha():\n            found.add(tok[1:].rstrip('.,;:!?'))\n    return sorted(found)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -814,6 +896,40 @@
      "items": [
       "Finally there are limits. The setting maxTurns caps the tool rounds, and if it is reached she says she stopped after that many rounds and you can send continue.",
       "Everything fetched from the web or SSH is wrapped with a label saying it is data, not instructions, so that a web page cannot give orders to the agent."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Agent loop",
+       "Call the model, run its tools, repeat."
+      ],
+      [
+       "System prompt",
+       "The standing instructions placed before the chat."
+      ],
+      [
+       "Tool call",
+       "A request from the model to run a named tool with arguments."
+      ],
+      [
+       "Tool round",
+       "One model call that asks for tools, plus running them."
+      ],
+      [
+       "maxTurns",
+       "The setting that limits tool rounds per message."
+      ],
+      [
+       "Context window",
+       "How much text the model can read at once."
+      ]
      ]
     }
    ],
@@ -1025,6 +1141,13 @@
      "hint": "Count rounds as tools arrive.",
      "solution": "def agent_loop(script, max_rounds):\n    rounds = 0\n    for r in script:\n        if r.startswith('text:'):\n            return ['reply', r[5:], rounds]\n        if rounds >= max_rounds:\n            return ['stopped', rounds]\n        rounds += 1\n    return ['stopped', rounds]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1126,6 +1249,40 @@
      "type": "text",
      "items": [
       "Finally, some settings she cannot edit at all: the numbers that a Sentry flow may contact, the hourly limit and the consent switches. If an agent could change its own safety limits, they would not be limits."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Tool schema",
+       "The description of a tool and its arguments that the model sees."
+      ],
+      [
+       "Pack",
+       "A group of tools with one switch, like phone or browser."
+      ],
+      [
+       "Secret placeholder",
+       "A {{NAME}} that is replaced by the real value after the model writes it."
+      ],
+      [
+       "Approval",
+       "A dialog that asks you before an action runs."
+      ],
+      [
+       "Untrusted data",
+       "Text from outside, labelled so it is not read as instructions."
+      ],
+      [
+       "MCP",
+       "Model Context Protocol: a way to plug in more tools."
+      ]
      ]
     }
    ],
@@ -1436,6 +1593,13 @@
      "hint": "Compare each name with the set.",
      "solution": "def flag_risky(tools):\n    risky = ['phone', 'screen', 'ssh', 'bash', 'write', 'edit', 'sentry', 'web_fetch', 'backup', 'schedule', 'flow']\n    out = []\n    for t in tools:\n        if t in risky and t not in out:\n            out.append(t)\n    return sorted(out)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1535,6 +1699,40 @@
      "items": [
       "Context is the other half. The window of a model is limited, and tools alone can take about ten thousand tokens at full load. A guard estimates the size of the whole request, compacts old turns into a summary, then trims bulky tool results, and learns real limits from errors.",
       "The slash command context shows where the room goes."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Memory.md",
+       "A file of durable facts, one bullet per line, added to every prompt."
+      ],
+      [
+       "Journal",
+       "A short entry for each chat, saved under /Jade/Journal."
+      ],
+      [
+       "Embedding",
+       "A list of numbers that represents the meaning of a text."
+      ],
+      [
+       "BM25",
+       "A ranking function: term frequency times inverse document frequency, with length normalisation."
+      ],
+      [
+       "RRF",
+       "Reciprocal rank fusion: merging ranked lists by adding 1 over (k plus rank)."
+      ],
+      [
+       "Compaction",
+       "Replacing old turns with a short summary."
+      ]
      ]
     }
    ],
@@ -1833,6 +2031,13 @@
      "hint": "Split off the oldest turns.",
      "solution": "def compact_split(turns, compact_after, keep):\n    if len(turns) > compact_after:\n        cut = len(turns) - keep\n        return [turns[:cut], turns[cut:]]\n    return [[], turns]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -1932,6 +2137,40 @@
      "type": "text",
      "items": [
       "Jade can also write skills. A built-in skill called skill-creator teaches her how, and the built-ins include daily review, atomic notes, a literature note, and math notes. Skills are the cheapest way to change her behaviour without changing the app."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Skill",
+       "A reusable procedure written as a SKILL.md file."
+      ],
+      [
+       "Frontmatter",
+       "The block between --- lines with name and description."
+      ],
+      [
+       "Router",
+       "Code that picks which skills to list for a message."
+      ],
+      [
+       "find_skill",
+       "A tool that searches the skills that were not listed."
+      ],
+      [
+       "Strict mode",
+       "Dropping weak matches: far in meaning and no shared words."
+      ],
+      [
+       "skill-creator",
+       "A built-in skill that teaches Jade to write new skills."
+      ]
      ]
     }
    ],
@@ -2295,6 +2534,13 @@
      "hint": "Fewer than 16 skills: list them all.",
      "solution": "def route(skills, message, limit):\n    def words(s):\n        out = set()\n        cur = ''\n        for ch in s.lower():\n            if ch.isalpha() or ch.isdigit():\n                cur += ch\n            else:\n                if cur:\n                    out.add(cur)\n                cur = ''\n        if cur:\n            out.add(cur)\n        return out\n    if len(skills) <= 15:\n        return sorted([s[0] for s in skills])\n    m = words(message)\n    scored = []\n    for name, desc in skills:\n        sc = len(m & words(name + ' ' + desc))\n        if sc > 0:\n            scored.append([-sc, name])\n    scored.sort()\n    return [x[1] for x in scored[:limit]]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2396,6 +2642,40 @@
      "items": [
       "The suggestion is scored by learning progress, an idea of Schmidhuber's. Each activity has a small forecaster of how rewarding it will be. Progress is the slow average of the forecast error minus the fast average, never below zero.",
       "An activity whose results stay random keeps a high but flat error and earns no bonus, which avoids the noisy TV trap. The reward itself is measured, not claimed: the harness compares the vault before and after, counting new notes, changed notes, links and memories."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Heartbeat",
+       "A periodic check driven by HEARTBEAT.md."
+      ],
+      [
+       "HEARTBEAT_OK",
+       "The silent answer when nothing needs attention."
+      ],
+      [
+       "Schedule",
+       "A job that runs a prompt, a shell command or a flow at a time."
+      ],
+      [
+       "Cron",
+       "Five fields: minute, hour, day of month, month, day of week."
+      ],
+      [
+       "Learning progress",
+       "How much a forecast error is falling over time."
+      ],
+      [
+       "Noisy TV",
+       "A random source that stays unpredictable and so teaches nothing."
+      ]
      ]
     }
    ],
@@ -2698,6 +2978,13 @@
      "hint": "Cap the self-score first.",
      "solution": "def wake_reward(measured, self_score):\n    s = 0.75 * measured + 0.25 * min(self_score, measured + 0.2)\n    s = max(0.0, min(1.0, s))\n    return round(s, 4)\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -2798,6 +3085,40 @@
      "items": [
       "Flows start in several ways: by hand, on a schedule, or when a note or folder changes. They can also be called from the shell with flow run, from scripts with jade.flow, over the HTTP API, and by Jade herself with the flow tool.",
       "Because command and flow schedules need no model, a flow is the right tool for anything that should simply happen the same way each time."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Flow",
+       "A saved list of steps, run in order."
+      ],
+      [
+       "$json",
+       "The output of the previous step, available to the next."
+      ],
+      [
+       "Trigger",
+       "What starts a flow: by hand, a schedule or a note change."
+      ],
+      [
+       "Decide step",
+       "A step that picks one option and returns probabilities."
+      ],
+      [
+       "Retry",
+       "Running a failing step again, up to three times."
+      ],
+      [
+       "Expression",
+       "JavaScript inside {{ }} in a text field, run in a sandbox without network."
+      ]
      ]
     }
    ],
@@ -3128,6 +3449,13 @@
      "hint": "Copy the data, then apply each step.",
      "solution": "def run_flow(steps, data):\n    d = {}\n    for k in data:\n        d[k] = data[k]\n    for st in steps:\n        if st[0] == 'set':\n            d[st[1]] = st[2]\n        elif st[0] == 'if':\n            if d.get(st[1]) == st[2]:\n                return [True, [[k, d[k]] for k in sorted(d)]]\n        elif st[0] == 'stop':\n            return [True, [[k, d[k]] for k in sorted(d)]]\n    return [False, [[k, d[k]] for k in sorted(d)]]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3229,6 +3557,40 @@
      "items": [
       "More limits protect you. The allow_hosts list limits where the browser may go and which URLs any task may fetch. Run variables are limited to the ones the playbook declares. Saves go only under /Jade/Playbooks/out.",
       "A failure stops the run at that task unless you wrote ignore_errors or a rescue, and nothing is repaired or guessed."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Playbook",
+       "A saved JSON list of tasks run without a model."
+      ],
+      [
+       "Task",
+       "One action with arguments and keywords."
+      ],
+      [
+       "register",
+       "A keyword that stores a task's result in a variable."
+      ],
+      [
+       "rescue",
+       "Tasks that run when a block fails."
+      ],
+      [
+       "Approval hash",
+       "A fingerprint of the playbook; a change makes it unapproved."
+      ],
+      [
+       "Expression language",
+       "A safe mini language for when, until and templates."
+      ]
      ]
     }
    ],
@@ -3538,6 +3900,13 @@
      "hint": "Mask to 32 bits at every step.",
      "solution": "def fnv1a(text):\n    h = 2166136261\n    for ch in text:\n        h ^= ord(ch)\n        h = (h * 16777619) & 0xFFFFFFFF\n    return h\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -3639,6 +4008,40 @@
      "items": [
       "The graph is under your control. Facts you add are confirmed. Facts Jade adds are proposed, and a proof that rests on a proposed fact says so. If you reject a fact, Jade cannot add it again.",
       "With Verify answers on, she checks the factual claims in her own answers against the graph and marks each with a tick, a cross or a question mark."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Fact",
+       "A relation between things, like works_at(alice, acme)."
+      ],
+      [
+       "Rule",
+       "A statement that derives new facts: head :- conditions."
+      ],
+      [
+       "Constraint",
+       "A pattern that must never match, written with a leading !."
+      ],
+      [
+       "Reasoner",
+       "The engine that derives facts and checks claims."
+      ],
+      [
+       "Open world",
+       "Assuming unknown things might be true, not false."
+      ],
+      [
+       "Proof",
+       "The facts and rules a conclusion rests on."
+      ]
      ]
     }
    ],
@@ -4062,6 +4465,13 @@
      "hint": "Check for the claim, then for a clash.",
      "solution": "def verdict(facts, claim, single_valued):\n    for f in facts:\n        if f == claim:\n            return 'proven'\n    if claim[0] in single_valued:\n        for f in facts:\n            if f[0] == claim[0] and f[1] == claim[1] and f[2] != claim[2]:\n                return 'contradicted'\n    return 'unknown'\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4164,6 +4574,40 @@
      "type": "text",
      "items": [
       "Plans and the queue are separate, with one link. With autonomous mode on and the setting to work on her ready plan tasks, each of Jade's tasks whose dependencies are done becomes a tier three goal, and finishing it marks the plan task 100 percent."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Autonomous mode",
+       "Jade works through her queue without being asked, within your limits."
+      ],
+      [
+       "Interrupt",
+       "An urgent item that goes first."
+      ],
+      [
+       "Aging",
+       "Raising a waiting task's priority so it is not starved."
+      ],
+      [
+       "Round robin",
+       "Giving each long goal short turns in rotation."
+      ],
+      [
+       "Gantt chart",
+       "A bar chart of tasks over time."
+      ],
+      [
+       "Critical path",
+       "The chain of tasks that sets the finish date."
+      ]
      ]
     }
    ],
@@ -4514,6 +4958,13 @@
      "hint": "Compute each finish time by recursion.",
      "solution": "def critical_path(tasks):\n    info = {}\n    for name, days, deps in tasks:\n        info[name] = [days, deps]\n    fin = {}\n\n    def finish(n):\n        if n in fin:\n            return fin[n]\n        days, deps = info[n]\n        best = 0\n        for d in deps:\n            best = max(best, finish(d))\n        fin[n] = days + best\n        return fin[n]\n\n    for n in info:\n        finish(n)\n    if not info:\n        return [0, []]\n    end = sorted(info, key=lambda n: [-fin[n], n])[0]\n    path = [end]\n    cur = end\n    while info[cur][1]:\n        deps = info[cur][1]\n        cur = sorted(deps, key=lambda n: [-fin[n], n])[0]\n        path.append(cur)\n    path.reverse()\n    return [fin[end], path]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -4615,6 +5066,40 @@
      "items": [
       "The model router is a third. Before each message, the decision model, which can be a local model through Ollaya or Ollama, picks which of your models should answer. Everyday chat goes to a quick one and a hard request goes to a strong one.",
       "This saves time and cost, and you configure it under Decision models."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Tree of thoughts",
+       "Branching several lines of reasoning and keeping the best checked ones."
+      ],
+      [
+       "Verifier",
+       "A check, such as running code, that can reject a thought."
+      ],
+      [
+       "Veto",
+       "A failure that cannot be averaged away."
+      ],
+      [
+       "Beam search",
+       "Keeping only the top few nodes at each depth."
+      ],
+      [
+       "Delegate",
+       "A sub-agent that works in its own clean context and reports back."
+      ],
+      [
+       "Model router",
+       "A decision model that picks which of your models answers."
+      ]
      ]
     }
    ],
@@ -4991,6 +5476,13 @@
      "hint": "Apply defaults, then clamp.",
      "solution": "def delegate_limits(steps, seconds):\n    if steps is None:\n        steps = 8\n    if seconds is None:\n        seconds = 120\n    return [max(1, min(15, steps)), max(1, min(300, seconds))]\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5092,6 +5584,40 @@
       "Outside Lisp, the node scripts in the shell, in a flow's JavaScript step and in Jade's own bash, have a jade object.",
       "A call such as jade.tool with a name and arguments runs a tool, jade.ask gets one model answer without a whole chat, jade.decide asks the decision model, jade.flow runs a flow, and jade.kv keeps small values between runs.",
       "Files that a script writes are visible to the tools it calls, and the other way round."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Lisp",
+       "A language where code is lists, written with parentheses."
+      ],
+      [
+       "Macro",
+       "Code that writes code; defmacro with quasiquote."
+      ],
+      [
+       "DSL",
+       "A domain specific language: a small language for one job."
+      ],
+      [
+       "Fuel",
+       "A limit on evaluation steps that stops runaway programs."
+      ],
+      [
+       "Sandbox",
+       "A place where a program can use only the functions you give it."
+      ],
+      [
+       "jade.tool",
+       "A script call that runs any of Jade's tools."
+      ]
      ]
     }
    ],
@@ -5282,6 +5808,13 @@
      "hint": "Pass an environment through each evaluation.",
      "solution": "def lisp_eval(src, fuel):\n    toks = src.replace('(', ' ( ').replace(')', ' ) ').split()\n    pos = [0]\n\n    def parse():\n        t = toks[pos[0]]\n        pos[0] += 1\n        if t == '(':\n            out = []\n            while toks[pos[0]] != ')':\n                out.append(parse())\n            pos[0] += 1\n            return out\n        if t == '#t':\n            return True\n        if t == '#f':\n            return False\n        if t == 'nil':\n            return None\n        try:\n            return int(t)\n        except ValueError:\n            pass\n        try:\n            return float(t)\n        except ValueError:\n            pass\n        return t\n\n    budget = [fuel]\n\n    def lookup(env, name):\n        while env is not None:\n            if name in env[0]:\n                return env[0][name]\n            env = env[1]\n        raise KeyError(name)\n\n    def ev(x, env):\n        budget[0] -= 1\n        if budget[0] < 0:\n            raise RuntimeError('fuel')\n        if x is True or x is False or x is None:\n            return x\n        if isinstance(x, (int, float)):\n            return x\n        if isinstance(x, str):\n            return lookup(env, x)\n        op = x[0]\n        if op == 'if':\n            c = ev(x[1], env)\n            if c is not False and c is not None:\n                return ev(x[2], env)\n            if len(x) > 3:\n                return ev(x[3], env)\n            return None\n        if op == 'define':\n            env[0][x[1]] = ev(x[2], env)\n            return env[0][x[1]]\n        if op == 'lambda':\n            return ['closure', x[1], x[2], env]\n        if op == 'let':\n            scope = [{}, env]\n            for b in x[1]:\n                scope[0][b[0]] = ev(b[1], env)\n            return ev(x[2], scope)\n        fn = ev(op, env)\n        args = [ev(a, env) for a in x[1:]]\n        if isinstance(fn, list):\n            scope = [{}, fn[3]]\n            for i in range(len(fn[1])):\n                scope[0][fn[1][i]] = args[i]\n            return ev(fn[2], scope)\n        return fn(*args)\n\n    def add(*a):\n        t = 0\n        for v in a:\n            t += v\n        return t\n\n    def sub(*a):\n        if len(a) == 1:\n            return -a[0]\n        t = a[0]\n        for v in a[1:]:\n            t -= v\n        return t\n\n    def mul(*a):\n        t = 1\n        for v in a:\n            t *= v\n        return t\n\n    glob = [{'+': add, '-': sub, '*': mul, '<': lambda a, b: a < b, '>': lambda a, b: a > b, '=': lambda a, b: a == b}, None]\n    try:\n        forms = []\n        while pos[0] < len(toks):\n            forms.append(parse())\n        result = None\n        for f in forms:\n            result = ev(f, glob)\n        return result\n    except RuntimeError as e:\n        if str(e) == 'fuel':\n            return 'out of fuel'\n        return 'error'\n    except Exception:\n        return 'error'\n"
     }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
+    }
    ]
   },
   {
@@ -5384,6 +5917,40 @@
      "items": [
       "Testing uses Playwright with headless Chromium plus engine tests, and every feature gets a test. The Android app is built without the Android SDK, using stubs, a dex step, a packaging tool and signing. The repository also states honestly what has not run on a real phone.",
       "That habit of saying what was and was not tested is a good one to copy. You now have the map: use the vault, let Jade work within limits, and extend it with skills, flows and playbooks."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "HTTP API",
+       "An optional phone-side server that answers GET requests with JSON; off by default."
+      ],
+      [
+       "Bearer token",
+       "A secret sent in the Authorization header to prove access."
+      ],
+      [
+       "Webxdc",
+       "Sandboxed offline mini apps in a zip with index.html."
+      ],
+      [
+       "Vector, Discord",
+       "Messengers where Jade can be a bot, through small bridge servers."
+      ],
+      [
+       "Fleet",
+       "One shared vault on a small server used by phones and browsers."
+      ],
+      [
+       "Exact-match patch",
+       "A replacement whose old text must occur exactly once, or the build stops."
+      ]
      ]
     }
    ],
@@ -5660,6 +6227,13 @@
      ],
      "hint": "Group by kind, sort, drop the oldest.",
      "solution": "def keep_newest(names, keep):\n    groups = {}\n    for n in names:\n        kind = n.split('-')[2] if n.count('-') >= 3 else ''\n        if kind not in groups:\n            groups[kind] = []\n        groups[kind].append(n)\n    out = []\n    for kind in groups:\n        files = sorted(groups[kind])\n        cut = len(files) - keep\n        if cut > 0:\n            out.extend(files[:cut])\n    return sorted(out)\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Written for Lilith Learning Lab from standard textbooks and documentation; no web sources were fetched",
+     "url": "",
+     "note": "Check facts against current documentation."
     }
    ]
   }
