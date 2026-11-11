@@ -1,0 +1,3999 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "vector-sdk",
+ "title": "Vector SDK: Private Bots on Nostr",
+ "subtitle": "Identity, channels, events, communities, encryption and operations for Vector bots, with Python labs",
+ "author": "Lilith Learning Lab",
+ "description": "A hands-on course based on the public Vector SDK documentation (vector-privacy.gitbook.io/vector-privacy/vector-sdk) and the VectorPrivacy/Vector-SDK repository. The documentation describes SDK 0.3.0 with a builder API, while the repository main branch we inspected still showed 0.2.1, so everything is presented as reported in November 2026 and you should verify the version you use. Learn how a Rust bot gets an identity, sends and reacts to messages, handles events, manages communities and invites, protects files and keys, and is troubleshot and deployed. Labs run offline and simulate the rules in Python, since Rust cannot run here.",
+ "pronounce": {
+  "Vector": "vec tor",
+  "Nostr": "nos ter",
+  "npub": "en pub",
+  "nsec": "en sec",
+  "npub1": "en pub one",
+  "nsec1": "en sec one",
+  "tokio": "toe key oh",
+  "Rust": "rust",
+  "relay": "ree lay",
+  "relays": "ree lays",
+  "AES-256-GCM": "A E S two fifty six G C M",
+  "SHA-256": "shaw two fifty six",
+  "NIP-59": "nip fifty nine",
+  "NIP-17": "nip seventeen",
+  "NIP-25": "nip twenty five",
+  "NIP-40": "nip forty",
+  "NIP-96": "nip ninety six",
+  "NIP-46": "nip forty six",
+  "wss": "W S S",
+  "Tor": "tor",
+  "Arti": "ar tee",
+  "mnemonic": "nuh mon ik",
+  "bech32": "beck thirty two",
+  "Cargo": "car go",
+  "SDK": "S D K",
+  "API": "A P I",
+  "OpenAI": "open A I",
+  "systemd": "system D",
+  "Concord": "con cord",
+  "JSON": "jay son",
+  "DM": "D M",
+  "DMs": "D Ms",
+  "ELI5": "E L I five"
+ },
+ "chapters": [
+  {
+   "title": "What the Vector SDK is, and which version to trust",
+   "maps": [
+    {
+     "title": "Vector SDK",
+     "links": [
+      "Vector SDK | builds | Bots",
+      "Vector | is | Private messenger",
+      "Bot | has | One identity",
+      "vector-core | provides | Crypto and storage",
+      "nostr-sdk | provides | Relay transport",
+      "Docs 0.3.0 | differ from | Repo 0.2.1",
+      "Rust | is | The SDK language"
+     ]
+    }
+   ],
+   "summary": [
+    "The Vector SDK is a Rust library for building bots that talk over Vector, a privacy-focused messenger built on the Nostr protocol. A bot gets its own identity, can message people and communities, and reacts to events.",
+    "This course follows the public GitBook documentation, which describes SDK version 0.3.0 and says it targets Vector 0.4.0 and later. All statements are as reported in that documentation in November 2026.",
+    "The GitHub repository VectorPrivacy/Vector-SDK was found at crate version 0.2.1 on its main branch, with an older API built around VectorBot::quick. Always check which version you depend on before copying code."
+   ],
+   "glossary": [
+    {
+     "term": "Vector",
+     "def": "A private messenger built on Nostr, with end-to-end encrypted direct messages and communities."
+    },
+    {
+     "term": "Nostr",
+     "def": "An open protocol where clients talk to relays using signed events and public keys."
+    },
+    {
+     "term": "Relay",
+     "def": "A server that stores and forwards Nostr events."
+    },
+    {
+     "term": "npub",
+     "def": "A bech32 encoded public key starting with npub1; the address of a user or bot."
+    },
+    {
+     "term": "nsec",
+     "def": "A bech32 encoded private key starting with nsec1; keep it secret."
+    }
+   ],
+   "keyPoints": [
+    "Rust library, tokio runtime, builder API in the 0.3.0 docs.",
+    "The docs say 0.3.0 targets Vector 0.4.0 and later.",
+    "The repo main branch showed 0.2.1: verify versions before copying code.",
+    "A bot has exactly one identity per process.",
+    "Treat anything here as reported, not guaranteed."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A bot is a robot mail carrier for a secret-letter club. It needs to know which version of the rulebook it has, because old and new rulebooks are different."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A messenger needs three things: a way to prove who you are, a way to send messages privately, and a way to hear about new messages. The Vector SDK gives a bot all three, so a program can take part in chats like a person would."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Under the hood it uses a crate called vector-core for encryption, networking and storage, and the nostr-sdk crate to talk to relays. It runs on tokio, Rust's asynchronous runtime, so event handlers do not block each other."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Be careful with versions. The hosted documentation presents a builder API, VectorBot::builder, and says it is version 0.3.0. The GitHub main branch we inspected still reported 0.2.1 and used a shorter VectorBot::quick entry point. Code written for one may not compile with the other."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "toml",
+     "code": "// Cargo.toml (version as the 0.3.0 docs describe it; check crates.io or the repo for the real one)\n[dependencies]\nvector-sdk = \"0.3\"\ntokio = { version = \"1\", features = [\"full\"] }"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The honest way to use any SDK is to pin an exact version, read the examples that match it, and run a small echo bot before building anything large. This course marks which API belongs to which documented version."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Everything here is about the SDK, not the Vector app itself. The documentation also covers the Concord Protocol and the messenger's own features, which this course leaves out."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Vector",
+       "A private messenger built on Nostr, with end-to-end encrypted direct messages and communities."
+      ],
+      [
+       "Nostr",
+       "An open protocol where clients talk to relays using signed events and public keys."
+      ],
+      [
+       "Relay",
+       "A server that stores and forwards Nostr events."
+      ],
+      [
+       "npub",
+       "A bech32 encoded public key starting with npub1; the address of a user or bot."
+      ],
+      [
+       "nsec",
+       "A bech32 encoded private key starting with nsec1; keep it secret."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What language is the SDK written in?",
+     "options": [
+      "Rust",
+      "Python",
+      "Go",
+      "C#"
+     ],
+     "answer": 0,
+     "explain": "Cargo crate."
+    },
+    {
+     "q": "What does a Vector bot's address look like?",
+     "options": [
+      "An npub1 key",
+      "An email",
+      "A phone number",
+      "A URL"
+     ],
+     "answer": 0,
+     "explain": "Bech32 public key."
+    },
+    {
+     "q": "What does vector-core provide?",
+     "options": [
+      "Encryption, networking and storage",
+      "The UI",
+      "Billing",
+      "Maps"
+     ],
+     "answer": 0,
+     "explain": "The engine."
+    },
+    {
+     "q": "Which two version numbers differed?",
+     "options": [
+      "Docs 0.3.0 and repo main 0.2.1",
+      "1.0 and 2.0",
+      "Python 2 and 3",
+      "None"
+     ],
+     "answer": 0,
+     "explain": "Check before copying."
+    },
+    {
+     "q": "Which runtime does it use?",
+     "options": [
+      "tokio",
+      "asyncio",
+      "node",
+      "rayon only"
+     ],
+     "answer": 0,
+     "explain": "Async Rust."
+    },
+    {
+     "q": "What is a relay?",
+     "options": [
+      "A server that stores and forwards events",
+      "A router",
+      "A key",
+      "A bot"
+     ],
+     "answer": 0,
+     "explain": "Nostr."
+    }
+   ],
+   "cards": [
+    {
+     "q": "npub",
+     "a": "Public key address"
+    },
+    {
+     "q": "nsec",
+     "a": "Private key, secret"
+    },
+    {
+     "q": "tokio",
+     "a": "Rust async runtime"
+    },
+    {
+     "q": "Version pinning",
+     "a": "Fix an exact dependency version"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the term",
+     "intro": "Pair each term with its meaning.",
+     "pairs": [
+      [
+       "npub",
+       "public address"
+      ],
+      [
+       "nsec",
+       "private key"
+      ],
+      [
+       "relay",
+       "stores and forwards events"
+      ],
+      [
+       "vector-core",
+       "crypto, network, storage"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Overview",
+     "text": "The SDK is written in {{Rust}}. A bot's public address starts with {{npub1}}. Its private key must be kept {{secret}}. Servers that forward events are called {{relays}}."
+    },
+    {
+     "type": "python",
+     "title": "Which API?",
+     "intro": "Write api_style(version): versions are strings like '0.2.1' or '0.3.0'. Return 'quick' for a minor version below 3, otherwise 'builder'.",
+     "fn": "api_style",
+     "starter": "def api_style(version):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "0.2.1"
+       ],
+       "expect": "quick"
+      },
+      {
+       "args": [
+        "0.3.0"
+       ],
+       "expect": "builder"
+      },
+      {
+       "args": [
+        "0.4.2"
+       ],
+       "expect": "builder"
+      },
+      {
+       "args": [
+        "0.1.0"
+       ],
+       "expect": "quick"
+      }
+     ],
+     "hint": "Look at the middle number.",
+     "solution": "def api_style(version):\n    parts = version.split('.')\n    minor = int(parts[1])\n    if minor < 3:\n        return 'quick'\n    return 'builder'\n"
+    },
+    {
+     "type": "python",
+     "title": "Key kind",
+     "intro": "Write key_kind(key): return 'public' if the text starts with 'npub1', 'secret' if it starts with 'nsec1', otherwise 'unknown'.",
+     "fn": "key_kind",
+     "starter": "def key_kind(key):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "npub1abc"
+       ],
+       "expect": "public"
+      },
+      {
+       "args": [
+        "nsec1xyz"
+       ],
+       "expect": "secret"
+      },
+      {
+       "args": [
+        "hello"
+       ],
+       "expect": "unknown"
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": "unknown"
+      }
+     ],
+     "hint": "Prefix test.",
+     "solution": "def key_kind(key):\n    if key.startswith('npub1'):\n        return 'public'\n    if key.startswith('nsec1'):\n        return 'secret'\n    return 'unknown'\n"
+    },
+    {
+     "type": "python",
+     "title": "Safe to log?",
+     "intro": "Write safe_to_log(text): return False if the text contains 'nsec1' anywhere, otherwise True.",
+     "fn": "safe_to_log",
+     "starter": "def safe_to_log(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "bot started"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "key=nsec1qq"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "npub1abc online"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Never log secrets.",
+     "solution": "def safe_to_log(text):\n    return 'nsec1' not in text\n"
+    },
+    {
+     "type": "python",
+     "title": "Compatible?",
+     "intro": "Write compatible(sdk_minor, vector_version): the docs say SDK 0.3 targets Vector 0.4.0 and later. vector_version is like '0.4.1'. Return True when sdk_minor is 3 or more and the Vector minor number is 4 or more (major 0).",
+     "fn": "compatible",
+     "starter": "def compatible(sdk_minor, vector_version):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        "0.4.0"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        3,
+        "0.3.9"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        2,
+        "0.5.0"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        3,
+        "1.0.0"
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Two conditions.",
+     "solution": "def compatible(sdk_minor, vector_version):\n    parts = vector_version.split('.')\n    major = int(parts[0])\n    minor = int(parts[1])\n    if sdk_minor < 3:\n        return False\n    return major > 0 or minor >= 4\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Vector SDK overview",
+     "url": "https://vector-privacy.gitbook.io/vector-privacy/vector-sdk",
+     "note": "readme and version notes"
+    }
+   ]
+  },
+  {
+   "title": "Identity and keys: building a bot",
+   "maps": [
+    {
+     "title": "Identity",
+     "links": [
+      "Builder | creates | VectorBot",
+      "nsec | gives | Identity",
+      "mnemonic | derives | Keys",
+      "Keyless bot | saves | identity.nsec",
+      "data_dir | holds | Bot state",
+      "One identity | per | Process",
+      "npub | is shown by | bot.npub()"
+     ]
+    }
+   ],
+   "summary": [
+    "In the documented builder API you start with VectorBot::builder(), choose how the bot gets its keys, optionally set a data directory, and call build, which connects and returns the bot.",
+    "Keys can come from an nsec, from a mnemonic phrase, or from nothing. A keyless bot generates a key, saves it as identity.nsec in its data directory, and reuses it next time. Keys you pass in explicitly stay in memory only.",
+    "A process has one bot identity. To run more than one keyless bot on the same machine, give each its own data directory."
+   ],
+   "glossary": [
+    {
+     "term": "Builder",
+     "def": "A configuration object that collects options before build creates the bot."
+    },
+    {
+     "term": "Mnemonic",
+     "def": "A list of words from which keys can be derived."
+    },
+    {
+     "term": "Keyless bot",
+     "def": "A bot built without supplied keys; it generates and persists its own."
+    },
+    {
+     "term": "Data directory",
+     "def": "The folder where the bot stores its state and, for keyless bots, identity.nsec."
+    },
+    {
+     "term": "Environment variable",
+     "def": "A setting such as VECTOR_NSEC used by the examples to pass the key."
+    }
+   ],
+   "keyPoints": [
+    "VectorBot::builder()...build().await? creates and connects.",
+    "Use .nsec(), .mnemonic() or leave keys out.",
+    "Keyless bots save identity.nsec in the data directory.",
+    "More than one keyless bot needs separate .data_dir() values.",
+    "bot.npub() gives the public address to share."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Your bot has a public name tag anyone can read, and a secret code that only it knows. You share the name tag and hide the code."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Think of a bot as a new employee who needs a badge. The nsec is the badge's secret code, and the npub is the name on the badge that other people see. Whoever knows the secret code can act as the bot, so it must stay private."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "rust",
+     "code": "// as described in the 0.3.0 documentation\nuse vector_sdk::VectorBot;\n\n#[tokio::main]\nasync fn main() -> Result<(), Box<dyn std::error::Error>> {\n    let nsec = std::env::var(\"VECTOR_NSEC\")?;\n    let bot = VectorBot::builder()\n        .nsec(&nsec)\n        .build()\n        .await?;\n    println!(\"My address: {}\", bot.npub());\n    Ok(())\n}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The build call is where the bot logs in, connects to relays and syncs. Many errors such as not connected or not logged in appear when you use the bot before build has finished, so always await it first."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Without keys, the bot creates a fresh identity the first time. It writes the secret to identity.nsec in the data directory and loads it on later runs, so its address stays the same. Keys you pass explicitly are never written to disk by the SDK."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "If you start two keyless bots from the same directory they would share one identity file, which is a mistake. Give each bot its own data_dir. And never commit identity.nsec or print an nsec to a log."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Read the nsec from an environment variable, as the documented examples do with VECTOR_NSEC, rather than from a source file. Rotate it by creating a new identity if you suspect it leaked, and tell your contacts the new npub."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Builder",
+       "A configuration object that collects options before build creates the bot."
+      ],
+      [
+       "Mnemonic",
+       "A list of words from which keys can be derived."
+      ],
+      [
+       "Keyless bot",
+       "A bot built without supplied keys; it generates and persists its own."
+      ],
+      [
+       "Data directory",
+       "The folder where the bot stores its state and, for keyless bots, identity.nsec."
+      ],
+      [
+       "Environment variable",
+       "A setting such as VECTOR_NSEC used by the examples to pass the key."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Where is a keyless bot's key stored?",
+     "options": [
+      "identity.nsec in its data directory",
+      "In the cloud",
+      "Nowhere",
+      "In the npub"
+     ],
+     "answer": 0,
+     "explain": "Reused on restart."
+    },
+    {
+     "q": "When are explicit keys written to disk?",
+     "options": [
+      "Never, they stay in memory",
+      "Always",
+      "On exit",
+      "To the relay"
+     ],
+     "answer": 0,
+     "explain": "Memory only."
+    },
+    {
+     "q": "What do two keyless bots on one machine need?",
+     "options": [
+      "Different data directories",
+      "The same nsec",
+      "No setup",
+      "Two processes with one key"
+     ],
+     "answer": 0,
+     "explain": "Separate identity files."
+    },
+    {
+     "q": "What does build().await? do?",
+     "options": [
+      "Connects and returns the bot",
+      "Deletes keys",
+      "Sends a message",
+      "Compiles Rust"
+     ],
+     "answer": 0,
+     "explain": "Setup."
+    },
+    {
+     "q": "How do examples pass the key?",
+     "options": [
+      "VECTOR_NSEC environment variable",
+      "Hardcoded",
+      "In the URL",
+      "By email"
+     ],
+     "answer": 0,
+     "explain": "No secrets in code."
+    },
+    {
+     "q": "Which is safe to share?",
+     "options": [
+      "npub",
+      "nsec",
+      "identity.nsec",
+      "mnemonic"
+     ],
+     "answer": 0,
+     "explain": "Public key."
+    }
+   ],
+   "cards": [
+    {
+     "q": "bot.npub()",
+     "a": "Returns the public address"
+    },
+    {
+     "q": "identity.nsec",
+     "a": "Saved secret of a keyless bot"
+    },
+    {
+     "q": "VECTOR_NSEC",
+     "a": "Env variable used by examples"
+    },
+    {
+     "q": ".data_dir()",
+     "a": "Choose where state is stored"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Invite policy lab",
+     "intro": "Try the three invite policies and see which invitations a bot accepts.",
+     "height": 700,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}\n</style></head><body>\n<label>Invite policy <select id=\"pol\"><option value=\"manual\">Manual (default)</option><option value=\"public\">Public</option><option value=\"whitelist\">Whitelist</option></select></label>\n<label>Sender <select id=\"snd\"><option value=\"friend\">npub1friend (on the whitelist)</option><option value=\"stranger\">npub1stranger (not listed)</option></select></label>\n<label><input type=\"checkbox\" id=\"off\"> The invite arrived while the bot was offline (bot just started)</label>\n<button id=\"go\">Deliver invite</button><div id=\"o\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar seen={};\n$(\"go\").onclick=function(){var pol=$(\"pol\").value,s=$(\"snd\").value,off=$(\"off\").checked,r,c;\n if(pol===\"public\"){r=off?\"accepted on startup\":\"accepted at once\";c=\"ok\"}\n else if(pol===\"whitelist\"){if(s===\"friend\"){r=off?\"accepted on startup\":\"accepted at once\";c=\"ok\"}else{r=\"silently ignored: no reply is sent to the sender\";c=\"bad\"}}\n else{r=\"pending: waits until your code calls accept_invite\";c=\"un\"}\n $(\"o\").innerHTML='<b class=\"'+c+'\">'+r+'</b>';seen[pol+s]=1;var n=Object.keys(seen).length;$(\"p\").textContent=\"Cases seen: \"+n+\" of 4\";if(n>=4)done()};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the key source",
+     "intro": "Pair each setup with what happens.",
+     "pairs": [
+      [
+       "nsec supplied",
+       "key stays in memory"
+      ],
+      [
+       "no keys",
+       "identity.nsec is saved and reused"
+      ],
+      [
+       "two keyless bots",
+       "need separate data directories"
+      ],
+      [
+       "mnemonic",
+       "keys are derived from words"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Identity",
+     "text": "A bot built with no keys is {{keyless}}. It saves {{identity.nsec}} in its data {{directory}}. Only the {{npub}} should be shared."
+    },
+    {
+     "type": "python",
+     "title": "Bech32-looking npub",
+     "intro": "Write npub_ok(s): True when s starts with 'npub1', has exactly 63 characters, and every character after 'npub1' is in the bech32 set 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'. (This checks the shape only, not the checksum.)",
+     "fn": "npub_ok",
+     "starter": "def npub_ok(s):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "npub1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "npub1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "npub1bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "nsec1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "npub1qpzry9x8gf2tvdw0s3jn54khce6mua7lqqqqqqqqqqqqqqqqqqqqqqqqqq"
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Length 63.",
+     "solution": "def npub_ok(s):\n    if not s.startswith('npub1'):\n        return False\n    if len(s) != 63:\n        return False\n    chars = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'\n    for ch in s[5:]:\n        if ch not in chars:\n            return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Where does the key come from?",
+     "intro": "Write key_source(nsec, mnemonic, has_saved_file): return 'nsec' if nsec is non-empty, else 'mnemonic' if mnemonic is non-empty, else 'saved' if has_saved_file, else 'generate'.",
+     "fn": "key_source",
+     "starter": "def key_source(nsec, mnemonic, has_saved_file):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "k",
+        "",
+        false
+       ],
+       "expect": "nsec"
+      },
+      {
+       "args": [
+        "",
+        "w w w",
+        true
+       ],
+       "expect": "mnemonic"
+      },
+      {
+       "args": [
+        "",
+        "",
+        true
+       ],
+       "expect": "saved"
+      },
+      {
+       "args": [
+        "",
+        "",
+        false
+       ],
+       "expect": "generate"
+      }
+     ],
+     "hint": "Priority order.",
+     "solution": "def key_source(nsec, mnemonic, has_saved_file):\n    if nsec != '':\n        return 'nsec'\n    if mnemonic != '':\n        return 'mnemonic'\n    if has_saved_file:\n        return 'saved'\n    return 'generate'\n"
+    },
+    {
+     "type": "python",
+     "title": "Written to disk?",
+     "intro": "Write persists(source): True only when the key source is 'generate' (a new keyless identity is saved); False for 'nsec', 'mnemonic' and 'saved'.",
+     "fn": "persists",
+     "starter": "def persists(source):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "generate"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "nsec"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "saved"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "mnemonic"
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Explicit keys stay in memory.",
+     "solution": "def persists(source):\n    return source == 'generate'\n"
+    },
+    {
+     "type": "python",
+     "title": "Data dir clash",
+     "intro": "Write clashes(dirs): dirs is a list of data directory names for keyless bots. Return the sorted list of directory names used more than once.",
+     "fn": "clashes",
+     "starter": "def clashes(dirs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "a"
+        ]
+       ],
+       "expect": [
+        "a"
+       ]
+      },
+      {
+       "args": [
+        [
+         "x",
+         "y"
+        ]
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "d",
+         "d",
+         "d"
+        ]
+       ],
+       "expect": [
+        "d"
+       ]
+      }
+     ],
+     "hint": "Count duplicates.",
+     "solution": "def clashes(dirs):\n    out = []\n    for d in dirs:\n        if dirs.count(d) > 1 and d not in out:\n            out.append(d)\n    out.sort()\n    return out\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Quickstart",
+     "url": "https://vector-privacy.gitbook.io/vector-privacy/vector-sdk",
+     "note": "building a bot and identity"
+    }
+   ]
+  },
+  {
+   "title": "Channels, messages and replies",
+   "maps": [
+    {
+     "title": "Messaging",
+     "links": [
+      "bot.dm | opens | Channel",
+      "Channel | sends | Text and files",
+      "reply | links to | Message id",
+      "edit | changes | Own message",
+      "react | adds | Emoji",
+      "typing | shows | 30 second hint",
+      "send_file | uploads | Encrypted file"
+     ]
+    }
+   ],
+   "summary": [
+    "Messages go through a Channel. You get one for a direct message with bot.dm(npub), or from a chat or community with bot.channel(id), and then call methods on it.",
+    "A channel can send text, reply to a specific message, edit or delete a message, add a reaction, show that the bot is typing, and send a file from disk.",
+    "Typing indicators are short lived: the documentation describes them as expiring after 30 seconds, so a bot that is still working should send them again."
+   ],
+   "glossary": [
+    {
+     "term": "Channel",
+     "def": "A conversation the bot can send to: a direct message or a community chat."
+    },
+    {
+     "term": "Reply",
+     "def": "A message that points at an earlier message by its id."
+    },
+    {
+     "term": "Reaction",
+     "def": "An emoji attached to a message."
+    },
+    {
+     "term": "Typing indicator",
+     "def": "A temporary signal that the bot is composing a message."
+    },
+    {
+     "term": "Attachment",
+     "def": "A file sent with a message; it is encrypted before upload."
+    }
+   ],
+   "keyPoints": [
+    "bot.dm(npub) for direct messages; bot.channel(id) for others.",
+    "send, reply, edit, delete, react, typing, send_file.",
+    "Relative file paths resolve against the working directory.",
+    "Typing hints expire after about 30 seconds.",
+    "A DM send can fail if the person has no reachable inbox relays."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A channel is a door to one chat. Through the door the bot can talk, answer one particular sentence, fix its own words, add a smiley, or hand over a file."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A channel is a doorway to one conversation. Once the bot has the doorway it can speak, answer a particular earlier remark, fix a typo in its own message, or react with a thumbs up."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "rust",
+     "code": "// sketch of the 0.3.0 documented methods\nlet chat = bot.dm(\"npub1...\").await?;\nlet sent = chat.send(\"Hello!\").await?;\nchat.reply(&sent_id, \"Replying to that\").await?;\nchat.react(&sent_id, \"👍\").await?;\nchat.typing().await?;\nchat.send_file(\"report.pdf\").await?;"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Replies and reactions need the id of the message they refer to. That id usually comes from an incoming message or from the result of a send, so keep it if you plan to edit or react later."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Files are encrypted before they are uploaded and a hash lets the receiver check integrity. A relative path such as report.pdf is resolved against the working directory of the process, so a service started from another folder may not find it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Direct messages in Vector rely on the recipient's inbox relays. If the person has none that the bot can reach, the send fails with an error rather than going nowhere, and you should tell your user instead of retrying forever."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Never send private data to a channel without thinking about who is in it. In a community, everyone with access can read what the bot posts."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Channel",
+       "A conversation the bot can send to: a direct message or a community chat."
+      ],
+      [
+       "Reply",
+       "A message that points at an earlier message by its id."
+      ],
+      [
+       "Reaction",
+       "An emoji attached to a message."
+      ],
+      [
+       "Typing indicator",
+       "A temporary signal that the bot is composing a message."
+      ],
+      [
+       "Attachment",
+       "A file sent with a message; it is encrypted before upload."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How do you open a direct message?",
+     "options": [
+      "bot.dm(npub)",
+      "bot.run()",
+      "bot.build()",
+      "bot.sync()"
+     ],
+     "answer": 0,
+     "explain": "Returns a channel."
+    },
+    {
+     "q": "What does reply need?",
+     "options": [
+      "The target message id",
+      "A token",
+      "A mnemonic",
+      "A relay"
+     ],
+     "answer": 0,
+     "explain": "Reference."
+    },
+    {
+     "q": "How long does a typing hint last?",
+     "options": [
+      "About 30 seconds",
+      "Forever",
+      "1 second",
+      "1 hour"
+     ],
+     "answer": 0,
+     "explain": "Expires."
+    },
+    {
+     "q": "What resolves a relative send_file path?",
+     "options": [
+      "The working directory",
+      "The data dir always",
+      "The relay",
+      "The npub"
+     ],
+     "answer": 0,
+     "explain": "Check where you launch."
+    },
+    {
+     "q": "Why might a DM fail?",
+     "options": [
+      "No reachable inbox relays",
+      "Bad weather",
+      "Too many emojis",
+      "Wrong Rust version"
+     ],
+     "answer": 0,
+     "explain": "Delivery path."
+    },
+    {
+     "q": "Are files sent as plain bytes?",
+     "options": [
+      "No, encrypted first",
+      "Yes",
+      "Only images",
+      "Only small ones"
+     ],
+     "answer": 0,
+     "explain": "AES-256-GCM."
+    }
+   ],
+   "cards": [
+    {
+     "q": "react",
+     "a": "Add an emoji to a message"
+    },
+    {
+     "q": "edit",
+     "a": "Change a message you sent"
+    },
+    {
+     "q": "typing",
+     "a": "Show composing status"
+    },
+    {
+     "q": "send_file",
+     "a": "Upload and send a file"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the call",
+     "intro": "Pair each need with the call.",
+     "pairs": [
+      [
+       "answer a message",
+       "reply"
+      ],
+      [
+       "fix a typo",
+       "edit"
+      ],
+      [
+       "show activity",
+       "typing"
+      ],
+      [
+       "share a PDF",
+       "send_file"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Messaging",
+     "text": "Open a direct chat with bot.{{dm}}(npub). Add an emoji with {{react}}. A typing hint expires after about {{30}} seconds. Files are {{encrypted}} before upload."
+    },
+    {
+     "type": "python",
+     "title": "Typing still showing?",
+     "intro": "Write typing_active(sent_at, now): a typing hint lasts 30 seconds. True when now minus sent_at is less than 30.",
+     "fn": "typing_active",
+     "starter": "def typing_active(sent_at, now):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        10
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        0,
+        30
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        100,
+        129
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        100,
+        131
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Strictly less than 30.",
+     "solution": "def typing_active(sent_at, now):\n    return (now - sent_at) < 30\n"
+    },
+    {
+     "type": "python",
+     "title": "Keep typing alive",
+     "intro": "Write typing_times(duration, refresh): while the bot works for duration seconds, it re-sends typing every refresh seconds starting at 0. Return the list of times at which a hint is sent (all times below duration).",
+     "fn": "typing_times",
+     "starter": "def typing_times(duration, refresh):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        70,
+        25
+       ],
+       "expect": [
+        0,
+        25,
+        50
+       ]
+      },
+      {
+       "args": [
+        10,
+        25
+       ],
+       "expect": [
+        0
+       ]
+      },
+      {
+       "args": [
+        0,
+        25
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        50,
+        10
+       ],
+       "expect": [
+        0,
+        10,
+        20,
+        30,
+        40
+       ]
+      }
+     ],
+     "hint": "Loop until duration.",
+     "solution": "def typing_times(duration, refresh):\n    out = []\n    t = 0\n    while t < duration:\n        out.append(t)\n        t += refresh\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Resolve a path",
+     "intro": "Write resolve(cwd, path): if path starts with '/', return it; otherwise join cwd and path with a single '/' between (no double slash).",
+     "fn": "resolve",
+     "starter": "def resolve(cwd, path):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "/srv/bot",
+        "report.pdf"
+       ],
+       "expect": "/srv/bot/report.pdf"
+      },
+      {
+       "args": [
+        "/srv/bot/",
+        "a/b.txt"
+       ],
+       "expect": "/srv/bot/a/b.txt"
+      },
+      {
+       "args": [
+        "/srv",
+        "/tmp/x.png"
+       ],
+       "expect": "/tmp/x.png"
+      }
+     ],
+     "hint": "Absolute stays.",
+     "solution": "def resolve(cwd, path):\n    if path.startswith('/'):\n        return path\n    if cwd.endswith('/'):\n        return cwd + path\n    return cwd + '/' + path\n"
+    },
+    {
+     "type": "python",
+     "title": "Reply target",
+     "intro": "Write reply_to(messages, text): messages is a list of [id, text]. Return the id of the first message whose text equals the given text, or 'none'.",
+     "fn": "reply_to",
+     "starter": "def reply_to(messages, text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a1",
+          "hi"
+         ],
+         [
+          "a2",
+          "help"
+         ]
+        ],
+        "help"
+       ],
+       "expect": "a2"
+      },
+      {
+       "args": [
+        [
+         [
+          "a1",
+          "hi"
+         ]
+        ],
+        "bye"
+       ],
+       "expect": "none"
+      },
+      {
+       "args": [
+        [],
+        "x"
+       ],
+       "expect": "none"
+      }
+     ],
+     "hint": "Search by text.",
+     "solution": "def reply_to(messages, text):\n    for mid, t in messages:\n        if t == text:\n            return mid\n    return 'none'\n"
+    },
+    {
+     "type": "python",
+     "title": "Message chunks",
+     "intro": "Write chunks(text, size): split text into pieces of at most size characters and return the list. An empty text gives an empty list.",
+     "fn": "chunks",
+     "starter": "def chunks(text, size):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "abcdefg",
+        3
+       ],
+       "expect": [
+        "abc",
+        "def",
+        "g"
+       ]
+      },
+      {
+       "args": [
+        "",
+        5
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "abc",
+        3
+       ],
+       "expect": [
+        "abc"
+       ]
+      },
+      {
+       "args": [
+        "abcd",
+        10
+       ],
+       "expect": [
+        "abcd"
+       ]
+      }
+     ],
+     "hint": "Step through the text.",
+     "solution": "def chunks(text, size):\n    out = []\n    i = 0\n    while i < len(text):\n        out.append(text[i:i + size])\n        i += size\n    return out\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "NIP-17 private direct messages",
+     "url": "https://github.com/nostr-protocol/nips/blob/master/17.md",
+     "note": "inbox relays"
+    }
+   ]
+  },
+  {
+   "title": "Events, handlers and incoming messages",
+   "maps": [
+    {
+     "title": "Events",
+     "links": [
+      "on_message | handles | IncomingMessage",
+      "on_event | handles | BotEvent",
+      "is_mine | filters | Own messages",
+      "BotEvent | has | Eight variants",
+      "Handlers | run | Independently",
+      "Reconnect | catches up | Missed messages",
+      "member() | gives | Sender"
+     ]
+    }
+   ],
+   "summary": [
+    "Bots are event driven. You register a handler with on_message for chat messages or on_event for the wider set of events. Handlers are asynchronous and run independently, so a slow one does not block the others.",
+    "The documentation lists eight BotEvent variants: Message, MessageUpdate, Delete, MemberJoin, MemberLeave, Typing, Invite and Removed.",
+    "An IncomingMessage gives you its text, whether it is yours, its channel, and in communities the community and member. Always skip messages the bot sent itself."
+   ],
+   "glossary": [
+    {
+     "term": "IncomingMessage",
+     "def": "The object passed to on_message: text, channel, sender and reply helpers."
+    },
+    {
+     "term": "BotEvent",
+     "def": "An enum of everything a bot can be told about."
+    },
+    {
+     "term": "is_mine",
+     "def": "A check that tells you the bot itself sent the message."
+    },
+    {
+     "term": "Catch-up",
+     "def": "Fetching messages that arrived while the bot was offline."
+    },
+    {
+     "term": "Dispatch",
+     "def": "Calling the right handler for each event."
+    }
+   ],
+   "keyPoints": [
+    "on_message(handler) for chat; on_event(handler) for all events.",
+    "Eight variants: Message, MessageUpdate, Delete, MemberJoin, MemberLeave, Typing, Invite, Removed.",
+    "Skip is_mine() messages to avoid loops.",
+    "The bot reconnects automatically and catches up.",
+    "Keep the process alive or no events will arrive."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Events are like doorbells. Each kind of bell goes to a different helper, and the bot must not answer its own doorbell."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine a switchboard operator. Calls arrive in any order, and each one is passed to the right desk. In the SDK, every incoming thing becomes an event, and your handlers are the desks."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "rust",
+     "code": "// as described in the docs\nbot.on_message(|msg| async move {\n    if msg.is_mine() {\n        return;\n    }\n    let text = msg.text();\n    if text == \"ping\" {\n        let _ = msg.reply(\"pong\").await;\n    }\n}).await;"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is the shape of the documented echo-style bot. The first check protects against loops; without it the bot would answer its own replies. After registering handlers, the main task must stay alive, for example by awaiting a signal, or the process exits and no events arrive."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "on_event is for everything else. A MemberJoin lets a moderation bot greet newcomers, an Invite tells the bot it was asked to join a community, and Removed says it was taken out. Typing events are short lived signals you can usually ignore."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Because handlers run independently, do not rely on two events being processed in the order they arrived. If order matters, use ids and timestamps from the events, not the order of your code running."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "If the connection drops, the SDK reconnects by itself and catches up on messages it missed, according to the docs. Your handlers should therefore be safe to run for messages that are a little old."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "IncomingMessage",
+       "The object passed to on_message: text, channel, sender and reply helpers."
+      ],
+      [
+       "BotEvent",
+       "An enum of everything a bot can be told about."
+      ],
+      [
+       "is_mine",
+       "A check that tells you the bot itself sent the message."
+      ],
+      [
+       "Catch-up",
+       "Fetching messages that arrived while the bot was offline."
+      ],
+      [
+       "Dispatch",
+       "Calling the right handler for each event."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How many BotEvent variants are documented?",
+     "options": [
+      "Eight",
+      "Two",
+      "Twenty",
+      "One"
+     ],
+     "answer": 0,
+     "explain": "Message through Removed."
+    },
+    {
+     "q": "Why check is_mine()?",
+     "options": [
+      "Avoid answering itself",
+      "Speed",
+      "Encryption",
+      "Billing"
+     ],
+     "answer": 0,
+     "explain": "Loops."
+    },
+    {
+     "q": "Do handlers block each other?",
+     "options": [
+      "No, they run independently",
+      "Yes, strictly in order",
+      "Only on Linux",
+      "Only in DMs"
+     ],
+     "answer": 0,
+     "explain": "Independent."
+    },
+    {
+     "q": "Which event tells the bot it was invited?",
+     "options": [
+      "Invite",
+      "Delete",
+      "Typing",
+      "Message"
+     ],
+     "answer": 0,
+     "explain": "Variant."
+    },
+    {
+     "q": "What if the process exits?",
+     "options": [
+      "No events arrive",
+      "Events queue forever",
+      "Nothing changes",
+      "Relays push anyway"
+     ],
+     "answer": 0,
+     "explain": "Keep it alive."
+    },
+    {
+     "q": "What happens after a disconnect?",
+     "options": [
+      "Auto-reconnect and catch-up",
+      "The bot is deleted",
+      "Needs a manual restart",
+      "Messages are lost"
+     ],
+     "answer": 0,
+     "explain": "As documented."
+    }
+   ],
+   "cards": [
+    {
+     "q": "on_event",
+     "a": "Receive any BotEvent"
+    },
+    {
+     "q": "MemberJoin",
+     "a": "Someone joined a community"
+    },
+    {
+     "q": "Removed",
+     "a": "The bot was removed from a community"
+    },
+    {
+     "q": "Typing",
+     "a": "A typing signal"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Event router",
+     "intro": "Send events through a bot and see which handler would run.",
+     "height": 700,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}\n</style></head><body>\n<div class=\"k\">Pick an event and see where it goes</div>\n<label>Event <select id=\"ev\"><option>Message</option><option>MessageUpdate</option><option>Delete</option><option>MemberJoin</option><option>MemberLeave</option><option>Typing</option><option>Invite</option><option>Removed</option></select></label>\n<label><input type=\"checkbox\" id=\"mine\"> The message was sent by the bot itself</label>\n<button id=\"go\">Dispatch</button><div id=\"o\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar R={Message:\"on_message handler: chat\",MessageUpdate:\"on_event: chat edit\",Delete:\"on_event: moderation\",MemberJoin:\"on_event: welcome the member\",MemberLeave:\"on_event: update the member list\",Typing:\"on_event: usually ignore (expires in 30 s)\",Invite:\"on_event: apply the invite policy\",Removed:\"on_event: forget the community\"};\nvar seen={};\n$(\"go\").onclick=function(){var e=$(\"ev\").value,r=R[e],c=\"ok\";\n if(e===\"Message\"&&$(\"mine\").checked){r=\"skipped: is_mine() is true, so no loop\";c=\"un\"}\n $(\"o\").innerHTML='<b class=\"'+c+'\">'+e+'</b><br>'+r;seen[e+($(\"mine\").checked?\"m\":\"\")]=1;var n=Object.keys(seen).length;$(\"p\").textContent=\"Events tried: \"+n+\" of 6\";if(n>=6)done()};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the event",
+     "intro": "Pair each situation with the BotEvent.",
+     "pairs": [
+      [
+       "someone joined",
+       "MemberJoin"
+      ],
+      [
+       "someone left",
+       "MemberLeave"
+      ],
+      [
+       "bot invited",
+       "Invite"
+      ],
+      [
+       "message removed",
+       "Delete"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Events",
+     "text": "Chat messages go to {{on_message}}. Other events go to {{on_event}}. Skip messages where {{is_mine}} is true. The SDK documents {{eight}} event variants."
+    },
+    {
+     "type": "python",
+     "title": "Route an event",
+     "intro": "Write route(event): 'Message' and 'MessageUpdate' give 'chat'; 'MemberJoin' and 'MemberLeave' give 'members'; 'Invite' and 'Removed' give 'membership'; 'Delete' gives 'moderation'; 'Typing' gives 'ignore'; anything else gives 'unknown'.",
+     "fn": "route",
+     "starter": "def route(event):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Message"
+       ],
+       "expect": "chat"
+      },
+      {
+       "args": [
+        "MemberJoin"
+       ],
+       "expect": "members"
+      },
+      {
+       "args": [
+        "Invite"
+       ],
+       "expect": "membership"
+      },
+      {
+       "args": [
+        "Delete"
+       ],
+       "expect": "moderation"
+      },
+      {
+       "args": [
+        "Typing"
+       ],
+       "expect": "ignore"
+      },
+      {
+       "args": [
+        "Foo"
+       ],
+       "expect": "unknown"
+      }
+     ],
+     "hint": "A lookup.",
+     "solution": "def route(event):\n    if event in ('Message', 'MessageUpdate'):\n        return 'chat'\n    if event in ('MemberJoin', 'MemberLeave'):\n        return 'members'\n    if event in ('Invite', 'Removed'):\n        return 'membership'\n    if event == 'Delete':\n        return 'moderation'\n    if event == 'Typing':\n        return 'ignore'\n    return 'unknown'\n"
+    },
+    {
+     "type": "python",
+     "title": "Should the bot answer?",
+     "intro": "Write answers(is_mine, text, trigger): False if is_mine; otherwise True when text equals the trigger ignoring case and surrounding spaces.",
+     "fn": "answers",
+     "starter": "def answers(is_mine, text, trigger):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        false,
+        " Ping ",
+        "ping"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        true,
+        "ping",
+        "ping"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        false,
+        "pong",
+        "ping"
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Own messages first.",
+     "solution": "def answers(is_mine, text, trigger):\n    if is_mine:\n        return False\n    return text.strip().lower() == trigger.lower()\n"
+    },
+    {
+     "type": "python",
+     "title": "Catch up",
+     "intro": "Write missed(seen_ids, server_ids): return the ids in server_ids that are not in seen_ids, keeping order.",
+     "fn": "missed",
+     "starter": "def missed(seen_ids, server_ids):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         1,
+         2
+        ],
+        [
+         1,
+         2,
+         3,
+         4
+        ]
+       ],
+       "expect": [
+        3,
+        4
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         5
+        ]
+       ],
+       "expect": [
+        5
+       ]
+      },
+      {
+       "args": [
+        [
+         7
+        ],
+        [
+         7
+        ]
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Set difference in order.",
+     "solution": "def missed(seen_ids, server_ids):\n    out = []\n    for i in server_ids:\n        if i not in seen_ids:\n            out.append(i)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Count by kind",
+     "intro": "Write count_events(events): return a sorted list of [name, count] pairs for the event names in the list.",
+     "fn": "count_events",
+     "starter": "def count_events(events):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "Message",
+         "Typing",
+         "Message"
+        ]
+       ],
+       "expect": [
+        [
+         "Message",
+         2
+        ],
+        [
+         "Typing",
+         1
+        ]
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "Invite"
+        ]
+       ],
+       "expect": [
+        [
+         "Invite",
+         1
+        ]
+       ]
+      }
+     ],
+     "hint": "Count each name.",
+     "solution": "def count_events(events):\n    names = []\n    for e in events:\n        if e not in names:\n            names.append(e)\n    names.sort()\n    return [[n, events.count(n)] for n in names]\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Vector SDK components",
+     "url": "https://vector-privacy.gitbook.io/vector-privacy/vector-sdk",
+     "note": "events and handlers"
+    }
+   ]
+  },
+  {
+   "title": "Communities, invites and members",
+   "maps": [
+    {
+     "title": "Communities",
+     "links": [
+      "Community | has | Members and roles",
+      "Invite | is handled by | Policy",
+      "Manual | needs | accept_invite",
+      "Public | accepts | Anyone",
+      "Whitelist | accepts | Listed npubs",
+      "Member | can be | Kicked or banned",
+      "capabilities | tell | What bot may do"
+     ]
+    }
+   ],
+   "summary": [
+    "A community is a shared space with members and roles. Your bot can be invited to one, read and send messages there, welcome new members, and, if it has the rights, moderate.",
+    "What happens to an invitation depends on the invite policy you set on the builder. Manual is the default and leaves invites pending until you call accept_invite. Public accepts everyone. Whitelist accepts only listed npubs and quietly ignores the rest.",
+    "Invitations that arrived while the bot was offline are accepted on startup in the automatic modes."
+   ],
+   "glossary": [
+    {
+     "term": "Invite policy",
+     "def": "The builder setting that decides what the bot does with invitations."
+    },
+    {
+     "term": "Whitelist",
+     "def": "A list of npubs whose invitations are accepted automatically."
+    },
+    {
+     "term": "Capability",
+     "def": "A right the bot has in a community, such as kicking or banning."
+    },
+    {
+     "term": "Role",
+     "def": "A set of rights given to members, such as admin."
+    },
+    {
+     "term": "Owner",
+     "def": "The member who created the community; only they can dissolve it."
+    }
+   ],
+   "keyPoints": [
+    "Default policy is Manual: use pending_invites() and accept_invite(&id).",
+    "Public accepts anyone; Whitelist accepts only listed npubs and silently ignores others.",
+    "Check community.capabilities() before kick or ban.",
+    "dissolve() is owner only and cannot be undone.",
+    "sync_communities() refreshes stale ids."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A community is a clubhouse. A bot can be told to say yes to every invitation, only to friends on a list, or to ask a grown-up each time."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Think of a club that sends your bot a membership card. Manual policy means a person looks at each card first. Public policy means the bot joins any club that asks. Whitelist means it only joins clubs run by people on a list."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "rust",
+     "code": "// as described in the 0.3.0 docs\nlet bot = VectorBot::builder()\n    .nsec(&nsec)\n    .whitelist([\"npub1friend...\"])\n    .build()\n    .await?;\n\nfor invite in bot.pending_invites().await? {\n    // in Manual mode you decide\n    bot.accept_invite(&invite.id).await?;\n}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "In the whitelist mode, invitations from anyone else are silently ignored; the sender gets no refusal message. For a public helper bot you choose Public, but then anyone can add it to a community, so consider what it will do there."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Once inside, a community gives you member lists, roles, and methods to edit the name and description, create invites or leave. A Member can be asked for its profile, and checked with is_owner and is_admin."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Moderation actions such as kick and ban need admin rights. The bot should check capabilities first instead of trying and failing. Dissolve is the most destructive action: only the owner may call it, and it cannot be undone, so a bot should never do it without a person confirming."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "If an id you stored no longer works, the bot's local view is stale. Run sync_communities to refresh it before assuming the community is gone."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Invite policy",
+       "The builder setting that decides what the bot does with invitations."
+      ],
+      [
+       "Whitelist",
+       "A list of npubs whose invitations are accepted automatically."
+      ],
+      [
+       "Capability",
+       "A right the bot has in a community, such as kicking or banning."
+      ],
+      [
+       "Role",
+       "A set of rights given to members, such as admin."
+      ],
+      [
+       "Owner",
+       "The member who created the community; only they can dissolve it."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is the default invite policy?",
+     "options": [
+      "Manual",
+      "Public",
+      "Whitelist",
+      "Reject"
+     ],
+     "answer": 0,
+     "explain": "A person decides."
+    },
+    {
+     "q": "What happens to a non-listed invite in Whitelist mode?",
+     "options": [
+      "Silently ignored",
+      "Accepted",
+      "Error sent",
+      "Banned"
+     ],
+     "answer": 0,
+     "explain": "No refusal."
+    },
+    {
+     "q": "Who may dissolve a community?",
+     "options": [
+      "The owner only",
+      "Any admin",
+      "Any member",
+      "The bot always"
+     ],
+     "answer": 0,
+     "explain": "Irreversible."
+    },
+    {
+     "q": "Before kick or ban, check:",
+     "options": [
+      "capabilities()",
+      "npub()",
+      "typing()",
+      "send()"
+     ],
+     "answer": 0,
+     "explain": "Admin rights."
+    },
+    {
+     "q": "Stale community id fix?",
+     "options": [
+      "sync_communities()",
+      "Restart relay",
+      "Change nsec",
+      "Delete the bot"
+     ],
+     "answer": 0,
+     "explain": "Refresh."
+    },
+    {
+     "q": "Offline invites in automatic modes?",
+     "options": [
+      "Accepted on startup",
+      "Lost",
+      "Rejected",
+      "Deleted"
+     ],
+     "answer": 0,
+     "explain": "Per the docs."
+    }
+   ],
+   "cards": [
+    {
+     "q": "pending_invites",
+     "a": "Invites waiting for a decision"
+    },
+    {
+     "q": "accept_invite",
+     "a": "Join a community from an invite"
+    },
+    {
+     "q": "capabilities",
+     "a": "What the bot may do"
+    },
+    {
+     "q": "dissolve",
+     "a": "Owner-only destruction"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Invite policy lab",
+     "intro": "Try each policy against different senders and see what the bot does.",
+     "height": 700,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}\n</style></head><body>\n<label>Invite policy <select id=\"pol\"><option value=\"manual\">Manual (default)</option><option value=\"public\">Public</option><option value=\"whitelist\">Whitelist</option></select></label>\n<label>Sender <select id=\"snd\"><option value=\"friend\">npub1friend (on the whitelist)</option><option value=\"stranger\">npub1stranger (not listed)</option></select></label>\n<label><input type=\"checkbox\" id=\"off\"> The invite arrived while the bot was offline (bot just started)</label>\n<button id=\"go\">Deliver invite</button><div id=\"o\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar seen={};\n$(\"go\").onclick=function(){var pol=$(\"pol\").value,s=$(\"snd\").value,off=$(\"off\").checked,r,c;\n if(pol===\"public\"){r=off?\"accepted on startup\":\"accepted at once\";c=\"ok\"}\n else if(pol===\"whitelist\"){if(s===\"friend\"){r=off?\"accepted on startup\":\"accepted at once\";c=\"ok\"}else{r=\"silently ignored: no reply is sent to the sender\";c=\"bad\"}}\n else{r=\"pending: waits until your code calls accept_invite\";c=\"un\"}\n $(\"o\").innerHTML='<b class=\"'+c+'\">'+r+'</b>';seen[pol+s]=1;var n=Object.keys(seen).length;$(\"p\").textContent=\"Cases seen: \"+n+\" of 4\";if(n>=4)done()};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the policy",
+     "intro": "Pair each policy with its behaviour.",
+     "pairs": [
+      [
+       "Manual",
+       "waits for accept_invite"
+      ],
+      [
+       "Public",
+       "accepts anyone"
+      ],
+      [
+       "Whitelist",
+       "accepts only listed npubs"
+      ],
+      [
+       "Whitelist, unlisted sender",
+       "silently ignored"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Communities",
+     "text": "The default policy is {{Manual}}. A {{whitelist}} accepts only listed npubs. Kick and ban need {{admin}} rights, and only the {{owner}} can dissolve a community."
+    },
+    {
+     "type": "python",
+     "title": "Invite decision",
+     "intro": "Write decide(policy, sender, whitelist): policy is 'manual', 'public' or 'whitelist'. Return 'accept' for public, and for whitelist when the sender is listed; 'pending' for manual; 'ignore' for an unlisted sender under whitelist.",
+     "fn": "decide",
+     "starter": "def decide(policy, sender, whitelist):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "public",
+        "x",
+        []
+       ],
+       "expect": "accept"
+      },
+      {
+       "args": [
+        "manual",
+        "x",
+        [
+         "x"
+        ]
+       ],
+       "expect": "pending"
+      },
+      {
+       "args": [
+        "whitelist",
+        "a",
+        [
+         "a",
+         "b"
+        ]
+       ],
+       "expect": "accept"
+      },
+      {
+       "args": [
+        "whitelist",
+        "z",
+        [
+         "a"
+        ]
+       ],
+       "expect": "ignore"
+      }
+     ],
+     "hint": "Three policies.",
+     "solution": "def decide(policy, sender, whitelist):\n    if policy == 'public':\n        return 'accept'\n    if policy == 'manual':\n        return 'pending'\n    if sender in whitelist:\n        return 'accept'\n    return 'ignore'\n"
+    },
+    {
+     "type": "python",
+     "title": "Startup invites",
+     "intro": "Write startup(policy, offline_invites, whitelist): offline_invites is a list of sender names. In 'public' accept all, in 'whitelist' accept those listed, in 'manual' accept none. Return the accepted senders in order.",
+     "fn": "startup",
+     "starter": "def startup(policy, offline_invites, whitelist):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "public",
+        [
+         "a",
+         "b"
+        ],
+        []
+       ],
+       "expect": [
+        "a",
+        "b"
+       ]
+      },
+      {
+       "args": [
+        "whitelist",
+        [
+         "a",
+         "b"
+        ],
+        [
+         "b"
+        ]
+       ],
+       "expect": [
+        "b"
+       ]
+      },
+      {
+       "args": [
+        "manual",
+        [
+         "a"
+        ],
+        [
+         "a"
+        ]
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Automatic modes only.",
+     "solution": "def startup(policy, offline_invites, whitelist):\n    out = []\n    for s in offline_invites:\n        if policy == 'public' or (policy == 'whitelist' and s in whitelist):\n            out.append(s)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "May moderate",
+     "intro": "Write may_ban(caps, target_is_owner): caps is a list of capability names. True only when 'ban' is in caps and the target is not the owner.",
+     "fn": "may_ban",
+     "starter": "def may_ban(caps, target_is_owner):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "ban",
+         "kick"
+        ],
+        false
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "kick"
+        ],
+        false
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         "ban"
+        ],
+        true
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [],
+        false
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Check the rights.",
+     "solution": "def may_ban(caps, target_is_owner):\n    return ('ban' in caps) and not target_is_owner\n"
+    },
+    {
+     "type": "python",
+     "title": "Confirm destructive",
+     "intro": "Write allow_action(action, confirmed_by_person): 'dissolve' and 'leave' need confirmation (return confirmed_by_person); 'send' and 'react' are always True; anything else is False.",
+     "fn": "allow_action",
+     "starter": "def allow_action(action, confirmed_by_person):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "dissolve",
+        false
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "dissolve",
+        true
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "send",
+        false
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "unknown",
+        true
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Destructive needs a person.",
+     "solution": "def allow_action(action, confirmed_by_person):\n    if action in ('dissolve', 'leave'):\n        return confirmed_by_person\n    return action in ('send', 'react')\n"
+    },
+    {
+     "type": "python",
+     "title": "Admins",
+     "intro": "Write admins(members): members is a list of [npub, role] with role 'owner', 'admin' or 'member'. Return the sorted npubs of owners and admins.",
+     "fn": "admins",
+     "starter": "def admins(members):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "b",
+          "admin"
+         ],
+         [
+          "a",
+          "owner"
+         ],
+         [
+          "c",
+          "member"
+         ]
+        ]
+       ],
+       "expect": [
+        "a",
+        "b"
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Filter by role.",
+     "solution": "def admins(members):\n    out = []\n    for n, r in members:\n        if r in ('owner', 'admin'):\n            out.append(n)\n    out.sort()\n    return out\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Vector SDK advanced guide",
+     "url": "https://vector-privacy.gitbook.io/vector-privacy/vector-sdk",
+     "note": "communities and invite policies"
+    }
+   ]
+  },
+  {
+   "title": "Privacy, encryption and security practice",
+   "maps": [
+    {
+     "title": "Security",
+     "links": [
+      "Files | use | AES-256-GCM",
+      "Hash | checks | Integrity",
+      "NIP-59 | wraps | DMs",
+      "Relays | can | Delay or withhold",
+      "Profile | is | Public",
+      "Key leak | exposes | Old messages",
+      "Tor | hides | Network address"
+     ]
+    }
+   ],
+   "summary": [
+    "The documentation says files are encrypted with AES-256-GCM and verified with a SHA-256 hash, and that direct messages use NIP-59 gift wrapping. Reactions use NIP-25, typing indicators use NIP-40 expiry, and inbox relays use NIP-17.",
+    "Privacy still has limits. Relays can withhold or delay messages, profile data is public, and if a key is compromised, past messages could be exposed.",
+    "Good practice follows from that: never hardcode or commit keys, use wss relays, cap file sizes, keep logs free of sensitive data, rotate keys on a schedule, and report vulnerabilities privately."
+   ],
+   "glossary": [
+    {
+     "term": "AES-256-GCM",
+     "def": "An authenticated encryption mode; it hides content and detects tampering."
+    },
+    {
+     "term": "SHA-256",
+     "def": "A hash function used to check that data did not change."
+    },
+    {
+     "term": "Gift wrap",
+     "def": "A Nostr technique that hides who is talking to whom inside an outer envelope."
+    },
+    {
+     "term": "wss",
+     "def": "A websocket connection protected by TLS."
+    },
+    {
+     "term": "Tor",
+     "def": "An anonymity network that hides your network address; optional in the SDK through a feature."
+    }
+   ],
+   "keyPoints": [
+    "Do not commit keys; use environment variables.",
+    "Use wss:// relays only.",
+    "Cap file sizes and avoid logging sensitive content.",
+    "A compromised key can expose old messages; rotate every 6 to 12 months.",
+    "Report vulnerabilities privately; the team acknowledges within 48 hours."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Files are put in a locked box with a seal. If the seal is broken the box is not trusted. Remember, the post office can see that a box came, even if it cannot open it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine sending a letter inside a locked box, then inside a plain envelope with a fake return address. The box hides the contents, the outer envelope hides who is writing to whom. That is the idea behind encrypted files and gift-wrapped direct messages."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "AES-256-GCM uses a 256-bit key, which is 32 bytes. The GCM mode also adds an authentication tag, conventionally 16 bytes, so the encrypted data is longer than the original by that amount, and any change to it is detected when decrypting."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The SHA-256 hash is like a fingerprint. If a downloaded file does not match the fingerprint that came with it, it was damaged or tampered with, and the bot should refuse to use it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Be honest about limits. A relay can see that something arrived even if it cannot read it, and can drop or delay messages. Profile information such as a name is public. And since keys do not expire on their own, losing one can expose history."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "rust",
+     "code": "// the optional Tor feature, as the docs describe it\n# Cargo.toml:  vector-sdk = { version = \"0.3\", features = [\"tor\"] }\nlet bot = VectorBot::builder()\n    .nsec(&nsec)\n    .tor()\n    .build()\n    .await?;"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Tor needs both the Cargo feature and the tor call. Without the feature the call has no effect, so test that it really takes effect rather than assuming it did. Startup is slower because the embedded client has to bootstrap during build."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "AES-256-GCM",
+       "An authenticated encryption mode; it hides content and detects tampering."
+      ],
+      [
+       "SHA-256",
+       "A hash function used to check that data did not change."
+      ],
+      [
+       "Gift wrap",
+       "A Nostr technique that hides who is talking to whom inside an outer envelope."
+      ],
+      [
+       "wss",
+       "A websocket connection protected by TLS."
+      ],
+      [
+       "Tor",
+       "An anonymity network that hides your network address; optional in the SDK through a feature."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which cipher protects files?",
+     "options": [
+      "AES-256-GCM",
+      "ROT13",
+      "MD5",
+      "None"
+     ],
+     "answer": 0,
+     "explain": "Authenticated encryption."
+    },
+    {
+     "q": "What does a SHA-256 hash check?",
+     "options": [
+      "Integrity",
+      "Speed",
+      "Language",
+      "Billing"
+     ],
+     "answer": 0,
+     "explain": "Fingerprint."
+    },
+    {
+     "q": "What can a relay do?",
+     "options": [
+      "Withhold or delay messages",
+      "Read gift-wrapped DMs",
+      "Change your key",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Limits of privacy."
+    },
+    {
+     "q": "What does a leaked key expose?",
+     "options": [
+      "Old messages",
+      "Nothing",
+      "Only new ones",
+      "Just the name"
+     ],
+     "answer": 0,
+     "explain": "Rotate."
+    },
+    {
+     "q": "Which relay URL scheme is safe?",
+     "options": [
+      "wss://",
+      "ws://",
+      "http://",
+      "ftp://"
+     ],
+     "answer": 0,
+     "explain": "TLS."
+    },
+    {
+     "q": "Tor requires:",
+     "options": [
+      "The Cargo feature and .tor()",
+      "Only .tor()",
+      "Only the feature",
+      "A VPN"
+     ],
+     "answer": 0,
+     "explain": "Both."
+    }
+   ],
+   "cards": [
+    {
+     "q": "NIP-17",
+     "a": "Inbox relay lists for DMs"
+    },
+    {
+     "q": "NIP-25",
+     "a": "Reactions"
+    },
+    {
+     "q": "NIP-40",
+     "a": "Event expiration; used for typing"
+    },
+    {
+     "q": "NIP-59",
+     "a": "Gift wrap"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the protection",
+     "intro": "Pair each risk with the safeguard.",
+     "pairs": [
+      [
+       "tampered file",
+       "SHA-256 check"
+      ],
+      [
+       "hidden sender",
+       "gift wrap"
+      ],
+      [
+       "leaked key",
+       "rotate keys"
+      ],
+      [
+       "plain connection",
+       "wss relays"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Security",
+     "text": "Files are encrypted with {{AES-256-GCM}}. A {{hash}} detects changes. Use {{wss}} relays and never commit a {{key}}."
+    },
+    {
+     "type": "python",
+     "title": "Encrypted size",
+     "intro": "Write encrypted_len(plain_len): AES-GCM adds a 16 byte tag. Return plain_len + 16.",
+     "fn": "encrypted_len",
+     "starter": "def encrypted_len(plain_len):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": 16
+      },
+      {
+       "args": [
+        100
+       ],
+       "expect": 116
+      },
+      {
+       "args": [
+        1048576
+       ],
+       "expect": 1048592
+      }
+     ],
+     "hint": "Add the tag.",
+     "solution": "def encrypted_len(plain_len):\n    return plain_len + 16\n"
+    },
+    {
+     "type": "python",
+     "title": "Valid key size",
+     "intro": "Write key_ok(key_bytes): True when the AES-256 key has exactly 32 bytes.",
+     "fn": "key_ok",
+     "starter": "def key_ok(key_bytes):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        32
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        16
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        64
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        0
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "256 bits.",
+     "solution": "def key_ok(key_bytes):\n    return key_bytes == 32\n"
+    },
+    {
+     "type": "python",
+     "title": "Safe relay",
+     "intro": "Write relay_ok(url): True when the url starts with 'wss://'.",
+     "fn": "relay_ok",
+     "starter": "def relay_ok(url):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "wss://relay.example"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "ws://relay.example"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "https://x"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "TLS only.",
+     "solution": "def relay_ok(url):\n    return url.startswith('wss://')\n"
+    },
+    {
+     "type": "python",
+     "title": "File policy",
+     "intro": "Write accept_file(size_bytes, limit_bytes, hash_matches): True only when the size is within the limit and the hash matches.",
+     "fn": "accept_file",
+     "starter": "def accept_file(size_bytes, limit_bytes, hash_matches):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        100,
+        1000,
+        true
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        2000,
+        1000,
+        true
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        100,
+        1000,
+        false
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        1000,
+        1000,
+        true
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Both checks.",
+     "solution": "def accept_file(size_bytes, limit_bytes, hash_matches):\n    return size_bytes <= limit_bytes and hash_matches\n"
+    },
+    {
+     "type": "python",
+     "title": "Rotation due",
+     "intro": "Write rotation_due(months_since_rotation, max_months): True when months_since_rotation is at least max_months.",
+     "fn": "rotation_due",
+     "starter": "def rotation_due(months_since_rotation, max_months):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        3,
+        6
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        6,
+        6
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        14,
+        12
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Rotate on schedule.",
+     "solution": "def rotation_due(months_since_rotation, max_months):\n    return months_since_rotation >= max_months\n"
+    },
+    {
+     "type": "python",
+     "title": "Redact for logs",
+     "intro": "Write redact(text): replace every occurrence of the characters following 'nsec1' (letters and digits) with the word nsec1[redacted]. Operate on whitespace-separated words: a word starting with 'nsec1' becomes 'nsec1[redacted]'. Return the joined text with single spaces.",
+     "fn": "redact",
+     "starter": "def redact(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "key nsec1abcdef loaded"
+       ],
+       "expect": "key nsec1[redacted] loaded"
+      },
+      {
+       "args": [
+        "no secrets here"
+       ],
+       "expect": "no secrets here"
+      },
+      {
+       "args": [
+        "nsec1zz"
+       ],
+       "expect": "nsec1[redacted]"
+      }
+     ],
+     "hint": "Words that start with nsec1.",
+     "solution": "def redact(text):\n    out = []\n    for w in text.split(' '):\n        if w.startswith('nsec1'):\n            out.append('nsec1[redacted]')\n        else:\n            out.append(w)\n    return ' '.join(out)\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "NIP-59 gift wrap",
+     "url": "https://github.com/nostr-protocol/nips/blob/master/59.md",
+     "note": "hiding sender and receiver"
+    }
+   ]
+  },
+  {
+   "title": "Example bots: echo, slash, AI, moderation, files",
+   "maps": [
+    {
+     "title": "Examples",
+     "links": [
+      "echo_bot | repeats | Text",
+      "slash_command_bot | parses | /ping /echo /roll /help",
+      "ai_bot | calls | OpenAI-compatible API",
+      "moderation_bot | welcomes and bans | By word filter",
+      "whitelist_bot | accepts | Listed invites",
+      "file_bot | sends | Files",
+      "cargo run | starts | An example"
+     ]
+    }
+   ],
+   "summary": [
+    "The documentation ships a set of example bots: echo_bot, slash_command_bot, ai_bot, moderation_bot, whitelist_bot, file_bot and save_files_bot. All need the VECTOR_NSEC environment variable, and you start one with cargo run -p vector-sdk --example name.",
+    "The slash_command_bot handles /ping, /echo, /roll and /help by parsing message text, since these are bot-side conventions in a chat, not a server feature. The ai_bot calls an OpenAI-compatible endpoint, shows a typing indicator, replies in threads and keeps a history per chat.",
+    "It needs OPENAI_API_KEY.",
+    "The moderation_bot welcomes members on MemberJoin and bans on a word filter."
+   ],
+   "glossary": [
+    {
+     "term": "Example",
+     "def": "A small runnable program in the repository that shows one feature."
+    },
+    {
+     "term": "Slash-style command",
+     "def": "A message starting with a slash that the bot parses itself."
+    },
+    {
+     "term": "History",
+     "def": "The list of earlier messages sent to a language model as context."
+    },
+    {
+     "term": "Word filter",
+     "def": "A rule that matches banned words in a message."
+    },
+    {
+     "term": "OPENAI_API_KEY",
+     "def": "The environment variable the AI example expects for its model endpoint."
+    }
+   ],
+   "keyPoints": [
+    "cargo run -p vector-sdk --example echo_bot with VECTOR_NSEC set.",
+    "slash_command_bot: /ping, /echo, /roll, /help.",
+    "ai_bot needs OPENAI_API_KEY and keeps per-chat history.",
+    "moderation_bot: welcome on MemberJoin, ban on filtered words.",
+    "Run examples with a throwaway identity first."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The example bots are little practice robots: one repeats, one follows commands, one chats, one keeps order. Always practise with a pretend identity."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The best way to learn an SDK is to run its smallest program. The echo bot receives a message and sends the same text back. It touches the whole path: identity, connection, event, reply."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "bash",
+     "code": "# in a shell (names as reported in the examples page)\nexport VECTOR_NSEC='nsec1...'   # use a throwaway identity\ncargo run -p vector-sdk --example echo_bot"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The command bot adds parsing: split the text at the first space, look at the command word, and act. The documented set is ping, echo, roll and help, and anything else gets the help text."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The AI bot is the largest example. For each incoming message it shows typing, sends the conversation so far to an OpenAI-compatible endpoint, and replies. Keep the history short, because long histories cost money and slow replies."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The moderation bot shows why handlers need care. A filter that bans on a single word will punish innocent people; a careful bot warns first, logs the reason without the message text, and leaves final decisions to admins."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Before pointing any example at a real community, run it in a private test chat with a throwaway key, and read its source so you know exactly what it will do with the permissions you give it."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Example",
+       "A small runnable program in the repository that shows one feature."
+      ],
+      [
+       "Slash-style command",
+       "A message starting with a slash that the bot parses itself."
+      ],
+      [
+       "History",
+       "The list of earlier messages sent to a language model as context."
+      ],
+      [
+       "Word filter",
+       "A rule that matches banned words in a message."
+      ],
+      [
+       "OPENAI_API_KEY",
+       "The environment variable the AI example expects for its model endpoint."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which variable do all examples need?",
+     "options": [
+      "VECTOR_NSEC",
+      "HOME",
+      "PATH",
+      "RUST_LOG only"
+     ],
+     "answer": 0,
+     "explain": "Identity."
+    },
+    {
+     "q": "How is an example started?",
+     "options": [
+      "cargo run -p vector-sdk --example name",
+      "python run.py",
+      "npm start",
+      "make"
+     ],
+     "answer": 0,
+     "explain": "Cargo."
+    },
+    {
+     "q": "What does ai_bot call?",
+     "options": [
+      "An OpenAI-compatible endpoint",
+      "A local file",
+      "Nothing",
+      "A relay"
+     ],
+     "answer": 0,
+     "explain": "Needs OPENAI_API_KEY."
+    },
+    {
+     "q": "What does moderation_bot do on MemberJoin?",
+     "options": [
+      "Sends a welcome",
+      "Bans",
+      "Leaves",
+      "Dissolves"
+     ],
+     "answer": 0,
+     "explain": "Greeting."
+    },
+    {
+     "q": "Safest way to try an example?",
+     "options": [
+      "Throwaway identity, private chat",
+      "Production key, big community",
+      "No key",
+      "Public key only"
+     ],
+     "answer": 0,
+     "explain": "Test first."
+    },
+    {
+     "q": "What does an unknown command get?",
+     "options": [
+      "The help text",
+      "A ban",
+      "Nothing",
+      "A crash"
+     ],
+     "answer": 0,
+     "explain": "Friendly fallback."
+    }
+   ],
+   "cards": [
+    {
+     "q": "echo_bot",
+     "a": "Repeats incoming text"
+    },
+    {
+     "q": "file_bot",
+     "a": "Uses Channel::send_file"
+    },
+    {
+     "q": "save_files_bot",
+     "a": "Stores received files"
+    },
+    {
+     "q": "RUST_LOG",
+     "a": "Controls log verbosity"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the example",
+     "intro": "Pair each example with its job.",
+     "pairs": [
+      [
+       "echo_bot",
+       "repeat text"
+      ],
+      [
+       "slash_command_bot",
+       "ping echo roll help"
+      ],
+      [
+       "moderation_bot",
+       "welcome and filter"
+      ],
+      [
+       "file_bot",
+       "send a file"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Examples",
+     "text": "Examples need the {{VECTOR_NSEC}} variable. The AI example needs {{OPENAI_API_KEY}}. Start one with cargo {{run}} -p vector-sdk --example name."
+    },
+    {
+     "type": "python",
+     "title": "Command handler",
+     "intro": "Write command(text): '/ping' gives 'pong'; '/echo something' gives 'something'; '/help' gives 'commands: /ping /echo /roll /help'; anything else gives the same help text.",
+     "fn": "command",
+     "starter": "def command(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "/ping"
+       ],
+       "expect": "pong"
+      },
+      {
+       "args": [
+        "/echo hello there"
+       ],
+       "expect": "hello there"
+      },
+      {
+       "args": [
+        "/help"
+       ],
+       "expect": "commands: /ping /echo /roll /help"
+      },
+      {
+       "args": [
+        "hi"
+       ],
+       "expect": "commands: /ping /echo /roll /help"
+      },
+      {
+       "args": [
+        "/echo"
+       ],
+       "expect": "commands: /ping /echo /roll /help"
+      }
+     ],
+     "hint": "Split on the first space.",
+     "solution": "def command(text):\n    help_text = 'commands: /ping /echo /roll /help'\n    if text == '/ping':\n        return 'pong'\n    if text.startswith('/echo '):\n        return text[6:]\n    return help_text\n"
+    },
+    {
+     "type": "python",
+     "title": "Parse a roll",
+     "intro": "Write parse_roll(text): text is like '/roll 2d6'. Return [count, sides] as integers, or [0, 0] if it is not in that form. Count and sides must be at least 1.",
+     "fn": "parse_roll",
+     "starter": "def parse_roll(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "/roll 2d6"
+       ],
+       "expect": [
+        2,
+        6
+       ]
+      },
+      {
+       "args": [
+        "/roll d6"
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        "/roll 0d6"
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        "roll 2d6"
+       ],
+       "expect": [
+        0,
+        0
+       ]
+      },
+      {
+       "args": [
+        "/roll 1d20"
+       ],
+       "expect": [
+        1,
+        20
+       ]
+      }
+     ],
+     "hint": "Split at d.",
+     "solution": "def parse_roll(text):\n    if not text.startswith('/roll '):\n        return [0, 0]\n    body = text[6:]\n    if 'd' not in body:\n        return [0, 0]\n    a, b = body.split('d', 1)\n    if a == '' or b == '':\n        return [0, 0]\n    for ch in a + b:\n        if ch not in '0123456789':\n            return [0, 0]\n    n = int(a)\n    s = int(b)\n    if n < 1 or s < 1:\n        return [0, 0]\n    return [n, s]\n"
+    },
+    {
+     "type": "python",
+     "title": "Welcome message",
+     "intro": "Write welcome(name, community): return 'Welcome, ' + name + ', to ' + community + '!'",
+     "fn": "welcome",
+     "starter": "def welcome(name, community):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Ana",
+        "Rust Club"
+       ],
+       "expect": "Welcome, Ana, to Rust Club!"
+      },
+      {
+       "args": [
+        "Bo",
+        "Vector"
+       ],
+       "expect": "Welcome, Bo, to Vector!"
+      }
+     ],
+     "hint": "String joining.",
+     "solution": "def welcome(name, community):\n    return 'Welcome, ' + name + ', to ' + community + '!'\n"
+    },
+    {
+     "type": "python",
+     "title": "Word filter",
+     "intro": "Write flagged(message, banned): True when any banned word appears as a whole word in the message (compare lower case, split on spaces).",
+     "fn": "flagged",
+     "starter": "def flagged(message, banned):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "this is spam",
+        [
+         "spam"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "spammy words",
+        [
+         "spam"
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "Hello",
+        [
+         "x"
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "BUY now",
+        [
+         "buy"
+        ]
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Whole words only.",
+     "solution": "def flagged(message, banned):\n    words = message.lower().split(' ')\n    for b in banned:\n        if b.lower() in words:\n            return True\n    return False\n"
+    },
+    {
+     "type": "python",
+     "title": "Trim history",
+     "intro": "Write trim(history, max_items): keep only the last max_items entries of the list, in order.",
+     "fn": "trim",
+     "starter": "def trim(history, max_items):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b",
+         "c"
+        ],
+        2
+       ],
+       "expect": [
+        "b",
+        "c"
+       ]
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        5
+       ],
+       "expect": [
+        "a"
+       ]
+      },
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        0
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Keep the tail.",
+     "solution": "def trim(history, max_items):\n    if max_items <= 0:\n        return []\n    if len(history) <= max_items:\n        return history\n    return history[len(history) - max_items:]\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Vector-SDK examples",
+     "url": "https://github.com/VectorPrivacy/Vector-SDK/tree/main/examples",
+     "note": "echo, command, AI, moderation bots"
+    }
+   ]
+  },
+  {
+   "title": "Troubleshooting, tracing and deployment",
+   "maps": [
+    {
+     "title": "Operations",
+     "links": [
+      "Not connected | means | build not finished",
+      "RUST_LOG | enables | Debug logs",
+      "No events | means | Process not alive",
+      "send_file | uses | Working directory",
+      "Bunker signer | cannot do | Concord rekeys",
+      "Backoff | spaces | Reconnects",
+      "Supervisor | restarts | The bot"
+     ]
+    }
+   ],
+   "summary": [
+    "Most problems fall into a few families. A not connected or not logged in error means you used the bot before build finished. A DM send failure usually means no reachable inbox relays. A stale id means run sync_communities.",
+    "If on_message never fires, keep the process alive and message the printed npub from another account. If kick or ban fails, check capabilities. If send_file cannot find a file, check the working directory. Turn on debug logging with RUST_LOG=vector_sdk=debug.",
+    "In production run the bot under a supervisor, keep secrets out of logs, and monitor reconnect storms."
+   ],
+   "glossary": [
+    {
+     "term": "RUST_LOG",
+     "def": "An environment variable that sets the log level for Rust crates."
+    },
+    {
+     "term": "Supervisor",
+     "def": "A tool such as systemd that restarts a crashed process."
+    },
+    {
+     "term": "Bunker signer",
+     "def": "A remote NIP-46 signer; the docs say it cannot perform Concord rekeys."
+    },
+    {
+     "term": "Reconnect storm",
+     "def": "Many rapid reconnect attempts, often from a bad network or key."
+    },
+    {
+     "term": "Health check",
+     "def": "A small test that shows the bot is alive and can send."
+    }
+   ],
+   "keyPoints": [
+    "Await build() before any other call.",
+    "No events? Keep the process alive and message the printed npub.",
+    "RUST_LOG=vector_sdk=debug for detail.",
+    "Check capabilities before moderation; run sync_communities for stale ids.",
+    "Supervise, log without secrets, back off on retries."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. When a toy will not work, check the cheap things first: is it switched on, are the batteries in, did the setup finish, and is anyone listening?"
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When something fails, work from the cheapest check to the dearest. First, is the process running and did build finish? Second, is the key right? Third, can the target be reached? Only then read deeper logs."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "bash",
+     "code": "# turn on debug output (name as given in the troubleshooting page)\nRUST_LOG=vector_sdk=debug cargo run -p vector-sdk --example echo_bot"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A classic mistake is registering a handler and then letting main return. The program ends, the connection closes and nothing is ever delivered. Wait on a signal or a channel so the process stays alive."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A second classic is a relative path. A service started by systemd runs from another folder than your shell, so report.pdf is not where you thought. Use absolute paths in services."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "For retries use exponential backoff with a cap and some randomness, so a fleet of bots does not stampede a relay after an outage. Treat authentication errors differently from network errors: do not retry a bad key."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Deploy under systemd or a container with a restart policy. Give each bot its own data directory, protect the directory with file permissions, and keep a runbook: how to rotate the key, how to read logs, and who to tell."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "RUST_LOG",
+       "An environment variable that sets the log level for Rust crates."
+      ],
+      [
+       "Supervisor",
+       "A tool such as systemd that restarts a crashed process."
+      ],
+      [
+       "Bunker signer",
+       "A remote NIP-46 signer; the docs say it cannot perform Concord rekeys."
+      ],
+      [
+       "Reconnect storm",
+       "Many rapid reconnect attempts, often from a bad network or key."
+      ],
+      [
+       "Health check",
+       "A small test that shows the bot is alive and can send."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Error: not connected. Likely cause?",
+     "options": [
+      "Used the bot before build finished",
+      "Wrong Rust",
+      "Bad emoji",
+      "Large file"
+     ],
+     "answer": 0,
+     "explain": "Await build."
+    },
+    {
+     "q": "on_message never fires. First check?",
+     "options": [
+      "Process stays alive",
+      "Change the language",
+      "Delete data dir",
+      "Buy a relay"
+     ],
+     "answer": 0,
+     "explain": "Keep running."
+    },
+    {
+     "q": "How do you enable debug logs?",
+     "options": [
+      "RUST_LOG=vector_sdk=debug",
+      "--loud",
+      "DEBUG=1 only",
+      "Edit the key"
+     ],
+     "answer": 0,
+     "explain": "Env var."
+    },
+    {
+     "q": "send_file fails on a relative path. Why?",
+     "options": [
+      "Resolved against the working directory",
+      "Files must be tiny",
+      "Relays block it",
+      "Wrong npub"
+     ],
+     "answer": 0,
+     "explain": "Use absolute paths."
+    },
+    {
+     "q": "Stale community id?",
+     "options": [
+      "sync_communities()",
+      "Rotate key",
+      "Restart tor",
+      "Rewrite handler"
+     ],
+     "answer": 0,
+     "explain": "Refresh."
+    },
+    {
+     "q": "Should a bad key be retried forever?",
+     "options": [
+      "No, treat it as fatal",
+      "Yes",
+      "Only at night",
+      "Only in Tor"
+     ],
+     "answer": 0,
+     "explain": "Auth errors differ."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Health check",
+     "a": "Confirms the bot can send"
+    },
+    {
+     "q": "systemd",
+     "a": "Linux supervisor"
+    },
+    {
+     "q": "Jitter",
+     "a": "Randomness added to a backoff delay"
+    },
+    {
+     "q": "Runbook",
+     "a": "Written steps for operating a service"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the symptom",
+     "intro": "Pair each symptom with the first check.",
+     "pairs": [
+      [
+       "not logged in",
+       "await build"
+      ],
+      [
+       "no events",
+       "process alive"
+      ],
+      [
+       "kick fails",
+       "capabilities"
+      ],
+      [
+       "file not found",
+       "working directory"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Operations",
+     "text": "Use {{RUST_LOG}} to see debug output. Run a bot under a {{supervisor}} such as systemd. Retry with {{backoff}}, and never retry a bad {{key}} forever."
+    },
+    {
+     "type": "order",
+     "title": "Diagnose",
+     "intro": "Put the checks in a sensible order.",
+     "items": [
+      "Is the process running?",
+      "Did build() finish?",
+      "Is the key correct?",
+      "Is the target reachable?",
+      "Read debug logs"
+     ]
+    },
+    {
+     "type": "python",
+     "title": "Backoff with cap",
+     "intro": "Write waits(n, base, cap): return the first n retry waits; the first is base, each next doubles, never above cap.",
+     "fn": "waits",
+     "starter": "def waits(n, base, cap):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        1,
+        10
+       ],
+       "expect": [
+        1,
+        2,
+        4,
+        8,
+        10
+       ]
+      },
+      {
+       "args": [
+        3,
+        2,
+        100
+       ],
+       "expect": [
+        2,
+        4,
+        8
+       ]
+      },
+      {
+       "args": [
+        0,
+        1,
+        1
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Double and clamp.",
+     "solution": "def waits(n, base, cap):\n    out = []\n    w = base\n    for i in range(n):\n        out.append(min(w, cap))\n        w = w * 2\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Retry or stop",
+     "intro": "Write retry_decision(error): 'network' and 'timeout' give 'retry'; 'auth' and 'invalid_key' give 'stop'; 'no_relays' gives 'tell person'; anything else gives 'log'.",
+     "fn": "retry_decision",
+     "starter": "def retry_decision(error):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "network"
+       ],
+       "expect": "retry"
+      },
+      {
+       "args": [
+        "auth"
+       ],
+       "expect": "stop"
+      },
+      {
+       "args": [
+        "no_relays"
+       ],
+       "expect": "tell person"
+      },
+      {
+       "args": [
+        "weird"
+       ],
+       "expect": "log"
+      }
+     ],
+     "hint": "Different errors, different actions.",
+     "solution": "def retry_decision(error):\n    if error in ('network', 'timeout'):\n        return 'retry'\n    if error in ('auth', 'invalid_key'):\n        return 'stop'\n    if error == 'no_relays':\n        return 'tell person'\n    return 'log'\n"
+    },
+    {
+     "type": "python",
+     "title": "Diagnose",
+     "intro": "Write diagnose(symptom): 'not connected' or 'not logged in' gives 'await build'; 'no events' gives 'keep process alive'; 'dm failed' gives 'check inbox relays'; 'kick failed' gives 'check capabilities'; 'file missing' gives 'check working directory'; anything else gives 'enable debug logs'.",
+     "fn": "diagnose",
+     "starter": "def diagnose(symptom):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "not connected"
+       ],
+       "expect": "await build"
+      },
+      {
+       "args": [
+        "no events"
+       ],
+       "expect": "keep process alive"
+      },
+      {
+       "args": [
+        "dm failed"
+       ],
+       "expect": "check inbox relays"
+      },
+      {
+       "args": [
+        "kick failed"
+       ],
+       "expect": "check capabilities"
+      },
+      {
+       "args": [
+        "file missing"
+       ],
+       "expect": "check working directory"
+      },
+      {
+       "args": [
+        "strange"
+       ],
+       "expect": "enable debug logs"
+      }
+     ],
+     "hint": "A lookup.",
+     "solution": "def diagnose(symptom):\n    if symptom in ('not connected', 'not logged in'):\n        return 'await build'\n    if symptom == 'no events':\n        return 'keep process alive'\n    if symptom == 'dm failed':\n        return 'check inbox relays'\n    if symptom == 'kick failed':\n        return 'check capabilities'\n    if symptom == 'file missing':\n        return 'check working directory'\n    return 'enable debug logs'\n"
+    },
+    {
+     "type": "python",
+     "title": "Reconnect storm",
+     "intro": "Write storm(times, window, limit): times is a sorted list of reconnect attempt times in seconds. Return True if more than limit attempts fall inside any window of the given length (counting from an attempt time, inclusive of start, exclusive of end).",
+     "fn": "storm",
+     "starter": "def storm(times, window, limit):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         0,
+         1,
+         2,
+         3,
+         4,
+         5
+        ],
+        10,
+        3
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         0,
+         20,
+         40
+        ],
+        10,
+        1
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [],
+        10,
+        0
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         5,
+         5,
+         5
+        ],
+        1,
+        2
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Slide a window.",
+     "solution": "def storm(times, window, limit):\n    for i in range(len(times)):\n        c = 0\n        for t in times:\n            if t >= times[i] and t < times[i] + window:\n                c += 1\n        if c > limit:\n            return True\n    return False\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "NIP-46 remote signing",
+     "url": "https://github.com/nostr-protocol/nips/blob/master/46.md",
+     "note": "bunker signers"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Vector SDK: Private Bots on Nostr",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What is the Vector SDK written in?",
+    "options": [
+     "Rust",
+     "Python",
+     "Go",
+     "Java"
+    ],
+    "answer": 0,
+    "explain": "Cargo crate."
+   },
+   {
+    "q": "A bot's public address starts with:",
+    "options": [
+     "npub1",
+     "nsec1",
+     "http",
+     "0x"
+    ],
+    "answer": 0,
+    "explain": "Bech32."
+   },
+   {
+    "q": "Which key must stay secret?",
+    "options": [
+     "nsec",
+     "npub",
+     "relay URL",
+     "bot name"
+    ],
+    "answer": 0,
+    "explain": "Private key."
+   },
+   {
+    "q": "Which versions did the docs and repo main show?",
+    "options": [
+     "0.3.0 docs and 0.2.1 repo",
+     "1.0 both",
+     "2.0 and 3.0",
+     "None"
+    ],
+    "answer": 0,
+    "explain": "Verify versions."
+   },
+   {
+    "q": "What does a keyless bot save?",
+    "options": [
+     "identity.nsec",
+     "Nothing",
+     "The password",
+     "The npub only"
+    ],
+    "answer": 0,
+    "explain": "In the data dir."
+   },
+   {
+    "q": "Two keyless bots on a machine need:",
+    "options": [
+     "Separate data dirs",
+     "One nsec",
+     "Tor",
+     "Nothing"
+    ],
+    "answer": 0,
+    "explain": "Avoid sharing."
+   },
+   {
+    "q": "Explicit keys are:",
+    "options": [
+     "Kept in memory only",
+     "Always saved",
+     "Sent to relays",
+     "Printed"
+    ],
+    "answer": 0,
+    "explain": "Per docs."
+   },
+   {
+    "q": "How do you open a DM?",
+    "options": [
+     "bot.dm(npub)",
+     "bot.run",
+     "bot.sync",
+     "bot.dissolve"
+    ],
+    "answer": 0,
+    "explain": "Channel."
+   },
+   {
+    "q": "A typing hint expires after:",
+    "options": [
+     "About 30 seconds",
+     "1 second",
+     "1 day",
+     "Never"
+    ],
+    "answer": 0,
+    "explain": "NIP-40."
+   },
+   {
+    "q": "Relative send_file paths resolve against:",
+    "options": [
+     "Working directory",
+     "Relay",
+     "npub",
+     "Data dir always"
+    ],
+    "answer": 0,
+    "explain": "Use absolute paths."
+   },
+   {
+    "q": "How many BotEvent variants?",
+    "options": [
+     "Eight",
+     "Two",
+     "Four",
+     "Twelve"
+    ],
+    "answer": 0,
+    "explain": "Listed in docs."
+   },
+   {
+    "q": "Why check is_mine()?",
+    "options": [
+     "Avoid reply loops",
+     "Speed",
+     "Encryption",
+     "Billing"
+    ],
+    "answer": 0,
+    "explain": "Skip own messages."
+   },
+   {
+    "q": "Default invite policy?",
+    "options": [
+     "Manual",
+     "Public",
+     "Whitelist",
+     "None"
+    ],
+    "answer": 0,
+    "explain": "A person accepts."
+   },
+   {
+    "q": "Whitelist, unlisted sender:",
+    "options": [
+     "Silently ignored",
+     "Accepted",
+     "Banned",
+     "Replied"
+    ],
+    "answer": 0,
+    "explain": "No refusal."
+   },
+   {
+    "q": "Who can dissolve a community?",
+    "options": [
+     "The owner",
+     "Any member",
+     "Any bot",
+     "Relays"
+    ],
+    "answer": 0,
+    "explain": "Irreversible."
+   },
+   {
+    "q": "Files are encrypted with:",
+    "options": [
+     "AES-256-GCM",
+     "ROT13",
+     "MD5",
+     "None"
+    ],
+    "answer": 0,
+    "explain": "Authenticated."
+   },
+   {
+    "q": "Integrity is checked with:",
+    "options": [
+     "SHA-256",
+     "CRC8",
+     "Parity",
+     "Nothing"
+    ],
+    "answer": 0,
+    "explain": "Hash."
+   },
+   {
+    "q": "Which relay scheme is safe?",
+    "options": [
+     "wss://",
+     "ws://",
+     "http://",
+     "ftp://"
+    ],
+    "answer": 0,
+    "explain": "TLS."
+   },
+   {
+    "q": "Tor needs:",
+    "options": [
+     "Cargo feature and .tor()",
+     ".tor() only",
+     "Feature only",
+     "VPN"
+    ],
+    "answer": 0,
+    "explain": "Both."
+   },
+   {
+    "q": "Examples need the variable:",
+    "options": [
+     "VECTOR_NSEC",
+     "HOME",
+     "PATH",
+     "USER"
+    ],
+    "answer": 0,
+    "explain": "Identity."
+   },
+   {
+    "q": "ai_bot needs:",
+    "options": [
+     "OPENAI_API_KEY",
+     "A GPU",
+     "Tor",
+     "A mnemonic"
+    ],
+    "answer": 0,
+    "explain": "Endpoint key."
+   },
+   {
+    "q": "No events arrive. First check:",
+    "options": [
+     "Process kept alive",
+     "Delete keys",
+     "Change relay",
+     "Upgrade Rust"
+    ],
+    "answer": 0,
+    "explain": "Do not exit main."
+   },
+   {
+    "q": "Stale community id:",
+    "options": [
+     "sync_communities()",
+     "New key",
+     "Rewrite",
+     "Ignore"
+    ],
+    "answer": 0,
+    "explain": "Refresh."
+   },
+   {
+    "q": "Debug logging:",
+    "options": [
+     "RUST_LOG=vector_sdk=debug",
+     "--verbose",
+     "DEBUG only",
+     "None"
+    ],
+    "answer": 0,
+    "explain": "Env var."
+   },
+   {
+    "q": "A leaked key may expose:",
+    "options": [
+     "Old messages",
+     "Nothing",
+     "Only the name",
+     "Only new ones"
+    ],
+    "answer": 0,
+    "explain": "Rotate."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Vector SDK cheat sheet",
+  "prompt": "vector>",
+  "intro": "A scripted lookup. Try: version, build, keys, send, reply, events, invites, security, tor, examples, trouble, help",
+  "chips": [
+   "version",
+   "build",
+   "keys",
+   "send",
+   "reply",
+   "events",
+   "invites",
+   "security",
+   "tor",
+   "examples",
+   "trouble",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "version    Docs describe SDK 0.3.0 (targets Vector 0.4.0+). The GitHub ",
+     "build      VectorBot::builder().nsec(&nsec).build().await? connects. Op",
+     "keys       Keyless bots save identity.nsec in the data directory. Expli",
+     "send       bot.dm(npub) or bot.channel(id), then send, reply, edit, del",
+     "reply      channel.reply(msg_id, text). IncomingMessage also has reply ",
+     "events     on_message(handler), on_event(handler). BotEvent: Message, M",
+     "invites    Manual (default): accept_invite. Public: accept anyone. Whit",
+     "security   AES-256-GCM files, SHA-256 integrity, NIP-59 gift wrap. Use ",
+     "tor        Needs the tor Cargo feature and .tor(); without the feature ",
+     "examples   cargo run -p vector-sdk --example echo_bot (also slash_comma",
+     "trouble    Not connected: await build. No events: keep the process aliv"
+    ]
+   },
+   {
+    "re": "^version$",
+    "out": [
+     "Docs describe SDK 0.3.0 (targets Vector 0.4.0+). The GitHub main branch showed 0.2.1 with VectorBot::quick. Pin and verify."
+    ]
+   },
+   {
+    "re": "^build$",
+    "out": [
+     "VectorBot::builder().nsec(&nsec).build().await? connects. Optional: .mnemonic, .password, .public, .whitelist, .data_dir, .tor, .tor_bridges."
+    ]
+   },
+   {
+    "re": "^keys$",
+    "out": [
+     "Keyless bots save identity.nsec in the data directory. Explicit keys stay in memory. One identity per process."
+    ]
+   },
+   {
+    "re": "^send$",
+    "out": [
+     "bot.dm(npub) or bot.channel(id), then send, reply, edit, delete, react, typing, send_file."
+    ]
+   },
+   {
+    "re": "^reply$",
+    "out": [
+     "channel.reply(msg_id, text). IncomingMessage also has reply and react."
+    ]
+   },
+   {
+    "re": "^events$",
+    "out": [
+     "on_message(handler), on_event(handler). BotEvent: Message, MessageUpdate, Delete, MemberJoin, MemberLeave, Typing, Invite, Removed."
+    ]
+   },
+   {
+    "re": "^invites$",
+    "out": [
+     "Manual (default): accept_invite. Public: accept anyone. Whitelist: listed npubs only, others silently ignored."
+    ]
+   },
+   {
+    "re": "^security$",
+    "out": [
+     "AES-256-GCM files, SHA-256 integrity, NIP-59 gift wrap. Use wss, never commit keys, rotate every 6 to 12 months."
+    ]
+   },
+   {
+    "re": "^tor$",
+    "out": [
+     "Needs the tor Cargo feature and .tor(); without the feature .tor() has no effect."
+    ]
+   },
+   {
+    "re": "^examples$",
+    "out": [
+     "cargo run -p vector-sdk --example echo_bot (also slash_command_bot, ai_bot, moderation_bot, whitelist_bot, file_bot, save_files_bot). Needs VECTOR_NSEC."
+    ]
+   },
+   {
+    "re": "^trouble$",
+    "out": [
+     "Not connected: await build. No events: keep the process alive. DM fails: inbox relays. Stale id: sync_communities. Debug: RUST_LOG=vector_sdk=debug."
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Computer Science",
+ "level": "Intermediate",
+ "tags": [
+  "vector",
+  "nostr",
+  "rust",
+  "bots",
+  "privacy",
+  "encryption"
+ ]
+}
