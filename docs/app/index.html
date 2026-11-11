@@ -2493,6 +2493,49 @@ dialog textarea{margin-top:8px}
 'use strict';
 const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+// Fuzzy course search: every query word must match some word in the text, by substring, prefix,
+// a small edit distance (typos), or in-order letters ("trnsfmr"). Returns a score, 0 = no match.
+function fzEdit(a, b, max) {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = [], cur = [], i, j;
+  for (j = 0; j <= b.length; j++) prev[j] = j;
+  for (i = 1; i <= a.length; i++) {
+    cur = [i]; let best = i;
+    for (j = 1; j <= b.length; j++) { cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); if (cur[j] < best) best = cur[j]; }
+    if (best > max) return max + 1;
+    prev = cur;
+  }
+  return prev[b.length];
+}
+function fzNorm(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+function fuzzyScore(query, text) {
+  const q = fzNorm(query).split(/[^a-z0-9]+/).filter(Boolean);
+  if (!q.length) return 1;
+  const t = fzNorm(text), words = t.split(/[^a-z0-9]+/).filter(Boolean);
+  let total = 0;
+  for (const w of q) {
+    let best = 0;
+    if (t.indexOf(w) >= 0) best = words.some(x => x === w) ? 10 : words.some(x => x.indexOf(w) === 0) ? 8 : 6;
+    if (!best && w.length >= 3) {
+      const max = w.length <= 4 ? 1 : w.length <= 8 ? 2 : 3;
+      for (const x of words) {
+        const d = Math.min(fzEdit(w, x, max), fzEdit(w, x.slice(0, w.length + 1), max));
+        if (d <= max) best = Math.max(best, 5 - d);
+        if (best >= 4) break;
+      }
+      if (!best && w.length >= 4) {
+        for (const x of words) {
+          let k = 0;
+          for (let i = 0; i < x.length && k < w.length; i++) if (x[i] === w[k]) k++;
+          if (k === w.length && x[0] === w[0]) { best = 2; break; }
+        }
+      }
+    }
+    if (!best) return 0;
+    total += best;
+  }
+  return total;
+}
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const LM = LilithMath, inline = s => LM.render(s), cap = s => LM.caption(s);
 const N = LilithNarrate, M = LilithMaps, S = LilithSlides, K = LilithCourse, X = LilithXdc, ICONS = LilithIcons;
@@ -2688,8 +2731,8 @@ function renderLibrary() {
     if (cats.length > 1) h += '<div class="chips"><button class="chip ' + (libCat ? '' : 'on') + '" data-lc="">All</button>' + cats.map(k => '<button class="chip ' + (libCat === k ? 'on' : '') + '" data-lc="' + esc(k) + '">' + esc(k) + '</button>').join('') + '</div>';
   }
   const ql = libQ.trim().toLowerCase();
-  const shown = ST.courses.filter(c => (!libCat || (c.cat || 'Other') === libCat) && (!ql || (c.title + ' ' + (c.subtitle || '') + ' ' + (c.tags || []).join(' ')).toLowerCase().includes(ql)))
-    .sort((a, b) => (a.cat || 'Other').localeCompare(b.cat || 'Other') || a.title.localeCompare(b.title));
+  const shown = ST.courses.filter(c => (!libCat || (c.cat || 'Other') === libCat) && (!ql || fuzzyScore(ql, c.title + ' ' + c.title + ' ' + (c.subtitle || '') + ' ' + (c.tags || []).join(' '))))
+    .sort((a, b) => (ql ? fuzzyScore(ql, b.title + ' ' + b.title + ' ' + (b.subtitle || '') + ' ' + (b.tags || []).join(' ')) - fuzzyScore(ql, a.title + ' ' + a.title + ' ' + (a.subtitle || '') + ' ' + (a.tags || []).join(' ')) : 0) || (a.cat || 'Other').localeCompare(b.cat || 'Other') || a.title.localeCompare(b.title));
   let lastCat = null;
   shown.forEach(c => {
     if (cats.length > 1 && (c.cat || 'Other') !== lastCat) { lastCat = c.cat || 'Other'; h += '<h3 style="margin:16px 2px 0;color:var(--g2)">' + esc(lastCat) + '</h3>'; }
@@ -2765,7 +2808,7 @@ function renderStore() {
     const cat = STORE.cat, cs = cat.categories || [], ql = STORE.q.trim().toLowerCase();
     h += '<input type="search" id="sq" placeholder="Search ' + cat.courses.length + ' courses..." value="' + esc(STORE.q) + '">';
     h += '<div class="chips"><button class="chip ' + (STORE.c ? '' : 'on') + '" data-sc="">All</button>' + cs.map(k => '<button class="chip ' + (STORE.c === k ? 'on' : '') + '" data-sc="' + esc(k) + '">' + esc(k) + '</button>').join('') + '</div>';
-    const list = cat.courses.filter(c => (!STORE.c || c.category === STORE.c) && (!ql || (c.title + ' ' + c.subtitle + ' ' + c.description + ' ' + (c.tags || []).join(' ')).toLowerCase().includes(ql)));
+    const list = cat.courses.filter(c => (!STORE.c || c.category === STORE.c) && (!ql || fuzzyScore(ql, c.title + ' ' + c.title + ' ' + c.subtitle + ' ' + c.description + ' ' + (c.tags || []).join(' '))));
     if (!list.length) h += '<div class="card"><div class="muted">No course matches.</div></div>';
     let last = null;
     list.forEach(c => {
