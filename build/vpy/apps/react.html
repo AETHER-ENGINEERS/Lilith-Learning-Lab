@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}
+.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}
+.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}
+</style></head><body>
+<div class="k">Buttons (leave an emoji blank to get a letter)</div>
+<input type="text" id="b1" value="✅"><input type="text" id="b2" value=""><input type="text" id="b3" value="">
+<div class="k">Select options</div><label>Number of options <input type="text" id="no" value="3"></label>
+<button id="go">Build view</button><div id="o" class="box"></div><div id="p" class="k"></div>
+<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var NUM=["1","2","3","4","5","6","7","8","9","10"];
+var seen={};
+$("go").onclick=function(){var used=[],out=[],i,n=0;
+ var bs=[$("b1").value.trim(),$("b2").value.trim(),$("b3").value.trim()];bs.forEach(function(b){if(b)used.push(b)});
+ bs.forEach(function(b,i){if(b)out.push("Button "+(i+1)+": "+b);else{var L=String.fromCharCode(65+n);while(used.indexOf(L)>=0){n++;L=String.fromCharCode(65+n)}out.push("Button "+(i+1)+": letter "+L);n++}});
+ var no=Math.min(25,parseInt($("no").value)||0);for(i=0;i<no;i++)out.push("Option "+(i+1)+": "+(i<10?NUM[i]:String.fromCharCode(65+i-10)));
+ $("o").innerHTML=out.join("<br>")+"<br><span class='k'>Reacting clicks it; removing the reaction clicks again.</span>";seen[no>10?"many":"few"]=1;seen["b"+used.length]=1;var c=Object.keys(seen).length;$("p").textContent="Layouts tried: "+c+" of 3";if(c>=3)done()};
+</script></body></html>

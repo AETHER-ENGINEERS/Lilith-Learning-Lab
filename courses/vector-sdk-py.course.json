@@ -1,0 +1,4648 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "vector-sdk-py",
+ "title": "vector-sdk-py: discord.py-style Vector Bots",
+ "subtitle": "Write Vector messenger bots in Python with the discord.py API, on top of the Rust vector_sdk, with Python labs",
+ "author": "Lilith Learning Lab",
+ "description": "A hands-on course based on lucky-edgelord/vector-sdk-py (MIT, alpha), a discord.py-style Python library for Vector messenger bots built on the official Rust vector_sdk with PyO3. Learn the mapping from discord.py, installing and keys, events (including Vector's own), prefix and native slash commands with type hints, cogs, checks, cooldowns and tasks, embeds rendered as markdown, views built from reactions, community moderation, voice, Mini Apps and the development workflow. Labs run offline and simulate the library's rules in Python.",
+ "pronounce": {
+  "Vector": "vec tor",
+  "vector-sdk-py": "vector S D K pie",
+  "Nostr": "nos ter",
+  "npub": "en pub",
+  "nsec": "en sec",
+  "PyO3": "pie oh three",
+  "Rust": "rust",
+  "maturin": "mat your in",
+  "pytest": "pie test",
+  "asyncio": "a sink eye oh",
+  "async": "a sink",
+  "await": "a wait",
+  "wheel": "wheel",
+  "abi3": "A B I three",
+  "cmake": "see make",
+  "Opus": "oh pus",
+  "FFmpeg": "eff eff em peg",
+  "PCM": "P C M",
+  "kHz": "kilohertz",
+  "WebXDC": "web X D C",
+  "xdc": "X D C",
+  "NIP-40": "nip forty",
+  "ephemeral": "eh fem er al",
+  "cogs": "cogs",
+  "Cog": "cog",
+  "Greedy": "greedy",
+  "Literal": "literal",
+  "whisper": "whisper",
+  "Tor": "tor",
+  "I2P": "eye two P",
+  "SDK": "S D K",
+  "API": "A P I",
+  "DM": "D M",
+  "DMs": "D Ms",
+  "JSON": "jay son",
+  "UI": "you eye",
+  "npub1": "en pub one",
+  "nsec1": "en sec one",
+  "ELI5": "E L I five"
+ },
+ "chapters": [
+  {
+   "title": "What vector-sdk-py is and how it maps from discord.py",
+   "maps": [
+    {
+     "title": "vector-sdk-py",
+     "links": [
+      "vector-sdk-py | wraps | Rust vector_sdk",
+      "PyO3 | binds | Rust to Python",
+      "vector._native | is | Thin binding layer",
+      "python/vector | is | discord.py style API",
+      "Guild | aliases | Community",
+      "user.id | aliases | npub",
+      "bot.native | exposes | Raw Rust bot"
+     ]
+    }
+   ],
+   "summary": [
+    "vector-sdk-py is a Python library for Vector messenger bots. It copies the discord.py style: the same decorators, cogs, ctx, checks, cooldowns, converters, wait_for, tasks.loop, embeds and views.",
+    "Underneath, every network, crypto and storage call runs in the official Rust vector_sdk crate, compiled into the package with PyO3. You get its communities, private messages, Mini Apps and voice without writing Rust.",
+    "The repository is github.com/lucky-edgelord/vector-sdk-py, MIT licensed, marked alpha, and needs Python 3.9 or newer. Most discord.py bots port by changing the imports."
+   ],
+   "glossary": [
+    {
+     "term": "PyO3",
+     "def": "A Rust library for writing Python extension modules."
+    },
+    {
+     "term": "abi3 wheel",
+     "def": "One compiled package that works across Python versions on a platform."
+    },
+    {
+     "term": "Community",
+     "def": "Vector's name for a Discord guild; Guild is kept as an alias."
+    },
+    {
+     "term": "npub",
+     "def": "A Vector user's public key, used as the user id."
+    },
+    {
+     "term": "Native bot",
+     "def": "The raw Rust bot, reachable as bot.native for anything not wrapped."
+    }
+   ],
+   "keyPoints": [
+    "import vector; from vector.ext import commands, tasks.",
+    "Layers: src/ is the PyO3 binding, python/vector/ is the discord.py style API.",
+    "Guild is an alias of Community; user.id is an alias of npub.",
+    "Intents are accepted and ignored: Vector sends every event.",
+    "Anything not wrapped is reachable through bot.native."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. It is a translator in a costume. It dresses a secret-letter robot from the Rust world to look and act just like the Discord robot you already know."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "If you can write a discord.py bot, you already know this library. The idea is to keep your habits and swap the engine. The Python layer looks like discord.py, and the Rust layer does the secure messaging."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import os\nimport vector\nfrom vector.ext import commands\n\nbot = commands.Bot(command_prefix=\"!\")\n\n@bot.event\nasync def on_ready():\n    print(f\"Logged in as {bot.user}\")\n\n@bot.command()\nasync def ping(ctx):\n    await ctx.reply(\"pong\")\n\nbot.run(os.environ.get(\"VECTOR_NSEC\"))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Both the prefix command and Vector's native slash command work for ping. Every command is also published to the bot's manifest, so it appears in Vector's slash picker with typed arguments."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Porting is mostly renaming. Import vector as discord, or just use vector. Guild becomes Community with Guild kept as an alias, user.id becomes user.npub with id kept as an alias, and Intents are accepted but ignored because Vector delivers every event."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Some things have no direct equivalent and are emulated. Vector has no message components, so views are built from reactions. Embeds are rendered as coloured markdown. Ephemeral replies are sent as direct messages. The next chapters explain each emulation."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Because the project is alpha, expect change. Read the README and the tests for the current behaviour, and remember the Rust crate underneath also changes quickly."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "PyO3",
+       "A Rust library for writing Python extension modules."
+      ],
+      [
+       "abi3 wheel",
+       "One compiled package that works across Python versions on a platform."
+      ],
+      [
+       "Community",
+       "Vector's name for a Discord guild; Guild is kept as an alias."
+      ],
+      [
+       "npub",
+       "A Vector user's public key, used as the user id."
+      ],
+      [
+       "Native bot",
+       "The raw Rust bot, reachable as bot.native for anything not wrapped."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does the library sit on top of?",
+     "options": [
+      "The Rust vector_sdk crate",
+      "discord.py",
+      "A web API",
+      "Matrix"
+     ],
+     "answer": 0,
+     "explain": "Via PyO3."
+    },
+    {
+     "q": "What is Guild in this library?",
+     "options": [
+      "An alias of Community",
+      "A different thing",
+      "Removed",
+      "A voice channel"
+     ],
+     "answer": 0,
+     "explain": "Compatibility."
+    },
+    {
+     "q": "What are Intents here?",
+     "options": [
+      "Accepted and ignored",
+      "Required",
+      "Privileged",
+      "Removed"
+     ],
+     "answer": 0,
+     "explain": "Vector sends all events."
+    },
+    {
+     "q": "What is a user's id?",
+     "options": [
+      "Their npub",
+      "A number",
+      "An email",
+      "A token"
+     ],
+     "answer": 0,
+     "explain": "id is an alias."
+    },
+    {
+     "q": "How can you reach unwrapped SDK features?",
+     "options": [
+      "bot.native",
+      "bot.raw",
+      "vector.rust",
+      "Not possible"
+     ],
+     "answer": 0,
+     "explain": "The raw Rust bot."
+    },
+    {
+     "q": "Which Python versions work?",
+     "options": [
+      "3.9 and newer",
+      "2.7",
+      "3.5 only",
+      "3.12 only"
+     ],
+     "answer": 0,
+     "explain": "abi3 wheel."
+    }
+   ],
+   "cards": [
+    {
+     "q": "bot.native",
+     "a": "The raw Rust bot"
+    },
+    {
+     "q": "vector._native",
+     "a": "The PyO3 binding module"
+    },
+    {
+     "q": "abi3",
+     "a": "Stable ABI wheel across Python versions"
+    },
+    {
+     "q": "alpha",
+     "a": "Early stage; expect changes"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the name",
+     "intro": "Pair each discord.py name with the Vector equivalent.",
+     "pairs": [
+      [
+       "Guild",
+       "Community"
+      ],
+      [
+       "user.id",
+       "user.npub"
+      ],
+      [
+       "bot token",
+       "nsec key"
+      ],
+      [
+       "Intents",
+       "accepted, ignored"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Mapping",
+     "text": "The Python layer imitates {{discord.py}}. The engine is the Rust {{vector_sdk}} crate, bound with {{PyO3}}. Unwrapped features are reached through bot.{{native}}."
+    },
+    {
+     "type": "python",
+     "title": "Port a name",
+     "intro": "Write port(name): 'Guild' gives 'Community'; 'guild' gives 'community'; 'token' gives 'nsec'; 'user.id' gives 'user.npub'; anything else is returned unchanged.",
+     "fn": "port",
+     "starter": "def port(name):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Guild"
+       ],
+       "expect": "Community"
+      },
+      {
+       "args": [
+        "token"
+       ],
+       "expect": "nsec"
+      },
+      {
+       "args": [
+        "user.id"
+       ],
+       "expect": "user.npub"
+      },
+      {
+       "args": [
+        "channel"
+       ],
+       "expect": "channel"
+      }
+     ],
+     "hint": "A lookup with a default.",
+     "solution": "def port(name):\n    table = {'Guild': 'Community', 'guild': 'community', 'token': 'nsec', 'user.id': 'user.npub'}\n    return table.get(name, name)\n"
+    },
+    {
+     "type": "python",
+     "title": "Port an import",
+     "intro": "Write port_import(line): 'import discord' becomes 'import vector as discord'; 'from discord.ext import commands, tasks' becomes 'from vector.ext import commands, tasks'; any other line is unchanged.",
+     "fn": "port_import",
+     "starter": "def port_import(line):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "import discord"
+       ],
+       "expect": "import vector as discord"
+      },
+      {
+       "args": [
+        "from discord.ext import commands, tasks"
+       ],
+       "expect": "from vector.ext import commands, tasks"
+      },
+      {
+       "args": [
+        "import os"
+       ],
+       "expect": "import os"
+      }
+     ],
+     "hint": "Two patterns.",
+     "solution": "def port_import(line):\n    if line == 'import discord':\n        return 'import vector as discord'\n    if line.startswith('from discord.ext import'):\n        return line.replace('from discord.ext', 'from vector.ext', 1)\n    return line\n"
+    },
+    {
+     "type": "python",
+     "title": "Same user?",
+     "intro": "Write same_user(a, b): users are dictionaries; return True when they have the same 'npub', or when one has 'npub' and the other has 'id' with the same value (id is an alias).",
+     "fn": "same_user",
+     "starter": "def same_user(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        {
+         "npub": "x"
+        },
+        {
+         "id": "x"
+        }
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        {
+         "npub": "x"
+        },
+        {
+         "npub": "y"
+        }
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        {},
+        {}
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Treat id as npub.",
+     "solution": "def same_user(a, b):\n    ka = a.get('npub', a.get('id'))\n    kb = b.get('npub', b.get('id'))\n    return ka is not None and ka == kb\n"
+    },
+    {
+     "type": "python",
+     "title": "Python supported?",
+     "intro": "Write py_ok(version): True when a version string like '3.9.1' is 3.9 or newer (major 3).",
+     "fn": "py_ok",
+     "starter": "def py_ok(version):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "3.9.1"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "3.8.10"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "3.12.0"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "2.7.18"
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Compare minor.",
+     "solution": "def py_ok(version):\n    p = version.split('.')\n    major = int(p[0])\n    minor = int(p[1])\n    if major != 3:\n        return major > 3\n    return minor >= 9\n"
+    },
+    {
+     "type": "python",
+     "title": "Layer of a file",
+     "intro": "Write layer(path): paths starting with 'src/' give 'rust binding'; starting with 'python/vector/' give 'python api'; starting with 'tests/' give 'tests'; anything else gives 'other'.",
+     "fn": "layer",
+     "starter": "def layer(path):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "src/bot.rs"
+       ],
+       "expect": "rust binding"
+      },
+      {
+       "args": [
+        "python/vector/client.py"
+       ],
+       "expect": "python api"
+      },
+      {
+       "args": [
+        "tests/test_bot.py"
+       ],
+       "expect": "tests"
+      },
+      {
+       "args": [
+        "README.md"
+       ],
+       "expect": "other"
+      }
+     ],
+     "hint": "Prefix checks.",
+     "solution": "def layer(path):\n    if path.startswith('src/'):\n        return 'rust binding'\n    if path.startswith('python/vector/'):\n        return 'python api'\n    if path.startswith('tests/'):\n        return 'tests'\n    return 'other'\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Coming from discord.py (README)",
+     "url": "https://github.com/lucky-edgelord/vector-sdk-py#coming-from-discordpy",
+     "note": "mapping table"
+    }
+   ]
+  },
+  {
+   "title": "Installing, keys and starting the bot",
+   "maps": [
+    {
+     "title": "Setup",
+     "links": [
+      "pip install git+... | builds | Rust SDK",
+      "Rust and cmake | are needed for | Build",
+      "nsec | plays role of | Token",
+      "bot.run | logs in with | nsec",
+      "No key | reuses | data_dir key",
+      "invite_policy | handles | Invites",
+      "Client.features | lists | Build options"
+     ]
+    }
+   ],
+   "summary": [
+    "Install with pip install git+https://github.com/lucky-edgelord/vector-sdk-py. This compiles the Rust SDK, so you need a Rust toolchain and cmake for the Opus voice codec. Prebuilt wheels are produced by the GitHub Actions workflow, and once published to PyPI it will be pip install vector-sdk-py.",
+    "A Vector identity is a Nostr key. bot.run takes an nsec key where discord.py takes a token. Called with no key it reuses the key stored in data_dir, which defaults to ./vector-bot-data, creating one on first run. A seed phrase works with mnemonic.",
+    "Voice and Mini Apps are built by default. Speech to text (whisper), Tor and I2P are opt-in build features, and Client.features() tells you what your build has."
+   ],
+   "glossary": [
+    {
+     "term": "nsec",
+     "def": "The bot's private key; plays the role of a Discord token."
+    },
+    {
+     "term": "data_dir",
+     "def": "Where the bot keeps its database and key; default ./vector-bot-data."
+    },
+    {
+     "term": "invite_policy",
+     "def": "manual (default), public, or a whitelist of npubs."
+    },
+    {
+     "term": "maturin",
+     "def": "The build tool that compiles the Rust extension into a Python package."
+    },
+    {
+     "term": "Wheel",
+     "def": "A prebuilt Python package file."
+    }
+   ],
+   "keyPoints": [
+    "Needs Rust toolchain and cmake to build from source.",
+    "bot.run(nsec) or bot.run() to reuse the stored key.",
+    "vector.generate_nsec() mints a key; keep it secret.",
+    "invite_policy: manual, public, or whitelist=[npubs].",
+    "Whisper, Tor and I2P are opt-in features at build time."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. To start, you need a toolbox to build the robot, and a secret code. If you give no code, the robot makes one and keeps it in its own drawer."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Installing this library is different from most Python packages because it compiles Rust. That takes a few minutes the first time, and later installs reuse the cache. Prebuilt wheels avoid the compile when they are available for your platform."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "bash",
+     "code": "pip install git+https://github.com/lucky-edgelord/vector-sdk-py\n\n# opt-in features at build time\npip install \"git+https://github.com/lucky-edgelord/vector-sdk-py\" \\\n    --config-settings=build-args=\"--features whisper,tor\""
+    },
+    {
+     "type": "text",
+     "items": [
+      "Your bot's identity is a Nostr key. Where discord.py wants a token, this library wants the nsec. If you pass nothing, the library reuses the key it saved in data_dir, and creates one on the first run, which is perfect for experiments."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "import vector\nprint(vector.generate_nsec())   # mint one and keep it secret\n\nbot = commands.Bot(command_prefix=\"!\",\n                   data_dir=\"./vector-bot-data\",\n                   invite_policy=\"public\")        # or \"manual\" or whitelist=[...]\nbot.run(os.environ.get(\"VECTOR_NSEC\"))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Invite policy decides what happens when someone invites the bot to a community. Manual queues the invite and fires on_community_invite, where you can call invite.accept. Public accepts every invite. A whitelist accepts only invites from the npubs you list."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Treat the nsec like a password: read it from an environment variable, never commit it, and do not print it. Give each bot its own data_dir, because the directory holds the key and the database."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "nsec",
+       "The bot's private key; plays the role of a Discord token."
+      ],
+      [
+       "data_dir",
+       "Where the bot keeps its database and key; default ./vector-bot-data."
+      ],
+      [
+       "invite_policy",
+       "manual (default), public, or a whitelist of npubs."
+      ],
+      [
+       "maturin",
+       "The build tool that compiles the Rust extension into a Python package."
+      ],
+      [
+       "Wheel",
+       "A prebuilt Python package file."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does bot.run take?",
+     "options": [
+      "The nsec key",
+      "A Discord token",
+      "A URL",
+      "A password file"
+     ],
+     "answer": 0,
+     "explain": "Plays the token role."
+    },
+    {
+     "q": "What if you pass no key?",
+     "options": [
+      "It reuses or creates the stored key",
+      "It fails",
+      "It uses a public key",
+      "It asks the relay"
+     ],
+     "answer": 0,
+     "explain": "From data_dir."
+    },
+    {
+     "q": "Why is cmake needed?",
+     "options": [
+      "For the Opus voice codec",
+      "For Python",
+      "For pip",
+      "For tests"
+     ],
+     "answer": 0,
+     "explain": "Build requirement."
+    },
+    {
+     "q": "Default invite policy?",
+     "options": [
+      "manual",
+      "public",
+      "whitelist",
+      "off"
+     ],
+     "answer": 0,
+     "explain": "Queued."
+    },
+    {
+     "q": "How do you see build features?",
+     "options": [
+      "Client.features()",
+      "bot.version",
+      "pip list",
+      "vector.help"
+     ],
+     "answer": 0,
+     "explain": "Reports voice, whisper, tor..."
+    },
+    {
+     "q": "Where is the key stored?",
+     "options": [
+      "In data_dir",
+      "In the cloud",
+      "In PyPI",
+      "In the wheel"
+     ],
+     "answer": 0,
+     "explain": "Default ./vector-bot-data."
+    }
+   ],
+   "cards": [
+    {
+     "q": "generate_nsec",
+     "a": "Create a new key"
+    },
+    {
+     "q": "on_community_invite",
+     "a": "Event fired for manual invites"
+    },
+    {
+     "q": "whitelist",
+     "a": "Auto-accept only these npubs"
+    },
+    {
+     "q": "mnemonic",
+     "a": "Seed phrase login"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Invite policy lab",
+     "intro": "Try each invite policy against different senders.",
+     "height": 700,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}\n</style></head><body>\n<label>Invite policy <select id=\"pol\"><option value=\"manual\">Manual (default)</option><option value=\"public\">Public</option><option value=\"whitelist\">Whitelist</option></select></label>\n<label>Sender <select id=\"snd\"><option value=\"friend\">npub1friend (on the whitelist)</option><option value=\"stranger\">npub1stranger (not listed)</option></select></label>\n<label><input type=\"checkbox\" id=\"off\"> The invite arrived while the bot was offline (bot just started)</label>\n<button id=\"go\">Deliver invite</button><div id=\"o\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar seen={};\n$(\"go\").onclick=function(){var pol=$(\"pol\").value,s=$(\"snd\").value,off=$(\"off\").checked,r,c;\n if(pol===\"public\"){r=off?\"accepted on startup\":\"accepted at once\";c=\"ok\"}\n else if(pol===\"whitelist\"){if(s===\"friend\"){r=off?\"accepted on startup\":\"accepted at once\";c=\"ok\"}else{r=\"silently ignored: no reply is sent to the sender\";c=\"bad\"}}\n else{r=\"queued: on_community_invite fires and you call invite.accept()\";c=\"un\"}\n $(\"o\").innerHTML='<b class=\"'+c+'\">'+r+'</b>';seen[pol+s]=1;var n=Object.keys(seen).length;$(\"p\").textContent=\"Cases seen: \"+n+\" of 4\";if(n>=4)done()};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the setting",
+     "intro": "Pair each setting with its effect.",
+     "pairs": [
+      [
+       "manual",
+       "queue and fire on_community_invite"
+      ],
+      [
+       "public",
+       "accept every invite"
+      ],
+      [
+       "whitelist",
+       "accept listed npubs only"
+      ],
+      [
+       "no key",
+       "reuse or create stored key"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Setup",
+     "text": "The key plays the role of the {{token}}. With no key, the library reuses the key stored in {{data_dir}}. The default invite policy is {{manual}}. Build tools needed: Rust and {{cmake}}."
+    },
+    {
+     "type": "python",
+     "title": "Invite decision",
+     "intro": "Write decide(policy, sender, whitelist): 'manual' gives 'queue'; 'public' gives 'accept'; 'whitelist' gives 'accept' when sender is in the list, else 'ignore'.",
+     "fn": "decide",
+     "starter": "def decide(policy, sender, whitelist):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "manual",
+        "a",
+        []
+       ],
+       "expect": "queue"
+      },
+      {
+       "args": [
+        "public",
+        "a",
+        []
+       ],
+       "expect": "accept"
+      },
+      {
+       "args": [
+        "whitelist",
+        "a",
+        [
+         "a"
+        ]
+       ],
+       "expect": "accept"
+      },
+      {
+       "args": [
+        "whitelist",
+        "z",
+        [
+         "a"
+        ]
+       ],
+       "expect": "ignore"
+      }
+     ],
+     "hint": "Three policies.",
+     "solution": "def decide(policy, sender, whitelist):\n    if policy == 'manual':\n        return 'queue'\n    if policy == 'public':\n        return 'accept'\n    if sender in whitelist:\n        return 'accept'\n    return 'ignore'\n"
+    },
+    {
+     "type": "python",
+     "title": "Which key?",
+     "intro": "Write key_to_use(passed, mnemonic, stored): the passed nsec wins, then a mnemonic, then the stored key, otherwise 'create'.",
+     "fn": "key_to_use",
+     "starter": "def key_to_use(passed, mnemonic, stored):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "k",
+        "",
+        ""
+       ],
+       "expect": "passed"
+      },
+      {
+       "args": [
+        "",
+        "w",
+        "s"
+       ],
+       "expect": "mnemonic"
+      },
+      {
+       "args": [
+        "",
+        "",
+        "s"
+       ],
+       "expect": "stored"
+      },
+      {
+       "args": [
+        "",
+        "",
+        ""
+       ],
+       "expect": "create"
+      }
+     ],
+     "hint": "Priority.",
+     "solution": "def key_to_use(passed, mnemonic, stored):\n    if passed != '':\n        return 'passed'\n    if mnemonic != '':\n        return 'mnemonic'\n    if stored != '':\n        return 'stored'\n    return 'create'\n"
+    },
+    {
+     "type": "python",
+     "title": "Build features",
+     "intro": "Write has_feature(build, name): build is a list of feature names the package was built with, plus the default ones 'voice' and 'xdc' are always present. True if name is in build or is a default feature.",
+     "fn": "has_feature",
+     "starter": "def has_feature(build, name):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [],
+        "voice"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [],
+        "tor"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         "tor"
+        ],
+        "tor"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "whisper"
+        ],
+        "xdc"
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Defaults plus extras.",
+     "solution": "def has_feature(build, name):\n    return name in build or name in ('voice', 'xdc')\n"
+    },
+    {
+     "type": "python",
+     "title": "Redact secrets",
+     "intro": "Write redact(text): split on single spaces; any word starting with 'nsec1' becomes 'nsec1[redacted]'. Join with single spaces.",
+     "fn": "redact",
+     "starter": "def redact(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "key nsec1abc loaded"
+       ],
+       "expect": "key nsec1[redacted] loaded"
+      },
+      {
+       "args": [
+        "all clear"
+       ],
+       "expect": "all clear"
+      }
+     ],
+     "hint": "Never log keys.",
+     "solution": "def redact(text):\n    out = []\n    for w in text.split(' '):\n        if w.startswith('nsec1'):\n            out.append('nsec1[redacted]')\n        else:\n            out.append(w)\n    return ' '.join(out)\n"
+    },
+    {
+     "type": "python",
+     "title": "Pick a data dir",
+     "intro": "Write dirs_ok(bots): bots is a list of [name, data_dir]. Return True when no two bots share the same data_dir.",
+     "fn": "dirs_ok",
+     "starter": "def dirs_ok(bots):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          "/x"
+         ],
+         [
+          "b",
+          "/y"
+         ]
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "/x"
+         ],
+         [
+          "b",
+          "/x"
+         ]
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Each bot needs its own.",
+     "solution": "def dirs_ok(bots):\n    seen = []\n    for name, d in bots:\n        if d in seen:\n            return False\n        seen.append(d)\n    return True\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "maturin",
+     "url": "https://www.maturin.rs/",
+     "note": "building PyO3 packages"
+    }
+   ]
+  },
+  {
+   "title": "Events: the discord.py names plus Vector's own",
+   "maps": [
+    {
+     "title": "Events",
+     "links": [
+      "@bot.event | registers | Handler",
+      "@bot.listen | adds | Extra listener",
+      "on_message | gets | Messages",
+      "on_community_change | is | Raw audited change",
+      "on_member_kick | is | Separate from remove",
+      "on_slash_command | gets | Raw native command",
+      "wait_for | waits for | One event"
+     ]
+    }
+   ],
+   "summary": [
+    "The usual discord.py event names fire with the usual arguments: on_ready, on_message, on_message_edit, on_message_delete, on_reaction_add, on_typing, on_member_join, on_member_remove, on_member_ban, on_guild_join, on_guild_role_create and more.",
+    "Vector adds events of its own: on_community_invite, on_community_change, on_member_kick, on_member_timeout, on_member_roles_update, on_overwrite_update, on_channel_keyed, on_community_dissolve, on_xdc_presence, on_xdc_session and on_slash_command.",
+    "Register with bot.event or bot.listen, and use wait_for when you want to pause a command until a particular event arrives."
+   ],
+   "glossary": [
+    {
+     "term": "Listener",
+     "def": "An extra handler for an event, added with bot.listen so several can coexist."
+    },
+    {
+     "term": "on_community_change",
+     "def": "The raw form of every audited community change; other events derive from it."
+    },
+    {
+     "term": "on_member_kick",
+     "def": "A kick; Discord folds this into on_member_remove."
+    },
+    {
+     "term": "on_channel_keyed",
+     "def": "The bot received the key for a private channel."
+    },
+    {
+     "term": "wait_for",
+     "def": "Await one event that passes a check, with a timeout."
+    }
+   ],
+   "keyPoints": [
+    "bot.event replaces a handler; bot.listen adds one.",
+    "Vector extras: on_community_invite, on_member_kick, on_member_timeout.",
+    "on_member_roles_update(member, added, removed) is finer than on_member_update.",
+    "on_slash_command(name, args, message) sees raw native commands.",
+    "Use wait_for with a check and a timeout."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Events are doorbells. Some are the same as in Discord, and some are new bells for things only this club has, like time-outs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Events work the way they do in discord.py. A decorated coroutine with the right name is called when the event happens. The names and arguments match closely, so most of your handlers need no change."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "@bot.event\nasync def on_member_join(member: vector.Member):\n    channel = member.guild.system_channel\n    if channel:\n        await channel.send(f\"Welcome {member.mention}!\")\n\n@bot.listen()\nasync def on_message(message):\n    if message.author == bot.user:\n        return\n    print(message.content)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Vector's richer community model produces events that Discord does not have. A timeout, a role change, a nickname change and a permission overwrite each get their own event, and they all derive from on_community_change, which carries the raw change and who made it."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A kick is its own event, on_member_kick, rather than being folded into on_member_remove as Discord does. If you want one handler for both, listen to both. The on_member_ban and on_member_unban events behave as in discord.py."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "# wait for the same user's next message, up to 30 seconds\ndef check(m):\n    return m.author == ctx.author and m.channel == ctx.channel\n\nmsg = await bot.wait_for(\"message\", check=check, timeout=30)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Error handling is the same too. on_error catches exceptions in event handlers, and on_command_error catches errors from commands. Keep handlers short and push long work into tasks, so they do not block other events."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Listener",
+       "An extra handler for an event, added with bot.listen so several can coexist."
+      ],
+      [
+       "on_community_change",
+       "The raw form of every audited community change; other events derive from it."
+      ],
+      [
+       "on_member_kick",
+       "A kick; Discord folds this into on_member_remove."
+      ],
+      [
+       "on_channel_keyed",
+       "The bot received the key for a private channel."
+      ],
+      [
+       "wait_for",
+       "Await one event that passes a check, with a timeout."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which registers an extra listener?",
+     "options": [
+      "bot.listen",
+      "bot.event",
+      "bot.run",
+      "bot.close"
+     ],
+     "answer": 0,
+     "explain": "Several can coexist."
+    },
+    {
+     "q": "Which event is Vector-specific?",
+     "options": [
+      "on_member_timeout",
+      "on_ready",
+      "on_message",
+      "on_typing"
+     ],
+     "answer": 0,
+     "explain": "Not in Discord."
+    },
+    {
+     "q": "How are kicks reported?",
+     "options": [
+      "on_member_kick",
+      "Only on_member_remove",
+      "Not at all",
+      "on_ban"
+     ],
+     "answer": 0,
+     "explain": "Separate event."
+    },
+    {
+     "q": "What does on_slash_command receive?",
+     "options": [
+      "name, args, message",
+      "ctx",
+      "token",
+      "nothing"
+     ],
+     "answer": 0,
+     "explain": "Raw native command."
+    },
+    {
+     "q": "What does wait_for take?",
+     "options": [
+      "An event name, check and timeout",
+      "A token",
+      "A file",
+      "A guild"
+     ],
+     "answer": 0,
+     "explain": "Pause for an event."
+    },
+    {
+     "q": "What is on_community_change?",
+     "options": [
+      "The raw audited change event",
+      "A chat message",
+      "A voice call",
+      "A login"
+     ],
+     "answer": 0,
+     "explain": "Source of the finer events."
+    }
+   ],
+   "cards": [
+    {
+     "q": "on_member_roles_update",
+     "a": "Roles added and removed"
+    },
+    {
+     "q": "on_member_nickname_update",
+     "a": "Nickname changed"
+    },
+    {
+     "q": "on_overwrite_update",
+     "a": "Permission overwrite changed"
+    },
+    {
+     "q": "on_community_dissolve",
+     "a": "Owner dissolved the community"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Event router",
+     "intro": "Send events through the router and see which handler fires.",
+     "height": 700,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}\n</style></head><body>\n<label>What happened <select id=\"ev\"><option value=\"kick\">A member was kicked</option><option value=\"ban\">A member was banned</option><option value=\"timeout\">A member was timed out</option><option value=\"roles\">A member's roles changed</option><option value=\"nickname\">A nickname changed</option><option value=\"overwrite\">A channel overwrite changed</option><option value=\"pin\">A message was pinned</option><option value=\"dissolve\">The owner dissolved the community</option></select></label>\n<button id=\"go\">Fire</button><div id=\"o\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar H={kick:\"on_member_kick (and on_community_change)\",ban:\"on_member_ban (and on_community_change)\",timeout:\"on_member_timeout, later on_member_timeout_end\",roles:\"on_member_roles_update(member, added, removed)\",nickname:\"on_member_nickname_update(member, nick)\",overwrite:\"on_overwrite_update(channel, target, overwrite)\",pin:\"on_guild_channel_pins_update (and on_community_change)\",dissolve:\"on_community_dissolve(guild)\"};\nvar seen={};\n$(\"go\").onclick=function(){var e=$(\"ev\").value;$(\"o\").innerHTML='<b class=\"ok\">'+H[e]+'</b><br>Every change also arrives raw as on_community_change(change), naming who made it.';seen[e]=1;var n=Object.keys(seen).length;$(\"p\").textContent=\"Changes tried: \"+n+\" of 8\";if(n>=6)done()};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the event",
+     "intro": "Pair each situation with the event.",
+     "pairs": [
+      [
+       "someone is kicked",
+       "on_member_kick"
+      ],
+      [
+       "someone is timed out",
+       "on_member_timeout"
+      ],
+      [
+       "roles change",
+       "on_member_roles_update"
+      ],
+      [
+       "owner dissolves",
+       "on_community_dissolve"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Events",
+     "text": "{{bot.listen}} adds an extra handler. A kick fires {{on_member_kick}}. Raw changes arrive as {{on_community_change}}. Pause a command with bot.{{wait_for}}."
+    },
+    {
+     "type": "python",
+     "title": "Which handler?",
+     "intro": "Write handler_for(change): 'kick' gives 'on_member_kick'; 'ban' gives 'on_member_ban'; 'timeout' gives 'on_member_timeout'; 'roles' gives 'on_member_roles_update'; 'nickname' gives 'on_member_nickname_update'; 'overwrite' gives 'on_overwrite_update'; anything else gives 'on_community_change'.",
+     "fn": "handler_for",
+     "starter": "def handler_for(change):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "kick"
+       ],
+       "expect": "on_member_kick"
+      },
+      {
+       "args": [
+        "roles"
+       ],
+       "expect": "on_member_roles_update"
+      },
+      {
+       "args": [
+        "overwrite"
+       ],
+       "expect": "on_overwrite_update"
+      },
+      {
+       "args": [
+        "pin"
+       ],
+       "expect": "on_community_change"
+      }
+     ],
+     "hint": "Lookup with default.",
+     "solution": "def handler_for(change):\n    table = {'kick': 'on_member_kick', 'ban': 'on_member_ban', 'timeout': 'on_member_timeout', 'roles': 'on_member_roles_update', 'nickname': 'on_member_nickname_update', 'overwrite': 'on_overwrite_update'}\n    return table.get(change, 'on_community_change')\n"
+    },
+    {
+     "type": "python",
+     "title": "Role diff",
+     "intro": "Write roles_diff(before, after): both are lists of role names. Return [added, removed] as sorted lists.",
+     "fn": "roles_diff",
+     "starter": "def roles_diff(before, after):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "a",
+         "b"
+        ],
+        [
+         "b",
+         "c"
+        ]
+       ],
+       "expect": [
+        [
+         "c"
+        ],
+        [
+         "a"
+        ]
+       ]
+      },
+      {
+       "args": [
+        [],
+        [
+         "x"
+        ]
+       ],
+       "expect": [
+        [
+         "x"
+        ],
+        []
+       ]
+      },
+      {
+       "args": [
+        [
+         "x"
+        ],
+        [
+         "x"
+        ]
+       ],
+       "expect": [
+        [],
+        []
+       ]
+      }
+     ],
+     "hint": "Set differences.",
+     "solution": "def roles_diff(before, after):\n    added = [r for r in after if r not in before]\n    removed = [r for r in before if r not in after]\n    added.sort()\n    removed.sort()\n    return [added, removed]\n"
+    },
+    {
+     "type": "python",
+     "title": "Wait for message",
+     "intro": "Write wait_for(messages, author, channel): messages is a list of [author, channel, text]. Return the text of the first message by that author in that channel, or 'timeout' if none.",
+     "fn": "wait_for",
+     "starter": "def wait_for(messages, author, channel):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          "c1",
+          "hi"
+         ],
+         [
+          "b",
+          "c1",
+          "yo"
+         ]
+        ],
+        "b",
+        "c1"
+       ],
+       "expect": "yo"
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          "c2",
+          "x"
+         ]
+        ],
+        "a",
+        "c1"
+       ],
+       "expect": "timeout"
+      },
+      {
+       "args": [
+        [],
+        "a",
+        "c1"
+       ],
+       "expect": "timeout"
+      }
+     ],
+     "hint": "Mimic the check.",
+     "solution": "def wait_for(messages, author, channel):\n    for a, c, t in messages:\n        if a == author and c == channel:\n            return t\n    return 'timeout'\n"
+    },
+    {
+     "type": "python",
+     "title": "Is it my own message?",
+     "intro": "Write should_handle(author, bot_npub, content): False for the bot's own messages and for empty content, otherwise True.",
+     "fn": "should_handle",
+     "starter": "def should_handle(author, bot_npub, content):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "a",
+        "a",
+        "hi"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "b",
+        "a",
+        "hi"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "b",
+        "a",
+        ""
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Avoid loops.",
+     "solution": "def should_handle(author, bot_npub, content):\n    if author == bot_npub:\n        return False\n    return content != ''\n"
+    },
+    {
+     "type": "python",
+     "title": "Timeout over?",
+     "intro": "Write timed_out(until, now): True while now is before until.",
+     "fn": "timed_out",
+     "starter": "def timed_out(until, now):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        600,
+        100
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        600,
+        600
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        600,
+        900
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Strictly before.",
+     "solution": "def timed_out(until, now):\n    return now < until\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "discord.py event reference",
+     "url": "https://discordpy.readthedocs.io/en/stable/api.html#event-reference",
+     "note": "the standard names"
+    }
+   ]
+  },
+  {
+   "title": "Commands: prefix and native slash at once",
+   "maps": [
+    {
+     "title": "Commands",
+     "links": [
+      "@bot.command | defines | Prefix command",
+      "Manifest | publishes | Native slash command",
+      "Type hint | maps to | Vector arg type",
+      "Literal | becomes | Choice",
+      "Member | becomes | User picker",
+      "Prefix / | is | Native only",
+      "More than 8 args | stays | Prefix only"
+     ]
+    }
+   ],
+   "summary": [
+    "Every command you define is available as a text command and, where possible, as a native Vector slash command. The library publishes a manifest so the command appears in Vector's slash picker with typed arguments, and Vector checks the types before your code runs.",
+    "Type hints decide the argument types: str is text, int is int, float is number, bool is a flag, Member or User is a user picker, Literal is a choice. Trailing arguments such as a keyword-only rest, args or Greedy become trailing text. Anything else is text, converted in Python.",
+    "The default prefix is the slash. Set a prefix such as an exclamation mark to also accept text commands. Commands whose name or signature cannot be expressed natively stay prefix only."
+   ],
+   "glossary": [
+    {
+     "term": "Manifest",
+     "def": "The list of native commands published to Vector."
+    },
+    {
+     "term": "Literal",
+     "def": "A typing construct that limits a value to fixed options; shown as a dropdown."
+    },
+    {
+     "term": "Greedy",
+     "def": "A converter wrapper that consumes as many arguments as possible."
+    },
+    {
+     "term": "describe",
+     "def": "A decorator that gives each argument a description in the picker."
+    },
+    {
+     "term": "hybrid",
+     "def": "A command usable as both text and native slash; here every command is."
+    }
+   ],
+   "keyPoints": [
+    "command_prefix defaults to '/' (native only); '!' also accepts text.",
+    "str=text, int=int, float=number, bool=flag, Member=user, Literal=choice.",
+    "Rest, *args and Greedy become trailing text.",
+    "Names with uppercase letters or more than 8 args stay prefix only.",
+    "Groups become /name subcommand args."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A command is a magic word that works two ways: type it, or pick it from a menu that has the blanks already drawn for you."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The nice thing is that you write one function and get two ways to call it. A person can type an exclamation mark and the command name, or pick the slash command from the picker and fill in typed fields."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "from typing import Literal\n\n@bot.command()\n@commands.describe(temp=\"the temperature\", unit=\"what it's in\")\nasync def convert(ctx, temp: float, unit: Literal[\"c\", \"f\"]):\n    if unit == \"c\":\n        await ctx.send(f\"{temp}°C = {temp * 9 / 5 + 32:.1f}°F\")\n    else:\n        await ctx.send(f\"{temp}°F = {(temp - 32) * 5 / 9:.1f}°C\")"
+    },
+    {
+     "type": "text",
+     "items": [
+      "This is published as convert with a number field called temp and a choice called unit with the options c and f. Vector checks the input and replies with usage before your function runs, so you rarely need to validate."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Not everything can be native. Arguments that are a Role, a TextChannel or a custom converter are sent as text and converted in Python. A command whose name has uppercase letters, or which has more than eight arguments, stays prefix only, and a log line tells you so."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Groups work like in discord.py: bot.group makes a command with subcommands, published as a name followed by a subcommand and its arguments. Load your cogs in setup_hook, as discord.py recommends, so their commands are part of the manifest published at startup."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Prefix commands still use the familiar error classes. A bad conversion raises BadArgument, a missing value raises MissingRequiredArgument, and an unknown command raises CommandNotFound, which you can handle in on_command_error."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Manifest",
+       "The list of native commands published to Vector."
+      ],
+      [
+       "Literal",
+       "A typing construct that limits a value to fixed options; shown as a dropdown."
+      ],
+      [
+       "Greedy",
+       "A converter wrapper that consumes as many arguments as possible."
+      ],
+      [
+       "describe",
+       "A decorator that gives each argument a description in the picker."
+      ],
+      [
+       "hybrid",
+       "A command usable as both text and native slash; here every command is."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Which hint becomes a dropdown?",
+     "options": [
+      "Literal",
+      "str",
+      "int",
+      "bool"
+     ],
+     "answer": 0,
+     "explain": "Choice."
+    },
+    {
+     "q": "What does float map to?",
+     "options": [
+      "number",
+      "int",
+      "flag",
+      "text"
+     ],
+     "answer": 0,
+     "explain": "Vector arg type."
+    },
+    {
+     "q": "Default command_prefix?",
+     "options": [
+      "/",
+      "!",
+      "?",
+      "none"
+     ],
+     "answer": 0,
+     "explain": "Native only."
+    },
+    {
+     "q": "Which commands stay prefix only?",
+     "options": [
+      "Uppercase names or more than 8 args",
+      "All of them",
+      "None",
+      "Those with Member"
+     ],
+     "answer": 0,
+     "explain": "Cannot be native."
+    },
+    {
+     "q": "Where are cogs best loaded?",
+     "options": [
+      "setup_hook",
+      "on_message",
+      "a loop",
+      "a command"
+     ],
+     "answer": 0,
+     "explain": "Before the manifest is published."
+    },
+    {
+     "q": "Who checks types for native commands?",
+     "options": [
+      "Vector, before your code runs",
+      "Nobody",
+      "The relay",
+      "Python only"
+     ],
+     "answer": 0,
+     "explain": "Client side."
+    }
+   ],
+   "cards": [
+    {
+     "q": "commands.describe",
+     "a": "Add argument descriptions"
+    },
+    {
+     "q": "bot.group",
+     "a": "A command with subcommands"
+    },
+    {
+     "q": "hybrid_command",
+     "a": "Same as command here"
+    },
+    {
+     "q": "CommandNotFound",
+     "a": "Unknown command error"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Type hint mapper",
+     "intro": "Pick a Python type hint and see which Vector argument it becomes.",
+     "height": 700,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}\n</style></head><body>\n<label>Python type hint <select id=\"h\"><option>str</option><option>int</option><option>float</option><option>bool</option><option>vector.Member</option><option>Literal[\"c\",\"f\"]</option><option>Greedy[Member]</option><option>*, rest: str</option><option>Role</option><option>TextChannel</option></select></label>\n<label>Command name <input type=\"text\" id=\"n\" value=\"convert\"></label>\n<label>Number of arguments <input type=\"text\" id=\"a\" value=\"2\"></label>\n<button id=\"go\">Publish</button><div id=\"o\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar M={\"str\":\"text\",\"int\":\"int\",\"float\":\"number\",\"bool\":\"flag\",\"vector.Member\":\"user picker\",'Literal[\"c\",\"f\"]':\"choice (dropdown c|f)\",\"Greedy[Member]\":\"trailing text\",\"*, rest: str\":\"trailing text\",\"Role\":\"text, converted in Python\",\"TextChannel\":\"text, converted in Python\"};\nvar seen={};\n$(\"go\").onclick=function(){var h=$(\"h\").value,n=$(\"n\").value,a=parseInt($(\"a\").value)||0,r;\n if(n!==n.toLowerCase()||a>8){r='<b class=\"un\">prefix only</b><br>'+(n!==n.toLowerCase()?\"Uppercase names\":\"More than 8 arguments\")+\" cannot be expressed natively, so a log line says so.\"}\n else{r='<b class=\"ok\">/'+n.replace(/</g,\"\")+'</b> argument type: <b>'+M[h]+'</b><br>Vector checks the input and replies with usage before your code runs.'}\n $(\"o\").innerHTML=r;seen[h]=1;var c=Object.keys(seen).length;$(\"p\").textContent=\"Hints tried: \"+c+\" of 5\";if(c>=5)done()};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the hint",
+     "intro": "Pair each hint with the Vector argument.",
+     "pairs": [
+      [
+       "str",
+       "text"
+      ],
+      [
+       "float",
+       "number"
+      ],
+      [
+       "Member",
+       "user picker"
+      ],
+      [
+       "Literal",
+       "choice"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Commands",
+     "text": "The default prefix is the {{slash}}. Literal becomes a {{choice}}. Decorate with commands.{{describe}} to explain arguments. Commands with more than {{8}} arguments stay prefix only."
+    },
+    {
+     "type": "python",
+     "title": "Hint to argument",
+     "intro": "Write arg_type(hint): 'str' gives 'text'; 'int' gives 'int'; 'float' gives 'number'; 'bool' gives 'flag'; 'Member' and 'User' give 'user'; 'Literal' gives 'choice'; 'Greedy' and 'rest' give 'trailing text'; anything else gives 'text'.",
+     "fn": "arg_type",
+     "starter": "def arg_type(hint):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "str"
+       ],
+       "expect": "text"
+      },
+      {
+       "args": [
+        "float"
+       ],
+       "expect": "number"
+      },
+      {
+       "args": [
+        "Member"
+       ],
+       "expect": "user"
+      },
+      {
+       "args": [
+        "Literal"
+       ],
+       "expect": "choice"
+      },
+      {
+       "args": [
+        "Greedy"
+       ],
+       "expect": "trailing text"
+      },
+      {
+       "args": [
+        "Role"
+       ],
+       "expect": "text"
+      }
+     ],
+     "hint": "A lookup.",
+     "solution": "def arg_type(hint):\n    table = {'str': 'text', 'int': 'int', 'float': 'number', 'bool': 'flag', 'Member': 'user', 'User': 'user', 'Literal': 'choice', 'Greedy': 'trailing text', 'rest': 'trailing text'}\n    return table.get(hint, 'text')\n"
+    },
+    {
+     "type": "python",
+     "title": "Can it be native?",
+     "intro": "Write native_ok(name, nargs): True when the name has no uppercase letters and nargs is at most 8.",
+     "fn": "native_ok",
+     "starter": "def native_ok(name, nargs):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "ping",
+        0
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "Ping",
+        0
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "big",
+        9
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "roll",
+        8
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Two conditions.",
+     "solution": "def native_ok(name, nargs):\n    return name == name.lower() and nargs <= 8\n"
+    },
+    {
+     "type": "python",
+     "title": "Describe the manifest",
+     "intro": "Write manifest_line(name, args): args is a list of [argname, type]. Return '/name <a:type> <b:type>' with a space between pieces; with no args return '/name'.",
+     "fn": "manifest_line",
+     "starter": "def manifest_line(name, args):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "convert",
+        [
+         [
+          "temp",
+          "number"
+         ],
+         [
+          "unit",
+          "c|f"
+         ]
+        ]
+       ],
+       "expect": "/convert <temp:number> <unit:c|f>"
+      },
+      {
+       "args": [
+        "ping",
+        []
+       ],
+       "expect": "/ping"
+      }
+     ],
+     "hint": "Join the pieces.",
+     "solution": "def manifest_line(name, args):\n    parts = ['/' + name]\n    for a, t in args:\n        parts.append('<' + a + ':' + t + '>')\n    return ' '.join(parts)\n"
+    },
+    {
+     "type": "python",
+     "title": "Which prefixes work?",
+     "intro": "Write accepts(content, prefixes): True when the content starts with any of the given prefixes.",
+     "fn": "accepts",
+     "starter": "def accepts(content, prefixes):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "!ping",
+        [
+         "!"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "/ping",
+        [
+         "/",
+         "!"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "ping",
+        [
+         "!"
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "",
+        [
+         "!"
+        ]
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Any prefix.",
+     "solution": "def accepts(content, prefixes):\n    for p in prefixes:\n        if content.startswith(p):\n            return True\n    return False\n"
+    },
+    {
+     "type": "python",
+     "title": "Greedy consumption",
+     "intro": "Write greedy(args, kind): args is a list of strings; kind is 'int'. Return the leading items that are all digits and stop at the first that is not. Return them as integers.",
+     "fn": "greedy",
+     "starter": "def greedy(args, kind):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "1",
+         "2",
+         "x",
+         "3"
+        ],
+        "int"
+       ],
+       "expect": [
+        1,
+        2
+       ]
+      },
+      {
+       "args": [
+        [
+         "a"
+        ],
+        "int"
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "5",
+         "6"
+        ],
+        "int"
+       ],
+       "expect": [
+        5,
+        6
+       ]
+      }
+     ],
+     "hint": "Stop at the first non-digit.",
+     "solution": "def greedy(args, kind):\n    out = []\n    for a in args:\n        ok = a != ''\n        for ch in a:\n            if ch not in '0123456789':\n                ok = False\n        if not ok:\n            break\n        out.append(int(a))\n    return out\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Commands (README)",
+     "url": "https://github.com/lucky-edgelord/vector-sdk-py#commands-prefix-and-native-slash-at-once",
+     "note": "type hint mapping"
+    }
+   ]
+  },
+  {
+   "title": "Cogs, checks, cooldowns, converters and tasks",
+   "maps": [
+    {
+     "title": "Structure",
+     "links": [
+      "Cog | groups | Commands and listeners",
+      "setup | adds | Cog",
+      "has_permissions | checks | Member rights",
+      "cooldown | limits | Command use",
+      "Converter | builds | Objects from text",
+      "tasks.loop | repeats | Coroutine",
+      "Error handler | answers | Failures"
+     ]
+    }
+   ],
+   "summary": [
+    "Structure works as in discord.py. A Cog groups commands and listeners, and an extension module defines async def setup(bot) that adds it with bot.add_cog. Cog_check can apply a rule to every command in a cog.",
+    "Checks such as has_permissions, guild_only and is_owner guard commands. Cooldowns limit how often a command can be used, per user, community, channel or other bucket. is_owner uses owner_id, which takes an npub.",
+    "Converters turn text into objects: Member, Role, TextChannel, Greedy, Range, Literal and your own. tasks.loop repeats a coroutine on a schedule. Errors are classes such as MissingPermissions, BadArgument and CommandOnCooldown."
+   ],
+   "glossary": [
+    {
+     "term": "Cog",
+     "def": "A class grouping related commands and listeners."
+    },
+    {
+     "term": "Check",
+     "def": "A predicate a command must pass, such as has_permissions or guild_only."
+    },
+    {
+     "term": "Cooldown",
+     "def": "A limit of rate uses per period seconds in a bucket."
+    },
+    {
+     "term": "BucketType",
+     "def": "The scope of a cooldown: default, user, guild/community, channel, member, category or role."
+    },
+    {
+     "term": "tasks.loop",
+     "def": "A decorator that runs a coroutine every seconds, minutes or hours."
+    }
+   ],
+   "keyPoints": [
+    "await bot.add_cog(Cog(bot)) inside async def setup(bot).",
+    "cog_check can guard every command in a cog.",
+    "@commands.cooldown(rate, per, BucketType.user).",
+    "has_permissions(kick_members=True), is_owner(), guild_only().",
+    "@tasks.loop(minutes=5); start with .start()."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A cog is a toy box, a check is a bouncer, and a cooldown is a rule that says you only get a few turns every little while."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Cogs keep a growing bot tidy. Each cog is a class with its own commands and listeners, and the bot loads them from extension modules. The examples directory has a cogs bot with moderation, fun and admin cogs."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "class Moderation(commands.Cog):\n    def __init__(self, bot):\n        self.bot = bot\n\n    async def cog_check(self, ctx):\n        return ctx.guild is not None      # community-only\n\n    @commands.command()\n    @commands.has_permissions(kick_members=True)\n    async def kick(self, ctx, member: vector.Member, *, reason: str = None):\n        await member.kick(reason=reason)\n        await ctx.send(f\"Kicked {member.display_name}\")\n\nasync def setup(bot):\n    await bot.add_cog(Moderation(bot))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Checks run before the command body. If one fails, a CheckFailure subclass such as MissingPermissions is raised and goes to your error handler, so you can answer politely. A cog level error handler can be attached with the command's error decorator."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A cooldown is a token bucket. A command allows rate uses within each period of per seconds. Once the tokens are used up, the next call raises CommandOnCooldown carrying how many seconds remain. The bucket type decides who shares the allowance."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "@commands.command()\n@commands.cooldown(2, 30, commands.BucketType.user)\nasync def roll(ctx):\n    ...\n\n@tasks.loop(minutes=5)\nasync def report():\n    ...\n\n@report.before_loop\nasync def before():\n    await bot.wait_until_ready()"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Converters work as in discord.py, including Greedy for many arguments and Range for bounds. Errors such as MemberNotFound and RoleNotFound carry the offending argument, which makes friendly error messages easy."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Cog",
+       "A class grouping related commands and listeners."
+      ],
+      [
+       "Check",
+       "A predicate a command must pass, such as has_permissions or guild_only."
+      ],
+      [
+       "Cooldown",
+       "A limit of rate uses per period seconds in a bucket."
+      ],
+      [
+       "BucketType",
+       "The scope of a cooldown: default, user, guild/community, channel, member, category or role."
+      ],
+      [
+       "tasks.loop",
+       "A decorator that runs a coroutine every seconds, minutes or hours."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What must an extension define?",
+     "options": [
+      "async def setup(bot)",
+      "def main",
+      "class Bot",
+      "token"
+     ],
+     "answer": 0,
+     "explain": "Entry point."
+    },
+    {
+     "q": "What does cog_check do?",
+     "options": [
+      "Guards every command in the cog",
+      "Loads the cog",
+      "Sends messages",
+      "Runs tasks"
+     ],
+     "answer": 0,
+     "explain": "Cog-wide rule."
+    },
+    {
+     "q": "What is a cooldown?",
+     "options": [
+      "rate uses per period seconds",
+      "A sleep",
+      "A timeout",
+      "A ban"
+     ],
+     "answer": 0,
+     "explain": "Token bucket."
+    },
+    {
+     "q": "Which error does a cooldown raise?",
+     "options": [
+      "CommandOnCooldown",
+      "BadArgument",
+      "Forbidden",
+      "NotFound"
+     ],
+     "answer": 0,
+     "explain": "retry_after."
+    },
+    {
+     "q": "owner_id takes:",
+     "options": [
+      "An npub",
+      "A number",
+      "A name",
+      "An email"
+     ],
+     "answer": 0,
+     "explain": "Vector identity."
+    },
+    {
+     "q": "How do you wait before a loop starts?",
+     "options": [
+      "before_loop with wait_until_ready",
+      "sleep",
+      "nothing",
+      "stop()"
+     ],
+     "answer": 0,
+     "explain": "Cache ready."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Greedy",
+     "a": "Consume many arguments"
+    },
+    {
+     "q": "Range",
+     "a": "Bounded numeric converter"
+    },
+    {
+     "q": "MemberNotFound",
+     "a": "Member converter failed"
+    },
+    {
+     "q": "max_concurrency",
+     "a": "Limit simultaneous runs"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the error",
+     "intro": "Pair each situation with the error.",
+     "pairs": [
+      [
+       "used too soon",
+       "CommandOnCooldown"
+      ],
+      [
+       "bad number",
+       "BadArgument"
+      ],
+      [
+       "lacks rights",
+       "MissingPermissions"
+      ],
+      [
+       "no such member",
+       "MemberNotFound"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Structure",
+     "text": "A {{cog}} groups commands. Guard a command with a {{check}}. A cooldown allows {{rate}} uses every {{per}} seconds."
+    },
+    {
+     "type": "python",
+     "title": "Cooldown simulator",
+     "intro": "Write cooldown(rate, per, times): simulate discord.py's bucket for one user. times is a sorted list of seconds when the command is called. A call is allowed (None) while tokens remain in the current window, which starts at the first allowed call and lasts per seconds; when no tokens remain return the seconds left rounded to 1 decimal. A window ends after per seconds and tokens reset. Return the list of results.",
+     "fn": "cooldown",
+     "starter": "def cooldown(rate, per, times):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2,
+        10,
+        [
+         0,
+         1,
+         2,
+         3
+        ]
+       ],
+       "expect": [
+        null,
+        null,
+        8,
+        7
+       ]
+      },
+      {
+       "args": [
+        1,
+        5,
+        [
+         0,
+         6
+        ]
+       ],
+       "expect": [
+        null,
+        null
+       ]
+      },
+      {
+       "args": [
+        3,
+        60,
+        [
+         0,
+         10,
+         20,
+         30
+        ]
+       ],
+       "expect": [
+        null,
+        null,
+        null,
+        30
+       ]
+      },
+      {
+       "args": [
+        1,
+        5,
+        [
+         0,
+         1,
+         6,
+         7
+        ]
+       ],
+       "expect": [
+        null,
+        4,
+        null,
+        4
+       ]
+      }
+     ],
+     "hint": "Replicates the library's token bucket.",
+     "solution": "def cooldown(rate, per, times):\n    tokens = rate\n    window = 0.0\n    out = []\n    for t in times:\n        if t > window + per:\n            tokens = rate\n        if tokens == rate:\n            window = t\n        tokens -= 1\n        if tokens < 0:\n            tokens = 0\n            out.append(round(per - (t - window), 1))\n        else:\n            out.append(None)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Bucket key",
+     "intro": "Write bucket_key(kind, user, channel, community): 'user' returns the user; 'channel' returns the channel; 'community' or 'guild' returns the community; 'member' returns the user and community joined with a colon; anything else returns 'global'.",
+     "fn": "bucket_key",
+     "starter": "def bucket_key(kind, user, channel, community):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "user",
+        "u",
+        "c",
+        "g"
+       ],
+       "expect": "u"
+      },
+      {
+       "args": [
+        "member",
+        "u",
+        "c",
+        "g"
+       ],
+       "expect": "u:g"
+      },
+      {
+       "args": [
+        "guild",
+        "u",
+        "c",
+        "g"
+       ],
+       "expect": "g"
+      },
+      {
+       "args": [
+        "default",
+        "u",
+        "c",
+        "g"
+       ],
+       "expect": "global"
+      }
+     ],
+     "hint": "Which scope shares the limit.",
+     "solution": "def bucket_key(kind, user, channel, community):\n    if kind == 'user':\n        return user\n    if kind == 'channel':\n        return channel\n    if kind in ('community', 'guild'):\n        return community\n    if kind == 'member':\n        return user + ':' + community\n    return 'global'\n"
+    },
+    {
+     "type": "python",
+     "title": "Has permission",
+     "intro": "Write has_perms(member_perms, needed): both are lists of permission names. True when every needed one is present.",
+     "fn": "has_perms",
+     "starter": "def has_perms(member_perms, needed):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "kick_members",
+         "send_messages"
+        ],
+        [
+         "kick_members"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "send_messages"
+        ],
+        [
+         "kick_members"
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [],
+        []
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Every needed one.",
+     "solution": "def has_perms(member_perms, needed):\n    for n in needed:\n        if n not in member_perms:\n            return False\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Range converter",
+     "intro": "Write in_range(value, low, high): return the value if it is between low and high inclusive, otherwise the string 'RangeError'.",
+     "fn": "in_range",
+     "starter": "def in_range(value, low, high):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        1,
+        10
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        0,
+        1,
+        10
+       ],
+       "expect": "RangeError"
+      },
+      {
+       "args": [
+        11,
+        1,
+        10
+       ],
+       "expect": "RangeError"
+      },
+      {
+       "args": [
+        10,
+        1,
+        10
+       ],
+       "expect": 10
+      }
+     ],
+     "hint": "Bounds are inclusive.",
+     "solution": "def in_range(value, low, high):\n    if value < low or value > high:\n        return 'RangeError'\n    return value\n"
+    },
+    {
+     "type": "python",
+     "title": "Loop runs",
+     "intro": "Write loop_runs(elapsed, interval): a tasks.loop runs once at start and then every interval seconds. Return how many runs happened after elapsed seconds.",
+     "fn": "loop_runs",
+     "starter": "def loop_runs(elapsed, interval):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        300
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        299,
+        300
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        600,
+        300
+       ],
+       "expect": 3
+      }
+     ],
+     "hint": "Floor plus one.",
+     "solution": "def loop_runs(elapsed, interval):\n    return elapsed // interval + 1\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "ext.commands cogs",
+     "url": "https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html",
+     "note": "cogs and extensions"
+    },
+    {
+     "title": "cogs_bot example",
+     "url": "https://github.com/lucky-edgelord/vector-sdk-py/tree/main/examples/cogs_bot",
+     "note": "moderation, fun, admin"
+    }
+   ]
+  },
+  {
+   "title": "Messages and embeds on a messenger without embeds",
+   "maps": [
+    {
+     "title": "Messages",
+     "links": [
+      "Embed | renders as | Coloured markdown",
+      "Colour | paints | Title and bar",
+      "Inline fields | sit | Side by side",
+      "timestamp | shows in | Reader timezone",
+      "delete_after | sets | NIP-40 expiry",
+      "ephemeral | sends | A DM",
+      "File | sends | Attachment"
+     ]
+    }
+   ],
+   "summary": [
+    "Vector has no embed objects, so vector.Embed keeps discord.py's full API but renders itself into Vector's markdown.",
+    "The colour paints the title and a bar character down the left edge, inline fields sit side by side separated by a vertical line, and the timestamp is shown in each reader's own timezone.",
+    "Sending works as you expect: send, reply, edit, history, purge, fetch_message, attachments with await attachment.read(), custom emoji reactions and typing indicators. delete_after sets a NIP-40 expiry that every client honours and also deletes the message after that many seconds.",
+    "Other emulations are worth knowing: ephemeral replies are sent as a direct message, and deleting someone else's message hides it as a moderation action, while your own messages are really deleted."
+   ],
+   "glossary": [
+    {
+     "term": "Embed",
+     "def": "A rich card; here rendered as coloured markdown."
+    },
+    {
+     "term": "NIP-40",
+     "def": "The Nostr rule for event expiration; used for delete_after and expires_in."
+    },
+    {
+     "term": "Ephemeral",
+     "def": "A reply only the requester should see; sent as a DM in this library."
+    },
+    {
+     "term": "File",
+     "def": "vector.File wraps a path or bytes to attach to a message."
+    },
+    {
+     "term": "Link preview",
+     "def": "An image URL on its own line so Vector shows a preview."
+    }
+   ],
+   "keyPoints": [
+    "Embed API is discord.py's: add_field, set_author, set_footer, set_image, to_dict.",
+    "Rendering: bar char, bold title in colour, inline fields joined with a bar.",
+    "attachment://name plus file=vector.File(...) sends a real attachment.",
+    "delete_after sets expiry and deletes; expires_in sets expiry only.",
+    "ephemeral=True sends the reply to the user's DMs."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. This messenger has no fancy cards, so the robot draws one using coloured text. It can also make a message disappear on a timer that every phone obeys."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An embed is just a pretty way to lay out information. Since Vector has no embed object, the library turns it into markdown that looks like one. You write the same code you would for discord.py and the library does the translation."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "embed = vector.Embed(title=\"Server stats\", description=\"Updated hourly\", colour=0x59FCB3)\nembed.add_field(name=\"CPU\", value=\"12%\", inline=True)\nembed.add_field(name=\"RAM\", value=\"3.1 GB\", inline=True)\nembed.set_footer(text=\"vector-sdk-py\")\nembed.timestamp = vector.utils.utcnow()\nawait ctx.send(embed=embed)"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The rendering puts a coloured bar at the left of every line, then the title in bold, then the description. Two inline fields are drawn on one line separated by a vertical bar. The timestamp uses a time tag, so each reader sees their own timezone."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To send an image as a real attachment, set the embed image to attachment colon slash slash and the file name, and pass the file with the message. The image goes first and the embed becomes its caption. A plain URL image is placed on its own line so Vector shows a link preview."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "delete_after is stronger than its Discord cousin. It sets an expiry that every Vector client honours, so the message vanishes even if the bot is offline, and it also schedules a deletion. If you only want the expiry, use expires_in."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Because ephemeral replies become direct messages, think twice before using them in busy chats. And remember that deleting another person's message hides it as moderation rather than erasing it."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Embed",
+       "A rich card; here rendered as coloured markdown."
+      ],
+      [
+       "NIP-40",
+       "The Nostr rule for event expiration; used for delete_after and expires_in."
+      ],
+      [
+       "Ephemeral",
+       "A reply only the requester should see; sent as a DM in this library."
+      ],
+      [
+       "File",
+       "vector.File wraps a path or bytes to attach to a message."
+      ],
+      [
+       "Link preview",
+       "An image URL on its own line so Vector shows a preview."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does an Embed render as?",
+     "options": [
+      "Coloured markdown",
+      "A PDF",
+      "An image only",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "No native embeds."
+    },
+    {
+     "q": "What does delete_after add?",
+     "options": [
+      "A NIP-40 expiry and a deletion",
+      "A reaction",
+      "A pin",
+      "A ban"
+     ],
+     "answer": 0,
+     "explain": "Honoured by clients."
+    },
+    {
+     "q": "Where does an ephemeral reply go?",
+     "options": [
+      "The user's DMs",
+      "The channel",
+      "A file",
+      "Nowhere"
+     ],
+     "answer": 0,
+     "explain": "Emulation."
+    },
+    {
+     "q": "How are inline fields drawn?",
+     "options": [
+      "Side by side with a bar",
+      "Stacked",
+      "Hidden",
+      "As images"
+     ],
+     "answer": 0,
+     "explain": "Separated by a vertical line."
+    },
+    {
+     "q": "What is the timestamp shown in?",
+     "options": [
+      "Each reader's timezone",
+      "UTC only",
+      "The bot's timezone",
+      "Not shown"
+     ],
+     "answer": 0,
+     "explain": "Time tag."
+    },
+    {
+     "q": "What does deleting another's message do?",
+     "options": [
+      "Hides it as moderation",
+      "Erases it from relays",
+      "Nothing",
+      "Bans them"
+     ],
+     "answer": 0,
+     "explain": "Not a true delete."
+    }
+   ],
+   "cards": [
+    {
+     "q": "attachment://",
+     "a": "Reference an uploaded file from an embed"
+    },
+    {
+     "q": "expires_in",
+     "a": "Set expiry only"
+    },
+    {
+     "q": "purge",
+     "a": "Bulk delete recent messages"
+    },
+    {
+     "q": "fetch_message",
+     "a": "Get a message by id"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Type hint mapper",
+     "intro": "A quick look at how hints map; relevant to the command descriptions in embeds.",
+     "height": 700,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}\n</style></head><body>\n<label>Python type hint <select id=\"h\"><option>str</option><option>int</option><option>float</option><option>bool</option><option>vector.Member</option><option>Literal[\"c\",\"f\"]</option><option>Greedy[Member]</option><option>*, rest: str</option><option>Role</option><option>TextChannel</option></select></label>\n<label>Command name <input type=\"text\" id=\"n\" value=\"convert\"></label>\n<label>Number of arguments <input type=\"text\" id=\"a\" value=\"2\"></label>\n<button id=\"go\">Publish</button><div id=\"o\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar M={\"str\":\"text\",\"int\":\"int\",\"float\":\"number\",\"bool\":\"flag\",\"vector.Member\":\"user picker\",'Literal[\"c\",\"f\"]':\"choice (dropdown c|f)\",\"Greedy[Member]\":\"trailing text\",\"*, rest: str\":\"trailing text\",\"Role\":\"text, converted in Python\",\"TextChannel\":\"text, converted in Python\"};\nvar seen={};\n$(\"go\").onclick=function(){var h=$(\"h\").value,n=$(\"n\").value,a=parseInt($(\"a\").value)||0,r;\n if(n!==n.toLowerCase()||a>8){r='<b class=\"un\">prefix only</b><br>'+(n!==n.toLowerCase()?\"Uppercase names\":\"More than 8 arguments\")+\" cannot be expressed natively, so a log line says so.\"}\n else{r='<b class=\"ok\">/'+n.replace(/</g,\"\")+'</b> argument type: <b>'+M[h]+'</b><br>Vector checks the input and replies with usage before your code runs.'}\n $(\"o\").innerHTML=r;seen[h]=1;var c=Object.keys(seen).length;$(\"p\").textContent=\"Hints tried: \"+c+\" of 5\";if(c>=5)done()};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the piece",
+     "intro": "Pair each feature with how it behaves.",
+     "pairs": [
+      [
+       "Embed colour",
+       "title and left bar"
+      ],
+      [
+       "inline fields",
+       "one line, bar between"
+      ],
+      [
+       "delete_after",
+       "expiry and delete"
+      ],
+      [
+       "ephemeral",
+       "sent as a DM"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Messages",
+     "text": "An embed is rendered as {{markdown}}. The expiry rule is {{NIP-40}}. An ephemeral reply is sent as a {{DM}}. Use {{expires_in}} for expiry without scheduling a delete."
+    },
+    {
+     "type": "python",
+     "title": "Render an embed",
+     "intro": "Write render(title, description, fields): return a list of lines. First '▍ **' + title + '**', then '▍ ' + description, then for each field [name, value] two lines '▍ **' + name + '**' and '▍ ' + value.",
+     "fn": "render",
+     "starter": "def render(title, description, fields):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Stats",
+        "Hourly",
+        [
+         [
+          "CPU",
+          "12%"
+         ]
+        ]
+       ],
+       "expect": [
+        "▍ **Stats**",
+        "▍ Hourly",
+        "▍ **CPU**",
+        "▍ 12%"
+       ]
+      },
+      {
+       "args": [
+        "T",
+        "D",
+        []
+       ],
+       "expect": [
+        "▍ **T**",
+        "▍ D"
+       ]
+      }
+     ],
+     "hint": "Bar, bold title, description, fields.",
+     "solution": "def render(title, description, fields):\n    bar = '\\u258d'\n    out = [bar + ' **' + title + '**', bar + ' ' + description]\n    for name, value in fields:\n        out.append(bar + ' **' + name + '**')\n        out.append(bar + ' ' + value)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Inline row",
+     "intro": "Write inline_row(fields): fields is a list of [name, value]. Return two lines: names joined as '**name**' with ' │ ' between, and values joined with ' │ '.",
+     "fn": "inline_row",
+     "starter": "def inline_row(fields):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "CPU",
+          "12%"
+         ],
+         [
+          "RAM",
+          "3 GB"
+         ]
+        ]
+       ],
+       "expect": [
+        "**CPU** │ **RAM**",
+        "12% │ 3 GB"
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "A",
+          "1"
+         ]
+        ]
+       ],
+       "expect": [
+        "**A**",
+        "1"
+       ]
+      }
+     ],
+     "hint": "Join with the separator.",
+     "solution": "def inline_row(fields):\n    sep = ' \\u2502 '\n    names = sep.join(['**' + n + '**' for n, v in fields])\n    values = sep.join([v for n, v in fields])\n    return [names, values]\n"
+    },
+    {
+     "type": "python",
+     "title": "Expiry seconds",
+     "intro": "Write expiry_s(delete_after, expires_in): expires_in wins when given (not None); otherwise delete_after; round up to whole seconds; None if neither is given.",
+     "fn": "expiry_s",
+     "starter": "def expiry_s(delete_after, expires_in):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        null
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        null,
+        2.2
+       ],
+       "expect": 3
+      },
+      {
+       "args": [
+        3,
+        10
+       ],
+       "expect": 10
+      },
+      {
+       "args": [
+        null,
+        null
+       ],
+       "expect": null
+      }
+     ],
+     "hint": "Ceiling of the chosen value.",
+     "solution": "def expiry_s(delete_after, expires_in):\n    v = expires_in if expires_in is not None else delete_after\n    if v is None or v == 0:\n        return None\n    i = int(v)\n    if i < v:\n        i += 1\n    return i\n"
+    },
+    {
+     "type": "python",
+     "title": "Where does it go?",
+     "intro": "Write target(ephemeral, user, channel): the user's DMs when ephemeral, otherwise the channel.",
+     "fn": "target",
+     "starter": "def target(ephemeral, user, channel):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        true,
+        "u",
+        "c"
+       ],
+       "expect": "u"
+      },
+      {
+       "args": [
+        false,
+        "u",
+        "c"
+       ],
+       "expect": "c"
+      }
+     ],
+     "hint": "Emulated privacy.",
+     "solution": "def target(ephemeral, user, channel):\n    return user if ephemeral else channel\n"
+    },
+    {
+     "type": "python",
+     "title": "Split long text",
+     "intro": "Write chunks(text, size): split text into pieces of at most size characters; empty text gives an empty list.",
+     "fn": "chunks",
+     "starter": "def chunks(text, size):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "abcdefg",
+        3
+       ],
+       "expect": [
+        "abc",
+        "def",
+        "g"
+       ]
+      },
+      {
+       "args": [
+        "",
+        4
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "abc",
+        3
+       ],
+       "expect": [
+        "abc"
+       ]
+      }
+     ],
+     "hint": "Step through.",
+     "solution": "def chunks(text, size):\n    out = []\n    i = 0\n    while i < len(text):\n        out.append(text[i:i + size])\n        i += size\n    return out\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "NIP-40 expiration",
+     "url": "https://github.com/nostr-protocol/nips/blob/master/40.md",
+     "note": "used by delete_after"
+    }
+   ]
+  },
+  {
+   "title": "Views, buttons, selects and modals built from reactions",
+   "maps": [
+    {
+     "title": "Interactive UI",
+     "links": [
+      "View | holds | Buttons and selects",
+      "Button | becomes | Reaction",
+      "Select option | becomes | Numbered reaction",
+      "Modal | becomes | Chat questions",
+      "Paginator | uses | Arrow reactions",
+      "interaction_check | gates | Who may click",
+      "timeout | ends | The view"
+     ]
+    }
+   ],
+   "summary": [
+    "Vector has no message components, so vector.ui builds them from reactions. Each button or select option becomes an emoji reaction that the bot adds under the message, with a legend in the message text. Reacting clicks it, and removing your reaction clicks it again.",
+    "Buttons without an emoji get regional letters A, B, C and so on. Select options get number emoji one to ten, then letters. A Modal asks its TextInput fields as a short chat conversation and then calls on_submit. ui.Paginator pages text or embeds with first, previous, next, last and stop reactions.",
+    "timeout, on_timeout, interaction_check, stop, wait and interaction.response.edit_message all work as in discord.py."
+   ],
+   "glossary": [
+    {
+     "term": "Reaction button",
+     "def": "An emoji reaction added by the bot that acts as a button."
+    },
+    {
+     "term": "Legend",
+     "def": "The text in the message that explains which emoji does what."
+    },
+    {
+     "term": "Interaction",
+     "def": "The object passed to a callback when someone clicks."
+    },
+    {
+     "term": "Paginator",
+     "def": "A view that pages through a list of pages with arrow reactions."
+    },
+    {
+     "term": "Modal",
+     "def": "A form emulated as a conversation of questions."
+    }
+   ],
+   "keyPoints": [
+    "Same decorators as discord.py: @ui.button, @ui.select, ui.View, ui.Modal.",
+    "Buttons: given emoji, else A B C. Options: 1 to 10, then letters.",
+    "Reacting clicks; removing the reaction clicks again.",
+    "ephemeral=True is sent as a DM.",
+    "Reaction limits mean views should stay small."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. There are no buttons here, so the robot sticks little emoji stickers under a message. Tap a sticker and it counts as a button press."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The trick is that reactions are the one interactive thing every message already has. The library adds one reaction per control and listens for people reacting. It feels like buttons even though the mechanism is different."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "class Confirm(ui.View):\n    @ui.button(label=\"Confirm\", emoji=\"✅\", style=ui.ButtonStyle.success)\n    async def confirm(self, interaction: vector.Interaction, button: ui.Button):\n        await interaction.response.send_message(\"Done!\")\n        self.stop()\n\nawait ctx.send(\"Are you sure?\", view=Confirm(timeout=60))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The message text gets a legend such as a checkmark for confirm, so people know what each reaction does. When someone reacts, your callback runs with an interaction. Calling stop ends the view, and the bot removes its reactions."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Select menus use numbered reactions: an option without its own emoji gets the number for its position, from one to ten, and after ten the regional letters. Because reactions are limited, keep menus short, or use the Paginator."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A Modal is a conversation. The bot asks each TextInput as a short question, waits for the answer, then calls on_submit with all the values. It is slower than a popup but works anywhere a chat does."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Gate who may click with interaction_check, exactly as in discord.py. Without it, anyone who can react can click, so a confirm button in a public channel should check the user."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Reaction button",
+       "An emoji reaction added by the bot that acts as a button."
+      ],
+      [
+       "Legend",
+       "The text in the message that explains which emoji does what."
+      ],
+      [
+       "Interaction",
+       "The object passed to a callback when someone clicks."
+      ],
+      [
+       "Paginator",
+       "A view that pages through a list of pages with arrow reactions."
+      ],
+      [
+       "Modal",
+       "A form emulated as a conversation of questions."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is a button here?",
+     "options": [
+      "A reaction the bot adds",
+      "A native component",
+      "A link",
+      "A command"
+     ],
+     "answer": 0,
+     "explain": "Emulation."
+    },
+    {
+     "q": "What do buttons without an emoji get?",
+     "options": [
+      "Regional letters A B C",
+      "Numbers",
+      "Nothing",
+      "Stars"
+     ],
+     "answer": 0,
+     "explain": "Letter emoji."
+    },
+    {
+     "q": "What do select options get?",
+     "options": [
+      "Number emoji, then letters",
+      "Letters only",
+      "Colours",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "One to ten first."
+    },
+    {
+     "q": "How is a Modal shown?",
+     "options": [
+      "As chat questions",
+      "A popup",
+      "A web page",
+      "A file"
+     ],
+     "answer": 0,
+     "explain": "Conversation."
+    },
+    {
+     "q": "What clicks a button again?",
+     "options": [
+      "Removing your reaction",
+      "Typing",
+      "Waiting",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Both directions."
+    },
+    {
+     "q": "Which method restricts clickers?",
+     "options": [
+      "interaction_check",
+      "on_timeout",
+      "stop",
+      "wait"
+     ],
+     "answer": 0,
+     "explain": "Return False to block."
+    }
+   ],
+   "cards": [
+    {
+     "q": "ui.Paginator",
+     "a": "Reaction-driven pages"
+    },
+    {
+     "q": "self.stop()",
+     "a": "End the view"
+    },
+    {
+     "q": "view.wait()",
+     "a": "Await the view finishing"
+    },
+    {
+     "q": "ButtonStyle",
+     "a": "Style hint; shown in the legend"
+    }
+   ],
+   "practice": [
+    {
+     "type": "webxdc",
+     "title": "Reaction view simulator",
+     "intro": "Add buttons and options and see which reactions the bot would place.",
+     "height": 700,
+     "html": "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>\n*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}\nbutton,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}\n.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}\n.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}\n</style></head><body>\n<div class=\"k\">Buttons (leave an emoji blank to get a letter)</div>\n<input type=\"text\" id=\"b1\" value=\"✅\"><input type=\"text\" id=\"b2\" value=\"\"><input type=\"text\" id=\"b3\" value=\"\">\n<div class=\"k\">Select options</div><label>Number of options <input type=\"text\" id=\"no\" value=\"3\"></label>\n<button id=\"go\">Build view</button><div id=\"o\" class=\"box\"></div><div id=\"p\" class=\"k\"></div>\n<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}\nvar NUM=[\"1\",\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"10\"];\nvar seen={};\n$(\"go\").onclick=function(){var used=[],out=[],i,n=0;\n var bs=[$(\"b1\").value.trim(),$(\"b2\").value.trim(),$(\"b3\").value.trim()];bs.forEach(function(b){if(b)used.push(b)});\n bs.forEach(function(b,i){if(b)out.push(\"Button \"+(i+1)+\": \"+b);else{var L=String.fromCharCode(65+n);while(used.indexOf(L)>=0){n++;L=String.fromCharCode(65+n)}out.push(\"Button \"+(i+1)+\": letter \"+L);n++}});\n var no=Math.min(25,parseInt($(\"no\").value)||0);for(i=0;i<no;i++)out.push(\"Option \"+(i+1)+\": \"+(i<10?NUM[i]:String.fromCharCode(65+i-10)));\n $(\"o\").innerHTML=out.join(\"<br>\")+\"<br><span class='k'>Reacting clicks it; removing the reaction clicks again.</span>\";seen[no>10?\"many\":\"few\"]=1;seen[\"b\"+used.length]=1;var c=Object.keys(seen).length;$(\"p\").textContent=\"Layouts tried: \"+c+\" of 3\";if(c>=3)done()};\n</script></body></html>"
+    },
+    {
+     "type": "match",
+     "title": "Match the control",
+     "intro": "Pair each control with its emulation.",
+     "pairs": [
+      [
+       "Button",
+       "emoji reaction"
+      ],
+      [
+       "Select option",
+       "numbered reaction"
+      ],
+      [
+       "Modal",
+       "chat questions"
+      ],
+      [
+       "Paginator",
+       "arrow reactions"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "UI",
+     "text": "Views are built from {{reactions}}. Buttons without an emoji get {{letters}}. Select options get {{numbers}} first. Restrict clickers with {{interaction_check}}."
+    },
+    {
+     "type": "python",
+     "title": "Button emojis",
+     "intro": "Write button_emojis(buttons): buttons is a list of emoji strings or empty strings. Buttons with an emoji keep it; those without get the next unused letter 'A', 'B', 'C' in order. Return the list.",
+     "fn": "button_emojis",
+     "starter": "def button_emojis(buttons):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "",
+         "",
+         ""
+        ]
+       ],
+       "expect": [
+        "A",
+        "B",
+        "C"
+       ]
+      },
+      {
+       "args": [
+        [
+         "OK",
+         "",
+         "X"
+        ]
+       ],
+       "expect": [
+        "OK",
+        "A",
+        "X"
+       ]
+      },
+      {
+       "args": [
+        []
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        [
+         "A",
+         "",
+         ""
+        ]
+       ],
+       "expect": [
+        "A",
+        "B",
+        "C"
+       ]
+      }
+     ],
+     "hint": "Skip letters already used.",
+     "solution": "def button_emojis(buttons):\n    used = [b for b in buttons if b != '']\n    out = []\n    n = 0\n    for b in buttons:\n        if b != '':\n            out.append(b)\n        else:\n            letter = chr(65 + n)\n            while letter in used:\n                n += 1\n                letter = chr(65 + n)\n            out.append(letter)\n            n += 1\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Option marker",
+     "intro": "Write option_marker(i): for index i from 0 to 9 return the number i+1 as text; for i 10 and above return a letter 'A', 'B', ... for i-10.",
+     "fn": "option_marker",
+     "starter": "def option_marker(i):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0
+       ],
+       "expect": "1"
+      },
+      {
+       "args": [
+        9
+       ],
+       "expect": "10"
+      },
+      {
+       "args": [
+        10
+       ],
+       "expect": "A"
+      },
+      {
+       "args": [
+        12
+       ],
+       "expect": "C"
+      }
+     ],
+     "hint": "Numbers then letters.",
+     "solution": "def option_marker(i):\n    if i < 10:\n        return str(i + 1)\n    return chr(65 + i - 10)\n"
+    },
+    {
+     "type": "python",
+     "title": "Who clicked?",
+     "intro": "Write allowed(user, owner, only_owner): when only_owner is true only the owner may click; otherwise anyone.",
+     "fn": "allowed",
+     "starter": "def allowed(user, owner, only_owner):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "a",
+        "a",
+        true
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "b",
+        "a",
+        true
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "b",
+        "a",
+        false
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Like interaction_check.",
+     "solution": "def allowed(user, owner, only_owner):\n    if only_owner:\n        return user == owner\n    return True\n"
+    },
+    {
+     "type": "python",
+     "title": "Paginator",
+     "intro": "Write page_after(page, pages, reaction): page is the current zero-based page, pages the count. 'first' gives 0, 'prev' gives page-1 but not below 0, 'next' gives page+1 but not past pages-1, 'last' gives pages-1, anything else leaves it unchanged.",
+     "fn": "page_after",
+     "starter": "def page_after(page, pages, reaction):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        2,
+        5,
+        "prev"
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        0,
+        5,
+        "prev"
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        4,
+        5,
+        "next"
+       ],
+       "expect": 4
+      },
+      {
+       "args": [
+        1,
+        5,
+        "last"
+       ],
+       "expect": 4
+      },
+      {
+       "args": [
+        3,
+        5,
+        "first"
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        3,
+        5,
+        "stop"
+       ],
+       "expect": 3
+      }
+     ],
+     "hint": "Clamp at the ends.",
+     "solution": "def page_after(page, pages, reaction):\n    if reaction == 'first':\n        return 0\n    if reaction == 'prev':\n        return max(0, page - 1)\n    if reaction == 'next':\n        return min(pages - 1, page + 1)\n    if reaction == 'last':\n        return pages - 1\n    return page\n"
+    },
+    {
+     "type": "python",
+     "title": "Modal answers",
+     "intro": "Write ask(fields, answers): fields is a list of [name, required]; answers is a list of replies in order. Return [values, missing] where values pairs each name with its answer (an empty string if no answer) and missing is the list of required names with empty answers.",
+     "fn": "ask",
+     "starter": "def ask(fields, answers):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "name",
+          true
+         ],
+         [
+          "note",
+          false
+         ]
+        ],
+        [
+         "Ann"
+        ]
+       ],
+       "expect": [
+        [
+         [
+          "name",
+          "Ann"
+         ],
+         [
+          "note",
+          ""
+         ]
+        ],
+        []
+       ]
+      },
+      {
+       "args": [
+        [
+         [
+          "a",
+          true
+         ]
+        ],
+        []
+       ],
+       "expect": [
+        [
+         [
+          "a",
+          ""
+         ]
+        ],
+        [
+         "a"
+        ]
+       ]
+      }
+     ],
+     "hint": "Walk the fields in order.",
+     "solution": "def ask(fields, answers):\n    values = []\n    missing = []\n    for i in range(len(fields)):\n        name, required = fields[i]\n        a = answers[i] if i < len(answers) else ''\n        values.append([name, a])\n        if required and a == '':\n            missing.append(name)\n    return [values, missing]\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "ui_views example",
+     "url": "https://github.com/lucky-edgelord/vector-sdk-py/blob/main/examples/ui_views.py",
+     "note": "buttons, selects, modals"
+    }
+   ]
+  },
+  {
+   "title": "Communities and moderation",
+   "maps": [
+    {
+     "title": "Communities",
+     "links": [
+      "Community | is | Guild alias",
+      "create_role | makes | Roles",
+      "set_permissions | sets | Overwrites",
+      "member.timeout | silences | A member",
+      "audit_logs | lists | Actions",
+      "bulk_ban | bans | One rekey",
+      "guild.delete | dissolves | Community"
+     ]
+    }
+   ],
+   "summary": [
+    "Communities are richer than Discord guilds. You can create communities, join by invite link, preview an invite with fetch_invite, create invites with a lifetime and label, and manage roles, categories, text, voice and forum channels.",
+    "Permissions work per channel with set_permissions and overwrites, and permissions_for tells you what someone may do. Moderation includes kick, ban, unban, bulk_ban for one key rotation, member.timeout, nicknames, pins, audit_logs and bans listings, and contain_raid.",
+    "Recovery and operations tools include relay management with check_relays and move_relays, refound and repair_roster. leave removes the bot, and delete dissolves the community, which is irreversible and for the owner only."
+   ],
+   "glossary": [
+    {
+     "term": "Community",
+     "def": "A shared space with members, roles and channels."
+    },
+    {
+     "term": "Overwrite",
+     "def": "A per-channel permission change for a role or member."
+    },
+    {
+     "term": "Timeout",
+     "def": "A temporary silence applied to a member."
+    },
+    {
+     "term": "Audit log",
+     "def": "The list of recorded moderation and settings actions."
+    },
+    {
+     "term": "Bulk ban",
+     "def": "Banning many members with a single key rotation."
+    }
+   ],
+   "keyPoints": [
+    "create_community, join(invite_url), fetch_invite for a preview.",
+    "create_role, create_text_channel, create_category, create_forum.",
+    "channel.set_permissions(target, send_messages=False) locks a channel.",
+    "member.timeout(timedelta), guild.bulk_ban(members), guild.audit_logs().",
+    "guild.delete() dissolves a community; owner only, irreversible."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Running a club means locking rooms, putting people in time-out and banning troublemakers. Dissolving the whole club is the big red button only the owner may press."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Think of running a community as a set of small decisions: who may enter, what they can see, who may speak, and who can undo mistakes. The library exposes each one as a method on the objects you already know from discord.py."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "@commands.command()\n@commands.has_permissions(manage_channels=True)\nasync def lock(self, ctx):\n    await ctx.channel.set_permissions(ctx.guild.default_role, send_messages=False)\n    await ctx.send(\"Channel locked\")\n\n@commands.command()\n@commands.has_permissions(moderate_members=True)\nasync def timeout(self, ctx, member: vector.Member, minutes: int = 10):\n    await member.timeout(datetime.timedelta(minutes=minutes))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "The lock command in the moderation example denies the send permission to the default role in the current channel. The timeout command silences a member for a number of minutes. Both are guarded by permission checks."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When a wave of spam arrives, ban one account at a time and each ban rotates the community key. bulk_ban bans the whole list with a single rekey. contain_raid treats a raid as one moderation unit."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The audit log is an async iterator of entries with a user, an action and a time, which makes a handy command for admins. Because each moderation call is checked the way every member's client will judge it, a refused action raises an error that you should handle."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Dissolving a community with delete cannot be undone and only the owner may do it. Never wire it to a casual command. Require an explicit confirmation from a person, for example with a confirm view that only the owner may click."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "Community",
+       "A shared space with members, roles and channels."
+      ],
+      [
+       "Overwrite",
+       "A per-channel permission change for a role or member."
+      ],
+      [
+       "Timeout",
+       "A temporary silence applied to a member."
+      ],
+      [
+       "Audit log",
+       "The list of recorded moderation and settings actions."
+      ],
+      [
+       "Bulk ban",
+       "Banning many members with a single key rotation."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does set_permissions change?",
+     "options": [
+      "A channel overwrite",
+      "The bot's key",
+      "The invite",
+      "The relay"
+     ],
+     "answer": 0,
+     "explain": "Per channel."
+    },
+    {
+     "q": "What is bulk_ban for?",
+     "options": [
+      "Banning many with one rekey",
+      "Banning forever",
+      "Listing bans",
+      "Muting"
+     ],
+     "answer": 0,
+     "explain": "Efficiency."
+    },
+    {
+     "q": "What does guild.delete do?",
+     "options": [
+      "Dissolves the community",
+      "Deletes a message",
+      "Leaves",
+      "Kicks"
+     ],
+     "answer": 0,
+     "explain": "Owner only."
+    },
+    {
+     "q": "Which method lists recorded actions?",
+     "options": [
+      "audit_logs",
+      "bans",
+      "invites",
+      "history"
+     ],
+     "answer": 0,
+     "explain": "Async iterator."
+    },
+    {
+     "q": "Which method previews an invite?",
+     "options": [
+      "fetch_invite",
+      "join",
+      "create_invite",
+      "leave"
+     ],
+     "answer": 0,
+     "explain": "Before joining."
+    },
+    {
+     "q": "What happens if a moderation action is refused?",
+     "options": [
+      "An error is raised",
+      "It silently succeeds",
+      "The bot dissolves",
+      "A retry loop"
+     ],
+     "answer": 0,
+     "explain": "Handle it."
+    }
+   ],
+   "cards": [
+    {
+     "q": "contain_raid",
+     "a": "Handle a raid as one unit"
+    },
+    {
+     "q": "refound",
+     "a": "Recovery tool for a community"
+    },
+    {
+     "q": "repair_roster",
+     "a": "Fix the member list"
+    },
+    {
+     "q": "system_channel",
+     "a": "Default channel for welcome messages"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the method",
+     "intro": "Pair each need with the method.",
+     "pairs": [
+      [
+       "lock a channel",
+       "set_permissions"
+      ],
+      [
+       "silence a member",
+       "timeout"
+      ],
+      [
+       "ban a wave",
+       "bulk_ban"
+      ],
+      [
+       "list actions",
+       "audit_logs"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Moderation",
+     "text": "Lock a channel by denying {{send_messages}} to the default role. Ban many at once with {{bulk_ban}}. Silence a member with {{timeout}}. Only the owner may {{dissolve}} a community."
+    },
+    {
+     "type": "python",
+     "title": "Rekeys needed",
+     "intro": "Write rekeys(bans, bulk): bans is the number of accounts to ban. One rekey each normally, one rekey in total when bulk is true (and zero if there are none).",
+     "fn": "rekeys",
+     "starter": "def rekeys(bans, bulk):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        5,
+        false
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        5,
+        true
+       ],
+       "expect": 1
+      },
+      {
+       "args": [
+        0,
+        true
+       ],
+       "expect": 0
+      },
+      {
+       "args": [
+        1,
+        false
+       ],
+       "expect": 1
+      }
+     ],
+     "hint": "Bulk is one.",
+     "solution": "def rekeys(bans, bulk):\n    if bans == 0:\n        return 0\n    return 1 if bulk else bans\n"
+    },
+    {
+     "type": "python",
+     "title": "Effective permission",
+     "intro": "Write can_send(role_allows, channel_allow, channel_deny): True when (the role allows OR the channel allows) AND NOT the channel denies. All are booleans.",
+     "fn": "can_send",
+     "starter": "def can_send(role_allows, channel_allow, channel_deny):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        true,
+        false,
+        false
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        true,
+        false,
+        true
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        false,
+        true,
+        false
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        false,
+        false,
+        false
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Deny wins.",
+     "solution": "def can_send(role_allows, channel_allow, channel_deny):\n    return (role_allows or channel_allow) and not channel_deny\n"
+    },
+    {
+     "type": "python",
+     "title": "Timeout end",
+     "intro": "Write timeout_active(until_minutes, now_minutes): True while now is before until.",
+     "fn": "timeout_active",
+     "starter": "def timeout_active(until_minutes, now_minutes):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        10,
+        5
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        10,
+        10
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        10,
+        20
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Strictly before.",
+     "solution": "def timeout_active(until_minutes, now_minutes):\n    return now_minutes < until_minutes\n"
+    },
+    {
+     "type": "python",
+     "title": "Confirm dissolve",
+     "intro": "Write may_dissolve(user, owner, confirmed): True only for the owner and only when a person confirmed.",
+     "fn": "may_dissolve",
+     "starter": "def may_dissolve(user, owner, confirmed):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "a",
+        "a",
+        true
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "a",
+        "a",
+        false
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "b",
+        "a",
+        true
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Owner and confirmed.",
+     "solution": "def may_dissolve(user, owner, confirmed):\n    return user == owner and confirmed\n"
+    },
+    {
+     "type": "python",
+     "title": "Audit filter",
+     "intro": "Write by_user(entries, user): entries is a list of [user, action]. Return the actions by that user in order.",
+     "fn": "by_user",
+     "starter": "def by_user(entries, user):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         [
+          "a",
+          "kick"
+         ],
+         [
+          "b",
+          "ban"
+         ],
+         [
+          "a",
+          "pin"
+         ]
+        ],
+        "a"
+       ],
+       "expect": [
+        "kick",
+        "pin"
+       ]
+      },
+      {
+       "args": [
+        [],
+        "x"
+       ],
+       "expect": []
+      }
+     ],
+     "hint": "Filter by user.",
+     "solution": "def by_user(entries, user):\n    return [a for u, a in entries if u == user]\n"
+    },
+    {
+     "type": "python",
+     "title": "Invite lifetime",
+     "intro": "Write invite_valid(created, max_age, now): max_age 0 means never expires; otherwise valid while now minus created is less than max_age.",
+     "fn": "invite_valid",
+     "starter": "def invite_valid(created, max_age, now):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        0,
+        9999
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        0,
+        60,
+        30
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        0,
+        60,
+        60
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        100,
+        3600,
+        200
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Zero means forever.",
+     "solution": "def invite_valid(created, max_age, now):\n    if max_age == 0:\n        return True\n    return (now - created) < max_age\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Rust vector_sdk community management",
+     "url": "https://docs.rs/vector-sdk",
+     "note": "roles, overwrites, audit log"
+    }
+   ]
+  },
+  {
+   "title": "Voice, Mini Apps, testing and contributing",
+   "maps": [
+    {
+     "title": "Beyond text",
+     "links": [
+      "VoiceChannel.connect | joins | A call",
+      "vc.play | plays | PCM audio",
+      "utterances | yields | Speaker clips",
+      "Transcriber | needs | whisper build",
+      "xdc_app | joins | Mini App session",
+      "maturin develop | builds | The extension",
+      "pytest | tests | Python layer"
+     ]
+    }
+   ],
+   "summary": [
+    "Voice works like discord.py. voice_channel.connect returns a client, vc.play plays an FFmpegPCMAudio source, and bots can also listen. Audio is 48 kHz mono 16-bit PCM bytes. utterances yields one clip per speaker per pause, and a Transcriber turns a clip into text in a whisper build.",
+    "Mini Apps are WebXDC apps shared in a chat. Decorate an async function with bot.xdc_app(app_id) and iterate the session for data, peer_join and peer_leave events. Sessions end after idle or quiet timeouts.",
+    "For development, install maturin and pytest, run maturin develop to build the Rust extension into your virtual environment, and run pytest. The Python layer is tested against a fake native bot, so most tests need no network."
+   ],
+   "glossary": [
+    {
+     "term": "PCM",
+     "def": "Raw audio samples; here 48 kHz mono 16-bit."
+    },
+    {
+     "term": "Utterance",
+     "def": "One speaker's clip, cut at a pause."
+    },
+    {
+     "term": "XdcSession",
+     "def": "The bot's live link to one open Mini App."
+    },
+    {
+     "term": "maturin",
+     "def": "Builds PyO3 projects into Python packages."
+    },
+    {
+     "term": "Fake native bot",
+     "def": "A test double that stands in for the Rust bot."
+    }
+   ],
+   "keyPoints": [
+    "PCM bytes: 48000 samples per second, mono, 2 bytes per sample.",
+    "vc.play(FFmpegPCMAudio(path)); vc.say(pcm); vc.hush().",
+    "@bot.xdc_app('id') async def f(session): async for event in session.",
+    "event.type: data, peer_join, peer_leave; event.verified_sender names the sender.",
+    "maturin develop --release; pytest tests."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The robot can join voice calls and little shared apps. To help build it, you test with a pretend robot so you do not need the real internet."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Voice turns the bot into a participant in a call. You connect to a voice channel, play audio, and listen. Everything is raw PCM, which keeps the interface simple: bytes in, bytes out. FFmpeg decodes files for you."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "vc = await voice_channel.connect()\nvc.play(vector.FFmpegPCMAudio(\"song.mp3\"), after=lambda e: print(\"done\"))\n\nasync for member, pcm in vc.utterances():     # bots can listen\n    print(member, await transcriber.transcribe(pcm))"
+    },
+    {
+     "type": "text",
+     "items": [
+      "At 48 kilohertz mono with two bytes per sample, one second of audio is 96 thousand bytes. A twenty millisecond frame is 960 samples, which is 1920 bytes. Knowing these numbers helps when you buffer or cut clips."
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "python",
+     "code": "@bot.xdc_app(\"vector-counter\")\nasync def counter(session: vector.XdcSession):\n    async for event in session:\n        if event.type == \"data\":\n            await session.send_json({\"echo\": event.json(), \"from\": event.verified_sender})"
+    },
+    {
+     "type": "text",
+     "items": [
+      "A Mini App is a small web app shared in a chat that everyone who opens it uses together. Your bot can be a referee, an opponent or the server behind it. Use verified_sender when you must trust who sent a message, and remember players can see each other's network addresses."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The repository is built for contributors. src is the PyO3 binding, python/vector is the API, and the tests use a fake native bot. A GitHub Actions workflow builds wheels for Linux, macOS and Windows. Add a test whenever you add a feature."
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Key terms at a glance",
+     "head": [
+      "Term",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "PCM",
+       "Raw audio samples; here 48 kHz mono 16-bit."
+      ],
+      [
+       "Utterance",
+       "One speaker's clip, cut at a pause."
+      ],
+      [
+       "XdcSession",
+       "The bot's live link to one open Mini App."
+      ],
+      [
+       "maturin",
+       "Builds PyO3 projects into Python packages."
+      ],
+      [
+       "Fake native bot",
+       "A test double that stands in for the Rust bot."
+      ]
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What audio format does voice use?",
+     "options": [
+      "48 kHz mono 16-bit PCM",
+      "MP3",
+      "Stereo 44.1 kHz",
+      "Opus bytes"
+     ],
+     "answer": 0,
+     "explain": "Raw PCM."
+    },
+    {
+     "q": "Which build feature enables Transcriber?",
+     "options": [
+      "whisper",
+      "tor",
+      "xdc",
+      "i2p"
+     ],
+     "answer": 0,
+     "explain": "Opt-in."
+    },
+    {
+     "q": "How do you join Mini App sessions?",
+     "options": [
+      "bot.xdc_app",
+      "bot.voice",
+      "bot.join_app",
+      "ctx.xdc"
+     ],
+     "answer": 0,
+     "explain": "Decorator."
+    },
+    {
+     "q": "What builds the extension for development?",
+     "options": [
+      "maturin develop",
+      "make",
+      "npm",
+      "cargo test only"
+     ],
+     "answer": 0,
+     "explain": "Then run pytest."
+    },
+    {
+     "q": "What do the tests use?",
+     "options": [
+      "A fake native bot",
+      "The live network",
+      "A browser",
+      "A phone"
+     ],
+     "answer": 0,
+     "explain": "No network needed."
+    },
+    {
+     "q": "Does the library support live video for bots?",
+     "options": [
+      "No",
+      "Yes",
+      "Only in DMs",
+      "Only with whisper"
+     ],
+     "answer": 0,
+     "explain": "Rust SDK limit."
+    }
+   ],
+   "cards": [
+    {
+     "q": "verified_sender",
+     "a": "A sender you can trust in a Mini App message"
+    },
+    {
+     "q": "FFmpegPCMAudio",
+     "a": "Decodes audio files to PCM"
+    },
+    {
+     "q": "vc.hush",
+     "a": "Stop playing queued audio"
+    },
+    {
+     "q": "peer_join",
+     "a": "Someone joined the Mini App session"
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match the piece",
+     "intro": "Pair each tool with its use.",
+     "pairs": [
+      [
+       "maturin",
+       "build the extension"
+      ],
+      [
+       "pytest",
+       "run the tests"
+      ],
+      [
+       "FFmpegPCMAudio",
+       "decode files"
+      ],
+      [
+       "Transcriber",
+       "speech to text"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Beyond text",
+     "text": "Voice audio is {{48}} kHz {{mono}} PCM. Mini Apps use bot.{{xdc_app}}. Build the extension with {{maturin}} develop. Test with {{pytest}}."
+    },
+    {
+     "type": "python",
+     "title": "Bytes of audio",
+     "intro": "Write pcm_bytes(rate, ms): bytes for ms milliseconds of mono 16-bit audio at the given rate.",
+     "fn": "pcm_bytes",
+     "starter": "def pcm_bytes(rate, ms):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        48000,
+        1000
+       ],
+       "expect": 96000
+      },
+      {
+       "args": [
+        48000,
+        20
+       ],
+       "expect": 1920
+      },
+      {
+       "args": [
+        16000,
+        500
+       ],
+       "expect": 16000
+      }
+     ],
+     "hint": "Two bytes per sample.",
+     "solution": "def pcm_bytes(rate, ms):\n    return rate * ms // 1000 * 2\n"
+    },
+    {
+     "type": "python",
+     "title": "Frames in a clip",
+     "intro": "Write frames(rate, clip_ms, frame_ms): number of whole frames of frame_ms in a clip of clip_ms.",
+     "fn": "frames",
+     "starter": "def frames(rate, clip_ms, frame_ms):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        48000,
+        1000,
+        20
+       ],
+       "expect": 50
+      },
+      {
+       "args": [
+        48000,
+        55,
+        20
+       ],
+       "expect": 2
+      },
+      {
+       "args": [
+        48000,
+        0,
+        20
+       ],
+       "expect": 0
+      }
+     ],
+     "hint": "Integer division.",
+     "solution": "def frames(rate, clip_ms, frame_ms):\n    return clip_ms // frame_ms\n"
+    },
+    {
+     "type": "python",
+     "title": "Session ends",
+     "intro": "Write session_ended(idle_min, quiet_min, returned, idle_limit, quiet_limit): True when the handler returned, or idle_min is at least idle_limit, or quiet_min is at least quiet_limit.",
+     "fn": "session_ended",
+     "starter": "def session_ended(idle_min, quiet_min, returned, idle_limit, quiet_limit):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        0,
+        0,
+        false,
+        3,
+        15
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        3,
+        0,
+        false,
+        3,
+        15
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        0,
+        15,
+        false,
+        3,
+        15
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        0,
+        0,
+        true,
+        3,
+        15
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Three ways.",
+     "solution": "def session_ended(idle_min, quiet_min, returned, idle_limit, quiet_limit):\n    return returned or idle_min >= idle_limit or quiet_min >= quiet_limit\n"
+    },
+    {
+     "type": "python",
+     "title": "Trusted event",
+     "intro": "Write trust(event_type, verified_sender): data events from a verified sender give 'act'; data events without one give 'ignore'; peer_join and peer_leave give 'note'; anything else gives 'ignore'.",
+     "fn": "trust",
+     "starter": "def trust(event_type, verified_sender):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "data",
+        "npub1x"
+       ],
+       "expect": "act"
+      },
+      {
+       "args": [
+        "data",
+        ""
+       ],
+       "expect": "ignore"
+      },
+      {
+       "args": [
+        "peer_join",
+        ""
+       ],
+       "expect": "note"
+      },
+      {
+       "args": [
+        "other",
+        "x"
+       ],
+       "expect": "ignore"
+      }
+     ],
+     "hint": "Verify before acting.",
+     "solution": "def trust(event_type, verified_sender):\n    if event_type == 'data':\n        return 'act' if verified_sender != '' else 'ignore'\n    if event_type in ('peer_join', 'peer_leave'):\n        return 'note'\n    return 'ignore'\n"
+    },
+    {
+     "type": "python",
+     "title": "Test plan",
+     "intro": "Write needs_network(test_kind): 'unit' and 'fake' give False; 'live' and 'relay' give True; anything else gives True.",
+     "fn": "needs_network",
+     "starter": "def needs_network(test_kind):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "unit"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "fake"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "live"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "other"
+       ],
+       "expect": true
+      }
+     ],
+     "hint": "Fake native bot needs none.",
+     "solution": "def needs_network(test_kind):\n    if test_kind in ('unit', 'fake'):\n        return False\n    return True\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "WebXDC",
+     "url": "https://webxdc.org/",
+     "note": "Mini App format"
+    },
+    {
+     "title": "pytest",
+     "url": "https://docs.pytest.org/",
+     "note": "test runner"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: vector-sdk-py: discord.py-style Vector Bots",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "What powers vector-sdk-py underneath?",
+    "options": [
+     "The Rust vector_sdk via PyO3",
+     "discord.py",
+     "Matrix",
+     "A web API"
+    ],
+    "answer": 0,
+    "explain": "Compiled into the package."
+   },
+   {
+    "q": "What plays the role of the token?",
+    "options": [
+     "The nsec key",
+     "A password",
+     "An API key",
+     "An email"
+    ],
+    "answer": 0,
+    "explain": "A Nostr key."
+   },
+   {
+    "q": "What does Guild alias?",
+    "options": [
+     "Community",
+     "Channel",
+     "Role",
+     "Member"
+    ],
+    "answer": 0,
+    "explain": "Compatibility."
+   },
+   {
+    "q": "What happens to Intents?",
+    "options": [
+     "Accepted and ignored",
+     "Required",
+     "Privileged",
+     "Removed"
+    ],
+    "answer": 0,
+    "explain": "All events are sent."
+   },
+   {
+    "q": "Why is Rust needed to install?",
+    "options": [
+     "The SDK is compiled",
+     "For tests only",
+     "For docs",
+     "It is not needed"
+    ],
+    "answer": 0,
+    "explain": "Unless a wheel exists."
+   },
+   {
+    "q": "Default invite policy?",
+    "options": [
+     "manual",
+     "public",
+     "whitelist",
+     "none"
+    ],
+    "answer": 0,
+    "explain": "Fires on_community_invite."
+   },
+   {
+    "q": "run() with no key:",
+    "options": [
+     "Reuses or creates the stored key",
+     "Fails",
+     "Uses a public key",
+     "Prompts"
+    ],
+    "answer": 0,
+    "explain": "From data_dir."
+   },
+   {
+    "q": "A kick fires:",
+    "options": [
+     "on_member_kick",
+     "Only on_member_remove",
+     "Nothing",
+     "on_ban"
+    ],
+    "answer": 0,
+    "explain": "Separate event."
+   },
+   {
+    "q": "Default command prefix?",
+    "options": [
+     "/",
+     "!",
+     "?",
+     "None"
+    ],
+    "answer": 0,
+    "explain": "Native only."
+   },
+   {
+    "q": "Literal becomes:",
+    "options": [
+     "A choice",
+     "A flag",
+     "A number",
+     "A user"
+    ],
+    "answer": 0,
+    "explain": "Dropdown."
+   },
+   {
+    "q": "float becomes:",
+    "options": [
+     "number",
+     "int",
+     "text",
+     "flag"
+    ],
+    "answer": 0,
+    "explain": "Vector arg."
+   },
+   {
+    "q": "Which commands stay prefix only?",
+    "options": [
+     "Uppercase names or over 8 args",
+     "All",
+     "None",
+     "Those with str"
+    ],
+    "answer": 0,
+    "explain": "Cannot be native."
+   },
+   {
+    "q": "What must an extension define?",
+    "options": [
+     "async def setup(bot)",
+     "def main",
+     "token",
+     "class Bot"
+    ],
+    "answer": 0,
+    "explain": "Entry point."
+   },
+   {
+    "q": "A cooldown allows:",
+    "options": [
+     "rate uses per period",
+     "One use ever",
+     "Unlimited",
+     "Ten uses"
+    ],
+    "answer": 0,
+    "explain": "Token bucket."
+   },
+   {
+    "q": "owner_id takes:",
+    "options": [
+     "An npub",
+     "A number",
+     "A name",
+     "A URL"
+    ],
+    "answer": 0,
+    "explain": "Vector identity."
+   },
+   {
+    "q": "An Embed renders as:",
+    "options": [
+     "Coloured markdown",
+     "A PDF",
+     "Nothing",
+     "An image only"
+    ],
+    "answer": 0,
+    "explain": "No native embeds."
+   },
+   {
+    "q": "delete_after adds:",
+    "options": [
+     "NIP-40 expiry and a delete",
+     "A pin",
+     "A reaction",
+     "A ban"
+    ],
+    "answer": 0,
+    "explain": "Honoured by clients."
+   },
+   {
+    "q": "An ephemeral reply goes to:",
+    "options": [
+     "The user's DMs",
+     "The channel",
+     "A file",
+     "Nowhere"
+    ],
+    "answer": 0,
+    "explain": "Emulated."
+   },
+   {
+    "q": "Buttons are built from:",
+    "options": [
+     "Reactions",
+     "Native components",
+     "Links",
+     "Commands"
+    ],
+    "answer": 0,
+    "explain": "No components."
+   },
+   {
+    "q": "Buttons without emoji get:",
+    "options": [
+     "Letters A B C",
+     "Numbers",
+     "Nothing",
+     "Stars"
+    ],
+    "answer": 0,
+    "explain": "Regional letters."
+   },
+   {
+    "q": "A Modal is asked as:",
+    "options": [
+     "Chat questions",
+     "A popup",
+     "A page",
+     "A file"
+    ],
+    "answer": 0,
+    "explain": "Conversation."
+   },
+   {
+    "q": "bulk_ban gives:",
+    "options": [
+     "One rekey for many bans",
+     "A longer ban",
+     "A list",
+     "A mute"
+    ],
+    "answer": 0,
+    "explain": "Efficiency."
+   },
+   {
+    "q": "Who may dissolve a community?",
+    "options": [
+     "The owner",
+     "Any member",
+     "Any admin",
+     "The relay"
+    ],
+    "answer": 0,
+    "explain": "Irreversible."
+   },
+   {
+    "q": "Voice audio is:",
+    "options": [
+     "48 kHz mono 16-bit PCM",
+     "MP3",
+     "Stereo 44.1 kHz",
+     "Opus bytes"
+    ],
+    "answer": 0,
+    "explain": "Raw bytes."
+   },
+   {
+    "q": "Tests run against:",
+    "options": [
+     "A fake native bot",
+     "The live network",
+     "A phone",
+     "A browser"
+    ],
+    "answer": 0,
+    "explain": "No network needed."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "vector-sdk-py cheat sheet",
+  "prompt": "vpy>",
+  "intro": "A scripted lookup. Try: install, key, run, command, hints, cog, cooldown, embed, view, community, voice, xdc, dev, help",
+  "chips": [
+   "install",
+   "key",
+   "run",
+   "command",
+   "hints",
+   "cog",
+   "cooldown",
+   "embed",
+   "view",
+   "community",
+   "voice",
+   "xdc",
+   "dev",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "install    pip install git+https://github.com/lucky-edgelord/vector-sdk",
+     "key        vector.generate_nsec(). bot.run(nsec) or bot.run() to reuse ",
+     "run        bot = commands.Bot(command_prefix='!', invite_policy='public",
+     "command    @bot.command() async def ping(ctx): await ctx.reply('pong').",
+     "hints      str=text, int=int, float=number, bool=flag, Member/User=user",
+     "cog        class X(commands.Cog) ... async def setup(bot): await bot.ad",
+     "cooldown   @commands.cooldown(rate, per, commands.BucketType.user) rais",
+     "embed      vector.Embed(title=, description=, colour=) rendered as colo",
+     "view       ui.View with @ui.button and @ui.select built from reactions.",
+     "community  create_role, set_permissions, member.timeout, guild.bulk_ban",
+     "voice      await vc.connect(); vc.play(FFmpegPCMAudio(path)); vc.uttera",
+     "xdc        @bot.xdc_app('app-id') async def f(session): async for event",
+     "dev        pip install maturin pytest pytest-asyncio; maturin develop -"
+    ]
+   },
+   {
+    "re": "^install$",
+    "out": [
+     "pip install git+https://github.com/lucky-edgelord/vector-sdk-py. Needs Rust and cmake. Python 3.9+. Opt-in: --features whisper,tor,i2p."
+    ]
+   },
+   {
+    "re": "^key$",
+    "out": [
+     "vector.generate_nsec(). bot.run(nsec) or bot.run() to reuse the key in data_dir (default ./vector-bot-data). mnemonic= also works."
+    ]
+   },
+   {
+    "re": "^run$",
+    "out": [
+     "bot = commands.Bot(command_prefix='!', invite_policy='public'); bot.run(os.environ.get('VECTOR_NSEC'))"
+    ]
+   },
+   {
+    "re": "^command$",
+    "out": [
+     "@bot.command() async def ping(ctx): await ctx.reply('pong'). Also published as native /ping. Default prefix is '/'."
+    ]
+   },
+   {
+    "re": "^hints$",
+    "out": [
+     "str=text, int=int, float=number, bool=flag, Member/User=user, Literal=choice, rest/args/Greedy=trailing text. Uppercase names or >8 args stay prefix only."
+    ]
+   },
+   {
+    "re": "^cog$",
+    "out": [
+     "class X(commands.Cog) ... async def setup(bot): await bot.add_cog(X(bot)). Load in setup_hook."
+    ]
+   },
+   {
+    "re": "^cooldown$",
+    "out": [
+     "@commands.cooldown(rate, per, commands.BucketType.user) raises CommandOnCooldown with retry_after."
+    ]
+   },
+   {
+    "re": "^embed$",
+    "out": [
+     "vector.Embed(title=, description=, colour=) rendered as coloured markdown. delete_after sets a NIP-40 expiry and deletes."
+    ]
+   },
+   {
+    "re": "^view$",
+    "out": [
+     "ui.View with @ui.button and @ui.select built from reactions. Buttons get A B C; options 1-10 then letters. ui.Modal asks questions in chat."
+    ]
+   },
+   {
+    "re": "^community$",
+    "out": [
+     "create_role, set_permissions, member.timeout, guild.bulk_ban, audit_logs, guild.delete (dissolve, owner only)."
+    ]
+   },
+   {
+    "re": "^voice$",
+    "out": [
+     "await vc.connect(); vc.play(FFmpegPCMAudio(path)); vc.utterances(); Transcriber needs the whisper build. 48 kHz mono 16-bit PCM."
+    ]
+   },
+   {
+    "re": "^xdc$",
+    "out": [
+     "@bot.xdc_app('app-id') async def f(session): async for event in session: data, peer_join, peer_leave."
+    ]
+   },
+   {
+    "re": "^dev$",
+    "out": [
+     "pip install maturin pytest pytest-asyncio; maturin develop --release; pytest tests (fake native bot)."
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "category": "Computer Science",
+ "level": "Intermediate",
+ "tags": [
+  "vector",
+  "python",
+  "bots",
+  "discord.py",
+  "pyo3",
+  "nostr"
+ ]
+}

@@ -1,0 +1,13 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}
+.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}
+.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}
+</style></head><body>
+<label>What happened <select id="ev"><option value="kick">A member was kicked</option><option value="ban">A member was banned</option><option value="timeout">A member was timed out</option><option value="roles">A member's roles changed</option><option value="nickname">A nickname changed</option><option value="overwrite">A channel overwrite changed</option><option value="pin">A message was pinned</option><option value="dissolve">The owner dissolved the community</option></select></label>
+<button id="go">Fire</button><div id="o" class="box"></div><div id="p" class="k"></div>
+<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var H={kick:"on_member_kick (and on_community_change)",ban:"on_member_ban (and on_community_change)",timeout:"on_member_timeout, later on_member_timeout_end",roles:"on_member_roles_update(member, added, removed)",nickname:"on_member_nickname_update(member, nick)",overwrite:"on_overwrite_update(channel, target, overwrite)",pin:"on_guild_channel_pins_update (and on_community_change)",dissolve:"on_community_dissolve(guild)"};
+var seen={};
+$("go").onclick=function(){var e=$("ev").value;$("o").innerHTML='<b class="ok">'+H[e]+'</b><br>Every change also arrives raw as on_community_change(change), naming who made it.';seen[e]=1;var n=Object.keys(seen).length;$("p").textContent="Changes tried: "+n+" of 8";if(n>=6)done()};
+</script></body></html>

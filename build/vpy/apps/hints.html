@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+*{box-sizing:border-box}body{font:14px system-ui,Roboto,sans-serif;margin:0;padding:10px;background:#150d27;color:#f1ebff}
+button,select{font:inherit;border:0;border-radius:18px;padding:8px 12px;background:#b26bff;color:#1b0b33;font-weight:600;margin:3px}button.s{background:#3a2a5c;color:#f1ebff}
+.k{color:#c9b8e8}label{display:block;margin-top:6px}input[type=text],textarea{width:100%;font:inherit;padding:8px;border-radius:8px;border:1px solid #5c4a85;background:#2a1b48;color:#f1ebff}
+.box{background:#0e0820;border-radius:8px;padding:10px;margin:6px 0;line-height:1.7}.ev{font-family:monospace}.ok{color:#8fe3a8}.bad{color:#ff8a8a}.un{color:#ffd28a}
+</style></head><body>
+<label>Python type hint <select id="h"><option>str</option><option>int</option><option>float</option><option>bool</option><option>vector.Member</option><option>Literal["c","f"]</option><option>Greedy[Member]</option><option>*, rest: str</option><option>Role</option><option>TextChannel</option></select></label>
+<label>Command name <input type="text" id="n" value="convert"></label>
+<label>Number of arguments <input type="text" id="a" value="2"></label>
+<button id="go">Publish</button><div id="o" class="box"></div><div id="p" class="k"></div>
+<script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var M={"str":"text","int":"int","float":"number","bool":"flag","vector.Member":"user picker",'Literal["c","f"]':"choice (dropdown c|f)","Greedy[Member]":"trailing text","*, rest: str":"trailing text","Role":"text, converted in Python","TextChannel":"text, converted in Python"};
+var seen={};
+$("go").onclick=function(){var h=$("h").value,n=$("n").value,a=parseInt($("a").value)||0,r;
+ if(n!==n.toLowerCase()||a>8){r='<b class="un">prefix only</b><br>'+(n!==n.toLowerCase()?"Uppercase names":"More than 8 arguments")+" cannot be expressed natively, so a log line says so."}
+ else{r='<b class="ok">/'+n.replace(/</g,"")+'</b> argument type: <b>'+M[h]+'</b><br>Vector checks the input and replies with usage before your code runs.'}
+ $("o").innerHTML=r;seen[h]=1;var c=Object.keys(seen).length;$("p").textContent="Hints tried: "+c+" of 5";if(c>=5)done()};
+</script></body></html>
