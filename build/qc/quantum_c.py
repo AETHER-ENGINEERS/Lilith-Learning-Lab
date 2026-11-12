@@ -75,7 +75,7 @@ def two_slits(a, phi):
   ORDER("Order the surprise", "Put the three filter experiment in order.", ["Light passes the first filter", "The middle filter sets a new direction", "The last filter now lets some through", "Light shows up where there was none"])]))
 
 QISKIT.append(CH(
- "From the composer to real code: OpenQASM and Qiskit",
+ "Qiskit: real quantum code in Python",
  ("Code", [
   "Composer | writes | Code",
   "Qiskit | is | Python toolkit",
@@ -83,7 +83,7 @@ QISKIT.append(CH(
   "QuantumCircuit | holds | Gates",
   "Statevector | gives | Chances",
   "IBM Quantum | runs | Real chips"]),
- ["Every circuit you drew has a text form. The Code panel under the composer shows it as Qiskit, an open source Python toolkit from IBM, and as OpenQASM, a plain text format many tools read.",
+ ["You have seen a circuit as a picture, as Q text and as OpenQASM. Now meet Qiskit, an open source Python toolkit from IBM that people use to write real quantum programs. The Python tab in our lab shows the same circuit in Qiskit style.",
   "In Qiskit you make a QuantumCircuit and call methods like h, x and cx. A Statevector gives you the exact chances, and a Sampler runs shots on a simulator or a real chip.",
   "Watch one trap: Qiskit counts qubits from 0 and prints qubit 0 on the right, while our composer reads q[0] at the top and writes it on the left."],
  [("Qiskit", "An open source Python toolkit for quantum circuits."),
@@ -103,6 +103,8 @@ QISKIT.append(CH(
   C("OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[2] q;\nh q[0];\ncx q[0], q[1];\nbit[2] c;\nc = measure q;", "text"),
   T("OpenQASM is the same circuit as plain text. Many tools can read it, so it works like a shared language. To run on a real chip, you make a free IBM Quantum account, pick a machine, and the toolkit transpiles your circuit into the gates that chip supports. Queues can take a while, so simulate first."),
   T("Inside our Quantum Web Lab the Python tab runs MicroQiskit, a tiny Qiskit we wrote that works offline in your browser. It has QuantumCircuit, the same gate methods and simulate. Real Qiskit code looks almost the same, so what you learn here carries over. The Python you press Run on is turned back into a circuit, so you can go from code to picture and back."),
+  T("Qiskit and OpenQASM are close friends. Qiskit can write any circuit out as OpenQASM text and read it back in, so the recipe card from the last chapter works as a bridge between tools. A circuit you drew in the composer, saved as OpenQASM, can be loaded into Qiskit with one line and sent to a real chip."),
+  T("A full Qiskit program has four steps. Build the circuit. Transpile it, which rewrites it for the gates a chip supports. Run it with a Sampler to get counts. Then read the counts, which look just like the Shots tab: a table of results and how many times each came up."),
   T("A good habit: draw it in the composer, look at the Qiskit code, change one line, and predict what changes. Then try the code in a notebook. Reading code that you drew yourself is a gentle way into real quantum programming.")],
  [("What is Qiskit?", ["A Python toolkit for quantum circuits", "A quantum chip", "A game", "A web browser"], 0, "From IBM, open source."),
   ("Which line makes an H on the first qubit?", ["qc.h(0)", "qc.h(1)", "qc.cx(0, 1)", "qc.x(0)"], 0, "Numbering starts at 0."),

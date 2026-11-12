@@ -7,7 +7,9 @@ MARK = "ELI5."
 OLD = ("Explain it simply.",)
 
 def block(analogy, stall=None):
-    return {"type": "text", "items": [MARK + " " + analogy]}
+    parts = [x.strip() for x in analogy.split("\n\n") if x.strip()]
+    parts[0] = MARK + " " + parts[0]
+    return {"type": "text", "items": parts}
 
 def apply(path):
     d = json.load(open(path))
@@ -23,7 +25,8 @@ def apply(path):
                   if not (isinstance(b, dict) and b.get("type", "text") == "text"
                           and (b.get("items") or [""])[0].startswith((MARK,) + OLD))]
         if e:
-            lesson.insert(0, block(*e)); n += 1
+            at = 1 if lesson and isinstance(lesson[0], dict) and (lesson[0].get("items") or [""])[0].startswith("Quick recap") else 0
+            lesson.insert(at, block(*e)); n += 1
         ch["lesson"] = lesson
     d.setdefault("pronounce", {})["ELI5"] = "E L I five"
     json.dump(d, open(path, "w"), ensure_ascii=False, indent=1)

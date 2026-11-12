@@ -7,11 +7,13 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "qc"))
 sys.path.insert(0, os.path.join(HERE, "ql"))
 import cmk, quantum_a, quantum_b, quantum_c, quantum_d, make_apps  # noqa: E402
+import figs  # noqa: E402
+from clib import T  # noqa: E402
 import labs  # noqa: E402  (Quantum Web Lab configs)
 make_apps.main()
-CHS = quantum_c.INTRO + quantum_a.CHS[:4] + quantum_d.BLOCH + quantum_a.CHS[4:] + quantum_b.CHS[:4] + quantum_c.QISKIT + quantum_c.QASM + quantum_b.CHS[4:]
+CHS = quantum_c.INTRO + quantum_a.CHS[:4] + quantum_d.BLOCH + quantum_a.CHS[4:] + quantum_b.CHS[:4] + quantum_c.QASM + quantum_c.QISKIT + quantum_b.CHS[4:]
 KEEP_PY = {"Count the numbers", "Two chances", "Apply H", "H, phase, H", "Tensor product", "Grover chance", "Standard error", "A stack of filters", "Chance from the angle"}
-LAB_FOR = ["bits", "qubit", "gates", "interference", "bloch", "circuits", "twoq", "entangle", "algo", "noise", "qiskit", "qasm", "free"]
+LAB_FOR = ["bits", "qubit", "gates", "interference", "bloch", "circuits", "twoq", "entangle", "algo", "noise", "qasm", "qiskit", "free"]
 for _c in CHS:
     _c["lesson"] = [x for x in _c["lesson"] if not (isinstance(x, dict) and x.get("type") == "webxdc" and x["html"] != "__QPOLAR__")]
     _c["practice"] = [x for x in _c["practice"] if not (x["type"] == "webxdc" and x["html"] != "__QPOLAR__") and (x["type"] != "python" or x["title"] in KEEP_PY)]
@@ -21,6 +23,65 @@ for _c in CHS:
 for _i, _k in enumerate(LAB_FOR):
     _ch = CHS[_i + 1]
     _ch["practice"].insert(0, dict(labs.LABS[_k]))
+
+FIG = lambda name, cap: {"type": "figure", "image": name, "caption": cap}
+INS = [
+ ("Quantum mechanics", "Start with a ball", "qm-ball-electron.svg", "A ball has one path. An electron is a cloud of possibilities until you look."),
+ ("Quantum mechanics", "Normal thinking says", "qm-filters.svg", "Two crossed filters block all light, yet a third filter between them lets some through."),
+ ("Bits, chance", "A qubit is more like", "bits-vs-qubits.svg", "A bit, a coin and a qubit side by side."),
+ ("Bits, chance", "Here is why people", "bits-double.svg", "Each extra qubit doubles the numbers you need."),
+ ("The qubit", "To turn amplitudes", "qubit-squares.svg", "Square the amplitudes to get the chances."),
+ ("One-qubit gates", "Z does not change", "gates-effect.svg", "X, H and Z change the amplitudes in different ways."),
+ ("Interference", "Here is the experiment", "interference-waves.svg", "Waves in step add up. Waves out of step cancel."),
+ ("Interference", "Now put a Z between", "interference-paths.svg", "H, Z, H: the routes to 0 cancel and the routes to 1 add up."),
+ ("The Bloch sphere", "Height is chance", "bloch-sphere.svg", "The Bloch sphere: north pole is 0, south pole is 1, the equator holds the blends."),
+ ("The Bloch sphere", "The H gate is a half turn", "bloch-gates.svg", "Each gate is a turn of the globe."),
+ ("Reading circuits", "Look at a circuit like", "circuit-read.svg", "A circuit read from left to right: blend, link, look."),
+ ("Two qubits", "The CNOT gate has", "cnot-table.svg", "CNOT flips the second qubit only when the first is 1."),
+ ("Entanglement", "The state is now half", "bell-pair.svg", "A Bell pair: the two results always agree."),
+ ("Small algorithms", "Grover's search is", "grover-bars.svg", "Grover on four items: mark the prize, then reflect about the average."),
+ ("Noise, shots", "How big is the wobble", "shots-wobble.svg", "More shots give steadier counts."),
+ ("OpenQASM", "Think of OpenQASM", "qasm-vs-circuit.svg", "The same Bell circuit as a picture and as OpenQASM."),
+ ("Qiskit", "Next is the trap", "endian.svg", "Our composer puts qubit 0 on the left. Qiskit puts it on the right."),
+ ("Qiskit", "A full Qiskit program", "qiskit-pipeline.svg", "Build, transpile, run, read."),
+ ("Uses, myths", "What could a large", "uses-map.svg", "Where quantum computers may help, and where they will not."),
+]
+_fig_no = {}
+for _t, _p, _f, _cap in INS:
+    _ci = [i for i, c in enumerate(CHS) if c["title"].startswith(_t)][0]
+    _ch = CHS[_ci]
+    _k = [i for i, b in enumerate(_ch["lesson"]) if b["type"] == "text" and b["items"][0].startswith(_p)]
+    assert _k, (_t, _p)
+    _fig_no[_ci] = _fig_no.get(_ci, 0) + 1
+    _num = "%d.%d" % (_ci + 1, _fig_no[_ci])
+    _anchor = _ch["lesson"][_k[0]]
+    _anchor["items"][-1] = _anchor["items"][-1].rstrip() + " (See Figure %s below.)" % _num
+    _ch["lesson"].insert(_k[0] + 1, FIG(_f, "Figure %s. %s" % (_num, _cap)))
+for _i in range(1, len(CHS)):
+    _prev = CHS[_i - 1]
+    CHS[_i]["lesson"].insert(0, T("Quick recap of the last chapter, " + _prev["title"] + ":", *["• " + k for k in _prev["keyPoints"]]))
+MNEM = [
+ ("PWP: Packets, Waves, Peeking", "Tiny things come in Packets, spread like Waves, and change when you Peek."),
+ ("A bit lies flat, a qubit spins", "Coin on the table is a bit, coin in the air is a qubit. Add a qubit and the list doubles: 2, 4, 8, 16."),
+ ("Square it to share it", "Square each amplitude to get a chance, and the chances share 100 percent between them."),
+ ("Flip, Blend, Twist", "X Flips, H Blends, Z Twists the sign. Two H gates cancel: blend, then un-blend."),
+ ("Same shines, opposite vanishes", "Same sign adds up and shines. Opposite sign cancels and vanishes. Add first, then square."),
+ ("Top is Zero, bottom is One", "Top is Zero, bottom is One. Height tells the chance, going Round tells the phase, and gates are turns of the globe."),
+ ("Rows are players, columns are beats", "Rows are players (qubits), columns are beats (time). Read left to right, with qubit 0 on top."),
+ ("Controller nods, Target turns", "If the Controller says 1, the Target turns. If it says 0, nothing happens."),
+ ("Blend, then Bind", "Blend one qubit with H, then Bind it to another with CNOT, and you have a Bell pair."),
+ ("Mark, Mirror, Measure", "Grover is Mark the prize, Mirror about the average, then Measure. Deutsch asks once instead of twice."),
+ ("Quadruple the shots, halve the wobble", "Four times as many shots makes the wobble half as big."),
+ ("Name it, Size it, Use it", "OpenQASM: Name the version, Size the qubits, Use the gates, one per line."),
+ ("Build, Transpile, Run, Read", "Qiskit is Build, Transpile, Run, Read. And Qiskit keeps qubit 0 on the Right."),
+ ("Molecules, Searching, Secrets", "Quantum is a special tool: Molecules, Searching, Secrets. It is not a faster everything."),
+]
+assert len(MNEM) == len(CHS)
+for _c, (_m, _d) in zip(CHS, MNEM):
+    _full = _d if _d.startswith(_m) else _m + ". " + _d
+    _c["lesson"].append(T("Memory trick: " + _full))
+    _c["cards"].append({"q": "Memory trick for: " + _c["title"] + "?", "a": _full})
+IMAGES = figs.build_all()
 PRONOUNCE = {"qubit": "cue bit", "qubits": "cue bits", "Qubit": "cue bit", "Qubits": "cue bits", "Q.js": "Q J S", "MicroQiskit": "micro kiss kit", "Bloch": "block", "Bloch sphere": "block sphere", "QASM": "kasm", "CNOT": "see not", "Hadamard": "had a mard",
     "Pauli": "pow lee", "Deutsch": "doich", "Grover": "grow ver", "Grover's": "grow vers", "Shor": "shore", "Shor's": "shores", "GHZ": "G H Z", "Bell": "bell",
     "amplitude": "am plih tude", "amplitudes": "am plih tudes", "decoherence": "dee co here ence", "Qiskit": "kiss kit", "Cirq": "surk", "oracle": "or a kul",
@@ -74,7 +135,7 @@ EXAM = [
 CFG = dict(id="quantum-computing", title="Quantum Computing for Beginners",
     subtitle="Qubits, gates, the Bloch sphere, interference and entanglement with hands-on circuit labs, for curious kids, teens and adults",
     description="A friendly first course on quantum computing with no maths beyond squares and multiplication. Learn bits and qubits, amplitudes and measurement, the X, H, Z and T gates, interference, circuit text, CNOT, entanglement and Bell states, Deutsch and Grover's algorithms, noise and shots, and what quantum computers are really good for. Every chapter has a hands-on lab built on our own Quantum Web Lab (github.com/lucky-edgelord/quantum-web-lab): a mobile-friendly circuit composer with live chances, Inspect view, a friendly console, ASCII and Q text notation, MicroQiskit (a tiny Qiskit that runs offline) and micro OpenQASM. A few short Python labs build the maths in code. The circuit text notation is inspired by Q.js by Stewart Smith (github.com/stewdio/q.js, MIT) and the layout by the IBM Quantum Composer. Includes an intuitive intro to quantum mechanics, an interactive Bloch sphere chapter, a Qiskit chapter and an OpenQASM chapter.",
-    pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, appdir="ql", apps={"__QPOLAR__": "qpolar.html"})
+    pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, appdir="ql", images=IMAGES, apps={"__QPOLAR__": "qpolar.html"})
 if __name__ == "__main__":
     out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "courses", "quantum-computing.course.json")
     cmk.main(CFG, CHS, [sys.argv[0], out])
