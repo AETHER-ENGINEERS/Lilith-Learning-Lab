@@ -1,0 +1,58 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+:root{--bg:#0f0b18;--panel:#1b1429;--panel2:#261b3b;--line:#3a2d55;--tx:#f1ebff;--dim:#a99dc7;--g:#b26bff;--g2:#d9acff;--pink:#e06aa8;--ok:#7be0a4;--err:#ff7a9a;--blue:#6bb6ff;--tonal:#33244f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font:14px/1.5 Roboto,system-ui,sans-serif;margin:0;padding:8px;background:var(--bg);color:var(--tx)}
+h2{margin:0 0 4px;font-size:17px;font-weight:600}h3{margin:0 0 4px;font-size:14px;font-weight:500}
+.k{color:var(--dim)}.ok{color:var(--ok)}.bad{color:var(--err)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:8px 0}
+button{font:500 14px/1 Roboto,system-ui,sans-serif;border:0;border-radius:20px;min-height:38px;padding:0 16px;background:var(--g);color:#22083d;margin:3px 4px 3px 0;cursor:pointer}
+button.s{background:var(--tonal);color:#eadbff}button:disabled{opacity:.4}
+.row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}.row:last-child{border:0}
+.w{font:600 15px ui-monospace,Menlo,monospace;min-width:150px}
+.dots{display:inline-flex;gap:4px;min-height:24px;align-items:center;flex-wrap:wrap}
+.d{width:22px;height:22px;border-radius:50%;display:inline-block}
+.R{background:#ff6b6b}.G{background:#76b900}.B{background:#4fa8ff}.Y{background:#e3b341}
+.pal button{width:44px;height:44px;border-radius:50%;padding:0;border:3px solid transparent}
+.ans{min-height:34px;border:1px dashed var(--line);border-radius:10px;padding:4px 8px;display:flex;gap:4px;align-items:center}
+.tag{display:inline-block;border-radius:8px;padding:1px 8px;font-size:12px;background:var(--tonal);color:var(--g2)}
+</style></head><body>
+<div class="card"><h2>Episode stream and rule finder</h2><div class="k">In meta-training the network sees a stream of episodes. Every episode has new meanings for the same words. Press <b>Next episode</b> to see a few, then press <b>Solve it</b> to watch a rule finder cross out the impossible meanings. The network learns to do this kind of finding without being told the method.</div></div>
+<div class="card"><h3 id="eh">Episode 1</h3><div id="ep"></div><div id="qry" class="row"></div><div id="ans"></div>
+<button id="rev" class="s">Show the answer</button><button id="sol">Solve it</button><button id="nx">Next episode</button></div>
+<div class="card" id="log" style="display:none"></div><div class="card"><span class="k" id="cnt"></span></div>
+<script>
+var COLORS=['R','G','B','Y'],WORDS=['dax','wif','lug','zup'],FUNS=['fep','blicket','kiki'],RULES=['rep','sand','swap'];
+function rnd(n){return Math.floor(Math.random()*n)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=rnd(i+1),t=a[i];a[i]=a[j];a[j]=t}return a}
+function newWorld(){var c=shuffle(COLORS),r=shuffle(RULES),w={};WORDS.forEach(function(x,i){w[x]=c[i]});FUNS.forEach(function(x,i){w[x]=r[i]});return w}
+function evalAtoms(toks,w){ // toks: words; returns array of colours
+  var parts=[[]];toks.forEach(function(t){if(w[t]==='swap')parts.push([]);else parts[parts.length-1].push(t)});
+  var out=[];parts.forEach(function(p){out=evalSand(p,w).concat(out)});return out}
+function evalSand(p,w){var groups=[[]];p.forEach(function(t){if(w[t]==='sand')groups.push([]);else groups[groups.length-1].push(t)});
+  var out=evalRep(groups[0],w);for(var i=1;i<groups.length;i++){var b=evalRep(groups[i],w);out=out.concat(b,out)}return out}
+function evalRep(g,w){if(!g.length)return[];var x=[w[g[0]]];for(var i=1;i<g.length;i++){if(w[g[i]]==='rep')x=x.concat(x,x)}return x}
+function run(s,w){return evalAtoms(s.split(' '),w)}
+function dots(a){return '<span class="dots">'+a.map(function(c){return '<i class="d '+c+'"></i>'}).join('')+'</span>'}
+function wordFor(w,type){for(var i=0;i<FUNS.length;i++)if(w[FUNS[i]]===type)return FUNS[i]}
+function wordOf(w,c){for(var i=0;i<WORDS.length;i++)if(w[WORDS[i]]===c)return WORDS[i]}
+
+var W,study,query,n=0,solved=0;
+function allWorlds(){var out=[];function perm(a){if(a.length<2)return[a];var r=[];a.forEach(function(x,i){perm(a.slice(0,i).concat(a.slice(i+1))).forEach(function(p){r.push([x].concat(p))})});return r}
+  perm(COLORS).forEach(function(c){perm(RULES).forEach(function(r){var w={};WORDS.forEach(function(x,i){w[x]=c[i]});FUNS.forEach(function(x,i){w[x]=r[i]});out.push(w)})});return out}
+var ALL=allWorlds();
+function episode(){n++;W=newWorld();var p=shuffle(WORDS),rep=wordFor(W,'rep'),sand=wordFor(W,'sand'),swap=wordFor(W,'swap');
+  study=[p[0],p[1],p[2],p[3],p[0]+' '+rep,p[1]+' '+sand+' '+p[2],p[3]+' '+swap+' '+p[0]];query=p[2]+' '+rep+' '+swap+' '+p[1];
+  document.getElementById('eh').textContent='Episode '+n;
+  document.getElementById('ep').innerHTML=study.map(function(x){return '<div class="row"><span class="w">'+x+'</span><span class="k">→</span>'+dots(run(x,W))+'</div>'}).join('');
+  document.getElementById('qry').innerHTML='<span class="w">'+query+'</span><span class="k">→ ?</span>';document.getElementById('ans').innerHTML='';document.getElementById('log').style.display='none';
+  document.getElementById('cnt').textContent='Episodes seen: '+n+'. Rule finder used: '+solved+' time(s).';
+  if(n>=4&&solved>=1&&window.lilith&&window.lilith.complete)window.lilith.complete()}
+document.getElementById('rev').onclick=function(){document.getElementById('ans').innerHTML='<div class="row"><span class="k">Answer</span>'+dots(run(query,W))+'</div>'};
+document.getElementById('nx').onclick=episode;
+document.getElementById('sol').onclick=function(){var cand=ALL.slice(),h='<h3>Rule finder</h3><div class="k">Start: '+cand.length+' possible meanings (4 words to 4 colours, 3 function words to 3 rules).</div>';
+  study.forEach(function(x){var gold=run(x,W).join('');cand=cand.filter(function(w){return run(x,w).join('')===gold});h+='<div class="row"><span class="w">'+x+'</span><span class="k">→</span>'+dots(run(x,W))+'<span class="tag">'+cand.length+' left</span></div>'});
+  if(cand.length===1){var w=cand[0];h+='<div class="k">One meaning is left, so the query is certain: </div>'+dots(run(query,w))}else h+='<div class="k">Several meanings remain.</div>';
+  var l=document.getElementById('log');l.innerHTML=h;l.style.display='block';solved++;document.getElementById('cnt').textContent='Episodes seen: '+n+'. Rule finder used: '+solved+' time(s).';
+  if(n>=4&&solved>=1&&window.lilith&&window.lilith.complete)window.lilith.complete()};
+episode();
+</script></body></html>

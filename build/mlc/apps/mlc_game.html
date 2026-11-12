@@ -1,0 +1,53 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+:root{--bg:#0f0b18;--panel:#1b1429;--panel2:#261b3b;--line:#3a2d55;--tx:#f1ebff;--dim:#a99dc7;--g:#b26bff;--g2:#d9acff;--pink:#e06aa8;--ok:#7be0a4;--err:#ff7a9a;--blue:#6bb6ff;--tonal:#33244f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font:14px/1.5 Roboto,system-ui,sans-serif;margin:0;padding:8px;background:var(--bg);color:var(--tx)}
+h2{margin:0 0 4px;font-size:17px;font-weight:600}h3{margin:0 0 4px;font-size:14px;font-weight:500}
+.k{color:var(--dim)}.ok{color:var(--ok)}.bad{color:var(--err)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:8px 0}
+button{font:500 14px/1 Roboto,system-ui,sans-serif;border:0;border-radius:20px;min-height:38px;padding:0 16px;background:var(--g);color:#22083d;margin:3px 4px 3px 0;cursor:pointer}
+button.s{background:var(--tonal);color:#eadbff}button:disabled{opacity:.4}
+.row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}.row:last-child{border:0}
+.w{font:600 15px ui-monospace,Menlo,monospace;min-width:150px}
+.dots{display:inline-flex;gap:4px;min-height:24px;align-items:center;flex-wrap:wrap}
+.d{width:22px;height:22px;border-radius:50%;display:inline-block}
+.R{background:#ff6b6b}.G{background:#76b900}.B{background:#4fa8ff}.Y{background:#e3b341}
+.pal button.d{width:44px;height:44px;border-radius:50%;padding:0;border:3px solid transparent}
+.ans{min-height:34px;border:1px dashed var(--line);border-radius:10px;padding:4px 8px;display:flex;gap:4px;align-items:center}
+.tag{display:inline-block;border-radius:8px;padding:1px 8px;font-size:12px;background:var(--tonal);color:var(--g2)}
+</style></head><body>
+<div class="card"><h2>Learn the alien language</h2><div class="k">Study the examples. Then work out the colours for the new instructions below, using only what you learned. Every time you press New language the words get new meanings, like the people in the study.</div></div>
+<div class="card"><h3>Study</h3><div id="study"></div></div>
+<div class="card"><h3>Questions</h3><div id="qs"></div></div>
+<div class="card" id="sum"></div><button id="nw" class="s">New language</button>
+<script>
+var COLORS=['R','G','B','Y'],WORDS=['dax','wif','lug','zup'],FUNS=['fep','blicket','kiki'],RULES=['rep','sand','swap'];
+function rnd(n){return Math.floor(Math.random()*n)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=rnd(i+1),t=a[i];a[i]=a[j];a[j]=t}return a}
+function newWorld(){var c=shuffle(COLORS),r=shuffle(RULES),w={};WORDS.forEach(function(x,i){w[x]=c[i]});FUNS.forEach(function(x,i){w[x]=r[i]});return w}
+function evalAtoms(toks,w){ // toks: words; returns array of colours
+  var parts=[[]];toks.forEach(function(t){if(w[t]==='swap')parts.push([]);else parts[parts.length-1].push(t)});
+  var out=[];parts.forEach(function(p){out=evalSand(p,w).concat(out)});return out}
+function evalSand(p,w){var groups=[[]];p.forEach(function(t){if(w[t]==='sand')groups.push([]);else groups[groups.length-1].push(t)});
+  var out=evalRep(groups[0],w);for(var i=1;i<groups.length;i++){var b=evalRep(groups[i],w);out=out.concat(b,out)}return out}
+function evalRep(g,w){if(!g.length)return[];var x=[w[g[0]]];for(var i=1;i<g.length;i++){if(w[g[i]]==='rep')x=x.concat(x,x)}return x}
+function run(s,w){return evalAtoms(s.split(' '),w)}
+function dots(a){return '<span class="dots">'+a.map(function(c){return '<i class="d '+c+'"></i>'}).join('')+'</span>'}
+function wordFor(w,type){for(var i=0;i<FUNS.length;i++)if(w[FUNS[i]]===type)return FUNS[i]}
+function wordOf(w,c){for(var i=0;i<WORDS.length;i++)if(w[WORDS[i]]===c)return WORDS[i]}
+
+var W,Q,score,done;
+function build(){W=newWorld();var P=WORDS,s=[],rep=wordFor(W,'rep'),sand=wordFor(W,'sand'),swap=wordFor(W,'swap'),p=shuffle(P);
+  var study=[p[0],p[1],p[2],p[3],p[0]+' '+rep,p[1]+' '+sand+' '+p[2],p[3]+' '+swap+' '+p[0],p[2]+' '+rep+' '+sand+' '+p[1]].filter(Boolean);
+  document.getElementById('study').innerHTML=study.map(function(x){return '<div class="row"><span class="w">'+x+'</span><span class="k">→</span>'+dots(run(x,W))+'</div>'}).join('');
+  var q=shuffle(P);Q=[q[0]+' '+rep+' '+swap+' '+q[1],q[1]+' '+sand+' '+q[2]+' '+rep,q[3]+' '+rep+' '+sand+' '+q[0],q[2]+' '+swap+' '+q[3]+' '+sand+' '+q[1],q[0]+' '+rep+' '+rep,q[1]+' '+sand+' '+q[0]+' '+swap+' '+q[2]+' '+rep];
+  score=0;done=0;var h='';Q.forEach(function(x,i){h+='<div class="card" id="q'+i+'"><div class="w">'+x+'</div><div class="ans" id="a'+i+'"></div><div class="pal">'+COLORS.map(function(c){return '<button class="d '+c+'" data-q="'+i+'" data-c="'+c+'" aria-label="'+c+'"></button>'}).join('')+'<button class="s" data-u="'+i+'">undo</button><button data-chk="'+i+'">check</button></div><div class="k" id="f'+i+'"></div></div>'});
+  document.getElementById('qs').innerHTML=h;document.getElementById('sum').innerHTML='';
+  Array.prototype.forEach.call(document.querySelectorAll('[data-c]'),function(b){b.onclick=function(){var i=b.dataset.q,a=document.getElementById('a'+i);if(a.dataset.done)return;a.insertAdjacentHTML('beforeend','<i class="d '+b.dataset.c+'" data-c="'+b.dataset.c+'"></i>')}});
+  Array.prototype.forEach.call(document.querySelectorAll('[data-u]'),function(b){b.onclick=function(){var a=document.getElementById('a'+b.dataset.u);if(!a.dataset.done&&a.lastChild)a.removeChild(a.lastChild)}});
+  Array.prototype.forEach.call(document.querySelectorAll('[data-chk]'),function(b){b.onclick=function(){var i=+b.dataset.chk,a=document.getElementById('a'+i);if(a.dataset.done)return;a.dataset.done=1;var mine=Array.prototype.map.call(a.querySelectorAll('i'),function(e){return e.dataset.c}),gold=run(Q[i],W),ok=mine.join('')===gold.join('');if(ok)score++;done++;
+    document.getElementById('f'+i).innerHTML=ok?'<span class="ok">Correct!</span>':'<span class="bad">Not quite.</span> The rule gives: '+dots(gold);
+    if(done===Q.length){var pc=Math.round(score/Q.length*100);document.getElementById('sum').innerHTML='<h3>You got '+score+' of '+Q.length+' ('+pc+'%)</h3><div class="k">In the study by Lake and Baroni, people matched the rule 80.7% of the time on their own task. If you made mistakes, check whether you tended to <span class="tag">list pieces in the order heard</span> or <span class="tag">give one piece per word</span>: those are the habits the paper describes.</div>';if(window.lilith&&window.lilith.complete)window.lilith.complete()}}});
+}
+document.getElementById('nw').onclick=build;build();
+</script></body></html>
