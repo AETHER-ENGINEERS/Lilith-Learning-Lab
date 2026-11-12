@@ -6,9 +6,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "qc"))
 sys.path.insert(0, os.path.join(HERE, "ql"))
-import cmk, quantum_a, quantum_b, make_apps  # noqa: E402
+import cmk, quantum_a, quantum_b, quantum_c, make_apps  # noqa: E402
 make_apps.main()
-CHS = quantum_a.CHS + quantum_b.CHS
+CHS = quantum_c.INTRO + quantum_a.CHS + quantum_b.CHS[:4] + quantum_c.QISKIT + quantum_c.QASM + quantum_b.CHS[4:]
 for _c in CHS:
     _apps = [x for x in _c["lesson"] if isinstance(x, dict) and x.get("type") == "webxdc"]
     _c["lesson"] = [x for x in _c["lesson"] if x not in _apps]
@@ -17,7 +17,7 @@ PRONOUNCE = {"qubit": "cue bit", "qubits": "cue bits", "Qubit": "cue bit", "Qubi
     "Pauli": "pow lee", "Deutsch": "doich", "Grover": "grow ver", "Grover's": "grow vers", "Shor": "shore", "Shor's": "shores", "GHZ": "G H Z", "Bell": "bell",
     "amplitude": "am plih tude", "amplitudes": "am plih tudes", "decoherence": "dee co here ence", "Qiskit": "kiss kit", "Cirq": "surk", "oracle": "or a kul",
     "superposition": "super position", "entangled": "en tangled", "entanglement": "en tangle ment", "Stewart": "stew art", "IBM": "I B M", "ket": "ket",
-    "PC": "P C", "NOT": "not", "SDK": "S D K", "MicroPython": "micro python", "tensor": "ten sor", "Born": "born", "asin": "arc sine"}
+    "PC": "P C", "NOT": "not", "SDK": "S D K", "MicroPython": "micro python", "tensor": "ten sor", "Born": "born", "asin": "arc sine", "OpenQASM": "open kasm", "Qiskit": "kiss kit", "polarizer": "polar eyes er", "photon": "foe ton", "photons": "foe tons", "quanta": "kwon ta", "quantum": "kwon tum", "Transpile": "trans pile", "transpile": "trans pile"}
 SANDBOX = cmk.terminal("Quantum cheat sheet", "q>", "A scripted lookup. Try: qubit, x, h, z, t, cnot, bell, ghz, deutsch, grover, shots, noise, shor, console", [
     ("qubit", ["A qubit has two amplitudes. The chance of 0 is a squared, the chance of 1 is b squared."]),
     ("x", ["X swaps 0 and 1. Type X 1 in the Q Console."]),
@@ -63,8 +63,8 @@ EXAM = [
 ]
 CFG = dict(id="quantum-computing", title="Quantum Computing for Beginners",
     subtitle="Qubits, gates, interference and entanglement with hands-on circuit labs, for curious kids, teens and adults",
-    description="A friendly first course on quantum computing with no maths beyond squares and multiplication. Learn bits and qubits, amplitudes and measurement, the X, H, Z and T gates, interference, circuit text, CNOT, entanglement and Bell states, Deutsch and Grover's algorithms, noise and shots, and what quantum computers are really good for. Every chapter has Python labs, and four webxdc labs run the Q.js simulator by Stewart Smith (github.com/stewdio/q.js, MIT) offline, with our own easy Q Console: type commands like H 1 and CNOT 1 2 instead of code.",
-    pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, appdir="ql", apps={"__QPLAY__": "qplay.html", "__QGATES__": "qgates.html", "__QENT__": "qentangle.html", "__QALGO__": "qalgo.html"})
+    description="A friendly first course on quantum computing with no maths beyond squares and multiplication. Learn bits and qubits, amplitudes and measurement, the X, H, Z and T gates, interference, circuit text, CNOT, entanglement and Bell states, Deutsch and Grover's algorithms, noise and shots, and what quantum computers are really good for. Every chapter has Python labs, and five webxdc labs run offline: a polarizer experiment and four circuit labs built on our own mobile Lilith Composer (tap gates, see live chances, copy Qiskit or OpenQASM code) with an easy Q Console. The simulation engine and the circuit text notation come from Q.js by Stewart Smith (github.com/stewdio/q.js, MIT). Includes an intuitive intro to quantum mechanics, a Qiskit chapter and an OpenQASM chapter.",
+    pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, appdir="ql", apps={"__QPLAY__": "qplay.html", "__QGATES__": "qgates.html", "__QENT__": "qentangle.html", "__QALGO__": "qalgo.html", "__QPOLAR__": "qpolar.html"})
 if __name__ == "__main__":
     out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "courses", "quantum-computing.course.json")
     cmk.main(CFG, CHS, [sys.argv[0], out])

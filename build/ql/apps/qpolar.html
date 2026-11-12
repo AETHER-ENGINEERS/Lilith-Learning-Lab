@@ -1,0 +1,63 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+:root{--bg:#0f0b18;--panel:#1b1429;--panel2:#261b3b;--line:#3a2d55;--tx:#f1ebff;--dim:#a99dc7;--g:#b26bff;--g2:#d9acff;--pink:#e06aa8;--ok:#7be0a4;--err:#ff7a9a;--blue:#6bb6ff;--tonal:#33244f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font:14px/1.5 Roboto,system-ui,sans-serif;margin:0;padding:8px;background:var(--bg);color:var(--tx)}
+h2{margin:0 0 4px;font-size:17px;font-weight:600}h3{margin:0;font-size:14px;font-weight:500}
+.k{color:var(--dim)}.ok{color:var(--ok)}.bad{color:var(--err)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:8px 0}
+button.ab{font:500 14px/1 Roboto,system-ui,sans-serif;border:0;border-radius:20px;min-height:38px;padding:0 16px;background:var(--g);color:#22083d;margin:3px 4px 3px 0;cursor:pointer}
+button.ab.s{background:var(--tonal);color:#eadbff}
+button.ic{font:500 15px/1 Roboto,system-ui,sans-serif;width:38px;height:38px;border-radius:19px;border:1px solid var(--line);background:transparent;color:var(--g2);cursor:pointer;padding:0}
+button.ic:disabled{opacity:.35}
+.pal{display:flex;gap:6px;overflow-x:auto;padding:2px 0 6px}
+.gb{flex:0 0 auto;min-width:42px;height:42px;border-radius:10px;border:2px solid transparent;font:700 16px Roboto,system-ui,sans-serif;color:#1a0a2a;cursor:pointer;padding:0 8px}
+.gb.H{background:var(--pink)}.gb.X,.gb.Y,.gb.Z{background:var(--blue)}.gb.T{background:var(--g)}
+.gb.CX,.gb.CZ{background:var(--tonal);color:var(--g2);border-color:var(--line);font-size:13px}
+.gb.E{background:transparent;color:var(--dim);border-color:var(--line);font-size:13px}
+.gb.on{border-color:#fff;box-shadow:0 0 0 2px var(--g)}
+#tip{font-size:12.5px;color:var(--dim);min-height:19px;margin:0 0 4px}
+.gw{overflow-x:auto;padding-bottom:4px}#grid{position:relative;display:inline-block;min-width:100%}
+.row{display:flex;height:44px;align-items:center}.lab{flex:0 0 46px;font:12px ui-monospace,Menlo,monospace;color:var(--dim)}
+.cell{flex:0 0 42px;height:44px;position:relative;display:grid;place-items:center;cursor:pointer}
+.cell:before{content:"";position:absolute;left:0;right:0;top:50%;height:1.5px;background:#5a4a80}
+.cell.sel{background:rgba(178,107,255,.18);border-radius:8px}
+.cell:not(.has):hover:after{content:"";position:absolute;inset:6px;border:1px dashed var(--line);border-radius:8px}
+.g{position:relative;z-index:2;width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font:700 15px Roboto,system-ui,sans-serif;color:#1a0a2a}
+.g.H{background:var(--pink)}.g.X,.g.Y,.g.Z{background:var(--blue)}.g.T{background:var(--g)}.g.o{background:#6b5d8c;color:#fff}
+.dot{position:relative;z-index:2;width:13px;height:13px;border-radius:50%;background:var(--g2)}
+.tg{position:relative;z-index:2;width:28px;height:28px;border-radius:50%;border:2px solid var(--g2);background:var(--panel);display:grid;place-items:center;color:var(--g2);font:600 20px/1 system-ui}
+.tg.z{border-radius:50%;width:13px;height:13px;border:0;background:var(--g2)}
+.ln{position:absolute;width:2px;background:var(--g2);z-index:1;margin-left:-1px}
+.ring{flex:0 0 28px;height:28px;border-radius:50%;margin-left:6px;border:1.5px solid var(--line);background:conic-gradient(var(--g) 0deg,var(--g) 0deg,transparent 0deg)}
+.tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px}.tools .sp{flex:1}.tools span.k{font-size:12px}
+.chart{display:flex;gap:6px;align-items:flex-end;height:128px;overflow-x:auto;padding-top:4px}
+.bc{flex:0 0 auto;min-width:34px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bc .v{font:11px Roboto,system-ui,sans-serif;color:var(--dim)}.bc .b{width:26px;border-radius:5px 5px 0 0;background:linear-gradient(180deg,var(--pink),var(--g));min-height:2px}
+.bc .l{font:11px ui-monospace,Menlo,monospace;color:var(--g2);margin-top:3px}
+details{margin:0}summary{cursor:pointer;font-weight:500;color:var(--g2);padding:2px 0;list-style:none}summary::-webkit-details-marker{display:none}
+summary:before{content:"\25B8  ";color:var(--dim)}details[open]>summary:before{content:"\25BE  "}
+pre{white-space:pre;overflow-x:auto;margin:6px 0;font:12px/1.5 ui-monospace,Menlo,monospace;background:#0f0b18;border:1px solid var(--line);border-radius:10px;padding:8px}
+button.chip{font:500 12.5px/1 Roboto,system-ui,sans-serif;min-height:32px;padding:0 11px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--dim);margin:2px 4px 2px 0;cursor:pointer}
+button.chip.on{background:var(--tonal);color:#eadbff;border-color:transparent}
+#out{max-height:150px;overflow:auto;font:12.5px/1.5 ui-monospace,Menlo,monospace}#out div{margin:2px 0;white-space:pre-wrap}.you{color:var(--g2)}.sys{color:var(--dim)}
+.crow{display:flex;gap:6px;margin-top:6px}.crow input{flex:1;min-width:0;font:14px ui-monospace,Menlo,monospace;padding:0 12px;min-height:40px;border-radius:20px;border:1px solid var(--line);background:#0f0b18;color:var(--tx)}
+textarea{width:100%;font:13px ui-monospace,Menlo,monospace;padding:8px;border-radius:10px;border:1px solid var(--line);background:#0f0b18;color:var(--tx);height:80px}
+</style></head><body><div class="card"><h2>Polarizer lab</h2><div class="k">Light waves wiggle in some direction. The first filter lets through only light wiggling straight up and down (0&deg;). The last filter is turned to 90&deg;, so it should block everything. Now add a middle filter and choose its angle.</div></div>
+<div class="card"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="mid"> Add a middle filter</label>
+<div id="angrow" style="display:none;margin:8px 0">Middle filter angle: <b id="angv">45</b>&deg;<input type="range" id="ang" min="0" max="90" value="45" step="5" style="width:100%;accent-color:#b26bff"></div>
+<button class="ab" id="send" style="margin-top:8px">Send 400 photons</button><div id="res" style="margin-top:8px"></div><div id="msg" style="margin-top:6px"></div></div><script>var $=function(i){return document.getElementById(i)};function done(){try{if(window.lilith)lilith.complete()}catch(e){}}
+var best=0;
+function row(label,n,tot,exp){return '<div style="margin:6px 0"><div style="display:flex;justify-content:space-between"><span>'+label+'</span><span class="k">'+n+' photons'+(exp!==undefined?' (expect about '+exp+')':'')+'</span></div><div style="height:14px;background:#0f0b18;border:1px solid var(--line);border-radius:7px;overflow:hidden"><div style="height:100%;width:'+Math.round(n/tot*100)+'%;background:linear-gradient(90deg,var(--pink),var(--g))"></div></div></div>'}
+function c2(d){var r=d*Math.PI/180;return Math.cos(r)*Math.cos(r)}
+function pass(n,p){var k=0,i;for(i=0;i<n;i++)if(Math.random()<p)k++;return k}
+$("mid").onchange=function(){$("angrow").style.display=$("mid").checked?"block":"none"};
+$("ang").oninput=function(){$("angv").textContent=$("ang").value};
+$("send").onclick=function(){var N=400,mid=$("mid").checked,a=+$("ang").value;
+ var n1=pass(N,0.5),h=row("Start",N,N)+row("After filter 1 (0°)",n1,N,Math.round(N*0.5)),last;
+ if(mid){var n2=pass(n1,c2(a));h+=row("After middle filter ("+a+"°)",n2,N,Math.round(N*0.5*c2(a)));last=pass(n2,c2(90-a));h+=row("After last filter (90°)",last,N,Math.round(N*0.5*c2(a)*c2(90-a)))}
+ else{last=pass(n1,c2(90));h+=row("After last filter (90°)",last,N,0)}
+ $("res").innerHTML=h;
+ if(!mid)$("msg").innerHTML='<span class="k">Crossed filters block it all. Now tick the box and add a middle filter.</span>';
+ else if(last>0){$("msg").innerHTML='<span class="ok">Surprise! Light came back, though you added a blocker. Each filter acts like a measurement and re-sets the photon’s direction.</span>';done()}
+ else $("msg").innerHTML='<span class="k">Nothing got through this time. Try 45°, which lets the most light through.</span>'};
+</script></body></html>
