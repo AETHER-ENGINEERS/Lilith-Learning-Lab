@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.join(HERE, "qc"))
 sys.path.insert(0, os.path.join(HERE, "ql"))
 import cmk, quantum_a, quantum_b, quantum_c, quantum_d, make_apps  # noqa: E402
 import figs  # noqa: E402
+import maps as qmaps  # noqa: E402
 from clib import T  # noqa: E402
 import labs  # noqa: E402  (Quantum Web Lab configs)
 make_apps.main()
@@ -81,6 +82,9 @@ for _c, (_m, _d) in zip(CHS, MNEM):
     _full = _d if _d.startswith(_m) else _m + ". " + _d
     _c["lesson"].append(T("Memory trick: " + _full))
     _c["cards"].append({"q": "Memory trick for: " + _c["title"] + "?", "a": _full})
+assert len(qmaps.MAPS) == len(CHS)
+for _c, _ms in zip(CHS, qmaps.MAPS):
+    _c["maps"] = [{"title": _t, "links": _l} for _t, _l in _ms]
 IMAGES = figs.build_all()
 PRONOUNCE = {"qubit": "cue bit", "qubits": "cue bits", "Qubit": "cue bit", "Qubits": "cue bits", "Q.js": "Q J S", "MicroQiskit": "micro kiss kit", "Bloch": "block", "Bloch sphere": "block sphere", "QASM": "kasm", "CNOT": "see not", "Hadamard": "had a mard",
     "Pauli": "pow lee", "Deutsch": "doich", "Grover": "grow ver", "Grover's": "grow vers", "Shor": "shore", "Shor's": "shores", "GHZ": "G H Z", "Bell": "bell",
