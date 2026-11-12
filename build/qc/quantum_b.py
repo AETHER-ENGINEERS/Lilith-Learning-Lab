@@ -20,7 +20,7 @@ CHS.append(CH(
   "Control | decides | If target flips",
   "Product state | is | Separate qubits",
   "States | are labelled | 00 01 10 11"]),
- ["Two qubits have four possible answers: 00, 01, 10 and 11. So a two qubit state is four amplitudes. In Q.js the left bit is qubit 1.",
+ ["Two qubits have four possible answers: 00, 01, 10 and 11. So a two qubit state is four amplitudes. In our composer the left bit is qubit 0, the top wire.",
   "If the qubits are separate, you can build the four amplitudes by multiplying: the tensor product. A, B gives a0 b0, a0 b1, a1 b0 and a1 b1. A state you can build this way is called a product state.",
   "The CNOT gate links two qubits. If the control is 1, it flips the target. If the control is 0, nothing happens. With H plus CNOT you can make states that are not product states."],
  [("Tensor product", "Multiplying amplitudes to combine separate qubits."),
@@ -33,19 +33,19 @@ CHS.append(CH(
   "CNOT swaps the amplitudes of 10 and 11.",
   "A state is a product if a0*d equals b*c for amplitudes a, b, c, d.",
   "Not every two qubit state is a product."],
- [T("One qubit has two answers, 0 and 1. Two qubits have four, written 00, 01, 10 and 11. The first digit is qubit 1. A state needs one amplitude for each, so four numbers. Three qubits would need eight."),
-  T("If you set two qubits up separately, you can find the combined state by multiplying. Qubit 1 is (a0, a1) and qubit 2 is (b0, b1). The combined amplitudes are a0 times b0, a0 times b1, a1 times b0 and a1 times b1. This is the tensor product."),
+ [T("One qubit has two answers, 0 and 1. Two qubits have four, written 00, 01, 10 and 11. The first digit is qubit 0. A state needs one amplitude for each, so four numbers. Three qubits would need eight."),
+  T("If you set two qubits up separately, you can find the combined state by multiplying. Qubit 0 is (a0, a1) and qubit 1 is (b0, b1). The combined amplitudes are a0 times b0, a0 times b1, a1 times b0 and a1 times b1. This is the tensor product."),
   C("def tensor(a, b):\n    return [a[0]*b[0], a[0]*b[1], a[1]*b[0], a[1]*b[1]]\nprint(tensor([1, 0], [0, 1]))   # 0 and 1 gives 01\nprint(tensor([0.7071, 0.7071], [1, 0]))", "python"),
   T("The CNOT gate has two inputs. If the control qubit is 0, it does nothing. If the control is 1, it flips the target. On the four amplitudes, that means the answers 10 and 11 swap. The other two stay."),
   C("def cnot(s):\n    return [s[0], s[1], s[3], s[2]]\nprint(cnot([0, 0, 1, 0]))  # 10 becomes 11", "python"),
-  T("Try it by typing in the console of the next chapter: new 2, then X 1, then CNOT 1 2, then run. You should see 11. The CNOT copied the 1 from qubit 1 onto qubit 2."),
+  T("Try it in the lab: pick X and tap qubit 0, then CNOT from 0 to 1, and look at the chances. You should see 11. The CNOT copied the 1 from qubit 0 onto qubit 1."),
   T("Everything so far could be done by separate qubits. The next chapter shows how H and CNOT together make something new: the qubits can no longer be pulled apart.")],
  [("How many amplitudes describe 2 qubits?", ["4", "2", "3", "8"], 0, "00 01 10 11."),
   ("What does CNOT do when the control is 0?", ["Nothing", "Flips the target", "Measures", "Swaps"], 0, "No control, no change."),
   ("What does CNOT do when the control is 1?", ["Flips the target", "Nothing", "Flips both", "Erases"], 0, "Target flips."),
   ("What is the tensor product used for?", ["Combining separate qubits", "Measuring", "Making noise", "Undoing a gate"], 0, "Multiplying amplitudes."),
   ("Which two answers swap under CNOT?", ["10 and 11", "00 and 01", "00 and 11", "01 and 10"], 0, "Control is 1."),
-  ("In the label 01, which is qubit 1?", ["The left digit", "The right digit", "Both", "Neither"], 0, "Q.js reads left first.")],
+  ("In the label 01, which is qubit 0?", ["The left digit", "The right digit", "Both", "Neither"], 0, "Our composer reads left first.")],
  [("Tensor product", "Combine by multiplying"), ("CNOT", "Flip target if control is 1"), ("Basis state", "A plain 00, 01, 10 or 11"), ("Product state", "Made of separate qubits")],
  [MATCH("Match the gate", "Pair each situation with what CNOT does.", [("control 0", "nothing happens"), ("control 1", "target flips"), ("00", "stays 00"), ("10", "becomes 11")]),
   FILL("Two qubits", "Two qubits have {{4}} amplitudes. The {{tensor}} product combines separate qubits. A {{CNOT}} flips the target when the control is 1."),
@@ -80,7 +80,7 @@ CHS.append(CH(
   "Measure one | tells you | The other",
   "GHZ | is | Three qubit Bell",
   "Entanglement | is not | Messaging"]),
- ["Entanglement is when qubits are linked so tightly that you cannot describe one without the others. The famous recipe: put H on qubit 1, then a CNOT from 1 to 2.",
+ ["Entanglement is when qubits are linked so tightly that you cannot describe one without the others. The famous recipe: put H on qubit 0, then a CNOT from 0 to 1.",
   "The result is the Bell state. It is half 00 and half 11. Measure it and you get 00 or 11, each 50 percent of the time, never 01 or 10. Each qubit alone is a fair coin, but the two coins always agree.",
   "Entanglement does not send messages faster than light. The results look random to each side. You only see the link when you compare them afterwards."],
  [("Entanglement", "Qubits linked so they cannot be described separately."),
@@ -88,16 +88,16 @@ CHS.append(CH(
   ("Correlated", "Outcomes that agree or match."),
   ("GHZ state", "A three-qubit entangled state: all 0 or all 1."),
   ("Product state", "A state that is not entangled.")],
- ["H on qubit 1, then CNOT 1 to 2, makes a Bell state.",
+ ["H on qubit 0, then CNOT 0 to 1, makes a Bell state.",
   "Bell outcomes: 00 or 11, 50 percent each.",
   "Each qubit alone looks like a fair coin.",
   "The two coins always agree.",
   "No message is sent: the results are random until compared."],
- [T("Here is the recipe. Start with two plain 0 qubits. Put an H on qubit 1. Now qubit 1 is a blend. Add a CNOT with qubit 1 as the control and qubit 2 as the target. The control is a blend, so the target is a blend too, and they are tied together."),
-  T("The state is now half 00 and half 11. If you measure qubit 1 and see 0, qubit 2 will be 0. If you see 1, qubit 2 will be 1. Each coin alone is perfectly random, yet the two always agree."),
+ [T("Here is the recipe. Start with two plain 0 qubits. Put an H on qubit 0. Now qubit 0 is a blend. Add a CNOT with qubit 0 as the control and qubit 1 as the target. The control is a blend, so the target is a blend too, and they are tied together."),
+  T("The state is now half 00 and half 11. If you measure qubit 0 and see 0, qubit 1 will be 0. If you see 1, qubit 1 will be 1. Each coin alone is perfectly random, yet the two always agree."),
   T("This cannot be a product state. A product state has a0 times d equal to b times c. Here the amplitudes are 0.7071, 0, 0, 0.7071. The first times the last is 0.5, but the middle two give 0. They do not match, so this state is entangled."),
-  C("def bell(i):\n    r = 0.7071\n    s = [0, 0, 0, 0]\n    s[i] = 1\n    s = [r*(s[0]+s[2]), r*(s[1]+s[3]), r*(s[0]-s[2]), r*(s[1]-s[3])]  # H on qubit 1\n    return [s[0], s[1], s[3], s[2]]                                    # CNOT\nprint(bell(0))", "python"),
-  T("Time for the lab in the practice section. Solve the levels: copy a bit with CNOT, make a Bell pair, make the opposite pair, and build a three-qubit GHZ state. In the Q Console you can type new 3, H 1, CNOT 1 2, CNOT 2 3 and explain."),
+  C("def bell(i):\n    r = 0.7071\n    s = [0, 0, 0, 0]\n    s[i] = 1\n    s = [r*(s[0]+s[2]), r*(s[1]+s[3]), r*(s[0]-s[2]), r*(s[1]-s[3])]  # H on qubit 0\n    return [s[0], s[1], s[3], s[2]]                                    # CNOT\nprint(bell(0))", "python"),
+  T("Time for the lab in the practice section. Solve the levels: copy a bit with CNOT, make a Bell pair, make the opposite pair, and build a three-qubit GHZ state. In the Q Console you can type new 3, h 0, cx 0 1, cx 1 2 and explain."),
   APP("QENT", "Entanglement lab", "Make entangled pairs with the editor or the Q Console. After CNOT, type explain and the console will tell you if the qubits are entangled."),
   T("One more myth to bust. Entanglement is not a phone line. If you are far away from your friend and you measure your qubit, you see a random result. It only shows a pattern when you later compare results. That is why it cannot send messages.")],
  [("What makes a Bell state?", ["H then CNOT", "X then X", "Z then Z", "Two H gates"], 0, "A blend plus a link."),
@@ -107,9 +107,9 @@ CHS.append(CH(
   ("A GHZ state of 3 qubits gives:", ["000 or 111", "Any of 8", "001 or 110", "Only 000"], 0, "All agree."),
   ("An entangled state is:", ["Not a product state", "A plain state", "A noisy state", "A measured state"], 0, "Cannot be separated.")],
  [("Bell state", "H plus CNOT on 00"), ("GHZ", "Three entangled qubits: 000 or 111"), ("Correlation", "Results that agree"), ("No messaging", "Entanglement alone sends no message")],
- [MATCH("Match the state", "Pair each circuit with its outcomes.", [("H, CNOT", "00 or 11"), ("X, then CNOT", "11"), ("H on 1 only", "0 or 1 on qubit 1"), ("H, CNOT, CNOT on 3 qubits", "000 or 111")]),
+ [MATCH("Match the state", "Pair each circuit with its outcomes.", [("H, CNOT", "00 or 11"), ("X, then CNOT", "11"), ("H on 0 only", "0 or 1 on qubit 0"), ("H, CNOT, CNOT on 3 qubits", "000 or 111")]),
   FILL("Entanglement", "An H and a {{CNOT}} make a {{Bell}} state. The two coins always {{agree}}. It cannot send {{messages}}."),
-  PL("Make a Bell state", "Start with the plain state at index i of 4 (a 1 at position i). Apply H to qubit 1 (pairs index 0 with 2, and 1 with 3: new0=r*(s0+s2), new1=r*(s1+s3), new2=r*(s0-s2), new3=r*(s1-s3), r=0.70710678), then CNOT (swap last two). Write bell(i) and round to 4 decimals.", "bell(i)", '''
+  PL("Make a Bell state", "Start with the plain state at index i of 4 (a 1 at position i). Apply H to qubit 0 (pairs index 0 with 2, and 1 with 3: new0=r*(s0+s2), new1=r*(s1+s3), new2=r*(s0-s2), new3=r*(s1-s3), r=0.70710678), then CNOT (swap last two). Write bell(i) and round to 4 decimals.", "bell(i)", '''
 def bell(i):
     r = 0.70710678
     s = [0, 0, 0, 0]
@@ -137,7 +137,7 @@ def tally(samples):
         d[s] = d.get(s, 0) + 1
     return sorted([[k, v] for k, v in d.items()])
 ''', [[["00", "11", "11", "00", "11"]], [["01"]], [["a", "b", "a"]]], "A dictionary of counts."),
-  ORDER("Order the recipe", "Put the Bell state recipe in order.", ["Start with two plain 0 qubits", "Apply H to qubit 1", "Apply CNOT from 1 to 2", "Measure: 00 or 11"])]))
+  ORDER("Order the recipe", "Put the Bell state recipe in order.", ["Start with two plain 0 qubits", "Apply H to qubit 0", "Apply CNOT from 0 to 1", "Measure: 00 or 11"])]))
 
 CHS.append(CH(
  "Small algorithms: Deutsch and Grover",
@@ -230,7 +230,7 @@ CHS.append(CH(
   C("shots = 100\np = 0.5\nerr = (p * (1 - p) / shots) ** 0.5\nprint('standard error:', round(err, 3))", "python"),
   T("On real hardware the picture is messier. Gates are not perfect, qubits slowly lose their blend, and measurement can read the wrong answer. Today's machines have dozens to hundreds of noisy qubits, and engineers are working on error correction."),
   T("Error correction spreads one reliable qubit across many noisy ones, similar to how you repeat a message three times so one smudge does not matter. It is a big engineering goal, and useful big machines need it."),
-  T("Finally, why a simulator is limited. Every qubit you add doubles the memory. At 16 bytes per number, 30 qubits need 16 gigabytes. 40 qubits need 16 terabytes. That is why Q.js is great for learning on small circuits, but real chips are needed for large ones.")],
+  T("Finally, why a simulator is limited. Every qubit you add doubles the memory. At 16 bytes per number, 30 qubits need 16 gigabytes. 40 qubits need 16 terabytes. That is why a simulator like our lab is great for learning on small circuits, but real chips are needed for large ones.")],
  [("What is a shot?", ["One run and one measurement", "A gate", "A qubit", "A noise"], 0, "Repeat to see chances."),
   ("More shots make the estimate:", ["More accurate", "Less accurate", "The same", "Random"], 0, "Smaller wobble."),
   ("What is decoherence?", ["Losing the quantum blend", "Adding a qubit", "A fast gate", "A shot"], 0, "Noise breaks it."),
@@ -276,7 +276,7 @@ CHS.append(CH(
   "Next | is | Learn and play"]),
  ["Quantum computers are expected to help with a few kinds of problems: simulating molecules and materials, searching, and breaking some codes. Shor's algorithm can factor large numbers much faster than known normal methods.",
   "That is why people are building new codes that resist quantum attacks. Everyday tasks like browsing, email, games and spreadsheets will not get faster. Quantum computers are co-processors for special jobs.",
-  "To keep going: play with Q.js, try IBM Quantum and other free cloud services, follow Qiskit and Cirq tutorials, and read about the linear algebra under the hood. You already know the key ideas."],
+  "To keep going: play with the Quantum Web Lab, try IBM Quantum and other free cloud services, follow Qiskit and Cirq tutorials, and read about the linear algebra under the hood. You already know the key ideas."],
  [("Shor's algorithm", "A quantum method for factoring big numbers."),
   ("Post-quantum", "Codes designed to resist quantum computers."),
   ("Quantum chemistry", "Simulating molecules, a natural quantum job."),
@@ -298,7 +298,7 @@ CHS.append(CH(
   ("Which job is natural for quantum computers?", ["Simulating molecules", "Playing music", "Showing photos", "Typing"], 0, "Nature is quantum."),
   ("What is post-quantum cryptography?", ["Codes that resist quantum attacks", "Faster internet", "A new qubit", "A simulator"], 0, "Preparing early."),
   ("Does a quantum computer try every answer at once?", ["No", "Yes", "Only in labs", "Only with H"], 0, "That is a myth."),
-  ("Where can you keep learning?", ["Q.js, Qiskit and cloud tools", "Nowhere", "Only books", "Only a lab"], 0, "Many free options.")],
+  ("Where can you keep learning?", ["Quantum Web Lab, Qiskit and cloud tools", "Nowhere", "Only books", "Only a lab"], 0, "Many free options.")],
  [("Shor", "Factoring algorithm"), ("Post-quantum", "Codes safe against quantum computers"), ("Qiskit", "Open source quantum toolkit"), ("Myth", "Tries every answer at once")],
  [MATCH("Match the idea", "Pair each idea with what it is about.", [("Shor", "factoring"), ("Grover", "search"), ("Chemistry", "simulating molecules"), ("Post-quantum", "safe codes")]),
   FILL("Where next", "{{Shor}} factors large numbers. {{Grover}} speeds up search. Quantum computers are {{special}} helpers, not faster laptops. Keep learning with {{simulators}}."),
@@ -333,4 +333,4 @@ def helps(job):
         return 'square root speedup'
     return 'no help'
 ''', [["factoring"], ["search"], ["email"], ["chemistry"]], "A small lookup."),
-  ORDER("Order your path", "Put a good learning path in order.", ["Play with the Q.js simulator", "Learn the gates and interference", "Try small algorithms", "Run on a cloud quantum computer"])]))
+  ORDER("Order your path", "Put a good learning path in order.", ["Play with the Quantum Web Lab", "Learn the gates and interference", "Try small algorithms", "Run on a cloud quantum computer"])]))

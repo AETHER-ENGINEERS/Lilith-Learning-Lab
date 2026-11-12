@@ -7,13 +7,21 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "qc"))
 sys.path.insert(0, os.path.join(HERE, "ql"))
 import cmk, quantum_a, quantum_b, quantum_c, make_apps  # noqa: E402
+import labs  # noqa: E402  (Quantum Web Lab configs)
 make_apps.main()
 CHS = quantum_c.INTRO + quantum_a.CHS + quantum_b.CHS[:4] + quantum_c.QISKIT + quantum_c.QASM + quantum_b.CHS[4:]
+KEEP_PY = {"Count the numbers", "Two chances", "Apply H", "H, phase, H", "Tensor product", "Grover chance", "Standard error", "A stack of filters"}
+LAB_FOR = ["bits", "qubit", "gates", "interference", "circuits", "twoq", "entangle", "algo", "noise", "qiskit", "qasm", "free"]
 for _c in CHS:
+    _c["lesson"] = [x for x in _c["lesson"] if not (isinstance(x, dict) and x.get("type") == "webxdc" and x["html"] != "__QPOLAR__")]
+    _c["practice"] = [x for x in _c["practice"] if not (x["type"] == "webxdc" and x["html"] != "__QPOLAR__") and (x["type"] != "python" or x["title"] in KEEP_PY)]
     _apps = [x for x in _c["lesson"] if isinstance(x, dict) and x.get("type") == "webxdc"]
     _c["lesson"] = [x for x in _c["lesson"] if x not in _apps]
     _c["practice"] = _apps + _c["practice"]
-PRONOUNCE = {"qubit": "cue bit", "qubits": "cue bits", "Qubit": "cue bit", "Qubits": "cue bits", "Q.js": "Q J S", "CNOT": "see not", "Hadamard": "had a mard",
+for _i, _k in enumerate(LAB_FOR):
+    _ch = CHS[_i + 1]
+    _ch["practice"].insert(0, dict(labs.LABS[_k]))
+PRONOUNCE = {"qubit": "cue bit", "qubits": "cue bits", "Qubit": "cue bit", "Qubits": "cue bits", "Q.js": "Q J S", "MicroQiskit": "micro kiss kit", "QASM": "kasm", "CNOT": "see not", "Hadamard": "had a mard",
     "Pauli": "pow lee", "Deutsch": "doich", "Grover": "grow ver", "Grover's": "grow vers", "Shor": "shore", "Shor's": "shores", "GHZ": "G H Z", "Bell": "bell",
     "amplitude": "am plih tude", "amplitudes": "am plih tudes", "decoherence": "dee co here ence", "Qiskit": "kiss kit", "Cirq": "surk", "oracle": "or a kul",
     "superposition": "super position", "entangled": "en tangled", "entanglement": "en tangle ment", "Stewart": "stew art", "IBM": "I B M", "ket": "ket",
@@ -63,8 +71,8 @@ EXAM = [
 ]
 CFG = dict(id="quantum-computing", title="Quantum Computing for Beginners",
     subtitle="Qubits, gates, interference and entanglement with hands-on circuit labs, for curious kids, teens and adults",
-    description="A friendly first course on quantum computing with no maths beyond squares and multiplication. Learn bits and qubits, amplitudes and measurement, the X, H, Z and T gates, interference, circuit text, CNOT, entanglement and Bell states, Deutsch and Grover's algorithms, noise and shots, and what quantum computers are really good for. Every chapter has Python labs, and five webxdc labs run offline: a polarizer experiment and four circuit labs built on our own mobile Lilith Composer (tap gates, see live chances, copy Qiskit or OpenQASM code) with an easy Q Console. The simulation engine and the circuit text notation come from Q.js by Stewart Smith (github.com/stewdio/q.js, MIT). Includes an intuitive intro to quantum mechanics, a Qiskit chapter and an OpenQASM chapter.",
-    pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, appdir="ql", apps={"__QPLAY__": "qplay.html", "__QGATES__": "qgates.html", "__QENT__": "qentangle.html", "__QALGO__": "qalgo.html", "__QPOLAR__": "qpolar.html"})
+    description="A friendly first course on quantum computing with no maths beyond squares and multiplication. Learn bits and qubits, amplitudes and measurement, the X, H, Z and T gates, interference, circuit text, CNOT, entanglement and Bell states, Deutsch and Grover's algorithms, noise and shots, and what quantum computers are really good for. Every chapter has a hands-on lab built on our own Quantum Web Lab (github.com/lucky-edgelord/quantum-web-lab): a mobile-friendly circuit composer with live chances, Inspect view, a friendly console, ASCII and Q text notation, MicroQiskit (a tiny Qiskit that runs offline) and micro OpenQASM. A few short Python labs build the maths in code. The circuit text notation is inspired by Q.js by Stewart Smith (github.com/stewdio/q.js, MIT) and the layout by the IBM Quantum Composer. Includes an intuitive intro to quantum mechanics, a Qiskit chapter and an OpenQASM chapter.",
+    pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, appdir="ql", apps={"__QPOLAR__": "qpolar.html"})
 if __name__ == "__main__":
     out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "courses", "quantum-computing.course.json")
     cmk.main(CFG, CHS, [sys.argv[0], out])
