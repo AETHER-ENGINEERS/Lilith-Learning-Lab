@@ -11,7 +11,7 @@ def check(c, msg):
     if not c: fails.append(msg)
 
 labs = [(ch["title"], l) for ch in course["chapters"] for l in ch["practice"] if l["type"] == "webxdc" and "QWL" in l["html"]]
-check(len(labs) == 12, "12 Quantum Web Labs in the course (found %d)" % len(labs))
+check(len(labs) == 13, "13 Quantum Web Labs in the course (found %d)" % len(labs))
 tmp = tempfile.mkdtemp()
 with sync_playwright() as p:
     b = p.chromium.launch()

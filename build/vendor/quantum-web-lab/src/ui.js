@@ -5,7 +5,7 @@
   var DEFAULTS = {
     title: '', intro: '', qubits: 2, steps: 6, maxQubits: 5, maxSteps: 14, start: '', startQasm: '', startPython: '',
     palette: ['h', 'x', 'y', 'z', 's', 't', 'cx', 'cz', 'swap', 'ccx', 'rx', 'ry', 'rz', 'p', 'sdg', 'tdg', 'sx', 'measure'],
-    results: ['chances', 'shots', 'inspect'], code: ['python', 'qasm', 'text', 'ascii'], codeOpen: false, console: true, python: true, levels: null, seed: 1, shots: 1024,
+    results: ['chances', 'shots', 'inspect', 'bloch'], code: ['python', 'qasm', 'text', 'ascii'], codeOpen: false, console: true, python: true, levels: null, seed: 1, shots: 1024,
     chips: ['h 0', 'x 0', 'cx 0 1', 'run', 'shots 20', 'undo', 'help']
   };
   var TABNAME = { python: 'Python', qasm: 'OpenQASM', text: 'Q text', ascii: 'ASCII' };
@@ -116,7 +116,7 @@
     function lab(i) { var s = QWL.label(i, S.res.n); return S.left ? s : s.split('').reverse().join(''); }
     function paintResults() {
       var tabs = '', body = '', res = S.res, n = res.n;
-      cfg.results.forEach(function (t) { tabs += '<button class="chip' + (t === S.rtab ? ' on' : '') + '" data-t="' + t + '">' + { chances: 'Chances', shots: 'Shots', inspect: 'Inspect' }[t] + '</button>'; });
+      cfg.results.forEach(function (t) { tabs += '<button class="chip' + (t === S.rtab ? ' on' : '') + '" data-t="' + t + '">' + { chances: 'Chances', shots: 'Shots', inspect: 'Inspect', bloch: 'Bloch' }[t] + '</button>'; });
       tabs += '<button class="chip" id="bo" title="Which side qubit 0 is on">q0 on the ' + (S.left ? 'left' : 'right') + '</button>';
       $('rtabs').innerHTML = tabs;
       Array.prototype.forEach.call($('rtabs').querySelectorAll('[data-t]'), function (e) { e.onclick = function () { S.rtab = e.getAttribute('data-t'); paintResults(); }; });
@@ -131,6 +131,8 @@
           var hh = ''; arr.forEach(function (k) { var key = S.left ? k : k.split('').reverse().join(''); hh += '<div class="bc"><span class="v">' + S.counts[k] + '</span><div class="b" style="height:' + Math.round(S.counts[k] / mx * 92) + 'px"></div><span class="l">' + key + '</span></div>'; });
           body += '<div class="chart" style="margin-top:6px">' + hh + '</div><div class="k">' + tot + ' shots. The same seed always gives the same shots.</div>'; }
         else body += '<div class="k" style="margin-top:6px">Each shot measures the circuit once. Run many shots to see the chances appear.</div>';
+      } else if (S.rtab === 'bloch') {
+        body = blochHTML();
       } else {
         var rowsH = '', i; for (i = 0; i < res.probs.length; i++) { if (res.probs[i] < 1e-6 && n > 3) continue; var re = res.re[i], im = res.im[i], mag = Math.sqrt(res.probs[i]), ph = Math.atan2(im, re);
           var dial = '<svg width="26" height="26" viewBox="-13 -13 26 26"><circle r="11" fill="none" stroke="#3a2d55"/>' + (mag > 1e-6 ? '<line x1="0" y1="0" x2="' + (10 * Math.cos(ph)).toFixed(2) + '" y2="' + (-10 * Math.sin(ph)).toFixed(2) + '" stroke="hsl(' + Math.round((ph * 180 / Math.PI + 360) % 360) + ',80%,65%)" stroke-width="2.5" stroke-linecap="round"/>' : '') + '</svg>';
@@ -140,7 +142,64 @@
         body = '<table class="st"><tr class="k"><td>state</td><td>size</td><td>phase</td><td></td><td>chance</td></tr>' + rowsH + '</table><div class="k" style="margin-top:6px">The little arrow shows the phase. A qubit that is shared with others (entangled) has a short arrow below.</div><div class="blochs">' + bl + '</div>';
       }
       $('rbody').innerHTML = body;
+      if (S.rtab === 'bloch') blochStart();
       if ($('rs')) { $('rs').onclick = function () { S.counts = QWL.sample(S.c, S.res, S.shots, S.seed); paintResults(); if (cfg.complete === 'shots') complete(); }; $('sd').onclick = function () { S.seed = S.seed % 99 + 1; S.counts = null; paintResults(); }; }
+    }
+
+
+    /* ---------- Bloch sphere ---------- */
+    S.bq = 0; S.byaw = -0.6; S.bpitch = 0.35; S.bshow = null;
+    function blochHTML() {
+      var n = S.res.n, q = Math.min(S.bq, n - 1), sel = '';
+      if (n > 1) { sel = '<div>'; for (var i = 0; i < n; i++) sel += '<button class="chip' + (i === q ? ' on' : '') + '" data-bq="' + i + '">qubit ' + i + '</button>'; sel += '</div>'; }
+      return sel + '<div style="text-align:center"><canvas id="bcv" width="300" height="300" style="width:100%;max-width:320px;touch-action:none;cursor:grab"></canvas></div><div id="bread" class="k"></div><div class="k" style="margin-top:4px">Drag the sphere to turn it. The arrow points at the qubit state: top is 0, bottom is 1. Turning around the vertical axis is phase. A shorter arrow means the qubit is entangled.</div><div><button class="chip" id="bz">Top view</button><button class="chip" id="bs">Side view</button><button class="chip" id="bsp">Spin</button></div>';
+    }
+    function blochStart() {
+      var cv = $('bcv'); if (!cv) return; var n = S.res.n; if (S.bq >= n) S.bq = 0;
+      Array.prototype.forEach.call($('rbody').querySelectorAll('[data-bq]'), function (e) { e.onclick = function () { S.bq = +e.getAttribute('data-bq'); S.bshow = null; paintResults(); }; });
+      var target = QWL.bloch(S.res, S.bq); if (!S.bshow) S.bshow = { x: target.x, y: target.y, z: target.z };
+      var spin = false, drag = null, ctx = cv.getContext('2d'), dead = false;
+      function proj(x, y, z) { // x right, y into the screen, z up
+        var cy = Math.cos(S.byaw), sy = Math.sin(S.byaw), cp = Math.cos(S.bpitch), sp = Math.sin(S.bpitch);
+        var x1 = x * cy - y * sy, y1 = x * sy + y * cy, z1 = z * cp - y1 * sp, d = z * sp + y1 * cp;
+        return { X: 150 + 108 * x1, Y: 150 - 108 * z1, d: d };
+      }
+      function css(v, f) { var c = getComputedStyle(cv).getPropertyValue(v).trim(); return c || f; }
+      function ring(f, col, w) { ctx.strokeStyle = col; ctx.lineWidth = w; var prev = null; ctx.beginPath(); for (var a = 0; a <= 64; a++) { var t = a / 64 * Math.PI * 2, p = f(t), q = proj(p[0], p[1], p[2]); if (a === 0) ctx.moveTo(q.X, q.Y); else ctx.lineTo(q.X, q.Y); } ctx.stroke(); }
+      function line(a, b, col, w, dash) { var p = proj(a[0], a[1], a[2]), q = proj(b[0], b[1], b[2]); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.setLineDash(dash || []); ctx.beginPath(); ctx.moveTo(p.X, p.Y); ctx.lineTo(q.X, q.Y); ctx.stroke(); ctx.setLineDash([]); }
+      function lbl(t, p, col) { var q = proj(p[0], p[1], p[2]); ctx.fillStyle = col; ctx.font = '500 13px Roboto,system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t, q.X, q.Y); }
+      function draw() {
+        var line0 = css('--qb-line', '#3a2d55'), dim = css('--qb-dim', '#a99dc7'), acc = css('--qb-acc2', '#d9acff'), pink = css('--qb-pink', '#e06aa8'), tx = css('--qb-tx', '#f1ebff');
+        ctx.clearRect(0, 0, 300, 300);
+        var g = ctx.createRadialGradient(125, 120, 10, 150, 150, 112); g.addColorStop(0, 'rgba(178,107,255,0.16)'); g.addColorStop(1, 'rgba(178,107,255,0.03)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(150, 150, 108, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = line0; ctx.lineWidth = 1.5; ctx.stroke();
+        ring(function (t) { return [Math.cos(t), Math.sin(t), 0]; }, line0, 1.2); ring(function (t) { return [Math.cos(t), 0, Math.sin(t)]; }, line0, 1); ring(function (t) { return [0, Math.cos(t), Math.sin(t)]; }, line0, 1);
+        line([-1.15, 0, 0], [1.15, 0, 0], dim, 1, [3, 4]); line([0, -1.15, 0], [0, 1.15, 0], dim, 1, [3, 4]); line([0, 0, -1.15], [0, 0, 1.15], dim, 1, [3, 4]);
+        lbl('|0⟩', [0, 0, 1.28], tx); lbl('|1⟩', [0, 0, -1.28], tx); lbl('|+⟩', [1.3, 0, 0], dim); lbl('|−⟩', [-1.3, 0, 0], dim); lbl('|+i⟩', [0, 1.34, 0], dim); lbl('|−i⟩', [0, -1.34, 0], dim);
+        var b = S.bshow, tip = proj(b.x, b.y, b.z), o = proj(0, 0, 0);
+        line([b.x, b.y, 0], [b.x, b.y, b.z], 'rgba(224,106,168,0.5)', 1.5, [2, 3]); line([0, 0, 0], [b.x, b.y, 0], 'rgba(224,106,168,0.5)', 1.5, [2, 3]);
+        ctx.strokeStyle = acc; ctx.lineWidth = 3.5; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(o.X, o.Y); ctx.lineTo(tip.X, tip.Y); ctx.stroke();
+        ctx.fillStyle = pink; ctx.beginPath(); ctx.arc(tip.X, tip.Y, 7, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = tx; ctx.beginPath(); ctx.arc(o.X, o.Y, 2.5, 0, Math.PI * 2); ctx.fill();
+      }
+      function read() {
+        var b = QWL.bloch(S.res, S.bq), len = Math.sqrt(b.x * b.x + b.y * b.y + b.z * b.z), th = Math.acos(Math.max(-1, Math.min(1, len > 1e-9 ? b.z / len : 1))), ph = Math.atan2(b.y, b.x);
+        var txt = 'x ' + b.x.toFixed(2) + ' · y ' + b.y.toFixed(2) + ' · z ' + b.z.toFixed(2) + ' · chance of 1: ' + Math.round((1 - b.z) / 2 * 100) + '%';
+        if (len > 0.02 && len > 0.98) txt += '<br>turn from the top θ = ' + Math.round(th * 180 / Math.PI) + '°, around the axis φ = ' + Math.round(((ph * 180 / Math.PI) + 360) % 360) + '°';
+        else if (len <= 0.98) txt += '<br>arrow length ' + len.toFixed(2) + ' (entangled with another qubit)';
+        $('bread').innerHTML = txt;
+      }
+      function frame() {
+        if (dead || !$('bcv')) return; var t = QWL.bloch(S.res, S.bq), b = S.bshow, dx = t.x - b.x, dy = t.y - b.y, dz = t.z - b.z;
+        if (Math.abs(dx) + Math.abs(dy) + Math.abs(dz) > 1e-3) { b.x += dx * 0.2; b.y += dy * 0.2; b.z += dz * 0.2; } else { b.x = t.x; b.y = t.y; b.z = t.z; }
+        if (spin) S.byaw += 0.02; draw(); read(); requestAnimationFrame(frame);
+      }
+      cv.onpointerdown = function (e) { drag = [e.clientX, e.clientY]; try { cv.setPointerCapture(e.pointerId); } catch (x) {} cv.style.cursor = 'grabbing'; };
+      cv.onpointermove = function (e) { if (!drag) return; S.byaw += (e.clientX - drag[0]) * 0.012; S.bpitch = Math.max(-1.5, Math.min(1.5, S.bpitch + (e.clientY - drag[1]) * 0.012)); drag = [e.clientX, e.clientY]; };
+      cv.onpointerup = cv.onpointercancel = function () { drag = null; cv.style.cursor = 'grab'; };
+      $('bz').onclick = function () { S.bpitch = 1.5; }; $('bs').onclick = function () { S.bpitch = 0.05; S.byaw = 0; };
+      $('bsp').onclick = function () { spin = !spin; $('bsp').className = 'chip' + (spin ? ' on' : ''); };
+      var obs = new MutationObserver(function () { if (!document.body.contains(cv)) { dead = true; obs.disconnect(); } }); obs.observe($('rbody'), { childList: true });
+      frame();
     }
 
     /* ---------- code panel ---------- */

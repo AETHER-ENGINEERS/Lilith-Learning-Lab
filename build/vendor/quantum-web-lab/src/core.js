@@ -352,6 +352,10 @@
       var good = t.min !== undefined ? p >= t.min : t.max !== undefined ? p <= t.max : Math.abs(p - t.approx) <= (t.tol === undefined ? 0.02 : t.tol);
       if (!good) { ok = false; why.push(t.hint || ('|' + t.state + '⟩ is ' + Math.round(p * 100) + '%')); }
     });
+    (goal.bloch || []).forEach(function (t) {
+      var b = bloch(res, t.q || 0), tol = t.tol === undefined ? 0.08 : t.tol;
+      if (Math.abs(b.x - (t.x || 0)) > tol || Math.abs(b.y - (t.y || 0)) > tol || Math.abs(b.z - (t.z || 0)) > tol) { ok = false; why.push(t.hint || 'the arrow is not pointing the right way yet'); }
+    });
     var gs = goal.gates; if (gs) {
       var cnt = circ.counts(), real = Object.keys(cnt).filter(function (g) { return g !== 'i'; }), total = 0; real.forEach(function (g) { total += cnt[g]; });
       if (gs.min !== undefined && total < gs.min) { ok = false; why.push('use at least ' + gs.min + ' gate' + (gs.min > 1 ? 's' : '')); }

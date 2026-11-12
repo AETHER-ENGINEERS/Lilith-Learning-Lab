@@ -6,12 +6,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "qc"))
 sys.path.insert(0, os.path.join(HERE, "ql"))
-import cmk, quantum_a, quantum_b, quantum_c, make_apps  # noqa: E402
+import cmk, quantum_a, quantum_b, quantum_c, quantum_d, make_apps  # noqa: E402
 import labs  # noqa: E402  (Quantum Web Lab configs)
 make_apps.main()
-CHS = quantum_c.INTRO + quantum_a.CHS + quantum_b.CHS[:4] + quantum_c.QISKIT + quantum_c.QASM + quantum_b.CHS[4:]
-KEEP_PY = {"Count the numbers", "Two chances", "Apply H", "H, phase, H", "Tensor product", "Grover chance", "Standard error", "A stack of filters"}
-LAB_FOR = ["bits", "qubit", "gates", "interference", "circuits", "twoq", "entangle", "algo", "noise", "qiskit", "qasm", "free"]
+CHS = quantum_c.INTRO + quantum_a.CHS[:4] + quantum_d.BLOCH + quantum_a.CHS[4:] + quantum_b.CHS[:4] + quantum_c.QISKIT + quantum_c.QASM + quantum_b.CHS[4:]
+KEEP_PY = {"Count the numbers", "Two chances", "Apply H", "H, phase, H", "Tensor product", "Grover chance", "Standard error", "A stack of filters", "Chance from the angle"}
+LAB_FOR = ["bits", "qubit", "gates", "interference", "bloch", "circuits", "twoq", "entangle", "algo", "noise", "qiskit", "qasm", "free"]
 for _c in CHS:
     _c["lesson"] = [x for x in _c["lesson"] if not (isinstance(x, dict) and x.get("type") == "webxdc" and x["html"] != "__QPOLAR__")]
     _c["practice"] = [x for x in _c["practice"] if not (x["type"] == "webxdc" and x["html"] != "__QPOLAR__") and (x["type"] != "python" or x["title"] in KEEP_PY)]
@@ -21,7 +21,7 @@ for _c in CHS:
 for _i, _k in enumerate(LAB_FOR):
     _ch = CHS[_i + 1]
     _ch["practice"].insert(0, dict(labs.LABS[_k]))
-PRONOUNCE = {"qubit": "cue bit", "qubits": "cue bits", "Qubit": "cue bit", "Qubits": "cue bits", "Q.js": "Q J S", "MicroQiskit": "micro kiss kit", "QASM": "kasm", "CNOT": "see not", "Hadamard": "had a mard",
+PRONOUNCE = {"qubit": "cue bit", "qubits": "cue bits", "Qubit": "cue bit", "Qubits": "cue bits", "Q.js": "Q J S", "MicroQiskit": "micro kiss kit", "Bloch": "block", "Bloch sphere": "block sphere", "QASM": "kasm", "CNOT": "see not", "Hadamard": "had a mard",
     "Pauli": "pow lee", "Deutsch": "doich", "Grover": "grow ver", "Grover's": "grow vers", "Shor": "shore", "Shor's": "shores", "GHZ": "G H Z", "Bell": "bell",
     "amplitude": "am plih tude", "amplitudes": "am plih tudes", "decoherence": "dee co here ence", "Qiskit": "kiss kit", "Cirq": "surk", "oracle": "or a kul",
     "superposition": "super position", "entangled": "en tangled", "entanglement": "en tangle ment", "Stewart": "stew art", "IBM": "I B M", "ket": "ket",
@@ -66,12 +66,14 @@ EXAM = [
  ("Grover search takes about:", ["Root N steps", "N steps", "N squared", "1 step"], 0, "Quadratic."),
  ("A shot is:", ["One run and one measurement", "A gate", "A qubit", "A phase"], 0, "Repeat for chances."),
  ("More shots make estimates:", ["More accurate", "Less accurate", "The same", "Random"], 0, "Root shots."),
+ ("On the Bloch sphere, where is a plain 1?", ["South pole", "North pole", "Equator", "Centre"], 0, "Bottom of the globe."),
+ ("What does a shorter arrow inside the Bloch ball tell you?", ["The qubit is entangled", "The qubit is plain 0", "Nothing", "Noise only"], 0, "Information is shared."),
  ("Shor's algorithm is for:", ["Factoring", "Sorting", "Printing", "Typing"], 0, "Breaks some codes."),
  ("Is a quantum computer faster at everything?", ["No", "Yes", "Only games", "Only email"], 0, "Special jobs only."),
 ]
 CFG = dict(id="quantum-computing", title="Quantum Computing for Beginners",
-    subtitle="Qubits, gates, interference and entanglement with hands-on circuit labs, for curious kids, teens and adults",
-    description="A friendly first course on quantum computing with no maths beyond squares and multiplication. Learn bits and qubits, amplitudes and measurement, the X, H, Z and T gates, interference, circuit text, CNOT, entanglement and Bell states, Deutsch and Grover's algorithms, noise and shots, and what quantum computers are really good for. Every chapter has a hands-on lab built on our own Quantum Web Lab (github.com/lucky-edgelord/quantum-web-lab): a mobile-friendly circuit composer with live chances, Inspect view, a friendly console, ASCII and Q text notation, MicroQiskit (a tiny Qiskit that runs offline) and micro OpenQASM. A few short Python labs build the maths in code. The circuit text notation is inspired by Q.js by Stewart Smith (github.com/stewdio/q.js, MIT) and the layout by the IBM Quantum Composer. Includes an intuitive intro to quantum mechanics, a Qiskit chapter and an OpenQASM chapter.",
+    subtitle="Qubits, gates, the Bloch sphere, interference and entanglement with hands-on circuit labs, for curious kids, teens and adults",
+    description="A friendly first course on quantum computing with no maths beyond squares and multiplication. Learn bits and qubits, amplitudes and measurement, the X, H, Z and T gates, interference, circuit text, CNOT, entanglement and Bell states, Deutsch and Grover's algorithms, noise and shots, and what quantum computers are really good for. Every chapter has a hands-on lab built on our own Quantum Web Lab (github.com/lucky-edgelord/quantum-web-lab): a mobile-friendly circuit composer with live chances, Inspect view, a friendly console, ASCII and Q text notation, MicroQiskit (a tiny Qiskit that runs offline) and micro OpenQASM. A few short Python labs build the maths in code. The circuit text notation is inspired by Q.js by Stewart Smith (github.com/stewdio/q.js, MIT) and the layout by the IBM Quantum Composer. Includes an intuitive intro to quantum mechanics, an interactive Bloch sphere chapter, a Qiskit chapter and an OpenQASM chapter.",
     pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, appdir="ql", apps={"__QPOLAR__": "qpolar.html"})
 if __name__ == "__main__":
     out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "courses", "quantum-computing.course.json")

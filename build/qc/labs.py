@@ -69,6 +69,16 @@ LABS["interference"] = lab("Interference lab", "Steer the chances with phase. Us
         LV("Two S gates", "Using only H and S gates make the result 1. Each S is a quarter turn of phase.", BLANK6, {"probs": [P("1", min=0.99)], "gates": {"only": ["h", "s"], "count": {"s": {"min": 2}}}}, "H-S-S-H-I-I", "Two S gates make one Z.", "S then S is a Z."),
         LV("A 25% coin", "Using H, RZ and H, make the chance of 1 about 25%. The chance is sin squared of half the angle. Try pi/3.", BLANK6, {"probs": [P("1", approx=0.25, tol=0.02)], "gates": {"require": ["rz"], "count": {"h": {"min": 2}}}}, "H-RZ(pi/3)-H-I-I-I", "Pick RZ, choose an angle, put it between two H gates.", "An angle between two H gates sets any chance you like.")]})
 
+LABS["bloch"] = lab("Bloch sphere lab", "Turn the arrow with gates. Open the Bloch tab, drag the sphere to look around, and read the x, y, z numbers.", {
+    "qubits": 1, "steps": 6, "maxQubits": 2, "palette": ["h", "x", "y", "z", "s", "t", "ry", "rz"], "results": ["bloch", "chances", "inspect"], "resultsTab": "bloch", "code": ["qasm", "text", "ascii"], "console": True,
+    "levels": [
+        LV("South pole", "Send the arrow to the south pole, a plain 1.", BLANK6, {"bloch": [{"q": 0, "z": -1}]}, "X-I-I-I-I-I", "X is a half turn that swaps the poles.", "X is a half turn about the x axis."),
+        LV("Onto the equator", "Put the arrow on the equator, pointing towards you (the +x point, |+>).", BLANK6, {"bloch": [{"q": 0, "x": 1}]}, "H-I-I-I-I-I", "H takes the north pole to +x.", "H is a half turn about the slanted axis between x and z."),
+        LV("The far side", "Put the arrow on the equator on the far side (the -x point, |->). Use H and Z.", BLANK6, {"bloch": [{"q": 0, "x": -1}], "gates": {"only": ["h", "z"]}}, "H-Z-I-I-I-I", "Go to +x first, then turn halfway round the vertical axis.", "Z is a half turn about the vertical axis."),
+        LV("A quarter turn round", "Point the arrow at +i (the +y point on the equator). Use H and S.", BLANK6, {"bloch": [{"q": 0, "y": 1}], "gates": {"only": ["h", "s"]}}, "H-S-I-I-I-I", "From +x, a quarter turn about the vertical axis.", "S is a quarter turn, so +x becomes +i."),
+        LV("Halfway between", "Point the arrow halfway between +x and +i, using H and T. T is an eighth turn.", BLANK6, {"bloch": [{"q": 0, "x": 0.707, "y": 0.707}], "gates": {"only": ["h", "t"]}}, "H-T-I-I-I-I", "An eighth of a turn from +x is 45 degrees.", "Two T gates make an S."),
+        LV("Tilt from the top", "Tilt the arrow 45 degrees down from the north pole, towards +x. Use an RY gate with angle pi/4.", BLANK6, {"bloch": [{"q": 0, "x": 0.707, "z": 0.707}], "gates": {"require": ["ry"]}}, "RY(pi/4)-I-I-I-I-I", "Pick RY, type pi/4 as the angle, tap a square.", "RY turns the arrow in the x-z plane by any angle.")]})
+
 LABS["circuits"] = lab("Circuit text lab", "Type circuits as text. Open the Code box, pick Q text, edit, and press Apply.", {
     "qubits": 2, "steps": 4, "maxQubits": 3, "palette": GATE_BASIC, "results": ["chances"], "code": CODE_ALL, "codeOpen": True, "codeTab": "text", "console": True,
     "levels": [
