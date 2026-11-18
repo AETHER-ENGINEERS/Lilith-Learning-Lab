@@ -127,9 +127,9 @@ $('gard').onclick = () => {
   goal('garden');
 };
 $('replay').onclick = async () => {
-  const before = { dim: DIM, hash: E.factsHash(kg), nn: E.knn(db, vecs['retry-storm'], 4).map(r => r.name).join(', '), sig: E.hashStr(Array.from(vecs['retry-storm']).map(x => x.toFixed(3)).join(',')) };
+  const before = { dim: DIM, hash: E.factsHash(kg, notes), nn: E.knn(db, vecs['retry-storm'], 4).map(r => r.name).join(', '), sig: E.hashStr(Array.from(vecs['retry-storm']).map(x => x.toFixed(3)).join(',')) };
   const nd = +$('dim').value; await rebuild(nd);
-  const after = { dim: nd, hash: E.factsHash(kg), nn: E.knn(db, vecs['retry-storm'], 4).map(r => r.name).join(', '), sig: E.hashStr(Array.from(vecs['retry-storm']).map(x => x.toFixed(3)).join(',')) };
+  const after = { dim: nd, hash: E.factsHash(kg, notes), nn: E.knn(db, vecs['retry-storm'], 4).map(r => r.name).join(', '), sig: E.hashStr(Array.from(vecs['retry-storm']).map(x => x.toFixed(3)).join(',')) };
   const same = before.hash === after.hash;
   $('rout').innerHTML = table(['', 'before', 'after replay'], [['embedding size', before.dim, after.dim], ['fact fingerprint (G)', before.hash, after.hash + (same ? ' <b class="good">identical</b>' : ' <b class="bad">different</b>')], ['vector fingerprint (M)', before.sig, after.sig], ['nearest to retry-storm', before.nn, after.nn]]) +
     '<p class="dim">The symbolic layer is rebuilt from the same files and comes out the same. The geometry is a property of the embedding model, so changing the model changes M and nothing else.</p>';

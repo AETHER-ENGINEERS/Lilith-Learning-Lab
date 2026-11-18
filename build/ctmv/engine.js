@@ -153,4 +153,5 @@ E.plain = (db, qtext, k, dim = 64) => E.knn(db, E.embed(qtext, dim), k);
 
 /* ---------- replay: rebuild G and M from V alone ---------- */
 E.hashStr = s => E.hash(s).toString(16).padStart(8, '0');
-E.factsHash = (kg) => { const r = E.kgCall({ op: 'query', handle: kg.handle, q: 'claim(N, S, R, O)', limit: 1000 }); return E.hashStr((r.answers || []).map(a => ['N', 'S', 'R', 'O'].map(k => a.bindings[k]).join(' ')).sort().join('\n')); };
+E.factsHash = (kg, notes) => E.hashStr(notes.flatMap(n => (E.kgCall({ op: 'query', handle: kg.handle, q: `claim(${JSON.stringify(n.name)}, S, R, O)`, limit: 200 }).answers || []).map(a => [n.name, a.bindings.S, a.bindings.R, a.bindings.O].join(' '))).sort().join('\n'));
+// note: the reasoner returns at most 200 answers per query, so facts are fetched note by note
