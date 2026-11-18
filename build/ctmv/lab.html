@@ -1,0 +1,135 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;font:14px/1.45 system-ui,sans-serif;background:#14161c;color:#e6e8ee;padding:8px}
+h3{margin:.2em 0 .4em;font-size:15px}small,.dim{color:#9aa3b5}.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:4px 0}
+button,select,input,textarea{font:inherit;background:#232734;color:#e6e8ee;border:1px solid #3a4054;border-radius:6px;padding:5px 8px}
+button{cursor:pointer}button.on{background:#3b5bdb;border-color:#3b5bdb}button:disabled{opacity:.5}
+input[type=text]{flex:1;min-width:140px}textarea{width:100%;min-height:120px;font-family:ui-monospace,monospace;font-size:12px}
+pre{background:#0d0f14;padding:8px;border-radius:6px;overflow:auto;font-size:12px;margin:4px 0;white-space:pre-wrap;word-break:break-word}
+table{border-collapse:collapse;width:100%;font-size:12px}td,th{border-bottom:1px solid #2c3142;padding:3px 5px;text-align:left;vertical-align:top}
+.goal{background:#1c2030;border:1px solid #2f3650;border-radius:8px;padding:6px 10px;margin-bottom:6px}.goal li{list-style:none;margin:2px 0}.goal li.ok{color:#69db7c}
+.bar{display:inline-block;height:8px;background:#f59f00;border-radius:4px;vertical-align:middle}.tag{display:inline-block;padding:0 6px;border-radius:9px;background:#2c3142;font-size:11px;margin:1px}
+.bad{color:#ff8787}.good{color:#69db7c}.warn{color:#ffd43b}.panel{display:none}.panel.show{display:block}
+#load{padding:20px;text-align:center}
+</style></head><body>
+<div id="load">Loading SQLite, sqlite-vec and the Datalog engine…</div>
+<div id="app" style="display:none">
+<div class="goal"><b id="gt"></b><ul id="goals" style="margin:4px 0 0;padding:0"></ul></div>
+<div class="row" id="tabs"></div>
+<div id="p-v" class="panel"><h3>V · the markdown vault</h3><small>Plain files in the kit's virtual file system. This is the only thing that is ever precious.</small>
+ <div class="row"><select id="note"></select><button id="saveNote">Save note</button><button id="newNote">New note</button></div>
+ <textarea id="md" spellcheck="false"></textarea><div id="vmsg" class="dim"></div></div>
+<div id="p-g" class="panel"><h3>G · facts, rules and proofs (jade-kg, Datalog)</h3>
+ <div class="row"><input type="text" id="q" value="leads_to(retry_storm, X)"><button id="runq">Query</button></div>
+ <div class="row"><input type="text" id="claim" value="leads_to(retry_storm, outage)"><button id="runv">Verify</button><button id="runc">Check contradictions</button></div>
+ <pre id="gout"></pre><details><summary>Rules in use</summary><pre id="rules"></pre></details></div>
+<div id="p-m" class="panel"><h3>M · the manifold (sqlite-vec)</h3><small>A toy embedder hashes words into a short vector, so everything runs offline and always gives the same numbers.</small>
+ <div class="row"><select id="mnote"></select><button id="runk">Nearest to this note</button></div>
+ <div class="row"><input type="text" id="mtext" value="a swing goes higher and higher"><button id="runkt">Nearest to this text</button></div><pre id="mout"></pre></div>
+<div id="p-d" class="panel"><h3>δ · do the three views agree?</h3><small>δ = 1 − overlap between a note's nearest neighbours in M and its neighbours in V and G. High δ means the views disagree.</small>
+ <div id="dtab"></div><h3>Bridge candidates</h3><small>Notes that share an idea in G but have no link in V.</small><div id="btab"></div></div>
+<div id="p-w" class="panel"><h3>Warp the metric, then retrieve</h3>
+ <div class="row"><input type="text" id="wq" value="clients retry too much"><button id="runw">Retrieve</button></div>
+ <div class="row"><label>causal pull λ <input type="range" id="lam" min="0" max="0.9" step="0.05" value="0"><b id="lamv">0</b></label>
+ <label>conflict push μ <input type="range" id="mu" min="0" max="1" step="0.1" value="0"><b id="muv">0</b></label>
+ <label>reach <input type="range" id="slack" min="0.1" max="0.8" step="0.05" value="0.45"><b id="slv">0.45</b></label></div>
+ <div class="row"><button class="q" data-q="clients retry too much">Retries</button><button class="q" data-q="should clients retry straight away">Disputed advice</button><button class="q" data-q="what is wrong with a long time to live">Old cache note</button><button class="q" data-q="a swing goes higher and higher">Swing</button></div>
+ <div id="wout"></div></div>
+<div id="p-r" class="panel"><h3>Garden and replay</h3>
+ <div class="row"><button id="gard">Run the gardener</button><label>embedding size <select id="dim"><option>32</option><option selected>64</option><option>128</option></select></label><button id="replay">Replay: rebuild G and M from the .md files</button></div>
+ <div id="rout"></div></div>
+</div>
+<script>/*__KIT__*/</script>
+<script>/*__VAULT__*/</script>
+<script>/*__ENGINE__*/</script>
+<script>
+const MODE = '__MODE__', GOALS = __GOALS__, TITLE = '__TITLE__', TABS = __TABS__;
+const $ = id => document.getElementById(id);
+const done = {}; let completed = false;
+function goal(k) { if (done[k]) return; done[k] = 1; paintGoals(); if (!completed && GOALS.every(g => done[g[0]])) { completed = true; try { window.lilith && window.lilith.complete(); } catch (e) {} } }
+function paintGoals() { $('gt').textContent = TITLE; $('goals').innerHTML = GOALS.map(g => `<li class="${done[g[0]] ? 'ok' : ''}">${done[g[0]] ? '✓' : '○'} ${g[1]}</li>`).join(''); window.__lab = { done, completed: () => completed }; }
+const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const gunzip = async b64 => { const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0)); const s = new Blob([bin]).stream().pipeThrough(new DecompressionStream('gzip')); return new Uint8Array(await new Response(s).arrayBuffer()); };
+let kit, db, kg, notes, vecs, es, DIM = 64, vault = Object.assign({}, VAULT);
+async function boot() {
+  const sql = await gunzip(__SQLITE__), kgw = await gunzip(__KGWASM__);
+  const of = window.fetch; window.fetch = (u, ...a) => /sqlite3\.wasm$/.test(String(u)) ? Promise.resolve(new Response(sql)) : of(u, ...a);
+  kit = await JadeKit.createKit({ busybox: false, scheduler: false });
+  await E.initKg(kgw);
+  for (const [n, t] of Object.entries(vault)) kit.vfs.write('/vault/' + n + '.md', t);
+  db = await kit.sqlite.open(':memory:');
+  await rebuild(64);
+}
+async function rebuild(dim) {
+  DIM = dim; vault = {};
+  for (const f of kit.vfs.list('/vault')) { const nm = (f.name || f).replace(/\.md$/, ''); vault[nm] = kit.vfs.read('/vault/' + nm + '.md'); }
+  notes = E.notes(vault);
+  if (kg) E.kgCall({ op: 'free', handle: kg.handle });
+  kg = E.loadKg(notes); vecs = await E.buildMani(db, notes, dim); es = E.edgeSets(notes, kg);
+  const sel = ['note', 'mnote']; for (const id of sel) { const cur = $(id).value; $(id).innerHTML = notes.map(n => `<option>${n.name}</option>`).join(''); if (cur && vault[cur]) $(id).value = cur; }
+  showNote(); $('rules').textContent = E.RULES;
+}
+const showNote = () => { const n = $('note').value; $('md').value = vault[n] || ''; };
+function tabs() {
+  const names = { v: 'V notes', g: 'G facts', m: 'M manifold', d: 'δ & bridges', w: 'Warp', r: 'Garden & replay' };
+  $('tabs').innerHTML = TABS.map(t => `<button data-t="${t}">${names[t]}</button>`).join('');
+  $('tabs').onclick = e => { const t = e.target.dataset.t; if (!t) return; open(t); };
+  open(TABS[0]);
+}
+function open(t) { document.querySelectorAll('.panel').forEach(p => p.classList.toggle('show', p.id === 'p-' + t)); document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  if (t === 'd') drawDelta(); if (t === 'v') goal('openV'); }
+function table(head, rows) { return '<table><tr>' + head.map(h => `<th>${h}</th>`).join('') + '</tr>' + rows.map(r => '<tr>' + r.map(c => `<td>${c}</td>`).join('') + '</tr>').join('') + '</table>'; }
+const tags = a => a.length ? a.map(x => `<span class="tag">${esc(x)}</span>`).join('') : '<span class="dim">none</span>';
+function drawDelta() {
+  const rows = E.delta(db, kg, notes, vecs); const out = rows.sort((a, b) => b.delta - a.delta);
+  $('dtab').innerHTML = table(['note', 'δ', 'M says (nearest)', 'V+G say (shares or links)'], out.map(r => [r.name, `<span class="bar" style="width:${Math.round(r.delta * 60)}px"></span> ${r.delta.toFixed(2)}`, tags(r.geo), tags(r.sym)]));
+  const br = E.bridges(notes, vecs, kg).slice(0, 8);
+  $('btab').innerHTML = table(['pair', 'shared idea', 'cosine in M', 'domains', ''], br.map((b, i) => [`${b.a} ↔ ${b.b}`, tags(b.via), b.cos.toFixed(2), b.cross ? '<b class="good">different</b>' : 'same', `<button data-b="${i}">Mark as bridge</button>`]));
+  $('btab').onclick = e => { const i = e.target.dataset.b; if (i == null) return; const b = br[i]; const ok = b.cross && b.via.includes('positive_feedback'); $('btab').insertAdjacentHTML('beforeend', `<p class="${ok ? 'good' : 'warn'}">${esc(b.a)} ↔ ${esc(b.b)}: ${ok ? 'a true cross-domain bridge, the same loop in two worlds. Saved as a Latent Synthesis suggestion.' : 'shares an idea, but it is not the cross-domain loop we are hunting.'}</p>`); if (ok) goal('bridge'); };
+  goal('openD');
+}
+$('note').onchange = showNote;
+$('saveNote').onclick = async () => { const n = $('note').value, tmp = '/vault/.tmp-' + n; kit.vfs.write(tmp, $('md').value); kit.vfs.move(tmp, '/vault/' + n + '.md'); await rebuild(DIM); $('vmsg').textContent = 'Saved with write-then-rename. G and M rebuilt from the files.'; goal('edit'); };
+$('newNote').onclick = async () => { const n = 'new-note-' + (notes.length + 1); kit.vfs.write('/vault/' + n + '.md', '# New note\ntags: ops\nWrite what you know.\n- thing causes effect'); await rebuild(DIM); $('note').value = n; showNote(); $('vmsg').textContent = 'Created ' + n + '. Edit it and press Save.'; goal('edit'); };
+$('runq').onclick = () => { const r = E.kgCall({ op: 'query', handle: kg.handle, q: $('q').value, limit: 30 }); $('gout').textContent = r.text || r.error || JSON.stringify(r); goal('query'); };
+$('runv').onclick = () => { const r = E.kgCall({ op: 'verify', handle: kg.handle, claim: $('claim').value }); $('gout').textContent = r.text || r.error || JSON.stringify(r); goal('verify'); };
+$('runc').onclick = () => { const r = E.kgCall({ op: 'check', handle: kg.handle }); $('gout').textContent = r.text || r.error; goal('check'); };
+const knnOut = (rows) => table(['note', 'cosine distance'], rows.map(r => [r.name, r.dist.toFixed(3)]));
+$('runk').onclick = () => { $('mout').outerHTML = '<div id="mout">' + knnOut(E.knn(db, vecs[$('mnote').value], 5)) + '</div>'; goal('knn'); };
+$('runkt').onclick = () => { $('mout').outerHTML = '<div id="mout">' + knnOut(E.knn(db, E.embed($('mtext').value, DIM), 5)) + '</div>'; goal('knn'); };
+for (const [id, v] of [['lam', 'lamv'], ['mu', 'muv'], ['slack', 'slv']]) $(id).oninput = () => $(v).textContent = $(id).value;
+document.querySelectorAll('button.q').forEach(b => b.onclick = () => { $('wq').value = b.dataset.q; runW(); });
+function runW() {
+  const q = $('wq').value, lam = +$('lam').value, mu = +$('mu').value, slack = +$('slack').value;
+  const plain = E.plain(db, q, 3, DIM); const w = E.retrieve(db, notes, vecs, es, q, { lam, mu, slack, dim: DIM, drop: true });
+  const inW = new Set(w.map(r => r.name)), inP = new Set(plain.map(r => r.name));
+  const A = plain.map(r => [r.name, r.dist.toFixed(2), es.replaced.has(r.name) ? '<span class="bad">replaced</span>' : (inW.has(r.name) ? '' : '<span class="warn">pushed out</span>')]);
+  const B = w.map(r => [r.name, r.d.toFixed(2), (inP.has(r.name) ? '' : '<b class="good">found by the warp</b> ') + (r.disputed ? '<span class="bad">disputed</span>' : '')]);
+  $('wout').innerHTML = '<h3>Plain nearest neighbours</h3>' + table(['note', 'distance', ''], A) + '<h3>Warped multi-hop</h3>' + table(['note', 'warped distance', ''], B);
+  goal('retrieve'); if (lam > 0 && B.some(r => r[2].includes('found by the warp'))) goal('pull');
+  if (mu > 0 && (A.some(r => r[2].includes('pushed out')) || w.some(r => r.disputed))) goal('push');
+  if (es.replaced.size && A.some(r => r[2].includes('replaced')) && !w.some(r => es.replaced.has(r.name))) goal('current');
+}
+$('runw').onclick = runW;
+$('gard').onclick = () => {
+  const chk = E.kgCall({ op: 'check', handle: kg.handle }); const br = E.bridges(notes, vecs, kg).filter(b => b.cross).slice(0, 3);
+  const concepts = E.kgCall({ op: 'query', handle: kg.handle, q: 'concept(C)', limit: 200 }).answers.map(a => a.bindings.C); const noteSet = new Set(notes.map(n => n.name.replace(/-/g, '_')));
+  const seen = {}; for (const n of notes) for (const [s, r, o] of n.claims) for (const c of [s, o]) (seen[c] = seen[c] || new Set()).add(n.name);
+  const gaps = Object.entries(seen).filter(([c, s]) => s.size >= 2 && !noteSet.has(c)).map(([c, s]) => c);
+  const viol = chk.violations || [];
+  $('rout').innerHTML = '<h3>Contradictions (constraint check)</h3>' + (viol.length ? table(['constraint', 'facts involved'], viol.map(v => [v.constraint, esc(JSON.stringify(v.bindings))])) : '<p class="good">none</p>') +
+    '<h3>Latent syntheses (bridges with no link)</h3>' + table(['suggested note', 'because'], br.map(b => [`${b.a} + ${b.b}`, tags(b.via)])) +
+    '<h3>Gaps (ideas used by two or more notes with no note of their own)</h3><p>' + tags(gaps) + '</p>';
+  goal('garden');
+};
+$('replay').onclick = async () => {
+  const before = { dim: DIM, hash: E.factsHash(kg), nn: E.knn(db, vecs['retry-storm'], 4).map(r => r.name).join(', '), sig: E.hashStr(Array.from(vecs['retry-storm']).map(x => x.toFixed(3)).join(',')) };
+  const nd = +$('dim').value; await rebuild(nd);
+  const after = { dim: nd, hash: E.factsHash(kg), nn: E.knn(db, vecs['retry-storm'], 4).map(r => r.name).join(', '), sig: E.hashStr(Array.from(vecs['retry-storm']).map(x => x.toFixed(3)).join(',')) };
+  const same = before.hash === after.hash;
+  $('rout').innerHTML = table(['', 'before', 'after replay'], [['embedding size', before.dim, after.dim], ['fact fingerprint (G)', before.hash, after.hash + (same ? ' <b class="good">identical</b>' : ' <b class="bad">different</b>')], ['vector fingerprint (M)', before.sig, after.sig], ['nearest to retry-storm', before.nn, after.nn]]) +
+    '<p class="dim">The symbolic layer is rebuilt from the same files and comes out the same. The geometry is a property of the embedding model, so changing the model changes M and nothing else.</p>';
+  if (same && before.dim !== after.dim) goal('replay');
+};
+boot().then(() => { $('load').style.display = 'none'; $('app').style.display = 'block'; tabs(); paintGoals(); window.__ready = true; }).catch(e => { $('load').textContent = 'Could not start: ' + e.message; window.__err = String(e.stack || e); });
+</script></body></html>
