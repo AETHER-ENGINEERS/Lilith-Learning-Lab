@@ -1,0 +1,4520 @@
+{
+ "format": "lilith-course",
+ "version": 1,
+ "id": "vectiq-user-guide",
+ "title": "Running a Community with Vectiq: A User Guide",
+ "subtitle": "Install, configure and operate the Vectiq bot: welcome, moderation, levels, events, tickets, games and keeping it healthy",
+ "author": "Lilith Learning Lab",
+ "description": "A practical, beginner-friendly guide to using Vectiq (github.com/lucky-edgelord/aio-vector-bot, MIT), the community-management bot for the Vector messenger, based on its documentation at lucky-edgelord.github.io/aio-vector-bot. In 11 chapters you plan and install the bot, learn the configuration file, modules and setup wizard, welcome and verify new members, moderate day to day, protect the community with link safety, image guard and Sentire, run levels and a coin economy with a shop, schedule events, giveaways and polls, handle support tickets, add games, music and feed alerts, use the dashboard, webhooks and AI assistants, and finally keep it running with restore points, updates and troubleshooting. There are 22 numbered figures, 22 numbered tables, a recap, a memory trick, an expanded ELI5 and a concept map in every chapter, a command cheat sheet in the sandbox, a final exam, and a few short Python labs that run offline in the app. Credits: the course is original and follows the public documentation of Vectiq by lucky-edgelord and the Vectiq contributors (MIT licence). The documentation credits Logiq and MEE6 for feature shape, GateBot by henk.tech for verification ideas and Sentire by JSKitty of VectorPrivacy for automod. Settings and defaults may change as the project grows, so check the live documentation for the latest values.",
+ "pronounce": {
+  "Vectiq": "VEK tick",
+  "Vector": "vec tor",
+  "vector-sdk-py": "vector S D K pie",
+  "Logiq": "LOJ ick",
+  "MEE6": "me six",
+  "Sentire": "sen TEER ay",
+  "SQLite": "S Q L ite",
+  "SQL": "S Q L",
+  "sqlite3": "S Q L ite three",
+  "WAL": "wall",
+  "asyncio": "a sink eye oh",
+  "async": "a sink",
+  "await": "a wait",
+  "PyO3": "pie oh three",
+  "Pillow": "pillow",
+  "PyYAML": "pie yam ul",
+  "YAML": "yam ul",
+  "FastAPI": "fast A P I",
+  "FastMCP": "fast M C P",
+  "MCP": "M C P",
+  "uvicorn": "you vee corn",
+  "yt-dlp": "Y T D L P",
+  "pytest": "pie test",
+  "dataclass": "data class",
+  "importlib": "import lib",
+  "HMAC": "H mac",
+  "CAPTCHA": "cap chah",
+  "Turnstile": "turn style",
+  "hCaptcha": "H captcha",
+  "reCAPTCHA": "re cap chah",
+  "NudeNet": "nude net",
+  "oisd": "oh eye S D",
+  "WebXDC": "web X D C",
+  "xdc": "X D C",
+  "npub": "en pub",
+  "nsec": "en sec",
+  "GateBot": "gate bot",
+  "henk": "henk",
+  "JSKitty": "J S kitty",
+  "TTL": "T T L",
+  "CLI": "C L I",
+  "API": "A P I",
+  "UI": "you eye",
+  "DMs": "D Ms",
+  "DM": "D M",
+  "JSON": "jay son",
+  "HTTPS": "H T T P S",
+  "HTTP": "H T T P",
+  "CHECK": "check",
+  "pragma": "prag ma",
+  "PRAGMA": "prag ma",
+  "to_thread": "to thread",
+  "BEGIN": "begin",
+  "IMMEDIATE": "immediate",
+  "ROLLBACK": "roll back",
+  "COMMIT": "commit",
+  "tictactoe": "tic tac toe",
+  "connect4": "connect four",
+  "Docker": "docker",
+  "systemd": "system D",
+  "launchd": "launch D",
+  "ELI5": "E L I five",
+  "MIT": "M I T",
+  "ruff": "ruff",
+  "cogs": "cogs",
+  "cog": "cog",
+  "stdio": "standard I O",
+  "bearer": "bearer",
+  "Unix": "you nix",
+  "NIP-40": "nip forty",
+  "ics": "I C S",
+  "env": "env",
+  "dotenv": "dot env",
+  "pipx": "pip ex",
+  "Caddy": "caddy",
+  "Tailscale": "tail scale",
+  "winget": "win get",
+  "Homebrew": "home brew",
+  "kickstart": "kick start",
+  "roster": "roster"
+ },
+ "chapters": [
+  {
+   "title": "Before you start: the plan and the install",
+   "maps": [
+    {
+     "title": "Setup",
+     "links": [
+      "Bot | needs | Own Vector account",
+      "Bot | needs | Computer that stays on",
+      "Install | via | Script",
+      "Install | via | pipx",
+      "Install | via | Docker",
+      "Key | goes in | .env",
+      "Test | is | !ping"
+     ]
+    }
+   ],
+   "summary": [
+    "Vectiq is a bot you run yourself. You put it on a computer that stays on, such as a Mac mini, a Linux server or a spare laptop, give it its own Vector account, and invite that account to your community. When the computer is off, the bot is off.",
+    "Use a separate account for the bot. Its key sits in a file on the computer, and the account needs strong roles in your community, so never give it your personal key.",
+    "The first install compiles a Rust core, which takes several minutes. After that, the goal is simple: the bot answers !ping."
+   ],
+   "glossary": [
+    {
+     "term": "Prefix",
+     "def": "The symbol before a command; the default is an exclamation mark."
+    },
+    {
+     "term": "nsec",
+     "def": "The secret key of a Vector account; the bot's key goes in VECTOR_NSEC."
+    },
+    {
+     "term": "Invite link",
+     "def": "A link that lets the bot join a community."
+    },
+    {
+     "term": "pipx",
+     "def": "A tool that installs Python programs in their own space."
+    },
+    {
+     "term": "Docker Compose",
+     "def": "A way to run the bot in a container with one command."
+    }
+   ],
+   "keyPoints": [
+    "You need a computer that stays on, Python 3.10 or newer, a separate bot account and admin rights in the community.",
+    "install.sh handles macOS and Linux; install.ps1 handles Windows.",
+    "pipx install works without cloning; Docker suits a server or NAS.",
+    "The bot key goes in .env, which is never shared.",
+    "Check it works with !ping."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "ELI5. You are hiring a helper for your clubhouse. You give the helper their own key card, not yours, and a desk that stays open. If the desk is closed, the helper is not there.",
+      "Now the real words. Vectiq runs on a computer that stays on, with its own Vector account. You install it, put its key in .env, invite it, and test with !ping.",
+      "Try it. Say why the bot needs its own key.",
+      "If you remember one thing: Own account, always-on computer, !ping."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Think of hiring a helper for your clubhouse. You give the helper their own key card, not yours, and a desk that is always open. That is the whole idea of setting up Vectiq. (See Figure 1.1 below.) (See Table 1.1 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-1-1.svg",
+     "caption": "Figure 1.1. The route from an empty computer to a bot that answers."
+    },
+    {
+     "type": "table",
+     "title": "Table 1.1. What you need",
+     "head": [
+      "Item",
+      "Why"
+     ],
+     "rows": [
+      [
+       "a computer that stays on",
+       "the bot keeps a connection open to Vector"
+      ],
+      [
+       "Python 3.10 or newer",
+       "Vectiq is written in Python"
+      ],
+      [
+       "a bot-only Vector account",
+       "keeps your own key safe"
+      ],
+      [
+       "admin rights in the community",
+       "to invite the bot and give it roles"
+      ],
+      [
+       "rustc, cargo and cmake",
+       "to build the Vector SDK the first time"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "On a Mac or Linux, clone the code and run ./install.sh. It installs what is missing, makes a virtual environment, asks for the bot's key and invite links, offers the setup wizard, checks the config and starts the bot at login. Options like --no-service and --yes skip parts or questions.",
+      "(See Figure 1.2 below.) (See Table 1.2 below.)"
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "sh",
+     "code": "git clone https://github.com/lucky-edgelord/aio-vector-bot\ncd aio-vector-bot\n./install.sh"
+    },
+    {
+     "type": "figure",
+     "image": "vu-1-2.svg",
+     "caption": "Figure 1.2. Four ways to install."
+    },
+    {
+     "type": "table",
+     "title": "Table 1.2. Install routes",
+     "head": [
+      "Route",
+      "Command",
+      "Good for"
+     ],
+     "rows": [
+      [
+       "macOS and Linux",
+       "./install.sh",
+       "most people"
+      ],
+      [
+       "Windows",
+       ".\\install.ps1",
+       "uses winget; not yet tested on real machines"
+      ],
+      [
+       "pipx",
+       "pipx install \"vectiq[dashboard,webhooks] @ git+https://github.com/lucky-edgelord/aio-vector-bot\"",
+       "no clone"
+      ],
+      [
+       "Docker",
+       "docker compose up -d",
+       "server or NAS"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The Windows and Linux installers and the Mac login item are described by the project as not yet tested on real machines. If something is off, open an issue in the repository."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Memory trick: Own key, always on. Give the bot its Own account, keep the computer Always on, test with !ping: 'Own, On, Ping'."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Whose key does the bot use?",
+     "options": [
+      "Its own account's key",
+      "Your personal key",
+      "A shared key",
+      "No key"
+     ],
+     "answer": 0,
+     "explain": "Always a separate account."
+    },
+    {
+     "q": "What command checks the bot is alive?",
+     "options": [
+      "!ping",
+      "!hello",
+      "!alive",
+      "!bot"
+     ],
+     "answer": 0,
+     "explain": "The first test."
+    },
+    {
+     "q": "What does the first install build?",
+     "options": [
+      "The Rust core of the SDK",
+      "A website",
+      "A game",
+      "A database server"
+     ],
+     "answer": 0,
+     "explain": "Needs rustc, cargo, cmake."
+    },
+    {
+     "q": "Where does the key go?",
+     "options": [
+      ".env",
+      "config.yaml",
+      "Chat",
+      "README"
+     ],
+     "answer": 0,
+     "explain": "VECTOR_NSEC."
+    },
+    {
+     "q": "Which Python version?",
+     "options": [
+      "3.10 or newer",
+      "2.7",
+      "3.6",
+      "Any"
+     ],
+     "answer": 0,
+     "explain": "Required."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Why a separate account?",
+     "a": "The key lives on the computer and the account is powerful."
+    },
+    {
+     "q": "What if the computer sleeps?",
+     "a": "The bot is off until it wakes."
+    },
+    {
+     "q": "Which flag skips questions?",
+     "a": "--yes."
+    },
+    {
+     "q": "Where do logs go?",
+     "a": "data/vectiq.log or the service log."
+    },
+    {
+     "q": "Memory trick for: Before you start: the plan and the install?",
+     "a": "Own key, always on. Give the bot its Own account, keep the computer Always on, test with !ping: 'Own, On, Ping'."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match install route",
+     "intro": "Pair each route with its command.",
+     "pairs": [
+      [
+       "macOS and Linux",
+       "./install.sh"
+      ],
+      [
+       "Windows",
+       ".\\install.ps1"
+      ],
+      [
+       "server",
+       "docker compose up -d"
+      ],
+      [
+       "no clone",
+       "pipx install"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "First steps",
+     "text": "Give the bot its own {{account}}, put its key in {{.env}}, invite it, and test with {{!ping}}."
+    }
+   ],
+   "references": [
+    {
+     "title": "Docker Compose",
+     "url": "https://docs.docker.com/compose/",
+     "note": "for the Docker route"
+    }
+   ]
+  },
+  {
+   "title": "Configuration, modules and the setup wizard",
+   "maps": [
+    {
+     "title": "Settings",
+     "links": [
+      "Wizard | asks | Questions",
+      "config.yaml | holds | Settings",
+      "check | validates | Config",
+      "reload | applies | Changes",
+      "modules | switch | Features",
+      "Dashboard | edits | Settings",
+      "Restore point | before | Wizard save"
+     ]
+    }
+   ],
+   "summary": [
+    "Everything about how Vectiq behaves is in one file, config.yaml, and every setting has a comment next to it. The easiest start is the setup wizard, which asks one question per screen and writes your answers into the file, keeping the comments.",
+    "To change a setting by hand: edit the file, check it with --check, and apply it with !vectiq reload. Turning a module on or off needs a restart.",
+    "Each feature is a module with a switch. Switch off what you do not need, and its commands and background jobs stay idle."
+   ],
+   "glossary": [
+    {
+     "term": "config.yaml",
+     "def": "The main settings file with a comment for each setting."
+    },
+    {
+     "term": "Wizard",
+     "def": "A guided questionnaire that writes your config."
+    },
+    {
+     "term": "Reload",
+     "def": "Apply most changes without a restart."
+    },
+    {
+     "term": "Module switch",
+     "def": "A true or false under modules: for a feature."
+    },
+    {
+     "term": "Settings reference",
+     "def": "The documentation page listing every setting and default."
+    }
+   ],
+   "keyPoints": [
+    "Run the wizard with python -m vectiq --setup or from the dashboard.",
+    "Check with --check; errors are plain sentences.",
+    "!vectiq reload applies most changes; module switches need a restart.",
+    "The old config is saved as config.yaml.bak.",
+    "A restore point is made before the wizard saves."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Quick recap of the last chapter, Before you start: the plan and the install:",
+      "• You need a computer that stays on, Python 3.10 or newer, a separate bot account and admin rights in the community.",
+      "• install.sh handles macOS and Linux; install.ps1 handles Windows.",
+      "• pipx install works without cloning; Docker suits a server or NAS.",
+      "• The bot key goes in .env, which is never shared.",
+      "• Check it works with !ping."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A control panel with lots of switches. A helper walks you through them one at a time. If you set a dial to nonsense, a checker tells you in words before anything breaks.",
+      "Now the real words. Settings live in config.yaml. Use the wizard, or edit, run the checker, then reload. Module switches need a restart.",
+      "Try it. Write the three steps for changing a setting safely.",
+      "If you remember one thing: Edit, check, reload."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Imagine a control panel with a lot of switches and dials. The wizard walks you through them one at a time. Later you can fiddle by hand, with a safety net: a checker that tells you in words if you set a dial to a nonsense value. (See Figure 2.1 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-2-1.svg",
+     "caption": "Figure 2.1. Pick the style that suits you; they all change the same settings."
+    },
+    {
+     "type": "code",
+     "lang": "yaml",
+     "code": "modules:\n  leveling: true\n  economy: true\n  tickets: true\n  securitycam: false   # off by default\n\nevents:\n  timezone: America/New_York"
+    },
+    {
+     "type": "text",
+     "items": [
+      "For example, a typo such as an unknown time zone produces a message like events.timezone: unknown time zone, instead of a crash. This is why checking before applying is a good habit. (See Figure 2.2 below.) (See Table 2.1 below.) (See Table 2.2 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-2-2.svg",
+     "caption": "Figure 2.2. Edit, check, apply."
+    },
+    {
+     "type": "table",
+     "title": "Table 2.1. Ways to change settings",
+     "head": [
+      "Where",
+      "Best for",
+      "Needs restart?"
+     ],
+     "rows": [
+      [
+       "setup wizard",
+       "first setup",
+       "after saving"
+      ],
+      [
+       "dashboard",
+       "quick tweaks",
+       "usually no"
+      ],
+      [
+       "config.yaml",
+       "full control, version control",
+       "module switches"
+      ],
+      [
+       "chat commands",
+       "on-the-spot changes",
+       "no"
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Table 2.2. Config commands",
+     "head": [
+      "Command",
+      "Does"
+     ],
+     "rows": [
+      [
+       "python -m vectiq --check",
+       "validate config"
+      ],
+      [
+       "python -m vectiq --setup",
+       "run the wizard"
+      ],
+      [
+       "!vectiq reload",
+       "apply most changes (bot owners)"
+      ],
+      [
+       "!module on NAME",
+       "switch a module on"
+      ],
+      [
+       "vectiq --export-config / --import-config",
+       "move settings between machines"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Dashboard changes are saved separately from the file and sit on top of it, as chapter 4 of the technical course explains. If you ever wonder why a value differs from the file, look at the dashboard."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Memory trick: Edit, check, reload. Change settings in three beats: Edit, Check, Reload (E-C-R). Module switches need a restart."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What validates the config?",
+     "options": [
+      "--check",
+      "--run",
+      "--stop",
+      "--zip"
+     ],
+     "answer": 0,
+     "explain": "Plain error messages."
+    },
+    {
+     "q": "What applies most changes?",
+     "options": [
+      "!vectiq reload",
+      "!restart all",
+      "!apply",
+      "nothing"
+     ],
+     "answer": 0,
+     "explain": "Bot owners only."
+    },
+    {
+     "q": "Does the wizard keep comments?",
+     "options": [
+      "Yes",
+      "No",
+      "Only some",
+      "It deletes the file"
+     ],
+     "answer": 0,
+     "explain": "And saves config.yaml.bak."
+    },
+    {
+     "q": "Do module switches need a restart?",
+     "options": [
+      "Yes",
+      "No",
+      "Only on Mac",
+      "Only on Docker"
+     ],
+     "answer": 0,
+     "explain": "Reload is not enough."
+    },
+    {
+     "q": "What is made before the wizard saves?",
+     "options": [
+      "A restore point",
+      "A new account",
+      "A website",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "So you can roll back."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Where is every setting documented?",
+     "a": "The settings reference."
+    },
+    {
+     "q": "What if the check fails?",
+     "a": "Fix the named setting and check again."
+    },
+    {
+     "q": "What is the safest change loop?",
+     "a": "Edit, check, reload."
+    },
+    {
+     "q": "Can the dashboard change settings?",
+     "a": "Yes, and the audit log records it."
+    },
+    {
+     "q": "Memory trick for: Configuration, modules and the setup wizard?",
+     "a": "Edit, check, reload. Change settings in three beats: Edit, Check, Reload (E-C-R). Module switches need a restart."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match config tool",
+     "intro": "Pair each tool with its job.",
+     "pairs": [
+      [
+       "--check",
+       "validate"
+      ],
+      [
+       "--setup",
+       "wizard"
+      ],
+      [
+       "!vectiq reload",
+       "apply changes"
+      ],
+      [
+       "!module on",
+       "switch a feature on"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Safe changes",
+     "text": "{{Edit}} the file, {{check}} it, then {{reload}} the bot."
+    }
+   ],
+   "references": [
+    {
+     "title": "Vectiq documentation",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/",
+     "note": "the guide this course follows"
+    },
+    {
+     "title": "Getting started",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/getting-started/",
+     "note": "install and first run"
+    },
+    {
+     "title": "aio-vector-bot repository",
+     "url": "https://github.com/lucky-edgelord/aio-vector-bot",
+     "note": "source, issues and changelog (MIT)"
+    },
+    {
+     "title": "Vector",
+     "url": "https://vectorapp.io",
+     "note": "the messenger"
+    },
+    {
+     "title": "Sentire",
+     "url": "https://github.com/VectorPrivacy/Sentire",
+     "note": "automod by JSKitty"
+    },
+    {
+     "title": "GateBot",
+     "url": "https://gitworkshop.dev/henk.tech/Gatebot",
+     "note": "verification ideas (MIT)"
+    }
+   ]
+  },
+  {
+   "title": "Welcoming members: welcome, verification, onboarding and role menus",
+   "maps": [
+    {
+     "title": "Welcome",
+     "links": [
+      "Welcome | greets | New member",
+      "Verification | proves | Human",
+      "Onboarding | chains | Steps",
+      "Role menu | lets | Pick roles",
+      "Placeholders | fill | Message",
+      "Gate | hides | Unverified messages"
+     ]
+    }
+   ],
+   "summary": [
+    "Three modules look after a new member. Welcome greets them, verification checks they are a person, and onboarding walks them through the steps and lets them pick roles. You can use any one alone.",
+    "Welcome messages use placeholders such as the member's mention and name, and !testwelcome shows a preview. Verification offers a question, a reaction or a CAPTCHA, and a gate can hide messages from people who have not verified yet.",
+    "Role menus are messages where members react to take a role and unreact to drop it. Onboarding posts a menu built from your list of emoji and roles."
+   ],
+   "glossary": [
+    {
+     "term": "Placeholder",
+     "def": "A fill-in such as the member's name inside a message template."
+    },
+    {
+     "term": "Gate",
+     "def": "A setting that deletes messages from unverified members."
+    },
+    {
+     "term": "Lobby",
+     "def": "A separate community where people verify before being invited to the real one."
+    },
+    {
+     "term": "Role menu",
+     "def": "A message of emoji and roles that members react to."
+    },
+    {
+     "term": "Onboarding",
+     "def": "A sequence of steps for new members, by default verify then pick roles."
+    }
+   ],
+   "keyPoints": [
+    "Placeholders: {mention}, {name}, {community}, {count}.",
+    "Verification modes: question, button, captcha.",
+    "gate: off, channel or all; spam_kick softbans repeat offenders.",
+    "Role menu: !rolemenus create Title | emoji=Role ...",
+    "Onboarding default steps: verify, then pick_roles."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Quick recap of the last chapter, Configuration, modules and the setup wizard:",
+      "• Run the wizard with python -m vectiq --setup or from the dashboard.",
+      "• Check with --check; errors are plain sentences.",
+      "• !vectiq reload applies most changes; module switches need a restart.",
+      "• The old config is saved as config.yaml.bak.",
+      "• A restore point is made before the wizard saves."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The door of a clubhouse. First someone says hello, then checks your ticket, then offers you a badge for your hobby.",
+      "Now the real words. Welcome greets, verification proves you are a person, and onboarding with a role menu lets you pick roles by tapping reactions.",
+      "Try it. Write a welcome message using the member's name.",
+      "If you remember one thing: Greet, prove, pick."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Picture the door of a clubhouse. First someone says hello, then checks your ticket, then offers you a badge for your favourite hobby. That is welcome, verification and onboarding. (See Figure 3.1 below.) (See Figure 3.2 below.) (See Table 3.1 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-3-1.svg",
+     "caption": "Figure 3.1. The three modules can be used together or one at a time."
+    },
+    {
+     "type": "code",
+     "lang": "yaml",
+     "code": "welcome:\n  enabled: true\n  channel: general\n  message: \"Welcome to {community}, {mention}! You are member #{count}.\""
+    },
+    {
+     "type": "figure",
+     "image": "vu-3-2.svg",
+     "caption": "Figure 3.2. Placeholders are replaced when the message is sent."
+    },
+    {
+     "type": "table",
+     "title": "Table 3.1. Welcome placeholders",
+     "head": [
+      "Placeholder",
+      "Becomes"
+     ],
+     "rows": [
+      [
+       "{mention}",
+       "pings the member"
+      ],
+      [
+       "{name}",
+       "their name"
+      ],
+      [
+       "{community}",
+       "your community's name"
+      ],
+      [
+       "{count}",
+       "the number of members"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Verification stores the result, so a member who loses the role or rejoins gets it back without checking again. For CAPTCHA mode you need a web address and a key from a CAPTCHA provider, and the secret goes in .env, never in config.yaml. Always run !verification to see anything that is missing.",
+      "(See Table 3.2 below.)"
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Table 3.2. Gate, lobby and softban",
+     "head": [
+      "Feature",
+      "What it does"
+     ],
+     "rows": [
+      [
+       "gate: channel",
+       "only the verification channel is open to unverified members"
+      ],
+      [
+       "gate: all",
+       "every channel hides their messages"
+      ],
+      [
+       "spam_kick",
+       "softban after that many gated messages in 15 minutes"
+      ],
+      [
+       "invite_to",
+       "verify in a lobby, then invite to the real community"
+      ],
+      [
+       "min_age",
+       "ask an age first; younger members are softbanned"
+      ]
+     ]
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "!rolemenus create Pick your roles | 🎮=Gamer 🎨=Artist 💻=Dev\n!rolemenus list\n!rolemenus delete 3"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Use an underscore for a space inside a role name, so 🎵=Music_Lover makes a role called Music Lover. The bot needs permission to manage roles."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Memory trick: Greet, prove, pick. New member: Greet, Prove, Pick = welcome, verification, role menu."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What does !testwelcome do?",
+     "options": [
+      "Previews the welcome message",
+      "Bans someone",
+      "Deletes channels",
+      "Sends a DM to all"
+     ],
+     "answer": 0,
+     "explain": "Needs Manage Community."
+    },
+    {
+     "q": "What do members do to get a role?",
+     "options": [
+      "React to the menu",
+      "Type a password",
+      "Pay coins",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Unreact to drop it."
+    },
+    {
+     "q": "Where does the CAPTCHA secret go?",
+     "options": [
+      ".env",
+      "config.yaml",
+      "chat",
+      "the README"
+     ],
+     "answer": 0,
+     "explain": "Never in the YAML."
+    },
+    {
+     "q": "What is a lobby?",
+     "options": [
+      "A separate community for verifying",
+      "A role",
+      "A game",
+      "A log"
+     ],
+     "answer": 0,
+     "explain": "Then invited to the real one."
+    },
+    {
+     "q": "Default onboarding steps?",
+     "options": [
+      "verify, pick_roles",
+      "ban, kick",
+      "pay, play",
+      "none"
+     ],
+     "answer": 0,
+     "explain": "In that order."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What replaces {count}?",
+     "a": "The number of members."
+    },
+    {
+     "q": "How do spaces work in role names?",
+     "a": "Use an underscore."
+    },
+    {
+     "q": "What does gate do?",
+     "a": "Hides or deletes messages from unverified members."
+    },
+    {
+     "q": "Which command shows verification problems?",
+     "a": "!verification."
+    },
+    {
+     "q": "Memory trick for: Welcoming members: welcome, verification, onboarding and role menus?",
+     "a": "Greet, prove, pick. New member: Greet, Prove, Pick = welcome, verification, role menu."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match placeholder",
+     "intro": "Pair each placeholder with its meaning.",
+     "pairs": [
+      [
+       "{mention}",
+       "pings the member"
+      ],
+      [
+       "{name}",
+       "member's name"
+      ],
+      [
+       "{community}",
+       "community name"
+      ],
+      [
+       "{count}",
+       "member count"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Greeting",
+     "text": "Use {{placeholders}} in the welcome message, preview with {{!testwelcome}}, and keep CAPTCHA secrets in {{.env}}."
+    },
+    {
+     "type": "python",
+     "title": "Fill in a welcome message",
+     "intro": "Write render_welcome(template, name, community, count). Replace {name}, {community} and {count} in the template with the given values and return the result.",
+     "fn": "render_welcome",
+     "starter": "def render_welcome(template, name, community, count):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Hi {name}, welcome to {community}!",
+        "Sam",
+        "Nebula",
+        5
+       ],
+       "expect": "Hi Sam, welcome to Nebula!"
+      },
+      {
+       "args": [
+        "You are member #{count}.",
+        "Ana",
+        "Club",
+        120
+       ],
+       "expect": "You are member #120."
+      },
+      {
+       "args": [
+        "No fields",
+        "x",
+        "y",
+        1
+       ],
+       "expect": "No fields"
+      },
+      {
+       "args": [
+        "{name} {name}",
+        "Bo",
+        "C",
+        2
+       ],
+       "expect": "Bo Bo"
+      }
+     ],
+     "hint": "Use replace for each placeholder; count must be turned into text.",
+     "solution": "def render_welcome(template, name, community, count):\n    return (template.replace(\"{name}\", name)\n            .replace(\"{community}\", community)\n            .replace(\"{count}\", str(count)))\n"
+    },
+    {
+     "type": "python",
+     "title": "Read a role menu",
+     "intro": "Write parse_role_menu(text). text has pairs like 'a=Gamer b=Music_Lover' separated by spaces. Return a list of [key, role] pairs, turning underscores in the role into spaces.",
+     "fn": "parse_role_menu",
+     "starter": "def parse_role_menu(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "a=Gamer b=Artist"
+       ],
+       "expect": [
+        [
+         "a",
+         "Gamer"
+        ],
+        [
+         "b",
+         "Artist"
+        ]
+       ]
+      },
+      {
+       "args": [
+        "x=Music_Lover"
+       ],
+       "expect": [
+        [
+         "x",
+         "Music Lover"
+        ]
+       ]
+      },
+      {
+       "args": [
+        ""
+       ],
+       "expect": []
+      },
+      {
+       "args": [
+        "q=Big_Red_Team z=Dev"
+       ],
+       "expect": [
+        [
+         "q",
+         "Big Red Team"
+        ],
+        [
+         "z",
+         "Dev"
+        ]
+       ]
+      }
+     ],
+     "hint": "Split on spaces, then on the first equals sign.",
+     "solution": "def parse_role_menu(text):\n    out = []\n    for part in text.split():\n        if \"=\" in part:\n            k, v = part.split(\"=\", 1)\n            out.append([k, v.replace(\"_\", \" \")])\n    return out\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Vectiq documentation",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/",
+     "note": "the guide this course follows"
+    },
+    {
+     "title": "Getting started",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/getting-started/",
+     "note": "install and first run"
+    },
+    {
+     "title": "aio-vector-bot repository",
+     "url": "https://github.com/lucky-edgelord/aio-vector-bot",
+     "note": "source, issues and changelog (MIT)"
+    },
+    {
+     "title": "Vector",
+     "url": "https://vectorapp.io",
+     "note": "the messenger"
+    },
+    {
+     "title": "Sentire",
+     "url": "https://github.com/VectorPrivacy/Sentire",
+     "note": "automod by JSKitty"
+    },
+    {
+     "title": "GateBot",
+     "url": "https://gitworkshop.dev/henk.tech/Gatebot",
+     "note": "verification ideas (MIT)"
+    }
+   ]
+  },
+  {
+   "title": "Moderation day to day",
+   "maps": [
+    {
+     "title": "Moderation",
+     "links": [
+      "Warn | adds | Case",
+      "Threshold | triggers | Action",
+      "Timeout | is | Temporary mute",
+      "Tempban | lifts | Itself",
+      "Softban | removes | On sight",
+      "modlog | shows | Cases",
+      "Purge | deletes | Messages",
+      "Lock | stops | Sending"
+     ]
+    }
+   ],
+   "summary": [
+    "Every moderation action is stored as a numbered case, so you can see what happened, who did it and why. Commands need the matching Vector permission, so someone who cannot time people out in Vector cannot do it through the bot either.",
+    "Warnings escalate. With the defaults, a third warning gives a one-hour timeout, and the same again at six and nine. You can change the action, the length, or turn escalation off.",
+    "The bot refuses to act on you, on itself and on the community owner, and says so instead of failing quietly."
+   ],
+   "glossary": [
+    {
+     "term": "Case",
+     "def": "A numbered record of a moderation action."
+    },
+    {
+     "term": "Timeout",
+     "def": "A temporary mute, up to 28 days by default."
+    },
+    {
+     "term": "Tempban",
+     "def": "A ban that lifts itself after a set time."
+    },
+    {
+     "term": "Softban",
+     "def": "Removal that repeats whenever the member returns."
+    },
+    {
+     "term": "Purge",
+     "def": "Delete the last messages in a channel."
+    }
+   ],
+   "keyPoints": [
+    "!warn, !warnings, !delwarn, !clearwarns manage warnings.",
+    "!timeout, !untimeout, !kick, !ban, !tempban, !softban, !unban act on members.",
+    "Durations: 30m, 2h, 1d12h.",
+    "!case, !history and !modlog look back; log_channel mirrors cases.",
+    "!purge up to 100, !lock/!unlock, !slowmode N."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Quick recap of the last chapter, Welcoming members: welcome, verification, onboarding and role menus:",
+      "• Placeholders: {mention}, {name}, {community}, {count}.",
+      "• Verification modes: question, button, captcha.",
+      "• gate: off, channel or all; spam_kick softbans repeat offenders.",
+      "• Role menu: !rolemenus create Title | emoji=Role ...",
+      "• Onboarding default steps: verify, then pick_roles."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A teacher's notebook with numbered pages. Every page says who, what, when and why. After three pages about the same child, something happens.",
+      "Now the real words. Moderation actions are cases. Warnings escalate at the threshold, timeouts mute for a while, tempbans lift themselves, and softbans repeat.",
+      "Try it. Say what happens at warning number six by default.",
+      "If you remember one thing: Every action is a case, and warnings escalate."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A moderator's notebook has numbered pages. Each page says who, what, when and why. Warnings stack up, and a rule says what happens at the third page. (See Figure 4.1 below.) (See Table 4.1 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-4-1.svg",
+     "caption": "Figure 4.1. With the defaults, every third warning triggers a one-hour timeout."
+    },
+    {
+     "type": "code",
+     "lang": "yaml",
+     "code": "moderation:\n  warn_threshold: 3\n  warn_action: timeout   # timeout | kick | ban | none\n  warn_action_minutes: 60\n  log_channel: mod-log"
+    },
+    {
+     "type": "table",
+     "title": "Table 4.1. Member actions",
+     "head": [
+      "Command",
+      "Effect"
+     ],
+     "rows": [
+      [
+       "!warn @sam reason",
+       "adds a warning case"
+      ],
+      [
+       "!timeout @sam 30m reason",
+       "mutes for 30 minutes"
+      ],
+      [
+       "!kick / !ban",
+       "removes or bans"
+      ],
+      [
+       "!tempban @sam 3d reason",
+       "ban that ends in 3 days"
+      ],
+      [
+       "!softban @sam reason",
+       "removed again every return"
+      ],
+      [
+       "!unban npub... reason",
+       "lifts bans and softbans"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The bot checks for expired tempbans every 30 seconds. A softban becomes a real ban after the member comes back the number of times set by softban_escalate, three by default. (See Figure 4.2 below.) (See Table 4.2 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-4-2.svg",
+     "caption": "Figure 4.2. Everyday tools for people, places and history."
+    },
+    {
+     "type": "table",
+     "title": "Table 4.2. Looking back and cleaning up",
+     "head": [
+      "Command",
+      "Effect"
+     ],
+     "rows": [
+      [
+       "!case 12",
+       "show one case"
+      ],
+      [
+       "!history @sam",
+       "all cases for a member"
+      ],
+      [
+       "!modlog",
+       "latest cases"
+      ],
+      [
+       "!purge 25",
+       "delete last 25 messages"
+      ],
+      [
+       "!lock / !unlock",
+       "stop or allow everyone sending"
+      ],
+      [
+       "!slowmode 10",
+       "soft slowmode; staff exempt"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Communities still on Vector's legacy roster do not accept per-channel permission changes, so lock and unlock may not work until the community is upgraded."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Memory trick: Three strikes, then time. Every third warning triggers a timeout: 3, 6, 9. Case numbers keep the record."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What happens at the third warning by default?",
+     "options": [
+      "A one-hour timeout",
+      "A ban",
+      "Nothing",
+      "A kick"
+     ],
+     "answer": 0,
+     "explain": "And again at six and nine."
+    },
+    {
+     "q": "What lifts a tempban?",
+     "options": [
+      "The bot, on time",
+      "A moderator",
+      "Nothing",
+      "The member"
+     ],
+     "answer": 0,
+     "explain": "Checked every 30 seconds."
+    },
+    {
+     "q": "Can the bot act on the owner?",
+     "options": [
+      "No",
+      "Yes",
+      "Only kick",
+      "Only warn"
+     ],
+     "answer": 0,
+     "explain": "It says so."
+    },
+    {
+     "q": "What does !purge 25 do?",
+     "options": [
+      "Deletes 25 messages",
+      "Bans 25",
+      "Warns 25",
+      "Mutes 25"
+     ],
+     "answer": 0,
+     "explain": "Up to 100."
+    },
+    {
+     "q": "Which shows a member's cases?",
+     "options": [
+      "!history",
+      "!lock",
+      "!tempban",
+      "!slowmode"
+     ],
+     "answer": 0,
+     "explain": "Lists every case."
+    }
+   ],
+   "cards": [
+    {
+     "q": "How do you stop escalation?",
+     "a": "Set warn_action to none."
+    },
+    {
+     "q": "Maximum timeout?",
+     "a": "28 days by default."
+    },
+    {
+     "q": "Where can cases be mirrored?",
+     "a": "moderation.log_channel."
+    },
+    {
+     "q": "Who can use mod commands?",
+     "a": "People with the matching Vector permission."
+    },
+    {
+     "q": "Memory trick for: Moderation day to day?",
+     "a": "Three strikes, then time. Every third warning triggers a timeout: 3, 6, 9. Case numbers keep the record."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match command to effect",
+     "intro": "Pair each command with what it does.",
+     "pairs": [
+      [
+       "!warn",
+       "adds a case"
+      ],
+      [
+       "!tempban",
+       "ban that ends"
+      ],
+      [
+       "!history",
+       "member's cases"
+      ],
+      [
+       "!purge",
+       "deletes messages"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Fair moderation",
+     "text": "Every action is a {{case}}, warnings escalate at the {{threshold}}, and a {{softban}} repeats on return."
+    },
+    {
+     "type": "python",
+     "title": "Does this warning trigger an action?",
+     "intro": "Write warn_action(count, threshold). Return 'timeout' when count is at least 1 and is an exact multiple of threshold (3, 6, 9 for threshold 3), otherwise 'none'.",
+     "fn": "warn_action",
+     "starter": "def warn_action(count, threshold):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        3
+       ],
+       "expect": "none"
+      },
+      {
+       "args": [
+        3,
+        3
+       ],
+       "expect": "timeout"
+      },
+      {
+       "args": [
+        4,
+        3
+       ],
+       "expect": "none"
+      },
+      {
+       "args": [
+        6,
+        3
+       ],
+       "expect": "timeout"
+      },
+      {
+       "args": [
+        9,
+        3
+       ],
+       "expect": "timeout"
+      },
+      {
+       "args": [
+        0,
+        3
+       ],
+       "expect": "none"
+      },
+      {
+       "args": [
+        5,
+        5
+       ],
+       "expect": "timeout"
+      },
+      {
+       "args": [
+        10,
+        5
+       ],
+       "expect": "timeout"
+      }
+     ],
+     "hint": "Use the remainder operator.",
+     "solution": "def warn_action(count, threshold):\n    if count >= 1 and count % threshold == 0:\n        return \"timeout\"\n    return \"none\"\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Vectiq documentation",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/",
+     "note": "the guide this course follows"
+    },
+    {
+     "title": "Getting started",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/getting-started/",
+     "note": "install and first run"
+    },
+    {
+     "title": "aio-vector-bot repository",
+     "url": "https://github.com/lucky-edgelord/aio-vector-bot",
+     "note": "source, issues and changelog (MIT)"
+    },
+    {
+     "title": "Vector",
+     "url": "https://vectorapp.io",
+     "note": "the messenger"
+    },
+    {
+     "title": "Sentire",
+     "url": "https://github.com/VectorPrivacy/Sentire",
+     "note": "automod by JSKitty"
+    },
+    {
+     "title": "GateBot",
+     "url": "https://gitworkshop.dev/henk.tech/Gatebot",
+     "note": "verification ideas (MIT)"
+    }
+   ]
+  },
+  {
+   "title": "Protecting your community: link safety, image guard and Sentire",
+   "maps": [
+    {
+     "title": "Protection",
+     "links": [
+      "Link safety | uses | Public blocklists",
+      "Allow list | beats | Everything",
+      "Image guard | uses | Blocklist",
+      "Image guard | optional | Detector",
+      "Sentire | is | Automod",
+      "Actions | are | Log delete warn timeout",
+      "Exempt | skips | Staff"
+     ]
+    }
+   ],
+   "summary": [
+    "Safety modules watch for trouble so you do not have to. Link safety removes links to scam, malware, phishing and tracking sites using public lists. Image guard blocks pictures you have flagged, and can score nudity with a detector. Sentire is the full automod.",
+    "They share the same actions: log, delete, warn or timeout. Staff with Manage Messages and any exempt roles or channels are skipped.",
+    "The golden rule for any new rule: start with action log, read the mod log for a few days, and only then switch to delete. No detector is perfect."
+   ],
+   "glossary": [
+    {
+     "term": "Blocklist",
+     "def": "A list of bad domains or pictures that are removed."
+    },
+    {
+     "term": "Allow list",
+     "def": "Domains that are never blocked."
+    },
+    {
+     "term": "Perceptual hash",
+     "def": "A picture fingerprint that survives resizing."
+    },
+    {
+     "term": "Detector",
+     "def": "A tool that scores a picture, for example for nudity."
+    },
+    {
+     "term": "Strike score",
+     "def": "Sentire's per-member score that decays over time."
+    }
+   ],
+   "keyPoints": [
+    "!module on linksafety downloads the lists on first start.",
+    "allow beats everything; block beats the lists.",
+    "Reply to a picture with !imageguard block reason to add it to the blocklist.",
+    "Image detectors: off, nudenet, nsfw-detector, sightengine, http.",
+    "Sentire and Sentire (official) share one slot; only one runs."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Quick recap of the last chapter, Moderation day to day:",
+      "• !warn, !warnings, !delwarn, !clearwarns manage warnings.",
+      "• !timeout, !untimeout, !kick, !ban, !tempban, !softban, !unban act on members.",
+      "• Durations: 30m, 2h, 1d12h.",
+      "• !case, !history and !modlog look back; log_channel mirrors cases.",
+      "• !purge up to 100, !lock/!unlock, !slowmode N."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A shop with a bouncer who reads labels, a memory for troublemakers' faces, and a watcher who notices bad behaviour. At first they only write notes.",
+      "Now the real words. Link safety, image guard and Sentire protect the community. Start every rule with action log and read the log before deleting.",
+      "Try it. Say why writing notes first is wise.",
+      "If you remember one thing: Log first, delete later."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A shop with a bouncer, a security camera and a lost-and-found. Link safety is the bouncer reading each label, image guard remembers faces of known troublemakers, and Sentire watches behaviour over time. (See Figure 5.1 below.) (See Table 5.1 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-5-1.svg",
+     "caption": "Figure 5.1. Several layers, each catching different things."
+    },
+    {
+     "type": "code",
+     "lang": "yaml",
+     "code": "linksafety:\n  nsfw: false\n  allow: [example-shortener.com]\n  block: [annoying.example]\n  action: log      # start gentle"
+    },
+    {
+     "type": "table",
+     "title": "Table 5.1. Link safety facts",
+     "head": [
+      "Item",
+      "Detail"
+     ],
+     "rows": [
+      [
+       "default list",
+       "oisd big, about 230,000 domains"
+      ],
+      [
+       "catches",
+       "links with or without https, and subdomains"
+      ],
+      [
+       "optional",
+       "Google Safe Browsing key in .env"
+      ],
+      [
+       "test a link",
+       "!linksafety check <link>"
+      ],
+      [
+       "offline",
+       "a cached copy of the lists is used"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Image guard's blocklist needs nothing extra and works on resized or re-saved copies thanks to the fingerprint. Detectors run on your own computer or through an API, and the first check loads the model in the background so chat stays fast. (See Figure 5.2 below.) (See Table 5.2 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-5-2.svg",
+     "caption": "Figure 5.2. Tune from gentle to firm."
+    },
+    {
+     "type": "table",
+     "title": "Table 5.2. Choosing an image detector",
+     "head": [
+      "Detector",
+      "Runs",
+      "Setup"
+     ],
+     "rows": [
+      [
+       "off",
+       "-",
+       "blocklist only"
+      ],
+      [
+       "nudenet",
+       "your computer",
+       "pip install vectiq[nudenet]"
+      ],
+      [
+       "nsfw-detector",
+       "your computer",
+       "TensorFlow and a model file"
+      ],
+      [
+       "sightengine",
+       "their API",
+       "account and keys in .env"
+      ],
+      [
+       "http",
+       "your own API",
+       "give a URL"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Sentire is a separate program by JSKitty of VectorPrivacy. Vectiq can build and run your own copy, or invite the official Sentire-001. It starts by only watching and reporting; you arm each action when you are ready."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Memory trick: Log, look, then delete. New safety rule: Log, Look, Loosen or tighten, then Delete: 'L-L-D'."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What should a new rule start with?",
+     "options": [
+      "action log",
+      "action ban",
+      "action kick",
+      "no testing"
+     ],
+     "answer": 0,
+     "explain": "Watch first."
+    },
+    {
+     "q": "Which list wins in linksafety?",
+     "options": [
+      "allow",
+      "block",
+      "public",
+      "none"
+     ],
+     "answer": 0,
+     "explain": "Allow beats everything."
+    },
+    {
+     "q": "What catches resized copies of a picture?",
+     "options": [
+      "The perceptual hash",
+      "The file name",
+      "The time",
+      "The size"
+     ],
+     "answer": 0,
+     "explain": "A fingerprint."
+    },
+    {
+     "q": "Who is skipped by safety rules?",
+     "options": [
+      "Staff and exempt roles",
+      "Everyone",
+      "Nobody",
+      "Bots only"
+     ],
+     "answer": 0,
+     "explain": "Manage Messages."
+    },
+    {
+     "q": "Can both Sentire modules run?",
+     "options": [
+      "No, one slot",
+      "Yes",
+      "Only on Mac",
+      "Only with Docker"
+     ],
+     "answer": 0,
+     "explain": "They share automod."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Where does the Safe Browsing key go?",
+     "a": ".env."
+    },
+    {
+     "q": "How to test a link?",
+     "a": "!linksafety check."
+    },
+    {
+     "q": "Why log first?",
+     "a": "To see mistakes without hurting members."
+    },
+    {
+     "q": "Does Sentire start armed?",
+     "a": "No, it only watches at first."
+    },
+    {
+     "q": "Memory trick for: Protecting your community: link safety, image guard and Sentire?",
+     "a": "Log, look, then delete. New safety rule: Log, Look, Loosen or tighten, then Delete: 'L-L-D'."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match protection",
+     "intro": "Pair each module with its job.",
+     "pairs": [
+      [
+       "linksafety",
+       "bad links"
+      ],
+      [
+       "imageguard",
+       "pictures"
+      ],
+      [
+       "Sentire",
+       "behaviour and raids"
+      ],
+      [
+       "allow list",
+       "never blocked"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Careful rules",
+     "text": "Start with action {{log}}, read the {{mod log}}, then switch to {{delete}}."
+    }
+   ],
+   "references": [
+    {
+     "title": "oisd blocklists",
+     "url": "https://oisd.nl",
+     "note": "the default link list"
+    }
+   ]
+  },
+  {
+   "title": "Levels, coins and the shop",
+   "maps": [
+    {
+     "title": "Engagement",
+     "links": [
+      "Chatting | earns | XP",
+      "XP | becomes | Level",
+      "Level | can grant | Role",
+      "!daily | pays | Coins",
+      "Streak | adds | Bonus",
+      "Shop | sells | Items",
+      "Items | can give | Roles"
+     ]
+    }
+   ],
+   "summary": [
+    "Members earn XP by chatting, and XP adds up to levels. Each level needs more than the last, so early levels come quickly. You can give a role at a level, such as a Regular role at level 5.",
+    "The economy gives every member a wallet. They earn coins from daily rewards and work, keep savings in a bank, pay each other and buy items from a shop that can sell roles.",
+    "The two systems are separate modules, so you can run either one alone."
+   ],
+   "glossary": [
+    {
+     "term": "XP",
+     "def": "Experience points from chatting; 15 to 25 at most once a minute by default."
+    },
+    {
+     "term": "Level reward",
+     "def": "A role granted automatically at a level."
+    },
+    {
+     "term": "Streak",
+     "def": "Consecutive daily claims; each extra day adds a bonus up to a cap."
+    },
+    {
+     "term": "Wallet and bank",
+     "def": "Cash on hand and savings."
+    },
+    {
+     "term": "Shop item",
+     "def": "Something members can buy, optionally giving a role."
+    }
+   ],
+   "keyPoints": [
+    "XP step n to n+1 costs 5n squared plus 50n plus 100; !levelcurve shows it.",
+    "!rank and !leaderboard show cards; leveling.cards false gives plain text.",
+    "!levelreward add 5 Regular gives a role at level 5.",
+    "!daily pays 200; the streak continues if you claim again within 48 hours.",
+    "!shop add 1500 Supporter | text role:Supporter makes an item that gives a role."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Quick recap of the last chapter, Protecting your community: link safety, image guard and Sentire:",
+      "• !module on linksafety downloads the lists on first start.",
+      "• allow beats everything; block beats the lists.",
+      "• Reply to a picture with !imageguard block reason to add it to the blocklist.",
+      "• Image detectors: off, nudenet, nsfw-detector, sightengine, http.",
+      "• Sentire and Sentire (official) share one slot; only one runs."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "ELI5. An arcade. You earn tickets for playing, you can save or spend them on prizes, and visiting every day earns a little extra.",
+      "Now the real words. Chatting gives XP and levels, !daily and !work give coins, a streak adds a bonus, and the shop sells items that can give roles.",
+      "Try it. Work out how many coins a streak of three days pays.",
+      "If you remember one thing: XP for chatting, coins for claiming."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Think of an arcade. You earn tickets for playing, tickets can be saved or spent on prizes, and a long visiting streak earns a little extra every day. (See Table 6.1 below.) (See Figure 6.1 below.)"
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Table 6.1. How long to reach a level",
+     "head": [
+      "Level",
+      "Total XP",
+      "At 20 XP a minute"
+     ],
+     "rows": [
+      [
+       "1",
+       "100",
+       "about 5 minutes"
+      ],
+      [
+       "5",
+       "1,150",
+       "about 1 hour"
+      ],
+      [
+       "10",
+       "4,675",
+       "about 4 hours"
+      ],
+      [
+       "20",
+       "23,850",
+       "about 20 hours"
+      ],
+      [
+       "30",
+       "67,525",
+       "about 56 hours"
+      ]
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-6-1.svg",
+     "caption": "Figure 6.1. Chatting earns XP; daily and work earn coins."
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "!levelreward add 5 Regular\n!levelreward remove 5\n!levelcurve"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Level-up messages go to the channel the member was typing in, or to one fixed channel if you set announce_channel. Channels where you do not want XP can be listed in no_xp_channels. (See Table 6.2 below.) (See Figure 6.2 below.)"
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Table 6.2. Economy commands",
+     "head": [
+      "Command",
+      "Does"
+     ],
+     "rows": [
+      [
+       "!balance / !daily / !work",
+       "look and earn"
+      ],
+      [
+       "!pay @sam 50",
+       "send coins"
+      ],
+      [
+       "!deposit / !withdraw",
+       "move to and from the bank"
+      ],
+      [
+       "!richest / !transactions",
+       "leaderboard and your history"
+      ],
+      [
+       "!shop / !buy VIP / !inventory",
+       "look, buy, see owned"
+      ],
+      [
+       "!addmoney @sam 1000",
+       "admin gift; negative takes away"
+      ]
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-6-2.svg",
+     "caption": "Figure 6.2. A shop item can give a role when bought."
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "!shop add 500 VIP | Gold name colour\n!shop add 1500 Supporter | Show your support role:Supporter\n!shop remove VIP"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Games use the same wallet, so winners are paid with the same coins, and slots bets come from real balances."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Memory trick: Chat for XP, claim for coins. Chat earns XP, !daily earns coins, a streak adds 25 a day up to 10 days."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "How often can XP be earned?",
+     "options": [
+      "Once per cooldown, default 60 s",
+      "Every message",
+      "Once a day",
+      "Never"
+     ],
+     "answer": 0,
+     "explain": "Spamming does not help."
+    },
+    {
+     "q": "How do you give a role at a level?",
+     "options": [
+      "!levelreward add",
+      "!rank",
+      "!daily",
+      "!shop"
+     ],
+     "answer": 0,
+     "explain": "Or in config."
+    },
+    {
+     "q": "When does a daily streak continue?",
+     "options": [
+      "Within 48 hours",
+      "Within 1 hour",
+      "Never",
+      "Weekly only"
+     ],
+     "answer": 0,
+     "explain": "Else restarts."
+    },
+    {
+     "q": "How does a shop item give a role?",
+     "options": [
+      "role:Name in the description",
+      "A separate command",
+      "It cannot",
+      "!giverole"
+     ],
+     "answer": 0,
+     "explain": "Created if missing."
+    },
+    {
+     "q": "Who can use !addmoney?",
+     "options": [
+      "Administrators",
+      "Everyone",
+      "Nobody",
+      "Only bots"
+     ],
+     "answer": 0,
+     "explain": "Negative takes away."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Which shows next levels' XP?",
+     "a": "!levelcurve."
+    },
+    {
+     "q": "What command lists the richest?",
+     "a": "!richest."
+    },
+    {
+     "q": "How to turn off rank pictures?",
+     "a": "leveling.cards false."
+    },
+    {
+     "q": "Where is the starting balance set?",
+     "a": "economy.start_balance, 100 by default."
+    },
+    {
+     "q": "Memory trick for: Levels, coins and the shop?",
+     "a": "Chat for XP, claim for coins. Chat earns XP, !daily earns coins, a streak adds 25 a day up to 10 days."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match engagement command",
+     "intro": "Pair each command with what it does.",
+     "pairs": [
+      [
+       "!rank",
+       "shows a card"
+      ],
+      [
+       "!daily",
+       "claims coins"
+      ],
+      [
+       "!buy",
+       "spends coins"
+      ],
+      [
+       "!levelreward",
+       "role at a level"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Rewards",
+     "text": "Chatting earns {{XP}}, a long {{streak}} adds a bonus, and a shop item can give a {{role}}."
+    },
+    {
+     "type": "python",
+     "title": "Minutes to reach a level",
+     "intro": "Write minutes_to_level(level, xp_per_min). Total XP for a level is the sum of 5*n*n + 50*n + 100 for n from 0 to level - 1. Return how many whole minutes at xp_per_min XP a minute are needed, rounding up.",
+     "fn": "minutes_to_level",
+     "starter": "def minutes_to_level(level, xp_per_min):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        1,
+        20
+       ],
+       "expect": 5
+      },
+      {
+       "args": [
+        5,
+        20
+       ],
+       "expect": 58
+      },
+      {
+       "args": [
+        10,
+        20
+       ],
+       "expect": 234
+      },
+      {
+       "args": [
+        20,
+        20
+       ],
+       "expect": 1193
+      },
+      {
+       "args": [
+        30,
+        20
+       ],
+       "expect": 3377
+      },
+      {
+       "args": [
+        5,
+        25
+       ],
+       "expect": 46
+      }
+     ],
+     "hint": "Add the steps, then divide rounding up.",
+     "solution": "def minutes_to_level(level, xp_per_min):\n    total = 0\n    for n in range(level):\n        total += 5 * n * n + 50 * n + 100\n    return (total + xp_per_min - 1) // xp_per_min\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Vectiq documentation",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/",
+     "note": "the guide this course follows"
+    },
+    {
+     "title": "Getting started",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/getting-started/",
+     "note": "install and first run"
+    },
+    {
+     "title": "aio-vector-bot repository",
+     "url": "https://github.com/lucky-edgelord/aio-vector-bot",
+     "note": "source, issues and changelog (MIT)"
+    },
+    {
+     "title": "Vector",
+     "url": "https://vectorapp.io",
+     "note": "the messenger"
+    },
+    {
+     "title": "Sentire",
+     "url": "https://github.com/VectorPrivacy/Sentire",
+     "note": "automod by JSKitty"
+    },
+    {
+     "title": "GateBot",
+     "url": "https://gitworkshop.dev/henk.tech/Gatebot",
+     "note": "verification ideas (MIT)"
+    }
+   ]
+  },
+  {
+   "title": "Events, giveaways, polls and analytics",
+   "maps": [
+    {
+     "title": "Activities",
+     "links": [
+      "Event | has | RSVP",
+      "Event | has | Waitlist",
+      "Event | sends | Reminders",
+      "Event | can | Repeat",
+      "Giveaway | picks | Random winners",
+      "Poll | has | Numbered options",
+      "Analytics | shows | Activity"
+     ]
+    }
+   ],
+   "summary": [
+    "Schedule an event with one message and members RSVP with a reaction. The bot posts it in your announcements channel, reminds people before it starts, and can repeat it. Set the community's time zone once so times come out right.",
+    "Giveaways run for a set time with several winners and rerolls. Polls take two to nine options. Analytics shows messages, joins and leaves per day.",
+    "All of these are quick to run from chat, and the dashboard shows entry counts and charts."
+   ],
+   "glossary": [
+    {
+     "term": "RSVP",
+     "def": "A reply saying you are going, maybe, or not."
+    },
+    {
+     "term": "Waitlist",
+     "def": "People beyond the capacity who move up if someone leaves."
+    },
+    {
+     "term": "Reroll",
+     "def": "Draw a replacement giveaway winner."
+    },
+    {
+     "term": "Time zone",
+     "def": "The clock an event's time is read in."
+    },
+    {
+     "term": "Banner",
+     "def": "The picture the bot draws or you attach for an event."
+    }
+   ],
+   "keyPoints": [
+    "!event create Title | when | length | description (title and time required).",
+    "When can be friday 8pm, tomorrow 18:30, in 2h, 2026-11-20 20:00.",
+    "Set the zone once: !event timezone America/New_York.",
+    "Reminders default to 60 and 15 minutes before; a missed one over ten minutes late is skipped.",
+    "!giveaway start 1h 2 Prize; !poll Q | A | B."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Quick recap of the last chapter, Levels, coins and the shop:",
+      "• XP step n to n+1 costs 5n squared plus 50n plus 100; !levelcurve shows it.",
+      "• !rank and !leaderboard show cards; leveling.cards false gives plain text.",
+      "• !levelreward add 5 Regular gives a role at level 5.",
+      "• !daily pays 200; the streak continues if you claim again within 48 hours.",
+      "• !shop add 1500 Supporter | text role:Supporter makes an item that gives a role."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "ELI5. Planning a party. You send invitations, people tick yes or maybe, you remind them the day before, and if the room is small, extra guests wait in line.",
+      "Now the real words. Events have RSVPs, a waitlist, reminders and repeats. Set the time zone once. Giveaways and polls are quick extras.",
+      "Try it. Write an event line with a title, a time and a length.",
+      "If you remember one thing: Set the zone first."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Organising a party. You announce it, people tick yes or maybe, you remind them the day before, and if the room is small, extra guests wait in line and are let in if someone drops out. (See Figure 7.1 below.) (See Table 7.1 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-7-1.svg",
+     "caption": "Figure 7.1. An event goes from post to repeat."
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "!event timezone America/New_York\n!event create Game night | friday 8pm | 2h | Bring snacks\n!event edit 4 capacity 8\n!event edit 4 repeat weekly"
+    },
+    {
+     "type": "table",
+     "title": "Table 7.1. Event settings and options",
+     "head": [
+      "Item",
+      "Detail"
+     ],
+     "rows": [
+      [
+       "who can create",
+       "staff by default; events.who_can_create: everyone opens it"
+      ],
+      [
+       "length",
+       "default 60 minutes; between 1 minute and 14 days"
+      ],
+      [
+       "reminders",
+       "channel post and DMs; defaults 60 and 15 minutes"
+      ],
+      [
+       "repeat",
+       "daily, weekly, biweekly, monthly, none"
+      ],
+      [
+       "image",
+       "attach a picture or use the drawn banner"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Members react with the tick, thinking face or cross on the footer. The newest reaction wins, and taking it back clears the answer. They can also type !event rsvp 4 going. (See Figure 7.2 below.) (See Table 7.2 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-7-2.svg",
+     "caption": "Figure 7.2. Quick tools for community activities."
+    },
+    {
+     "type": "table",
+     "title": "Table 7.2. Giveaway commands",
+     "head": [
+      "Command",
+      "Does"
+     ],
+     "rows": [
+      [
+       "!giveaway start 1h 2 Nitro",
+       "start, one hour, two winners"
+      ],
+      [
+       "!giveaway end ID",
+       "finish now"
+      ],
+      [
+       "!giveaway reroll ID",
+       "draw a replacement"
+      ],
+      [
+       "!giveaway cancel ID",
+       "stop without winners"
+      ],
+      [
+       "!giveaway list",
+       "see what is running"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Polls look like !poll Best colour? | Red | Green | Blue, and members vote with one tap. !analytics 30 shows a month of messages, joins and leaves per day plus the busiest channels."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Memory trick: Zone first. Before events, set the Zone first, then Create, RSVP, Remind: 'Z-C-R-R'."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is required to create an event?",
+     "options": [
+      "Title and time",
+      "Only a title",
+      "Everything",
+      "A picture"
+     ],
+     "answer": 0,
+     "explain": "Others are optional."
+    },
+    {
+     "q": "What fixes times that are hours off?",
+     "options": [
+      "!event timezone",
+      "!event fix",
+      "!restart",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Default is UTC."
+    },
+    {
+     "q": "How many options may a poll have?",
+     "options": [
+      "2 to 9",
+      "1 to 3",
+      "10 to 20",
+      "Any"
+     ],
+     "answer": 0,
+     "explain": "Numbered reactions."
+    },
+    {
+     "q": "What does reroll do?",
+     "options": [
+      "Draws a replacement winner",
+      "Restarts",
+      "Cancels",
+      "Deletes"
+     ],
+     "answer": 0,
+     "explain": "After a giveaway ends."
+    },
+    {
+     "q": "What happens to RSVPs on repeat?",
+     "options": [
+      "Fresh clean list",
+      "Kept",
+      "Deleted forever",
+      "Doubled"
+     ],
+     "answer": 0,
+     "explain": "Old post kept as a record."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Who can create events?",
+     "a": "Staff by default."
+    },
+    {
+     "q": "What does the waitlist do?",
+     "a": "Moves people up when a place opens."
+    },
+    {
+     "q": "How long is the longest event?",
+     "a": "14 days."
+    },
+    {
+     "q": "Where do events go?",
+     "a": "events.channel, matched loosely."
+    },
+    {
+     "q": "Memory trick for: Events, giveaways, polls and analytics?",
+     "a": "Zone first. Before events, set the Zone first, then Create, RSVP, Remind: 'Z-C-R-R'."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match activity command",
+     "intro": "Pair each command with what it does.",
+     "pairs": [
+      [
+       "!event create",
+       "schedule"
+      ],
+      [
+       "!giveaway start",
+       "begin a draw"
+      ],
+      [
+       "!poll",
+       "ask a question"
+      ],
+      [
+       "!analytics",
+       "activity numbers"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Planning",
+     "text": "Set the {{time zone}} once, members RSVP with {{reactions}}, and extra people join the {{waitlist}}."
+    },
+    {
+     "type": "python",
+     "title": "Read an event line",
+     "intro": "Write parse_event(text). text looks like 'title | when | length | description'. Return a list of four items [title, when, length, description], each stripped of spaces, with None for any part that is missing.",
+     "fn": "parse_event",
+     "starter": "def parse_event(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Game night | friday 8pm | 2h | Bring snacks"
+       ],
+       "expect": [
+        "Game night",
+        "friday 8pm",
+        "2h",
+        "Bring snacks"
+       ]
+      },
+      {
+       "args": [
+        "Quiz | tomorrow 18:30"
+       ],
+       "expect": [
+        "Quiz",
+        "tomorrow 18:30",
+        null,
+        null
+       ]
+      },
+      {
+       "args": [
+        "Only title"
+       ],
+       "expect": [
+        "Only title",
+        null,
+        null,
+        null
+       ]
+      },
+      {
+       "args": [
+        "A | b | | desc"
+       ],
+       "expect": [
+        "A",
+        "b",
+        null,
+        "desc"
+       ]
+      }
+     ],
+     "hint": "Split on the bar and pad to four items.",
+     "solution": "def parse_event(text):\n    parts = [p.strip() for p in text.split(\"|\")]\n    out = []\n    for i in range(4):\n        out.append(parts[i] if i < len(parts) and parts[i] else None)\n    return out\n"
+    },
+    {
+     "type": "python",
+     "title": "Is this a valid poll?",
+     "intro": "Write poll_ok(text). text looks like 'Question | Option | Option'. Return True if there are between 2 and 9 options after the question, otherwise False.",
+     "fn": "poll_ok",
+     "starter": "def poll_ok(text):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        "Best colour? | Red | Green | Blue"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "Q | A"
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        "Q | A | B"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "Q | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9"
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        "Q | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10"
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Count the parts after the first.",
+     "solution": "def poll_ok(text):\n    parts = [p.strip() for p in text.split(\"|\")]\n    n = len(parts) - 1\n    return 2 <= n <= 9\n"
+    }
+   ],
+   "references": [
+    {
+     "title": "Vectiq documentation",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/",
+     "note": "the guide this course follows"
+    },
+    {
+     "title": "Getting started",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/getting-started/",
+     "note": "install and first run"
+    },
+    {
+     "title": "aio-vector-bot repository",
+     "url": "https://github.com/lucky-edgelord/aio-vector-bot",
+     "note": "source, issues and changelog (MIT)"
+    },
+    {
+     "title": "Vector",
+     "url": "https://vectorapp.io",
+     "note": "the messenger"
+    },
+    {
+     "title": "Sentire",
+     "url": "https://github.com/VectorPrivacy/Sentire",
+     "note": "automod by JSKitty"
+    },
+    {
+     "title": "GateBot",
+     "url": "https://gitworkshop.dev/henk.tech/Gatebot",
+     "note": "verification ideas (MIT)"
+    }
+   ]
+  },
+  {
+   "title": "Support tickets, security cam and role-based access",
+   "maps": [
+    {
+     "title": "Support",
+     "links": [
+      "Ticket | is | Private channel",
+      "Ticket | claimed by | Staff",
+      "Ticket | closed by | Command or reaction",
+      "Transcript | keeps | Conversation",
+      "Security cam | echoes | All messages",
+      "Security cam | needs | Staff channel"
+     ]
+    }
+   ],
+   "summary": [
+    "Tickets give each request its own private channel. A member opens one, staff claim it, and when it is resolved anyone with access closes it. The conversation is kept as a transcript.",
+    "The bot needs Manage Channels to create ticket channels. Name a support role, or only the bot and the opener can see a ticket.",
+    "The security cam is a different tool: it copies every message from every channel into one staff channel. It is off by default, and you must think carefully about who can read that channel and whether members should know."
+   ],
+   "glossary": [
+    {
+     "term": "Ticket",
+     "def": "A private support channel for one request."
+    },
+    {
+     "term": "Claim",
+     "def": "A staff member says they are handling a ticket."
+    },
+    {
+     "term": "Transcript",
+     "def": "The saved messages of a ticket."
+    },
+    {
+     "term": "Support role",
+     "def": "The role that can see every ticket."
+    },
+    {
+     "term": "Security cam",
+     "def": "A staff channel that echoes the whole community."
+    }
+   ],
+   "keyPoints": [
+    "!tickets open reason; !tickets claim; !tickets close.",
+    "A lock emoji reaction also closes a ticket.",
+    "Settings: category, support_role, max_open_per_user, transcripts.",
+    "!tickets transcript 12 reads a saved one.",
+    "!securitycam set makes the current channel the cam."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Quick recap of the last chapter, Events, giveaways, polls and analytics:",
+      "• !event create Title | when | length | description (title and time required).",
+      "• When can be friday 8pm, tomorrow 18:30, in 2h, 2026-11-20 20:00.",
+      "• Set the zone once: !event timezone America/New_York.",
+      "• Reminders default to 60 and 15 minutes before; a missed one over ten minutes late is skipped.",
+      "• !giveaway start 1h 2 Prize; !poll Q | A | B."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A help desk where each customer gets a numbered booth and a staff member says I will take this one. Afterwards the notes are filed.",
+      "Now the real words. Tickets are private channels you open, claim and close, with a transcript kept. The security cam is a separate tool that copies everything to a staff channel.",
+      "Try it. Say who can see a ticket.",
+      "If you remember one thing: Open, claim, close."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A help desk in a shop. Each customer gets a numbered booth. A staff member says I will take this one. When finished, the booth is cleared but the notes are filed. (See Figure 8.1 below.) (See Table 8.1 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-8-1.svg",
+     "caption": "Figure 8.1. From opening to transcript."
+    },
+    {
+     "type": "code",
+     "lang": "yaml",
+     "code": "tickets:\n  category: Support\n  support_role: Moderator\n  max_open_per_user: 2\n  transcripts: true"
+    },
+    {
+     "type": "table",
+     "title": "Table 8.1. Ticket commands",
+     "head": [
+      "Command",
+      "Who",
+      "Does"
+     ],
+     "rows": [
+      [
+       "!tickets open reason",
+       "member",
+       "creates ticket-NN"
+      ],
+      [
+       "!tickets claim",
+       "staff",
+       "marks it handled"
+      ],
+      [
+       "!tickets close",
+       "opener or staff",
+       "closes and deletes the channel"
+      ],
+      [
+       "!tickets transcript 12",
+       "staff",
+       "reads the saved conversation"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Communities on the legacy roster do not accept per-channel permission settings, so Vectiq creates a plain private channel and grants access another way. You might see two similarly named channels in that case. (See Figure 8.2 below.) (See Table 8.2 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-8-2.svg",
+     "caption": "Figure 8.2. The four main ticket settings."
+    },
+    {
+     "type": "table",
+     "title": "Table 8.2. Security cam rules",
+     "head": [
+      "Item",
+      "Detail"
+     ],
+     "rows": [
+      [
+       "default",
+       "off"
+      ],
+      [
+       "turn on",
+       "modules.securitycam true, then !securitycam set"
+      ],
+      [
+       "left out",
+       "its own channel, the bot's messages, other bots by default"
+      ],
+      [
+       "ignore",
+       "securitycam.ignore_channels for private places"
+      ],
+      [
+       "warning",
+       "everyone who can read the cam channel reads everything"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Make the camera channel staff-only and consider telling members it exists. Attachments are re-uploaded so they stay after the original is gone; files that cannot be copied are listed as links."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Memory trick: Open, claim, close. Ticket: Open, Claim, Close, then read the Transcript: 'O-C-C-T'."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Who sees a ticket?",
+     "options": [
+      "Opener and the support role",
+      "Everyone",
+      "Only the bot",
+      "Nobody"
+     ],
+     "answer": 0,
+     "explain": "Name a support_role."
+    },
+    {
+     "q": "What closes a ticket besides !tickets close?",
+     "options": [
+      "A lock reaction",
+      "A ban",
+      "A poll",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Configurable emoji."
+    },
+    {
+     "q": "Is the security cam on by default?",
+     "options": [
+      "No",
+      "Yes",
+      "Only on Mac",
+      "Only for owners"
+     ],
+     "answer": 0,
+     "explain": "Privacy."
+    },
+    {
+     "q": "What permission creates ticket channels?",
+     "options": [
+      "Manage Channels",
+      "Ban Members",
+      "Mention",
+      "None"
+     ],
+     "answer": 0,
+     "explain": "Bot needs it."
+    },
+    {
+     "q": "Are transcripts kept after closing?",
+     "options": [
+      "Yes, if enabled",
+      "Never",
+      "Only a day",
+      "Only for staff"
+     ],
+     "answer": 0,
+     "explain": "transcripts true."
+    }
+   ],
+   "cards": [
+    {
+     "q": "What if there is no support_role?",
+     "a": "Only the bot and the opener can see it."
+    },
+    {
+     "q": "How do you stop the cam?",
+     "a": "!securitycam off."
+    },
+    {
+     "q": "How to ignore a private channel?",
+     "a": "securitycam.ignore_channels."
+    },
+    {
+     "q": "Where is a transcript shown?",
+     "a": "!tickets transcript or the dashboard."
+    },
+    {
+     "q": "Memory trick for: Support tickets, security cam and role-based access?",
+     "a": "Open, claim, close. Ticket: Open, Claim, Close, then read the Transcript: 'O-C-C-T'."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match support item",
+     "intro": "Pair each item with its meaning.",
+     "pairs": [
+      [
+       "claim",
+       "staff takes the ticket"
+      ],
+      [
+       "transcript",
+       "saved conversation"
+      ],
+      [
+       "support_role",
+       "sees all tickets"
+      ],
+      [
+       "security cam",
+       "echoes everything"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Help desk",
+     "text": "A ticket is a {{private}} channel, staff {{claim}} it, and the conversation is kept as a {{transcript}}."
+    }
+   ],
+   "references": [
+    {
+     "title": "Vectiq documentation",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/",
+     "note": "the guide this course follows"
+    },
+    {
+     "title": "Getting started",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/getting-started/",
+     "note": "install and first run"
+    },
+    {
+     "title": "aio-vector-bot repository",
+     "url": "https://github.com/lucky-edgelord/aio-vector-bot",
+     "note": "source, issues and changelog (MIT)"
+    },
+    {
+     "title": "Vector",
+     "url": "https://vectorapp.io",
+     "note": "the messenger"
+    },
+    {
+     "title": "Sentire",
+     "url": "https://github.com/VectorPrivacy/Sentire",
+     "note": "automod by JSKitty"
+    },
+    {
+     "title": "GateBot",
+     "url": "https://gitworkshop.dev/henk.tech/Gatebot",
+     "note": "verification ideas (MIT)"
+    }
+   ]
+  },
+  {
+   "title": "Games, music and feed alerts",
+   "maps": [
+    {
+     "title": "Fun",
+     "links": [
+      "Game | is | WebXDC app",
+      "Bot | is | Referee",
+      "Music | needs | yt-dlp and ffmpeg",
+      "Queue | holds | Songs",
+      "Notifications | watch | Feeds",
+      "Feeds | include | YouTube",
+      "Feeds | include | Twitch",
+      "Feeds | include | RSS"
+     ]
+    }
+   ],
+   "summary": [
+    "Games are small apps shared into the chat: Tic-Tac-Toe, Connect Four, trivia and slots. The bot is the referee, so a modified app cannot cheat. Winners earn coins from your economy.",
+    "Music plays in voice channels with a queue, loops, shuffle, filters, vote-skips and a DJ role. It needs two extra tools, yt-dlp and ffmpeg.",
+    "Notifications post in a channel when a YouTube channel uploads, a Twitch channel goes live, or any RSS feed has something new."
+   ],
+   "glossary": [
+    {
+     "term": "Referee",
+     "def": "The bot component that holds the true game state."
+    },
+    {
+     "term": "Queue",
+     "def": "The ordered list of songs waiting to play."
+    },
+    {
+     "term": "Feed",
+     "def": "A source of updates such as a YouTube channel."
+    },
+    {
+     "term": "Join when",
+     "def": "When the bot joins a game: opened or shared."
+    },
+    {
+     "term": "DJ role",
+     "def": "A role allowed to control the music."
+    }
+   ],
+   "keyPoints": [
+    "!game tictactoe, connect4, trivia, slots.",
+    "!gamestats and !gameboard trivia show records.",
+    "Music: pip install vectiq[music] plus ffmpeg; !module on music.",
+    "!play, !skip, !queue, !shuffle, !volume 60.",
+    "!notify add youtube @Name #videos."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Quick recap of the last chapter, Support tickets, security cam and role-based access:",
+      "• !tickets open reason; !tickets claim; !tickets close.",
+      "• A lock emoji reaction also closes a ticket.",
+      "• Settings: category, support_role, max_open_per_user, transcripts.",
+      "• !tickets transcript 12 reads a saved one.",
+      "• !securitycam set makes the current channel the cam."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A games room with a referee holding the dice, a music corner with a queue, and a notice board that adds new posts without repeating old ones.",
+      "Now the real words. Games, music and feed alerts are modules. The bot is the referee. Music needs ffmpeg and yt-dlp. New feeds do not flood the channel.",
+      "Try it. Name the four games.",
+      "If you remember one thing: The bot is the referee."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A games room has a referee who holds the dice and the scoreboard. Players can only say what they want to do. The referee makes it real. (See Figure 9.1 below.) (See Table 9.1 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-9-1.svg",
+     "caption": "Figure 9.1. Games, music and alerts all run as modules."
+    },
+    {
+     "type": "code",
+     "lang": "text",
+     "code": "!game tictactoe\n!game slots\n!gamestats\n!gameboard trivia"
+    },
+    {
+     "type": "table",
+     "title": "Table 9.1. The four games",
+     "head": [
+      "Game",
+      "How it plays"
+     ],
+     "rows": [
+      [
+       "Tic-Tac-Toe",
+       "two seats, others watch, rematch allowed"
+      ],
+      [
+       "Connect Four",
+       "two seats, rematch allowed"
+      ],
+      [
+       "Trivia",
+       "lobby then eight timed questions; faster is better"
+      ],
+      [
+       "Slots",
+       "bet real coins up to slots_max_bet"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "If the app says retry, the bot only trusts frames that come straight from a player's own device. Opening the game again fixes it. With join_when set to opened, the bot joins only when someone opens a game, which saves resources. (See Table 9.2 below.) (See Figure 9.2 below.)"
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Table 9.2. Music essentials",
+     "head": [
+      "Command",
+      "Does"
+     ],
+     "rows": [
+      [
+       "!play words or link",
+       "queue a song or playlist"
+      ],
+      [
+       "!search",
+       "show five results to pick"
+      ],
+      [
+       "!queue / !nowplaying",
+       "see the list and progress"
+      ],
+      [
+       "!skip / !skipto 4 / !back",
+       "move around"
+      ],
+      [
+       "!shuffle / !loop / !filter bassboost",
+       "change playback"
+      ]
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-9-2.svg",
+     "caption": "Figure 9.2. New feeds do not flood the channel."
+    },
+    {
+     "type": "code",
+     "lang": "yaml",
+     "code": "notifications:\n  channel: announcements\n  feeds:\n    - {type: youtube, source: \"@SomeChannel\", channel: videos}"
+    },
+    {
+     "type": "text",
+     "items": [
+      "Twitch needs a free app from the Twitch developer console, with its client id and secret in .env. YouTube and RSS need no account. A YouTube live stream shows up when YouTube publishes its page."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Memory trick: The bot is the referee. Games: apps Ask, the bot Decides. Music needs yt-dlp and ffmpeg."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Who decides game state?",
+     "options": [
+      "The bot",
+      "Each player",
+      "The relay",
+      "Chance"
+     ],
+     "answer": 0,
+     "explain": "The referee."
+    },
+    {
+     "q": "What does music need besides vectiq[music]?",
+     "options": [
+      "ffmpeg",
+      "A printer",
+      "Java",
+      "Docker only"
+     ],
+     "answer": 0,
+     "explain": "And yt-dlp."
+    },
+    {
+     "q": "What happens to old feed items?",
+     "options": [
+      "Remembered, not posted",
+      "Posted all at once",
+      "Deleted",
+      "Sent by DM"
+     ],
+     "answer": 0,
+     "explain": "No flood."
+    },
+    {
+     "q": "What does a game 'retry' mean?",
+     "options": [
+      "Reopen the app",
+      "You are banned",
+      "The bot is off",
+      "Server is full"
+     ],
+     "answer": 0,
+     "explain": "Unverified frame."
+    },
+    {
+     "q": "What do slots bets use?",
+     "options": [
+      "Real wallet coins",
+      "Pretend coins",
+      "XP",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Up to slots_max_bet."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Where do Twitch keys go?",
+     "a": ".env."
+    },
+    {
+     "q": "How to see a trivia leaderboard?",
+     "a": "!gameboard trivia."
+    },
+    {
+     "q": "What starts music?",
+     "a": "!module on music then !play."
+    },
+    {
+     "q": "Which games have two seats?",
+     "a": "Tic-Tac-Toe and Connect Four."
+    },
+    {
+     "q": "Memory trick for: Games, music and feed alerts?",
+     "a": "The bot is the referee. Games: apps Ask, the bot Decides. Music needs yt-dlp and ffmpeg."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match fun feature",
+     "intro": "Pair each feature with its command.",
+     "pairs": [
+      [
+       "game",
+       "!game tictactoe"
+      ],
+      [
+       "music",
+       "!play"
+      ],
+      [
+       "alerts",
+       "!notify add"
+      ],
+      [
+       "record",
+       "!gamestats"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Fun",
+     "text": "The bot is the {{referee}}, music needs {{ffmpeg}}, and new feeds are {{remembered}} so there is no flood."
+    }
+   ],
+   "references": [
+    {
+     "title": "Vectiq documentation",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/",
+     "note": "the guide this course follows"
+    },
+    {
+     "title": "Getting started",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/getting-started/",
+     "note": "install and first run"
+    },
+    {
+     "title": "aio-vector-bot repository",
+     "url": "https://github.com/lucky-edgelord/aio-vector-bot",
+     "note": "source, issues and changelog (MIT)"
+    },
+    {
+     "title": "Vector",
+     "url": "https://vectorapp.io",
+     "note": "the messenger"
+    },
+    {
+     "title": "Sentire",
+     "url": "https://github.com/VectorPrivacy/Sentire",
+     "note": "automod by JSKitty"
+    },
+    {
+     "title": "GateBot",
+     "url": "https://gitworkshop.dev/henk.tech/Gatebot",
+     "note": "verification ideas (MIT)"
+    }
+   ]
+  },
+  {
+   "title": "The dashboard, webhooks and AI assistants",
+   "maps": [
+    {
+     "title": "Control",
+     "links": [
+      "Dashboard | is | Web admin",
+      "Dashboard | needs | HTTPS outside",
+      "Sign in | by | Code or password",
+      "Audit log | records | Changes",
+      "Webhook | lets | Tools post in",
+      "Events | mirror to | Channel",
+      "MCP | lets | Assistant manage"
+     ]
+    }
+   ],
+   "summary": [
+    "The dashboard is a web page where staff manage the bot without typing commands. It is off by default: set modules.dashboard to true, restart, and open the address.",
+    "Only admins of a served community and the bot's owners can sign in, by a one-time code sent by DM or by a username and password you create with a command.",
+    "Webhooks let outside tools post into a channel with a secret URL, and mirror Vectiq events such as moderation actions into a channel.",
+    "The MCP module lets an AI assistant such as Claude manage the community with a token. Treat that token like the bot's own key."
+   ],
+   "glossary": [
+    {
+     "term": "Dashboard",
+     "def": "A browser page for managing the bot."
+    },
+    {
+     "term": "Audit log",
+     "def": "A record of changes made through the dashboard."
+    },
+    {
+     "term": "Webhook",
+     "def": "A secret URL that lets another tool post a message."
+    },
+    {
+     "term": "MCP",
+     "def": "Model Context Protocol: lets an assistant use tools."
+    },
+    {
+     "term": "base_url",
+     "def": "The address people really use to reach the dashboard."
+    }
+   ],
+   "keyPoints": [
+    "Dashboard default port 8090 on 127.0.0.1.",
+    "vectiq --add-user NAME --npub npub1... makes a login.",
+    "Sign-in codes last 10 minutes; sessions 7 days.",
+    "Webhook secrets are shown once; the bot stores only a hash.",
+    "MCP listens on 127.0.0.1:8770 with a bearer token; read_only lets assistants look only."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Quick recap of the last chapter, Games, music and feed alerts:",
+      "• !game tictactoe, connect4, trivia, slots.",
+      "• !gamestats and !gameboard trivia show records.",
+      "• Music: pip install vectiq[music] plus ffmpeg; !module on music.",
+      "• !play, !skip, !queue, !shuffle, !volume 60.",
+      "• !notify add youtube @Name #videos."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "ELI5. The control room of a theatre with screens for every part of the show, a doorbell for visitors, and a key you can hand to a trusted helper.",
+      "Now the real words. The dashboard manages the bot in a browser. Webhooks let tools post in. MCP lets an assistant manage the community with a token.",
+      "Try it. Say what you do before exposing the dashboard.",
+      "If you remember one thing: Lock the control room."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The dashboard is the control room with screens for every part of the community. Webhooks are doorbells that outside tools can ring. MCP is a key you hand to an assistant, so keep it safe. (See Figure 10.1 below.) (See Table 10.1 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-10-1.svg",
+     "caption": "Figure 10.1. Several ways to run the same bot."
+    },
+    {
+     "type": "code",
+     "lang": "yaml",
+     "code": "modules:\n  dashboard: true\ndashboard:\n  host: 127.0.0.1\n  port: 8090\n  base_url: \"http://localhost:8090\""
+    },
+    {
+     "type": "table",
+     "title": "Table 10.1. Dashboard pages",
+     "head": [
+      "Page",
+      "Use"
+     ],
+     "rows": [
+      [
+       "Overview",
+       "messages, joins, busiest channels"
+      ],
+      [
+       "Members",
+       "search, level, coins, warnings"
+      ],
+      [
+       "Moderation",
+       "cases, bans, log channel"
+      ],
+      [
+       "Leveling / Economy",
+       "settings, shop, balances"
+      ],
+      [
+       "Tickets / Giveaways / Role menus",
+       "manage and read"
+      ],
+      [
+       "Restore points / Setup wizard",
+       "safety and setup (owners)"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "To reach the dashboard from elsewhere, put HTTPS in front with Caddy or Tailscale and set base_url to the public address. A mismatch between http and https stops sign-in cookies from working. (See Figure 10.2 below.) (See Table 10.2 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-10-2.svg",
+     "caption": "Figure 10.2. Steps before exposing the dashboard."
+    },
+    {
+     "type": "table",
+     "title": "Table 10.2. Webhook fields",
+     "head": [
+      "Field",
+      "Meaning"
+     ],
+     "rows": [
+      [
+       "name",
+       "unique name for the hook"
+      ],
+      [
+       "channel",
+       "where it posts"
+      ],
+      [
+       "notify",
+       "who is DMed the secret URL once"
+      ],
+      [
+       "events",
+       "Vectiq events mirrored into the channel"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "An MCP assistant can create channels, set permissions, give roles and moderate members, and everything it changes is in the audit log. With the token it can do anything the bot can, so use read_only when you only want answers."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Memory trick: Lock the control room. Dashboard: localhost, then HTTPS, then base_url. MCP token is a key: keep read_only when unsure."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Is the dashboard on by default?",
+     "options": [
+      "No",
+      "Yes",
+      "Only for owners",
+      "Only on Mac"
+     ],
+     "answer": 0,
+     "explain": "Set modules.dashboard."
+    },
+    {
+     "q": "Who may sign in?",
+     "options": [
+      "Community admins and bot owners",
+      "Anyone",
+      "Only members",
+      "Only bots"
+     ],
+     "answer": 0,
+     "explain": "Others get the same answer as unknown."
+    },
+    {
+     "q": "How often is a webhook secret shown?",
+     "options": [
+      "Once",
+      "Always",
+      "Never",
+      "Daily"
+     ],
+     "answer": 0,
+     "explain": "Only a hash is stored."
+    },
+    {
+     "q": "What does MCP read_only do?",
+     "options": [
+      "Allows looking only",
+      "Hides the dashboard",
+      "Stops the bot",
+      "Locks the DB"
+     ],
+     "answer": 0,
+     "explain": "No changes."
+    },
+    {
+     "q": "What stops sign-in cookies?",
+     "options": [
+      "http and https mismatch",
+      "A long password",
+      "Dark mode",
+      "Too many members"
+     ],
+     "answer": 0,
+     "explain": "Set base_url correctly."
+    }
+   ],
+   "cards": [
+    {
+     "q": "Default dashboard port?",
+     "a": "8090."
+    },
+    {
+     "q": "How to make a dashboard login?",
+     "a": "vectiq --add-user."
+    },
+    {
+     "q": "Where is the audit log?",
+     "a": "On the dashboard."
+    },
+    {
+     "q": "Why HTTPS?",
+     "a": "To protect logins outside localhost."
+    },
+    {
+     "q": "Memory trick for: The dashboard, webhooks and AI assistants?",
+     "a": "Lock the control room. Dashboard: localhost, then HTTPS, then base_url. MCP token is a key: keep read_only when unsure."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match control surface",
+     "intro": "Pair each with its use.",
+     "pairs": [
+      [
+       "dashboard",
+       "browser admin"
+      ],
+      [
+       "webhook",
+       "outside tool posts in"
+      ],
+      [
+       "MCP",
+       "AI assistant manages"
+      ],
+      [
+       "audit log",
+       "record of changes"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "Control",
+     "text": "Put {{HTTPS}} in front of the dashboard, keep the MCP {{token}} private, and use {{read_only}} when you only want answers."
+    }
+   ],
+   "references": [
+    {
+     "title": "Model Context Protocol",
+     "url": "https://modelcontextprotocol.io",
+     "note": "what MCP is"
+    }
+   ]
+  },
+  {
+   "title": "Keeping it running: restore points, updates and troubleshooting",
+   "maps": [
+    {
+     "title": "Care",
+     "links": [
+      "Restore point | saves | Everything but key",
+      "Log | names | Problems",
+      "Update | needs | Restore point first",
+      "Service | restarts | Bot",
+      "Docker | keeps | Data folders",
+      "Troubleshooting | starts with | Log"
+     ]
+    }
+   ],
+   "summary": [
+    "A bot you rely on needs a routine. Restore points are zip snapshots of the database, config and settings, made on a schedule, before risky changes and by hand. Rolling back first makes a point of the current state, so you can undo it. The bot's key is never inside a restore point.",
+    "Run the bot as a service so it starts at login or boot: launchd on macOS, a systemd user service on Linux, a scheduled task on Windows, or Docker Compose with restart enabled. Keep copies of restore points on another machine.",
+    "When something is wrong, read the log first. Most problems are named there."
+   ],
+   "glossary": [
+    {
+     "term": "Service",
+     "def": "A background program the operating system starts and restarts for you."
+    },
+    {
+     "term": "Restore point",
+     "def": "A zip snapshot for rolling back."
+    },
+    {
+     "term": "Log",
+     "def": "The bot's running diary of what it did and what went wrong."
+    },
+    {
+     "term": "Rollback",
+     "def": "Return to an earlier restore point."
+    },
+    {
+     "term": "Compose",
+     "def": "Docker's way to run the bot with config and data folders."
+    }
+   ],
+   "keyPoints": [
+    "Restore points: every 24 hours, before risky changes, by hand.",
+    "vectiq --backup text; --list-backups; --restore N with the bot stopped.",
+    "Update: git pull and rebuild, or pipx upgrade vectiq.",
+    "Logs: data/vectiq.log, journalctl --user -u vectiq -f, or docker compose logs -f.",
+    "Only one Vector bot can run per process: stop the other copy."
+   ],
+   "lesson": [
+    {
+     "type": "text",
+     "items": [
+      "Quick recap of the last chapter, The dashboard, webhooks and AI assistants:",
+      "• Dashboard default port 8090 on 127.0.0.1.",
+      "• vectiq --add-user NAME --npub npub1... makes a login.",
+      "• Sign-in codes last 10 minutes; sessions 7 days.",
+      "• Webhook secrets are shown once; the bot stores only a hash.",
+      "• MCP listens on 127.0.0.1:8770 with a bearer token; read_only lets assistants look only."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "ELI5. A shop owner who locks up every night, keeps a copy of the accounts in another building, and reads the day's notes when something looks odd.",
+      "Now the real words. Restore points, updates and the log keep the bot healthy. Copy backups off the machine and read the log first.",
+      "Try it. List the three parts of the routine.",
+      "If you remember one thing: Save, read, copy."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "A shop owner locks up every night, keeps a copy of the accounts in a second building, and reads the day's notes when something looks odd. That routine is what keeps a bot healthy too. (See Figure 11.1 below.) (See Table 11.1 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-11-1.svg",
+     "caption": "Figure 11.1. A simple routine for a healthy bot."
+    },
+    {
+     "type": "table",
+     "title": "Table 11.1. Restarting by platform",
+     "head": [
+      "Platform",
+      "Restart",
+      "Log"
+     ],
+     "rows": [
+      [
+       "macOS",
+       "launchctl kickstart -k gui/$(id -u)/com.vectiq.bot",
+       "tail -f data/vectiq.log"
+      ],
+      [
+       "Linux user service",
+       "systemctl --user restart vectiq",
+       "journalctl --user -u vectiq -f"
+      ],
+      [
+       "Windows",
+       "Stop-ScheduledTask Vectiq; Start-ScheduledTask Vectiq",
+       "Get-Content data\\vectiq.log -Wait"
+      ],
+      [
+       "Docker",
+       "docker compose restart",
+       "docker compose logs -f"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Before an update, make a restore point. In Docker, run the backup command with a label like before update, then pull and rebuild. Copy docker-data/restore-points off the machine for a real backup. (See Figure 11.2 below.) (See Table 11.2 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "vu-11-2.svg",
+     "caption": "Figure 11.2. Common problems and where to look."
+    },
+    {
+     "type": "table",
+     "title": "Table 11.2. Troubleshooting guide",
+     "head": [
+      "Problem",
+      "Check"
+     ],
+     "rows": [
+      [
+       "bot does not answer",
+       "is it in the community, the prefix, is the module on, permissions, communities list"
+      ],
+      [
+       "only one Vector bot per process",
+       "stop the second copy"
+      ],
+      [
+       "no sign-in code",
+       "right npub, DMs and message requests, or !dashboard"
+      ],
+      [
+       "event time wrong",
+       "!event timezone"
+      ],
+      [
+       "game says retry",
+       "reopen the app"
+      ],
+      [
+       "no cam echoes",
+       "!securitycam shows a channel, module on"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "When asking for help, include the relevant lines from the log and the output of vectiq --version. Never paste your .env or your keys."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Memory trick: Save, read, copy. Routine: Save a restore point, Read the log, Copy backups elsewhere."
+     ]
+    }
+   ],
+   "quiz": [
+    {
+     "q": "What is never inside a restore point?",
+     "options": [
+      "The bot's key",
+      "The database",
+      "Config",
+      "Pictures"
+     ],
+     "answer": 0,
+     "explain": "Keep your own copy of .env."
+    },
+    {
+     "q": "What should you read first when something is wrong?",
+     "options": [
+      "The log",
+      "The README",
+      "Social media",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Most problems are named."
+    },
+    {
+     "q": "Which flag restores?",
+     "options": [
+      "--restore N",
+      "--undo",
+      "--back",
+      "--revert"
+     ],
+     "answer": 0,
+     "explain": "Stop the bot first."
+    },
+    {
+     "q": "What makes the bot start at login?",
+     "options": [
+      "The installer's service",
+      "Nothing",
+      "A bookmark",
+      "Chat"
+     ],
+     "answer": 0,
+     "explain": "launchd, systemd or a task."
+    },
+    {
+     "q": "What if two copies run?",
+     "options": [
+      "Only one Vector bot per process",
+      "Both work",
+      "Double XP",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Stop the other."
+    }
+   ],
+   "cards": [
+    {
+     "q": "How often are scheduled points made?",
+     "a": "Every 24 hours by default."
+    },
+    {
+     "q": "Where do Docker backups live?",
+     "a": "docker-data/restore-points."
+    },
+    {
+     "q": "How to update with pipx?",
+     "a": "pipx upgrade vectiq."
+    },
+    {
+     "q": "Why copy backups elsewhere?",
+     "a": "A disk failure would take both."
+    },
+    {
+     "q": "Memory trick for: Keeping it running: restore points, updates and troubleshooting?",
+     "a": "Save, read, copy. Routine: Save a restore point, Read the log, Copy backups elsewhere."
+    }
+   ],
+   "practice": [
+    {
+     "type": "match",
+     "title": "Match care task",
+     "intro": "Pair each task with its tool.",
+     "pairs": [
+      [
+       "snapshot",
+       "restore point"
+      ],
+      [
+       "read problems",
+       "the log"
+      ],
+      [
+       "start at boot",
+       "service"
+      ],
+      [
+       "undo",
+       "rollback"
+      ]
+     ]
+    },
+    {
+     "type": "fill",
+     "title": "A routine",
+     "text": "Make a {{restore point}} before updating, read the {{log}} when stuck, and copy backups to {{another}} machine."
+    }
+   ],
+   "references": [
+    {
+     "title": "Vectiq documentation",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/",
+     "note": "the guide this course follows"
+    },
+    {
+     "title": "Getting started",
+     "url": "https://lucky-edgelord.github.io/aio-vector-bot/getting-started/",
+     "note": "install and first run"
+    },
+    {
+     "title": "aio-vector-bot repository",
+     "url": "https://github.com/lucky-edgelord/aio-vector-bot",
+     "note": "source, issues and changelog (MIT)"
+    },
+    {
+     "title": "Vector",
+     "url": "https://vectorapp.io",
+     "note": "the messenger"
+    },
+    {
+     "title": "Sentire",
+     "url": "https://github.com/VectorPrivacy/Sentire",
+     "note": "automod by JSKitty"
+    },
+    {
+     "title": "GateBot",
+     "url": "https://gitworkshop.dev/henk.tech/Gatebot",
+     "note": "verification ideas (MIT)"
+    }
+   ]
+  }
+ ],
+ "finalExam": {
+  "title": "Final exam: Running a Community with Vectiq: A User Guide",
+  "passMark": 70,
+  "size": 20,
+  "questions": [
+   {
+    "q": "Whose key should the bot use?",
+    "options": [
+     "Its own account's key",
+     "Your personal key",
+     "A friend's key",
+     "None"
+    ],
+    "answer": 0,
+    "explain": "A separate account."
+   },
+   {
+    "q": "What command tests the bot?",
+    "options": [
+     "!ping",
+     "!hello",
+     "!test all",
+     "!on"
+    ],
+    "answer": 0,
+    "explain": "It answers."
+   },
+   {
+    "q": "What does the first install build?",
+    "options": [
+     "The Rust core",
+     "A website",
+     "A game",
+     "A phone app"
+    ],
+    "answer": 0,
+    "explain": "Needs rustc, cargo, cmake."
+   },
+   {
+    "q": "Where does the bot's key go?",
+    "options": [
+     ".env",
+     "config.yaml",
+     "chat",
+     "a note"
+    ],
+    "answer": 0,
+    "explain": "Never in the YAML."
+   },
+   {
+    "q": "Which route needs no clone?",
+    "options": [
+     "pipx",
+     "install.sh",
+     "install.ps1",
+     "docker only"
+    ],
+    "answer": 0,
+    "explain": "pipx install from git."
+   },
+   {
+    "q": "What validates config.yaml?",
+    "options": [
+     "--check",
+     "--run",
+     "--wipe",
+     "--zap"
+    ],
+    "answer": 0,
+    "explain": "Plain messages."
+   },
+   {
+    "q": "What applies most changes?",
+    "options": [
+     "!vectiq reload",
+     "!apply",
+     "!reboot",
+     "nothing"
+    ],
+    "answer": 0,
+    "explain": "Bot owners only."
+   },
+   {
+    "q": "Do module switches need a restart?",
+    "options": [
+     "Yes",
+     "No",
+     "Only some",
+     "Only on Docker"
+    ],
+    "answer": 0,
+    "explain": "Reload is not enough."
+   },
+   {
+    "q": "Which placeholder gives the member count?",
+    "options": [
+     "{count}",
+     "{name}",
+     "{mention}",
+     "{id}"
+    ],
+    "answer": 0,
+    "explain": "Number of members."
+   },
+   {
+    "q": "What previews the welcome message?",
+    "options": [
+     "!testwelcome",
+     "!welcome",
+     "!preview",
+     "!hello"
+    ],
+    "answer": 0,
+    "explain": "Needs Manage Community."
+   },
+   {
+    "q": "Which verification mode uses a web page?",
+    "options": [
+     "captcha",
+     "question",
+     "button",
+     "gate"
+    ],
+    "answer": 0,
+    "explain": "Needs a key and address."
+   },
+   {
+    "q": "Where does the CAPTCHA secret go?",
+    "options": [
+     ".env",
+     "config.yaml",
+     "chat",
+     "README"
+    ],
+    "answer": 0,
+    "explain": "Never in the YAML."
+   },
+   {
+    "q": "How do you write a space in a role name in a menu?",
+    "options": [
+     "underscore",
+     "dash",
+     "quote",
+     "slash"
+    ],
+    "answer": 0,
+    "explain": "Music_Lover."
+   },
+   {
+    "q": "What happens at the third warning by default?",
+    "options": [
+     "One-hour timeout",
+     "Ban",
+     "Nothing",
+     "Kick"
+    ],
+    "answer": 0,
+    "explain": "And at six and nine."
+   },
+   {
+    "q": "Which command lists a member's cases?",
+    "options": [
+     "!history",
+     "!purge",
+     "!lock",
+     "!poll"
+    ],
+    "answer": 0,
+    "explain": "All cases."
+   },
+   {
+    "q": "What does !purge 25 do?",
+    "options": [
+     "Deletes 25 messages",
+     "Bans 25",
+     "Warns 25",
+     "Lists 25"
+    ],
+    "answer": 0,
+    "explain": "Up to 100."
+   },
+   {
+    "q": "What lifts a tempban?",
+    "options": [
+     "The bot at the end time",
+     "A mod by hand",
+     "Nothing",
+     "The member"
+    ],
+    "answer": 0,
+    "explain": "Checked every 30 seconds."
+   },
+   {
+    "q": "What should a new safety rule begin with?",
+    "options": [
+     "action log",
+     "action ban",
+     "action kick",
+     "no test"
+    ],
+    "answer": 0,
+    "explain": "Watch first."
+   },
+   {
+    "q": "In linksafety, which list wins?",
+    "options": [
+     "allow",
+     "block",
+     "public lists",
+     "random"
+    ],
+    "answer": 0,
+    "explain": "Allow beats everything."
+   },
+   {
+    "q": "What catches resized copies of a picture?",
+    "options": [
+     "A perceptual hash",
+     "The file name",
+     "The upload time",
+     "The size"
+    ],
+    "answer": 0,
+    "explain": "Fingerprint."
+   },
+   {
+    "q": "Who is skipped by safety rules?",
+    "options": [
+     "Staff and exempt roles",
+     "Everyone",
+     "Nobody",
+     "Bots only"
+    ],
+    "answer": 0,
+    "explain": "Manage Messages."
+   },
+   {
+    "q": "Can both Sentire modules run?",
+    "options": [
+     "No, one slot",
+     "Yes",
+     "Only on Mac",
+     "Only with Docker"
+    ],
+    "answer": 0,
+    "explain": "Shared automod slot."
+   },
+   {
+    "q": "How often can XP be earned?",
+    "options": [
+     "Once per cooldown",
+     "Every message",
+     "Once a day",
+     "Never"
+    ],
+    "answer": 0,
+    "explain": "60 seconds by default."
+   },
+   {
+    "q": "How do you give a role at a level?",
+    "options": [
+     "!levelreward add",
+     "!rank",
+     "!daily",
+     "!shop"
+    ],
+    "answer": 0,
+    "explain": "Or in config."
+   },
+   {
+    "q": "When does a daily streak continue?",
+    "options": [
+     "Claim within 48 hours",
+     "Claim within 1 hour",
+     "Never",
+     "Weekly"
+    ],
+    "answer": 0,
+    "explain": "Else restarts."
+   },
+   {
+    "q": "How does a shop item give a role?",
+    "options": [
+     "role:Name in the description",
+     "A separate command",
+     "It cannot",
+     "!giverole"
+    ],
+    "answer": 0,
+    "explain": "Created if missing."
+   },
+   {
+    "q": "Total XP for level 5?",
+    "options": [
+     "1,150",
+     "500",
+     "5,000",
+     "250"
+    ],
+    "answer": 0,
+    "explain": "From the table."
+   },
+   {
+    "q": "What is required to create an event?",
+    "options": [
+     "Title and time",
+     "A picture",
+     "A length",
+     "Everything"
+    ],
+    "answer": 0,
+    "explain": "Others optional."
+   },
+   {
+    "q": "What fixes event times that are hours off?",
+    "options": [
+     "!event timezone",
+     "!event fix",
+     "!reboot",
+     "nothing"
+    ],
+    "answer": 0,
+    "explain": "Default is UTC."
+   },
+   {
+    "q": "How many poll options are allowed?",
+    "options": [
+     "2 to 9",
+     "1 to 3",
+     "10 to 20",
+     "Any"
+    ],
+    "answer": 0,
+    "explain": "Numbered reactions."
+   },
+   {
+    "q": "What does reroll do?",
+    "options": [
+     "Draws a replacement winner",
+     "Restarts",
+     "Cancels",
+     "Deletes"
+    ],
+    "answer": 0,
+    "explain": "After a giveaway ends."
+   },
+   {
+    "q": "Who sees a ticket?",
+    "options": [
+     "Opener and the support role",
+     "Everyone",
+     "The bot only",
+     "Nobody"
+    ],
+    "answer": 0,
+    "explain": "Name a support_role."
+   },
+   {
+    "q": "Is the security cam on by default?",
+    "options": [
+     "No",
+     "Yes",
+     "Only on Mac",
+     "Only for owners"
+    ],
+    "answer": 0,
+    "explain": "It shows everything."
+   },
+   {
+    "q": "Who decides game state?",
+    "options": [
+     "The bot",
+     "Each player",
+     "The relay",
+     "Chance"
+    ],
+    "answer": 0,
+    "explain": "Referee."
+   },
+   {
+    "q": "What does music need besides vectiq[music]?",
+    "options": [
+     "ffmpeg",
+     "Java",
+     "A printer",
+     "Docker only"
+    ],
+    "answer": 0,
+    "explain": "And yt-dlp."
+   },
+   {
+    "q": "What happens to old feed items when you add a feed?",
+    "options": [
+     "Remembered, not posted",
+     "All posted",
+     "Deleted",
+     "DMed"
+    ],
+    "answer": 0,
+    "explain": "No flood."
+   },
+   {
+    "q": "Is the dashboard on by default?",
+    "options": [
+     "No",
+     "Yes",
+     "Only for owners",
+     "Only on Mac"
+    ],
+    "answer": 0,
+    "explain": "modules.dashboard."
+   },
+   {
+    "q": "Who may sign in to the dashboard?",
+    "options": [
+     "Admins and bot owners",
+     "Anyone",
+     "Members",
+     "Bots"
+    ],
+    "answer": 0,
+    "explain": "Restricted."
+   },
+   {
+    "q": "What does MCP read_only do?",
+    "options": [
+     "Lets assistants only look",
+     "Hides the dashboard",
+     "Stops the bot",
+     "Locks the DB"
+    ],
+    "answer": 0,
+    "explain": "No changes."
+   },
+   {
+    "q": "What stops dashboard sign-in cookies working?",
+    "options": [
+     "http and https mismatch",
+     "Long passwords",
+     "Dark mode",
+     "Many members"
+    ],
+    "answer": 0,
+    "explain": "Set base_url correctly."
+   },
+   {
+    "q": "What is never inside a restore point?",
+    "options": [
+     "The bot's key",
+     "The database",
+     "Config",
+     "Pictures"
+    ],
+    "answer": 0,
+    "explain": "Keep your own copy."
+   },
+   {
+    "q": "What should you read first when something breaks?",
+    "options": [
+     "The log",
+     "Social media",
+     "The licence",
+     "Nothing"
+    ],
+    "answer": 0,
+    "explain": "Most problems are named."
+   },
+   {
+    "q": "Which flag restores a restore point?",
+    "options": [
+     "--restore N",
+     "--undo",
+     "--back",
+     "--revert"
+    ],
+    "answer": 0,
+    "explain": "Stop the bot first."
+   },
+   {
+    "q": "What if two copies of the bot run in one process?",
+    "options": [
+     "Only one Vector bot per process is allowed",
+     "Double XP",
+     "Both work",
+     "Nothing"
+    ],
+    "answer": 0,
+    "explain": "Stop the other."
+   }
+  ]
+ },
+ "sandbox": {
+  "type": "terminal",
+  "title": "Vectiq command cheat sheet",
+  "prompt": "!",
+  "intro": "A scripted lookup of chat commands, not the real bot. Try: ping, warn, timeout, ban, purge, level, daily, shop, event, giveaway, poll, ticket, game, play, notify, dashboard, backup, verify, help",
+  "chips": [
+   "ping",
+   "warn",
+   "timeout",
+   "ban",
+   "purge",
+   "level",
+   "daily",
+   "shop",
+   "event",
+   "giveaway",
+   "poll",
+   "ticket",
+   "game",
+   "play",
+   "notify",
+   "dashboard",
+   "backup",
+   "verify",
+   "help"
+  ],
+  "commands": [
+   {
+    "re": "^help$",
+    "out": [
+     "ping       !ping    the bot answers if it is running and in the communi",
+     "warn       !warn @sam reason   !warnings @sam   !delwarn 17   !clearwar",
+     "timeout    !timeout @sam 30m reason    !untimeout @sam",
+     "ban        !kick @sam   !ban @sam reason   !tempban @sam 3d reason",
+     "purge      !purge 25 deletes the last 25 (max 100)",
+     "level      !rank   !leaderboard [page]   !levelcurve",
+     "daily      !daily (200 coins, 24 h; keep the streak by claiming within ",
+     "shop       !shop   !buy VIP   !inventory",
+     "event      !event create Title | friday 8pm | 2h | description",
+     "giveaway   !giveaway start 1h 2 Prize   end ID   reroll ID   cancel ID ",
+     "poll       !poll Best colour? | Red | Green | Blue   (2 to 9 options)",
+     "ticket     !tickets open reason   claim   close   transcript 12",
+     "game       !game tictactoe | connect4 | trivia | slots",
+     "play       !play words or link   !search   !queue   !skip   !shuffle   ",
+     "notify     !module on notifications",
+     "dashboard  modules.dashboard: true, then open http://localhost:8090",
+     "backup     !restorepoint create label   !restorepoint rollback N confir",
+     "verify     modes: question, button, captcha"
+    ]
+   },
+   {
+    "re": "^ping$",
+    "out": [
+     "!ping    the bot answers if it is running and in the community",
+     "!help    lists what is on"
+    ]
+   },
+   {
+    "re": "^warn$",
+    "out": [
+     "!warn @sam reason   !warnings @sam   !delwarn 17   !clearwarns @sam",
+     "third warning: timeout of one hour (then 6 and 9)"
+    ]
+   },
+   {
+    "re": "^timeout$",
+    "out": [
+     "!timeout @sam 30m reason    !untimeout @sam",
+     "durations: 30m, 2h, 1d12h; max 28 days"
+    ]
+   },
+   {
+    "re": "^ban$",
+    "out": [
+     "!kick @sam   !ban @sam reason   !tempban @sam 3d reason",
+     "!softban @sam   !unban npub1... (also lifts softbans)"
+    ]
+   },
+   {
+    "re": "^purge$",
+    "out": [
+     "!purge 25 deletes the last 25 (max 100)",
+     "!lock / !unlock   !slowmode 10 (0 = off)"
+    ]
+   },
+   {
+    "re": "^level$",
+    "out": [
+     "!rank   !leaderboard [page]   !levelcurve",
+     "!levelreward add 5 Regular   !levelreward remove 5"
+    ]
+   },
+   {
+    "re": "^daily$",
+    "out": [
+     "!daily (200 coins, 24 h; keep the streak by claiming within 48 h)",
+     "!work   !balance   !deposit 100   !withdraw 100   !pay @sam 50"
+    ]
+   },
+   {
+    "re": "^shop$",
+    "out": [
+     "!shop   !buy VIP   !inventory",
+     "admin: !shop add 500 VIP | description role:Name   !shop remove VIP"
+    ]
+   },
+   {
+    "re": "^event$",
+    "out": [
+     "!event create Title | friday 8pm | 2h | description",
+     "!event timezone America/New_York   !event rsvp 4 going",
+     "!event edit 4 capacity 8 / repeat weekly / remind 1d, 30m"
+    ]
+   },
+   {
+    "re": "^giveaway$",
+    "out": [
+     "!giveaway start 1h 2 Prize   end ID   reroll ID   cancel ID   list"
+    ]
+   },
+   {
+    "re": "^poll$",
+    "out": [
+     "!poll Best colour? | Red | Green | Blue   (2 to 9 options)",
+     "!analytics 30   !userinfo @sam   !communityinfo"
+    ]
+   },
+   {
+    "re": "^ticket$",
+    "out": [
+     "!tickets open reason   claim   close   transcript 12"
+    ]
+   },
+   {
+    "re": "^game$",
+    "out": [
+     "!game tictactoe | connect4 | trivia | slots",
+     "!gamestats   !gameboard trivia"
+    ]
+   },
+   {
+    "re": "^play$",
+    "out": [
+     "!play words or link   !search   !queue   !skip   !shuffle   !volume 60   !filter bassboost"
+    ]
+   },
+   {
+    "re": "^notify$",
+    "out": [
+     "!module on notifications",
+     "!notify add youtube @Name #videos   !notify add twitch name #live @Role   !notify remove 2"
+    ]
+   },
+   {
+    "re": "^dashboard$",
+    "out": [
+     "modules.dashboard: true, then open http://localhost:8090",
+     "!dashboard sends a sign-in link by DM",
+     "vectiq --add-user NAME --npub npub1..."
+    ]
+   },
+   {
+    "re": "^backup$",
+    "out": [
+     "!restorepoint create label   !restorepoint rollback N confirm",
+     "vectiq --backup label; --list-backups; --restore N (bot stopped)"
+    ]
+   },
+   {
+    "re": "^verify$",
+    "out": [
+     "modes: question, button, captcha",
+     "!verification   !forceverify @sam   !unverify @sam   !softban @sam"
+    ]
+   },
+   {
+    "re": ".",
+    "out": [
+     "Unknown command. Type help."
+    ],
+    "cls": "err"
+   }
+  ],
+  "tasks": []
+ },
+ "images": {
+  "vu-1-1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 300\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">From nothing to !ping</title><desc id=\"d\">Steps to a running bot.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"300\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >From nothing to !ping</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#ff6b6b\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Own Vector account</text><text x=\"120.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >never your personal key</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Install</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >script, pipx or Docker</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Key in .env</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >VECTOR_NSEC</text><line x1=\"580\" y1=\"112\" x2=\"580\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"580\" y1=\"130\" x2=\"120\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"120\" y1=\"130\" x2=\"120\" y2=\"150\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"20\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Invite the bot</text><text x=\"120.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >admin of the community</text><line x1=\"220\" y1=\"181\" x2=\"250\" y2=\"181\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!ping</text><text x=\"350.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >it answers</text><text x=\"350\" y=\"284\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Use a separate account just for the bot.</text></svg>\n",
+  "vu-1-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 222\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Ways to install</title><desc id=\"d\">Four routes.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"222\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Ways to install</text><text x=\"175\" y=\"56\" font-size=\"13\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"700\" >Scripts</text><text x=\"525\" y=\"56\" font-size=\"13\" fill=\"#76b900\" text-anchor=\"middle\" font-weight=\"700\" >Packages</text><rect x=\"20\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >install.sh</text><text x=\"180.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >macOS and Linux, does everything</text><rect x=\"20\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >install.ps1</text><text x=\"180.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Windows with winget</text><rect x=\"360\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >pipx or pip</text><text x=\"520.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >no clone needed</text><rect x=\"360\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Docker Compose</text><text x=\"520.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >NAS or server</text><text x=\"350\" y=\"206\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >All of them need a first build of the Rust core.</text></svg>\n",
+  "vu-2-1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 354\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Where to change things</title><desc id=\"d\">From easy to precise.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"354\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Where to change things</text><rect x=\"30\" y=\"48\" width=\"640\" height=\"52\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"71.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Setup wizard</text><text x=\"350.0\" y=\"88.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >questions, one per screen</text><line x1=\"350\" y1=\"100\" x2=\"350\" y2=\"114\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"30\" y=\"114\" width=\"640\" height=\"52\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"137.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Dashboard</text><text x=\"350.0\" y=\"154.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >pages for each feature</text><line x1=\"350\" y1=\"166\" x2=\"350\" y2=\"180\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"30\" y=\"180\" width=\"640\" height=\"52\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"203.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >config.yaml</text><text x=\"350.0\" y=\"220.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >every setting, with comments</text><line x1=\"350\" y1=\"232\" x2=\"350\" y2=\"246\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"30\" y=\"246\" width=\"640\" height=\"52\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"269.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Chat commands</text><text x=\"350.0\" y=\"286.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >!module, !vectiq reload</text><text x=\"350\" y=\"320\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Check with --check before you apply.</text></svg>\n",
+  "vu-2-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 200\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Safe change loop</title><desc id=\"d\">Edit, check, apply.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"200\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Safe change loop</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"86.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >edit config.yaml</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >vectiq --check</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >plain error messages</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!vectiq reload</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >most changes</text><line x1=\"680\" y1=\"81\" x2=\"710\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"710\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e06aa8\" stroke-width=\"1.5\"/><text x=\"810.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >restart</text><text x=\"810.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >for module switches</text><text x=\"350\" y=\"184\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >A restore point is made before the wizard saves.</text></svg>\n",
+  "vu-3-1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 300\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">A new member's path</title><desc id=\"d\">Welcome, verify, pick roles.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"300\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >A new member's path</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"86.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >joins</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >welcome message</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >channel greeting</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >verification</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >question, button or captcha</text><line x1=\"580\" y1=\"112\" x2=\"580\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"580\" y1=\"130\" x2=\"120\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"120\" y1=\"130\" x2=\"120\" y2=\"150\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"20\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >role menu</text><text x=\"120.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >react to pick roles</text><line x1=\"220\" y1=\"181\" x2=\"250\" y2=\"181\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >all set</text><text x=\"350.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >done_message</text><text x=\"350\" y=\"284\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Each of the three modules also works alone.</text></svg>\n",
+  "vu-3-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 222\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Welcome placeholders</title><desc id=\"d\">Fill-ins for welcome text.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"222\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Welcome placeholders</text><text x=\"175\" y=\"56\" font-size=\"13\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"700\" >Who</text><text x=\"525\" y=\"56\" font-size=\"13\" fill=\"#76b900\" text-anchor=\"middle\" font-weight=\"700\" >Where</text><rect x=\"20\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >{mention}</text><text x=\"180.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >pings the member</text><rect x=\"20\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >{name}</text><text x=\"180.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >their name</text><rect x=\"360\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >{community}</text><text x=\"520.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >community name</text><rect x=\"360\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >{count}</text><text x=\"520.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >member number</text><text x=\"350\" y=\"206\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Preview with !testwelcome.</text></svg>\n",
+  "vu-4-1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 300\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Escalating warnings</title><desc id=\"d\">Warn counts trigger an action.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"300\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Escalating warnings</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >warn 1</text><text x=\"120.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >record only</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >warn 2</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >record only</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#ff6b6b\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >warn 3</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >timeout 60 min</text><line x1=\"580\" y1=\"112\" x2=\"580\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"580\" y1=\"130\" x2=\"120\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"120\" y1=\"130\" x2=\"120\" y2=\"150\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"20\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#ff6b6b\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >warn 6</text><text x=\"120.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >again</text><line x1=\"220\" y1=\"181\" x2=\"250\" y2=\"181\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#ff6b6b\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >warn 9</text><text x=\"350.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >again</text><text x=\"350\" y=\"284\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Set warn_action to none to keep warnings as a record.</text></svg>\n",
+  "vu-4-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 278\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Mod tools</title><desc id=\"d\">Everyday commands.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"278\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Mod tools</text><text x=\"175\" y=\"56\" font-size=\"13\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"700\" >People</text><text x=\"525\" y=\"56\" font-size=\"13\" fill=\"#76b900\" text-anchor=\"middle\" font-weight=\"700\" >Places and history</text><rect x=\"20\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!warn / !warnings</text><text x=\"180.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >record and look up</text><rect x=\"20\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!timeout / !untimeout</text><text x=\"180.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >mute for a while</text><rect x=\"20\" y=\"180\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"200.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!tempban</text><text x=\"180.0\" y=\"217.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >ban that lifts itself</text><rect x=\"360\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!softban</text><text x=\"520.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >kick on sight</text><rect x=\"360\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!purge / !lock</text><text x=\"520.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >clean up</text><rect x=\"360\" y=\"180\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"200.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!case / !history / !modlog</text><text x=\"520.0\" y=\"217.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >look back</text><text x=\"350\" y=\"262\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Staff need the matching Vector permission.</text></svg>\n",
+  "vu-5-1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 354\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Layers of protection</title><desc id=\"d\">From the door to the room.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"354\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Layers of protection</text><rect x=\"30\" y=\"48\" width=\"640\" height=\"52\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"71.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Verification and gate</text><text x=\"350.0\" y=\"88.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >who gets in</text><line x1=\"350\" y1=\"100\" x2=\"350\" y2=\"114\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"30\" y=\"114\" width=\"640\" height=\"52\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"137.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Link safety</text><text x=\"350.0\" y=\"154.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >bad links removed</text><line x1=\"350\" y1=\"166\" x2=\"350\" y2=\"180\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"30\" y=\"180\" width=\"640\" height=\"52\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"203.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Image guard</text><text x=\"350.0\" y=\"220.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >blocklist and nudity detector</text><line x1=\"350\" y1=\"232\" x2=\"350\" y2=\"246\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"30\" y=\"246\" width=\"640\" height=\"52\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e06aa8\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"269.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Sentire automod</text><text x=\"350.0\" y=\"286.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >strike scores and raids</text><text x=\"350\" y=\"320\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Start every rule with action log.</text></svg>\n",
+  "vu-5-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 200\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Tuning a rule</title><desc id=\"d\">Be gentle first.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"200\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Tuning a rule</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >action: log</text><text x=\"120.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >watch the mod log</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >adjust threshold</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >or allow lists</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >action: delete</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >when happy</text><line x1=\"680\" y1=\"81\" x2=\"710\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"710\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#ff6b6b\" stroke-width=\"1.5\"/><text x=\"810.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >warn or timeout</text><text x=\"810.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >only if needed</text><text x=\"350\" y=\"184\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >No detector is perfect.</text></svg>\n",
+  "vu-6-1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 222\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Ways members earn</title><desc id=\"d\">Coins and XP.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"222\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Ways members earn</text><text x=\"175\" y=\"56\" font-size=\"13\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"700\" >Levels</text><text x=\"525\" y=\"56\" font-size=\"13\" fill=\"#76b900\" text-anchor=\"middle\" font-weight=\"700\" >Coins</text><rect x=\"20\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >chatting</text><text x=\"180.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >XP once a minute</text><rect x=\"20\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!daily</text><text x=\"180.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >200 coins, streak bonus</text><rect x=\"360\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!work</text><text x=\"520.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >40 to 120 coins</text><rect x=\"360\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >games</text><text x=\"520.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >winner coins</text><text x=\"350\" y=\"206\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Both can be turned on or off per module.</text></svg>\n",
+  "vu-6-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 300\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">The shop</title><desc id=\"d\">Admins stock, members buy.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"300\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >The shop</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!shop add</text><text x=\"120.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >price name | description</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!shop</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >members look</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!buy VIP</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >coins leave the wallet</text><line x1=\"580\" y1=\"112\" x2=\"580\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"580\" y1=\"130\" x2=\"120\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"120\" y1=\"130\" x2=\"120\" y2=\"150\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"20\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >role:Name</text><text x=\"120.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >role is given</text><line x1=\"220\" y1=\"181\" x2=\"250\" y2=\"181\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!inventory</text><text x=\"350.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >see what you own</text><text x=\"350\" y=\"284\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Items can give roles.</text></svg>\n",
+  "vu-7-1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 300\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">An event's life</title><desc id=\"d\">From post to repeat.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"300\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >An event's life</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!event create</text><text x=\"120.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >title | when | length</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >RSVP reactions</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >going, maybe, no</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >reminders</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >channel and DMs</text><line x1=\"580\" y1=\"112\" x2=\"580\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"580\" y1=\"130\" x2=\"120\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"120\" y1=\"130\" x2=\"120\" y2=\"150\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"20\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >starts</text><text x=\"120.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >starting now post</text><line x1=\"220\" y1=\"181\" x2=\"250\" y2=\"181\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e06aa8\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >repeat</text><text x=\"350.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >fresh post, clean RSVPs</text><text x=\"350\" y=\"284\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Set the time zone once.</text></svg>\n",
+  "vu-7-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 222\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Other activities</title><desc id=\"d\">Giveaways, polls, events.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"222\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Other activities</text><text x=\"175\" y=\"56\" font-size=\"13\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"700\" >Giveaways</text><text x=\"525\" y=\"56\" font-size=\"13\" fill=\"#76b900\" text-anchor=\"middle\" font-weight=\"700\" >Polls</text><rect x=\"20\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!giveaway start 1h 2 Prize</text><text x=\"180.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >react to enter</text><rect x=\"20\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!giveaway reroll</text><text x=\"180.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >replacement winner</text><rect x=\"360\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!poll Q | A | B</text><text x=\"520.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >2 to 9 options</text><rect x=\"360\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!analytics 30</text><text x=\"520.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >activity numbers</text><text x=\"350\" y=\"206\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >All need Manage Messages except voting.</text></svg>\n",
+  "vu-8-1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 200\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">A ticket</title><desc id=\"d\">Open, claim, close.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"200\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >A ticket</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!tickets open</text><text x=\"120.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >private channel made</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!tickets claim</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >staff takes it</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!tickets close</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >or react with a lock</text><line x1=\"680\" y1=\"81\" x2=\"710\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"710\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"810.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >transcript</text><text x=\"810.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >kept afterwards</text><text x=\"350\" y=\"184\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Name a support_role so staff can see tickets.</text></svg>\n",
+  "vu-8-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 222\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Ticket settings</title><desc id=\"d\">Four main settings.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"222\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Ticket settings</text><text x=\"175\" y=\"56\" font-size=\"13\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"700\" >Where</text><text x=\"525\" y=\"56\" font-size=\"13\" fill=\"#76b900\" text-anchor=\"middle\" font-weight=\"700\" >Who</text><rect x=\"20\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >category</text><text x=\"180.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >where channels go</text><rect x=\"20\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >support_role</text><text x=\"180.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >who sees all</text><rect x=\"360\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >max_open_per_user</text><text x=\"520.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >limit per member</text><rect x=\"360\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >transcripts</text><text x=\"520.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >keep the messages</text><text x=\"350\" y=\"206\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >The bot needs Manage Channels.</text></svg>\n",
+  "vu-9-1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 222\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Play and connect</title><desc id=\"d\">Fun and feeds.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"222\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Play and connect</text><text x=\"175\" y=\"56\" font-size=\"13\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"700\" >Games</text><text x=\"525\" y=\"56\" font-size=\"13\" fill=\"#76b900\" text-anchor=\"middle\" font-weight=\"700\" >Music and alerts</text><rect x=\"20\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!game tictactoe</text><text x=\"180.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >also connect4, trivia, slots</text><rect x=\"20\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!gamestats</text><text x=\"180.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >your record</text><rect x=\"360\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!play song</text><text x=\"520.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >music in voice</text><rect x=\"360\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!notify add youtube</text><text x=\"520.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >stream and video alerts</text><text x=\"350\" y=\"206\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Games need nothing extra; music needs yt-dlp and ffmpeg.</text></svg>\n",
+  "vu-9-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 200\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Adding a feed</title><desc id=\"d\">Alerts without floods.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"200\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Adding a feed</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"86.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!module on notifications</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"86.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >!notify add youtube @Name #videos</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >old items remembered</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >not posted</text><line x1=\"680\" y1=\"81\" x2=\"710\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"710\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"810.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >new items posted</text><text x=\"810.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >at most max_per_check</text><text x=\"350\" y=\"184\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Twitch needs a free app and keys in .env.</text></svg>\n",
+  "vu-10-1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 222\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Control surfaces</title><desc id=\"d\">Pick your style.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"222\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Control surfaces</text><text x=\"175\" y=\"56\" font-size=\"13\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"700\" >People</text><text x=\"525\" y=\"56\" font-size=\"13\" fill=\"#76b900\" text-anchor=\"middle\" font-weight=\"700\" >Machines</text><rect x=\"20\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Dashboard</text><text x=\"180.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >browser, sign in by code or password</text><rect x=\"20\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Chat commands</text><text x=\"180.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >fast and scriptable</text><rect x=\"360\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >MCP assistant</text><text x=\"520.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Claude with a token</text><rect x=\"360\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Webhooks</text><text x=\"520.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >outside tools post in</text><text x=\"350\" y=\"206\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Every dashboard change is in the audit log.</text></svg>\n",
+  "vu-10-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 300\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Securing the dashboard</title><desc id=\"d\">Before it leaves your computer.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"300\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Securing the dashboard</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >host 127.0.0.1</text><text x=\"120.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >this computer only</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >HTTPS in front</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Caddy or Tailscale</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >set base_url</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >the public address</text><line x1=\"580\" y1=\"112\" x2=\"580\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"580\" y1=\"130\" x2=\"120\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"120\" y1=\"130\" x2=\"120\" y2=\"150\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"20\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#ff6b6b\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >owners and admins</text><text x=\"120.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >only they sign in</text><text x=\"350\" y=\"284\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Match http and https or cookies fail.</text></svg>\n",
+  "vu-11-1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 200\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Keeping it healthy</title><desc id=\"d\">A regular routine.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"200\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Keeping it healthy</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >watch the log</text><text x=\"120.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >most problems are named</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >restore point</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >before updates</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >update</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >git pull or pipx upgrade</text><line x1=\"680\" y1=\"81\" x2=\"710\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"710\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"810.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >check</text><text x=\"810.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >vectiq --check</text><text x=\"350\" y=\"184\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Copy restore points off the machine.</text></svg>\n",
+  "vu-11-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 222\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Quick fixes</title><desc id=\"d\">Common problems.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"222\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Quick fixes</text><text x=\"175\" y=\"56\" font-size=\"13\" fill=\"#4fa8ff\" text-anchor=\"middle\" font-weight=\"700\" >Commands</text><text x=\"525\" y=\"56\" font-size=\"13\" fill=\"#76b900\" text-anchor=\"middle\" font-weight=\"700\" >Pages and games</text><rect x=\"20\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >silent bot</text><text x=\"180.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >prefix, module on, permissions</text><rect x=\"20\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"180.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >wrong event time</text><text x=\"180.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >!event timezone</text><rect x=\"360\" y=\"68\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"88.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >blank dashboard</text><text x=\"520.0\" y=\"105.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >base_url and port</text><rect x=\"360\" y=\"124\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"520.0\" y=\"144.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >game says retry</text><text x=\"520.0\" y=\"161.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >reopen the app</text><text x=\"350\" y=\"206\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Start with the log.</text></svg>\n"
+ },
+ "category": "Programming",
+ "level": "Beginner",
+ "tags": [
+  "vectiq",
+  "vector",
+  "community management",
+  "moderation",
+  "bots",
+  "discord alternative",
+  "events",
+  "tickets",
+  "self-hosting"
+ ]
+}

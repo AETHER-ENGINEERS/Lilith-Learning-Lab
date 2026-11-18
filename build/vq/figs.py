@@ -58,7 +58,7 @@ def xpbars():
         s.rect(x, 280 - h, 44, h, PANEL, [BLUE, GRN, AMB][i % 3], 4, 1.5)
         s.text(x + 22, 274 - h, str(v), 11, TX)
         s.text(x + 22, 298, "L%d" % (i + 1), 11, DIM)
-    s.text(350, 320, "Each level costs a little more than the one before. Level 10 needs 3720 XP in total.", 11.5, DIM)
+    s.text(350, 320, "Each level costs a little more than the one before. Level 10 needs 4675 XP in total.", 11.5, DIM)
     return s
 
 
