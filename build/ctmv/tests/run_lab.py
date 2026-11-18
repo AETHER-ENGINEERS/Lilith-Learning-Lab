@@ -10,10 +10,21 @@ def wrap(lab_html):
     return '<!doctype html><body><script>window.lilith={complete:function(){window.__done=true}};addEventListener("message",e=>{if(e.data==="done")window.__done=true})</script>' \
            '<iframe id=f sandbox="allow-scripts allow-forms allow-modals allow-downloads" style="width:500px;height:900px" srcdoc="%s"></iframe></body>' % H.escape(inner, quote=True)
 
+
+TAP = """() => { const cv = document.getElementById('vzc'); const r = cv.getBoundingClientRect(); const fire = (t, x, y, el) => (el || window).dispatchEvent(new MouseEvent(t, {clientX: r.left + x, clientY: r.top + y, bubbles: true}));
+  const h = VZ.hit[VZ.hit.length - 1]; fire('mousedown', h.x, h.y, cv); fire('mouseup', h.x, h.y); return VZ.sel; }"""
+DRAG = """() => { const cv = document.getElementById('vzc'); const r = cv.getBoundingClientRect(); const fire = (t, x, y, el) => (el || window).dispatchEvent(new MouseEvent(t, {clientX: r.left + x, clientY: r.top + y, bubbles: true}));
+  fire('mousedown', 50, 50, cv); fire('mousemove', 120, 70); fire('mouseup', 120, 70); }"""
+
 def drive(key, fr, pg):
+    fr.click('button[data-t=x]'); fr.wait_for_timeout(400)
+    if key == 'three': fr.evaluate(DRAG)
+    if key != 'garden': print('   tap ->', fr.evaluate(TAP))
+    if key == 'warp': fr.evaluate("document.getElementById('vzlam').value=0.8;document.getElementById('vzlam').dispatchEvent(new Event('input'))")
+    pg.screenshot(path='/tmp/ctmv_viz_%s.png' % key)
     c = lambda s: fr.click(s)
     if key == 'three':
-        fr.select_option('#note', 'retry-storm'); c('button[data-t=v]')
+        c('button[data-t=v]'); fr.select_option('#note', 'retry-storm')
         c('button[data-t=g]'); c('#runq'); assert 'overload' in fr.inner_text('#gout'), fr.inner_text('#gout')
         c('#runv'); assert 'PROVEN' in fr.inner_text('#gout')
         c('button[data-t=m]'); fr.select_option('#mnote','retry-storm'); c('#runk'); print('   ', fr.inner_text('#mout')[:200]); assert 'circuit-breaker' in fr.inner_text('#mout')

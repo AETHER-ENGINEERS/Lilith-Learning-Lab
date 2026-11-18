@@ -16,6 +16,10 @@ table{border-collapse:collapse;width:100%;font-size:12px}td,th{border-bottom:1px
 <div id="app" style="display:none">
 <div class="goal"><b id="gt"></b><ul id="goals" style="margin:4px 0 0;padding:0"></ul></div>
 <div class="row" id="tabs"></div>
+<div id="p-x" class="panel"><h3>The three layers in 3D</h3><small>Top: G, the ideas jade-kg finds in two or more notes. Middle: V, your notes grouped by area. Bottom: M, the real sqlite-vec vectors squeezed to 2D. Drag to orbit, tap a note. Pink dashes are bridges, red dashes are disputes, amber dashes mark a replaced note.</small>
+ <div class="row"><button id="vzG" class="on">G</button><button id="vzV" class="on">V</button><button id="vzM" class="on">M</button><button id="vzorb" class="on">Auto-orbit</button>
+ <label>pull λ <input type="range" id="vzlam" min="0" max="1" step="0.05" value="0.75"><b id="vzlamv">0.75</b></label><label>push μ <input type="range" id="vzmu" min="0" max="1" step="0.1" value="0.5"><b id="vzmuv">0.5</b></label></div>
+ <canvas id="vzc" style="width:100%;height:380px;background:#04060e;border-radius:8px;touch-action:none;cursor:grab"></canvas><div id="vzinfo" class="dim" style="margin-top:4px"></div></div>
 <div id="p-v" class="panel"><h3>V · the markdown vault</h3><small>Plain files in the kit's virtual file system. This is the only thing that is ever precious.</small>
  <div class="row"><select id="note"></select><button id="saveNote">Save note</button><button id="newNote">New note</button></div>
  <textarea id="md" spellcheck="false"></textarea><div id="vmsg" class="dim"></div></div>
@@ -67,11 +71,11 @@ async function rebuild(dim) {
   if (kg) E.kgCall({ op: 'free', handle: kg.handle });
   kg = E.loadKg(notes); vecs = await E.buildMani(db, notes, dim); es = E.edgeSets(notes, kg);
   const sel = ['note', 'mnote']; for (const id of sel) { const cur = $(id).value; $(id).innerHTML = notes.map(n => `<option>${n.name}</option>`).join(''); if (cur && vault[cur]) $(id).value = cur; }
-  showNote(); $('rules').textContent = E.RULES;
+  showNote(); $('rules').textContent = E.RULES; if (window.vizRebuild) vizRebuild();
 }
 const showNote = () => { const n = $('note').value; $('md').value = vault[n] || ''; };
 function tabs() {
-  const names = { v: 'V notes', g: 'G facts', m: 'M manifold', d: 'δ & bridges', w: 'Warp', r: 'Garden & replay' };
+  const names = { x: '3D view', v: 'V notes', g: 'G facts', m: 'M manifold', d: 'δ & bridges', w: 'Warp', r: 'Garden & replay' };
   $('tabs').innerHTML = TABS.map(t => `<button data-t="${t}">${names[t]}</button>`).join('');
   $('tabs').onclick = e => { const t = e.target.dataset.t; if (!t) return; open(t); };
   open(TABS[0]);
@@ -132,4 +136,5 @@ $('replay').onclick = async () => {
   if (same && before.dim !== after.dim) goal('replay');
 };
 boot().then(() => { $('load').style.display = 'none'; $('app').style.display = 'block'; tabs(); paintGoals(); window.__ready = true; }).catch(e => { $('load').textContent = 'Could not start: ' + e.message; window.__err = String(e.stack || e); });
-</script></body></html>
+</script>
+<script>/*__VIZ__*/</script></body></html>
