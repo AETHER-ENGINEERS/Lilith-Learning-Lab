@@ -1,6 +1,6 @@
 # CTMV claim benchmark and the curiosity, creativity and inquiry experiments
 
-Date: 2026-11-18. Harness in this folder: `gen_vaults.py`, `run_bench.mjs`, `run_scale.mjs`, `analyze.py` (claims); `llm_extract.py` (language-model extractor); `curiosity.py`, `llm_leap.py` (curiosity and leaps); `inquiry.py`, `run_inquiry.py`, `run_inquiry2.py` (inquiry agent); `llm_graph.py`, `iso.py` (isomorphism hunting). Real engines (jade-kg WASM, sqlite-vec), real embeddings (bge-small-en-v1.5, all-MiniLM-L6-v2) and a real language model (gemma4:31b through Ollama cloud). 60 generated vaults (30 templated, 30 hand-rewritten style) of about 100 notes with planted bridges, false friends, replaced notes, disputes and causal chains. Intervals are 95% bootstrap. The inquiry experiments use simulated worlds.
+Date: 2026-11-18. Harness in this folder: `gen_vaults.py`, `run_bench.mjs`, `run_scale.mjs`, `analyze.py` (claims); `llm_extract.py` (language-model extractor); `curiosity.py`, `llm_leap.py` (curiosity and leaps); `inquiry.py`, `run_inquiry.py`, `run_inquiry2.py` (inquiry agent); `llm_graph.py`, `iso.py` (isomorphism hunting); `egg_iso.py`, `egg_sp.py` (egglog). Real engines (jade-kg WASM, sqlite-vec), real embeddings (bge-small-en-v1.5, all-MiniLM-L6-v2) and a real language model (gemma4:31b through Ollama cloud). 60 generated vaults (30 templated, 30 hand-rewritten style) of about 100 notes with planted bridges, false friends, replaced notes, disputes and causal chains. Intervals are 95% bootstrap. The inquiry experiments use simulated worlds.
 
 ## Part 1. Verdicts on the original claims (updated after the fixes and the language-model run)
 
@@ -115,6 +115,44 @@ Findings, plainly:
 3. **Anti-unification gives checkable patterns, and loop patterns come out well.** Many of the extracted rules are too generic to be useful, so keep rules with a loop or three or more edges, and send the rest back to the language model or to you.
 4. **Gromov-Wasserstein is the surprise**: the best structure-only AUROC under distractors (0.84), and it never matched a false friend. It needs graphs with two or more nodes.
 5. Weak spots: patterns that are not loops (redundancy, buffer, bottleneck) are hard to express as a few signed edges. Everything depends on the extraction step, and the planted analogies are clear.
+
+
+## Part 9. Invariants and isomorphisms with egglog (`egg_iso.py`, `egg_sp.py`)
+
+Question: can equality saturation (egglog 14.0) make the invariants and isomorphisms visible? Setup: the same 20 language-model-extracted graph vaults as Part 8. Two experiments.
+
+**9a. Feedback loops.** Each loop in a note's graph is a cyclic sequence of signs. Rules given to egglog: rotation does not change a loop; signs multiply around the loop (polarity); length counts edges. After saturation, two loops share an e-class exactly when they are isomorphic as signed loops. 12 distinct loops fell into 9 classes. The result agreed with a plain Python rotation check in every case (0 disagreements), so here egglog is correct but adds no power over a few lines of code; its value is that the laws are declarative and can be extended.
+
+The derived invariants show clearly which patterns are loops and what kind (notes per true pattern, polarity P or M and loop length):
+
+| true pattern | notes | with no loop | loops found |
+|---|---|---|---|
+| positive feedback | 57 | 0 | P (even): length 2: 17, 3: 17, 4: 16, 1: 7 |
+| contagion | 43 | 6 | P: length 1: 24, 2: 13 |
+| threshold cascade | 60 | 17 | P: length 3: 36, 4: 6 |
+| negative feedback | 47 | 6 | M (odd): length 2: 22, 3: 19; P2: 6 |
+| oscillation | 43 | 3 | M: length 2: 16, 3: 9; P2: 8; P1: 6 |
+| bottleneck | 55 | 55 | none |
+| buffer | 45 | 45 | none |
+| redundancy | 59 | 59 | none |
+
+Reading: loop polarity is a real invariant. Even (reinforcing) loops mark positive feedback, contagion and threshold cascades. Odd (balancing) loops mark negative feedback and oscillation. Bottleneck, buffer and redundancy (159 of 409 pattern notes) never form a loop at all.
+
+| method | P@K | AUROC | false friends in top K |
+|---|---|---|---|
+| same isomorphic loop | 0.16 | 0.57 | 0.10 |
+| same polarity and length | 0.18 | 0.58 | 0.10 |
+| same polarity only | **0.32** | 0.69 | 0.00 |
+
+Pairs sharing an isomorphic loop: 131, of which 71 true bridges (precision 0.54, recall 0.13). As a check on the language model's hunch (550 proposed, 549 correct) a shared loop keeps 71 with 70 correct: precision 0.99, recall 0.13. The polarity-only score gives the best structure-only P@K so far (0.32, against 0.24 for anti-unification and 0.23 for Gromov-Wasserstein) and never matched a false friend. It is a coarse class label, not a pair finder: positive feedback and threshold cascade share the same polarity.
+
+**9b. Patterns without loops.** Graphs reduced to series-parallel terms (merge parallel edges, merge pass-through nodes), then egglog decides equality modulo associativity and commutativity. 20 distinct reduced terms fell into 17 classes. Pairs sharing a piece: 364, true bridges 76 (precision 0.21, recall 0.14); P@K 0.15, AUROC 0.56. The pieces are dominated by generic two-step chains ("up then up", 148 of the pieces). Bottleneck, buffer and redundancy notes yield almost no distinctive structure, because the extractor draws them as one or two edges.
+
+Findings, plainly:
+1. **Egglog does make one invariant visible: loop polarity**, and it cleanly separates reinforcing from balancing structures. That is useful as a label and as an explanation.
+2. **It does not find isomorphisms the extractor did not draw.** About 40% of the pattern notes have no loop, and the structure left for them is too generic to match. The limit is the extraction, not the matcher.
+3. **It does not beat the language model's hunch.** As a verifier it behaves like anti-unification (99% precision) with lower recall.
+4. **Egglog proves equalities under laws you supply; it does not discover the laws.** Rule synthesis for e-graphs (for example Ruler) is a possible next step and was not tested.
 
 ## Part 5. Limitations of all of the above
 
