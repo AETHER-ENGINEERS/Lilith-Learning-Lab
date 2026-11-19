@@ -15,12 +15,12 @@ out = []
 P = lambda *a: out.append(' '.join(str(x) for x in a))
 data = {'templated': load(sys.argv[1]), 'rewritten': load(sys.argv[2])}
 scale = load(sys.argv[3])
-ACC = {'oracle': 'oracle claims', 'acc90': 'pattern labels 90% right', 'acc70': 'pattern labels 70% right', 'acc50': 'pattern labels 50% right', 'recall50': '50% of claims missed', 'realistic': 'realistic mix (70% recall, 20% entity mismatch, 10% wrong)', 'tagger': 'automatic few-shot embedding tagger'}
+ACC = {'llm': 'language model (gemma4:31b) reads each note', 'oracle': 'oracle claims', 'acc90': 'pattern labels 90% right', 'acc70': 'pattern labels 70% right', 'acc50': 'pattern labels 50% right', 'recall50': '50% of claims missed', 'realistic': 'realistic mix (70% recall, 20% entity mismatch, 10% wrong)', 'tagger': 'automatic few-shot embedding tagger'}
 for style, R in data.items():
     n = len(sel(R, 'oracle')); P(f'\n## Style: {style} text ({n} vaults, bge-small embeddings)\n')
     P('### T1. Cross-domain bridges: precision@K of unlinked cross-domain pairs (K = number of true bridges)\n')
     P('| extractor quality | dense | keyword | hybrid | CTMV | CTMV candidate set: precision / recall |'); P('|---|---|---|---|---|---|')
-    for v in ['oracle', 'acc90', 'acc70', 'acc50', 'recall50', 'realistic', 'tagger']:
+    for v in ['oracle', 'llm', 'acc90', 'acc70', 'acc50', 'recall50', 'realistic', 'tagger']:
         rs = sel(R, v)
         if not rs: continue
         cells = [fmt(ci([r['t1'][m]['pk'] for r in rs])) for m in ['dense', 'lexical', 'hybrid', 'ctmv']]
@@ -29,24 +29,30 @@ for style, R in data.items():
     P(f"Bridges that dense search ranks outside its top 3K: {np.mean([r['t1']['hard']['n'] for r in rs]):.1f} per vault on average; CTMV's candidate set contains {fmt(ci([r['t1']['hard']['ctmvRec'] for r in rs]))} of them with oracle claims.\n")
     P('### T2. Contradictions: top-3 retrieval, 6 superseded-note queries and 4 dispute queries per vault\n')
     P('| extractor quality | method | current note found | stale note also returned | dispute: both returned unflagged |'); P('|---|---|---|---|---|')
-    for v in ['oracle', 'recall80', 'canon30', 'realistic']:
+    for v in ['oracle', 'llm', 'recall80', 'canon30', 'realistic']:
         rs = sel(R, v)
         if not rs: continue
         for m in ['dense', 'hybrid', 'linkdedupe', 'ctmv']:
             P('| %s | %s | %s | %s | %s |' % (ACC.get(v, v) if m == 'dense' else '', m, fmt(ci([r['t2']['sup'][m]['hit'] for r in rs])), fmt(ci([r['t2']['sup'][m]['stale'] for r in rs])), fmt(ci([r['t2']['dis'][m]['silentBoth'] for r in rs]))))
     P('\nConstraint check (Datalog): detects planted disputes, and false alarms.\n')
     P('| extractor quality | disputes detected | false alarms per vault | replaced notes recognised |'); P('|---|---|---|---|')
-    for v in ['oracle', 'recall80', 'canon30', 'realistic']:
+    for v in ['oracle', 'llm', 'recall80', 'canon30', 'realistic']:
         rs = sel(R, v)
         if rs: P('| %s | %s | %s | %s |' % (v, fmt(ci([r['t2']['check']['disputeRecall'] for r in rs])), fmt(ci([r['t2']['check']['falsePos'] for r in rs])), fmt(ci([r['t2']['replacedRecall'] for r in rs]))))
     P('\n### T3. Multi-hop: recall@3 of a 3-note causal chain, query names only the first link\n')
     P('| extractor quality | dense | keyword | hybrid | dense + feedback (PRF) | graph expand (no warp) | CTMV warp λ=0 | CTMV λ=0.6 | CTMV λ=0.9 |'); P('|---|---|---|---|---|---|---|---|---|')
-    for v in ['oracle', 'recall80', 'canon30', 'realistic']:
+    for v in ['oracle', 'llm', 'recall80', 'canon30', 'realistic']:
         rs = sel(R, v)
         if rs: P('| %s | %s |' % (v, ' | '.join(fmt(ci([r['t3'][k]['rec'] for r in rs])) for k in ['dense', 'lexical', 'hybrid', 'prf', 'gexpand', 'ctmv_l0_s0.5', 'ctmv_l0.6_s0.5', 'ctmv_l0.9_s0.5'])))
+    if style == 'rewritten' and sel(R, 'oracle'):
+        P('\n### T3b. Lambda sweep (recall@3, slack 0.5)\n'); lams = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+        P('| extractor | ' + ' | '.join(f'λ={l}' for l in lams) + ' |'); P('|---|' + '---|' * len(lams))
+        for v in ['oracle', 'llm', 'realistic']:
+            rs = sel(R, v)
+            if rs and 'ctmv_l0.1_s0.5' in rs[0]['t3']: P(f'| {ACC.get(v, v)} | ' + ' | '.join(f"{np.mean([r['t3']['ctmv_l%s_s0.5' % (int(l) if l in (0, 1) else l)]['rec'] for r in rs]):.2f}" for l in lams) + ' |')
     P('\n### T4. Is δ informative? AUROC for flagging notes that are in a planted bridge or false friend\n')
     P('| extractor quality | δ | "note has few claims" (sparsity) | share of notes with δ = 1 |'); P('|---|---|---|---|')
-    for v in ['oracle', 'acc70', 'recall50', 'realistic', 'tagger']:
+    for v in ['oracle', 'llm', 'acc70', 'recall50', 'realistic', 'tagger']:
         rs = sel(R, v)
         if rs: P('| %s | %s | %s | %.2f |' % (v, fmt(ci([r['t4']['auroc_delta'] for r in rs])), fmt(ci([r['t4']['auroc_sparsity'] for r in rs])), np.mean([r['t4']['fracDeltaOne'] for r in rs])))
     # robustness: second embedder

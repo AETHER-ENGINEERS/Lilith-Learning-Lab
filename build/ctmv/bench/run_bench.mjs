@@ -46,9 +46,10 @@ for (const f of files) {
     E.embed = (t) => VEC.get(t); E.noteText = n => 'NOTE:' + n.name;
     const db = await kit.sqlite.open(':memory:');
     const t0 = Date.now();
-    const baseNotes = V.notes.map(n => ({ name: n.name, title: n.title, body: n.body, tags: [n.domain], claims: [], links: n.links }));
+    const baseNotes = V.notes.map(n => ({ name: n.name, title: n.title, body: n.body, tags: [n.domain], claims: [], links: n.links, replaces: n.name.startsWith('new-') ? n.links : [] }));
     await E.buildMani(db, baseNotes, DIM); const tM = Date.now() - t0;
     for (const variant of Object.keys(V.variants)) {
+      if (process.env.VARIANTS && !process.env.VARIANTS.split(',').includes(variant)) continue;
       if (model !== 'bge' && !['oracle', 'realistic', 'tagger', 'acc70'].includes(variant)) continue;
       const notes = baseNotes.map(n => ({ ...n, claims: V.variants[variant][n.name] || [] }));
       const t1 = Date.now(); const kg = E.loadKg(notes); const tG = Date.now() - t1;
@@ -86,6 +87,11 @@ for (const f of files) {
       const dis = (get) => { const r = disQ.map(q => get(q)); return { any: mean(r.map((x, i) => disQ[i].relevant.some(n => x.map(y => y.name || y).includes(n)) ? 1 : 0)), both: mean(r.map((x, i) => disQ[i].relevant.every(n => x.map(y => y.name || y).includes(n)) ? 1 : 0)), flagged: mean(r.map((x, i) => x.some(y => y.disputed && disQ[i].relevant.includes(y.name)) ? 1 : 0)), silentBoth: mean(r.map((x, i) => (disQ[i].relevant.every(n => x.map(y => y.name || y).includes(n)) && !x.some(y => y.disputed)) ? 1 : 0)) }; };
       const ldd = q => { const d = dtop(q, 4); return d.filter(x => !d.some(y => y !== x && byName[y].links.includes(x))).slice(0, 3); };   // drop a note when another result links to it
       t2.sup.linkdedupe = sup(ldd); t2.dis.linkdedupe = dis(ldd);
+      // same filter, but every note also carries two random see-also links (as real vaults do), and replacements are only recognised by explicit links
+      const rngL = (() => { let x = 12345; return () => (x = (x * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff; })();
+      const seeAlso = {}; for (const n of V.notes) seeAlso[n.name] = [0, 1].map(() => V.notes[Math.floor(rngL() * V.notes.length)].name).filter(m => m !== n.name);
+      const ldn = q => { const d = dtop(q, 4); return d.filter(x => !d.some(y => y !== x && (byName[y].links.includes(x) || (seeAlso[y] || []).includes(x)))).slice(0, 3); };
+      t2.sup.linkdedupe_seealso = sup(ldn); t2.dis.linkdedupe_seealso = dis(ldn);
       t2.dis.dense = dis(q => dtop(q, 3)); t2.dis.hybrid = dis(q => htop(q, 3)); t2.dis.ctmv = dis(q => ctop(q, 3));
       // constraint check
       { const chk = E.kgCall({ op: 'check', handle: kg.handle }); const vs = (chk.violations || []).map(v => pk(v.bindings.N1, v.bindings.N2)); const vset = new Set(vs);
@@ -102,7 +108,7 @@ for (const f of files) {
       const ch = (get) => { const r = chainQ.map(q => get(q).map(y => y.name || y)); return { rec: mean(r.map((x, i) => chainQ[i].relevant.filter(n => x.includes(n)).length / chainQ[i].relevant.length)), full: mean(r.map((x, i) => chainQ[i].relevant.every(n => x.includes(n)) ? 1 : 0)), prec: mean(r.map((x, i) => x.length ? x.filter(n => chainQ[i].relevant.includes(n)).length / x.length : 0)) }; };
       const prf = q => { const d1 = dtop(q, 1)[0], qv = VEC.get('Q:' + q.id); return E.knn(db, norm(Array.from(qv, (x, i) => x + vecs[d1][i])), 3).map(r => r.name); };   // pseudo-relevance feedback
       rec.t3 = { prf: ch(prf), dense: ch(q => dtop(q, 3)), lexical: ch(q => ltop(q, 3)), hybrid: ch(q => htop(q, 3)), gexpand: ch(q => gexp(q, 3)) };
-      for (const lam of [0, 0.3, 0.6, 0.9]) for (const slack of [0.3, 0.5]) rec.t3[`ctmv_l${lam}_s${slack}`] = ch(q => ctop(q, 3, { lam, mu: 0.8, slack }));
+      for (const lam of [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) for (const slack of [0.3, 0.5]) rec.t3[`ctmv_l${lam}_s${slack}`] = ch(q => ctop(q, 3, { lam, mu: 0.8, slack }));
       // ---- T4 delta ----
       const dl = E.delta(db, kg, notes, vecs, 3); const lab = dl.map(r => anomNotes.has(r.name));
       const cc = notes.map(n => n.claims.length);

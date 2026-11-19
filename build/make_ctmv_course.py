@@ -7,14 +7,14 @@ import os, re, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 CT = os.path.join(HERE, "ctmv")
 sys.path.insert(0, CT); sys.path.insert(1, os.path.join(HERE, "vq")); sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, "cd"))
-import cmk, cfigdefs, figs, ct_a, ct_b, labs  # noqa: E402
+import cmk, cfigdefs, figs, ct_a, ct_b, ct_c, labs  # noqa: E402
 from clib import T  # noqa: E402
 
-CHS = ct_a.CHS + ct_b.CHS
-assert len(CHS) == 12
+CHS = ct_a.CHS + ct_b.CHS + ct_c.CHS
+assert len(CHS) == 13
 
-# the four browser labs (webxdc) go first in their chapters' practice lists
-for _i, _k in ((4, "three"), (6, "bridge"), (9, "warp"), (10, "garden")):
+# the five browser labs (webxdc) go first in their chapters' practice lists
+for _i, _k in ((4, "three"), (6, "bridge"), (9, "warp"), (10, "garden"), (12, "curiosity")):
     CHS[_i]["practice"].insert(0, labs.lab(_k))
 
 
@@ -24,6 +24,7 @@ SHORT = {
  8: ["Similarity search ranks by distance. CTMV changes how distance is measured without moving any vector.", "A causal link multiplies the distance by one minus lambda. A conflict adds mu. At zero you get plain search.", "The warp is a view, so you can turn it off at any time."],
  10: ["Many AI memories are stored where only one assistant can read them. CTMV makes the files the memory and everything else a cache.", "Replay rebuilds G and M from the files. A new embedding model changes M only, and a fingerprint of the facts proves the replay.", "Plain files also mean anyone can inspect the memory with ordinary tools."],
  11: ["The labs use the Jade Agent Kit for files, SQLite and sqlite-vec, and the Jade Vault reasoner. Only the embedder is a toy.", "A real build adds an embedding model and a way to propose claims for you to approve.", "CozoDB could host graph and vectors together. Either way, a design is not a result: measure it."],
+ 12: ["Artificial curiosity rewards compression progress, not surprise. A good hypothesis makes the vault shorter to describe, and a leap is such a hypothesis checked by the reasoner.", "Creativity combines known patterns into new ones. In tests, a language model found cross-field bridges with 0.99 precision on clear notes, and a small tree-search agent found a law outside its library only when it could invent."],
 }
 for _i, _s in SHORT.items():
     CHS[_i]["summary"] = _s
@@ -86,6 +87,7 @@ MNEM = [
  ("Seed, hop, drop, flag", "Retrieval: Seed, Hop, Drop the replaced, Flag the disputed."),
  ("Files are the memory", "Throw away G and M, replay from the files. Same facts, maybe new geometry."),
  ("Build, plant, measure", "Build on Jade parts, Plant known bridges and conflicts, Measure against plain search."),
+ ("Learn, not noise", "Be curious about what Compresses, Invent when nothing fits, and Check every leap with the reasoner."),
 ]
 assert len(MNEM) == len(CHS)
 for _c, (_m, _d) in zip(CHS, MNEM):
@@ -98,7 +100,7 @@ PRONOUNCE = {"CTMV": "C T M V", "sqlite-vec": "S Q L ite vec", "SQLite": "S Q L 
   "k-NN": "K N N", "kNN": "K N N", "RAG": "rag", "vec0": "vec zero", "FTS5": "F T S five", "Ollama": "oh llama", "CozoDB": "cozo D B", "Wikilink": "wiki link",
   "wikilink": "wiki link", "wikilinks": "wiki links", "Wikilinks": "wiki links", "FNV-1a": "F N V one a", "Rust": "rust", "markdown": "mark down", "Markdown": "mark down",
   "φ": "phi", "π": "pi", "δ": "delta", "λ": "lambda", "μ": "mu", "∘": "composed with", "≅": "is about equal to", "≈": "is about equal to",
-  "retry_storm": "retry storm", "positive_feedback": "positive feedback", "runaway_growth": "runaway growth", "Jade": "jade", "pre-version-1": "pre version one"}
+  "Schmidhuber": "shmid hoober", "AIXI": "ay eye ex eye", "MC-AIXI": "M C ay eye ex eye", "MC-AIXI-CTW": "M C ay eye ex eye C T W", "UCT": "U C T", "MCTS": "M C T S", "gemma4:31b": "gemma four, thirty one B", "retry_storm": "retry storm", "positive_feedback": "positive feedback", "runaway_growth": "runaway growth", "Jade": "jade", "pre-version-1": "pre version one"}
 
 SANDBOX = cmk.terminal("CTMV cheat sheet", "ctmv>", "A scripted lookup of the pieces, not the real engine. Try: note, claim, rule, constraint, query, verify, vec0, knn, delta, bridge, warp, replay, atomic", [
     ("note", ["# Retry storm", "tags: ops", "prose...", "- retry_storm causes overload", "See also [[circuit-breaker]]."]),
@@ -162,15 +164,20 @@ EXAM = [
  ("What is still a toy in the labs?", ["The embedder", "The reasoner", "SQLite", "The file system"], 0, "Hashing."),
  ("Is CTMV proven by this course?", ["No, it needs measuring", "Yes", "Always", "Only on Android"], 0, "A design, not a result."),
  ("How would you test it?", ["Plant bridges and conflicts, then measure", "Trust it", "Read the logo", "Guess"], 0, "Evaluation."),
+ ("What does artificial curiosity reward?", ["Compression progress", "Surprise alone", "Speed", "Length"], 0, "Learning that shortens the description."),
+ ("Why is a noisy note never chosen?", ["Nothing predicts it, so it saves nothing", "It is too long", "It is private", "It is old"], 0, "Surprise without learnability earns nothing."),
+ ("What did the creative step do in the inquiry agent?", ["Combined known patterns into new hypotheses", "Deleted data", "Raised the cost", "Stopped the run"], 0, "Sum or gating of library patterns."),
+ ("When did curiosity help the inquiry agent most?", ["When the true law was missing from its library", "When the law was known", "Never", "Only with no noise"], 0, "It kept searching and triggered invention."),
+ ("What does the planner use to look ahead?", ["Monte-Carlo tree search", "A lookup table", "A coin", "A backup"], 0, "Simulated futures."),
 ]
 print("exam", len(EXAM))
 
 CFG = dict(id="ctmv-vault", title="The Commutative Tri-Modal Vault: Memory That Reasons",
     subtitle="Markdown notes, a fact graph and a vector space kept consistent: bridges, gardening, contradiction-aware retrieval and memory you can replay",
     description="A beginner-friendly course on the Commutative Tri-Modal Vault (CTMV), a design for personal knowledge bases and AI memory that answers four failures: related ideas that never meet, collections that decay, old and new facts that both come back, and memory locked to one model. "
-    "In 12 chapters you learn the three views of one vault (V markdown files, G facts and rules with proofs, M vectors), the commuting square and its error delta, cross-domain bridges, gap and contradiction gardening, metric warping, multi-hop retrieval that drops replaced notes and flags disputes, and replayable, model-agnostic memory. "
-    "Four hands-on labs run in the app, offline, on real components: the Jade Agent Kit's SQLite with sqlite-vec and file system, and the Jade Vault's Datalog reasoner (jade-kg); only the text embedder is a small toy so results repeat. A few short Python labs run on the app's MicroPython. "
-    "There are 24 numbered figures, numbered tables, a recap, a memory trick, an expanded ELI5 and a concept map in every chapter, a cheat sheet in the sandbox and a final exam. "
+    "In 13 chapters you learn the three views of one vault (V markdown files, G facts and rules with proofs, M vectors), the commuting square and its error delta, cross-domain bridges, gap and contradiction gardening, metric warping, multi-hop retrieval that drops replaced notes and flags disputes, and replayable, model-agnostic memory. "
+    "Five hands-on labs run in the app, offline, on real components: the Jade Agent Kit's SQLite with sqlite-vec and file system, and the Jade Vault's Datalog reasoner (jade-kg); only the text embedder is a small toy so results repeat. A few short Python labs run on the app's MicroPython. "
+    "There are 26 numbered figures, numbered tables, a recap, a memory trick, an expanded ELI5 and a concept map in every chapter, a cheat sheet in the sandbox and a final exam. "
     "Credits: the CTMV concept follows the description supplied by the course requester; the text and code here are original. Labs use Jade Agent Kit (MIT), Jade Vault jade-kg (MIT), SQLite (public domain) and sqlite-vec by Alex Garcia (MIT or Apache-2.0). CTMV is a design to understand and test, not a proven product.",
     pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, images=IMAGES)
 

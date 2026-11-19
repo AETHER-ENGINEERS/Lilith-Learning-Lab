@@ -15,6 +15,8 @@ LABS = {
    goals=[('vzwarp','Raise λ in the 3D view and watch the M layer bend'),('pull','Raise λ so a causal neighbour that plain search missed is found'),('push','Raise μ so disputed advice is pushed out'),('current','Search the cache question: the replaced 2023 note must not be returned')]),
  'garden': dict(title='Lab 4: Garden and replay', tabs='xrvgd', height=700, intro='Add a note, run the gardener, then throw away G and M and rebuild them from the markdown with a different embedding size. The facts must come out identical.',
    goals=[('edit','Create or edit a note (it is saved with write-then-rename)'),('garden','Run the gardener'),('replay','Replay with a different embedding size and get identical facts')]),
+ 'curiosity': dict(title='Lab 5: Be curious about what compresses', tabs='cxvg', height=700, intro='Ask the vault which hypothesis would shorten it most. Take the best leap and see which notes from other fields it joins, then add a filler note and watch it score below zero.',
+   goals=[('look','Look for hypotheses'),('noise','Add the filler note and see it score below zero'),('leap','Take the leap and find the new cross-field partners')]),
 }
 def lab(key):
     c = LABS[key]

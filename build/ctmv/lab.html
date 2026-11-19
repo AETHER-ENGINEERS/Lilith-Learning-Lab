@@ -39,6 +39,8 @@ table{border-collapse:collapse;width:100%;font-size:12px}td,th{border-bottom:1px
  <label>reach <input type="range" id="slack" min="0.1" max="0.8" step="0.05" value="0.45"><b id="slv">0.45</b></label></div>
  <div class="row"><button class="q" data-q="clients retry too much">Retries</button><button class="q" data-q="should clients retry straight away">Disputed advice</button><button class="q" data-q="what is wrong with a long time to live">Old cache note</button><button class="q" data-q="a swing goes higher and higher">Swing</button></div>
  <div id="wout"></div></div>
+<div id="p-c" class="panel"><h3>Curiosity · which hypothesis would shorten my vault?</h3><small>After Schmidhuber: be curious about what improves your compression, not about what surprises you. A hypothesis says "this note is an instance of a pattern the vault already knows". The reasoner derives what that pattern does; every claim the note already states that is now derivable is saved. Progress = claims saved − 1.</small>
+ <div class="row"><button id="cLook">Look for hypotheses</button><button id="cNoise">Add a filler note</button></div><div id="cOut"></div></div>
 <div id="p-r" class="panel"><h3>Garden and replay</h3>
  <div class="row"><button id="gard">Run the gardener</button><label>embedding size <select id="dim"><option>32</option><option selected>64</option><option>128</option></select></label><button id="replay">Replay: rebuild G and M from the .md files</button></div>
  <div id="rout"></div></div>
@@ -75,7 +77,7 @@ async function rebuild(dim) {
 }
 const showNote = () => { const n = $('note').value; $('md').value = vault[n] || ''; };
 function tabs() {
-  const names = { x: '3D view', v: 'V notes', g: 'G facts', m: 'M manifold', d: 'δ & bridges', w: 'Warp', r: 'Garden & replay' };
+  const names = { x: '3D view', v: 'V notes', g: 'G facts', m: 'M manifold', d: 'δ & bridges', w: 'Warp', r: 'Garden & replay', c: 'Curiosity' };
   $('tabs').innerHTML = TABS.map(t => `<button data-t="${t}">${names[t]}</button>`).join('');
   $('tabs').onclick = e => { const t = e.target.dataset.t; if (!t) return; open(t); };
   open(TABS[0]);
@@ -126,6 +128,22 @@ $('gard').onclick = () => {
     '<h3>Gaps (ideas used by two or more notes with no note of their own)</h3><p>' + tags(gaps) + '</p>';
   goal('garden');
 };
+
+function curiosity() {
+  const hs = E.curiosity(notes).filter(h => h.pattern);
+  const uniq = hs.filter((h, i, a) => a.findIndex(x => x.note === h.note) === i); const rows = [...uniq.filter(h => h.progress >= 0 || h.note === 'standup-filler'), ...uniq.filter(h => h.progress < 0 && h.note !== 'standup-filler')].slice(0, 7);
+  $('cOut').innerHTML = table(['note', 'hypothesis', 'claims saved', 'progress', 'same shape as (other fields)', ''], rows.map((h, i) => [h.note, `is ${h.pattern}`, h.saved.length ? tags(h.saved) : '<span class="dim">none</span>',
+    `<b class="${h.progress > 0 ? 'good' : (h.progress < 0 ? 'bad' : 'warn')}">${h.progress}</b>`, tags(h.cross), h.progress >= 0 ? `<button data-leap="${i}">Take the leap</button>` : '']));
+  $('cOut').dataset.rows = '1'; window.__cur = rows;
+  $('cOut').onclick = async e => { const i = e.target.dataset.leap; if (i == null) return; const h = window.__cur[i];
+    const f = '/vault/' + h.note + '.md', tmp = '/vault/.tmp-' + h.note; kit.vfs.write(tmp, vault[h.note].replace(/\n*$/, '') + '\n' + E.leapLine(h)); kit.vfs.move(tmp, f); await rebuild(DIM);
+    const br = E.bridges(notes, vecs, kg).filter(b => b.cross && (b.a === h.note || b.b === h.note)).slice(0, 4);
+    $('cOut').innerHTML = `<p class="good">Leap taken: <b>${esc(h.subject)}</b> is <b>${esc(h.pattern)}</b>. Saved as a claim line in ${esc(h.note)} (write then rename).</p>` + (br.length ? '<h3>New cross-field partners</h3>' + table(['pair', 'shared idea'], br.map(b => [`${b.a} ↔ ${b.b}`, tags(b.via)])) : '<p class="dim">No new partners.</p>') + '<p class="dim">The reasoner now treats the note as the same pattern as its partners. You can undo the line in the V tab.</p>';
+    goal('leap'); };
+  goal('look'); if (vault['standup-filler'] && hs.some(h => h.note === 'standup-filler' && h.progress < 0)) goal('noise');
+}
+$('cLook').onclick = curiosity;
+$('cNoise').onclick = async () => { kit.vfs.write('/vault/standup-filler.md', '# Weekly standup\ntags: ops\nThe team meets on Mondays to share news.\n- standup happens monday'); await rebuild(DIM); curiosity(); };
 $('replay').onclick = async () => {
   const before = { dim: DIM, hash: E.factsHash(kg, notes), nn: E.knn(db, vecs['retry-storm'], 4).map(r => r.name).join(', '), sig: E.hashStr(Array.from(vecs['retry-storm']).map(x => x.toFixed(3)).join(',')) };
   const nd = +$('dim').value; await rebuild(nd);

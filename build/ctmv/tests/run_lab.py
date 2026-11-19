@@ -1,4 +1,4 @@
-"""Drive the four CTMV labs in a headless browser: each must complete through real clicks, also inside the app's sandbox (iframe + CSP)."""
+"""Drive the five CTMV labs in a headless browser: each must complete through real clicks, also inside the app's sandbox (iframe + CSP)."""
 import os, sys, html as H
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, '..'))
 import labs
@@ -40,6 +40,10 @@ def drive(key, fr, pg):
         fr.click('button.q[data-q="clients retry too much"]'); print('   ', fr.inner_text('#wout').replace('\n', ' | ')[:300])
         fr.click('button.q[data-q="should clients retry straight away"]'); print('   ', fr.inner_text('#wout').replace('\n', ' | ')[:300])
         fr.click('button.q[data-q="what is wrong with a long time to live"]'); print('   ', fr.inner_text('#wout').replace('\n', ' | ')[:300])
+    elif key == 'curiosity':
+        c('button[data-t=c]'); c('#cLook'); assert 'resonance' in fr.inner_text('#cOut'), fr.inner_text('#cOut')
+        c('#cNoise'); t = fr.inner_text('#cOut'); assert 'standup-filler' in t, t; print('   ', t.replace('\n', ' | ')[:300])
+        c('button[data-leap="0"]'); t = fr.inner_text('#cOut'); print('   ', t.replace('\n', ' | ')[:300]); assert 'resonance' in t and 'retry-storm' in t, t
     elif key == 'garden':
         c('button[data-t=v]'); c('#newNote'); fr.fill('#md', '# Echo\ntags: audio\nSound bounces back and is heard again.\n- echo causes ringing_noise'); c('#saveNote')
         c('button[data-t=r]'); c('#gard'); print('   ', fr.inner_text('#rout').replace('\n', ' | ')[:500])
