@@ -5,7 +5,7 @@
  "title": "The Commutative Tri-Modal Vault: Memory That Reasons",
  "subtitle": "Markdown notes, a fact graph and a vector space kept consistent: bridges, gardening, contradiction-aware retrieval and memory you can replay",
  "author": "Lilith Learning Lab",
- "description": "A beginner-friendly course on the Commutative Tri-Modal Vault (CTMV), a design for personal knowledge bases and AI memory that answers four failures: related ideas that never meet, collections that decay, old and new facts that both come back, and memory locked to one model. In 13 chapters you learn the three views of one vault (V markdown files, G facts and rules with proofs, M vectors), the commuting square and its error delta, cross-domain bridges, gap and contradiction gardening, metric warping, multi-hop retrieval that drops replaced notes and flags disputes, and replayable, model-agnostic memory. Five hands-on labs run in the app, offline, on real components: the Jade Agent Kit's SQLite with sqlite-vec and file system, and the Jade Vault's Datalog reasoner (jade-kg); only the text embedder is a small toy so results repeat. A few short Python labs run on the app's MicroPython. There are 26 numbered figures, numbered tables, a recap, a memory trick, an expanded ELI5 and a concept map in every chapter, a cheat sheet in the sandbox and a final exam. Credits: the CTMV concept follows the description supplied by the course requester; the text and code here are original. Labs use Jade Agent Kit (MIT), Jade Vault jade-kg (MIT), SQLite (public domain) and sqlite-vec by Alex Garcia (MIT or Apache-2.0). CTMV is a design to understand and test, not a proven product.",
+ "description": "A beginner-friendly course on the Commutative Tri-Modal Vault (CTMV), a design for personal knowledge bases and AI memory that answers four failures: related ideas that never meet, collections that decay, old and new facts that both come back, and memory locked to one model. In 13 chapters you learn the three views of one vault (V markdown files, G facts and rules with proofs, M vectors), the commuting square and its error delta, cross-domain bridges, gap and contradiction gardening, metric warping, multi-hop retrieval that drops replaced notes and flags disputes, and replayable, model-agnostic memory. Five hands-on labs run in the app, offline, on real components: the Jade Agent Kit's SQLite with sqlite-vec and file system, and the Jade Vault's Datalog reasoner (jade-kg); only the text embedder is a small toy so results repeat. A few short Python labs run on the app's MicroPython. There are 27 numbered figures, numbered tables, a recap, a memory trick, an expanded ELI5 and a concept map in every chapter, a cheat sheet in the sandbox and a final exam. Credits: the CTMV concept follows the description supplied by the course requester; the text and code here are original. Labs use Jade Agent Kit (MIT), Jade Vault jade-kg (MIT), SQLite (public domain) and sqlite-vec by Alex Garcia (MIT or Apache-2.0). CTMV is a design to understand and test, not a proven product.",
  "pronounce": {
   "CTMV": "C T M V",
   "sqlite-vec": "S Q L ite vec",
@@ -3659,7 +3659,7 @@
      "items": [
       "We then ran such a test: 60 generated vaults of about 100 notes each with planted bridges, replaced notes, disputes and causal chains, two real embedding models, and a baseline for every claim.",
       "With perfect claims the design finds every planted bridge, drops every replaced note and flags every dispute.",
-      "The catch is the extractor: with claims 70 percent right the bridge score halves, and a small embedding-based tagger was no better than plain search. (See Table 12.3 below.) (See Table 12.4 below.)"
+      "The catch is the extractor: with claims 70 percent right the bridge score halves, and a small embedding-based tagger was no better than plain search, while a language model reading the notes reached 0.99. (See Table 12.3 below.) (See Table 12.4 below.)"
      ]
     },
     {
@@ -3674,12 +3674,12 @@
       [
        "finds analogies that search misses",
        "plain similarity is near chance; CTMV 1.00 with perfect labels, 0.51 at 70 percent right",
-       "needs a good extractor; not tested with a language model"
+       "needs a good extractor; a language model reading each note reached 0.99"
       ],
       [
        "drops replaced notes",
        "0 percent stale versus 100 percent for plain search",
-       "a simple rule that drops a note another result links to does the same when corrections link back"
+       "best done in the link layer: a note that says it replaces another needs no extractor"
       ],
       [
        "flags disputes",
@@ -4098,12 +4098,68 @@
     {
      "type": "text",
      "items": [
-      "The limits matter. The world is small and hand-built, the inventions come from a fixed grammar, the planner is a rough approximation of AIXI, and the language-model test used clear notes. The code and numbers are in the benchmark report. (See Table 13.4 below.)"
+      "Can structure alone find the same pattern in two fields? We tested four formal tools that ignore names completely, on graphs a language model drew from the notes.",
+      "Weisfeiler-Lehman fingerprints and structure mapping ranked true pairs well above embeddings, anti-unification and Gromov-Wasserstein alignment did better at picking the exact pairs, but none of them matched the language model's own hunch. Structure works best as the checker.",
+      "(See Figure 13.3 below.) (See Table 13.4 below.)"
+     ]
+    },
+    {
+     "type": "figure",
+     "image": "ct-13-3.svg",
+     "caption": "Figure 13.3. Propose with a language model, verify with structure, keep the rule."
+    },
+    {
+     "type": "table",
+     "title": "Table 13.4. Isomorphism hunting tools",
+     "head": [
+      "Tool",
+      "What it does",
+      "Result here"
+     ],
+     "rows": [
+      [
+       "Weisfeiler-Lehman",
+       "fingerprints each graph by its neighbourhoods",
+       "ranks pairs, AUROC 0.80"
+      ],
+      [
+       "structure mapping",
+       "largest common subgraph with matching signs",
+       "AUROC 0.82, fooled by single edges"
+      ],
+      [
+       "anti-unification",
+       "common shape written as a rule with variables",
+       "best pair picker at 0.24, gives the rule"
+      ],
+      [
+       "Gromov-Wasserstein",
+       "aligns two graphs by their inner distances",
+       "AUROC 0.84, never matched a false friend"
+      ],
+      [
+       "language-model hunch",
+       "groups notes with the same mechanism",
+       "0.99 precision; structure check keeps 99 percent right"
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "Together they invent patterns. With no pattern list given, the confirmed pairs formed 80 groups, 79 of them pure, covering 64 percent of the planted patterns. A loop with a side effect came out as a rule the reasoner can check.",
+      "About two thirds of the rules were too generic, like X raises Y and Y raises Z, so keep rules with a loop or three or more edges. Patterns that are not loops, such as spare parts, are hard to draw as a few signed edges."
+     ]
+    },
+    {
+     "type": "text",
+     "items": [
+      "The limits matter. The world is small and hand-built, the inventions come from a fixed grammar, the planner is a rough approximation of AIXI, and the language-model test used clear notes. The code and numbers are in the benchmark report. (See Table 13.5 below.)"
      ]
     },
     {
      "type": "table",
-     "title": "Table 13.4. What was measured",
+     "title": "Table 13.5. What was measured",
      "head": [
       "Question",
       "Result",
@@ -4134,6 +4190,11 @@
        "inquiry: new law",
        "0 percent to 90 percent with creativity",
        "fixed combination grammar"
+      ],
+      [
+       "structure-only isomorphism",
+       "pair ranking 0.80 AUROC, 64 percent of patterns recovered with the language model",
+       "much weaker alone than with the hunch"
       ]
      ]
     },
@@ -4188,6 +4249,17 @@
      ],
      "answer": 0,
      "explain": "Sum or gating of library patterns."
+    },
+    {
+     "q": "What is the best use of structure matching here?",
+     "options": [
+      "Checking a language model's hunch and writing the rule",
+      "Replacing the reasoner",
+      "Finding single edges",
+      "Sorting notes by date"
+     ],
+     "answer": 0,
+     "explain": "It verified hunches with 99 percent precision."
     }
    ],
    "cards": [
@@ -4332,6 +4404,70 @@
      ],
      "hint": "Bayes update, then the Kullback-Leibler divergence in bits.",
      "solution": "import math\ndef info_gain(prior, likelihoods):\n    w = [p * l for p, l in zip(prior, likelihoods)]\n    t = sum(w)\n    post = [x / t for x in w]\n    return round(sum(q * math.log2(q / p) for q, p in zip(post, prior) if q > 0), 3)\n"
+    },
+    {
+     "type": "python",
+     "title": "Same loop?",
+     "intro": "Write same_loop(a, b). Each argument is a list of signs, one per edge, for a loop that goes around once (for example [\"+\", \"+\", \"+\"] is a growth loop). Two loops have the same shape if they have the same number of edges and the same number of minus signs. Return True or False.",
+     "fn": "same_loop",
+     "starter": "def same_loop(a, b):\n    # your code\n    pass\n",
+     "tests": [
+      {
+       "args": [
+        [
+         "+",
+         "+"
+        ],
+        [
+         "+",
+         "+"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "+",
+         "-"
+        ],
+        [
+         "-",
+         "+"
+        ]
+       ],
+       "expect": true
+      },
+      {
+       "args": [
+        [
+         "+",
+         "+",
+         "+"
+        ],
+        [
+         "+",
+         "+"
+        ]
+       ],
+       "expect": false
+      },
+      {
+       "args": [
+        [
+         "+",
+         "-"
+        ],
+        [
+         "+",
+         "+"
+        ]
+       ],
+       "expect": false
+      }
+     ],
+     "hint": "Compare the length and the count of minus signs.",
+     "solution": "def same_loop(a, b):\n    return len(a) == len(b) and a.count(\"-\") == b.count(\"-\")\n"
     },
     {
      "type": "match",
@@ -5100,7 +5236,8 @@
   "ct-12-1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 354\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">The Jade stack</title><desc id=\"d\">Parts that already exist.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"354\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >The Jade stack</text><rect x=\"30\" y=\"48\" width=\"640\" height=\"52\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"71.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >jade-agent-kit file system</text><text x=\"350.0\" y=\"88.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >markdown notes</text><line x1=\"350\" y1=\"100\" x2=\"350\" y2=\"114\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"30\" y=\"114\" width=\"640\" height=\"52\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"137.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >jade-kg</text><text x=\"350.0\" y=\"154.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Datalog with proofs</text><line x1=\"350\" y1=\"166\" x2=\"350\" y2=\"180\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"30\" y=\"180\" width=\"640\" height=\"52\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"203.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >SQLite + sqlite-vec</text><text x=\"350.0\" y=\"220.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >vectors and FTS5</text><line x1=\"350\" y1=\"232\" x2=\"350\" y2=\"246\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"30\" y=\"246\" width=\"640\" height=\"52\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"269.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >Ollama embeddings</text><text x=\"350.0\" y=\"286.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >real meaning, when online</text><text x=\"350\" y=\"320\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >The labs use all but the last.</text></svg>\n",
   "ct-12-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 200\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">A plan to test it</title><desc id=\"d\">Do not trust, measure.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"200\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >A plan to test it</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >build it</text><text x=\"120.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >on the Jade stack</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >test vault</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >known bridges and conflicts</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >measure</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >found, caught, missed</text><line x1=\"680\" y1=\"81\" x2=\"710\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"710\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"810.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >compare</text><text x=\"810.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >with plain search</text><text x=\"350\" y=\"184\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >A design is not a result.</text></svg>\n",
   "ct-13-1.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 200\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Choosing a hypothesis by compression</title><desc id=\"d\">Curiosity scores a guess by how much shorter the vault becomes.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"200\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Choosing a hypothesis by compression</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >hypothesis</text><text x=\"120.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >this note is that pattern</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >reasoner derives</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >what the pattern does</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >claims saved</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >now derivable, no longer stored</text><line x1=\"680\" y1=\"81\" x2=\"710\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"710\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"810.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >progress</text><text x=\"810.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >saved minus the cost of the guess</text><text x=\"350\" y=\"184\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Noise saves nothing, so it is never chosen.</text></svg>\n",
-  "ct-13-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 300\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">The inquiry loop</title><desc id=\"d\">Experiment, learn, notice, invent, predict.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"300\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >The inquiry loop</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >experiment</text><text x=\"120.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >chosen by tree search</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >mixture updates</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >simple hypotheses first</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >curiosity</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >reward for information gained</text><line x1=\"580\" y1=\"112\" x2=\"580\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"580\" y1=\"130\" x2=\"120\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"120\" y1=\"130\" x2=\"120\" y2=\"150\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"20\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#ff6b6b\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >nothing fits?</text><text x=\"120.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >the data do not compress</text><line x1=\"220\" y1=\"181\" x2=\"250\" y2=\"181\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >invent</text><text x=\"350.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >combine known patterns</text><line x1=\"450\" y1=\"181\" x2=\"480\" y2=\"181\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >predict</text><text x=\"580.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >name the law</text><text x=\"350\" y=\"284\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Creativity finds the law; curiosity keeps the search alive.</text></svg>\n"
+  "ct-13-2.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 300\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">The inquiry loop</title><desc id=\"d\">Experiment, learn, notice, invent, predict.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"300\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >The inquiry loop</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >experiment</text><text x=\"120.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >chosen by tree search</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >mixture updates</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >simple hypotheses first</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >curiosity</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >reward for information gained</text><line x1=\"580\" y1=\"112\" x2=\"580\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"580\" y1=\"130\" x2=\"120\" y2=\"130\" stroke=\"#a99dc7\" stroke-width=\"1.6\"/><line x1=\"120\" y1=\"130\" x2=\"120\" y2=\"150\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"20\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#ff6b6b\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >nothing fits?</text><text x=\"120.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >the data do not compress</text><line x1=\"220\" y1=\"181\" x2=\"250\" y2=\"181\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >invent</text><text x=\"350.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >combine known patterns</text><line x1=\"450\" y1=\"181\" x2=\"480\" y2=\"181\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"150\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"178.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >predict</text><text x=\"580.0\" y=\"195.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >name the law</text><text x=\"350\" y=\"284\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Creativity finds the law; curiosity keeps the search alive.</text></svg>\n",
+  "ct-13-3.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 700 200\" role=\"img\" aria-labelledby=\"t d\" font-family=\"system-ui,-apple-system,Segoe UI,Roboto,sans-serif\"><title id=\"t\">Propose, verify, keep</title><desc id=\"d\">How a hunch becomes a pattern.</desc><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"#a99dc7\"/></marker></defs><rect width=\"700\" height=\"200\" rx=\"14\" fill=\"#120d1c\"/><text x=\"350\" y=\"28\" font-size=\"15\" fill=\"#b26bff\" text-anchor=\"middle\" font-weight=\"700\" >Propose, verify, keep</text><rect x=\"20\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#4fa8ff\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >language model</text><text x=\"120.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >groups notes with one mechanism</text><line x1=\"220\" y1=\"81\" x2=\"250\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"250\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#76b900\" stroke-width=\"1.5\"/><text x=\"350.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >structure check</text><text x=\"350.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >common subgraph of the notes</text><line x1=\"450\" y1=\"81\" x2=\"480\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"480\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#e3b341\" stroke-width=\"1.5\"/><text x=\"580.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >rule</text><text x=\"580.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >anti-unified, with variables</text><line x1=\"680\" y1=\"81\" x2=\"710\" y2=\"81\" stroke=\"#a99dc7\" stroke-width=\"1.8\" marker-end=\"url(#ah)\"/><rect x=\"710\" y=\"50\" width=\"200\" height=\"62\" rx=\"10\" fill=\"#1c1530\" stroke=\"#b26bff\" stroke-width=\"1.5\"/><text x=\"810.0\" y=\"78.0\" font-size=\"13\" fill=\"#efe9ff\" text-anchor=\"middle\" font-weight=\"600\" >reasoner</text><text x=\"810.0\" y=\"95.0\" font-size=\"10.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >finds every other instance</text><text x=\"350\" y=\"184\" font-size=\"11.5\" fill=\"#a99dc7\" text-anchor=\"middle\" font-weight=\"400\" >Keep rules with a loop or three or more edges.</text></svg>\n"
  },
  "category": "Artificial Intelligence",
  "level": "Intermediate",

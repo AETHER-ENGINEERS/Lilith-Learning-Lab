@@ -177,7 +177,7 @@ CFG = dict(id="ctmv-vault", title="The Commutative Tri-Modal Vault: Memory That 
     description="A beginner-friendly course on the Commutative Tri-Modal Vault (CTMV), a design for personal knowledge bases and AI memory that answers four failures: related ideas that never meet, collections that decay, old and new facts that both come back, and memory locked to one model. "
     "In 13 chapters you learn the three views of one vault (V markdown files, G facts and rules with proofs, M vectors), the commuting square and its error delta, cross-domain bridges, gap and contradiction gardening, metric warping, multi-hop retrieval that drops replaced notes and flags disputes, and replayable, model-agnostic memory. "
     "Five hands-on labs run in the app, offline, on real components: the Jade Agent Kit's SQLite with sqlite-vec and file system, and the Jade Vault's Datalog reasoner (jade-kg); only the text embedder is a small toy so results repeat. A few short Python labs run on the app's MicroPython. "
-    "There are 26 numbered figures, numbered tables, a recap, a memory trick, an expanded ELI5 and a concept map in every chapter, a cheat sheet in the sandbox and a final exam. "
+    "There are 27 numbered figures, numbered tables, a recap, a memory trick, an expanded ELI5 and a concept map in every chapter, a cheat sheet in the sandbox and a final exam. "
     "Credits: the CTMV concept follows the description supplied by the course requester; the text and code here are original. Labs use Jade Agent Kit (MIT), Jade Vault jade-kg (MIT), SQLite (public domain) and sqlite-vec by Alex Garcia (MIT or Apache-2.0). CTMV is a design to understand and test, not a proven product.",
     pronounce=PRONOUNCE, sandbox=SANDBOX, exam=EXAM, images=IMAGES)
 
