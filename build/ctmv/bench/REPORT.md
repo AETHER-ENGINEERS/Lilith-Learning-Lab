@@ -1,6 +1,6 @@
 # CTMV claim benchmark and the curiosity, creativity and inquiry experiments
 
-Date: 2026-11-18. Harness in this folder: `gen_vaults.py`, `run_bench.mjs`, `run_scale.mjs`, `analyze.py` (claims); `llm_extract.py` (language-model extractor); `curiosity.py`, `llm_leap.py` (curiosity and leaps); `inquiry.py`, `run_inquiry.py`, `run_inquiry2.py` (inquiry agent); `llm_graph.py`, `iso.py` (isomorphism hunting); `egg_iso.py`, `egg_sp.py` (egglog). Real engines (jade-kg WASM, sqlite-vec), real embeddings (bge-small-en-v1.5, all-MiniLM-L6-v2) and a real language model (gemma4:31b through Ollama cloud). 60 generated vaults (30 templated, 30 hand-rewritten style) of about 100 notes with planted bridges, false friends, replaced notes, disputes and causal chains. Intervals are 95% bootstrap. The inquiry experiments use simulated worlds.
+Date: 2026-11-18. Harness in this folder: `gen_vaults.py`, `run_bench.mjs`, `run_scale.mjs`, `analyze.py` (claims); `llm_extract.py` (language-model extractor); `curiosity.py`, `llm_leap.py` (curiosity and leaps); `inquiry.py`, `run_inquiry.py`, `run_inquiry2.py` (inquiry agent); `llm_graph.py`, `iso.py` (isomorphism hunting); `egg_iso.py`, `egg_sp.py` (egglog); `shn.py`, `llm_kind.py` (sequence, hierarchy, network). Real engines (jade-kg WASM, sqlite-vec), real embeddings (bge-small-en-v1.5, all-MiniLM-L6-v2) and a real language model (gemma4:31b through Ollama cloud). 60 generated vaults (30 templated, 30 hand-rewritten style) of about 100 notes with planted bridges, false friends, replaced notes, disputes and causal chains. Intervals are 95% bootstrap. The inquiry experiments use simulated worlds.
 
 ## Part 1. Verdicts on the original claims (updated after the fixes and the language-model run)
 
@@ -153,6 +153,38 @@ Findings, plainly:
 2. **It does not find isomorphisms the extractor did not draw.** About 40% of the pattern notes have no loop, and the structure left for them is too generic to match. The limit is the extraction, not the matcher.
 3. **It does not beat the language model's hunch.** As a verifier it behaves like anti-unification (99% precision) with lower recall.
 4. **Egglog proves equalities under laws you supply; it does not discover the laws.** Rule synthesis for e-graphs (for example Ruler) is a possible next step and was not tested.
+
+
+## Part 10. Sequences, hierarchies and networks as a note feature (`shn.py`, `llm_kind.py`)
+
+After Kulikauskas, "Organizing Thoughts into Sequences, Hierarchies, and Networks" (Minciu Sodas, 1998-99). The three structure kinds become a field on each note. Two independent ways of getting it: (a) from the note's extracted relation graph (acyclic path = sequence; acyclic tree = hierarchy; a cycle or a node with two parents = network), (b) a language model asked to label the note directly. Same 20 rewritten-style vaults as Parts 8 and 9.
+
+| kind from the graph, by true pattern (notes) | sequence | hierarchy | network | none |
+|---|---|---|---|---|
+| positive feedback (57) | 0 | 0 | 57 | 0 |
+| negative feedback (47) | 0 | 0 | 47 | 0 |
+| oscillation (43) | 2 | 1 | 40 | 0 |
+| contagion (43) | 4 | 0 | 37 | 2 |
+| threshold cascade (60) | 16 | 0 | 43 | 1 |
+| bottleneck (55) | 41 | 0 | 14 | 0 |
+| buffer (45) | 23 | 4 | 18 | 0 |
+| redundancy (59) | 29 | 0 | 12 | 18 |
+
+| score | P@K | AUROC | note |
+|---|---|---|---|
+| same kind, from the graph | 0.10 | 0.76 | 65% of true bridges have the same kind; 16% of all cross-domain pairs do |
+| same kind, labelled by the model | 0.11 | 0.64 | 36% of true bridges share the label |
+| both extractors agree on the same kind | 0.19 | 0.60 | |
+| same polarity (Part 9) | 0.32 | 0.69 | |
+| same polarity and same graph kind | **0.33** | 0.78 | best structure-only P@K so far |
+
+Chance P@K is 0.028. The two extractors agree on the kind of only 55% of notes (534 of 969), mostly "sequence" against "none".
+
+Findings:
+1. **The kind is a real but coarse feature.** Loop patterns are all networks. Bottleneck and buffer notes are mostly sequences, and redundancy notes are sequences or empty, so the kind helps a little where the loop invariants gave nothing. Same kind raises the odds of a true bridge about fourfold (65% against 16%).
+2. **It is unstable under extraction.** A third of the bridges differ in kind, and the graph-derived and the model-labelled kinds agree on only 55% of notes. We cannot tell a true restructuring from extraction noise.
+3. **The six restructurings (chronicle, evolution, catalog, atlas, canon, tour) were not tested.** The generated vaults plant no conversions between structure kinds, so there is nothing to measure them against. A test needs notes written as the same content in two kinds, or real notes.
+4. **Use:** as an explicit field (and navigation modes such as a tour or an atlas) it is cheap and useful. As a bridge detector it adds a little on top of polarity (0.32 to 0.33 P@K) and nothing beyond that.
 
 ## Part 5. Limitations of all of the above
 
