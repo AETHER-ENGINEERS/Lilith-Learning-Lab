@@ -122,7 +122,8 @@ function clsBar() {
     const n = Object.keys(CLS.people).length, who = Object.values(CLS.people).map(esc).join(', ');
     if (presenting()) h = '<div class="row"><span style="flex:1">' + ic('school') + ' <b>Presenting</b> ' + esc(CLS.title) + ' · ' + n + ' in class (' + who + ')</span>' + btn('clsend', 'flag', 'End class', 'sm') + '</div>';
     else if (CLS.joined) h = '<div class="row"><span style="flex:1">' + ic('school') + ' <b>In class</b> with ' + esc(CLS.hostName) + ' · ' + esc(CLS.title) + ' · ' + n + ' here</span>' + btn('clshand', 'help_outline', 'Raise hand', 'tonal sm') + btn('clsleave', 'close', 'Leave', 'sm') + '</div>';
-    else h = '<div class="row"><span style="flex:1">' + ic('school') + ' <b>' + esc(CLS.hostName) + '</b> is presenting ' + esc(CLS.title) + ' · ' + n + ' in class</span>' + btn('clsjoin', 'play_lesson', 'Join', 'pri sm') + '</div>';
+    // (not in it: join it, or start your own, which takes its place: a class whose presenter has gone can't hold the room)
+    else h = '<div class="row"><span style="flex:1">' + ic('school') + ' <b>' + esc(CLS.hostName) + '</b> is presenting ' + esc(CLS.title) + ' · ' + n + ' in class</span>' + btn('clsjoin', 'play_lesson', 'Join', 'pri sm') + (LEC && !LEC.tour ? btn('clsgo', 'school', 'Start my own', 'sm') : '') + '</div>';
     const open = CLS.asks.filter(a => !a.done).slice(-3);
     if (inClass()) h += open.map(a => '<div class="clsq"><b>' + ic('help_outline') + ' ' + esc(a.who) + ':</b> ' + esc(a.q) + a.answers.map(x => '<div class="clsa"><b>' + esc(x.who) + ':</b> ' + esc(x.text) + '</div>').join('') + '<div class="row end"><button class="btn sm txt" data-cans="' + esc(a.qid) + '">' + ic('edit_note') + '<span>Answer</span></button>' + (presenting() || a.from === meAddr() ? '<button class="btn sm txt" data-cdone="' + esc(a.qid) + '">' + ic('check') + '<span>Answered</span></button>' : '') + '</div></div>').join('');
   }
